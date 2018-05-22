@@ -26,6 +26,6 @@ public class HelloWorldTest {
 	 */
 	@Test
 	public void test() {
-		MatcherAssert.assertThat(new AnnotationReader().getSpeechKeyword(HelloWorldSpeech.class), Matchers.equalTo(new String[] { "Hello world" }));
+		MatcherAssert.assertThat(new AnnotationReader().getSpeechKeyword(HelloWorld.class), Matchers.equalTo(new String[] { "Hello world" }));
 	}
 }

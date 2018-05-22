@@ -25,5 +25,5 @@ public @interface SpeechCommand {
 	/**
 	 * @return the keyword of the speech command
 	 */
-	String value();
+	String[] value();
 }
