@@ -39,13 +39,13 @@ public class AnnotationReader {
 	}
 
 	/**
-	 * Get's the annotated keyword of this class
+	 * Get's the annotated keywords of this class
 	 * 
 	 * @param cls
 	 *            The class of which to get the keyword
-	 * @return the keyword
+	 * @return the keywords
 	 */
-	public String getSpeechKeyword(Class<?> cls) {
+	public String[] getSpeechKeyword(Class<?> cls) {
 		SpeechCommand speechCommand = cls.getAnnotation(SpeechCommand.class);
 		if (speechCommand != null)
 			return speechCommand.value();
