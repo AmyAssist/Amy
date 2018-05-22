@@ -1,33 +1,63 @@
+/*
+ * Amy Assist
+ *
+ * Personal Assistance System
+ *
+ * @author Tim Neumann, Leon Kiefer, Benno Krauss, Christian Braeuner, Felix Burk, Florian Bauer, Kai Menzel, Lars Buttgereit, Muhammed Kaya, Patrick Gebhardt, Patrick Singer, Tobias Siemonsen
+ *
+ */
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
+import de.unistuttgart.iaas.amyassist.amy.core.Core;
 import de.unistuttgart.iaas.amyassist.amy.core.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.ICore;
+import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.Init;
 import de.unistuttgart.iaas.amyassist.amy.core.SpeechCommand;
 
+/**
+ * A example plugin
+ * 
+ * @author Leon Kiefer, Tim Neumann
+ */
 @SpeechCommand("Hello world")
 public class HelloWorld {
 	private static final String KEY = "hellocount";
 
-	protected ICore core;
+	/**
+	 * A reference to the storage.
+	 */
+	protected IStorage storage;
 
+	/**
+	 * A method that says hello
+	 * 
+	 * @param params
+	 *            [Not used] The parameters of the sentence.
+	 * @return The response of the system
+	 */
 	@Grammar("say hello")
-	public String say(String... say) {
-		int count = Integer.parseInt(this.core.read(KEY));
+	public String say(String... params) {
+		int count = Integer.parseInt(this.storage.get(HelloWorld.KEY));
 		count++;
 
 		String countString = String.valueOf(count);
-		this.core.store(KEY, countString);
+		this.storage.put(HelloWorld.KEY, countString);
 
 		return "hello" + countString;
 	}
 
+	/**
+	 * The init method of this class
+	 * 
+	 * @param p_core
+	 *            The core of the system, from which we get the storage.
+	 */
 	@Init
-	public void init(ICore core) {
-		this.core = core;
+	public void init(Core p_core) {
+		this.storage = p_core.getStorage();
 
-		if (!core.has(KEY)) {
-			core.store(KEY, "0");
+		if (!this.storage.has(HelloWorld.KEY)) {
+			this.storage.put(HelloWorld.KEY, "0");
 		}
 	}
 }
