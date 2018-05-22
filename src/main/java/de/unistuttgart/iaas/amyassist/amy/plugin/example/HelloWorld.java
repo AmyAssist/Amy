@@ -24,9 +24,10 @@ public class HelloWorld {
 
 	@Init
 	public void init(ICore core) {
+		this.core = core;
+
 		if (!core.has(KEY)) {
 			core.store(KEY, "0");
 		}
-
 	}
 }
