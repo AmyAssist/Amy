@@ -15,7 +15,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.SpeechCommand;
 
 /**
  * TODO: Description
- * 
+ *
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
 
@@ -26,17 +26,17 @@ public class AlarmClockSpeech {
 
 	/**
 	 * Sets new alarm at for now 10 o' clock
-	 * 
+	 *
 	 * @return true if everything went well
 	 */
 	@Grammar("set alarm")
 	private boolean setAlarm() {
-		return this.logic.setAlarm();
+		return this.logic.setAlarm("10");
 	}
 
 	@Grammar("delete")
 	private boolean deleteAlarm() {
-		return this.logic.deleteAlarm();
+		return this.logic.deleteAlarm("1");
 	}
 
 	@Grammar("reset all")
@@ -45,13 +45,18 @@ public class AlarmClockSpeech {
 	}
 
 	@Grammar("get")
-	private boolean getAlarm() {
+	private String getAlarm() {
 		return this.logic.getAlarm();
 	}
 
 	@Grammar("get all")
-	private boolean getAllAlarms() {
+	private String[] getAllAlarms() {
 		return this.logic.getAllAlarms();
+	}
+
+	@Grammar("edit")
+	private boolean editAlarm() {
+		return this.logic.editAlarm("1", "10");
 	}
 	// vorlesen
 	// einzelnen löschen
@@ -62,7 +67,7 @@ public class AlarmClockSpeech {
 
 	/**
 	 * Init method
-	 * 
+	 *
 	 * @param core
 	 *            The core
 	 */
