@@ -18,6 +18,7 @@ public class Core implements ICore {
 
 	/**
 	 * The method executed by the main method
+	 * 
 	 */
 	protected void run() {
 
