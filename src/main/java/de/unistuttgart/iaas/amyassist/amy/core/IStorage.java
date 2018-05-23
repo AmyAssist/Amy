@@ -46,4 +46,12 @@ public interface IStorage {
 	 * @return Whether the key is set
 	 */
 	public boolean has(String key);
+
+	/**
+	 * delete value corresponding to key
+	 * 
+	 * @param key
+	 */
+	public void delete(String key);
+
 }
