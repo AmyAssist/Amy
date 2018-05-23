@@ -29,6 +29,11 @@ public class Server {
 
 	public static final URI BASE_URI = URI.create("http://localhost:8080/rest");
 	
+	/**
+	 * creates and starts the HttpServer
+	 * 
+	 * @return the started HttpServer
+	 */
 	public static HttpServer start() {
 		Map<String, String> initParams = new HashMap<>();
 		initParams.put(

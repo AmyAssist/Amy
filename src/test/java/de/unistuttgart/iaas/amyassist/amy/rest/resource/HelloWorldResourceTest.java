@@ -36,15 +36,15 @@ class HelloWorldResourceTest {
 	
 	@BeforeAll
 	public void setUp() {
-		server = Server.start();
+		this.server = Server.start();
 		
 		Client c = ClientBuilder.newClient();
-        target = c.target(Server.BASE_URI);
+        this.target = c.target(Server.BASE_URI);
 	}
 	
 	@AfterAll
 	public void stop() {
-		server.shutdown();
+		this.server.shutdown();
 	}
 	
 	/**
@@ -52,7 +52,7 @@ class HelloWorldResourceTest {
 	 */
 	@Test
 	public void test() {
-		String responseMsg = target.path("helloworld").request().get(String.class);
+		String responseMsg = this.target.path("helloworld").request().get(String.class);
 		System.out.println("fdash");
         assertEquals("Hello World", responseMsg);
 	}
