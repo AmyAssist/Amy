@@ -8,9 +8,8 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import de.unistuttgart.iaas.amyassist.amy.core.Core;
 import de.unistuttgart.iaas.amyassist.amy.core.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.Init;
 import de.unistuttgart.iaas.amyassist.amy.core.SpeechCommand;
 
@@ -20,13 +19,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.SpeechCommand;
  * @author Leon Kiefer, Tim Neumann
  */
 @SpeechCommand("Hello world")
-public class HelloWorld {
-	private static final String KEY = "hellocount";
+public class HelloWorldSpeech {
 
 	/**
-	 * A reference to the storage.
+	 * The logic class of this plugin.
 	 */
-	protected IStorage storage;
+	HelloWorldLogic logic;
 
 	/**
 	 * A method that says hello
@@ -37,13 +35,7 @@ public class HelloWorld {
 	 */
 	@Grammar("say hello")
 	public String say(String... params) {
-		int count = Integer.parseInt(this.storage.get(HelloWorld.KEY));
-		count++;
-
-		String countString = String.valueOf(count);
-		this.storage.put(HelloWorld.KEY, countString);
-
-		return "hello" + countString;
+		return this.logic.helloWorld();
 	}
 
 	/**
@@ -53,11 +45,9 @@ public class HelloWorld {
 	 *            The core of the system, from which we get the storage.
 	 */
 	@Init
-	public void init(Core p_core) {
-		this.storage = p_core.getStorage();
-
-		if (!this.storage.has(HelloWorld.KEY)) {
-			this.storage.put(HelloWorld.KEY, "0");
-		}
+	public void init(ICore p_core) {
+		this.logic = new HelloWorldLogic();
+		this.logic.init(p_core);
 	}
+
 }

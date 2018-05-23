@@ -9,26 +9,17 @@
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 /**
- * The central core of the application
+ * TODO: Description
  * 
  * @author Tim Neumann
  */
-public class Core implements ICore {
-	private IStorage storage;
+public interface ICore {
 
 	/**
-	 * The method executed by the main method
+	 * Get's the storage object of the system.
+	 * 
+	 * @return storage
 	 */
-	protected void run() {
-
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.ICore#getStorage()
-	 */
-	@Override
-	public IStorage getStorage() {
-		return this.storage;
-	}
+	IStorage getStorage();
 
 }
