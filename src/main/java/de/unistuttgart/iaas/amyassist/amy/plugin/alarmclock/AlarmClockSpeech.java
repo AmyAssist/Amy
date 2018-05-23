@@ -34,10 +34,31 @@ public class AlarmClockSpeech {
 		return this.logic.setAlarm();
 	}
 
+	@Grammar("delete")
+	private boolean deleteAlarm() {
+		return this.logic.deleteAlarm();
+	}
+
 	@Grammar("reset all")
 	private boolean resetAlarms() {
 		return this.logic.resetAlarms();
 	}
+
+	@Grammar("get")
+	private boolean getAlarm() {
+		return this.logic.getAlarm();
+	}
+
+	@Grammar("get all")
+	private boolean getAllAlarms() {
+		return this.logic.getAllAlarms();
+	}
+	// vorlesen
+	// einzelnen löschen
+	// alarm auslösen
+	// einmaliger alarm einstellen (set)
+
+	// wecktage einstellen
 
 	/**
 	 * Init method
