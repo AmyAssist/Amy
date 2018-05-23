@@ -8,6 +8,7 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.rest.resource;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 /**
@@ -18,5 +19,9 @@ import javax.ws.rs.Path;
 @Path("alarmclock")
 public class AlarmclockResource {
 
-	
+	@GET
+	public String getTime() {
+		return "time";
+	}
+
 }
