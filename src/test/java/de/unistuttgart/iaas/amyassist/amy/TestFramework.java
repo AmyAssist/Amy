@@ -31,12 +31,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class TestFramework {
 
 	private IStorage storage;
-	private DIMock dependencyInjection;
+	DIMock dependencyInjection;
 
 	public TestFramework() {
 		this.storage = Mockito.mock(IStorage.class);
 		this.dependencyInjection = new DIMock();
-		this.dependencyInjection.register(Core.class);
+		this.dependencyInjection.addService(TestFramework.class, this);
 		this.dependencyInjection.addService(IStorage.class, this.storage);
 	}
 
