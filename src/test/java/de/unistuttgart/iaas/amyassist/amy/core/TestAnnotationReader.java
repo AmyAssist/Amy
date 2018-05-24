@@ -37,14 +37,14 @@ class TestAnnotationReader {
 				.getSpeechKeyword(Plugin.class);
 
 		assertThat(speechKeyword, is(arrayWithSize(2)));
-		assertThat(speechKeyword, is(arrayContaining("test", "unittest")));
+		assertThat(speechKeyword, is(arrayContainingInAnyOrder("test", "unittest")));
 	}
 
 	@Test
 	public void testGrammar() {
 		List<String> grammars = this.annotationReader.getGrammars(Plugin.class);
 
-		assertThat(grammars, contains("count", "say (hello|test)"));
+		assertThat(grammars, containsInAnyOrder("count", "say (hello|test)"));
 	}
 
 	@Test
