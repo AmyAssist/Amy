@@ -60,7 +60,6 @@ public class GrammarParserTest {
 		assert (grammarResult.contains("public <sleep> = ( sleep );"));
 		assert (grammarResult.contains("public <shutdown> = ( die );"));
 		assert (grammarResult.contains("public <wakeup> = ( okay amy );"));
-		System.out.println(grammarResult);
 	}
 
 }
