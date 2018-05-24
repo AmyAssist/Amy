@@ -44,4 +44,18 @@ class DependencyInjectionTest {
 		assertThat(service2.checkServices(), is(true));
 	}
 
+	@Test
+	void testCircularDependencies() {
+		this.dependencyInjection.register(Service4.class);
+		this.dependencyInjection.register(Service5.class);
+		boolean exception = false;
+		try {
+			this.dependencyInjection.get(Service4.class);
+		} catch (RuntimeException e) {
+			exception = true;
+		}
+
+		assertThat(exception, is(true));
+	}
+
 }

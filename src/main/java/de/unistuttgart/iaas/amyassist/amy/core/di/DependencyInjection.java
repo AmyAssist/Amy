@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -102,18 +103,18 @@ public class DependencyInjection {
 	}
 
 	private <T> T resolve(Class<T> serviceClass) {
-		return this.resolve(serviceClass, new HashSet<>(), this.instances);
+		return this.resolve(serviceClass, new Stack<>(), this.instances);
 	}
 
-	private <T> T resolve(Class<T> serviceClass, Set<Class<?>> t,
+	private <T> T resolve(Class<T> serviceClass, Stack<Class<?>> stack,
 			Map<Class<?>, Object> resolved) {
 		if (resolved.containsKey(serviceClass)) {
 			return (T) resolved.get(serviceClass);
 		}
-		if (t.contains(serviceClass)) {
+		if (stack.contains(serviceClass)) {
 			throw new RuntimeException("circular dependencies");
 		}
-		t.add(serviceClass);
+		stack.push(serviceClass);
 
 		try {
 			T instance = (T) serviceClass.newInstance();
@@ -126,10 +127,11 @@ public class DependencyInjection {
 				}
 				Class<?> required = this.register.get(dependency);
 				FieldUtils.writeField(field, instance,
-						this.resolve(required, t, resolved), true);
+						this.resolve(required, stack, resolved), true);
 			}
 
 			resolved.put(serviceClass, instance);
+			stack.pop();
 			return instance;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
