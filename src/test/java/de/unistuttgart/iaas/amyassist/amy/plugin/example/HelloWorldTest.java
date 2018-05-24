@@ -10,6 +10,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -25,17 +27,25 @@ import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
  */
 @ExtendWith(MockitoExtension.class)
 public class HelloWorldTest {
+	private TestFramework testFramework;
+
+	@BeforeEach
+	public void setup() {
+		this.testFramework = new TestFramework();
+		this.testFramework.register(HelloWorldSpeech.class);
+		this.testFramework.register(HelloWorldLogic.class);
+	}
 
 	@Test
 	public void testcount() {
-		TestFramework testFramework = new TestFramework();
-		IStorage storage = testFramework
+
+		IStorage storage = this.testFramework
 				.storage(TestFramework.store("hellocount", "10"));
 
-		HelloWorldSpeech helloWorldLogic = testFramework
-				.init(HelloWorldSpeech.class);
+		HelloWorldLogic helloWorldLogic = this.testFramework
+				.get(HelloWorldLogic.class);
 
-		assertThat(helloWorldLogic.logic.helloWorld(), equalTo("hello11"));
+		assertThat(helloWorldLogic.helloWorld(), equalTo("hello11"));
 
 		Mockito.verify(storage).put("hellocount", "11");
 	}

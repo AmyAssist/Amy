@@ -9,21 +9,23 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
 import de.unistuttgart.iaas.amyassist.amy.core.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.ICore;
-import de.unistuttgart.iaas.amyassist.amy.core.Init;
 import de.unistuttgart.iaas.amyassist.amy.core.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
  * A example plugin
  * 
  * @author Leon Kiefer, Tim Neumann
  */
+@Service(HelloWorldSpeech.class)
 @SpeechCommand("Hello world")
 public class HelloWorldSpeech {
 
 	/**
 	 * The logic class of this plugin.
 	 */
+	@Reference
 	HelloWorldLogic logic;
 
 	/**
@@ -37,17 +39,4 @@ public class HelloWorldSpeech {
 	public String say(String... params) {
 		return this.logic.helloWorld();
 	}
-
-	/**
-	 * The init method of this class
-	 * 
-	 * @param p_core
-	 *            The core of the system, from which we get the storage.
-	 */
-	@Init
-	public void init(ICore p_core) {
-		this.logic = new HelloWorldLogic();
-		this.logic.init(p_core);
-	}
-
 }

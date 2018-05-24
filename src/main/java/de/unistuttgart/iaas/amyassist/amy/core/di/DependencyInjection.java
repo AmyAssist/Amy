@@ -33,9 +33,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  */
 public class DependencyInjection {
 
-	private Map<Class<?>, Class<?>> register;
+	protected Map<Class<?>, Class<?>> register;
 
-	private Map<Class<?>, Set<Class<?>>> dependencyRegister;
+	protected Map<Class<?>, Set<Class<?>>> dependencyRegister;
+
+	protected Map<Class<?>, Object> instances;
 
 	/**
 	 * 
@@ -43,6 +45,7 @@ public class DependencyInjection {
 	public DependencyInjection() {
 		this.register = new HashMap<>();
 		this.dependencyRegister = new HashMap<>();
+		this.instances = new HashMap<>();
 	}
 
 	public void register(Class<?> cls) {
@@ -99,7 +102,7 @@ public class DependencyInjection {
 	}
 
 	private <T> T resolve(Class<T> serviceClass) {
-		return this.resolve(serviceClass, new HashSet<>(), new HashMap<>());
+		return this.resolve(serviceClass, new HashSet<>(), this.instances);
 	}
 
 	private <T> T resolve(Class<T> serviceClass, Set<Class<?>> t,
