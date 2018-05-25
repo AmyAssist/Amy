@@ -8,10 +8,10 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import de.unistuttgart.iaas.amyassist.amy.core.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 /**
  * A example plugin

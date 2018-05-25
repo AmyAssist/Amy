@@ -8,9 +8,9 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
 /**
  * Does the logic of the Hello World plugin

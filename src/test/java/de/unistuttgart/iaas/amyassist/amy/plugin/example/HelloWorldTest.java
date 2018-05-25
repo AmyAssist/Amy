@@ -18,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.unistuttgart.iaas.amyassist.amy.FramworkExtention;
 import de.unistuttgart.iaas.amyassist.amy.TestFramework;
-import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
 /**
  * A Test for the Hello World Plugin

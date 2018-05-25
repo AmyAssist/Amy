@@ -8,6 +8,9 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+
 /**
  * The central core of the application
  * 
@@ -25,7 +28,7 @@ public class Core implements ICore {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.ICore#getStorage()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore#getStorage()
 	 */
 	@Override
 	public IStorage getStorage() {

@@ -17,11 +17,11 @@ import java.util.function.Consumer;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
-import de.unistuttgart.iaas.amyassist.amy.core.ICore;
-import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
 /**
  * A Framework to test plugins
@@ -56,7 +56,7 @@ public class TestFramework {
 		private IStorage storage;
 
 		/**
-		 * @see de.unistuttgart.iaas.amyassist.amy.core.ICore#getStorage()
+		 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore#getStorage()
 		 */
 		@Override
 		public IStorage getStorage() {

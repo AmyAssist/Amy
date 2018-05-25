@@ -12,6 +12,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+
 /**
  * This class is responsible to read the annotations of a given class
  * 

@@ -17,6 +17,11 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
 
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+
 /**
  * Test Cases for the AnnotationReader
  * 
