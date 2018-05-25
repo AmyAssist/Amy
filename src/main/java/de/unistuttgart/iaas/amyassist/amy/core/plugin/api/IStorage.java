@@ -6,7 +6,7 @@
  * @author Tim Neumann, Leon Kiefer, Benno Krauss, Christian Braeuner, Felix Burk, Florian Bauer, Kai Menzel, Lars Buttgereit, Muhammed Kaya, Patrick Gebhardt, Patrick Singer, Tobias Siemonsen
  *
  */
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.plugin.api;
 
 import java.util.NoSuchElementException;
 
@@ -46,4 +46,12 @@ public interface IStorage {
 	 * @return Whether the key is set
 	 */
 	public boolean has(String key);
+
+	/**
+	 * delete value corresponding to key
+	 * 
+	 * @param key
+	 */
+	public void delete(String key);
+
 }

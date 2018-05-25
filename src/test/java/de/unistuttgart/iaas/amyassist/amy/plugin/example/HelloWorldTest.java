@@ -8,24 +8,39 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
-import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import de.unistuttgart.iaas.amyassist.amy.FramworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.TestFramework;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
 /**
  * A Test for the Hello World Plugin
  * 
  * @author Leon Kiefer
  */
+@ExtendWith({ MockitoExtension.class, FramworkExtention.class })
 public class HelloWorldTest {
+	@Reference
+	private TestFramework testFramework;
+	@Reference
+	private HelloWorldLogic helloWorldLogic;
 
-	/**
-	 * Test
-	 */
 	@Test
-	public void test() {
-		MatcherAssert.assertThat(new AnnotationReader().getSpeechKeyword(HelloWorldSpeech.class), Matchers.equalTo(new String[] { "Hello world" }));
+	public void testcount() {
+
+		IStorage storage = this.testFramework
+				.storage(TestFramework.store("hellocount", "10"));
+
+		assertThat(this.helloWorldLogic.helloWorld(), equalTo("hello11"));
+
+		Mockito.verify(storage).put("hellocount", "11");
 	}
 }
