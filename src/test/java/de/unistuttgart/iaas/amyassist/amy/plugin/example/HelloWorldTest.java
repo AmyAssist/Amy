@@ -10,52 +10,37 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
-import de.unistuttgart.iaas.amyassist.amy.core.ICore;
+import de.unistuttgart.iaas.amyassist.amy.FramworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.TestFramework;
 import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * A Test for the Hello World Plugin
  * 
  * @author Leon Kiefer
  */
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({ MockitoExtension.class, FramworkExtention.class })
 public class HelloWorldTest {
-
-	@Mock
-	private IStorage storage;
-
-	@Mock
-	private ICore core;
-
-	/**
-	 * Test
-	 */
-	@Test
-	public void test() {
-		assertThat(new AnnotationReader().getSpeechKeyword(HelloWorldSpeech.class),
-				equalTo(new String[] { "Hello world" }));
-	}
+	@Reference
+	private TestFramework testFramework;
+	@Reference
+	private HelloWorldLogic helloWorldLogic;
 
 	@Test
 	public void testcount() {
-		Mockito.when(this.core.getStorage()).thenReturn(this.storage);
 
-		Mockito.when(this.storage.has("hellocount")).thenReturn(true);
-		Mockito.when(this.storage.get("hellocount")).thenReturn("10");
+		IStorage storage = this.testFramework
+				.storage(TestFramework.store("hellocount", "10"));
 
-		HelloWorldLogic helloWorldLogic = new HelloWorldLogic();
-		assertThat(this.core, notNullValue());
-		helloWorldLogic.init(this.core);
+		assertThat(this.helloWorldLogic.helloWorld(), equalTo("hello11"));
 
-		assertThat(helloWorldLogic.helloWorld(), equalTo("hello11"));
-
-		Mockito.verify(this.storage).put("hellocount", "11");
+		Mockito.verify(storage).put("hellocount", "11");
 	}
 }
