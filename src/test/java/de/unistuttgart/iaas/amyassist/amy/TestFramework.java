@@ -31,22 +31,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 public class TestFramework {
 
 	private IStorage storage;
-	DIMock dependencyInjection;
+	DependencyInjection dependencyInjection;
 
 	public TestFramework() {
 		this.storage = Mockito.mock(IStorage.class);
-		this.dependencyInjection = new DIMock();
-		this.dependencyInjection.addService(TestFramework.class, this);
-		this.dependencyInjection.addService(IStorage.class, this.storage);
-	}
-
-	class DIMock extends DependencyInjection {
-
-		public void addService(Class<?> cls, Object service) {
-			this.register.put(cls, service.getClass());
-			this.dependencyRegister.put(service.getClass(), null);
-			this.instances.put(service.getClass(), service);
-		}
+		this.dependencyInjection = new DependencyInjection();
+		this.dependencyInjection.addExternalService(TestFramework.class, this);
+		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
 	}
 
 	@Service(ICore.class)

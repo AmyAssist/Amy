@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.reflections.Reflections;
 
-import de.unistuttgart.iaas.amyassist.amy.TestFramework.DIMock;
+import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
@@ -37,7 +37,7 @@ public class FramworkExtention implements TestInstancePostProcessor {
 				"de.unistuttgart.iaas.amyassist.amy");
 
 		this.testFramework = new TestFramework();
-		DIMock dependencyInjection = this.testFramework.dependencyInjection;
+		DependencyInjection dependencyInjection = this.testFramework.dependencyInjection;
 
 		Set<Class<?>> annotated = reflections
 				.getTypesAnnotatedWith(Service.class);
