@@ -95,10 +95,7 @@ public class DependencyInjection {
 	}
 
 	public <T> T get(Class<T> serviceType) {
-		if (!this.register.containsKey(serviceType)) {
-			throw new ServiceNotFoundException(serviceType);
-		}
-		Class<?> class1 = this.register.get(serviceType);
+		Class<?> class1 = this.getRequired(serviceType);
 		return (T) this.resolve(class1);
 	}
 
@@ -117,18 +114,8 @@ public class DependencyInjection {
 		stack.push(serviceClass);
 
 		try {
-			T instance = (T) serviceClass.newInstance();
-			Field[] dependencyFields = FieldUtils
-					.getFieldsWithAnnotation(serviceClass, Reference.class);
-			for (Field field : dependencyFields) {
-				Class<?> dependency = field.getType();
-				if (!this.register.containsKey(dependency)) {
-					throw new ServiceNotFoundException(dependency);
-				}
-				Class<?> required = this.register.get(dependency);
-				FieldUtils.writeField(field, instance,
-						this.resolve(required, stack, resolved), true);
-			}
+			T instance = serviceClass.newInstance();
+			this.inject(instance, stack, resolved);
 
 			resolved.put(serviceClass, instance);
 			stack.pop();
@@ -136,5 +123,33 @@ public class DependencyInjection {
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public <T> void inject(T instance) {
+		this.inject(instance, new Stack<>(), this.instances);
+	}
+
+	private <T> void inject(T instance, Stack<Class<?>> stack,
+			Map<Class<?>, Object> resolved) {
+		Field[] dependencyFields = FieldUtils
+				.getFieldsWithAnnotation(instance.getClass(), Reference.class);
+		for (Field field : dependencyFields) {
+			Class<?> dependency = field.getType();
+			Class<?> required = this.getRequired(dependency);
+			try {
+				FieldUtils.writeField(field, instance,
+						this.resolve(required, stack, resolved), true);
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private Class<?> getRequired(Class<?> dependency) {
+		if (!this.register.containsKey(dependency)) {
+			throw new ServiceNotFoundException(dependency);
+		}
+		Class<?> required = this.register.get(dependency);
+		return required;
 	}
 }

@@ -8,16 +8,13 @@
  */
 package de.unistuttgart.iaas.amyassist.amy;
 
-import java.lang.reflect.Field;
 import java.util.Set;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.reflections.Reflections;
 
 import de.unistuttgart.iaas.amyassist.amy.TestFramework.DIMock;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
@@ -48,13 +45,6 @@ public class FramworkExtention implements TestInstancePostProcessor {
 			dependencyInjection.register(a);
 		}
 
-		Field[] dependencyFields = FieldUtils
-				.getFieldsWithAnnotation(instance.getClass(), Reference.class);
-
-		for (Field field : dependencyFields) {
-			Class<?> dependency = field.getType();
-			Object object = dependencyInjection.get(dependency);
-			FieldUtils.writeField(field, instance, object, true);
-		}
+		dependencyInjection.inject(instance);
 	}
 }
