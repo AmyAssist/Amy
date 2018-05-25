@@ -19,6 +19,9 @@ import org.mockito.Mockito;
 import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
 import de.unistuttgart.iaas.amyassist.amy.core.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
  * A Framework to test plugins
@@ -28,16 +31,38 @@ import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
 public class TestFramework {
 
 	private IStorage storage;
-	private ICore core;
+	DIMock dependencyInjection;
 
 	public TestFramework() {
-		this.core = Mockito.mock(ICore.class);
 		this.storage = Mockito.mock(IStorage.class);
-		Mockito.when(this.core.getStorage()).thenReturn(this.storage);
+		this.dependencyInjection = new DIMock();
+		this.dependencyInjection.addService(TestFramework.class, this);
+		this.dependencyInjection.addService(IStorage.class, this.storage);
 	}
 
-	public ICore core() {
-		return this.core;
+	class DIMock extends DependencyInjection {
+
+		public void addService(Class<?> cls, Object service) {
+			this.register.put(cls, service.getClass());
+			this.dependencyRegister.put(service.getClass(), null);
+			this.instances.put(service.getClass(), service);
+		}
+	}
+
+	@Service(ICore.class)
+	class Core implements ICore {
+
+		@Reference
+		private IStorage storage;
+
+		/**
+		 * @see de.unistuttgart.iaas.amyassist.amy.core.ICore#getStorage()
+		 */
+		@Override
+		public IStorage getStorage() {
+			return this.storage;
+		}
+
 	}
 
 	public IStorage storage(Consumer<IStorage>... modifiers) {
@@ -46,6 +71,20 @@ public class TestFramework {
 		}
 
 		return this.storage;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection#register(Class)
+	 */
+	public void register(Class<?> cls) {
+		this.dependencyInjection.register(cls);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection#get(Class)
+	 */
+	public <T> T get(Class<T> serviceType) {
+		return this.dependencyInjection.get(serviceType);
 	}
 
 	/**
@@ -67,10 +106,16 @@ public class TestFramework {
 		Method initMethod = annotationReader.getInitMethod(cls);
 
 		try {
-			T newInstance = cls.getConstructor().newInstance();
+			T newInstance;
+			if (cls.isAnnotationPresent(Service.class)) {
+				newInstance = this.dependencyInjection.get(cls);
+			} else {
+				newInstance = cls.getConstructor().newInstance();
+			}
 
 			if (initMethod != null) {
-				initMethod.invoke(newInstance, this.core);
+				initMethod.invoke(newInstance,
+						this.dependencyInjection.get(ICore.class));
 			}
 
 			return newInstance;
