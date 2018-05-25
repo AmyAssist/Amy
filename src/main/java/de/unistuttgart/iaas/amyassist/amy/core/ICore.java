@@ -9,7 +9,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 /**
- * TODO: Description
+ * The definition of the core interface.
  * 
  * @author Tim Neumann
  */
