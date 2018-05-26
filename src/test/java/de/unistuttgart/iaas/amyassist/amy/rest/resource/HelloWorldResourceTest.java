@@ -22,7 +22,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import de.unistuttgart.iaas.amyassist.amy.FramworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.FrameworkExtention;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
@@ -32,7 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.rest.Server;
  * @author Christian Bräuner
  */
 @TestInstance(Lifecycle.PER_CLASS)
-@ExtendWith(FramworkExtention.class)
+@ExtendWith(FrameworkExtention.class)
 class HelloWorldResourceTest {
 	@Reference
 	private Server server;

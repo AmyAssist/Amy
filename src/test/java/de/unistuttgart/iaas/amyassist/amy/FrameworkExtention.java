@@ -22,7 +22,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * 
  * @author Leon Kiefer
  */
-public class FramworkExtention implements TestInstancePostProcessor {
+public class FrameworkExtention implements TestInstancePostProcessor {
 
 	private TestFramework testFramework;
 

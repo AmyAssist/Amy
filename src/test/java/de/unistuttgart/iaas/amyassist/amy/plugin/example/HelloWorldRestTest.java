@@ -21,7 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import de.unistuttgart.iaas.amyassist.amy.FramworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.FrameworkExtention;
 import de.unistuttgart.iaas.amyassist.amy.TestFramework;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
@@ -32,7 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.rest.Server;
  * 
  * @author Leon Kiefer
  */
-@ExtendWith(FramworkExtention.class)
+@ExtendWith(FrameworkExtention.class)
 class HelloWorldRestTest {
 
 	@Reference
