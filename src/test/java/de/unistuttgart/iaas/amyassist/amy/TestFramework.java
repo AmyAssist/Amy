@@ -22,6 +22,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
 /**
  * A Framework to test plugins
@@ -33,11 +34,23 @@ public class TestFramework {
 	private IStorage storage;
 	DependencyInjection dependencyInjection;
 
+	/**
+	 * Get's {@link #dependencyInjection dependencyInjection}
+	 * 
+	 * @return dependencyInjection
+	 */
+	public DependencyInjection getDependencyInjection() {
+		return this.dependencyInjection;
+	}
+
 	public TestFramework() {
 		this.storage = Mockito.mock(IStorage.class);
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
-		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
+		this.dependencyInjection.addExternalService(IStorage.class,
+				this.storage);
+		this.dependencyInjection.addExternalService(Server.class,
+				new Server(this.dependencyInjection));
 	}
 
 	@Service(ICore.class)

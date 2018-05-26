@@ -32,7 +32,7 @@ public class HelloWorldLogic {
 	 * 
 	 * @return the response
 	 */
-	protected String helloWorld() {
+	public String helloWorld() {
 		if (!this.storage.has(HelloWorldLogic.KEY)) {
 			this.storage.put(HelloWorldLogic.KEY, "0");
 		}

@@ -8,39 +8,44 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.rest;
 
-import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.grizzly2.servlet.GrizzlyWebContainerFactory;
-import org.glassfish.jersey.server.ServerProperties;
-import org.glassfish.jersey.servlet.ServletContainer;
+import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 
-import de.unistuttgart.iaas.amyassist.amy.rest.resource.HelloWorldResource;
+import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * A class to create a http server
  * 
- * @author Christian Bräuner
+ * @author Christian Bräuner, Leon Kiefer
  */
 public class Server {
 
+	DependencyInjection di;
+
+	public Server(DependencyInjection di) {
+		this.di = di;
+	}
+
 	public static final URI BASE_URI = URI.create("http://localhost:8080/rest");
-	
-	public static HttpServer start() {
-		Map<String, String> initParams = new HashMap<>();
-		initParams.put(
-				ServerProperties.PROVIDER_PACKAGES,
-				HelloWorldResource.class.getPackage().getName());
-		HttpServer server = null;
-		try {
-			server = GrizzlyWebContainerFactory.create(BASE_URI, ServletContainer.class, initParams);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+
+	public HttpServer start(Class<?>... classes) {
+		ResourceConfig resourceConfig = new ResourceConfig(classes);
+		resourceConfig.register(new AbstractBinder() {
+			@Override
+			protected void configure() {
+				this.bind(new ServiceInjectionResolver(Server.this.di))
+						.to(new TypeLiteral<Reference>() {
+						});
+			}
+		});
+		HttpServer server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI,
+				resourceConfig);
 		return server;
 	}
 
