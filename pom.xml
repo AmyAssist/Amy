@@ -82,6 +82,11 @@
 			<artifactId>reflections</artifactId>
 			<version>0.9.11</version>
 		</dependency>
+		<dependency>
+			<groupId>com.googlecode.clichemaven</groupId>
+			<artifactId>cliche</artifactId>
+			<version>110413</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
