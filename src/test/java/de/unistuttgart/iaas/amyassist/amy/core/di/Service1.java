@@ -6,20 +6,16 @@
  * @author Tim Neumann, Leon Kiefer, Benno Krauss, Christian Braeuner, Felix Burk, Florian Bauer, Kai Menzel, Lars Buttgereit, Muhammed Kaya, Patrick Gebhardt, Patrick Singer, Tobias Siemonsen
  *
  */
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * TODO: Description
+ * Test Service for DI
  * 
- * @author Tim Neumann
+ * @author Leon Kiefer
  */
-public interface ICore {
-
-	/**
-	 * Get's the storage object of the system.
-	 * 
-	 * @return storage
-	 */
-	IStorage getStorage();
+@Service(Service1.class)
+public class Service1 {
 
 }

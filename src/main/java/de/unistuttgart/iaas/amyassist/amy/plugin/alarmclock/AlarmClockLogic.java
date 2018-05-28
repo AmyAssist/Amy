@@ -13,8 +13,8 @@ import java.applet.AudioClip;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import de.unistuttgart.iaas.amyassist.amy.core.ICore;
-import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
 /**
  * TODO: Description

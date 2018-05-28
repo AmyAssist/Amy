@@ -13,3 +13,6 @@ buildNumber.properties
 
 #Other -neumantm
 .directory
+
+#Other -sinpat
+.idea
