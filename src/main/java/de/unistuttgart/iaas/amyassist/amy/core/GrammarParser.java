@@ -39,7 +39,7 @@ public class GrammarParser {
 	 * @param sleep
 	 * @param shutdown
 	 */
-	protected GrammarParser(String name, String wakeup, String sleep, String shutdown) {
+	GrammarParser(String name, String wakeup, String sleep, String shutdown) {
 		this.wakeup = wakeup;
 		this.sleep = sleep;
 		this.shutdown = shutdown;
@@ -50,7 +50,7 @@ public class GrammarParser {
 
 	}
 
-	protected String getGrammar() {
+	String getGrammar() {
 		// header
 		String grammar = "#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n" + " */\n" + "\n";
 
@@ -76,7 +76,7 @@ public class GrammarParser {
 		return grammar;
 	}
 
-	protected void addRule(String ruleName, String keyword) {
+	void addRule(String ruleName, String keyword) {
 		this.addedRules.add("public " + "<" + ruleName + ">" + " = " + parseKeyword(keyword) + "; \n");
 	}
 

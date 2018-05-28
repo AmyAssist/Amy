@@ -40,6 +40,8 @@ public class DependencyInjection {
 
 	protected Map<Class<?>, Object> instances;
 
+	protected Map<Class<?>, Object> externalServices;
+
 	/**
 	 * 
 	 */
@@ -47,16 +49,17 @@ public class DependencyInjection {
 		this.register = new HashMap<>();
 		this.dependencyRegister = new HashMap<>();
 		this.instances = new HashMap<>();
+		this.externalServices = new HashMap<>();
 	}
 
-	public void register(Class<?> cls) {
+	public synchronized void register(Class<?> cls) {
 		Service annotation = cls.getAnnotation(Service.class);
 		if (annotation == null) {
 			throw new ClassIsNotAServiceException(cls);
 		}
 		Class<?> serviceType = annotation.value();
 		// TODO check if serviceType matches cls
-		if (this.register.containsKey(serviceType)) {
+		if (this.hasServiceOfType(serviceType)) {
 			throw new DuplicateServiceException();
 		}
 
@@ -85,6 +88,32 @@ public class DependencyInjection {
 	}
 
 	/**
+	 * Adds an external Service instance to the DI. The DI does not manage the
+	 * dependencies of the external Service, but the DI can inject the external
+	 * Service as dependency into other managed services.
+	 * 
+	 * @param serviceType
+	 * @param service
+	 */
+	public synchronized void addExternalService(Class<?> serviceType,
+			Object externalService) {
+		if (this.hasServiceOfType(serviceType)) {
+			throw new DuplicateServiceException();
+		}
+		this.externalServices.put(serviceType, externalService);
+	}
+
+	private boolean hasServiceOfType(Class<?> serviceType) {
+		if (this.register.containsKey(serviceType)) {
+			return true;
+		}
+		if (this.externalServices.containsKey(serviceType)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * check if default constructor exists and is accessible
 	 * 
 	 * @param cls
@@ -94,15 +123,35 @@ public class DependencyInjection {
 		return true;
 	}
 
+	/**
+	 * Get a Service instance
+	 * 
+	 * @param serviceType
+	 * @return
+	 */
 	public <T> T get(Class<T> serviceType) {
-		if (!this.register.containsKey(serviceType)) {
-			throw new ServiceNotFoundException(serviceType);
-		}
-		Class<?> class1 = this.register.get(serviceType);
-		return (T) this.resolve(class1);
+		return this.get(serviceType, new Stack<>(), this.instances);
 	}
 
-	private <T> T resolve(Class<T> serviceClass) {
+	private <T> T get(Class<T> serviceType, Stack<Class<?>> stack,
+			Map<Class<?>, Object> resolved) {
+		if (this.externalServices.containsKey(serviceType)) {
+			return (T) this.externalServices.get(serviceType);
+		}
+
+		Class<?> required = this.getRequired(serviceType);
+		return (T) this.resolve(required, stack, resolved);
+	}
+
+	/**
+	 * Resolve the dependency of a Service implementation and create an instance
+	 * of the Service
+	 * 
+	 * @param serviceClass
+	 *            the implementation class of a Service
+	 * @return the instance of the Service implementation
+	 */
+	public <T> T resolve(Class<T> serviceClass) {
 		return this.resolve(serviceClass, new Stack<>(), this.instances);
 	}
 
@@ -117,18 +166,8 @@ public class DependencyInjection {
 		stack.push(serviceClass);
 
 		try {
-			T instance = (T) serviceClass.newInstance();
-			Field[] dependencyFields = FieldUtils
-					.getFieldsWithAnnotation(serviceClass, Reference.class);
-			for (Field field : dependencyFields) {
-				Class<?> dependency = field.getType();
-				if (!this.register.containsKey(dependency)) {
-					throw new ServiceNotFoundException(dependency);
-				}
-				Class<?> required = this.register.get(dependency);
-				FieldUtils.writeField(field, instance,
-						this.resolve(required, stack, resolved), true);
-			}
+			T instance = serviceClass.newInstance();
+			this.inject(instance, stack, resolved);
 
 			resolved.put(serviceClass, instance);
 			stack.pop();
@@ -136,5 +175,36 @@ public class DependencyInjection {
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * 
+	 * @param instance
+	 */
+	public <T> void inject(T instance) {
+		this.inject(instance, new Stack<>(), this.instances);
+	}
+
+	private <T> void inject(T instance, Stack<Class<?>> stack,
+			Map<Class<?>, Object> resolved) {
+		Field[] dependencyFields = FieldUtils
+				.getFieldsWithAnnotation(instance.getClass(), Reference.class);
+		for (Field field : dependencyFields) {
+			Class<?> dependency = field.getType();
+			Object object = this.get(dependency, stack, resolved);
+			try {
+				FieldUtils.writeField(field, instance, object, true);
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private Class<?> getRequired(Class<?> serviceType) {
+		if (!this.register.containsKey(serviceType)) {
+			throw new ServiceNotFoundException(serviceType);
+		}
+		Class<?> required = this.register.get(serviceType);
+		return required;
 	}
 }

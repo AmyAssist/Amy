@@ -11,6 +11,8 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+
 /**
  * TODO: Description
  * 
@@ -29,7 +31,7 @@ public class Storage implements IStorage {
 	/**
 	 * puts a new value with corresponding plugin key
 	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.IStorage#put(java.lang.String,
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage#put(java.lang.String,
 	 *      java.lang.String)
 	 */
 	@Override
@@ -40,7 +42,7 @@ public class Storage implements IStorage {
 	/**
 	 * gets value of plugin key
 	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.IStorage#get(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage#get(java.lang.String)
 	 */
 	@Override
 	public String get(String key) throws NoSuchElementException {
@@ -50,7 +52,7 @@ public class Storage implements IStorage {
 	/**
 	 * checks if plugin key has a value
 	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.IStorage#has(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage#has(java.lang.String)
 	 */
 	@Override
 	public boolean has(String key) {
@@ -60,7 +62,7 @@ public class Storage implements IStorage {
 	/**
 	 * removes entry
 	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.IStorage#delete(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage#delete(java.lang.String)
 	 */
 	@Override
 	public void delete(String key) {

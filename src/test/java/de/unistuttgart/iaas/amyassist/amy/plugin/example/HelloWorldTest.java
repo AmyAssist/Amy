@@ -16,17 +16,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.unistuttgart.iaas.amyassist.amy.FramworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.FrameworkExtention;
 import de.unistuttgart.iaas.amyassist.amy.TestFramework;
-import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
 /**
  * A Test for the Hello World Plugin
  * 
  * @author Leon Kiefer
  */
-@ExtendWith({ MockitoExtension.class, FramworkExtention.class })
+@ExtendWith({ MockitoExtension.class, FrameworkExtention.class })
 public class HelloWorldTest {
 	@Reference
 	private TestFramework testFramework;
