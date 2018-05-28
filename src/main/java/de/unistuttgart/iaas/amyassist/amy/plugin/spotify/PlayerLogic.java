@@ -13,9 +13,11 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import com.google.gson.JsonParser;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.requests.data.player.GetUsersAvailableDevicesRequest;
+import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
@@ -28,10 +30,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class PlayerLogic {
 	private Authorization auth;
 	private String deviceID = null;
+	private String deviceName = null;
+	private ArrayList<String[]> actualSearchResult = null;
 
 	public void init() {
 		this.auth = new Authorization();
 		this.auth.init();
+		setDevice(0);
 	}
 
 	/**
@@ -97,12 +102,12 @@ public class PlayerLogic {
 	 * @return selected device
 	 */
 	public String setDevice(int deviceNumber) {
-		if(this.auth.getSpotifyApi() != null) {
+		if (this.auth.getSpotifyApi() != null) {
 			GetUsersAvailableDevicesRequest getUsersAvailableDevicesRequest = this.auth.getSpotifyApi()
 					.getUsersAvailableDevices().build();
 			try {
 				Device[] devices = getUsersAvailableDevicesRequest.execute();
-				if(deviceNumber < devices.length) {
+				if (deviceNumber < devices.length) {
 					this.deviceID = devices[deviceNumber].getId();
 					return devices[deviceNumber].getName();
 				}
@@ -112,9 +117,99 @@ public class PlayerLogic {
 				System.err.println(e);
 				return "A problem has occurred";
 			}
-			
+
 		}
 		return "Please init the spotify API";
+	}
+
+
+
+	public String search(String searchText, String type, int limit) {
+		if (checkPlayerState() == null) {
+			this.actualSearchResult = Search.SearchAnything(searchText, type, limit, this.auth.getSpotifyApi());
+			String resultString = "";
+			for (int i = 0; i < this.actualSearchResult.size(); i++) {
+				resultString = resultString + "\n" + this.actualSearchResult.get(i)[1];
+			}
+			return resultString;
+		} else {
+			return checkPlayerState();
+		}
+
+	}
+
+	/**
+	 * this method play the item that searched before. Use only after a search
+	 * 
+	 * @param songNumber
+	 *            number of the item form the search befor
+	 * @return
+	 */
+	public String play(int songNumber) {
+		if (this.actualSearchResult != null && songNumber < this.actualSearchResult.size()) {
+			if (this.actualSearchResult.get(songNumber)[2].equals("track")) {
+				playSongFromUri(this.actualSearchResult.get(songNumber)[0]);
+				return this.actualSearchResult.get(songNumber)[1];
+			} else {
+				playListFromUri(this.actualSearchResult.get(songNumber)[0]);
+				return this.actualSearchResult.get(songNumber)[1];
+			}
+		} else {
+			return "Please search before you call this";
+		}
+	}
+
+	/**
+	 * this method play the Song from the uri on spotify
+	 * 
+	 * @param uri
+	 * @return true if no problem occur else false
+	 */
+	private boolean playSongFromUri(String uri) {
+		StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = this.auth.getSpotifyApi()
+				.startResumeUsersPlayback().device_id(this.deviceID)
+				.uris(new JsonParser().parse("[\"" + uri + "\"]").getAsJsonArray()).build();
+		try {
+			startResumeUsersPlaybackRequest.execute();
+			return true;
+		} catch (SpotifyWebApiException | IOException e) {
+			System.out.println("Error: " + e.getCause().getMessage());
+			return false;
+		}
+	}
+	
+	/**
+	 * play a list of tracks for example a playlists and albums
+	 * 
+	 * @param uri
+	 * @return true if no problem occur else false
+	 */
+	private boolean playListFromUri(String uri) {
+		StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = this.auth.getSpotifyApi()
+				.startResumeUsersPlayback().context_uri(uri).device_id(this.deviceID).build();
+		try {
+			startResumeUsersPlaybackRequest.execute();
+			return true;
+		} catch (SpotifyWebApiException | IOException e) {
+			System.out.println("Error: " + e.getCause().getMessage());
+			return false;
+		}
+	}
+
+	/**
+	 * check all possible problems from the player
+	 * 
+	 * @return null if all good, else a String with a description of the problem
+	 */
+	private String checkPlayerState() {
+		if (this.auth == null) {
+			return "Please initialize the Authorization.";
+		} else if (this.auth.getSpotifyApi() == null) {
+			return "Please initialize the spotify api with the client id and client secret";
+	//	} else if (!getDevices().contains(this.deviceID)) {
+	//		return "the current device has been disconnected. Please select a new device.";
+		}
+		return null;
 	}
 
 	// testing
@@ -140,5 +235,7 @@ public class PlayerLogic {
 		for (int i = 0; i < pc.getDevices().size(); i++) {
 			System.out.println(pc.getDevices().get(i));
 		}
+		System.out.println(pc.search("game of thrones", "playlist", 5));
+		System.out.println(pc.play(2));
 	}
 }

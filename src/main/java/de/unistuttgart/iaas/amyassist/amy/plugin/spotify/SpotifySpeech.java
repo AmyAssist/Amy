@@ -43,7 +43,10 @@ public class SpotifySpeech {
 	 * @return
 	 */
 	@Grammar("set device #")
-	public String setDevice(int deviceNumber) {
-		return this.playerLogic.setDevice(deviceNumber);
+	public String setDevice(String... params) {
+		if(2 < params.length) {
+		return this.playerLogic.setDevice(Integer.parseInt(params[2]));
+		}
+		return "Wrong request";
 	}
 }
