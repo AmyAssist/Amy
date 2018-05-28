@@ -8,20 +8,23 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import de.unistuttgart.iaas.amyassist.amy.core.ICore;
-import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
 /**
  * Does the logic of the Hello World plugin
  * 
  * @author Tim Neumann
  */
+@Service(HelloWorldLogic.class)
 public class HelloWorldLogic {
 	private static final String KEY = "hellocount";
 
 	/**
 	 * A reference to the storage.
 	 */
+	@Reference
 	protected IStorage storage;
 
 	/**
@@ -29,7 +32,10 @@ public class HelloWorldLogic {
 	 * 
 	 * @return the response
 	 */
-	protected String helloWorld() {
+	public String helloWorld() {
+		if (!this.storage.has(HelloWorldLogic.KEY)) {
+			this.storage.put(HelloWorldLogic.KEY, "0");
+		}
 		int count = Integer.parseInt(this.storage.get(HelloWorldLogic.KEY));
 		count++;
 
@@ -38,19 +44,4 @@ public class HelloWorldLogic {
 
 		return "hello" + countString;
 	}
-
-	/**
-	 * Init method for the logic class
-	 * 
-	 * @param p_core
-	 *            The core.
-	 */
-	protected void init(ICore p_core) {
-		this.storage = p_core.getStorage();
-
-		if (!this.storage.has(HelloWorldLogic.KEY)) {
-			this.storage.put(HelloWorldLogic.KEY, "0");
-		}
-	}
-
 }
