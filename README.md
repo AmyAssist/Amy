@@ -5,5 +5,6 @@
 Personal Assistance System
 
 This is a research project from students. No functionality is tested. There may be harmful errors.
+For license information see [License-Notice](license-notice.md).
 
 Maven: de.unistuttgart.iaas.amyassist.amy
