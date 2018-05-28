@@ -58,12 +58,6 @@ public class AlarmClockSpeech {
 	private boolean editAlarm() {
 		return this.logic.editAlarm("1", "10");
 	}
-	// vorlesen
-	// einzelnen löschen
-	// alarm auslösen
-	// einmaliger alarm einstellen (set)
-
-	// wecktage einstellen
 
 	/**
 	 * Init method
