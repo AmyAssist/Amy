@@ -20,7 +20,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import de.unistuttgart.iaas.amyassist.amy.FrameworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
 /**
@@ -29,32 +32,35 @@ import de.unistuttgart.iaas.amyassist.amy.rest.Server;
  * @author Christian Bräuner
  */
 @TestInstance(Lifecycle.PER_CLASS)
+@ExtendWith(FrameworkExtention.class)
 class HelloWorldResourceTest {
+	@Reference
+	private Server server;
 
-	private HttpServer server;
+	private HttpServer httpServer;
 	private WebTarget target;
-	
+
 	@BeforeAll
 	public void setUp() {
-		this.server = Server.start();
-		
+		this.httpServer = this.server.start(HelloWorldResource.class);
+
 		Client c = ClientBuilder.newClient();
-        this.target = c.target(Server.BASE_URI);
+		this.target = c.target(Server.BASE_URI);
 	}
-	
+
 	@AfterAll
 	public void stop() {
-		this.server.shutdown();
+		this.httpServer.shutdown();
 	}
-	
+
 	/**
 	 * test to see the message "Hello World" is sent in response
 	 */
 	@Test
 	public void test() {
-		String responseMsg = this.target.path("helloworld").request().get(String.class);
-		System.out.println("fdash");
-        assertEquals("Hello World", responseMsg);
+		String responseMsg = this.target.path("helloworld").request()
+				.get(String.class);
+		assertEquals("Hello World", responseMsg);
 	}
 
 }
