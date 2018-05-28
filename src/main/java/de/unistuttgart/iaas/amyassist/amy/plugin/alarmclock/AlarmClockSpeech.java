@@ -8,10 +8,10 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import de.unistuttgart.iaas.amyassist.amy.core.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.ICore;
-import de.unistuttgart.iaas.amyassist.amy.core.Init;
-import de.unistuttgart.iaas.amyassist.amy.core.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 /**
  * TODO: Description

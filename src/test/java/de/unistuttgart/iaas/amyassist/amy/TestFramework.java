@@ -17,11 +17,12 @@ import java.util.function.Consumer;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
-import de.unistuttgart.iaas.amyassist.amy.core.ICore;
-import de.unistuttgart.iaas.amyassist.amy.core.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
 /**
  * A Framework to test plugins
@@ -31,22 +32,25 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class TestFramework {
 
 	private IStorage storage;
-	DIMock dependencyInjection;
+	DependencyInjection dependencyInjection;
+
+	/**
+	 * Get's {@link #dependencyInjection dependencyInjection}
+	 * 
+	 * @return dependencyInjection
+	 */
+	public DependencyInjection getDependencyInjection() {
+		return this.dependencyInjection;
+	}
 
 	public TestFramework() {
 		this.storage = Mockito.mock(IStorage.class);
-		this.dependencyInjection = new DIMock();
-		this.dependencyInjection.addService(TestFramework.class, this);
-		this.dependencyInjection.addService(IStorage.class, this.storage);
-	}
-
-	class DIMock extends DependencyInjection {
-
-		public void addService(Class<?> cls, Object service) {
-			this.register.put(cls, service.getClass());
-			this.dependencyRegister.put(service.getClass(), null);
-			this.instances.put(service.getClass(), service);
-		}
+		this.dependencyInjection = new DependencyInjection();
+		this.dependencyInjection.addExternalService(TestFramework.class, this);
+		this.dependencyInjection.addExternalService(IStorage.class,
+				this.storage);
+		this.dependencyInjection.addExternalService(Server.class,
+				new Server(this.dependencyInjection));
 	}
 
 	@Service(ICore.class)
@@ -56,7 +60,7 @@ public class TestFramework {
 		private IStorage storage;
 
 		/**
-		 * @see de.unistuttgart.iaas.amyassist.amy.core.ICore#getStorage()
+		 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore#getStorage()
 		 */
 		@Override
 		public IStorage getStorage() {

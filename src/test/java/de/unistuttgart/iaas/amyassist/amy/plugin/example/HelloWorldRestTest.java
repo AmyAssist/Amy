@@ -6,49 +6,53 @@
  * @author Tim Neumann, Leon Kiefer, Benno Krauss, Christian Braeuner, Felix Burk, Florian Bauer, Kai Menzel, Lars Buttgereit, Muhammed Kaya, Patrick Gebhardt, Patrick Singer, Tobias Siemonsen
  *
  */
-package de.unistuttgart.iaas.amyassist.amy.rest.resource;
+package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.FrameworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.TestFramework;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
 /**
- * A test for the server
+ * A Test for the Hello World Rest Service
  * 
- * @author Christian Bräuner
+ * @author Leon Kiefer
  */
-@TestInstance(Lifecycle.PER_CLASS)
 @ExtendWith(FrameworkExtention.class)
-class HelloWorldResourceTest {
+class HelloWorldRestTest {
+
+	@Reference
+	private TestFramework testFramework;
+
 	@Reference
 	private Server server;
 
 	private HttpServer httpServer;
 	private WebTarget target;
 
-	@BeforeAll
+	@BeforeEach
 	public void setUp() {
-		this.httpServer = this.server.start(HelloWorldResource.class);
+		this.httpServer = this.server.start(HelloWorldRest.class);
 
 		Client c = ClientBuilder.newClient();
 		this.target = c.target(Server.BASE_URI);
 	}
 
-	@AfterAll
+	@AfterEach
 	public void stop() {
 		this.httpServer.shutdown();
 	}
@@ -58,9 +62,12 @@ class HelloWorldResourceTest {
 	 */
 	@Test
 	public void test() {
+		IStorage storage = this.testFramework
+				.storage(TestFramework.store("hellocount", "99"));
+
 		String responseMsg = this.target.path("helloworld").request()
 				.get(String.class);
-		assertEquals("Hello World", responseMsg);
+		assertThat(responseMsg, equalTo("hello100"));
 	}
 
 }
