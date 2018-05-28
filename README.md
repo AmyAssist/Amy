@@ -4,4 +4,6 @@
 
 Personal Assistance System
 
+For license information see [License-Notice](license-notice.md).
+
 Maven: de.unistuttgart.iaas.amyassist.amy
