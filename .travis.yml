@@ -3,7 +3,9 @@ cache:
   directories:
   - "$HOME/.m2"
 after_success:
+  - mkdir gh-pages
   - mvn clean test jacoco:report coveralls:report
+  - mv target/site/jacoco gh-pages/jacoco
   - mvn project-info-reports:dependencies
   - mv target/site gh-pages/dependencies
   - mv gh-pages/dependencies/dependencies.html gh-pages/dependencies/index.html
