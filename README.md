@@ -1,6 +1,6 @@
 # Amy
 [![Build Status](https://travis-ci.com/AmyAssist/Amy.svg?branch=dev)](https://travis-ci.com/AmyAssist/Amy)
-[![Coverage Status](https://coveralls.io/repos/github/AmyAssist/Amy/badge.svg?branch=dev)](https://coveralls.io/github/AmyAssist/Amy?branch=dev)
+[![Coverage Status](https://codecov.io/gh/AmyAssist/Amy/branch/dev/graph/badge.svg)](https://codecov.io/gh/AmyAssist/Amy)
 
 Personal Assistance System
 
