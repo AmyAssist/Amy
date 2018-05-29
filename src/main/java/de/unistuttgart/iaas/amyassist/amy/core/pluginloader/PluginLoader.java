@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -123,7 +125,7 @@ public class PluginLoader {
 		URL packageURL = Thread.currentThread().getContextClassLoader().getResource(packagePath);
 		if (packageURL == null) return false;
 		File packageFile = new File(packageURL.getFile());
-		ArrayList<Class<?>> classes = this.findClassesInPackage(packageFile, packageName);
+		ArrayList<Class<?>> classes = this.findClassesInPackage(packageFile, packageName.substring(0, packageName.lastIndexOf(".")));
 		if (classes == null) return false;
 		Plugin p = new Plugin();
 		p.setClasses(classes);
@@ -135,16 +137,16 @@ public class PluginLoader {
 		return true;
 	}
 
-	private ArrayList<Class<?>> findClassesInPackage(File packageFile, String packageName) {
+	private ArrayList<Class<?>> findClassesInPackage(File packageFile, String parent_packageName) {
 		ArrayList<Class<?>> classes = new ArrayList<>();
 		if (packageFile.isDirectory()) {
 			for (File child : packageFile.listFiles()) {
-				ArrayList<Class<?>> newClasses = this.findClassesInPackage(child, packageName + "." + packageFile.getName());
+				ArrayList<Class<?>> newClasses = this.findClassesInPackage(child, parent_packageName + "." + packageFile.getName());
 				if (newClasses == null) return null;
 				classes.addAll(newClasses);
 			}
 		} else if (packageFile.getName().endsWith(".class")) {
-			String className = packageName + "." + packageFile.getName().substring(0, packageFile.getName().length() - 6);
+			String className = parent_packageName + "." + packageFile.getName().substring(0, packageFile.getName().length() - 6);
 			try {
 				classes.add(Class.forName(className));
 			} catch (ClassNotFoundException e) {
@@ -165,5 +167,16 @@ public class PluginLoader {
 	 */
 	public Plugin getPlugin(String name) {
 		return this.plugins.get(name);
+	}
+
+	/**
+	 * @return a list of plugin names
+	 */
+	public Set<String> getPluginNames() {
+		return this.plugins.keySet();
+	}
+
+	public List<Plugin> getPlugins() {
+		return new ArrayList<>(this.plugins.values());
 	}
 }
