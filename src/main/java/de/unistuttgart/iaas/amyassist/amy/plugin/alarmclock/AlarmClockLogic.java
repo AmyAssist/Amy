@@ -35,7 +35,8 @@ public class AlarmClockLogic {
 
 	private static TaskSchedulerAPI taskScheduler;
 
-	private static final String KEY = "alarmCounter";
+	private static final String ALARMCOUNTER = "alarmCounter";
+	private static final String TIMERCOUNTER = "timerCounter";
 
 	/**
 	 * Reads out the chosen alarm per Text-to-speech
@@ -46,6 +47,16 @@ public class AlarmClockLogic {
 	protected String alarmOutput(String alarm) {
 
 		return null;
+	}
+
+	/**
+	 * Stops alarm or timer, that's currently going off
+	 * 
+	 * @return
+	 */
+	protected boolean stopAlarm() {
+		// TODO: stop alarm with TaskScheduler (maybe with help of distinct alarm id)
+		return true;
 	}
 
 	/**
@@ -81,9 +92,9 @@ public class AlarmClockLogic {
 	 */
 	protected boolean setAlarm(String alarmTime) {
 		int time = Integer.parseInt(alarmTime);
-		int counter = Integer.parseInt(this.storage.get(KEY));
+		int counter = Integer.parseInt(this.storage.get(ALARMCOUNTER));
 		counter++;
-		this.storage.put(KEY, Integer.toString(counter));
+		this.storage.put(ALARMCOUNTER, Integer.toString(counter));
 		this.storage.put("alarm" + counter, alarmTime);
 
 		Runnable alarmRunnable = createAlarmRunnable();
@@ -93,9 +104,28 @@ public class AlarmClockLogic {
 					new Date(Calendar.YEAR - 1900, Calendar.MONTH, Calendar.DAY_OF_MONTH, time, 0));
 
 		} else {
+			// Day of month + 1 will cause problems (e.g. 31 + 1 = 32 is not a valid date)
 			taskScheduler.schedule(alarmRunnable,
 					new Date(Calendar.YEAR - 1900, Calendar.MONTH, Calendar.DAY_OF_MONTH + 1, time, 0));
 		}
+		return true;
+	}
+
+	/**
+	 * 
+	 * @param delay
+	 *            delay until alarm in milliseconds
+	 * @return
+	 */
+	protected boolean setTimer(long delay) {
+		int counter = Integer.parseInt(this.storage.get(TIMERCOUNTER));
+		counter++;
+		this.storage.put(TIMERCOUNTER, Integer.toString(counter));
+		this.storage.put("timer" + counter, "" + delay);
+
+		Runnable alarmRunnable = createAlarmRunnable();
+
+		taskScheduler.schedule(alarmRunnable, new Date(new Date().getTime() + delay));
 		return true;
 	}
 
@@ -105,8 +135,24 @@ public class AlarmClockLogic {
 	 * @return true if everything went well
 	 */
 	protected boolean resetAlarms() {
-		int amount = Integer.parseInt(this.storage.get(KEY));
-		this.storage.put(KEY, "0");
+		int amount = Integer.parseInt(this.storage.get(ALARMCOUNTER));
+		this.storage.put(ALARMCOUNTER, "0");
+		for (int i = 1; i <= amount; i++) {
+			String key = "alarm" + i;
+			if (this.storage.has(key))
+				this.storage.delete(key);
+		}
+		return true;
+	}
+
+	/**
+	 * Delete all timers and reset timerCounter
+	 * 
+	 * @return true if everything went well
+	 */
+	protected boolean resetTimers() {
+		int amount = Integer.parseInt(this.storage.get(TIMERCOUNTER));
+		this.storage.put(TIMERCOUNTER, "0");
 		for (int i = 1; i <= amount; i++) {
 			String key = "alarm" + i;
 			if (this.storage.has(key))
@@ -151,7 +197,7 @@ public class AlarmClockLogic {
 	 */
 	protected String[] getAllAlarms() {
 		String[] allAlarms = {};
-		for (int i = 1; i <= Integer.parseInt(this.storage.get(KEY)); i++) {
+		for (int i = 1; i <= Integer.parseInt(this.storage.get(ALARMCOUNTER)); i++) {
 			if (this.storage.has("alarm" + i)) {
 				alarmOutput(this.storage.get("alarm" + i));
 				allAlarms[i] = "alarm" + i;
@@ -185,8 +231,10 @@ public class AlarmClockLogic {
 	public void init(ICore core) {
 		this.storage = core.getStorage();
 		taskScheduler = new TaskScheduler();
-		if (!this.storage.has(KEY))
-			this.storage.put(KEY, Integer.toString(0));
+		if (!this.storage.has(ALARMCOUNTER))
+			this.storage.put(ALARMCOUNTER, "0");
+		if (!this.storage.has(TIMERCOUNTER))
+			this.storage.put(TIMERCOUNTER, "0");
 	}
 
 }

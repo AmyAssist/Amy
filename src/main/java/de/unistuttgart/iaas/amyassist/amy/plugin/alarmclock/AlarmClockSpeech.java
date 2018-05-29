@@ -37,14 +37,29 @@ public class AlarmClockSpeech {
 		return this.logic.setAlarm("10");
 	}
 
+	/**
+	 * Sets timer with 1 minute (60 second) delay
+	 * 
+	 * @return
+	 */
+	@Grammar("set timer")
+	private boolean setTimer() {
+		return this.logic.setTimer(60000);
+	}
+
 	@Grammar("delete")
 	private boolean deleteAlarm() {
 		return this.logic.deleteAlarm("1");
 	}
 
-	@Grammar("reset all")
+	@Grammar("reset alarms")
 	private boolean resetAlarms() {
 		return this.logic.resetAlarms();
+	}
+
+	@Grammar("reset timers")
+	private boolean resetTimers() {
+		return this.logic.resetTimers();
 	}
 
 	@Grammar("get")
@@ -60,6 +75,11 @@ public class AlarmClockSpeech {
 	@Grammar("edit")
 	private boolean editAlarm() {
 		return this.logic.editAlarm("1", "10");
+	}
+
+	@Grammar("stop alarm")
+	private boolean stopAlarm() {
+		return this.logic.stopAlarm();
 	}
 
 	/**
