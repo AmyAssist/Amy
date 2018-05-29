@@ -12,13 +12,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
 
 /**
  * A example plugin
  * 
  * @author Leon Kiefer, Tim Neumann
  */
-@Service(HelloWorldSpeech.class)
+@Service
 @SpeechCommand("Hello world")
 public class HelloWorldSpeech {
 
@@ -26,7 +27,7 @@ public class HelloWorldSpeech {
 	 * The logic class of this plugin.
 	 */
 	@Reference
-	HelloWorldLogic logic;
+	private HelloWorldService helloWorld;
 
 	/**
 	 * A method that says hello
@@ -37,6 +38,6 @@ public class HelloWorldSpeech {
 	 */
 	@Grammar("say hello")
 	public String say(String... params) {
-		return this.logic.helloWorld();
+		return this.helloWorld.helloWorld();
 	}
 }

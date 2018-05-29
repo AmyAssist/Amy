@@ -17,12 +17,13 @@ import java.util.function.Consumer;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
+import de.unistuttgart.iaas.amyassist.amy.core.GlobalStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.Storage;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldLogic;
 import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
 /**
@@ -36,7 +37,9 @@ public class TestFramework {
 	DependencyInjection dependencyInjection;
 
 	public TestFramework() {
-		this.storage = Mockito.mock(IStorage.class);
+		this.storage = Mockito.mock(Storage.class,
+				Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS)
+						.useConstructor("", new GlobalStorage()));
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
 		this.dependencyInjection.addExternalService(IStorage.class,
@@ -153,6 +156,6 @@ public class TestFramework {
 	 */
 	public <T> T setServiceUnderTest(Class<T> serviceClass) {
 		this.dependencyInjection.register(serviceClass);
-		return this.dependencyInjection.getService(serviceClass);
+		return this.dependencyInjection.create(serviceClass);
 	}
 }

@@ -32,13 +32,26 @@ public class HelloWorldTest {
 	private TestFramework testFramework;
 
 	@Test
+	public void testInit() {
+		HelloWorldImpl helloWorld = this.testFramework
+				.setServiceUnderTest(HelloWorldImpl.class);
+
+		IStorage storage = this.testFramework.storage();
+
+		assertThat(helloWorld.helloWorld(), equalTo("hello1"));
+
+		Mockito.verify(storage).put("hellocount", "1");
+	}
+
+	@Test
 	public void testcount() {
-		HelloWorldLogic helloWorldLogic = this.testFramework.setServiceUnderTest(HelloWorldLogic.class);
+		HelloWorldImpl helloWorld = this.testFramework
+				.setServiceUnderTest(HelloWorldImpl.class);
 
 		IStorage storage = this.testFramework
 				.storage(TestFramework.store("hellocount", "10"));
 
-		assertThat(helloWorldLogic.helloWorld(), equalTo("hello11"));
+		assertThat(helloWorld.helloWorld(), equalTo("hello11"));
 
 		Mockito.verify(storage).put("hellocount", "11");
 	}

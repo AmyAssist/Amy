@@ -209,4 +209,12 @@ public class DependencyInjection implements ServiceLocator {
 		Class<?> required = this.register.get(serviceType);
 		return required;
 	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator#create(java.lang.Class)
+	 */
+	@Override
+	public <T> T create(Class<T> serviceClass) {
+		return this.resolve(serviceClass);
+	}
 }

@@ -16,6 +16,14 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 public interface ServiceLocator {
 
 	/**
+	 * Instantiate the given class and inject dependencies.
+	 * 
+	 * @param serviceClass
+	 * @return
+	 */
+	<T> T create(Class<T> serviceClass);
+
+	/**
 	 * Get a Service instance
 	 * 
 	 * @param serviceType
