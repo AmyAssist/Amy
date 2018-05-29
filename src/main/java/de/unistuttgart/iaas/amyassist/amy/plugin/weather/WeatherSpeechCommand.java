@@ -1,8 +1,8 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
-import de.unistuttgart.iaas.amyassist.amy.core.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 
 @SpeechCommand({"weather"})
