@@ -94,8 +94,8 @@ public class GrammarParser {
 	 * @param keyword
 	 *            The keyword
 	 */
-	void addRule(String ruleName, String keyword) {
-		this.addedRules.add("public " + "<" + ruleName + ">" + " = " + this.parseKeyword(keyword) + "; \n");
+	void addRule(String ruleName, String keyword, String grammar) {
+		this.addedRules.add("public " + "<" + ruleName + ">" + " = " + this.parseKeyword(keyword) + " " + this.parseKeyword(grammar) + "; \n");
 	}
 
 	/**
