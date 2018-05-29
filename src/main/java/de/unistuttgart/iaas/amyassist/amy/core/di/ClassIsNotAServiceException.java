@@ -9,14 +9,15 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 /**
- * A exception of the dependency injection
+ * A exception of the dependency injection, signaling, that a given class is
+ * not a service.
  * 
  * @author Leon Kiefer
  */
 public class ClassIsNotAServiceException extends RuntimeException {
 
 	/**
-	 * 
+	 * Generated serial version UID
 	 */
 	private static final long serialVersionUID = 5382225920636029620L;
 	private final Class<?> cls;

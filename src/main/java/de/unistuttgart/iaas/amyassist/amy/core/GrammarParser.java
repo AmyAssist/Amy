@@ -32,12 +32,19 @@ public class GrammarParser {
 	/**
 	 * initializes the parser
 	 * 
-	 * possible expansions: more custom keywords, weights may be supported, <NULL>
+	 * possible expansions: more custom keywords, weights may be supported,
+	 * <NULL>
 	 * and <VOID> support, Unary Operators (kleene star, plus operator and tags)
 	 * 
+	 * @param name
+	 *            The name of the grammar
+	 * 
 	 * @param wakeup
+	 *            The wakeup call in this grammar.
 	 * @param sleep
+	 *            The sleep call in this grammar.
 	 * @param shutdown
+	 *            The shutdown call in this grammar.
 	 */
 	GrammarParser(String name, String wakeup, String sleep, String shutdown) {
 		this.wakeup = wakeup;
@@ -50,6 +57,9 @@ public class GrammarParser {
 
 	}
 
+	/**
+	 * @return The grammar generated
+	 */
 	String getGrammar() {
 		// header
 		String grammar = "#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n" + " */\n" + "\n";
@@ -76,15 +86,24 @@ public class GrammarParser {
 		return grammar;
 	}
 
+	/**
+	 * Adds a rule to the grammar
+	 * 
+	 * @param ruleName
+	 *            The name of the rule
+	 * @param keyword
+	 *            The keyword
+	 */
 	void addRule(String ruleName, String keyword) {
-		this.addedRules.add("public " + "<" + ruleName + ">" + " = " + parseKeyword(keyword) + "; \n");
+		this.addedRules.add("public " + "<" + ruleName + ">" + " = " + this.parseKeyword(keyword) + "; \n");
 	}
 
 	/**
 	 * replace keywords with corresponding pre defined rule
 	 * 
 	 * @param keyword
-	 * @return
+	 *            The keyword
+	 * @return the corresponding rule
 	 */
 	private String parseKeyword(String keyword) {
 		String parsedKeyword = "";

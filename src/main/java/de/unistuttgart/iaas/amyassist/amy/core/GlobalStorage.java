@@ -18,8 +18,15 @@ import java.util.Map;
  * @author Felix Burk
  */
 public class GlobalStorage {
+	/**
+	 * The map in which everything is stored.
+	 */
 	protected Map<String, String> store;
 
+	/**
+	 * Creates a new Global Storage.
+	 * This should only be called once.
+	 */
 	public GlobalStorage() {
 		this.store = new HashMap<>();
 	}

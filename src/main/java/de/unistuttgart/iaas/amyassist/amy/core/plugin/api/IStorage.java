@@ -51,6 +51,7 @@ public interface IStorage {
 	 * delete value corresponding to key
 	 * 
 	 * @param key
+	 *            The key of the data to delete
 	 */
 	public void delete(String key);
 
