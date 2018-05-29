@@ -34,15 +34,6 @@ public class TestFramework {
 	private IStorage storage;
 	DependencyInjection dependencyInjection;
 
-	/**
-	 * Get's {@link #dependencyInjection dependencyInjection}
-	 * 
-	 * @return dependencyInjection
-	 */
-	public DependencyInjection getDependencyInjection() {
-		return this.dependencyInjection;
-	}
-
 	public TestFramework() {
 		this.storage = Mockito.mock(IStorage.class);
 		this.dependencyInjection = new DependencyInjection();
@@ -85,10 +76,10 @@ public class TestFramework {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection#get(Class)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection#getService(Class)
 	 */
 	public <T> T get(Class<T> serviceType) {
-		return this.dependencyInjection.get(serviceType);
+		return this.dependencyInjection.getService(serviceType);
 	}
 
 	/**
@@ -112,14 +103,14 @@ public class TestFramework {
 		try {
 			T newInstance;
 			if (cls.isAnnotationPresent(Service.class)) {
-				newInstance = this.dependencyInjection.get(cls);
+				newInstance = this.dependencyInjection.getService(cls);
 			} else {
 				newInstance = cls.getConstructor().newInstance();
 			}
 
 			if (initMethod != null) {
 				initMethod.invoke(newInstance,
-						this.dependencyInjection.get(ICore.class));
+						this.dependencyInjection.getService(ICore.class));
 			}
 
 			return newInstance;

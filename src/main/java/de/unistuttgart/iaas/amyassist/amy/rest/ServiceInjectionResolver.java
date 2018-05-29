@@ -56,7 +56,7 @@ public class ServiceInjectionResolver implements InjectionResolver<Reference> {
 	@Override
 	public Object resolve(Injectee arg0, ServiceHandle<?> arg1) {
 		Type requiredType = arg0.getRequiredType();
-		return this.dependencyInjection.get((Class<?>) requiredType);
+		return this.dependencyInjection.getService((Class<?>) requiredType);
 	}
 
 }

@@ -36,13 +36,13 @@ class DependencyInjectionTest {
 
 	@Test
 	void testServiceAnnotation() {
-		Service1 service1 = this.dependencyInjection.get(Service1.class);
+		Service1 service1 = this.dependencyInjection.getService(Service1.class);
 		assertThat(service1, is(instanceOf(Service1.class)));
 	}
 
 	@Test
 	void testDependencyInjection() {
-		Service2 service2 = this.dependencyInjection.get(Service2.class);
+		Service2 service2 = this.dependencyInjection.getService(Service2.class);
 		assertThat(service2.checkServices(), is(true));
 	}
 
@@ -52,7 +52,7 @@ class DependencyInjectionTest {
 		this.dependencyInjection.register(Service5.class);
 
 		assertThrows(RuntimeException.class,
-				() -> this.dependencyInjection.get(Service4.class));
+				() -> this.dependencyInjection.getService(Service4.class));
 	}
 
 	@Test()

@@ -32,7 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * 
  * @author Leon Kiefer
  */
-public class DependencyInjection {
+public class DependencyInjection implements ServiceLocator {
 
 	protected Map<Class<?>, Class<?>> register;
 
@@ -133,13 +133,8 @@ public class DependencyInjection {
 		return true;
 	}
 
-	/**
-	 * Get a Service instance
-	 * 
-	 * @param serviceType
-	 * @return
-	 */
-	public <T> T get(Class<T> serviceType) {
+	@Override
+	public <T> T getService(Class<T> serviceType) {
 		return this.get(serviceType, new Stack<>(), this.instances);
 	}
 
@@ -187,15 +182,12 @@ public class DependencyInjection {
 		}
 	}
 
-	/**
-	 * 
-	 * @param instance
-	 */
-	public <T> void inject(T instance) {
+	@Override
+	public void inject(Object instance) {
 		this.inject(instance, new Stack<>(), this.instances);
 	}
 
-	private <T> void inject(T instance, Stack<Class<?>> stack,
+	private void inject(Object instance, Stack<Class<?>> stack,
 			Map<Class<?>, Object> resolved) {
 		Field[] dependencyFields = FieldUtils
 				.getFieldsWithAnnotation(instance.getClass(), Reference.class);
