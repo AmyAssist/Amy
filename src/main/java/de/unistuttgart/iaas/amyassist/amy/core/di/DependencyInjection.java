@@ -57,10 +57,19 @@ public class DependencyInjection {
 		if (annotation == null) {
 			throw new ClassIsNotAServiceException(cls);
 		}
-		Class<?> serviceType = annotation.value();
+		Class<?>[] serviceTypes = annotation.value();
+		if (serviceTypes.length == 0) {
+			serviceTypes = cls.getInterfaces();
+		}
+		if (serviceTypes.length == 0) {
+			serviceTypes = new Class[1];
+			serviceTypes[0] = cls;
+		}
 		// TODO check if serviceType matches cls
-		if (this.hasServiceOfType(serviceType)) {
-			throw new DuplicateServiceException();
+		for (Class<?> serviceType : serviceTypes) {
+			if (this.hasServiceOfType(serviceType)) {
+				throw new DuplicateServiceException();
+			}
 		}
 
 		if (!this.constructorCheck(cls)) {
@@ -82,8 +91,9 @@ public class DependencyInjection {
 				dependencies.add(dependency);
 			}
 		}
-
-		this.register.put(serviceType, cls);
+		for (Class<?> serviceType : serviceTypes) {
+			this.register.put(serviceType, cls);
+		}
 		this.dependencyRegister.put(cls, dependencies);
 	}
 

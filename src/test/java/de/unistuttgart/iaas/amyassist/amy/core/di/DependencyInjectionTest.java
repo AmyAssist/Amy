@@ -8,6 +8,8 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -48,14 +50,19 @@ class DependencyInjectionTest {
 	void testCircularDependencies() {
 		this.dependencyInjection.register(Service4.class);
 		this.dependencyInjection.register(Service5.class);
-		boolean exception = false;
-		try {
-			this.dependencyInjection.get(Service4.class);
-		} catch (RuntimeException e) {
-			exception = true;
-		}
 
-		assertThat(exception, is(true));
+		assertThrows(RuntimeException.class,
+				() -> this.dependencyInjection.get(Service4.class));
+	}
+
+	@Test()
+	void testRegisterNotAService() {
+		String message = assertThrows(ClassIsNotAServiceException.class,
+				() -> this.dependencyInjection.register(NotAService.class))
+						.getMessage();
+
+		assertThat(message, equalTo("The class " + NotAService.class.getName()
+				+ " is not a Service"));
 	}
 
 }
