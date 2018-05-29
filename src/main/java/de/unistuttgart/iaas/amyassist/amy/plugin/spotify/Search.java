@@ -9,7 +9,6 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 import com.neovisionaries.i18n.CountryCode;
-import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;

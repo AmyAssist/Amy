@@ -20,8 +20,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
  * @author Lars Buttgereit
  */
 @Service(SpotifySpeech.class)
-@SpeechCommand("music")
+@SpeechCommand({"music", "spotify"})
 public class SpotifySpeech {
+	
+	private final int SEARCH_LIMIT = 4;
 
 	@Reference
 	PlayerLogic playerLogic;
@@ -39,13 +41,61 @@ public class SpotifySpeech {
 		return output;
 	}
 	/**
+	 * set the device in the player logic
 	 * # is a number between 0 and theoretically infinite
 	 * @return
 	 */
 	@Grammar("set device #")
 	public String setDevice(String... params) {
 		if(2 < params.length) {
+			try {
 		return this.playerLogic.setDevice(Integer.parseInt(params[2]));
+			}
+			catch(NumberFormatException e) {
+				return "Input please as Integer";
+			}
+		}
+		return "Wrong request";
+	}
+	
+	/**
+	 * transmit the search query to the player logic
+	 * # any String
+	 * @param params
+	 * @return
+	 */
+	@Grammar("search # in (artist|track|playlist|album)")
+	public String search(String... params) {
+		if(3 < params.length) {
+		return this.playerLogic.search(params[1], params[3], this.SEARCH_LIMIT);
+		}
+		return "wrong request";
+	}
+	
+	/**
+	 * play a featured playlist
+	 * @return
+	 */
+	@Grammar("play")
+	public String playFeaturedPlaylist() {
+		return this.playerLogic.play();
+	}
+	
+	/**
+	 * this play method please use only when a search is executed before
+	 * # Number of the Search query
+	 * @param params
+	 * @return
+	 */
+	@Grammar("play #")
+	public String play(String... params) {
+		if(1 < params.length) {
+			try {
+		return this.playerLogic.play(new Integer(params[1]).intValue());
+			}
+			catch(NumberFormatException e) {
+				return "Input please as a integer";
+			}
 		}
 		return "Wrong request";
 	}
