@@ -32,7 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * 
  * @author Leon Kiefer
  */
-public class DependencyInjection {
+public class DependencyInjection implements ServiceLocator {
 
 	protected Map<Class<?>, Class<?>> register;
 
@@ -57,10 +57,19 @@ public class DependencyInjection {
 		if (annotation == null) {
 			throw new ClassIsNotAServiceException(cls);
 		}
-		Class<?> serviceType = annotation.value();
+		Class<?>[] serviceTypes = annotation.value();
+		if (serviceTypes.length == 0) {
+			serviceTypes = cls.getInterfaces();
+		}
+		if (serviceTypes.length == 0) {
+			serviceTypes = new Class[1];
+			serviceTypes[0] = cls;
+		}
 		// TODO check if serviceType matches cls
-		if (this.hasServiceOfType(serviceType)) {
-			throw new DuplicateServiceException();
+		for (Class<?> serviceType : serviceTypes) {
+			if (this.hasServiceOfType(serviceType)) {
+				throw new DuplicateServiceException();
+			}
 		}
 
 		if (!this.constructorCheck(cls)) {
@@ -82,8 +91,9 @@ public class DependencyInjection {
 				dependencies.add(dependency);
 			}
 		}
-
-		this.register.put(serviceType, cls);
+		for (Class<?> serviceType : serviceTypes) {
+			this.register.put(serviceType, cls);
+		}
 		this.dependencyRegister.put(cls, dependencies);
 	}
 
@@ -123,13 +133,8 @@ public class DependencyInjection {
 		return true;
 	}
 
-	/**
-	 * Get a Service instance
-	 * 
-	 * @param serviceType
-	 * @return
-	 */
-	public <T> T get(Class<T> serviceType) {
+	@Override
+	public <T> T getService(Class<T> serviceType) {
 		return this.get(serviceType, new Stack<>(), this.instances);
 	}
 
@@ -177,15 +182,12 @@ public class DependencyInjection {
 		}
 	}
 
-	/**
-	 * 
-	 * @param instance
-	 */
-	public <T> void inject(T instance) {
+	@Override
+	public void inject(Object instance) {
 		this.inject(instance, new Stack<>(), this.instances);
 	}
 
-	private <T> void inject(T instance, Stack<Class<?>> stack,
+	private void inject(Object instance, Stack<Class<?>> stack,
 			Map<Class<?>, Object> resolved) {
 		Field[] dependencyFields = FieldUtils
 				.getFieldsWithAnnotation(instance.getClass(), Reference.class);
@@ -206,5 +208,13 @@ public class DependencyInjection {
 		}
 		Class<?> required = this.register.get(serviceType);
 		return required;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator#create(java.lang.Class)
+	 */
+	@Override
+	public <T> T create(Class<T> serviceClass) {
+		return this.resolve(serviceClass);
 	}
 }

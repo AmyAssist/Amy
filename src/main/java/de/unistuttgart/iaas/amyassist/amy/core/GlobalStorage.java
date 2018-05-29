@@ -20,7 +20,7 @@ import java.util.Map;
 public class GlobalStorage {
 	protected Map<String, String> store;
 
-	protected GlobalStorage() {
+	public GlobalStorage() {
 		this.store = new HashMap<>();
 	}
 

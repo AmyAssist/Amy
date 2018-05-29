@@ -11,14 +11,15 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
 
 /**
  * Does the logic of the Hello World plugin
  * 
  * @author Tim Neumann
  */
-@Service(HelloWorldLogic.class)
-public class HelloWorldLogic {
+@Service
+public class HelloWorldImpl implements HelloWorldService {
 	private static final String KEY = "hellocount";
 
 	/**
@@ -27,20 +28,16 @@ public class HelloWorldLogic {
 	@Reference
 	protected IStorage storage;
 
-	/**
-	 * The method that does all the logic.
-	 * 
-	 * @return the response
-	 */
-	protected String helloWorld() {
-		if (!this.storage.has(HelloWorldLogic.KEY)) {
-			this.storage.put(HelloWorldLogic.KEY, "0");
+	@Override
+	public String helloWorld() {
+		if (!this.storage.has(KEY)) {
+			this.storage.put(KEY, "0");
 		}
-		int count = Integer.parseInt(this.storage.get(HelloWorldLogic.KEY));
+		int count = Integer.parseInt(this.storage.get(KEY));
 		count++;
 
 		String countString = String.valueOf(count);
-		this.storage.put(HelloWorldLogic.KEY, countString);
+		this.storage.put(KEY, countString);
 
 		return "hello" + countString;
 	}

@@ -6,16 +6,19 @@
  * @author Tim Neumann, Leon Kiefer, Benno Krauss, Christian Braeuner, Felix Burk, Florian Bauer, Kai Menzel, Lars Buttgereit, Muhammed Kaya, Patrick Gebhardt, Patrick Singer, Tobias Siemonsen
  *
  */
-package de.unistuttgart.iaas.amyassist.amy.core.di;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+package de.unistuttgart.iaas.amyassist.amy.plugin.example.api;
 
 /**
- * Test Service for DI
+ * The api provided by the HelloWorldService
  * 
  * @author Leon Kiefer
  */
-@Service
-public class Service1 {
+public interface HelloWorldService {
+	/**
+	 * The method that does all the logic.
+	 * 
+	 * @return the response
+	 */
+	String helloWorld();
 
 }

@@ -8,14 +8,15 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-
 /**
  * Test Service for DI
  * 
  * @author Leon Kiefer
  */
-@Service
-public class Service1 {
+public class NotAService {
+	private Service4 service4;
 
+	public NotAService(Service4 service4) {
+		this.service4 = service4;
+	}
 }
