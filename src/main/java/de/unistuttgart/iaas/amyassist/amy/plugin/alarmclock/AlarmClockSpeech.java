@@ -8,6 +8,8 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
@@ -18,10 +20,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
  *
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
-
+@Service(AlarmClockSpeech.class)
 @SpeechCommand({ "Alarm", "Alarm clock" })
 public class AlarmClockSpeech {
 
+	@Reference
 	private AlarmClockLogic logic;
 
 	/**

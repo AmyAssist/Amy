@@ -13,6 +13,8 @@ import java.applet.AudioClip;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
@@ -21,8 +23,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
  *
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
+@Service(AlarmClockLogic.class)
 public class AlarmClockLogic {
 
+	@Reference
 	private IStorage storage;
 	private static final String KEY = "alarmCounter";
 
@@ -105,9 +109,9 @@ public class AlarmClockLogic {
 	 */
 	protected String getAlarm() {
 		String specificAlarm = Integer.toString(1);
-		if (this.storage.has(specificAlarm)) {
+		if (this.storage.has("alarm" + specificAlarm)) {
 			alarmOutput(this.storage.get("alarm" + specificAlarm));
-			return alarmOutput(this.storage.get("alarm" + specificAlarm));
+			return this.storage.get("alarm" + specificAlarm);
 		}
 		return null;
 	}

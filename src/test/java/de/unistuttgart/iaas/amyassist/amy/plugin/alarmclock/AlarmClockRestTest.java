@@ -13,7 +13,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.jupiter.api.AfterEach;
@@ -41,13 +43,16 @@ class AlarmClockRestTest {
 
 	@Reference
 	private Server server;
+	
+	@Reference
+	private AlarmClockLogic logic;
 
 	private HttpServer httpServer;
 	private WebTarget target;
 
 	@BeforeEach
 	public void setUp() {
-		this.httpServer = this.server.start(HelloWorldRest.class);
+		this.httpServer = this.server.start(AlarmClockResource.class);
 
 		Client c = ClientBuilder.newClient();
 		this.target = c.target(Server.BASE_URI);
@@ -73,20 +78,25 @@ class AlarmClockRestTest {
 		System.out.println(responseMsg);
 	}
 
-//	/**
-//	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#setAlarm(java.lang.String)}.
-//	 */
-//	@Test
-//	void testSetAlarm() {
-//		fail("Not yet implemented");
-//	}
-//
-//	/**
-//	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#deleteAlarm(java.lang.String)}.
-//	 */
-//	@Test
-//	void testDeleteAlarm() {
-//		fail("Not yet implemented");
-//	}
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#setAlarm(java.lang.String)}.
+	 */
+	@Test
+	void testSetAlarm() {
+		IStorage storage = this.testFramework
+				.storage(TestFramework.store("alarmCounter", "0"));
+		
+		Entity<String> entity = Entity.entity("15:20", MediaType.TEXT_PLAIN);
+		this.target.path("alarmclock").request().post(entity);
+		assertEquals("15:20",logic.getAlarm());
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#deleteAlarm(java.lang.String)}.
+	 */
+	@Test
+	void testDeleteAlarm() {
+		fail("Not yet implemented");
+	}
 
 }

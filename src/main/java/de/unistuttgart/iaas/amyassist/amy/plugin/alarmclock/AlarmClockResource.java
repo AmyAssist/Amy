@@ -8,10 +8,12 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
@@ -31,15 +33,16 @@ public class AlarmClockResource {
 		return this.logic.getAlarm();
 	}
 	
-//	@POST
-//	public void setAlarm(String alarmTime) {
-//		this.logic.setAlarm(alarmTime);
-//	}
-//	
-//	@DELETE
-//	public void deleteAlarm(String specificAlarm) {
-//		this.logic.deleteAlarm(specificAlarm);
-//	}
+	@POST
+	@Consumes(MediaType.TEXT_PLAIN)
+	public void setAlarm(String alarmTime) {
+		this.logic.setAlarm(alarmTime);
+	}
+	
+	@DELETE
+	public void deleteAlarm(String specificAlarm) {
+		this.logic.deleteAlarm(specificAlarm);
+	}
 	
 	
 }
