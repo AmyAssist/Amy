@@ -22,6 +22,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldLogic;
 import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
 /**
@@ -129,5 +130,29 @@ public class TestFramework {
 			Mockito.when(storage.has(key)).thenReturn(true);
 			Mockito.when(storage.get(key)).thenReturn(value);
 		};
+	}
+
+	/**
+	 * create a mock for the serviceType and bind it in the DI.
+	 * 
+	 * @param serviceType
+	 * @return the service mock
+	 */
+	public <T> T mockService(Class<T> serviceType) {
+		T mock = Mockito.mock(serviceType);
+		this.dependencyInjection.addExternalService(serviceType, mock);
+		return mock;
+	}
+
+	/**
+	 * specify the Service Under Test
+	 * 
+	 * @param serviceClass
+	 *            the class to be tested
+	 * @return the ServiceUnderTest
+	 */
+	public <T> T setServiceUnderTest(Class<T> serviceClass) {
+		this.dependencyInjection.register(serviceClass);
+		return this.dependencyInjection.getService(serviceClass);
 	}
 }

@@ -20,6 +20,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.FrameworkExtention;
 import de.unistuttgart.iaas.amyassist.amy.TestFramework;
@@ -62,11 +64,13 @@ class HelloWorldRestTest {
 	 */
 	@Test
 	public void test() {
-		IStorage storage = this.testFramework
-				.storage(TestFramework.store("hellocount", "99"));
+		HelloWorldLogic mockService = this.testFramework
+				.mockService(HelloWorldLogic.class);
+		Mockito.when(mockService.helloWorld()).thenReturn("hello100");
 
 		String responseMsg = this.target.path("helloworld").request()
 				.get(String.class);
+
 		assertThat(responseMsg, equalTo("hello100"));
 	}
 
