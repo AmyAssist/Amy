@@ -30,16 +30,28 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 public class HelloWorldTest {
 	@Reference
 	private TestFramework testFramework;
-	@Reference
-	private HelloWorldLogic helloWorldLogic;
+
+	@Test
+	public void testInit() {
+		HelloWorldImpl helloWorld = this.testFramework
+				.setServiceUnderTest(HelloWorldImpl.class);
+
+		IStorage storage = this.testFramework.storage();
+
+		assertThat(helloWorld.helloWorld(), equalTo("hello1"));
+
+		Mockito.verify(storage).put("hellocount", "1");
+	}
 
 	@Test
 	public void testcount() {
+		HelloWorldImpl helloWorld = this.testFramework
+				.setServiceUnderTest(HelloWorldImpl.class);
 
 		IStorage storage = this.testFramework
 				.storage(TestFramework.store("hellocount", "10"));
 
-		assertThat(this.helloWorldLogic.helloWorld(), equalTo("hello11"));
+		assertThat(helloWorld.helloWorld(), equalTo("hello11"));
 
 		Mockito.verify(storage).put("hellocount", "11");
 	}

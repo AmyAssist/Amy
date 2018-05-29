@@ -32,9 +32,8 @@ public class GrammarParser {
 	/**
 	 * initializes the parser
 	 * 
-	 * possible expansions: more custom keywords, weights may be supported,
-	 * <NULL> and <VOID> support, Unary Operators (kleene star, plus operator
-	 * and tags)
+	 * possible expansions: more custom keywords, weights may be supported, <NULL>
+	 * and <VOID> support, Unary Operators (kleene star, plus operator and tags)
 	 * 
 	 * @param wakeup
 	 * @param sleep
@@ -53,9 +52,7 @@ public class GrammarParser {
 
 	String getGrammar() {
 		// header
-		System.out.println("gets grammar");
-		String grammar = "#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n"
-				+ " */\n" + "\n";
+		String grammar = "#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n" + " */\n" + "\n";
 
 		grammar += "grammar " + this.name + ";\n";
 		grammar += "public <wakeup> = ( " + this.wakeup + " );\n";
@@ -69,8 +66,7 @@ public class GrammarParser {
 		grammar += "<digit> = (one | two | three | four | five | six | seven |"
 				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
 				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
-				+ "fifty | sixty  | seventy | eighty | ninety | hundred | thousand |"
-				+ "million | and )* \n";
+				+ "fifty | sixty  | seventy | eighty | ninety | hundred | thousand |" + "million | and )+ \n";
 
 		grammar += "\n#custom rules \n";
 		for (String s : this.addedRules) {
@@ -81,8 +77,7 @@ public class GrammarParser {
 	}
 
 	void addRule(String ruleName, String keyword) {
-		this.addedRules.add("public " + "<" + ruleName + ">" + " = "
-				+ parseKeyword(keyword) + "; \n");
+		this.addedRules.add("public " + "<" + ruleName + ">" + " = " + parseKeyword(keyword) + "; \n");
 	}
 
 	/**

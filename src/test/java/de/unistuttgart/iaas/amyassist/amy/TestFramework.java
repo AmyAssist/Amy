@@ -17,6 +17,8 @@ import java.util.function.Consumer;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
+import de.unistuttgart.iaas.amyassist.amy.core.GlobalStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.Storage;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -34,17 +36,10 @@ public class TestFramework {
 	private IStorage storage;
 	DependencyInjection dependencyInjection;
 
-	/**
-	 * Get's {@link #dependencyInjection dependencyInjection}
-	 * 
-	 * @return dependencyInjection
-	 */
-	public DependencyInjection getDependencyInjection() {
-		return this.dependencyInjection;
-	}
-
 	public TestFramework() {
-		this.storage = Mockito.mock(IStorage.class);
+		this.storage = Mockito.mock(Storage.class,
+				Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS)
+						.useConstructor("", new GlobalStorage()));
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
 		this.dependencyInjection.addExternalService(IStorage.class,
@@ -85,10 +80,10 @@ public class TestFramework {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection#get(Class)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection#getService(Class)
 	 */
 	public <T> T get(Class<T> serviceType) {
-		return this.dependencyInjection.get(serviceType);
+		return this.dependencyInjection.getService(serviceType);
 	}
 
 	/**
@@ -112,14 +107,14 @@ public class TestFramework {
 		try {
 			T newInstance;
 			if (cls.isAnnotationPresent(Service.class)) {
-				newInstance = this.dependencyInjection.get(cls);
+				newInstance = this.dependencyInjection.getService(cls);
 			} else {
 				newInstance = cls.getConstructor().newInstance();
 			}
 
 			if (initMethod != null) {
 				initMethod.invoke(newInstance,
-						this.dependencyInjection.get(ICore.class));
+						this.dependencyInjection.getService(ICore.class));
 			}
 
 			return newInstance;
@@ -138,5 +133,29 @@ public class TestFramework {
 			Mockito.when(storage.has(key)).thenReturn(true);
 			Mockito.when(storage.get(key)).thenReturn(value);
 		};
+	}
+
+	/**
+	 * create a mock for the serviceType and bind it in the DI.
+	 * 
+	 * @param serviceType
+	 * @return the service mock
+	 */
+	public <T> T mockService(Class<T> serviceType) {
+		T mock = Mockito.mock(serviceType);
+		this.dependencyInjection.addExternalService(serviceType, mock);
+		return mock;
+	}
+
+	/**
+	 * specify the Service Under Test
+	 * 
+	 * @param serviceClass
+	 *            the class to be tested
+	 * @return the ServiceUnderTest
+	 */
+	public <T> T setServiceUnderTest(Class<T> serviceClass) {
+		this.dependencyInjection.register(serviceClass);
+		return this.dependencyInjection.create(serviceClass);
 	}
 }

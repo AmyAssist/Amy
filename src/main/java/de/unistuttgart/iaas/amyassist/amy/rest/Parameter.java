@@ -6,16 +6,14 @@
  * @author Tim Neumann, Leon Kiefer, Benno Krauss, Christian Braeuner, Felix Burk, Florian Bauer, Kai Menzel, Lars Buttgereit, Muhammed Kaya, Patrick Gebhardt, Patrick Singer, Tobias Siemonsen
  *
  */
-package de.unistuttgart.iaas.amyassist.amy.core.di;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+package de.unistuttgart.iaas.amyassist.amy.rest;
 
 /**
- * Test Service for DI
- * 
- * @author Leon Kiefer
+ * POJO mapping of a parameter
+ * @author Tim Neumann
  */
-@Service
-public class Service1 {
+public class Parameter {
 
+	private String name;
+	private ParameterType type;
 }

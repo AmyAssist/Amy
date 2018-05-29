@@ -34,6 +34,11 @@ public class Server {
 
 	public static final URI BASE_URI = URI.create("http://localhost:8080/rest");
 
+   /**
+	 * creates and starts the HttpServer
+	 * 
+	 * @return the started HttpServer
+	 */
 	public HttpServer start(Class<?>... classes) {
 		ResourceConfig resourceConfig = new ResourceConfig(classes);
 		resourceConfig.register(new AbstractBinder() {
