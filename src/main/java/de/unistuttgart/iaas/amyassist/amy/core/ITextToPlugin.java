@@ -1,3 +1,4 @@
+package de.unistuttgart.iaas.amyassist.amy.core;
 /*
  * Amy Assist
  *
