@@ -61,6 +61,7 @@ public class Authorization {
 
 			fis = new FileInputStream(f);
 			ObjectInputStream stream = new ObjectInputStream(fis);
+			@SuppressWarnings("unchecked")
 			HashMap<String, String> readObject = ((HashMap<String, String>) stream.readObject());
 			this.idExport = readObject;
 			//cheks if all necessary IDs in file
@@ -214,6 +215,7 @@ public class Authorization {
 		System.out.println("Please insert Auth Code");
 		auth.createRefreshToken(sc.nextLine());
 		System.out.println(auth.getSpotifyApi().getAccessToken());
+		sc.close();
 
 	}
 }

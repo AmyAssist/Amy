@@ -8,10 +8,13 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
+import com.neovisionaries.i18n.CountryCode;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.special.SearchResult;
+import com.wrapper.spotify.requests.data.browse.GetListOfFeaturedPlaylistsRequest;
 import com.wrapper.spotify.requests.data.search.SearchItemRequest;
 
 import java.io.IOException;
@@ -23,6 +26,11 @@ import java.util.ArrayList;
  * @author Lars Buttgereit
  */
 public class Search {
+	private Authorization auth;
+
+	public Search(Authorization auth) {
+		this.auth = auth;
+	}
 
 	/**
 	 * Start a Search in the Spotify library.
@@ -34,12 +42,13 @@ public class Search {
 	 *            max length of the result list
 	 * @param spotifyApi
 	 * @return a array list of the result entrys. every entry has at 0 the uri of
-	 *         the item and at 1 a output String with information about the item
+	 *         the item and at 1 a output String with information about the item and
+	 *         at 2 the type of the item
 	 */
-	public static ArrayList<String[]> SearchAnything(String searchItem, String type, int limit, SpotifyApi spotifyApi) {
+	public ArrayList<String[]> SearchAnything(String searchItem, String type, int limit) {
 		SearchResult searchResult;
 		if (typeCheck(type)) {
-			SearchItemRequest searchItemRequest = spotifyApi.searchItem(searchItem, type.toLowerCase())
+			SearchItemRequest searchItemRequest = this.auth.getSpotifyApi().searchItem(searchItem, type.toLowerCase())
 					.limit(new Integer(limit)).offset(new Integer(0)).build();
 			try {
 				searchResult = searchItemRequest.execute();
@@ -52,7 +61,7 @@ public class Search {
 		return null;
 	}
 
-	private static ArrayList<String[]> buildResultList(SearchResult searchResult, String type) {
+	private ArrayList<String[]> buildResultList(SearchResult searchResult, String type) {
 		ArrayList<String[]> resultList = new ArrayList<>();
 		String[] entry;
 		String outputString;
@@ -85,8 +94,8 @@ public class Search {
 				outputString = "";
 				outputString = outputString + i + ". Playlist name is "
 						+ searchResult.getPlaylists().getItems()[i].getName() + " created by ";
-				if(searchResult.getPlaylists().getItems()[i].getOwner().getDisplayName() != null) {
-				outputString = outputString + searchResult.getPlaylists().getItems()[i].getOwner().getDisplayName();
+				if (searchResult.getPlaylists().getItems()[i].getOwner().getDisplayName() != null) {
+					outputString = outputString + searchResult.getPlaylists().getItems()[i].getOwner().getDisplayName();
 				}
 				entry[1] = outputString;
 				entry[0] = searchResult.getPlaylists().getItems()[i].getUri();
@@ -102,8 +111,7 @@ public class Search {
 				outputString = outputString + i + ". Artist name is "
 						+ searchResult.getArtists().getItems()[i].getName() + " in the genre ";
 				for (int j = 0; j < searchResult.getArtists().getItems()[i].getGenres().length - 1; i++) {
-					outputString = outputString + searchResult.getArtists().getItems()[i].getGenres()[j]
-							+ " and ";
+					outputString = outputString + searchResult.getArtists().getItems()[i].getGenres()[j] + " and ";
 				}
 				if (0 < searchResult.getArtists().getItems()[i].getGenres().length) {
 					outputString = outputString + searchResult.getArtists().getItems()[i]
@@ -139,6 +147,42 @@ public class Search {
 		default:
 			break;
 
+		}
+		return null;
+	}
+
+	/**
+	 * this method get a list from 10 featured playlist back
+	 * 
+	 * @return a array list of the result entrys. every entry has at 0 the uri of
+	 *         the item and at 1 a output String with information about the item
+	 * 
+	 */
+	public ArrayList<String[]> getFeaturedPlaylists() {
+		ArrayList<String[]> resultList = new ArrayList<>();
+		GetListOfFeaturedPlaylistsRequest getListOfFeaturedPlaylistsRequest = this.auth.getSpotifyApi()
+				.getListOfFeaturedPlaylists().country(CountryCode.DE).limit(new Integer(10)).offset(new Integer(0))
+				.build();
+
+		try {
+			final FeaturedPlaylists featuredPlaylists = getListOfFeaturedPlaylistsRequest.execute();
+			String outputString;
+			for (int i = 0; i < featuredPlaylists.getPlaylists().getItems().length; i++) {
+				outputString = "";
+				String[] entry = new String [2];
+				outputString = outputString + i + ". Playlist name is "
+						+ featuredPlaylists.getPlaylists().getItems()[i].getName() + " created by ";
+				if (featuredPlaylists.getPlaylists().getItems()[i].getOwner().getDisplayName() != null) {
+					outputString = outputString
+							+ featuredPlaylists.getPlaylists().getItems()[i].getOwner().getDisplayName();
+				}
+				entry[0] = featuredPlaylists.getPlaylists().getItems()[i].getUri();
+				entry[1] = outputString;
+				resultList.add(entry);
+			}
+			return resultList;
+		} catch (IOException | SpotifyWebApiException e) {
+			System.out.println("Error: " + e.getMessage());
 		}
 		return null;
 	}

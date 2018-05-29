@@ -30,13 +30,15 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class PlayerLogic {
 	private Authorization auth;
 	private String deviceID = null;
-	private String deviceName = null;
+	private Search search;
+	// private String deviceName = null;
 	private ArrayList<String[]> actualSearchResult = null;
 
 	public void init() {
 		this.auth = new Authorization();
 		this.auth.init();
 		setDevice(0);
+		this.search = new Search(this.auth);
 	}
 
 	/**
@@ -122,11 +124,19 @@ public class PlayerLogic {
 		return "Please init the spotify API";
 	}
 
-
-
+	/**
+	 * this call the searchAnaything method in the Search class
+	 * 
+	 * @param searchText
+	 * @param type
+	 *            artist, track, playlist, album
+	 * @param limit
+	 *            how many results maximal searched for
+	 * @return one output String with all results
+	 */
 	public String search(String searchText, String type, int limit) {
 		if (checkPlayerState() == null) {
-			this.actualSearchResult = Search.SearchAnything(searchText, type, limit, this.auth.getSpotifyApi());
+			this.actualSearchResult = this.search.SearchAnything(searchText, type, limit);
 			String resultString = "";
 			for (int i = 0; i < this.actualSearchResult.size(); i++) {
 				resultString = resultString + "\n" + this.actualSearchResult.get(i)[1];
@@ -135,14 +145,24 @@ public class PlayerLogic {
 		} else {
 			return checkPlayerState();
 		}
+	}
 
+	public String play() {
+		ArrayList<String[]> playLists = this.search.getFeaturedPlaylists();
+		if (playLists != null) {
+			if(1 < this.search.getFeaturedPlaylists().size()) {
+			playListFromUri(playLists.get(1)[0]);
+			return playLists.get(1)[1];
+			}
+		}
+		return "no featured playlist found";
 	}
 
 	/**
 	 * this method play the item that searched before. Use only after a search
 	 * 
 	 * @param songNumber
-	 *            number of the item form the search befor
+	 *            number of the item form the search before
 	 * @return
 	 */
 	public String play(int songNumber) {
@@ -155,7 +175,7 @@ public class PlayerLogic {
 				return this.actualSearchResult.get(songNumber)[1];
 			}
 		} else {
-			return "Please search before you call this";
+			return "Please search before you call this or choose a smaller number";
 		}
 	}
 
@@ -177,7 +197,7 @@ public class PlayerLogic {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * play a list of tracks for example a playlists and albums
 	 * 
@@ -206,8 +226,9 @@ public class PlayerLogic {
 			return "Please initialize the Authorization.";
 		} else if (this.auth.getSpotifyApi() == null) {
 			return "Please initialize the spotify api with the client id and client secret";
-	//	} else if (!getDevices().contains(this.deviceID)) {
-	//		return "the current device has been disconnected. Please select a new device.";
+			// } else if (!getDevices().contains(this.deviceID)) {
+			// return "the current device has been disconnected. Please select a new
+			// device.";
 		}
 		return null;
 	}
@@ -235,7 +256,9 @@ public class PlayerLogic {
 		for (int i = 0; i < pc.getDevices().size(); i++) {
 			System.out.println(pc.getDevices().get(i));
 		}
-		System.out.println(pc.search("game of thrones", "playlist", 5));
-		System.out.println(pc.play(2));
+		// System.out.println(pc.search("game of thrones", "playlist", 5));
+		// System.out.println(pc.play(2));
+		System.out.println(pc.play());
+		sc.close();
 	}
 }
