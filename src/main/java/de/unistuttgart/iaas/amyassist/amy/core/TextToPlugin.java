@@ -51,7 +51,6 @@ class TextToPlugin {
 		for (String s : this.grammars) {
 			
 			String regex = regexFromGrammar(s);
-			System.out.println("regex: " + regex);
 			Pattern p = Pattern.compile(regex);
 			Matcher m = p.matcher(text);
 			

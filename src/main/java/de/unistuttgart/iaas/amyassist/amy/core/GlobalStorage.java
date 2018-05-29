@@ -8,6 +8,7 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +29,12 @@ public class GlobalStorage {
 	 * This should only be called once.
 	 */
 	public GlobalStorage() {
-		this.store = new HashMap<>();
+		Map<String, String> tempMap = new HashMap<>();
+		
+		//creates a thread save HashMap
+		//it's not perfect for performance but ensures consistency
+		//ConcurrentHashMap might be an alternative
+		this.store = Collections.synchronizedMap(tempMap);
 	}
 
 	/**
