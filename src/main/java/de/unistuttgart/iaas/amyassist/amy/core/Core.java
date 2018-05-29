@@ -37,6 +37,9 @@ public class Core implements ICore {
 		this.threads.forEach(Thread::start);
 	}
 
+	/**
+	 * Initializes the core
+	 */
 	void init() {
 		this.threads = new ArrayList<>();
 		this.singleThreadScheduledExecutor = Executors
