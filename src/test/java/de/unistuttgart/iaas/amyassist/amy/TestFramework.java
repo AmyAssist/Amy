@@ -97,11 +97,6 @@ public class TestFramework {
 	public <T> T init(Class<T> cls) {
 		AnnotationReader annotationReader = new AnnotationReader();
 		String[] speechKeyword = annotationReader.getSpeechKeyword(cls);
-		if (speechKeyword == null) {
-			fail("The given class: " + cls.getName()
-					+ " does not have a SpeechCommand Annotation");
-			return null;
-		}
 		Method initMethod = annotationReader.getInitMethod(cls);
 
 		try {

@@ -15,6 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
@@ -42,7 +44,8 @@ class TestAnnotationReader {
 				.getSpeechKeyword(Plugin.class);
 
 		assertThat(speechKeyword, is(arrayWithSize(2)));
-		assertThat(speechKeyword, is(arrayContainingInAnyOrder("test", "unittest")));
+		assertThat(speechKeyword,
+				is(arrayContainingInAnyOrder("test", "unittest")));
 	}
 
 	@Test
@@ -57,6 +60,19 @@ class TestAnnotationReader {
 		Method initMethod = this.annotationReader.getInitMethod(Plugin.class);
 
 		assertThat(initMethod, is(notNullValue()));
+	}
+
+	@Test
+	public void testNoSpeechKeyword() {
+		assertThrows(RuntimeException.class, () -> this.annotationReader
+				.getSpeechKeyword(TestAnnotationReader.class));
+	}
+
+	@Test
+	public void testNoInitMethod() {
+		assertThat(
+				this.annotationReader.getInitMethod(TestAnnotationReader.class),
+				is(nullValue()));
 	}
 
 	@SpeechCommand({ "test", "unittest" })
