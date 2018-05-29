@@ -81,6 +81,12 @@
 			<artifactId>cliche</artifactId>
 			<version>110413</version>
 		</dependency>
+		<!-- weather plugin -->
+		<dependency>
+			<groupId>com.github.dvdme</groupId>
+			<artifactId>ForecastIOLib</artifactId>
+			<version>LATEST</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
