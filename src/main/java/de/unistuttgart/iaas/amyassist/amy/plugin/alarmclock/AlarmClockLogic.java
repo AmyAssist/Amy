@@ -19,7 +19,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 
 /**
@@ -27,13 +26,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAP
  *
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
-@Service(AlarmClockLogic.class)
+@Service
 public class AlarmClockLogic {
 
 	@Reference
 	private IStorage storage;
 
-	private static TaskSchedulerAPI taskScheduler;
+	@Reference
+	private TaskSchedulerAPI taskScheduler;
 
 	private static final String ALARMCOUNTER = "alarmCounter";
 	private static final String TIMERCOUNTER = "timerCounter";
@@ -55,7 +55,8 @@ public class AlarmClockLogic {
 	 * @return
 	 */
 	protected boolean stopAlarm() {
-		// TODO: stop alarm with TaskScheduler (maybe with help of distinct alarm id)
+		// TODO: stop alarm with TaskScheduler (maybe with help of distinct
+		// alarm id)
 		return true;
 	}
 
@@ -67,18 +68,15 @@ public class AlarmClockLogic {
 	 * @return
 	 *
 	 */
-	protected Runnable createAlarmRunnable() {
-		return new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					// not sure if this URL is working
-					AudioClip clip = Applet.newAudioClip(new URL("src/alarmsound.wav"));
-					clip.play();
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				}
+	private Runnable createAlarmRunnable() {
+		return () -> {
+			try {
+				// not sure if this URL is working
+				AudioClip clip = Applet
+						.newAudioClip(new URL("src/alarmsound.wav"));
+				clip.play();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
 			}
 		};
 	}
@@ -90,7 +88,7 @@ public class AlarmClockLogic {
 	 *
 	 * @return true, if everything went well
 	 */
-	protected boolean setAlarm(String alarmTime) {
+	public boolean setAlarm(String alarmTime) {
 		int time = Integer.parseInt(alarmTime);
 		int counter = Integer.parseInt(this.storage.get(ALARMCOUNTER));
 		counter++;
@@ -98,16 +96,14 @@ public class AlarmClockLogic {
 		this.storage.put("alarm" + counter, alarmTime);
 
 		Runnable alarmRunnable = createAlarmRunnable();
-
-		if (Calendar.HOUR_OF_DAY < time) {
-			taskScheduler.schedule(alarmRunnable,
-					new Date(Calendar.YEAR - 1900, Calendar.MONTH, Calendar.DAY_OF_MONTH, time, 0));
-
-		} else {
-			// Day of month + 1 will cause problems (e.g. 31 + 1 = 32 is not a valid date)
-			taskScheduler.schedule(alarmRunnable,
-					new Date(Calendar.YEAR - 1900, Calendar.MONTH, Calendar.DAY_OF_MONTH + 1, time, 0));
+		Calendar current = Calendar.getInstance();
+		Calendar alarmCalendar = Calendar.getInstance();
+		alarmCalendar.set(Calendar.HOUR_OF_DAY, time);
+		if (alarmCalendar.before(current)) {
+			alarmCalendar.add(Calendar.DATE, 1);
 		}
+
+		this.taskScheduler.schedule(alarmRunnable, alarmCalendar.getTime());
 		return true;
 	}
 
@@ -124,8 +120,9 @@ public class AlarmClockLogic {
 		this.storage.put("timer" + counter, "" + delay);
 
 		Runnable alarmRunnable = createAlarmRunnable();
-
-		taskScheduler.schedule(alarmRunnable, new Date(new Date().getTime() + delay));
+		Calendar alarmTime = Calendar.getInstance();
+		alarmTime.add(Calendar.MILLISECOND, (int) delay);
+		this.taskScheduler.schedule(alarmRunnable, alarmTime.getTime());
 		return true;
 	}
 
@@ -197,7 +194,8 @@ public class AlarmClockLogic {
 	 */
 	protected String[] getAllAlarms() {
 		String[] allAlarms = {};
-		for (int i = 1; i <= Integer.parseInt(this.storage.get(ALARMCOUNTER)); i++) {
+		for (int i = 1; i <= Integer
+				.parseInt(this.storage.get(ALARMCOUNTER)); i++) {
 			if (this.storage.has("alarm" + i)) {
 				alarmOutput(this.storage.get("alarm" + i));
 				allAlarms[i] = "alarm" + i;
@@ -229,8 +227,6 @@ public class AlarmClockLogic {
 	 *            The core
 	 */
 	public void init(ICore core) {
-		this.storage = core.getStorage();
-		taskScheduler = new TaskScheduler();
 		if (!this.storage.has(ALARMCOUNTER))
 			this.storage.put(ALARMCOUNTER, "0");
 		if (!this.storage.has(TIMERCOUNTER))

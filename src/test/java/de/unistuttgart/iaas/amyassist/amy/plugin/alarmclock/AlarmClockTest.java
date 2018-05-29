@@ -8,29 +8,43 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.util.Date;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import de.unistuttgart.iaas.amyassist.amy.FrameworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.TestFramework;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 
 /**
  * Test class for the AlarmClock plug-in
  * 
  * @author Patrick Singer
  */
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(FrameworkExtention.class)
 public class AlarmClockTest {
-
-	@Mock
-	private ICore core;
-
-	@Mock
-	private IStorage storage;
+	@Reference
+	private TestFramework framework;
 
 	private AlarmClockLogic acl;
+
+	private TaskSchedulerAPI mockService;
+
+	@BeforeEach
+	public void setup() {
+		this.mockService = this.framework.mockService(TaskSchedulerAPI.class);
+		this.acl = this.framework.setServiceUnderTest(AlarmClockLogic.class);
+		this.acl.init(null);
+	}
 
 	/**
 	 * Tests if the keywords are correct
@@ -45,7 +59,11 @@ public class AlarmClockTest {
 	 */
 	@Test
 	public void testSet() {
+		this.acl.setAlarm("8");
 
+		Mockito.verify(this.mockService).schedule(
+				ArgumentMatchers.any(Runnable.class),
+				ArgumentMatchers.any(Date.class));
 	}
 
 	@Test
