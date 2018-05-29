@@ -14,8 +14,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 
 /**
  * The central core of the application
@@ -25,7 +28,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 public class Core implements ICore {
 	private List<Thread> threads;
 	private ScheduledExecutorService singleThreadScheduledExecutor;
-
+	private DependencyInjection di = new DependencyInjection();
+	private PluginLoader pluginLoader = new PluginLoader();
 	private IStorage storage;
 
 	/**
@@ -40,7 +44,8 @@ public class Core implements ICore {
 	/**
 	 * Initializes the core
 	 */
-	void init() {
+	private void init() {
+		this.loadPlugins();
 		this.threads = new ArrayList<>();
 		this.singleThreadScheduledExecutor = Executors
 				.newSingleThreadScheduledExecutor();
@@ -54,6 +59,14 @@ public class Core implements ICore {
 		});
 
 		this.threads.add(new Thread(console));
+	}
+
+	private void loadPlugins() {
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.example", "amy.plugin.example", "de.unistuttgart.iaas.amyassist", "0.0.1");
+
+		for (Plugin p : this.pluginLoader.getPlugins()) {
+			this.di.registerAll(p.getClasses());
+		}
 	}
 
 	/**
