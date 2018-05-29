@@ -17,6 +17,10 @@ import com.google.gson.JsonParser;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.requests.data.player.GetUsersAvailableDevicesRequest;
+import com.wrapper.spotify.requests.data.player.PauseUsersPlaybackRequest;
+import com.wrapper.spotify.requests.data.player.SetVolumeForUsersPlaybackRequest;
+import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToNextTrackRequest;
+import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrackRequest;
 import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -31,6 +35,7 @@ public class PlayerLogic {
 	private Authorization auth;
 	private String deviceID = null;
 	private Search search;
+	private int volume = 50;
 	// private String deviceName = null;
 	private ArrayList<String[]> actualSearchResult = null;
 
@@ -150,9 +155,9 @@ public class PlayerLogic {
 	public String play() {
 		ArrayList<String[]> playLists = this.search.getFeaturedPlaylists();
 		if (playLists != null) {
-			if(1 < this.search.getFeaturedPlaylists().size()) {
-			playListFromUri(playLists.get(1)[0]);
-			return playLists.get(1)[1];
+			if (1 < this.search.getFeaturedPlaylists().size()) {
+				playListFromUri(playLists.get(1)[0]);
+				return playLists.get(1)[1];
 			}
 		}
 		return "no featured playlist found";
@@ -177,6 +182,136 @@ public class PlayerLogic {
 		} else {
 			return "Please search before you call this or choose a smaller number";
 		}
+	}
+
+	/**
+	 * resume the actual playback
+	 * 
+	 * @return short String about the execute action
+	 */
+	public String resume() {
+		if (checkPlayerState() == null) {
+			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = this.auth.getSpotifyApi()
+					.startResumeUsersPlayback().device_id(this.deviceID).build();
+			try {
+				startResumeUsersPlaybackRequest.execute();
+				return "Playback resume";
+			} catch (SpotifyWebApiException | IOException e) {
+				System.out.println("Error: " + e.getMessage());
+				return "A problem occur";
+			}
+		}
+		return checkPlayerState();
+	}
+
+	/**
+	 * pause the actual playback
+	 * 
+	 * @return short String about the execute action
+	 */
+	public String pausePlayback() {
+		if (checkPlayerState() == null) {
+			PauseUsersPlaybackRequest pauseUsersPlaybackRequest = this.auth.getSpotifyApi().pauseUsersPlayback()
+					.device_id(this.deviceID).build();
+			try {
+				pauseUsersPlaybackRequest.execute();
+				return "Playback pause";
+			} catch (SpotifyWebApiException | IOException e) {
+				System.out.println("Error: " + e.getMessage());
+				return "A problem occur";
+			}
+		}
+		return checkPlayerState();
+	}
+
+	/**
+	 * goes one song forward in the playlist or album
+	 * 
+	 * @return short String about the execute action
+	 */
+	public String skip() {
+		if (checkPlayerState() == null) {
+			SkipUsersPlaybackToNextTrackRequest skipUsersPlaybackToNextTrackRequest = this.auth.getSpotifyApi()
+					.skipUsersPlaybackToNextTrack().device_id(this.deviceID).build();
+			try {
+				skipUsersPlaybackToNextTrackRequest.execute();
+				return "Playback skip";
+			} catch (IOException | SpotifyWebApiException e) {
+				System.out.println("Error: " + e.getMessage());
+				return "A problem occur";
+			}
+		}
+		return checkPlayerState();
+	}
+
+	/**
+	 * goes one song back in the playlist or album
+	 * 
+	 * @return short String about the execute action
+	 */
+	public String back() {
+		if (checkPlayerState() == null) {
+
+			SkipUsersPlaybackToPreviousTrackRequest skipUsersPlaybackToPreviousTrackRequest = this.auth.getSpotifyApi()
+					.skipUsersPlaybackToPreviousTrack().device_id(this.deviceID).build();
+			try {
+				skipUsersPlaybackToPreviousTrackRequest.execute();
+				return "Playback back";
+			} catch (IOException | SpotifyWebApiException e) {
+				System.out.println("Error: " + e.getMessage());
+				return "A problem occur";
+			}
+		}
+		return checkPlayerState();
+	}
+
+	/**
+	 * this method controls the volume of the player
+	 * @param volumeString allowed strings: mute, max, up, down
+	 * @return
+	 */
+	public String setVolume(String volumeString) {
+		if (checkPlayerState() == null) {
+			switch (volumeString) {
+			case "mute":
+				setVolume(0);
+				return "Volume mute";
+			case "max":
+				setVolume(100);
+				return "Volume max";
+			case "up":
+				if(this.volume + 10 <= 100) {
+					this.volume += 10;
+					setVolume(this.volume);
+					return "Volume on " + this.volume + " percent";
+				}
+				return "Volume on 100 percent";
+			case "down":
+				if(this.volume + 10 >= 0) {
+					this.volume += 10;
+					setVolume(this.volume);
+					return "Volume on " + this.volume + " percent";
+				}
+				return "Volume on 0 percent";
+				
+			default:
+				return "Incorrect volume command";
+			}
+		}
+
+		return checkPlayerState();
+	}
+
+	private void setVolume(int volume) {
+		SetVolumeForUsersPlaybackRequest setVolumeForUsersPlaybackRequest = this.auth.getSpotifyApi()
+				.setVolumeForUsersPlayback(volume).device_id(this.deviceID).build();
+
+		try {
+			setVolumeForUsersPlaybackRequest.execute();
+		} catch (SpotifyWebApiException | IOException e) {
+			System.out.println("Error: " + e.getMessage());
+		}
+
 	}
 
 	/**
