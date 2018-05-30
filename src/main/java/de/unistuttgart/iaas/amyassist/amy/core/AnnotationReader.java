@@ -9,8 +9,8 @@
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
 
@@ -33,20 +33,18 @@ public class AnnotationReader {
 	 *            The class of which to get the init method
 	 * @return the method or null if not found
 	 */
+	@Deprecated
 	public Method getInitMethod(Class<?> cls) {
-		Method[] methodsWithAnnotation = MethodUtils
-				.getMethodsWithAnnotation(cls, Init.class);
+		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Init.class);
 		for (Method method : methodsWithAnnotation) {
 			if (!method.getReturnType().equals(Void.TYPE)) {
-				System.err.println(
-						"The method annotated with @Init must have return type void");
+				System.err.println("The method annotated with @Init must have return type void");
 				return null;
 			}
 			Class<?>[] parameterTypes = method.getParameterTypes();
 			Class<ICore> c = ICore.class;
 			if (parameterTypes.length != 1 || !parameterTypes[0].equals(c)) {
-				System.err.println(
-						"The method annotated with @Init must have only one parameter of type ICore");
+				System.err.println("The method annotated with @Init must have only one parameter of type ICore");
 				return null;
 			}
 
@@ -62,16 +60,16 @@ public class AnnotationReader {
 	 *            The class of which to get the grammars
 	 * @return a List of grammars
 	 */
-	public List<String> getGrammars(Class<?> cls) {
-		List<String> list = new ArrayList<>();
+	public Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> getGrammars(Class<?> cls) {
+		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> map = new HashMap<>();
 		for (Method method : cls.getMethods()) {
 			if (method.isAnnotationPresent(Grammar.class)) {
 				String grammar = method.getAnnotation(Grammar.class).value();
-				list.add(grammar);
-
+				map.put(grammar,
+						new de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand(method, grammar, cls));
 			}
 		}
-		return list;
+		return map;
 	}
 
 	/**
@@ -84,8 +82,7 @@ public class AnnotationReader {
 	public String[] getSpeechKeyword(Class<?> cls) {
 		SpeechCommand speechCommand = cls.getAnnotation(SpeechCommand.class);
 		if (speechCommand == null)
-			throw new RuntimeException("The class " + cls.getName()
-					+ " have no SpeechCommand Annotation.");
+			throw new RuntimeException("The class " + cls.getName() + " have no SpeechCommand Annotation.");
 
 		return speechCommand.value();
 	}

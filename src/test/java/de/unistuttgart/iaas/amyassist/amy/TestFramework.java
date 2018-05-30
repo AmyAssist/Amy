@@ -18,7 +18,6 @@ import java.util.function.Consumer;
 
 import javax.ws.rs.Path;
 
-import org.glassfish.grizzly.http.server.HttpServer;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
@@ -40,7 +39,7 @@ public class TestFramework {
 
 	private IStorage storage;
 	private DependencyInjection dependencyInjection;
-	private HttpServer httpServer;
+	private Server server;
 	private List<Class<?>> restResources = new ArrayList<>();
 
 	public TestFramework() {
@@ -49,6 +48,7 @@ public class TestFramework {
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
 		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
+		this.dependencyInjection.register(Server.class);
 	}
 
 	void setup(Object testInstance) {
@@ -57,15 +57,15 @@ public class TestFramework {
 
 	public void before() {
 		if (!this.restResources.isEmpty()) {
-			this.httpServer = new Server(this.dependencyInjection)
-					.start(this.restResources.toArray(new Class<?>[this.restResources.size()]));
+			this.server = this.dependencyInjection.getService(Server.class);
+			this.server.start(this.restResources.toArray(new Class<?>[this.restResources.size()]));
 		}
 
 	}
 
 	public void after() {
-		if (this.httpServer != null) {
-			this.httpServer.shutdown();
+		if (this.server != null) {
+			this.server.shutdown();
 		}
 	}
 
@@ -115,6 +115,7 @@ public class TestFramework {
 	 *            the plugin class
 	 * @return an instance of the given class
 	 */
+	@Deprecated
 	public <T> T init(Class<T> cls) {
 		AnnotationReader annotationReader = new AnnotationReader();
 		String[] speechKeyword = annotationReader.getSpeechKeyword(cls);

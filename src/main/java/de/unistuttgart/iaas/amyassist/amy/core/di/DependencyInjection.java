@@ -8,7 +8,6 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,6 +51,8 @@ public class DependencyInjection implements ServiceLocator {
 		this.dependencyRegister = new HashMap<>();
 		this.instances = new HashMap<>();
 		this.externalServices = new HashMap<>();
+
+		this.addExternalService(ServiceLocator.class, this);
 	}
 
 	/**
@@ -61,6 +62,7 @@ public class DependencyInjection implements ServiceLocator {
 	 * @param classes
 	 *            The classes to be registered.
 	 */
+	@Deprecated
 	public void registerAll(List<Class<?>> classes) {
 		for (Class<?> cls : classes) {
 			if (cls.isAnnotationPresent(Service.class)) {
@@ -88,19 +90,15 @@ public class DependencyInjection implements ServiceLocator {
 		}
 
 		if (!this.constructorCheck(cls))
-			throw new RuntimeException(
-					"There is no default public constructor on class "
-							+ cls.getName());
+			throw new RuntimeException("There is no default public constructor on class " + cls.getName());
 
-		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(cls,
-				Reference.class);
+		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(cls, Reference.class);
 		Set<Class<?>> dependencies = new HashSet<>();
 		for (Field field : dependencyFields) {
 			Class<?> dependency = field.getType();
 			if (dependencies.contains(dependency)) {
-				System.out.println("The Service " + cls.getName()
-						+ " have a duplicate dependeny on "
-						+ dependency.getName());
+				System.out.println(
+						"The Service " + cls.getName() + " have a duplicate dependeny on " + dependency.getName());
 			} else {
 				dependencies.add(dependency);
 			}
@@ -119,8 +117,7 @@ public class DependencyInjection implements ServiceLocator {
 	 * @param serviceType
 	 * @param service
 	 */
-	public synchronized void addExternalService(Class<?> serviceType,
-			Object externalService) {
+	public synchronized void addExternalService(Class<?> serviceType, Object externalService) {
 		if (this.hasServiceOfType(serviceType))
 			throw new DuplicateServiceException();
 		this.externalServices.put(serviceType, externalService);
@@ -154,8 +151,7 @@ public class DependencyInjection implements ServiceLocator {
 		return this.get(serviceType, new Stack<>(), this.instances);
 	}
 
-	private <T> T get(Class<T> serviceType, Stack<Class<?>> stack,
-			Map<Class<?>, Object> resolved) {
+	private <T> T get(Class<T> serviceType, Stack<Class<?>> stack, Map<Class<?>, Object> resolved) {
 		if (this.externalServices.containsKey(serviceType))
 			return (T) this.externalServices.get(serviceType);
 
@@ -175,8 +171,7 @@ public class DependencyInjection implements ServiceLocator {
 		return this.resolve(serviceClass, new Stack<>(), this.instances);
 	}
 
-	private <T> T resolve(Class<T> serviceClass, Stack<Class<?>> stack,
-			Map<Class<?>, Object> resolved) {
+	private <T> T resolve(Class<T> serviceClass, Stack<Class<?>> stack, Map<Class<?>, Object> resolved) {
 		if (resolved.containsKey(serviceClass))
 			return (T) resolved.get(serviceClass);
 		if (stack.contains(serviceClass))
@@ -200,10 +195,8 @@ public class DependencyInjection implements ServiceLocator {
 		this.inject(instance, new Stack<>(), this.instances);
 	}
 
-	private void inject(Object instance, Stack<Class<?>> stack,
-			Map<Class<?>, Object> resolved) {
-		Field[] dependencyFields = FieldUtils
-				.getFieldsWithAnnotation(instance.getClass(), Reference.class);
+	private void inject(Object instance, Stack<Class<?>> stack, Map<Class<?>, Object> resolved) {
+		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(instance.getClass(), Reference.class);
 		for (Field field : dependencyFields) {
 			Class<?> dependency = field.getType();
 			Object object = this.get(dependency, stack, resolved);

@@ -16,7 +16,7 @@ import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.ServiceHandle;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
@@ -27,10 +27,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 @Singleton
 public class ServiceInjectionResolver implements InjectionResolver<Reference> {
 
-	private DependencyInjection dependencyInjection;
+	private ServiceLocator serviceLocator;
 
-	ServiceInjectionResolver(DependencyInjection dependencyInjection) {
-		this.dependencyInjection = dependencyInjection;
+	ServiceInjectionResolver(ServiceLocator serviceLocator) {
+		this.serviceLocator = serviceLocator;
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class ServiceInjectionResolver implements InjectionResolver<Reference> {
 	@Override
 	public Object resolve(Injectee arg0, ServiceHandle<?> arg1) {
 		Type requiredType = arg0.getRequiredType();
-		return this.dependencyInjection.getService((Class<?>) requiredType);
+		return this.serviceLocator.getService((Class<?>) requiredType);
 	}
 
 }

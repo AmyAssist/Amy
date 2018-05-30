@@ -30,7 +30,7 @@ public class Storage implements IStorage {
 	 * @param globalStorage
 	 *            The global storage to use
 	 */
-	protected Storage(String prefix, GlobalStorage globalStorage) {
+	Storage(String prefix, GlobalStorage globalStorage) {
 		//TODO: : is used for debugging purposes
 		this.prefix = prefix + ":";
 		this.globStorage = globalStorage.getStore();

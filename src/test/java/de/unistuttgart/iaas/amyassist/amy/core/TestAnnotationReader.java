@@ -10,6 +10,7 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 
@@ -50,9 +51,9 @@ class TestAnnotationReader {
 
 	@Test
 	public void testGrammar() {
-		List<String> grammars = this.annotationReader.getGrammars(Plugin.class);
+		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> grammars = this.annotationReader.getGrammars(Plugin.class);
 
-		assertThat(grammars, containsInAnyOrder("count", "say (hello|test)"));
+		assertThat(grammars.keySet(), containsInAnyOrder("count", "say (hello|test)"));
 	}
 
 	@Test

@@ -13,6 +13,8 @@ import java.util.concurrent.ExecutionException;
 
 import asg.cliche.Command;
 import asg.cliche.ShellFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 
@@ -21,7 +23,15 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
  * 
  * @author Leon Kiefer
  */
+@Service(Console.class)
 public class Console implements SpeechIO {
+
+	@Reference
+	private Configuration configuration;
+
+	@Reference
+	private Core core;
+
 	private SpeechInputHandler handler;
 
 	@Command
@@ -34,6 +44,17 @@ public class Console implements SpeechIO {
 		return "";
 	}
 
+	@Command
+	public String plugin(String command) {
+		switch (command) {
+		case "list":
+			return String.join("\n", this.configuration.getInstalledPlugins());
+
+		default:
+			throw new IllegalArgumentException(command);
+		}
+	}
+
 	/**
 	 * @see java.lang.Runnable#run()
 	 */
@@ -44,6 +65,7 @@ public class Console implements SpeechIO {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		this.core.stop();
 	}
 
 	/**

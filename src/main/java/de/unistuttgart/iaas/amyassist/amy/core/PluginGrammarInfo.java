@@ -9,20 +9,20 @@
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Plugin grammar info helper class
+ * 
  * @author Felix Burk
  */
-class PluginGrammarInfo {
-	
-	List<String> keywords;
-	List<String> grammars;
-	
-	PluginGrammarInfo(List<String> keywords, List<String> grammars) {
-		this.keywords = keywords;
-		this.grammars = grammars;
-	}
-	
+public class PluginGrammarInfo {
 
+	List<String> keywords;
+	Set<String> grammars;
+
+	public PluginGrammarInfo(List<String> keywords, Set<String> set) {
+		this.keywords = keywords;
+		this.grammars = set;
+	}
 }
