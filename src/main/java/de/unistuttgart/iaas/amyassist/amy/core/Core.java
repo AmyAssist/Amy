@@ -19,6 +19,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
+import de.unistuttgart.iaas.amyassist.amy.rest.Server;
+import de.unistuttgart.iaas.amyassist.amy.rest.resource.HelloWorldResource;
 
 /**
  * The central core of the application
@@ -30,6 +32,7 @@ public class Core implements ICore {
 	private ScheduledExecutorService singleThreadScheduledExecutor;
 	private DependencyInjection di = new DependencyInjection();
 	private PluginLoader pluginLoader = new PluginLoader();
+	private Server server = new Server(this.di);
 	private IStorage storage;
 
 	/**
@@ -39,6 +42,7 @@ public class Core implements ICore {
 	protected void run() {
 		this.init();
 		this.threads.forEach(Thread::start);
+		this.server.start(HelloWorldResource.class);
 	}
 
 	/**
