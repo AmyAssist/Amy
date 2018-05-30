@@ -76,12 +76,12 @@ public class TextToPluginTest {
 		assertThat(test.pluginActionFromText("keyword2 this bad")[1], equalTo("this [grammar|(is | really | (bad | hehe))]"));
 		assertThat(test.pluginActionFromText("keyword3 this")[1], equalTo("this [grammar|(is | really | (bad | hehe))]"));
 		
-		assertThat(test.stringToNumber("sixty two"), equalTo(62));
-		assertThat(test.stringToNumber("fifty"), equalTo(50));
-		assertThat(test.stringToNumber("one"), equalTo(1));
-		assertThat(test.stringToNumber("ninety nine"), equalTo(99));
-		assertThat(test.stringToNumber("hdaiohd dwhaiodh a  adwa twenty two  dad  dwa a wa"), equalTo(22));
-		assertThat(test.stringToNumber("nananananana zero jdiwapja jwpoa nanananan"), equalTo(0));
+		assertThat(test.stringToNumber("sixty two djeopsjp two").get(0), equalTo(62));
+		assertThat(test.stringToNumber("fifty").get(0), equalTo(50));
+		assertThat(test.stringToNumber("one").get(0), equalTo(1));
+		assertThat(test.stringToNumber("ninety nine").get(0), equalTo(99));
+		assertThat(test.stringToNumber("hdaiohd dwhaiodh a  adwa twenty two  dad  dwa a wa").get(0), equalTo(22));
+		assertThat(test.stringToNumber("nananananana zero jdiwapja jwpoa nanananan one").get(1), equalTo(1));
 
 
 	}

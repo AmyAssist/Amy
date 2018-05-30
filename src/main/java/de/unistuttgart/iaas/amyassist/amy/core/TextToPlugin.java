@@ -144,19 +144,33 @@ class TextToPlugin {
 	 * @param text
 	 * @return result
 	 */
-	int stringToNumber(String text) {
-		String regex = "(\\bzero\\b|\\bone\\b|\\btwo\\b|\\bthree\\b|\\bfour\\b|\\bfive\\b|\\bsix\\b|\\bseven\\b|\\beight\\b|\\bnine\\b|"
+	List<Integer> stringToNumber(String text) {
+		List<Integer> results = new ArrayList<>();
+		
+		String regex = "((\\bzero\\b|\\bone\\b|\\btwo\\b|\\bthree\\b|\\bfour\\b|\\bfive\\b|\\bsix\\b|\\bseven\\b|\\beight\\b|\\bnine\\b|"
 				+ "\\bten\\b|\\beleven\\b|\\btwelfe\\b|\\bthirteen\\b" + 
 				"|\\bfourteen\\b|\\bfifteen\\b|sixteen\\b|\\bseventeen\\b|\\beighteen\\b|\\bnineteen\\b|" + 
-				"\\bten\\b|\\btwenty\\b|\\bthirty\\b|\\bforty\\b|\\bfifty\\b|\\bsixty\\b|\\bseventy\\b|\\beigthty\\b|\\bninety\\b)";
+				"\\bten\\b|\\btwenty\\b|\\bthirty\\b|\\bforty\\b|\\bfifty\\b|\\bsixty\\b|\\bseventy\\b|\\beigthty\\b|\\bninety\\b)\\s{0,1})+";
 	
+		
+		String gr;
 		Matcher m = Pattern.compile(regex).matcher(text);
-		int result = 0;
+		int result;
 		while(m.find()) {
-			result += Integer.valueOf(stringToNmb.get(m.group()));
+			result = 0;
+			gr = m.group();
+			String [] nmbs = gr.split(" ");
+			System.out.println(gr);
+			
+			for(String s : nmbs) {
+				s = s.replace(" ", "");
+				result += Integer.valueOf(stringToNmb.get(s));
+			}
+			results.add(result);
+			
 		}
 		
-		return result;
+		return results;
 	}
 	
 	

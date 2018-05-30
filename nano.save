@@ -1,0 +1,49 @@
+/java/de/unistuttgart/iaas/amyassist/amy/core/TextToPlugin.java 
+b/src/main/java/de/unistuttgart/iaas/amyassist/amy/core/TextToPlugin.java 
+index a295f3d..c89ed9d 100644 --- 
+a/src/main/java/de/unistuttgart/iaas/amyassist/amy/core/TextToPlugin.java 
++++ 
+b/src/main/java/de/unistuttgart/iaas/amyassist/amy/core/TextToPlugin.java 
+@@ -145,15 +145,17 @@ class TextToPlugin {
+ 	 * @return result
+ 	 */
+ 	int stringToNumber(String text) { - String regex = 
+"(\\bzero\\b|\\bone\\b|\\btwo\\b|\\bthree\\b|\\bfour\\b|\\bfive\\b|\\bsix\\b|\\bseven\\b|\\beight\\b|\\bnine\\b|" 
++ String regex = 
+"((\\bzero\\b|\\bone\\b|\\btwo\\b|\\bthree\\b|\\bfour\\b|\\bfive\\b|\\bsix\\b|\\bseven\\b|\\beight\\b|\\bnine\\b|"
+ 				+ 
+"\\bten\\b|\\beleven\\b|\\btwelfe\\b|\\bthirteen\\b" +
+ 				
+"|\\bfourteen\\b|\\bfifteen\\b|sixteen\\b|\\bseventeen\\b|\\beighteen\\b|\\bnineteen\\b|" 
++ - 
+"\\bten\\b|\\btwenty\\b|\\bthirty\\b|\\bforty\\b|\\bfifty\\b|\\bsixty\\b|\\bseventy\\b|\\beigthty\\b|\\bninety\\b)"; 
++ 
+"\\bten\\b|\\btwenty\\b|\\bthirty\\b|\\bforty\\b|\\bfifty\\b|\\bsixty\\b|\\bseventy\\b|\\beigthty\\b|\\bninety\\b)\\s+)+";
+ 	
+ 		Matcher m = Pattern.compile(regex).matcher(text);
+ 		int result = 0;
+ 		while(m.find()) { - result += 
+Integer.valueOf(stringToNmb.get(m.group())); + String gr = m.group(); + 
+System.out.println(gr); + result += 
+Integer.valueOf(stringToNmb.get(gr));
+ 		}
+ 		
+ 		return result; diff --git 
+a/src/test/java/de/unistuttgart/iaas/amyassist/amy/core/TextToPluginTest.java 
+b/src/test/java/de/unistuttgart/iaas/amyassist/amy/core/TextToPluginTest.java 
+index 264c0b7..e661164 100644 --- 
+a/src/test/java/de/unistuttgart/iaas/amyassist/amy/core/TextToPluginTest.java 
++++ 
+b/src/test/java/de/unistuttgart/iaas/amyassist/amy/core/TextToPluginTest.java 
+@@ -81,7 +81,7 @@ public class TextToPluginTest {
+ 		assertThat(test.stringToNumber("one"), equalTo(1));
+ 		assertThat(test.stringToNumber("ninety nine"), 
+equalTo(99));
+ 		assertThat(test.stringToNumber("hdaiohd dwhaiodh a adwa 
+twenty two dad dwa a wa"), equalTo(22)); - 
+assertThat(test.stringToNumber("nananananana zero jdiwapja jwpoa 
+nanananan"), equalTo(0)); + assertThat(test.stringToNumber("nananananana 
+zero jdiwapja jwpoa nanananan one"), equalTo(0));
+ 
+ 
+ 	}
