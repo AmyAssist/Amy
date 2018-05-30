@@ -16,7 +16,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 /**
- * TODO: Description
+ * this class handle the speech commands from the spotify plugin
  * 
  * @author Lars Buttgereit
  */
@@ -29,8 +29,13 @@ public class SpotifySpeech {
 	@Reference
 	PlayerLogic playerLogic;
 
+	/**
+	 * get a String of all name of all devices
+	 * @param params not used here
+	 * @return 
+	 */
 	@Grammar("get devices")
-	public String getDevices() {
+	public String getDevices(String... params) {
 		ArrayList<String> devices = this.playerLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
@@ -45,6 +50,7 @@ public class SpotifySpeech {
 	/**
 	 * set the device in the player logic # is a number between 0 and theoretically
 	 * infinite
+	 * @param params 
 	 * 
 	 * @return
 	 */
@@ -60,19 +66,6 @@ public class SpotifySpeech {
 		return "Wrong request";
 	}
 
-	/**
-	 * transmit the search query to the player logic # any String
-	 * 
-	 * @param params
-	 * @return
-	 */
-	@Grammar("search # in (artist|track|playlist|album)")
-	public String search(String... params) {
-		if (3 < params.length) {
-			return this.playerLogic.search(params[1], params[3], this.SEARCH_LIMIT);
-		}
-		return "wrong request";
-	}
 
 	/**
 	 * play a featured playlist
@@ -80,46 +73,27 @@ public class SpotifySpeech {
 	 * @return
 	 */
 	@Grammar("play")
-	public String playFeaturedPlaylist() {
+	public String playFeaturedPlaylist(String... params) {
 		return this.playerLogic.play();
 	}
 
-	/**
-	 * this play method please use only when a search is executed before # Number of
-	 * the Search query
-	 * 
-	 * @param params
-	 * @return
-	 */
-	@Grammar("play #")
-	public String play(String... params) {
-		if (1 < params.length) {
-			try {
-				return this.playerLogic.play(new Integer(params[1]).intValue());
-			} catch (NumberFormatException e) {
-				return "Input please as a integer";
-			}
-		}
-		return "Wrong request";
-	}
-
 	@Grammar("resume")
-	public void resume() {
+	public void resume(String... params) {
 		this.playerLogic.resume();
 	}
 
 	@Grammar("pause")
-	public void pause() {
+	public void pause(String... params) {
 		this.playerLogic.pausePlayback();
 	}
 
 	@Grammar("skip")
-	public void skip() {
+	public void skip(String... params) {
 		this.playerLogic.skip();
 	}
 
 	@Grammar("back")
-	public void back() {
+	public void back(String... params) {
 		this.playerLogic.back();
 	}
 

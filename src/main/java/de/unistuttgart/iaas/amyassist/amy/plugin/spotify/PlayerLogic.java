@@ -394,6 +394,13 @@ public class PlayerLogic {
 		// System.out.println(pc.search("game of thrones", "playlist", 5));
 		// System.out.println(pc.play(2));
 		System.out.println(pc.play());
+		pc.pausePlayback();
+		pc.resume();
+		pc.skip();
+		pc.back();
+		pc.setVolume("max");
+		pc.setVolume("mute");
+		
 		sc.close();
 	}
 }
