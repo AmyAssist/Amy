@@ -25,9 +25,9 @@ public class Console implements SpeechIO {
 	private SpeechInputHandler handler;
 
 	@Command
-	public String say(String speechInput) {
+	public String say(String... speechInput) {
 		try {
-			return this.handler.handle(speechInput).get();
+			return this.handler.handle(String.join(" ", speechInput)).get();
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
