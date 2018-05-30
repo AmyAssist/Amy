@@ -35,8 +35,7 @@ public class WeatherDarkSkyAPI {
         return new WeatherReportDay("This is the weather report for tomorrow.", d.getDay(1));
     }
 
-    public String getReportWeek() {
-        FIODaily d = getDailyReports();
-        return "This is the weather report for the week. " + d.getSummary();
+    public WeatherReportWeek getReportWeek() {
+        return new WeatherReportWeek("This is the weather report for the week. ", getDailyReports());
     }
 }
