@@ -44,6 +44,7 @@ public class TextToPluginTest {
 
 		assertThat(test.pluginActionFromText("play 380213910"), equalTo("play #"));
 		assertThat(test.pluginActionFromText("play "),  equalTo(null));
+		assertThat(test.pluginActionFromText("play one two three"),  equalTo("play #"));
 		
 		assertThat(test.pluginActionFromText("get devices"), equalTo("get devices"));
 

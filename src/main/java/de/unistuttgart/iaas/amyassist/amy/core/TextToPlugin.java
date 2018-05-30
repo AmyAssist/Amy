@@ -8,6 +8,9 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,20 +36,13 @@ class TextToPlugin {
 	 * which means @Grammar(jhdawdap amy says wjapdjawp) will work
 	 * this is great for error prone speech to text 
 	 * 
-	 * but grammars contained in another grammar will most likely be matched wrong
-	 * -> don't use @Grammar annotations like
-	 *  @Grammar(hello)
-	 *  someMethod()
-	 *  
-	 * 	@Grammar(hello i am amy)
-	 * 	anotherMethod()
-	 * 
-	 * the first one will most likely be chosen if the input text is "hello i am amy"
+	 * !the longest matching grammar will be returned!
 	 * 
 	 * @param text
 	 * @return success
 	 */
-	String pluginActionFromText(String text) {
+	String pluginActionFromText(String text) {		
+		ArrayList<String> results = new ArrayList<>();
 		
 		for (String s : this.grammars) {
 			
@@ -57,9 +53,15 @@ class TextToPlugin {
 			//find looks for matching substrings
 			// ! the first matching grammar is returned !
 			if (m.find())
-				return s;
+				results.add(s);
+
 		}
-		return null;
+		String finalResult = null;
+		if(!results.isEmpty()) {
+			finalResult = Collections.max(results, Comparator.comparing(s -> s.length()));
+		}
+		
+		return finalResult;
 
 	}
 	
@@ -92,7 +94,9 @@ class TextToPlugin {
 		
 		//replace convenience characters for pre defined rules with corresponding regex
 		//(this might be hard for other pre defined rules in the future, but numbers are easy)
-		regex = regex.replaceAll("#", "([0-9]+)");
+		regex = regex.replaceAll("#", "((one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelfe|thirteen" + 
+				"|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|" + 
+				"ten|twenty|thirty|forty|fifty|sixty|seventy|eigthty|ninety)+|([0-9]+))");
 				
 		//at last replace whitespace with an arbitrary number of whitespaces
 		//makes things like @Grammar(this    has   lots of        space) possible
