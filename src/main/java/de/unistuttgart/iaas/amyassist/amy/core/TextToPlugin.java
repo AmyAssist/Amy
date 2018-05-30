@@ -23,10 +23,11 @@ import java.util.regex.Pattern;
 class TextToPlugin {
 
 	AnnotationReader reader;
-	List<String> grammars;
+	List<PluginGrammarInfo> infos;
+	
+	TextToPlugin(List<PluginGrammarInfo> infos) {
+		this.infos = infos;
 
-	TextToPlugin(List<String> grammars) {
-		this.grammars = grammars;
 	}
 
 	/**
@@ -39,29 +40,45 @@ class TextToPlugin {
 	 * !the longest matching grammar will be returned!
 	 * 
 	 * @param text
-	 * @return success
+	 * @return String[] 0 contains matching keyword, 1 contains matching grammar
 	 */
-	String pluginActionFromText(String text) {		
+	String[] pluginActionFromText(String text) {		
 		ArrayList<String> results = new ArrayList<>();
-		
-		for (String s : this.grammars) {
-			
-			String regex = regexFromGrammar(s);
-			Pattern p = Pattern.compile(regex);
-			Matcher m = p.matcher(text);
-			
-			//find looks for matching substrings
-			// ! the first matching grammar is returned !
-			if (m.find())
-				results.add(s);
-
-		}
 		String finalResult = null;
-		if(!results.isEmpty()) {
-			finalResult = Collections.max(results, Comparator.comparing(s -> s.length()));
+		
+		
+		for(PluginGrammarInfo currentGrammar : infos) {
+			
+			for(String keyword : currentGrammar.keywords) {
+				int index = text.indexOf(keyword);
+				String textTemp = text;
+				if(index != -1) {
+					textTemp = text.substring(index+keyword.length(), text.length());
+										
+					List<String> grammars = currentGrammar.grammars;
+					for (String s : grammars) {
+						
+						String regex = regexFromGrammar(s);
+						Pattern p = Pattern.compile(regex);
+						Matcher m = p.matcher(textTemp);
+						
+						//find looks for matching substrings
+						// ! the first matching grammar is returned !
+						if (m.find())
+							results.add(s);
+			
+					}
+					if(!results.isEmpty()) {
+						finalResult = Collections.max(results, Comparator.comparing(s -> s.length()));
+					}
+					
+					return new String[] {keyword, finalResult};
+					
+				}
+			}
 		}
 		
-		return finalResult;
+		return null;
 
 	}
 	
