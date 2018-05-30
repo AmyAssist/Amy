@@ -15,7 +15,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * 
  * @author Leon Kiefer
  */
-@Service(Service1.class)
+@Service
 public class Service1 {
 
 }

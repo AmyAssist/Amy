@@ -22,5 +22,5 @@ import java.lang.annotation.Target;
 @Documented
 @Target(java.lang.annotation.ElementType.TYPE)
 public @interface Service {
-	Class<?> value();
+	Class<?>[] value() default {};
 }

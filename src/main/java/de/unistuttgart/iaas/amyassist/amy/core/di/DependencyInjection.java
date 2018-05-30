@@ -8,9 +8,11 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -32,7 +34,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * 
  * @author Leon Kiefer
  */
-public class DependencyInjection {
+public class DependencyInjection implements ServiceLocator {
 
 	protected Map<Class<?>, Class<?>> register;
 
@@ -52,22 +54,43 @@ public class DependencyInjection {
 		this.externalServices = new HashMap<>();
 	}
 
+	/**
+	 * Registers all given classes. Classes that can not be registered are
+	 * ignored.
+	 * 
+	 * @param classes
+	 *            The classes to be registered.
+	 */
+	public void registerAll(List<Class<?>> classes) {
+		for (Class<?> cls : classes) {
+			if (cls.isAnnotationPresent(Service.class)) {
+				this.register(cls);
+			}
+		}
+	}
+
 	public synchronized void register(Class<?> cls) {
 		Service annotation = cls.getAnnotation(Service.class);
-		if (annotation == null) {
+		if (annotation == null)
 			throw new ClassIsNotAServiceException(cls);
+		Class<?>[] serviceTypes = annotation.value();
+		if (serviceTypes.length == 0) {
+			serviceTypes = cls.getInterfaces();
 		}
-		Class<?> serviceType = annotation.value();
+		if (serviceTypes.length == 0) {
+			serviceTypes = new Class[1];
+			serviceTypes[0] = cls;
+		}
 		// TODO check if serviceType matches cls
-		if (this.hasServiceOfType(serviceType)) {
-			throw new DuplicateServiceException();
+		for (Class<?> serviceType : serviceTypes) {
+			if (this.hasServiceOfType(serviceType))
+				throw new DuplicateServiceException();
 		}
 
-		if (!this.constructorCheck(cls)) {
+		if (!this.constructorCheck(cls))
 			throw new RuntimeException(
 					"There is no default public constructor on class "
 							+ cls.getName());
-		}
 
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(cls,
 				Reference.class);
@@ -82,8 +105,9 @@ public class DependencyInjection {
 				dependencies.add(dependency);
 			}
 		}
-
-		this.register.put(serviceType, cls);
+		for (Class<?> serviceType : serviceTypes) {
+			this.register.put(serviceType, cls);
+		}
 		this.dependencyRegister.put(cls, dependencies);
 	}
 
@@ -97,19 +121,16 @@ public class DependencyInjection {
 	 */
 	public synchronized void addExternalService(Class<?> serviceType,
 			Object externalService) {
-		if (this.hasServiceOfType(serviceType)) {
+		if (this.hasServiceOfType(serviceType))
 			throw new DuplicateServiceException();
-		}
 		this.externalServices.put(serviceType, externalService);
 	}
 
 	private boolean hasServiceOfType(Class<?> serviceType) {
-		if (this.register.containsKey(serviceType)) {
+		if (this.register.containsKey(serviceType))
 			return true;
-		}
-		if (this.externalServices.containsKey(serviceType)) {
+		if (this.externalServices.containsKey(serviceType))
 			return true;
-		}
 		return false;
 	}
 
@@ -120,24 +141,23 @@ public class DependencyInjection {
 	 * @return
 	 */
 	private boolean constructorCheck(Class<?> cls) {
-		return true;
+		try {
+			cls.getConstructor();
+			return true;
+		} catch (NoSuchMethodException | SecurityException e) {
+			return false;
+		}
 	}
 
-	/**
-	 * Get a Service instance
-	 * 
-	 * @param serviceType
-	 * @return
-	 */
-	public <T> T get(Class<T> serviceType) {
+	@Override
+	public <T> T getService(Class<T> serviceType) {
 		return this.get(serviceType, new Stack<>(), this.instances);
 	}
 
 	private <T> T get(Class<T> serviceType, Stack<Class<?>> stack,
 			Map<Class<?>, Object> resolved) {
-		if (this.externalServices.containsKey(serviceType)) {
+		if (this.externalServices.containsKey(serviceType))
 			return (T) this.externalServices.get(serviceType);
-		}
 
 		Class<?> required = this.getRequired(serviceType);
 		return (T) this.resolve(required, stack, resolved);
@@ -157,12 +177,10 @@ public class DependencyInjection {
 
 	private <T> T resolve(Class<T> serviceClass, Stack<Class<?>> stack,
 			Map<Class<?>, Object> resolved) {
-		if (resolved.containsKey(serviceClass)) {
+		if (resolved.containsKey(serviceClass))
 			return (T) resolved.get(serviceClass);
-		}
-		if (stack.contains(serviceClass)) {
+		if (stack.contains(serviceClass))
 			throw new RuntimeException("circular dependencies");
-		}
 		stack.push(serviceClass);
 
 		try {
@@ -177,15 +195,12 @@ public class DependencyInjection {
 		}
 	}
 
-	/**
-	 * 
-	 * @param instance
-	 */
-	public <T> void inject(T instance) {
+	@Override
+	public void inject(Object instance) {
 		this.inject(instance, new Stack<>(), this.instances);
 	}
 
-	private <T> void inject(T instance, Stack<Class<?>> stack,
+	private void inject(Object instance, Stack<Class<?>> stack,
 			Map<Class<?>, Object> resolved) {
 		Field[] dependencyFields = FieldUtils
 				.getFieldsWithAnnotation(instance.getClass(), Reference.class);
@@ -195,16 +210,23 @@ public class DependencyInjection {
 			try {
 				FieldUtils.writeField(field, instance, object, true);
 			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 	}
 
 	private Class<?> getRequired(Class<?> serviceType) {
-		if (!this.register.containsKey(serviceType)) {
+		if (!this.register.containsKey(serviceType))
 			throw new ServiceNotFoundException(serviceType);
-		}
 		Class<?> required = this.register.get(serviceType);
 		return required;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator#create(java.lang.Class)
+	 */
+	@Override
+	public <T> T create(Class<T> serviceClass) {
+		return this.resolve(serviceClass);
 	}
 }

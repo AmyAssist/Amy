@@ -8,14 +8,10 @@
  */
 package de.unistuttgart.iaas.amyassist.amy;
 
-import java.util.Set;
-
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
-import org.reflections.Reflections;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
  * A Jupiter Extension for the TestFramework
@@ -33,18 +29,8 @@ public class FrameworkExtention implements TestInstancePostProcessor {
 	@Override
 	public void postProcessTestInstance(Object instance, ExtensionContext arg1)
 			throws Exception {
-		Reflections reflections = new Reflections(
-				"de.unistuttgart.iaas.amyassist.amy");
-
 		this.testFramework = new TestFramework();
 		DependencyInjection dependencyInjection = this.testFramework.dependencyInjection;
-
-		Set<Class<?>> annotated = reflections
-				.getTypesAnnotatedWith(Service.class);
-		for (Class<?> a : annotated) {
-			dependencyInjection.register(a);
-		}
-
 		dependencyInjection.inject(instance);
 	}
 }

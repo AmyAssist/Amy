@@ -8,8 +8,8 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -20,11 +20,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.FrameworkExtention;
 import de.unistuttgart.iaas.amyassist.amy.TestFramework;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
 import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
 /**
@@ -62,11 +63,13 @@ class HelloWorldRestTest {
 	 */
 	@Test
 	public void test() {
-		IStorage storage = this.testFramework
-				.storage(TestFramework.store("hellocount", "99"));
+		HelloWorldService mockService = this.testFramework
+				.mockService(HelloWorldService.class);
+		Mockito.when(mockService.helloWorld()).thenReturn("hello100");
 
 		String responseMsg = this.target.path("helloworld").request()
 				.get(String.class);
+
 		assertThat(responseMsg, equalTo("hello100"));
 	}
 

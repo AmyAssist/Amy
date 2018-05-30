@@ -9,14 +9,15 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 /**
- * A exception of the dependency injection
+ * A exception of the dependency injection, signaling, that a service is already
+ * registered
  * 
  * @author Leon Kiefer
  */
 public class DuplicateServiceException extends RuntimeException {
 
 	/**
-	 * 
+	 * Generated serial version UID
 	 */
 	private static final long serialVersionUID = -4001860407694050099L;
 

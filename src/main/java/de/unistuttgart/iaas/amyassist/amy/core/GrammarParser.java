@@ -33,12 +33,18 @@ public class GrammarParser {
 	 * initializes the parser
 	 * 
 	 * possible expansions: more custom keywords, weights may be supported,
-	 * <NULL> and <VOID> support, Unary Operators (kleene star, plus operator
-	 * and tags)
+	 * <NULL>
+	 * and <VOID> support, Unary Operators (kleene star, plus operator and tags)
+	 * 
+	 * @param name
+	 *            The name of the grammar
 	 * 
 	 * @param wakeup
+	 *            The wakeup call in this grammar.
 	 * @param sleep
+	 *            The sleep call in this grammar.
 	 * @param shutdown
+	 *            The shutdown call in this grammar.
 	 */
 	GrammarParser(String name, String wakeup, String sleep, String shutdown) {
 		this.wakeup = wakeup;
@@ -51,11 +57,12 @@ public class GrammarParser {
 
 	}
 
+	/**
+	 * @return The grammar generated
+	 */
 	String getGrammar() {
 		// header
-		System.out.println("gets grammar");
-		String grammar = "#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n"
-				+ " */\n" + "\n";
+		String grammar = "#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n" + " */\n" + "\n";
 
 		grammar += "grammar " + this.name + ";\n";
 		grammar += "public <wakeup> = ( " + this.wakeup + " );\n";
@@ -69,8 +76,7 @@ public class GrammarParser {
 		grammar += "<digit> = (one | two | three | four | five | six | seven |"
 				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
 				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
-				+ "fifty | sixty  | seventy | eighty | ninety | hundred | thousand |"
-				+ "million | and )* \n";
+				+ "fifty | sixty  | seventy | eighty | ninety | hundred | thousand |" + "million | and )+ \n";
 
 		grammar += "\n#custom rules \n";
 		for (String s : this.addedRules) {
@@ -80,16 +86,24 @@ public class GrammarParser {
 		return grammar;
 	}
 
-	void addRule(String ruleName, String keyword) {
-		this.addedRules.add("public " + "<" + ruleName + ">" + " = "
-				+ parseKeyword(keyword) + "; \n");
+	/**
+	 * Adds a rule to the grammar
+	 * 
+	 * @param ruleName
+	 *            The name of the rule
+	 * @param keyword
+	 *            The keyword
+	 */
+	void addRule(String ruleName, String keyword, String grammar) {
+		this.addedRules.add("public " + "<" + ruleName + ">" + " = " + this.parseKeyword(keyword) + " " + this.parseKeyword(grammar) + "; \n");
 	}
 
 	/**
 	 * replace keywords with corresponding pre defined rule
 	 * 
 	 * @param keyword
-	 * @return
+	 *            The keyword
+	 * @return the corresponding rule
 	 */
 	private String parseKeyword(String keyword) {
 		String parsedKeyword = "";

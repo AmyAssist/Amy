@@ -12,6 +12,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.reflect.MethodUtils;
+
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
@@ -32,24 +34,23 @@ public class AnnotationReader {
 	 * @return the method or null if not found
 	 */
 	public Method getInitMethod(Class<?> cls) {
-		for (Method method : cls.getMethods()) {
-			if (method.isAnnotationPresent(Init.class)) {
-				if (!method.getReturnType().equals(Void.TYPE)) {
-					System.err.println(
-							"The method annotated with @Init must have return type void");
-					return null;
-				}
-				Class<?>[] parameterTypes = method.getParameterTypes();
-				Class<ICore> c = ICore.class;
-				if (parameterTypes.length != 1
-						|| !parameterTypes[0].equals(c)) {
-					System.err.println(
-							"The method annotated with @Init must have only one parameter of type ICore");
-					return null;
-				}
-
-				return method;
+		Method[] methodsWithAnnotation = MethodUtils
+				.getMethodsWithAnnotation(cls, Init.class);
+		for (Method method : methodsWithAnnotation) {
+			if (!method.getReturnType().equals(Void.TYPE)) {
+				System.err.println(
+						"The method annotated with @Init must have return type void");
+				return null;
 			}
+			Class<?>[] parameterTypes = method.getParameterTypes();
+			Class<ICore> c = ICore.class;
+			if (parameterTypes.length != 1 || !parameterTypes[0].equals(c)) {
+				System.err.println(
+						"The method annotated with @Init must have only one parameter of type ICore");
+				return null;
+			}
+
+			return method;
 		}
 		return null;
 	}
@@ -82,8 +83,10 @@ public class AnnotationReader {
 	 */
 	public String[] getSpeechKeyword(Class<?> cls) {
 		SpeechCommand speechCommand = cls.getAnnotation(SpeechCommand.class);
-		if (speechCommand != null)
-			return speechCommand.value();
-		return null;
+		if (speechCommand == null)
+			throw new RuntimeException("The class " + cls.getName()
+					+ " have no SpeechCommand Annotation.");
+
+		return speechCommand.value();
 	}
 }
