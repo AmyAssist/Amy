@@ -134,6 +134,7 @@ public class PluginLoader {
 		p.setMavenArtifactId(mavenArtifactId);
 		p.setMavenGroupId(mavenGroupId);
 		p.setMavenVersion(mavenVersion);
+		this.plugins.put(p.getUniqueName(), p);
 		return true;
 	}
 
