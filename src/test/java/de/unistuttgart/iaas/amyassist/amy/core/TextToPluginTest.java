@@ -65,7 +65,7 @@ public class TextToPluginTest {
 		assertThat(test.pluginActionFromText("keyword3 amy says bluuub things")[1], equalTo("amy says [great|bad] (bluuub|blub) things"));
 
 		assertThat(test.pluginActionFromText("testGrammar play 380213910")[1], equalTo("play #"));
-		assertThat(test.pluginActionFromText("testiGrammar play ")[1],  equalTo(null));
+		assertThat(test.pluginActionFromText("testiGrammar play "),  equalTo(null));
 		assertThat(test.pluginActionFromText("testiGrammar play one two three")[1],  equalTo("play #"));
 		assertThat(test.pluginActionFromText("testGrammar play one two three")[0],  equalTo("testGrammar"));
 
@@ -75,6 +75,14 @@ public class TextToPluginTest {
 		
 		assertThat(test.pluginActionFromText("keyword2 this bad")[1], equalTo("this [grammar|(is | really | (bad | hehe))]"));
 		assertThat(test.pluginActionFromText("keyword3 this")[1], equalTo("this [grammar|(is | really | (bad | hehe))]"));
+		
+		assertThat(test.stringToNumber("sixty two"), equalTo(62));
+		assertThat(test.stringToNumber("fifty"), equalTo(50));
+		assertThat(test.stringToNumber("one"), equalTo(1));
+		assertThat(test.stringToNumber("ninety nine"), equalTo(99));
+		assertThat(test.stringToNumber("hdaiohd dwhaiodh a  adwa twenty two  dad  dwa a wa"), equalTo(22));
+		assertThat(test.stringToNumber("nananananana zero jdiwapja jwpoa nanananan"), equalTo(0));
+
 
 	}
 

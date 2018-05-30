@@ -11,6 +11,7 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +28,8 @@ class TextToPlugin {
 	
 	TextToPlugin(List<PluginGrammarInfo> infos) {
 		this.infos = infos;
+		
+		setupUglyHashMap();
 
 	}
 
@@ -47,11 +50,14 @@ class TextToPlugin {
 		String finalResult = null;
 		
 		
-		for(PluginGrammarInfo currentGrammar : infos) {
+		for(PluginGrammarInfo currentGrammar : this.infos) {
 			
 			for(String keyword : currentGrammar.keywords) {
+				
 				int index = text.indexOf(keyword);
 				String textTemp = text;
+				
+				//keyword found! try to match the grammar
 				if(index != -1) {
 					textTemp = text.substring(index+keyword.length(), text.length());
 										
@@ -62,17 +68,16 @@ class TextToPlugin {
 						Pattern p = Pattern.compile(regex);
 						Matcher m = p.matcher(textTemp);
 						
-						//find looks for matching substrings
-						// ! the first matching grammar is returned !
 						if (m.find())
 							results.add(s);
 			
 					}
+					//find looks for matching substrings
+					// ! the first matching grammar is returned !
 					if(!results.isEmpty()) {
 						finalResult = Collections.max(results, Comparator.comparing(s -> s.length()));
+						return new String[] {keyword, finalResult};
 					}
-					
-					return new String[] {keyword, finalResult};
 					
 				}
 			}
@@ -111,7 +116,8 @@ class TextToPlugin {
 		
 		//replace convenience characters for pre defined rules with corresponding regex
 		//(this might be hard for other pre defined rules in the future, but numbers are easy)
-		regex = regex.replaceAll("#", "((one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelfe|thirteen" + 
+		// \\bnumber\\b is not needed here because of the previous for loop
+		regex = regex.replaceAll("#", "((zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelfe|thirteen" + 
 				"|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|" + 
 				"ten|twenty|thirty|forty|fifty|sixty|seventy|eigthty|ninety)+|([0-9]+))");
 				
@@ -130,6 +136,61 @@ class TextToPlugin {
 		return "\\b"+word.toLowerCase()+"\\b";
 	}
 	
+	
+	/**
+	 * get a number as int from any string
+	 * only one number in the sentence is supported right now! 
+	 * and only numbers ranging from 0 to 99
+	 * @param text
+	 * @return result
+	 */
+	int stringToNumber(String text) {
+		String regex = "(\\bzero\\b|\\bone\\b|\\btwo\\b|\\bthree\\b|\\bfour\\b|\\bfive\\b|\\bsix\\b|\\bseven\\b|\\beight\\b|\\bnine\\b|"
+				+ "\\bten\\b|\\beleven\\b|\\btwelfe\\b|\\bthirteen\\b" + 
+				"|\\bfourteen\\b|\\bfifteen\\b|sixteen\\b|\\bseventeen\\b|\\beighteen\\b|\\bnineteen\\b|" + 
+				"\\bten\\b|\\btwenty\\b|\\bthirty\\b|\\bforty\\b|\\bfifty\\b|\\bsixty\\b|\\bseventy\\b|\\beigthty\\b|\\bninety\\b)";
+	
+		Matcher m = Pattern.compile(regex).matcher(text);
+		int result = 0;
+		while(m.find()) {
+			result += Integer.valueOf(stringToNmb.get(m.group()));
+		}
+		
+		return result;
+	}
+	
+	
+	private HashMap<String, Integer> stringToNmb = new HashMap<>();
+	
+	/**
+	 * i know this is ugly.. 
+	 * this had to be done quickly
+	 */
+	
+	private void setupUglyHashMap() {
+		String[] oneToNine = {"zero","one","two","three","four","five","six","seven","eight","nine" };
+		String[] teens = {"eleven","twelfe","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"};
+		String[] tens = {"ten","twenty","thirty","forty","fifty","sixty","seventy","eigthty","ninety" };
+		
+		int i = 0;
+		for(String s : oneToNine) {
+			this.stringToNmb.put(s, i);
+			i++;
+		}
+		
+		i = 11;
+		for(String s : teens) {
+			this.stringToNmb.put(s, i);
+			i++;
+		}
+		
+		i = 10;
+		for(String s: tens) {
+			this.stringToNmb.put(s, i);
+			i += 10;
+		}
+	}
+
 	
 
 }
