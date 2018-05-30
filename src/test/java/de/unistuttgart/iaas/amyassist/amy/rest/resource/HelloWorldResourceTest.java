@@ -14,8 +14,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -23,6 +21,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.FrameworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.TestFramework;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
@@ -34,23 +33,16 @@ import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 @TestInstance(Lifecycle.PER_CLASS)
 @ExtendWith(FrameworkExtention.class)
 class HelloWorldResourceTest {
-	@Reference
-	private Server server;
-
-	private HttpServer httpServer;
 	private WebTarget target;
+	@Reference
+	private TestFramework testFramework;
 
 	@BeforeAll
 	public void setUp() {
-		this.httpServer = this.server.start(HelloWorldResource.class);
+		this.testFramework.setRESTResource(HelloWorldResource.class);
 
 		Client c = ClientBuilder.newClient();
 		this.target = c.target(Server.BASE_URI);
-	}
-
-	@AfterAll
-	public void stop() {
-		this.httpServer.shutdown();
 	}
 
 	/**

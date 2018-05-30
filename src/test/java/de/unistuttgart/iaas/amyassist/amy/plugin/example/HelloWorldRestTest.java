@@ -15,8 +15,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,23 +37,14 @@ class HelloWorldRestTest {
 	@Reference
 	private TestFramework testFramework;
 
-	@Reference
-	private Server server;
-
-	private HttpServer httpServer;
 	private WebTarget target;
 
 	@BeforeEach
 	public void setUp() {
-		this.httpServer = this.server.start(HelloWorldRest.class);
+		this.testFramework.setRESTResource(HelloWorldRest.class);
 
 		Client c = ClientBuilder.newClient();
 		this.target = c.target(Server.BASE_URI);
-	}
-
-	@AfterEach
-	public void stop() {
-		this.httpServer.shutdown();
 	}
 
 	/**
@@ -63,12 +52,10 @@ class HelloWorldRestTest {
 	 */
 	@Test
 	public void test() {
-		HelloWorldService mockService = this.testFramework
-				.mockService(HelloWorldService.class);
+		HelloWorldService mockService = this.testFramework.mockService(HelloWorldService.class);
 		Mockito.when(mockService.helloWorld()).thenReturn("hello100");
 
-		String responseMsg = this.target.path("helloworld").request()
-				.get(String.class);
+		String responseMsg = this.target.path("helloworld").request().get(String.class);
 
 		assertThat(responseMsg, equalTo("hello100"));
 	}
