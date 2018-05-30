@@ -9,6 +9,8 @@
 package de.unistuttgart.iaas.amyassist.amy.rest;
 
 import java.net.URI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.hk2.api.TypeLiteral;
@@ -34,7 +36,7 @@ public class Server {
 
 	public static final URI BASE_URI = URI.create("http://localhost:8080/rest");
 
-   /**
+	/**
 	 * creates and starts the HttpServer
 	 * 
 	 * @return the started HttpServer
@@ -44,13 +46,12 @@ public class Server {
 		resourceConfig.register(new AbstractBinder() {
 			@Override
 			protected void configure() {
-				this.bind(new ServiceInjectionResolver(Server.this.di))
-						.to(new TypeLiteral<Reference>() {
-						});
+				this.bind(new ServiceInjectionResolver(Server.this.di)).to(new TypeLiteral<Reference>() {
+				});
 			}
 		});
-		HttpServer server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI,
-				resourceConfig);
+		Logger.getLogger("org.glassfish.grizzly").setLevel(Level.WARNING);
+		HttpServer server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, resourceConfig);
 		return server;
 	}
 
