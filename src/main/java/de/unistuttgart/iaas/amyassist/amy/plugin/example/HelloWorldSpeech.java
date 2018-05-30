@@ -8,23 +8,26 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import de.unistuttgart.iaas.amyassist.amy.core.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.ICore;
-import de.unistuttgart.iaas.amyassist.amy.core.Init;
-import de.unistuttgart.iaas.amyassist.amy.core.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
 
 /**
  * A example plugin
  * 
  * @author Leon Kiefer, Tim Neumann
  */
+@Service
 @SpeechCommand("Hello world")
 public class HelloWorldSpeech {
 
 	/**
 	 * The logic class of this plugin.
 	 */
-	HelloWorldLogic logic;
+	@Reference
+	private HelloWorldService helloWorld;
 
 	/**
 	 * A method that says hello
@@ -35,19 +38,6 @@ public class HelloWorldSpeech {
 	 */
 	@Grammar("say hello")
 	public String say(String... params) {
-		return this.logic.helloWorld();
+		return this.helloWorld.helloWorld();
 	}
-
-	/**
-	 * The init method of this class
-	 * 
-	 * @param p_core
-	 *            The core of the system, from which we get the storage.
-	 */
-	@Init
-	public void init(ICore p_core) {
-		this.logic = new HelloWorldLogic();
-		this.logic.init(p_core);
-	}
-
 }

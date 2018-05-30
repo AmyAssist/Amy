@@ -1,1 +1,24 @@
 language: java
+cache:
+  directories:
+  - "$HOME/.m2"
+after_success:
+  - mkdir gh-pages
+  - mvn clean test jacoco:report
+  - bash <(curl -s https://codecov.io/bash)
+  - mv target/site/jacoco gh-pages/jacoco
+  - mvn project-info-reports:dependencies
+  - mv target/site gh-pages/dependencies
+  - mv gh-pages/dependencies/dependencies.html gh-pages/dependencies/index.html
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN # Set in travis-ci.com dashboard
+  local_dir: gh-pages/
+  on:
+    branch: dev
+notifications:
+  slack:
+    secure: c/f7lMOy0XYkIGOZQ+xlrPT++4YppK3umPGjfk/m7PXHB3oQ7y6G9WPEfCaE5REdLalkjzne1vAcjCqqN+Uqsn0Bdjbhu3yOTzZP1BlT7pB23kCqQS5EHYPlmzjSfr48gI4UEWHYDQAwxvKEHUX1ev9kCI4XdCN5PQhKQvoWpnCurzhJPRj6U+XHr0+TW46ACu0V46CWLc22ho9wHAvBgCX2ikZJWVkxz3uClTJbDfYJ7l4H4KAMEDVMoEn6PPXXdXxf2YJVrUuXw8WLaNGijiJ3eMUaxh46Vo0lgw9aORKEnZFU0y6ZWsC0b3ESs/sVH7r2afL4WpwtVgwFcHfizVaSicYTxEQl1KM6TVpn/hQevCNjVKKDEOG84WsYaQ6c/o4wDtCwCWZTaMOPA0qPCf8lLCtMYbxKLK1Vdq3JqX8V47uqJPOMHa8VUNDaK5a0qn76aCH5hkQyPbe+CPJ8jIvqM7eK2tHyIg8/BvJn4Wf33GcfRRt8B94vd8xlN6jWAgtFHPl5TGLY60jyo56lkA0vgwhea5pj9hryuGpsXKN4UTR7LoTAbyhoQs2Tzi8CnDfo8+zff2st72nMMbw8fbYrTDlEucjvf1UcpaAp0NzL6SE5UnNCUBZN2t13cuqnRADBzMz7SsvCcJLN+/6dwDLEaE1UQSuVN+qtW+/Irjc=
+    on_success: change
+    on_failure: always

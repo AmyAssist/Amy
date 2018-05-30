@@ -6,20 +6,14 @@
  * @author Tim Neumann, Leon Kiefer, Benno Krauss, Christian Braeuner, Felix Burk, Florian Bauer, Kai Menzel, Lars Buttgereit, Muhammed Kaya, Patrick Gebhardt, Patrick Singer, Tobias Siemonsen
  *
  */
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.rest;
 
 /**
- * TODO: Description
- * 
+ * POJO mapping of a parameter
  * @author Tim Neumann
  */
-public interface ICore {
+public class Parameter {
 
-	/**
-	 * Get's the storage object of the system.
-	 * 
-	 * @return storage
-	 */
-	IStorage getStorage();
-
+	private String name;
+	private ParameterType type;
 }
