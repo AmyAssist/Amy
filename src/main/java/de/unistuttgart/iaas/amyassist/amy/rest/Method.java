@@ -15,5 +15,6 @@ package de.unistuttgart.iaas.amyassist.amy.rest;
 public class Method {
 
 	private String link;
+	private String description;
 	private MethodType type;
 }

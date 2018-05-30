@@ -1,9 +1,12 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
-import com.github.dvdme.ForecastIOLib.FIODataPoint;
-
 import static java.lang.Math.round;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.github.dvdme.ForecastIOLib.FIODataPoint;
+
+@XmlRootElement
 public class WeatherReportDay {
     public String preamble;
     public String summary;
