@@ -23,6 +23,6 @@ public class WeatherSpeechCommand {
 
     @Grammar("week")
     public String weatherWeek(String... words) {
-        return weatherAPI.getReportWeek();
+        return weatherAPI.getReportWeek().toString();
     }
 }
