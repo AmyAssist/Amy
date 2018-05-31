@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
 /**
- * TODO: Description
+ * The class used to store information of the plugins.
  * 
  * @author Felix Burk
  */
@@ -22,8 +22,16 @@ public class Storage implements IStorage {
 	private String prefix;
 	private Map<String, String> globStorage;
 
-	protected Storage(String prefix, GlobalStorage globalStorage) {
-		// : is used for debugging purposes
+	/**
+	 * Creates a new Storage for the given prefix using the given global storage
+	 * 
+	 * @param prefix
+	 *            The prefix to use
+	 * @param globalStorage
+	 *            The global storage to use
+	 */
+	Storage(String prefix, GlobalStorage globalStorage) {
+		//TODO: : is used for debugging purposes
 		this.prefix = prefix + ":";
 		this.globStorage = globalStorage.getStore();
 	}
