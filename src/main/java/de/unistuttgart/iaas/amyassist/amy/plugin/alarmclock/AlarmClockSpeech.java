@@ -28,28 +28,28 @@ public class AlarmClockSpeech {
 	private AlarmClockLogic logic;
 
 	/**
-	 * Sets new alarm at for now 10 o' clock
+	 * Sets new alarm with this scheme: hh:mm
 	 *
 	 * @return true if everything went well
 	 */
 	@Grammar("set alarm")
 	private boolean setAlarm() {
-		return this.logic.setAlarm("10");
+		return this.logic.setAlarm("10:00");
 	}
 
-	/**
-	 * Sets timer with 1 minute (60 second) delay
-	 * 
-	 * @return
-	 */
 	@Grammar("set timer")
 	private boolean setTimer() {
-		return this.logic.setTimer(60000);
+		return this.logic.setAlarm(60000);
 	}
 
 	@Grammar("delete")
 	private boolean deleteAlarm() {
 		return this.logic.deleteAlarm("1");
+	}
+
+	@Grammar("deactivate")
+	private boolean deactivateAlarm() {
+		return this.logic.deactivateAlarm("alarm1");
 	}
 
 	@Grammar("reset alarms")
@@ -77,13 +77,8 @@ public class AlarmClockSpeech {
 		return this.logic.editAlarm("1", "10");
 	}
 
-	@Grammar("stop alarm")
-	private boolean stopAlarm() {
-		return this.logic.stopAlarm();
-	}
-
 	/**
-	 * Init method
+	 * Initialization method
 	 *
 	 * @param core
 	 *            The core

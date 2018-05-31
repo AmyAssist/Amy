@@ -8,12 +8,11 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import java.applet.Applet;
-import java.applet.AudioClip;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.File;
 import java.util.Calendar;
-import java.util.Date;
+
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -22,7 +21,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 
 /**
- * TODO: Description
+ * This class implements the logic for all the functions that our alarm clock
+ * and timer are capable of
  *
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
@@ -38,67 +38,94 @@ public class AlarmClockLogic {
 	private static final String ALARMCOUNTER = "alarmCounter";
 	private static final String TIMERCOUNTER = "timerCounter";
 
+	private static final File ALARMSOUND = new File("src/main/resources/alarmsound.wav");
+
 	/**
-	 * Reads out the chosen alarm per Text-to-speech
+	 * Reads out the given alarm per Text-to-speech
 	 *
 	 * @param alarm
-	 * @return
+	 *            the alarm to output
 	 */
-	protected String alarmOutput(String alarm) {
+	protected void alarmOutput(String alarm) {
 
-		return null;
 	}
 
 	/**
-	 * Stops alarm or timer, that's currently going off
-	 * 
-	 * @return
-	 */
-	protected boolean stopAlarm() {
-		// TODO: stop alarm with TaskScheduler (maybe with help of distinct
-		// alarm id)
-		return true;
-	}
-
-	/**
-	 * Creates a Runnable that plays the alarm sound License: Attribution 3.0
+	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
 	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel
 	 * Simion
 	 * 
-	 * @return
+	 * @return runnable
 	 *
 	 */
-	private Runnable createAlarmRunnable() {
+	@SuppressWarnings("resource")
+	private Runnable createAlarmRunnable(int alarmNumber) {
 		return () -> {
-			try {
-				// not sure if this URL is working
-				AudioClip clip = Applet
-						.newAudioClip(new URL("src/alarmsound.wav"));
-				clip.play();
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
+			if (this.storage.has("alarm" + alarmNumber)) {
+				try {
+					while (this.storage.get("alarm" + alarmNumber).split(";")[2].equals("true")) {
+						Clip clip = AudioSystem.getClip();
+						clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
+						clip.start();
+						Thread.sleep(clip.getMicrosecondLength() / 1000);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		};
+	}
+
+	/**
+	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
+	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel
+	 * Simion
+	 * 
+	 * @param timerNumber
+	 *            the number of the timer in storage
+	 * @return runnable
+	 */
+	@SuppressWarnings("resource")
+	private Runnable createTimerRunnable(int timerNumber) {
+		return () -> {
+			if (this.storage.has("timer" + timerNumber)) {
+				try {
+					while (this.storage.get("timer" + timerNumber).split(";")[2].equals("true")) {
+						Clip clip = AudioSystem.getClip();
+						clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
+						clip.start();
+						Thread.sleep(clip.getMicrosecondLength() / 1000);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}
+		};
+
 	}
 
 	/**
 	 * Set new alarm and schedule it
 	 *
 	 * @param alarmTime
+	 *            the time of alarm (e.g. 12:15)
 	 *
 	 * @return true, if everything went well
 	 */
 	public boolean setAlarm(String alarmTime) {
-		int time = Integer.parseInt(alarmTime);
+		int hour = Integer.parseInt(alarmTime.substring(0, 2));
+		int minute = Integer.parseInt(alarmTime.substring(3, 5));
 		int counter = Integer.parseInt(this.storage.get(ALARMCOUNTER));
 		counter++;
 		this.storage.put(ALARMCOUNTER, Integer.toString(counter));
-		this.storage.put("alarm" + counter, alarmTime);
+		this.storage.put("alarm" + counter, alarmTime + ";" + "" + System.currentTimeMillis() + ";" + "true");
 
-		Runnable alarmRunnable = createAlarmRunnable();
+		Runnable alarmRunnable = createAlarmRunnable(counter);
 		Calendar current = Calendar.getInstance();
 		Calendar alarmCalendar = Calendar.getInstance();
-		alarmCalendar.set(Calendar.HOUR_OF_DAY, time);
+		alarmCalendar.set(Calendar.HOUR_OF_DAY, hour);
+		alarmCalendar.set(Calendar.MINUTE, minute);
 		if (alarmCalendar.before(current)) {
 			alarmCalendar.add(Calendar.DATE, 1);
 		}
@@ -108,21 +135,21 @@ public class AlarmClockLogic {
 	}
 
 	/**
+	 * Sets new timer and schedules it
 	 * 
 	 * @param delay
 	 *            delay until alarm in milliseconds
-	 * @return
+	 * @return true if everything went well
 	 */
-	protected boolean setTimer(long delay) {
+	protected boolean setAlarm(long delay) {
 		int counter = Integer.parseInt(this.storage.get(TIMERCOUNTER));
 		counter++;
 		this.storage.put(TIMERCOUNTER, Integer.toString(counter));
-		this.storage.put("timer" + counter, "" + delay);
-
-		Runnable alarmRunnable = createAlarmRunnable();
+		this.storage.put("timer" + counter, "" + delay + ";" + "" + System.currentTimeMillis() + ";" + "true");
+		Runnable timerRunnable = createTimerRunnable(counter);
 		Calendar alarmTime = Calendar.getInstance();
 		alarmTime.add(Calendar.MILLISECOND, (int) delay);
-		this.taskScheduler.schedule(alarmRunnable, alarmTime.getTime());
+		this.taskScheduler.schedule(timerRunnable, alarmTime.getTime());
 		return true;
 	}
 
@@ -151,7 +178,7 @@ public class AlarmClockLogic {
 		int amount = Integer.parseInt(this.storage.get(TIMERCOUNTER));
 		this.storage.put(TIMERCOUNTER, "0");
 		for (int i = 1; i <= amount; i++) {
-			String key = "alarm" + i;
+			String key = "timer" + i;
 			if (this.storage.has(key))
 				this.storage.delete(key);
 		}
@@ -162,12 +189,35 @@ public class AlarmClockLogic {
 	 * Delete one alarm
 	 *
 	 * @param specificAlarm
+	 *            the alarm name
 	 *
 	 * @return true if everything went well
 	 */
 	protected boolean deleteAlarm(String specificAlarm) {
 		if (this.storage.has(specificAlarm)) {
 			this.storage.delete(specificAlarm);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Deactivates specific alarm so it will not go off
+	 * 
+	 * @param specificAlarm
+	 *            alarm name
+	 * @return true or false, depending on if there were complications
+	 */
+	protected boolean deactivateAlarm(String specificAlarm) {
+		if (this.storage.has(specificAlarm)) {
+			String alarm = this.storage.get(specificAlarm);
+			String[] params = alarm.split(";");
+			try {
+				this.storage.put(specificAlarm, params[0] + ";" + params[1] + ";" + "false");
+			} catch (ArrayIndexOutOfBoundsException e) {
+				System.err.println("Something went wrong!");
+				return false;
+			}
 			return true;
 		}
 		return false;
@@ -194,8 +244,7 @@ public class AlarmClockLogic {
 	 */
 	protected String[] getAllAlarms() {
 		String[] allAlarms = {};
-		for (int i = 1; i <= Integer
-				.parseInt(this.storage.get(ALARMCOUNTER)); i++) {
+		for (int i = 1; i <= Integer.parseInt(this.storage.get(ALARMCOUNTER)); i++) {
 			if (this.storage.has("alarm" + i)) {
 				alarmOutput(this.storage.get("alarm" + i));
 				allAlarms[i] = "alarm" + i;
@@ -208,7 +257,9 @@ public class AlarmClockLogic {
 	 * Edit a specific Alarm
 	 *
 	 * @param specificAlarm
+	 *            name of the alarm
 	 * @param alarmTime
+	 *            new alarm time
 	 * @return true if everything went well
 	 */
 	protected boolean editAlarm(String specificAlarm, String alarmTime) {
