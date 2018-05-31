@@ -9,9 +9,11 @@
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -42,7 +44,8 @@ public class PluginLoader {
 	public boolean loadPlugin(URI uri) throws IllegalArgumentException {
 		File file = new File(uri);
 
-		if (!file.exists() || file.isDirectory()) throw new IllegalArgumentException("Invalid file");
+		if (!file.exists() || file.isDirectory())
+			throw new IllegalArgumentException("Invalid file");
 
 		Plugin plugin = new Plugin();
 		plugin.setFile(file);
@@ -86,8 +89,10 @@ public class PluginLoader {
 				}
 			}
 
-			if (foundPoms.size() > 1) throw new IllegalStateException("More then one non-libary artifact found in jar!");
-			if (foundPoms.size() < 1) throw new IllegalStateException("No artifact found in jar!");
+			if (foundPoms.size() > 1)
+				throw new IllegalStateException("More then one non-libary artifact found in jar!");
+			if (foundPoms.size() < 1)
+				throw new IllegalStateException("No artifact found in jar!");
 
 			PomParser pom = foundPoms.values().iterator().next();
 
@@ -123,10 +128,19 @@ public class PluginLoader {
 	public boolean loadPlugin(String packageName, String mavenArtifactId, String mavenGroupId, String mavenVersion) {
 		String packagePath = packageName.replace(".", "/");
 		URL packageURL = Thread.currentThread().getContextClassLoader().getResource(packagePath);
-		if (packageURL == null) return false;
-		File packageFile = new File(packageURL.getFile());
-		ArrayList<Class<?>> classes = this.findClassesInPackage(packageFile, packageName.substring(0, packageName.lastIndexOf(".")));
-		if (classes == null) return false;
+		if (packageURL == null)
+			return false;
+		File packageFile;
+		try {
+			packageFile = new File(URLDecoder.decode(packageURL.getFile(), "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return false;
+		}
+		ArrayList<Class<?>> classes = this.findClassesInPackage(packageFile,
+				packageName.substring(0, packageName.lastIndexOf(".")));
+		if (classes == null)
+			return false;
 		Plugin p = new Plugin();
 		p.setClasses(classes);
 		p.setClassLoader(Thread.currentThread().getContextClassLoader());
@@ -142,12 +156,15 @@ public class PluginLoader {
 		ArrayList<Class<?>> classes = new ArrayList<>();
 		if (packageFile.isDirectory()) {
 			for (File child : packageFile.listFiles()) {
-				ArrayList<Class<?>> newClasses = this.findClassesInPackage(child, parent_packageName + "." + packageFile.getName());
-				if (newClasses == null) return null;
+				ArrayList<Class<?>> newClasses = this.findClassesInPackage(child,
+						parent_packageName + "." + packageFile.getName());
+				if (newClasses == null)
+					return null;
 				classes.addAll(newClasses);
 			}
 		} else if (packageFile.getName().endsWith(".class")) {
-			String className = parent_packageName + "." + packageFile.getName().substring(0, packageFile.getName().length() - 6);
+			String className = parent_packageName + "."
+					+ packageFile.getName().substring(0, packageFile.getName().length() - 6);
 			try {
 				classes.add(Class.forName(className));
 			} catch (ClassNotFoundException e) {
