@@ -22,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import de.unistuttgart.iaas.amyassist.amy.FrameworkExtention;
 import de.unistuttgart.iaas.amyassist.amy.TestFramework;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldRest;
 import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
 /**
@@ -47,15 +48,10 @@ public class WeatherRestTest {
 	
 	@BeforeEach
 	public void setUp() {
-		this.httpServer = this.server.start(WeatherResource.class);
+		this.testFramework.setRESTResource(WeatherResource.class);
 
 		Client c = ClientBuilder.newClient();
 		this.target = c.target(Server.BASE_URI);
-	}
-
-	@AfterEach
-	public void stop() {
-		this.httpServer.shutdown();
 	}
 	
 	/**
