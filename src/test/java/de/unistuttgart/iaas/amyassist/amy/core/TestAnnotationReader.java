@@ -10,11 +10,14 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
@@ -42,14 +45,15 @@ class TestAnnotationReader {
 				.getSpeechKeyword(Plugin.class);
 
 		assertThat(speechKeyword, is(arrayWithSize(2)));
-		assertThat(speechKeyword, is(arrayContainingInAnyOrder("test", "unittest")));
+		assertThat(speechKeyword,
+				is(arrayContainingInAnyOrder("test", "unittest")));
 	}
 
 	@Test
 	public void testGrammar() {
-		List<String> grammars = this.annotationReader.getGrammars(Plugin.class);
+		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> grammars = this.annotationReader.getGrammars(Plugin.class);
 
-		assertThat(grammars, containsInAnyOrder("count", "say (hello|test)"));
+		assertThat(grammars.keySet(), containsInAnyOrder("count", "say (hello|test)"));
 	}
 
 	@Test
@@ -57,6 +61,19 @@ class TestAnnotationReader {
 		Method initMethod = this.annotationReader.getInitMethod(Plugin.class);
 
 		assertThat(initMethod, is(notNullValue()));
+	}
+
+	@Test
+	public void testNoSpeechKeyword() {
+		assertThrows(RuntimeException.class, () -> this.annotationReader
+				.getSpeechKeyword(TestAnnotationReader.class));
+	}
+
+	@Test
+	public void testNoInitMethod() {
+		assertThat(
+				this.annotationReader.getInitMethod(TestAnnotationReader.class),
+				is(nullValue()));
 	}
 
 	@SpeechCommand({ "test", "unittest" })

@@ -21,24 +21,23 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 /**
  * TODO: Description
  * 
- * @author Tim Neumann
+ * @author Leon Kiefer
  */
 class ConsoleTest {
 
 	@Test
 	void test() {
-		final String testInput = "Hello world say hello";
+		final String[] testInput = { "Hello", "world", "say", "hello" };
 		final String expected = "hello1";
 
 		SpeechInputHandler handler = Mockito.mock(SpeechInputHandler.class);
 		CompletableFuture<String> completableFuture = new CompletableFuture<>();
 		completableFuture.complete(expected);
-		Mockito.when(handler.handle(testInput)).thenReturn(completableFuture);
+		Mockito.when(handler.handle("Hello world say hello")).thenReturn(completableFuture);
 
 		Console console = new Console();
 		console.setSpeechInputHandler(handler);
 
 		assertThat(console.say(testInput), equalTo(expected));
 	}
-
 }

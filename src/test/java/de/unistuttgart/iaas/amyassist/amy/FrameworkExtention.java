@@ -8,17 +8,18 @@
  */
 package de.unistuttgart.iaas.amyassist.amy;
 
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 
 /**
  * A Jupiter Extension for the TestFramework
  * 
  * @author Leon Kiefer
  */
-public class FrameworkExtention implements TestInstancePostProcessor {
+public class FrameworkExtention
+		implements TestInstancePostProcessor, BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
 	private TestFramework testFramework;
 
@@ -27,10 +28,24 @@ public class FrameworkExtention implements TestInstancePostProcessor {
 	 *      org.junit.jupiter.api.extension.ExtensionContext)
 	 */
 	@Override
-	public void postProcessTestInstance(Object instance, ExtensionContext arg1)
-			throws Exception {
+	public void postProcessTestInstance(Object instance, ExtensionContext arg1) throws Exception {
 		this.testFramework = new TestFramework();
-		DependencyInjection dependencyInjection = this.testFramework.dependencyInjection;
-		dependencyInjection.inject(instance);
+		this.testFramework.setup(instance);
+	}
+
+	/**
+	 * @see org.junit.jupiter.api.extension.BeforeTestExecutionCallback#beforeTestExecution(org.junit.jupiter.api.extension.ExtensionContext)
+	 */
+	@Override
+	public void beforeTestExecution(ExtensionContext arg0) throws Exception {
+		this.testFramework.before();
+	}
+
+	/**
+	 * @see org.junit.jupiter.api.extension.AfterTestExecutionCallback#afterTestExecution(org.junit.jupiter.api.extension.ExtensionContext)
+	 */
+	@Override
+	public void afterTestExecution(ExtensionContext arg0) throws Exception {
+		this.testFramework.after();
 	}
 }

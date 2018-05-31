@@ -20,6 +20,7 @@ public interface TaskSchedulerAPI {
 	 * Executes the given command at some time in the future.
 	 * 
 	 * @param runnable
+	 *            The runnable to run in the future
 	 */
 	void execute(Runnable runnable);
 
@@ -29,6 +30,7 @@ public interface TaskSchedulerAPI {
 	 * @param task
 	 *            the task to execute
 	 * @param date
+	 *            The date at which to execute that task
 	 */
 	void schedule(Runnable task, Date date);
 }

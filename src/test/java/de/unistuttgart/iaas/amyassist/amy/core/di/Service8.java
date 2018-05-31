@@ -8,17 +8,20 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+
 /**
- * A exception of the dependency injection, signaling, that a service is already
- * registered
+ * Test Service for DI
  * 
  * @author Leon Kiefer
  */
-public class DuplicateServiceException extends RuntimeException {
+@Service
+public class Service8 {
+	@Reference
+	private final Service1 service1;
 
-	/**
-	 * Generated serial version UID
-	 */
-	private static final long serialVersionUID = -4001860407694050099L;
-
+	public Service8(Service1 service1) {
+		this.service1 = service1;
+	}
 }
