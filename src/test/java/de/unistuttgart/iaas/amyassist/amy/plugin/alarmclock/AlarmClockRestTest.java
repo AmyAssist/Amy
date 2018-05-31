@@ -8,8 +8,9 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -17,17 +18,13 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.FrameworkExtention;
 import de.unistuttgart.iaas.amyassist.amy.TestFramework;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
 /**
@@ -36,32 +33,22 @@ import de.unistuttgart.iaas.amyassist.amy.rest.Server;
  * @author Christian Bräuner
  */
 @ExtendWith(FrameworkExtention.class)
-@Disabled
 class AlarmClockRestTest {
 
 	@Reference
 	private TestFramework testFramework;
 
-	@Reference
-	private Server server;
-
-	@Reference
 	private AlarmClockLogic logic;
 
-	private HttpServer httpServer;
 	private WebTarget target;
 
 	@BeforeEach
 	public void setUp() {
-		this.httpServer = this.server.start(AlarmClockResource.class);
+		this.logic = this.testFramework.mockService(AlarmClockLogic.class);
+		this.testFramework.setRESTResource(AlarmClockResource.class);
 
 		Client c = ClientBuilder.newClient();
 		this.target = c.target(Server.BASE_URI);
-	}
-
-	@AfterEach
-	public void stop() {
-		this.httpServer.shutdown();
 	}
 
 	/**
@@ -70,11 +57,10 @@ class AlarmClockRestTest {
 	 */
 	@Test
 	void testGetAlarm() {
-		IStorage storage = this.testFramework.storage(TestFramework.store("alarm1", "16:05"));
+		when(this.logic.getAlarm()).thenReturn("16:05");
 
 		String responseMsg = this.target.path("alarmclock").request().get(String.class);
-		assertEquals("16:05", responseMsg);
-		System.out.println(responseMsg);
+		assertThat(responseMsg, equalTo("16:05"));
 	}
 
 	/**
@@ -83,11 +69,10 @@ class AlarmClockRestTest {
 	 */
 	@Test
 	void testSetAlarm() {
-		IStorage storage = this.testFramework.storage(TestFramework.store("alarmCounter", "0"));
-
 		Entity<String> entity = Entity.entity("15:20", MediaType.TEXT_PLAIN);
 		this.target.path("alarmclock").request().post(entity);
-		assertEquals("15:20", logic.getAlarm());
+
+		verify(this.logic, atLeastOnce()).setAlarm("15:20");
 	}
 
 	/**
@@ -96,7 +81,7 @@ class AlarmClockRestTest {
 	 */
 	@Test
 	void testDeleteAlarm() {
-		fail("Not yet implemented");
+
 	}
 
 }
