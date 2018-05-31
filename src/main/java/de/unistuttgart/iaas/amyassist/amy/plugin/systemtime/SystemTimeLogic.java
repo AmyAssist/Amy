@@ -33,41 +33,41 @@ public class SystemTimeLogic {
 
 	public String getDay() {
 		DateFormat dayFormat = new SimpleDateFormat("dd");
-		return dayFormat.format(Calendar.getInstance().getTime()).toString();
+		return dayFormat.format(this.getTimeStamp()).toString();
 	}
 
 	public String getMonth() {
 		DateFormat monthFormat = new SimpleDateFormat("MM");
-		return monthFormat.format(Calendar.getInstance().getTime()).toString();
+		return monthFormat.format(this.getTimeStamp()).toString();
 	}
 
 	public String getYear() {
 		DateFormat yearFormat = new SimpleDateFormat("yy");
-		return yearFormat.format(Calendar.getInstance().getTime()).toString();
+		return yearFormat.format(this.getTimeStamp()).toString();
 	}
 
 	public String getDate() {
 		DateFormat dateFormat = new SimpleDateFormat("dd MM yy");
-		return dateFormat.format(Calendar.getInstance().getTime()).toString();
+		return dateFormat.format(this.getTimeStamp()).toString();
 	}
 
 	public String getHour() {
 		DateFormat hourFormat = new SimpleDateFormat("HH");
-		return hourFormat.format(Calendar.getInstance().getTime()).toString();
+		return hourFormat.format(this.getTimeStamp()).toString();
 	}
 
 	public String getMinute() {
 		DateFormat minuteFormat = new SimpleDateFormat("mm");
-		return minuteFormat.format(Calendar.getInstance().getTime()).toString();
+		return minuteFormat.format(this.getTimeStamp()).toString();
 	}
 
 	public String getSecond() {
 		DateFormat secondFormat = new SimpleDateFormat("ss");
-		return secondFormat.format(Calendar.getInstance().getTime()).toString();
+		return secondFormat.format(this.getTimeStamp()).toString();
 	}
 
 	public String getTime() {
 		DateFormat timeFormat = new SimpleDateFormat("HH mm ss");
-		return timeFormat.format(Calendar.getInstance().getTime()).toString();
+		return timeFormat.format(this.getTimeStamp()).toString();
 	}
 }
