@@ -20,7 +20,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 /**
  * REST Resource for weather
  * 
- * @author Muhammed Kaya
+ * @author Muhammed Kaya, Christian Bräuner
  */
 @Path("weather")
 public class WeatherResource {
@@ -38,21 +38,21 @@ public class WeatherResource {
 	@GET
 	@Path("today")
 	public WeatherReportDay getWeatherToday() {
-		return weatherLogic.getReportToday();
+		return this.weatherLogic.getReportToday();
 		
 	}
 	
 	@GET
 	@Path("tomorrow")
 	public WeatherReportDay getWeatherTomorrow() {
-		return weatherLogic.getReportTomorrow();
+		return this.weatherLogic.getReportTomorrow();
 	}
 	
-//	@GET
-//	@Path("week")
-//	public WeatherReportDay getWeatherWeek() {
-//		return weatherLogic.getReportWeek();
-//	}
+	@GET
+	@Path("week")
+	public WeatherReportWeek getWeatherWeek() {
+		return this.weatherLogic.getReportWeek();
+	}
 
 
 }

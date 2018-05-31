@@ -33,6 +33,6 @@ public class WeatherReportDay {
     }
 
     public String toString() {
-        return (preamble != null ? preamble + " " : "") + summary + " " + precipProbability +  " probability of " + precipType + ". Between " + temperatureMin + " and " + temperatureMax + "°C" +". Sunrise is at " + sunriseTime + " and sunset at " + sunsetTime;
+        return (this.preamble != null ? this.preamble + " " : "") + this.summary + " " + this.precipProbability +  " probability of " + this.precipType + ". Between " + this.temperatureMin + " and " + this.temperatureMax + "°C" +". Sunrise is at " + this.sunriseTime + " and sunset at " + this.sunsetTime;
     }
 }
