@@ -8,10 +8,6 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
@@ -30,31 +26,24 @@ public class SystemTimeSpeech {
 	@Reference
 	private SystemTimeLogic logic;
 
-	private DateFormat dateFormat = new SimpleDateFormat("dd MM yy");
-	private DateFormat timeFormat = new SimpleDateFormat("HH mm");
-
 	/**
 	 * A method which returns the current time
 	 * 
-	 * @return
+	 * @return current time (hour minute second) in a string
 	 */
 	@Grammar("the time")
 	public String time() {
-		Calendar cal = Calendar.getInstance();
-		String timeOut = this.timeFormat.format(cal.getTime()).toString();
-		return timeOut;
+		return this.logic.getTime();
 	}
 
 	/**
 	 * A method which returns the current date
 	 * 
-	 * @return
+	 * @return current date (day month year) in a string
 	 */
 	@Grammar("the date")
 	public String date() {
-		Calendar cal = Calendar.getInstance();
-		String dateOut = this.dateFormat.format(cal.getTime()).toString();
-		return dateOut;
+		return this.logic.getDate();
 	}
 
 	/**
