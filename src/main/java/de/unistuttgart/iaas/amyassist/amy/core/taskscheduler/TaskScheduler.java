@@ -24,6 +24,13 @@ public class TaskScheduler implements TaskSchedulerAPI {
 	private ScheduledExecutorService scheduledExecutorService;
 
 	/**
+	 * @param scheduledExecutorService
+	 */
+	public TaskScheduler(ScheduledExecutorService scheduledExecutorService) {
+		this.scheduledExecutorService = scheduledExecutorService;
+	}
+
+	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI#execute(java.lang.Runnable)
 	 */
 	@Override

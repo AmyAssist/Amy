@@ -8,16 +8,14 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
-
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
@@ -41,17 +39,16 @@ class TestAnnotationReader {
 
 	@Test
 	void testSpeechKeyword() {
-		String[] speechKeyword = this.annotationReader
-				.getSpeechKeyword(Plugin.class);
+		String[] speechKeyword = this.annotationReader.getSpeechKeyword(Plugin.class);
 
 		assertThat(speechKeyword, is(arrayWithSize(2)));
-		assertThat(speechKeyword,
-				is(arrayContainingInAnyOrder("test", "unittest")));
+		assertThat(speechKeyword, is(arrayContainingInAnyOrder("test", "unittest")));
 	}
 
 	@Test
 	public void testGrammar() {
-		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> grammars = this.annotationReader.getGrammars(Plugin.class);
+		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> grammars = this.annotationReader
+				.getGrammars(Plugin.class);
 
 		assertThat(grammars.keySet(), containsInAnyOrder("count", "say (hello|test)"));
 	}
@@ -65,15 +62,12 @@ class TestAnnotationReader {
 
 	@Test
 	public void testNoSpeechKeyword() {
-		assertThrows(RuntimeException.class, () -> this.annotationReader
-				.getSpeechKeyword(TestAnnotationReader.class));
+		assertThrows(RuntimeException.class, () -> this.annotationReader.getSpeechKeyword(TestAnnotationReader.class));
 	}
 
 	@Test
 	public void testNoInitMethod() {
-		assertThat(
-				this.annotationReader.getInitMethod(TestAnnotationReader.class),
-				is(nullValue()));
+		assertThat(this.annotationReader.getInitMethod(TestAnnotationReader.class), is(nullValue()));
 	}
 
 	@SpeechCommand({ "test", "unittest" })
@@ -84,13 +78,40 @@ class TestAnnotationReader {
 		}
 
 		@Grammar("say (hello|test)")
-		public String say(String... s) {
+		public String say(String[] s) {
 			return s[0];
 		}
 
 		@Init
 		public void foo(ICore core) {
 
+		}
+	}
+
+	@Test
+	public void testIllegalTypes() {
+		assertThrows(IllegalArgumentException.class, () -> this.annotationReader.getGrammars(Brocken.class));
+	}
+
+	@SpeechCommand({})
+	class Brocken {
+		@Grammar("count")
+		public int count(int i) {
+			return i;
+		}
+	}
+
+	@Test
+	public void testIllegalReturnType() {
+		String message = assertThrows(IllegalArgumentException.class, () -> this.annotationReader.getGrammars(BrockenReturnType.class)).getMessage();
+		assertThat(message, equalTo("The returntype of a method annotated with @Grammar should be String."));
+	}
+
+	@SpeechCommand({})
+	class BrockenReturnType {
+		@Grammar("count")
+		public int count(String[] i) {
+			return 0;
 		}
 	}
 

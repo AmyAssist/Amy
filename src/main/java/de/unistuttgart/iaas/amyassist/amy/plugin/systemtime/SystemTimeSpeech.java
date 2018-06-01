@@ -31,7 +31,7 @@ public class SystemTimeSpeech {
 	 * @return current time (hour minute) in a string, e.g. it is 10 30
 	 */
 	@Grammar("the time")
-	public String time() {
+	public String time(String[] s) {
 		return "it is " + this.logic.getHour() + " " + this.logic.getMinute();
 	}
 
@@ -41,7 +41,7 @@ public class SystemTimeSpeech {
 	 * @return current date (day month year) in a string, e.g. 01 06 18
 	 */
 	@Grammar("the date")
-	public String date() {
+	public String date(String[] s) {
 		return this.logic.getDate();
 	}
 

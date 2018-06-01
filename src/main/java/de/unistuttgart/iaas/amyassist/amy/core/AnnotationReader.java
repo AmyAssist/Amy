@@ -62,12 +62,21 @@ public class AnnotationReader {
 	 */
 	public Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> getGrammars(Class<?> cls) {
 		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> map = new HashMap<>();
-		for (Method method : cls.getMethods()) {
-			if (method.isAnnotationPresent(Grammar.class)) {
-				String grammar = method.getAnnotation(Grammar.class).value();
-				map.put(grammar,
-						new de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand(method, grammar, cls));
+		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Grammar.class);
+		for (Method method : methodsWithAnnotation) {
+			Class<?>[] parameterTypes = method.getParameterTypes();
+			if (parameterTypes.length != 1 || !parameterTypes[0].isArray()
+					|| !parameterTypes[0].getComponentType().equals(String.class)) {
+				throw new IllegalArgumentException("The method " + method.toString()
+						+ " does not have the correct parameter type. It should be String[].");
 			}
+			if (!method.getReturnType().equals(String.class)) {
+				throw new IllegalArgumentException(
+						"The returntype of a method annotated with @Grammar should be String.");
+			}
+			String grammar = method.getAnnotation(Grammar.class).value();
+			map.put(grammar, new de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand(method, grammar, cls));
+
 		}
 		return map;
 	}

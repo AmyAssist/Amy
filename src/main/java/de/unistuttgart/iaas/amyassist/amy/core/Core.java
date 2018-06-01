@@ -25,6 +25,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCammandHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
 /**
@@ -34,7 +36,7 @@ import de.unistuttgart.iaas.amyassist.amy.rest.Server;
  */
 public class Core implements ICore, SpeechInputHandler {
 	private List<Thread> threads;
-	private ScheduledExecutorService singleThreadScheduledExecutor;
+	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 	private DependencyInjection di = new DependencyInjection();
 	private PluginLoader pluginLoader = new PluginLoader();
 	private Server server;
@@ -58,7 +60,6 @@ public class Core implements ICore, SpeechInputHandler {
 		this.registerAllCoreServices();
 		this.speechCammandHandler = this.di.getService(SpeechCammandHandler.class);
 		this.threads = new ArrayList<>();
-		this.singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
 		this.server = this.di.getService(Server.class);
 
@@ -77,6 +78,7 @@ public class Core implements ICore, SpeechInputHandler {
 		this.di.addExternalService(IStorage.class, this.storage);
 		this.di.addExternalService(PluginLoader.class, this.pluginLoader);
 		this.di.addExternalService(Core.class, this);
+		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
 
 		this.di.register(Server.class);
 		this.di.register(ConfigurationImpl.class);
@@ -89,6 +91,14 @@ public class Core implements ICore, SpeechInputHandler {
 	 */
 	private void loadPlugins() {
 		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.example", "amy.plugin.example",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.systemtime", "amy.plugin.systemtime",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.weather", "amy.plugin.weather",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock", "amy.plugin.alarmclock",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.spotify", "amy.plugin.spotify",
 				"de.unistuttgart.iaas.amyassist", "0.0.1");
 
 		for (Plugin p : this.pluginLoader.getPlugins()) {
