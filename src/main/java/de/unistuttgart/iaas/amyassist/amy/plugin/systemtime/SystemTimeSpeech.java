@@ -11,7 +11,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 /**
@@ -29,29 +28,21 @@ public class SystemTimeSpeech {
 	/**
 	 * A method which returns the current time
 	 * 
-	 * @return current time (hour minute second) in a string
+	 * @return current time (hour minute) in a string, e.g. it is 10 30
 	 */
 	@Grammar("the time")
 	public String time() {
-		return this.logic.getTime();
+		return "it is " + this.logic.getHour() + " " + this.logic.getMinute();
 	}
 
 	/**
 	 * A method which returns the current date
 	 * 
-	 * @return current date (day month year) in a string
+	 * @return current date (day month year) in a string, e.g. 01 06 18
 	 */
 	@Grammar("the date")
 	public String date() {
 		return this.logic.getDate();
-	}
-
-	/**
-	 * Init method
-	 */
-	@Init
-	public void init() {
-		this.logic = new SystemTimeLogic();
 	}
 
 }
