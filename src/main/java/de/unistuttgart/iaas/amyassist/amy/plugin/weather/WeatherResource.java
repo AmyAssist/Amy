@@ -10,6 +10,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
@@ -32,34 +34,37 @@ public class WeatherResource {
 //	}
 	
 	/**
-	 * get the weather forcast for today
+	 * get the weather forecast for today
 	 * 
-	 * @return todays weather forcast
+	 * @return todays weather forecast
 	 */
 	@GET
 	@Path("today")
+	@Produces(MediaType.APPLICATION_JSON)
 	public WeatherReportDay getWeatherToday() {
 		return this.weatherLogic.getReportToday();
 		
 	}
 	/**
-	 * get the weather forcast for tomorrow
+	 * get the weather forecast for tomorrow
 	 * 
-	 * @return tomorrows weather forcast
+	 * @return tomorrows weather forecast
 	 */
 	@GET
 	@Path("tomorrow")
+	@Produces(MediaType.APPLICATION_JSON)
 	public WeatherReportDay getWeatherTomorrow() {
 		return this.weatherLogic.getReportTomorrow();
 	}
 	
 	/**
-	 * get the weather forcast for the week
+	 * get the weather forecast for the week
 	 * 
-	 * @return this weeks weather forcast
+	 * @return this weeks weather forecast
 	 */
 	@GET
 	@Path("week")
+	@Produces(MediaType.APPLICATION_JSON)
 	public WeatherReportWeek getWeatherWeek() {
 		return this.weatherLogic.getReportWeek();
 	}
