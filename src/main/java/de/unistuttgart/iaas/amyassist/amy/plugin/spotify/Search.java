@@ -28,15 +28,15 @@ import java.util.HashMap;
  */
 public class Search {
 	private Authorization auth;
-	public final String TYPE_ARTIST = "artist";
-	public final String TYPE_TRACK = "track";
-	public final String TYPE_PLAYLIST = "playlist";
-	public final String TYPE_ALBUM = "ablum";
-	public final String ITEM_NAME = "name";
-	public final String GENRE = "genre";
-	public final String ARTIST_NAME = "artisName";
-	public final String ITEM_URI = "uri";
-	public final String ITEM_TYPE = "type";
+	public static final String TYPE_ARTIST = "artist";
+	public static final String TYPE_TRACK = "track";
+	public static final String TYPE_PLAYLIST = "playlist";
+	public static final String TYPE_ALBUM = "ablum";
+	public static final String ITEM_NAME = "name";
+	public static final String GENRE = "genre";
+	public static final String ARTIST_NAME = "artisName";
+	public static final String ITEM_URI = "uri";
+	public static final String ITEM_TYPE = "type";
 
 	public Search(Authorization auth) {
 		this.auth = auth;
@@ -174,7 +174,7 @@ public class Search {
 				for (int i = 0; i < searchResult.getTracks().getItems().length; i++) {
 					entry = new HashMap<>();
 					if (searchResult.getTracks().getItems()[i].getName() != null) {
-						entry.put(this.ITEM_NAME, searchResult.getTracks().getItems()[i].getName());
+						entry.put(Search.ITEM_NAME, searchResult.getTracks().getItems()[i].getName());
 					}
 					String artist_name = "";
 					for (int j = 0; j < searchResult.getTracks().getItems()[i].getArtists().length - 1; i++) {
@@ -185,9 +185,9 @@ public class Search {
 						artist_name = artist_name + searchResult.getTracks().getItems()[i]
 								.getArtists()[searchResult.getTracks().getItems()[i].getArtists().length - 1].getName();
 					}
-					entry.put(this.ARTIST_NAME, artist_name);
-					entry.put(this.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
-					entry.put(this.ITEM_TYPE, this.TYPE_ARTIST);
+					entry.put(Search.ARTIST_NAME, artist_name);
+					entry.put(Search.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
+					entry.put(Search.ITEM_TYPE, Search.TYPE_ARTIST);
 					resultList.add(entry);
 				}
 				return resultList;
@@ -195,15 +195,15 @@ public class Search {
 				for (int i = 0; i < searchResult.getPlaylists().getItems().length; i++) {
 					entry = new HashMap<>();
 					if (searchResult.getPlaylists().getItems()[i].getName() != null) {
-						entry.put(this.ITEM_NAME, searchResult.getPlaylists().getItems()[i].getName());
+						entry.put(Search.ITEM_NAME, searchResult.getPlaylists().getItems()[i].getName());
 					}
 					
 					if (searchResult.getPlaylists().getItems()[i].getOwner().getDisplayName() != null) {
-						entry.put(this.ARTIST_NAME,
+						entry.put(Search.ARTIST_NAME,
 								searchResult.getPlaylists().getItems()[i].getOwner().getDisplayName());
 					}
-					entry.put(this.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
-					entry.put(this.ITEM_TYPE, this.TYPE_PLAYLIST);
+					entry.put(Search.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
+					entry.put(Search.ITEM_TYPE, Search.TYPE_PLAYLIST);
 					resultList.add(entry);
 				}
 				return resultList;
@@ -211,7 +211,7 @@ public class Search {
 				for (int i = 0; i < searchResult.getArtists().getItems().length; i++) {
 					entry = new HashMap<>();
 					if(searchResult.getArtists().getItems()[i].getName() != null) {
-					entry.put(this.ITEM_NAME, searchResult.getArtists().getItems()[i].getName());
+					entry.put(Search.ITEM_NAME, searchResult.getArtists().getItems()[i].getName());
 					}
 					String genre = "";		
 					for (int j = 0; j < searchResult.getArtists().getItems()[i].getGenres().length - 1; i++) {
@@ -221,9 +221,9 @@ public class Search {
 						genre = genre + searchResult.getArtists().getItems()[i]
 								.getGenres()[searchResult.getArtists().getItems()[i].getGenres().length - 1];
 					}
-					entry.put(this.GENRE, genre);
-					entry.put(this.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
-					entry.put(this.ITEM_TYPE, this.TYPE_ARTIST);
+					entry.put(Search.GENRE, genre);
+					entry.put(Search.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
+					entry.put(Search.ITEM_TYPE, Search.TYPE_ARTIST);
 					resultList.add(entry);
 				}
 				return resultList;
@@ -231,7 +231,7 @@ public class Search {
 				for (int i = 0; i < searchResult.getAlbums().getItems().length; i++) {
 					entry = new HashMap<>();
 					if(searchResult.getAlbums().getItems()[i].getName() != null) {
-					entry.put(this.ITEM_NAME, searchResult.getAlbums().getItems()[i].getName());
+					entry.put(Search.ITEM_NAME, searchResult.getAlbums().getItems()[i].getName());
 					}
 					String artists = "";
 					for (int j = 0; j < searchResult.getAlbums().getItems()[i].getArtists().length - 1; i++) {
@@ -242,9 +242,9 @@ public class Search {
 						artists = artists + searchResult.getAlbums().getItems()[i]
 								.getArtists()[searchResult.getAlbums().getItems()[i].getArtists().length - 1].getName();
 					}
-					entry.put(this.ARTIST_NAME, artists);
-					entry.put(this.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
-					entry.put(this.ITEM_TYPE, this.TYPE_ALBUM);
+					entry.put(Search.ARTIST_NAME, artists);
+					entry.put(Search.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
+					entry.put(Search.ITEM_TYPE, Search.TYPE_ALBUM);
 					resultList.add(entry);
 				}
 				return resultList;

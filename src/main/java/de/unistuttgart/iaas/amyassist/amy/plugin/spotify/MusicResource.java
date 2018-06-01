@@ -15,11 +15,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
 
 /**
  * Rest Resource for music
+ * TODO extend functionality
  * 
  * @author Muhammed Kaya, Christian Bräuner
  */
@@ -29,6 +31,9 @@ public class MusicResource {
 	
 	private MusicEntity musicEntity = new MusicEntity();
 	private Playlist playlist;
+	
+	@Reference
+	private PlayerLogic logic;
 
 	/**
 	 * returns the currently played music
@@ -46,12 +51,16 @@ public class MusicResource {
 	 * plays the given music
 	 * 
 	 * @param music the music to be played
+	 * @return the answer from the player
 	 */
 	@POST
 	@Path("play")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void play(MusicEntity music) {
+	@Produces(MediaType.TEXT_PLAIN)
+	public String play(MusicEntity music) {
 		this.musicEntity = music;
+		this.logic.search(this.musicEntity.toString(), Search.TYPE_TRACK, 5);
+		return this.logic.play(0);
 	}
 
 	/**

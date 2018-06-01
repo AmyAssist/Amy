@@ -28,4 +28,12 @@ public class MusicEntity {
 	 */
 	public String title = "";
 	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		
+		return this.title + " " + this.artist;
+	}
 }
