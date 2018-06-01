@@ -20,7 +20,7 @@ import edu.cmu.sphinx.result.WordResult;
 
 /**
  * TODO: Description
- * @author Tim Neumann
+ * @author Kai Menzel
  */
 public class SpeechRecognizer implements SpeechIO {
 	

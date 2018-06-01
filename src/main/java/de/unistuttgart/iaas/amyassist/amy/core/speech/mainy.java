@@ -14,15 +14,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map.Entry;
 
+import org.omg.CORBA.PRIVATE_MEMBER;
+
+import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
 import de.unistuttgart.iaas.amyassist.amy.core.GrammarParser;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 
 /**
  * TODO: Description
- * @author Tim Neumann
+ * @author Kai Menzel
  */
 public class mainy {
 
 	private static File grammarFile = new File("src/main/resources", "/sphinx-grammars/grammar.gram");
+	
 	
 	/**
 	 * 
@@ -36,13 +41,15 @@ public class mainy {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		
 
 		GrammarParser generator = new GrammarParser("grammar", "amy", "sleep", "amy shutdown");
+		
+//		generator.addRule(ruleName, keyword, grammar);
 		
 		String grammar = generator.getGrammar();
 
 		mainy.grammarFile.getParentFile().mkdirs();
-		System.out.println(grammarFile);
 		
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(mainy.grammarFile))) {
 			bw.write(grammar);
@@ -50,7 +57,7 @@ public class mainy {
 			e1.printStackTrace();
 		}
 		
-		(new Thread(new SpeechRecognizer("amy", "sleep", "amy shutdown", "src/main/resources/grammars"))).start();
+		(new Thread(new SpeechRecognizer("amy", "sleep", "amy shutdown", grammarFile.getParent()))).start();
 
 	}
 
