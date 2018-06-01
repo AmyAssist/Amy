@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import de.unistuttgart.iaas.amyassist.amy.FrameworkExtention;
 import de.unistuttgart.iaas.amyassist.amy.TestFramework;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
 import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
 /**
@@ -69,8 +70,11 @@ class AlarmClockRestTest {
 	 */
 	@Test
 	void testSetAlarm() {
-		Entity<String> entity = Entity.entity("15:20", MediaType.TEXT_PLAIN);
-		this.target.path("alarmclock").request().post(entity);
+		Timestamp ts = new Timestamp();
+		ts.hour = 15;
+		ts.minute = 20;
+		Entity<Timestamp> entity = Entity.entity(ts, MediaType.APPLICATION_JSON);
+		System.out.println(this.target.path("alarmclock").request().post(entity).getStatus());
 
 		verify(this.logic, atLeastOnce()).setAlarm("15:20");
 	}

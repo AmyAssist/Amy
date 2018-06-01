@@ -55,7 +55,7 @@ public class AlarmClockTest {
 	 */
 	@Test
 	public void testSet() {
-		this.acl.setAlarm("8");
+		this.acl.setAlarm("15:20");
 
 		Mockito.verify(this.mockService).schedule(
 				ArgumentMatchers.any(Runnable.class),
