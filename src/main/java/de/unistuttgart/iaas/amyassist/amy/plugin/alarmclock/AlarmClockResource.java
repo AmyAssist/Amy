@@ -53,8 +53,7 @@ public class AlarmClockResource {
 	public Response setAlarm(Timestamp alarmTime) {
 		Response r;
 		if(alarmTime.isValid()) {
-			System.out.println("daf");
-			System.out.println(this.logic.setAlarm(alarmTime.toString()));
+			this.logic.setAlarm(alarmTime.toString());
 			r = Response.ok().build();
 		} else {
 			r = Response.status(Status.BAD_REQUEST).build();

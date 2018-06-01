@@ -74,7 +74,7 @@ class AlarmClockRestTest {
 		ts.hour = 15;
 		ts.minute = 20;
 		Entity<Timestamp> entity = Entity.entity(ts, MediaType.APPLICATION_JSON);
-		System.out.println(this.target.path("alarmclock").request().post(entity).getStatus());
+		this.target.path("alarmclock").request().post(entity);
 
 		verify(this.logic, atLeastOnce()).setAlarm("15:20");
 	}
