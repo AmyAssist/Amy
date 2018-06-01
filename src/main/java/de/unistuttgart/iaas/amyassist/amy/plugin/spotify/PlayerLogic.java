@@ -24,6 +24,7 @@ import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrack
 import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
 
 /**
  * TODO: Description
@@ -38,7 +39,12 @@ public class PlayerLogic {
 	private int volume = 50;
 	// private String deviceName = null;
 	private ArrayList<String[]> actualSearchResult = null;
+	
+	public PlayerLogic() {
+		init();
+	}
 
+	@Init
 	public void init() {
 		this.auth = new Authorization();
 		this.auth.init();

@@ -58,6 +58,10 @@ public class Search {
 	 */
 	public ArrayList<String[]> SearchAnything(String searchItem, String type, int limit) {
 		SearchResult searchResult = searchInSpotify(searchItem, type, limit);
+		return createSpeechList(searchResult, type);
+	}
+	
+	public ArrayList<String[]> createSpeechList(SearchResult searchResult, String type){
 		ArrayList<String[]> resultList = new ArrayList<>();
 		if (searchResult != null) {
 			String[] entry;
@@ -70,7 +74,7 @@ public class Search {
 					outputString = "";
 					outputString = outputString + i + ". Track name is "
 							+ searchResult.getTracks().getItems()[i].getName() + " by ";
-					for (int j = 0; j < searchResult.getTracks().getItems()[i].getArtists().length - 1; i++) {
+					for (int j = 0; j < searchResult.getTracks().getItems()[i].getArtists().length - 1; j++) {
 						outputString = outputString + searchResult.getTracks().getItems()[i].getArtists()[j].getName()
 								+ " and ";
 					}
@@ -108,7 +112,7 @@ public class Search {
 					outputString = "";
 					outputString = outputString + i + ". Artist name is "
 							+ searchResult.getArtists().getItems()[i].getName() + " in the genre ";
-					for (int j = 0; j < searchResult.getArtists().getItems()[i].getGenres().length - 1; i++) {
+					for (int j = 0; j < searchResult.getArtists().getItems()[i].getGenres().length - 1; j++) {
 						outputString = outputString + searchResult.getArtists().getItems()[i].getGenres()[j] + " and ";
 					}
 					if (0 < searchResult.getArtists().getItems()[i].getGenres().length) {
@@ -128,7 +132,7 @@ public class Search {
 					outputString = "";
 					outputString = outputString + i + ". Album name is "
 							+ searchResult.getAlbums().getItems()[i].getName() + " by ";
-					for (int j = 0; j < searchResult.getAlbums().getItems()[i].getArtists().length - 1; i++) {
+					for (int j = 0; j < searchResult.getAlbums().getItems()[i].getArtists().length - 1; j++) {
 						outputString = outputString + searchResult.getAlbums().getItems()[i].getArtists()[j].getName()
 								+ " and ";
 					}
@@ -166,6 +170,11 @@ public class Search {
 	public ArrayList<HashMap<String, String>> searchList(String searchItem, String type, int limit) {
 
 		SearchResult searchResult = searchInSpotify(searchItem, type, limit);
+		
+		return createHashMap(searchResult, type);
+	}
+	
+	public ArrayList<HashMap<String, String>> createHashMap(SearchResult searchResult, String type){
 		ArrayList<HashMap<String, String>> resultList = new ArrayList<>();
 		if (searchResult != null) {
 			HashMap<String, String> entry;
@@ -177,7 +186,7 @@ public class Search {
 						entry.put(Search.ITEM_NAME, searchResult.getTracks().getItems()[i].getName());
 					}
 					String artist_name = "";
-					for (int j = 0; j < searchResult.getTracks().getItems()[i].getArtists().length - 1; i++) {
+					for (int j = 0; j < searchResult.getTracks().getItems()[i].getArtists().length - 1; j++) {
 						artist_name = artist_name + searchResult.getTracks().getItems()[i].getArtists()[j].getName()
 								+ ", ";
 					}
@@ -214,7 +223,7 @@ public class Search {
 					entry.put(Search.ITEM_NAME, searchResult.getArtists().getItems()[i].getName());
 					}
 					String genre = "";		
-					for (int j = 0; j < searchResult.getArtists().getItems()[i].getGenres().length - 1; i++) {
+					for (int j = 0; j < searchResult.getArtists().getItems()[i].getGenres().length - 1; j++) {
 						genre = genre + searchResult.getArtists().getItems()[i].getGenres()[j] + ", ";
 					}
 					if (0 < searchResult.getArtists().getItems()[i].getGenres().length) {
@@ -234,7 +243,7 @@ public class Search {
 					entry.put(Search.ITEM_NAME, searchResult.getAlbums().getItems()[i].getName());
 					}
 					String artists = "";
-					for (int j = 0; j < searchResult.getAlbums().getItems()[i].getArtists().length - 1; i++) {
+					for (int j = 0; j < searchResult.getAlbums().getItems()[i].getArtists().length - 1; j++) {
 						artists = artists + searchResult.getAlbums().getItems()[i].getArtists()[j].getName()
 								+ ", ";
 					}
@@ -255,6 +264,7 @@ public class Search {
 		}
 		return resultList;
 	}
+	
 
 	/**
 	 * create a search query for spotify.
