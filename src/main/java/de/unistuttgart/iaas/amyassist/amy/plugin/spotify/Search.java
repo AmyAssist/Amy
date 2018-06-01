@@ -31,7 +31,7 @@ public class Search {
 	public static final String TYPE_ARTIST = "artist";
 	public static final String TYPE_TRACK = "track";
 	public static final String TYPE_PLAYLIST = "playlist";
-	public static final String TYPE_ALBUM = "ablum";
+	public static final String TYPE_ALBUM = "album";
 	public static final String ITEM_NAME = "name";
 	public static final String GENRE = "genre";
 	public static final String ARTIST_NAME = "artisName";
@@ -196,7 +196,7 @@ public class Search {
 					}
 					entry.put(Search.ARTIST_NAME, artist_name);
 					entry.put(Search.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
-					entry.put(Search.ITEM_TYPE, Search.TYPE_ARTIST);
+					entry.put(Search.ITEM_TYPE, Search.TYPE_TRACK);
 					resultList.add(entry);
 				}
 				return resultList;
@@ -211,7 +211,7 @@ public class Search {
 						entry.put(Search.ARTIST_NAME,
 								searchResult.getPlaylists().getItems()[i].getOwner().getDisplayName());
 					}
-					entry.put(Search.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
+					entry.put(Search.ITEM_URI, searchResult.getPlaylists().getItems()[i].getUri());
 					entry.put(Search.ITEM_TYPE, Search.TYPE_PLAYLIST);
 					resultList.add(entry);
 				}
@@ -231,7 +231,7 @@ public class Search {
 								.getGenres()[searchResult.getArtists().getItems()[i].getGenres().length - 1];
 					}
 					entry.put(Search.GENRE, genre);
-					entry.put(Search.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
+					entry.put(Search.ITEM_URI, searchResult.getArtists().getItems()[i].getUri());
 					entry.put(Search.ITEM_TYPE, Search.TYPE_ARTIST);
 					resultList.add(entry);
 				}
@@ -252,7 +252,7 @@ public class Search {
 								.getArtists()[searchResult.getAlbums().getItems()[i].getArtists().length - 1].getName();
 					}
 					entry.put(Search.ARTIST_NAME, artists);
-					entry.put(Search.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
+					entry.put(Search.ITEM_URI, searchResult.getAlbums().getItems()[i].getUri());
 					entry.put(Search.ITEM_TYPE, Search.TYPE_ALBUM);
 					resultList.add(entry);
 				}
