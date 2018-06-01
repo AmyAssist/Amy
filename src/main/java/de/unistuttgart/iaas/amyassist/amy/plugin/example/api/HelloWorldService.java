@@ -14,6 +14,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.example.api;
  * @author Leon Kiefer
  */
 public interface HelloWorldService {
+
 	/**
 	 * The method that does all the logic.
 	 * 

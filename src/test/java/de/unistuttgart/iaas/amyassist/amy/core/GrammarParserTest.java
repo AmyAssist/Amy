@@ -32,10 +32,10 @@ public class GrammarParserTest {
 	 */
 	@Test
 	public void test() {
-		this.parser.addRule("wecker", "(today|tomorrow) ((at #)|abend|mittag)");
+		this.parser.addRule("wecker", "wecker", "(today|tomorrow) ((at #)|abend|mittag)");
 		String grammarResult = this.parser.getGrammar();
 		assertThat(grammarResult, containsString(
-				"public <wecker> = (today|tomorrow) ((at <digit>)|abend|mittag);"));
+				"public <wecker> = wecker (today|tomorrow) ((at <digit>)|abend|mittag);"));
 		assertThat(grammarResult,
 				containsString("public <sleep> = ( sleep );"));
 		assertThat(grammarResult,

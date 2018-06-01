@@ -12,7 +12,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
+
+import javax.ws.rs.Path;
 
 import org.mockito.Mockito;
 
@@ -34,18 +38,35 @@ import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 public class TestFramework {
 
 	private IStorage storage;
-	DependencyInjection dependencyInjection;
+	private DependencyInjection dependencyInjection;
+	private Server server;
+	private List<Class<?>> restResources = new ArrayList<>();
 
 	public TestFramework() {
-		this.storage = Mockito.mock(Storage.class,
-				Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS)
-						.useConstructor("", new GlobalStorage()));
+		this.storage = Mockito.mock(Storage.class, Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS)
+				.useConstructor("", new GlobalStorage()));
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
-		this.dependencyInjection.addExternalService(IStorage.class,
-				this.storage);
-		this.dependencyInjection.addExternalService(Server.class,
-				new Server(this.dependencyInjection));
+		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
+		this.dependencyInjection.register(Server.class);
+	}
+
+	void setup(Object testInstance) {
+		this.dependencyInjection.inject(testInstance);
+	}
+
+	public void before() {
+		if (!this.restResources.isEmpty()) {
+			this.server = this.dependencyInjection.getService(Server.class);
+			this.server.start(this.restResources.toArray(new Class<?>[this.restResources.size()]));
+		}
+
+	}
+
+	public void after() {
+		if (this.server != null) {
+			this.server.shutdown();
+		}
 	}
 
 	@Service(ICore.class)
@@ -94,14 +115,10 @@ public class TestFramework {
 	 *            the plugin class
 	 * @return an instance of the given class
 	 */
+	@Deprecated
 	public <T> T init(Class<T> cls) {
 		AnnotationReader annotationReader = new AnnotationReader();
 		String[] speechKeyword = annotationReader.getSpeechKeyword(cls);
-		if (speechKeyword == null) {
-			fail("The given class: " + cls.getName()
-					+ " does not have a SpeechCommand Annotation");
-			return null;
-		}
 		Method initMethod = annotationReader.getInitMethod(cls);
 
 		try {
@@ -113,17 +130,13 @@ public class TestFramework {
 			}
 
 			if (initMethod != null) {
-				initMethod.invoke(newInstance,
-						this.dependencyInjection.getService(ICore.class));
+				initMethod.invoke(newInstance, this.dependencyInjection.getService(ICore.class));
 			}
 
 			return newInstance;
-		} catch (NoSuchMethodException | SecurityException
-				| InstantiationException | IllegalAccessException
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException e) {
-			fail("The given class: " + cls.getName()
-					+ " is not managed by the framework and cant be initialized",
-					e);
+			fail("The given class: " + cls.getName() + " is not managed by the framework and cant be initialized", e);
 		}
 		return null;
 	}
@@ -155,7 +168,25 @@ public class TestFramework {
 	 * @return the ServiceUnderTest
 	 */
 	public <T> T setServiceUnderTest(Class<T> serviceClass) {
-		this.dependencyInjection.register(serviceClass);
-		return this.dependencyInjection.create(serviceClass);
+		if (serviceClass.isAnnotationPresent(Service.class)) {
+			this.dependencyInjection.register(serviceClass);
+			return this.dependencyInjection.create(serviceClass);
+		}
+		throw new RuntimeException();
 	}
+
+	/**
+	 * specify the Rest resource
+	 * 
+	 * @param resource
+	 *            the class of the Rest resource
+	 */
+	public void setRESTResource(Class<?> resource) {
+		if (resource.isAnnotationPresent(Path.class)) {
+			this.restResources.add(resource);
+		} else {
+			throw new RuntimeException();
+		}
+	}
+
 }

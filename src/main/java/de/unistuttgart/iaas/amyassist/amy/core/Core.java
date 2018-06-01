@@ -11,46 +11,119 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.Path;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCammandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
+import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 
 /**
  * The central core of the application
  * 
  * @author Tim Neumann, Leon Kiefer
  */
-public class Core implements ICore {
+public class Core implements ICore, SpeechInputHandler {
 	private List<Thread> threads;
-	private ScheduledExecutorService singleThreadScheduledExecutor;
-
-	private IStorage storage;
+	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+	private DependencyInjection di = new DependencyInjection();
+	private PluginLoader pluginLoader = new PluginLoader();
+	private Server server;
+	private SpeechCammandHandler speechCammandHandler;
+	private IStorage storage = new Storage("", new GlobalStorage());
 
 	/**
 	 * The method executed by the main method
 	 * 
 	 */
-	protected void run() {
+	void run() {
 		this.init();
 		this.threads.forEach(Thread::start);
+		this.server.start();
 	}
 
-	void init() {
+	/**
+	 * Initializes the core
+	 */
+	private void init() {
+		this.registerAllCoreServices();
+		this.speechCammandHandler = this.di.getService(SpeechCammandHandler.class);
 		this.threads = new ArrayList<>();
-		this.singleThreadScheduledExecutor = Executors
-				.newSingleThreadScheduledExecutor();
 
-		Console console = new Console();
-		console.setSpeechInputHandler((speechInput) -> {
-			return this.singleThreadScheduledExecutor.schedule(() -> {
-				//TODO pass the input to the plugins
-				return "Input was " + speechInput;
-			}, 0, TimeUnit.MILLISECONDS);
-		});
+		this.server = this.di.getService(Server.class);
+
+		Console console = this.di.getService(Console.class);
+		console.setSpeechInputHandler(this);
 
 		this.threads.add(new Thread(console));
+
+		this.loadPlugins();
+	}
+
+	/**
+	 * register all instances and classes in the DI
+	 */
+	private void registerAllCoreServices() {
+		this.di.addExternalService(IStorage.class, this.storage);
+		this.di.addExternalService(PluginLoader.class, this.pluginLoader);
+		this.di.addExternalService(Core.class, this);
+		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
+
+		this.di.register(Server.class);
+		this.di.register(ConfigurationImpl.class);
+		this.di.register(Console.class);
+		this.di.register(SpeechCammandHandler.class);
+	}
+
+	/**
+	 * load the plugins
+	 */
+	private void loadPlugins() {
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.example", "amy.plugin.example",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.systemtime", "amy.plugin.systemtime",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.weather", "amy.plugin.weather",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock", "amy.plugin.alarmclock",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.spotify", "amy.plugin.spotify",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+
+		for (Plugin p : this.pluginLoader.getPlugins()) {
+			this.processPlugin(p);
+		}
+		this.speechCammandHandler.completeSetup();
+	}
+
+	/**
+	 * Process the plugin components and register them at the right Services
+	 * 
+	 * @param plugin
+	 */
+	private void processPlugin(Plugin plugin) {
+		for (Class<?> cls : plugin.getClasses()) {
+			if (cls.isAnnotationPresent(SpeechCommand.class)) {
+				this.speechCammandHandler.registerSpeechCommand(cls);
+			}
+			if (cls.isAnnotationPresent(Service.class)) {
+				this.di.register(cls);
+			}
+			if (cls.isAnnotationPresent(Path.class)) {
+				this.server.register(cls);
+			}
+		}
 	}
 
 	/**
@@ -59,6 +132,26 @@ public class Core implements ICore {
 	@Override
 	public IStorage getStorage() {
 		return this.storage;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler#handle(java.lang.String)
+	 */
+	@Override
+	public Future<String> handle(String speechInput) {
+		return this.singleThreadScheduledExecutor.submit(() -> {
+			return this.speechCammandHandler.handleSpeechInput(speechInput);
+		});
+	}
+
+	/**
+	 * stop all Threads and terminate the application. This is call form the
+	 * {@link Console}
+	 */
+	public void stop() {
+		this.server.shutdown();
+		this.threads.forEach(Thread::interrupt);
+		this.singleThreadScheduledExecutor.shutdownNow();
 	}
 
 }
