@@ -25,12 +25,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * @author Leon Kiefer
  */
 @Service
-public class SpeechCammandHandler {
+public class SpeechCommandHandler {
 	private AnnotationReader annotationReader = new AnnotationReader();
 	private TextToPlugin textToPlugin;
 
 	private Map<PluginGrammarInfo, Class<?>> grammarInfos = new HashMap<>();
-	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> speechCammands = new HashMap<>();
+	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> speechCommands = new HashMap<>();
 	@Reference
 	private ServiceLocator serviceLocator;
 
@@ -42,7 +42,7 @@ public class SpeechCammandHandler {
 		Map<String, SpeechCommand> grammars = this.annotationReader.getGrammars(class1);
 		PluginGrammarInfo pluginGrammarInfo = new PluginGrammarInfo(Arrays.asList(speechKeyword), grammars.keySet());
 		this.grammarInfos.put(pluginGrammarInfo, class1);
-		this.speechCammands.putAll(grammars);
+		this.speechCommands.putAll(grammars);
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class SpeechCammandHandler {
 		if (pluginActionFromText == null) {
 			throw new IllegalArgumentException(input);
 		}
-		return this.call(this.speechCammands.get(pluginActionFromText[1]), input);
+		return this.call(this.speechCommands.get(pluginActionFromText[1]), input);
 	}
 
 	private String call(SpeechCommand command, String input) {
