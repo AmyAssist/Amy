@@ -6,7 +6,7 @@
 
 grammar grammar;
 
-public <wakeup> = ( horst );
+public <wakeup> = ( amy );
 
 <instruction> = ( open | start | get | search );
 <keyword> = ( music  | command prompt | google | calendar | online);
