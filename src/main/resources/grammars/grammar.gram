@@ -1,0 +1,15 @@
+#JSGF V1.0;
+
+/**
+ * JSGF Grammar 
+ */
+
+grammar grammar;
+
+public <wakeup> = ( horst );
+
+<instruction> = ( open | start | get | search );
+<keyword> = ( music  | command prompt | google | calendar | online);
+
+
+public <command> = <instruction> <keyword>;
