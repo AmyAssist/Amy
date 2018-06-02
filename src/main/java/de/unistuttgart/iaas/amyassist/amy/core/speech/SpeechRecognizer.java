@@ -39,8 +39,6 @@ public class SpeechRecognizer implements SpeechIO {
 	
 	//Handler who use the translated String for commanding the System
 	SpeechInputHandler inputHandler;
-	SpeechCommandHandler commandHandler = new SpeechCommandHandler();
-	
 
 	//The Recognizer which Handles the Recognition
 	private StreamSpeechRecognizer recognizer;
@@ -83,9 +81,8 @@ public class SpeechRecognizer implements SpeechIO {
 		// TODO Auto-generated method stub
 
 		//check and start audioInputstream
-		while(SpeechRecognizer.ais == null){
+		if(SpeechRecognizer.ais == null){
 			startInput();
-			Thread.yield();
 		}
 		
 		//starts Recognition
@@ -136,17 +133,8 @@ public class SpeechRecognizer implements SpeechIO {
 			
 		}
 	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO#setSpeechInputHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler)
-	 */
-	@Override
-	public void setSpeechInputHandler(SpeechInputHandler handler) {
-		// TODO Auto-generated method stub
-		
-		this.inputHandler = handler;
-
-	}
+	
+	
 	
 	//-----------------------------------------------------------------------------------------------
 	
@@ -168,9 +156,22 @@ public class SpeechRecognizer implements SpeechIO {
 			speech = speech.replaceFirst(this.wakeUp + " ", "");
 		}
 		
-		//TODO: give speech result to Handler
-		this.commandHandler.handleSpeechInput(speech);
+		if(inputHandler != null){
+			inputHandler.handle(speech);
+		}
 
+	}
+	
+	//-----------------------------------------------------------------------------------------------
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO#setSpeechInputHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler)
+	 */
+	@Override
+	public void setSpeechInputHandler(SpeechInputHandler handler) {
+		// TODO Auto-generated method stub
+		
+		this.inputHandler = handler;
 	}
 	
 	//===============================================================================================
@@ -181,8 +182,8 @@ public class SpeechRecognizer implements SpeechIO {
 	private void startInput(){
 		TargetDataLine mic = null;
 		try {
-			mic = AudioSystem.getTargetDataLine(SpeechRecognizer.getFormat());
-			mic.open(SpeechRecognizer.getFormat());
+			mic = AudioSystem.getTargetDataLine(this.getFormat());
+			mic.open(this.getFormat());
 			mic.start();
 			SpeechRecognizer.ais = new AudioInputStream(mic);
 		} catch (LineUnavailableException e) {
@@ -218,7 +219,7 @@ public class SpeechRecognizer implements SpeechIO {
 	 * Returns the Audioformat for the default AudioInputStream
 	 * @return
 	 */
-	public static AudioFormat getFormat() {
+	public AudioFormat getFormat() {
 		float sampleRate = 16000.0f;
 		int sampleSizeInBits = 16;
 		int channels = 1;
