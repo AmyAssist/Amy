@@ -13,6 +13,12 @@ import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.special.SearchResult;
+import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
+import com.wrapper.spotify.model_objects.specification.Artist;
+import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.model_objects.specification.Playlist;
+import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
+import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.requests.data.browse.GetListOfFeaturedPlaylistsRequest;
 import com.wrapper.spotify.requests.data.search.SearchItemRequest;
 
@@ -20,9 +26,10 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
- * TODO: Description
+ * TODO: This class create search query to the spotify web api and parse the results in a String or in a Hashmap with different attributes 
  * 
  * @author Lars Buttgereit
  */
@@ -60,8 +67,8 @@ public class Search {
 		SearchResult searchResult = searchInSpotify(searchItem, type, limit);
 		return createSpeechList(searchResult, type);
 	}
-	
-	public ArrayList<String[]> createSpeechList(SearchResult searchResult, String type){
+
+	public ArrayList<String[]> createSpeechList(SearchResult searchResult, String type) {
 		ArrayList<String[]> resultList = new ArrayList<>();
 		if (searchResult != null) {
 			String[] entry;
@@ -170,89 +177,88 @@ public class Search {
 	public ArrayList<HashMap<String, String>> searchList(String searchItem, String type, int limit) {
 
 		SearchResult searchResult = searchInSpotify(searchItem, type, limit);
-		
+
 		return createHashMap(searchResult, type);
 	}
-	
-	public ArrayList<HashMap<String, String>> createHashMap(SearchResult searchResult, String type){
+
+	public ArrayList<HashMap<String, String>> createHashMap(SearchResult searchResult, String type) {
 		ArrayList<HashMap<String, String>> resultList = new ArrayList<>();
 		if (searchResult != null) {
 			HashMap<String, String> entry;
 			switch (type.toLowerCase()) {
 			case "track":
-				for (int i = 0; i < searchResult.getTracks().getItems().length; i++) {
+				for (Track track : searchResult.getTracks().getItems()) {
 					entry = new HashMap<>();
-					if (searchResult.getTracks().getItems()[i].getName() != null) {
-						entry.put(Search.ITEM_NAME, searchResult.getTracks().getItems()[i].getName());
+					if (track.getName() != null) {
+						entry.put(Search.ITEM_NAME, track.getName());
 					}
 					String artist_name = "";
-					for (int j = 0; j < searchResult.getTracks().getItems()[i].getArtists().length - 1; j++) {
-						artist_name = artist_name + searchResult.getTracks().getItems()[i].getArtists()[j].getName()
+					for (int j = 0; j < track.getArtists().length - 1; j++) {
+						artist_name = artist_name + track.getArtists()[j].getName()
 								+ ", ";
 					}
-					if (0 < searchResult.getTracks().getItems()[i].getArtists().length) {
-						artist_name = artist_name + searchResult.getTracks().getItems()[i]
-								.getArtists()[searchResult.getTracks().getItems()[i].getArtists().length - 1].getName();
+					if (0 < track.getArtists().length) {
+						artist_name = artist_name + track
+								.getArtists()[track.getArtists().length - 1].getName();
 					}
 					entry.put(Search.ARTIST_NAME, artist_name);
-					entry.put(Search.ITEM_URI, searchResult.getTracks().getItems()[i].getUri());
+					entry.put(Search.ITEM_URI, track.getUri());
 					entry.put(Search.ITEM_TYPE, Search.TYPE_TRACK);
 					resultList.add(entry);
 				}
 				return resultList;
 			case "playlist":
-				for (int i = 0; i < searchResult.getPlaylists().getItems().length; i++) {
+				for (PlaylistSimplified playlist : searchResult.getPlaylists().getItems()) {
 					entry = new HashMap<>();
-					if (searchResult.getPlaylists().getItems()[i].getName() != null) {
-						entry.put(Search.ITEM_NAME, searchResult.getPlaylists().getItems()[i].getName());
+					if (playlist.getName() != null) {
+						entry.put(Search.ITEM_NAME, playlist.getName());
 					}
-					
-					if (searchResult.getPlaylists().getItems()[i].getOwner().getDisplayName() != null) {
+
+					if (playlist.getOwner().getDisplayName() != null) {
 						entry.put(Search.ARTIST_NAME,
-								searchResult.getPlaylists().getItems()[i].getOwner().getDisplayName());
+								playlist.getOwner().getDisplayName());
 					}
-					entry.put(Search.ITEM_URI, searchResult.getPlaylists().getItems()[i].getUri());
+					entry.put(Search.ITEM_URI, playlist.getUri());
 					entry.put(Search.ITEM_TYPE, Search.TYPE_PLAYLIST);
 					resultList.add(entry);
 				}
 				return resultList;
 			case "artist":
-				for (int i = 0; i < searchResult.getArtists().getItems().length; i++) {
+				for (Artist artist : searchResult.getArtists().getItems()) {
 					entry = new HashMap<>();
-					if(searchResult.getArtists().getItems()[i].getName() != null) {
-					entry.put(Search.ITEM_NAME, searchResult.getArtists().getItems()[i].getName());
+					if (artist.getName() != null) {
+						entry.put(Search.ITEM_NAME, artist.getName());
 					}
-					String genre = "";		
-					for (int j = 0; j < searchResult.getArtists().getItems()[i].getGenres().length - 1; j++) {
-						genre = genre + searchResult.getArtists().getItems()[i].getGenres()[j] + ", ";
+					String genre = "";
+					for (int j = 0; j < artist.getGenres().length - 1; j++) {
+						genre = genre + artist.getGenres()[j] + ", ";
 					}
-					if (0 < searchResult.getArtists().getItems()[i].getGenres().length) {
-						genre = genre + searchResult.getArtists().getItems()[i]
-								.getGenres()[searchResult.getArtists().getItems()[i].getGenres().length - 1];
+					if (0 < artist.getGenres().length) {
+						genre = genre + artist
+								.getGenres()[artist.getGenres().length - 1];
 					}
 					entry.put(Search.GENRE, genre);
-					entry.put(Search.ITEM_URI, searchResult.getArtists().getItems()[i].getUri());
+					entry.put(Search.ITEM_URI, artist.getUri());
 					entry.put(Search.ITEM_TYPE, Search.TYPE_ARTIST);
 					resultList.add(entry);
 				}
 				return resultList;
 			case "album":
-				for (int i = 0; i < searchResult.getAlbums().getItems().length; i++) {
+				for (AlbumSimplified album : searchResult.getAlbums().getItems()) {
 					entry = new HashMap<>();
-					if(searchResult.getAlbums().getItems()[i].getName() != null) {
-					entry.put(Search.ITEM_NAME, searchResult.getAlbums().getItems()[i].getName());
+					if (album.getName() != null) {
+						entry.put(Search.ITEM_NAME, album.getName());
 					}
 					String artists = "";
-					for (int j = 0; j < searchResult.getAlbums().getItems()[i].getArtists().length - 1; j++) {
-						artists = artists + searchResult.getAlbums().getItems()[i].getArtists()[j].getName()
-								+ ", ";
+					for (int j = 0; j < album.getArtists().length - 1; j++) {
+						artists = artists + album.getArtists()[j].getName() + ", ";
 					}
-					if (0 < searchResult.getAlbums().getItems()[i].getArtists().length) {
-						artists = artists + searchResult.getAlbums().getItems()[i]
-								.getArtists()[searchResult.getAlbums().getItems()[i].getArtists().length - 1].getName();
+					if (0 < album.getArtists().length) {
+						artists = artists + album
+								.getArtists()[album.getArtists().length - 1].getName();
 					}
 					entry.put(Search.ARTIST_NAME, artists);
-					entry.put(Search.ITEM_URI, searchResult.getAlbums().getItems()[i].getUri());
+					entry.put(Search.ITEM_URI, album.getUri());
 					entry.put(Search.ITEM_TYPE, Search.TYPE_ALBUM);
 					resultList.add(entry);
 				}
@@ -264,7 +270,6 @@ public class Search {
 		}
 		return resultList;
 	}
-	
 
 	/**
 	 * create a search query for spotify.

@@ -27,7 +27,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
 
 /**
- * TODO: Description
+ * TODO: This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music tracks etc.
  * 
  * @author Lars Buttgereit
  */
@@ -92,8 +92,8 @@ public class PlayerLogic {
 
 			try {
 				Device[] devices = getUsersAvailableDevicesRequest.execute();
-				for (int i = 0; i < devices.length; i++) {
-					deviceNames.add(devices[i].getName());
+				for (Device device : devices) {
+					deviceNames.add(device.getName());
 				}
 			} catch (SpotifyWebApiException | IOException e) {
 				System.err.println(e);
@@ -152,12 +152,19 @@ public class PlayerLogic {
 			for (int i = 0; i < this.actualSearchResult.size(); i++) {
 				resultString = resultString + "\n" + this.actualSearchResult.get(i)[1];
 			}
+			for (String[] result : this.actualSearchResult) {
+				resultString = resultString + "\n" + result[1];
+			}
 			return resultString;
 		} else {
 			return checkPlayerState();
 		}
 	}
 
+	/**
+	 * this play method play a featured playlist from spotify
+	 * @return
+	 */
 	public String play() {
 		ArrayList<String[]> playLists = this.search.getFeaturedPlaylists();
 		if (playLists != null) {
@@ -308,6 +315,10 @@ public class PlayerLogic {
 		return checkPlayerState();
 	}
 
+	/**
+	 * set the volume from the remote spotify player
+	 * @param volume
+	 */
 	private void setVolume(int volume) {
 		SetVolumeForUsersPlaybackRequest setVolumeForUsersPlaybackRequest = this.auth.getSpotifyApi()
 				.setVolumeForUsersPlayback(volume).device_id(this.deviceID).build();
