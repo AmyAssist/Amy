@@ -9,8 +9,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.logging.Level;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -19,10 +17,8 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
 import edu.cmu.sphinx.api.Configuration;
-import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;
-import edu.cmu.sphinx.result.WordResult;
 
 /**
  * Class that translate Aduio-Input into Strings, 
@@ -46,12 +42,8 @@ public class SpeechRecognizer implements SpeechIO {
 	SpeechCommandHandler commandHandler = new SpeechCommandHandler();
 	
 
-	//All the different Recognizers (each can have a different Grammar)
-	private StreamSpeechRecognizer mainGrammer_recognizer;
-//	private StreamSpeechRecognizer keyGrammar_recognition;
-//	private StreamSpeechRecognizer noGrammer_recognizer;
-	
-	private StreamSpeechRecognizer active_recognizer;
+	//The Recognizer which Handles the Recognition
+	private StreamSpeechRecognizer recognizer;
 	
 	//-----------------------------------------------------------------------------------------------	
 
@@ -68,13 +60,11 @@ public class SpeechRecognizer implements SpeechIO {
 		this.wakeUp = wakeUp;
 		this.goSleep = goSleep;
 		this.shutDown = shutDown;
-		this.ais = ais;
+		SpeechRecognizer.ais = ais;
 		
 		//Create the Recognizers
 		try {			
-//			SpeechRecognizer.this.noGrammer_recognizer = new StreamSpeechRecognizer(createConfiguration(p_grammarPath, null));
-//			SpeechRecognizer.this.keyGrammar_recognition = new StreamSpeechRecognizer(createConfiguration(p_grammarPath, "keywordGrammar"));
-			SpeechRecognizer.this.mainGrammer_recognizer = new StreamSpeechRecognizer(createConfiguration(grammarPath, grammarName));
+			SpeechRecognizer.this.recognizer = new StreamSpeechRecognizer(createConfiguration(grammarPath, grammarName));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -99,7 +89,7 @@ public class SpeechRecognizer implements SpeechIO {
 		}
 		
 		//starts Recognition
-		mainGrammer_recognizer.startRecognition(SpeechRecognizer.ais);
+		this.recognizer.startRecognition(SpeechRecognizer.ais);
 		
 		//Boolean to check if we are supposed to listen (sleeping)
 		boolean listening = false;
@@ -116,7 +106,7 @@ public class SpeechRecognizer implements SpeechIO {
 			 */
 			SpeechResult speechResult = null;
 			while (speechResult == null) {
-				speechResult = this.mainGrammer_recognizer.getResult();
+				speechResult = this.recognizer.getResult();
 			}
 			
 			// Get the hypothesis (Result as String)
@@ -124,20 +114,20 @@ public class SpeechRecognizer implements SpeechIO {
 			
 			
 			//check wakeUp/sleep/shutdown
-			if(speechRecognitionResult.contains(shutDown)){
+			if(speechRecognitionResult.contains(this.shutDown)){
 				//TODO: Shutdown the System
 				//System.exit(0);
 			}else if(!listening){
-				if(speechRecognitionResult.startsWith(wakeUp)){
+				if(speechRecognitionResult.startsWith(this.wakeUp)){
 					listening = true;
-					if(!speechRecognitionResult.equals(wakeUp)){
+					if(!speechRecognitionResult.equals(this.wakeUp)){
 						makeDecision(speechRecognitionResult);
 					}
 				}else{
 					
 				}
 			}else{
-				if(speechRecognitionResult.contains(goSleep)){
+				if(speechRecognitionResult.contains(this.goSleep)){
 					listening = false;
 				}else{
 					makeDecision(speechRecognitionResult);
@@ -178,10 +168,8 @@ public class SpeechRecognizer implements SpeechIO {
 			speech = speech.replaceFirst(this.wakeUp + " ", "");
 		}
 		
-//		System.out.println("You said: [" + speech + "]\n");
-		
-		//give speech to Handler
-		commandHandler.handleSpeechInput(speech);
+		//TODO: give speech result to Handler
+//		this.commandHandler.handleSpeechInput(speech);
 
 	}
 	
