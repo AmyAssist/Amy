@@ -34,8 +34,12 @@ public class SpeechRecognizer implements SpeechIO {
 	private String goSleep;
 	private String shutDown;
 	
+	//Grammar Location
+	private String grammarPath;
+	private String grammarName;
+	
 	//Audio Input Source for the Recognition
-	static AudioInputStream ais = null;
+	private AudioInputStream ais = null;
 	
 	//Handler who use the translated String for commanding the System
 	SpeechInputHandler inputHandler;
@@ -58,15 +62,9 @@ public class SpeechRecognizer implements SpeechIO {
 		this.wakeUp = wakeUp;
 		this.goSleep = goSleep;
 		this.shutDown = shutDown;
-		SpeechRecognizer.ais = ais;
-		
-		//Create the Recognizers
-		try {			
-			SpeechRecognizer.this.recognizer = new StreamSpeechRecognizer(createConfiguration(grammarPath, grammarName));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.grammarPath = grammarPath;
+		this.grammarName = grammarName;
+		this.ais = ais;
 	}
 	
 	//-----------------------------------------------------------------------------------------------
@@ -79,14 +77,21 @@ public class SpeechRecognizer implements SpeechIO {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		//Create the Recognizer
+		try {			
+			SpeechRecognizer.this.recognizer = new StreamSpeechRecognizer(createConfiguration());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		//check and start audioInputstream
-		if(SpeechRecognizer.ais == null){
+		if(this.ais == null){
 			startInput();
 		}
 		
 		//starts Recognition
-		this.recognizer.startRecognition(SpeechRecognizer.ais);
+		this.recognizer.startRecognition(this.ais);
 		
 		//Boolean to check if we are supposed to listen (sleeping)
 		boolean listening = false;
@@ -124,7 +129,7 @@ public class SpeechRecognizer implements SpeechIO {
 					
 				}
 			}else{
-				if(speechRecognitionResult.contains(this.goSleep)){
+				if(speechRecognitionResult.equals(this.goSleep)){
 					listening = false;
 				}else{
 					makeDecision(speechRecognitionResult);
@@ -145,20 +150,19 @@ public class SpeechRecognizer implements SpeechIO {
 	 * @param speech the speechRecognitionResultString
 	 */
 	public void makeDecision(String speech) {
-		if (speech.replace(" ", "").equals("") || speech.equals("<unk>")) {
+		String result = speech;
+		if (result.replace(" ", "").equals("") || result.equals("<unk>")) {
 			return;
 		}
 
 		// You said?
-		System.out.println("You said: [" + speech + "]\n");
+		System.out.println("You said: [" + result + "]\n");
 
-		if (speech.startsWith(this.wakeUp)) {
-			speech = speech.replaceFirst(this.wakeUp + " ", "");
+		if (result.startsWith(this.wakeUp)) {
+			result = result.replaceFirst(this.wakeUp + " ", "");
 		}
 		
-		if(inputHandler != null){
-			inputHandler.handle(speech);
-		}
+		this.inputHandler.handle(result);
 
 	}
 	
@@ -185,7 +189,7 @@ public class SpeechRecognizer implements SpeechIO {
 			mic = AudioSystem.getTargetDataLine(this.getFormat());
 			mic.open(this.getFormat());
 			mic.start();
-			SpeechRecognizer.ais = new AudioInputStream(mic);
+			this.ais = new AudioInputStream(mic);
 		} catch (LineUnavailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -194,21 +198,19 @@ public class SpeechRecognizer implements SpeechIO {
 	
 	/**
 	 * creates Configuration for the recognizers
-	 * @param grammarPath Path to the folder of the grammar
-	 * @param grammarName the name of the grammar (without .gram)
 	 * @return the configuration
 	 */
-	private Configuration createConfiguration(String grammarPath, String grammarName){
+	private Configuration createConfiguration(){
 		Configuration configuration = new Configuration();
 		
 		configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
 		configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
 		configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
-		configuration.setGrammarPath(grammarPath);
-		if(grammarName == null){
+		configuration.setGrammarPath(this.grammarPath);
+		if(this.grammarName == null){
 			configuration.setUseGrammar(false);
 		}else{
-			configuration.setGrammarName(grammarName);
+			configuration.setGrammarName(this.grammarName);
 			configuration.setUseGrammar(true);			
 		}
 	
@@ -216,8 +218,8 @@ public class SpeechRecognizer implements SpeechIO {
 	}
 	
 	/**
-	 * Returns the Audioformat for the default AudioInputStream
-	 * @return
+	 * Returns the AudioFormat for the default AudioInputStream
+	 * @return fitting AudioFormat
 	 */
 	public AudioFormat getFormat() {
 		float sampleRate = 16000.0f;
