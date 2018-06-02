@@ -8,10 +8,6 @@
  */
 package de.unistuttgart.iaas.amyassist.amy;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -20,7 +16,6 @@ import javax.ws.rs.Path;
 
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
 import de.unistuttgart.iaas.amyassist.amy.core.GlobalStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.Storage;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
@@ -105,40 +100,6 @@ public class TestFramework {
 	 */
 	public <T> T get(Class<T> serviceType) {
 		return this.dependencyInjection.getService(serviceType);
-	}
-
-	/**
-	 * Instantiate a plugin class with core components. Can only be used on
-	 * SpeechCommend classes.
-	 * 
-	 * @param cls
-	 *            the plugin class
-	 * @return an instance of the given class
-	 */
-	@Deprecated
-	public <T> T init(Class<T> cls) {
-		AnnotationReader annotationReader = new AnnotationReader();
-		String[] speechKeyword = annotationReader.getSpeechKeyword(cls);
-		Method initMethod = annotationReader.getInitMethod(cls);
-
-		try {
-			T newInstance;
-			if (cls.isAnnotationPresent(Service.class)) {
-				newInstance = this.dependencyInjection.getService(cls);
-			} else {
-				newInstance = cls.getConstructor().newInstance();
-			}
-
-			if (initMethod != null) {
-				initMethod.invoke(newInstance, this.dependencyInjection.getService(ICore.class));
-			}
-
-			return newInstance;
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
-			fail("The given class: " + cls.getName() + " is not managed by the framework and cant be initialized", e);
-		}
-		return null;
 	}
 
 	public static Consumer<IStorage> store(String key, String value) {

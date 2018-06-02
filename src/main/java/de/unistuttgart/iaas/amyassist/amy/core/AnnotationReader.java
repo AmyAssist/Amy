@@ -36,21 +36,22 @@ public class AnnotationReader {
 	@Deprecated
 	public Method getInitMethod(Class<?> cls) {
 		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Init.class);
-		for (Method method : methodsWithAnnotation) {
-			if (!method.getReturnType().equals(Void.TYPE)) {
-				System.err.println("The method annotated with @Init must have return type void");
-				return null;
-			}
-			Class<?>[] parameterTypes = method.getParameterTypes();
-			Class<ICore> c = ICore.class;
-			if (parameterTypes.length != 1 || !parameterTypes[0].equals(c)) {
-				System.err.println("The method annotated with @Init must have only one parameter of type ICore");
-				return null;
-			}
-
-			return method;
+		if (methodsWithAnnotation.length != 1) {
+			return null;
 		}
-		return null;
+		Method method = methodsWithAnnotation[0];
+		if (!method.getReturnType().equals(Void.TYPE)) {
+			System.err.println("The method annotated with @Init must have return type void");
+			return null;
+		}
+		Class<?>[] parameterTypes = method.getParameterTypes();
+		Class<ICore> c = ICore.class;
+		if (parameterTypes.length != 1 || !parameterTypes[0].equals(c)) {
+			System.err.println("The method annotated with @Init must have only one parameter of type ICore");
+			return null;
+		}
+
+		return method;
 	}
 
 	/**

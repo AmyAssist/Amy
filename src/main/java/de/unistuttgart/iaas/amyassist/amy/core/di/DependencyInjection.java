@@ -9,12 +9,12 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import java.lang.reflect.Field;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -53,22 +53,6 @@ public class DependencyInjection implements ServiceLocator {
 		this.externalServices = new HashMap<>();
 
 		this.addExternalService(ServiceLocator.class, this);
-	}
-
-	/**
-	 * Registers all given classes. Classes that can not be registered are
-	 * ignored.
-	 * 
-	 * @param classes
-	 *            The classes to be registered.
-	 */
-	@Deprecated
-	public void registerAll(List<Class<?>> classes) {
-		for (Class<?> cls : classes) {
-			if (cls.isAnnotationPresent(Service.class)) {
-				this.register(cls);
-			}
-		}
 	}
 
 	public synchronized void register(Class<?> cls) {
@@ -148,10 +132,10 @@ public class DependencyInjection implements ServiceLocator {
 
 	@Override
 	public <T> T getService(Class<T> serviceType) {
-		return this.get(serviceType, new Stack<>(), this.instances);
+		return this.get(serviceType, new ArrayDeque<>(), this.instances);
 	}
 
-	private <T> T get(Class<T> serviceType, Stack<Class<?>> stack, Map<Class<?>, Object> resolved) {
+	private <T> T get(Class<T> serviceType, Deque<Class<?>> stack, Map<Class<?>, Object> resolved) {
 		if (this.externalServices.containsKey(serviceType))
 			return (T) this.externalServices.get(serviceType);
 
@@ -168,10 +152,10 @@ public class DependencyInjection implements ServiceLocator {
 	 * @return the instance of the Service implementation
 	 */
 	public <T> T resolve(Class<T> serviceClass) {
-		return this.resolve(serviceClass, new Stack<>(), this.instances);
+		return this.resolve(serviceClass, new ArrayDeque<>(), this.instances);
 	}
 
-	private <T> T resolve(Class<T> serviceClass, Stack<Class<?>> stack, Map<Class<?>, Object> resolved) {
+	private <T> T resolve(Class<T> serviceClass, Deque<Class<?>> stack, Map<Class<?>, Object> resolved) {
 		if (resolved.containsKey(serviceClass))
 			return (T) resolved.get(serviceClass);
 		if (stack.contains(serviceClass))
@@ -192,10 +176,10 @@ public class DependencyInjection implements ServiceLocator {
 
 	@Override
 	public void inject(Object instance) {
-		this.inject(instance, new Stack<>(), this.instances);
+		this.inject(instance, new ArrayDeque<>(), this.instances);
 	}
 
-	private void inject(Object instance, Stack<Class<?>> stack, Map<Class<?>, Object> resolved) {
+	private void inject(Object instance, Deque<Class<?>> stack, Map<Class<?>, Object> resolved) {
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(instance.getClass(), Reference.class);
 		for (Field field : dependencyFields) {
 			Class<?> dependency = field.getType();
@@ -211,8 +195,7 @@ public class DependencyInjection implements ServiceLocator {
 	private Class<?> getRequired(Class<?> serviceType) {
 		if (!this.register.containsKey(serviceType))
 			throw new ServiceNotFoundException(serviceType);
-		Class<?> required = this.register.get(serviceType);
-		return required;
+		return this.register.get(serviceType);
 	}
 
 	/**
