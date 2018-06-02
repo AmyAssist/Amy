@@ -26,14 +26,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  * @author Leon Kiefer
  */
 @ExtendWith(FrameworkExtention.class)
-class SpeechCammandHandlerTest {
+class SpeechCommandHandlerTest {
 	@Reference
 	private TestFramework framework;
-	private SpeechCammandHandler speechCammandHandler;
+	private SpeechCommandHandler speechCammandHandler;
 
 	@BeforeEach
 	public void setup() {
-		this.speechCammandHandler = this.framework.setServiceUnderTest(SpeechCammandHandler.class);
+		this.speechCammandHandler = this.framework.setServiceUnderTest(SpeechCommandHandler.class);
 	}
 
 	@Test

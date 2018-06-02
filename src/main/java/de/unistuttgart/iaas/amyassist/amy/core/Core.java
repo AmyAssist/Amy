@@ -23,7 +23,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCammandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
@@ -40,7 +40,7 @@ public class Core implements ICore, SpeechInputHandler {
 	private DependencyInjection di = new DependencyInjection();
 	private PluginLoader pluginLoader = new PluginLoader();
 	private Server server;
-	private SpeechCammandHandler speechCammandHandler;
+	private SpeechCommandHandler speechCommandHandler;
 	private IStorage storage = new Storage("", new GlobalStorage());
 
 	/**
@@ -58,7 +58,7 @@ public class Core implements ICore, SpeechInputHandler {
 	 */
 	private void init() {
 		this.registerAllCoreServices();
-		this.speechCammandHandler = this.di.getService(SpeechCammandHandler.class);
+		this.speechCommandHandler = this.di.getService(SpeechCommandHandler.class);
 		this.threads = new ArrayList<>();
 
 		this.server = this.di.getService(Server.class);
@@ -83,7 +83,7 @@ public class Core implements ICore, SpeechInputHandler {
 		this.di.register(Server.class);
 		this.di.register(ConfigurationImpl.class);
 		this.di.register(Console.class);
-		this.di.register(SpeechCammandHandler.class);
+		this.di.register(SpeechCommandHandler.class);
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class Core implements ICore, SpeechInputHandler {
 		for (Plugin p : this.pluginLoader.getPlugins()) {
 			this.processPlugin(p);
 		}
-		this.speechCammandHandler.completeSetup();
+		this.speechCommandHandler.completeSetup();
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class Core implements ICore, SpeechInputHandler {
 	private void processPlugin(Plugin plugin) {
 		for (Class<?> cls : plugin.getClasses()) {
 			if (cls.isAnnotationPresent(SpeechCommand.class)) {
-				this.speechCammandHandler.registerSpeechCommand(cls);
+				this.speechCommandHandler.registerSpeechCommand(cls);
 			}
 			if (cls.isAnnotationPresent(Service.class)) {
 				this.di.register(cls);
@@ -140,7 +140,7 @@ public class Core implements ICore, SpeechInputHandler {
 	@Override
 	public Future<String> handle(String speechInput) {
 		return this.singleThreadScheduledExecutor.submit(() -> {
-			return this.speechCammandHandler.handleSpeechInput(speechInput);
+			return this.speechCommandHandler.handleSpeechInput(speechInput);
 		});
 	}
 
