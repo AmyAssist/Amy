@@ -8,6 +8,7 @@
  */
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -24,7 +25,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 import de.unistuttgart.iaas.amyassist.amy.rest.Server;
@@ -65,8 +68,13 @@ public class Core implements ICore, SpeechInputHandler {
 
 		Console console = this.di.getService(Console.class);
 		console.setSpeechInputHandler(this);
-
 		this.threads.add(new Thread(console));
+
+		SpeechIO sr = new SpeechRecognizer("amy", "sleep", "amy shotdown",
+				new File("src/main/resources", "/sphinx-grammars/grammar.gram").getParent(), "grammar", null);
+		this.di.inject(sr);
+		sr.setSpeechInputHandler(this);
+		this.threads.add(new Thread(sr));
 
 		this.loadPlugins();
 	}
