@@ -169,7 +169,7 @@ public class SpeechRecognizer implements SpeechIO {
 		}
 		
 		//TODO: give speech result to Handler
-//		this.commandHandler.handleSpeechInput(speech);
+		this.commandHandler.handleSpeechInput(speech);
 
 	}
 	
