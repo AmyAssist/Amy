@@ -26,7 +26,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  * @author Leon Kiefer
  */
 @ExtendWith(FrameworkExtention.class)
-class SpeechCammandHandlerTest {
+class SpeechCommandHandlerTest {
 	@Reference
 	private TestFramework framework;
 	private SpeechCommandHandler speechCammandHandler;

@@ -69,7 +69,7 @@ public class GrammarParser {
 		grammar += "public <sleep> = ( " + this.sleep + " );\n";
 		grammar += "public <shutdown> = ( " + this.shutdown + " );\n";
 
-		//grammar += "\n#pre defined rules \n";
+		grammar += "\n//pre defined rules \n";
 
 		// pre defined rules
 		// TODO add them to external file via import rule in JSGF
@@ -78,7 +78,7 @@ public class GrammarParser {
 				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
 				+ "fifty | sixty  | seventy | eighty | ninety | hundred | thousand |" + "million | and )+; \n";
 
-		//grammar += "\n#custom rules \n";
+		grammar += "\n//custom rules \n";
 		
 		for (String s : this.addedRules) {
 			grammar += s;

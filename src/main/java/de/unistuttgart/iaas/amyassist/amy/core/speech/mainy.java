@@ -57,7 +57,7 @@ public class mainy {
 			e1.printStackTrace();
 		}
 		
-		(new Thread(new SpeechRecognizer("amy", "sleep", "amy shutdown", grammarFile.getParent()))).start();
+		(new Thread(new SpeechRecognizer("amy", "sleep", "amy shutdown", grammarFile.getParent(), grammarFile.getName().replace(".gram", ""), null))).start();
 
 	}
 
