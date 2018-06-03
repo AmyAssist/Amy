@@ -12,6 +12,9 @@
     },
     {
       "name": "music"
+    },
+    {
+      "name": "alarmclock"
     }
   ],
   "schemes": [
@@ -133,6 +136,65 @@
           }
         }
       }
+    },
+    "/clock/alarms": {
+      "get": {
+        "tags": [
+          "alarmclock"
+        ],
+        "summary": "get all alarms",
+        "description": "gets all alarms that are currently set",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/clock/alarms/1": {
+      "get": {
+        "tags": [
+          "alarmclock"
+        ],
+        "summary": "get the first alarm",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/clock/newalarm": {
+      "post": {
+        "tags": [
+          "alarmclock"
+        ],
+        "summary": "set a new alarm",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "the new alarm time",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/timestamp"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -200,6 +262,19 @@
           "items": {
             "$ref": "#/definitions/music"
           }
+        }
+      }
+    },
+    "timestamp": {
+      "type": "object",
+      "properties": {
+        "hour": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minute": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     }
