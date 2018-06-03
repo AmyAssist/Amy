@@ -54,11 +54,10 @@ public class Authorization {
 	 * @return true if succeded, else false
 	 */
 	public boolean init() {
+		InputStream fis = null ;
 		try {
-			InputStream fis = null;
 			File tmp = new File(System.getProperty("java.io.tmpdir"));
 			File f = new File(tmp, "/spotifyAuth/auth.auth");
-
 			fis = new FileInputStream(f);
 			ObjectInputStream stream = new ObjectInputStream(fis);
 			@SuppressWarnings("unchecked")
@@ -89,7 +88,14 @@ public class Authorization {
 			return false;
 		}
 		finally {
-			fis.close();
+			try {
+				if(fis != null) {
+				fis.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -126,12 +132,13 @@ public class Authorization {
 	 * write alle Token and IDs to file in the temp folder of the system. Only for testing without persistent storage in Core
 	 */
 	private void writeToFile() {
+		FileOutputStream fos = null;
 		try {
 			File tmp = new File(System.getProperty("java.io.tmpdir"));
 			File f = new File(tmp, "/spotifyAuth/auth.auth");
 			f.delete();
 			f.getParentFile().mkdirs();
-			FileOutputStream fos;
+			
 			fos = new FileOutputStream(f);
 			ObjectOutputStream stream = new ObjectOutputStream(fos);
 			stream.writeObject(this.idExport);
@@ -140,7 +147,14 @@ public class Authorization {
 			System.err.println(e.getMessage());
 		}
 		finally {
-			fos.close();
+			try {
+				if(fos != null) {
+				fos.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
