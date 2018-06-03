@@ -1,5 +1,5 @@
 codecov:
-  strict_yaml_branch: master  # only use the latest copy on master branch
+  strict_yaml_branch: dev  # only use the latest copy on dev branch
 coverage:
   range: 50..100
   status:
@@ -10,3 +10,4 @@ coverage:
     patch:
       default:
         threshold: 5
+comment: off
