@@ -29,16 +29,28 @@ public class Timestamp {
 	public int minute;
 	
 	
+	/**
+	 * constructor for a timestamp without set values
+	 */
 	public Timestamp() {
 		// needed for JSON
 	}
+	
 	
 	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return String.valueOf(this.hour) + ":" + String.valueOf(this.minute);
+		String sh = String.valueOf(this.hour);
+		String sm = String.valueOf(this.minute);
+		if(this.hour < 10) {
+			sh = "0" + sh;
+		}
+		if(this.minute < 10) {
+			sm = "0" + sm;
+		}
+		return sh + ":" + sm;
 	}
 	
 	public boolean isValid() {

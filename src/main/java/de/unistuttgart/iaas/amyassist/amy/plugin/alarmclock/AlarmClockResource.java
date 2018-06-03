@@ -26,7 +26,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
  * 
  * @author Christian Bräuner
  */
-@Path("alarmclock")
+@Path("clock")
 public class AlarmClockResource {
 	
 	@Reference
@@ -38,18 +38,31 @@ public class AlarmClockResource {
 	 * @return alarm1 or null if there is no alarm1 
 	 */
 	@GET
+	@Path("alarms/1")
 	public String getAlarm() {
 		return this.logic.getAlarm();
 	}
 	
 	/**
+	 * returns all alrams
+	 * 
+	 * @return all alarms
+	 */
+	@GET
+	@Path("alarms")
+	public String[] getAllAlarms() {
+		return this.logic.getAllAlarms();
+	}
+	
+	/**
 	 * sets a alarm to a given timestamp
 	 * 
-	 * @param alarmTime the timestamp for the alrarm
+	 * @param alarmTime the timestamp for the alarm
 	 * @return HTTP Response
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("newalarm")
 	public Response setAlarm(Timestamp alarmTime) {
 		Response r;
 		if(alarmTime.isValid()) {
