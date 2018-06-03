@@ -102,4 +102,8 @@ public class SpotifySpeech {
 		if (1 < params.length)
 			this.playerLogic.setVolume(params[1]);
 	}
+	@Grammar("get currently played song")
+	public String getCurrentlyPlayed() {
+		return "track: " + playerLogic.getCurrentSong().get("name") + " by " + playerLogic.getCurrentSong().get("artist");
+	}
 }

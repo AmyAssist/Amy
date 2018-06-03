@@ -11,11 +11,15 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import com.google.gson.JsonParser;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
+import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.requests.data.player.GetInformationAboutUsersCurrentPlaybackRequest;
 import com.wrapper.spotify.requests.data.player.GetUsersAvailableDevicesRequest;
 import com.wrapper.spotify.requests.data.player.PauseUsersPlaybackRequest;
 import com.wrapper.spotify.requests.data.player.SetVolumeForUsersPlaybackRequest;
@@ -27,7 +31,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
 
 /**
- * TODO: This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music tracks etc.
+ * TODO: This class have methods to control a spotify client from a user. For
+ * examlpe play, pause playback or search for music tracks etc.
  * 
  * @author Lars Buttgereit
  */
@@ -39,7 +44,7 @@ public class PlayerLogic {
 	private int volume = 50;
 	// private String deviceName = null;
 	private ArrayList<String[]> actualSearchResult = null;
-	
+
 	public PlayerLogic() {
 		init();
 	}
@@ -81,7 +86,8 @@ public class PlayerLogic {
 	/**
 	 * get all devices that logged in at the moment
 	 * 
-	 * @return empty ArrayList if no device available else the name of the devices
+	 * @return empty ArrayList if no device available else the name of the
+	 *         devices
 	 */
 	public ArrayList<String> getDevices() {
 
@@ -110,8 +116,8 @@ public class PlayerLogic {
 	 * set the given device as acutal active device for playing music
 	 * 
 	 * @param deviceNumber
-	 *            index of the device array. Order is the same as in the output in
-	 *            getDevices
+	 *            index of the device array. Order is the same as in the output
+	 *            in getDevices
 	 * @return selected device
 	 */
 	public String setDevice(int deviceNumber) {
@@ -163,6 +169,7 @@ public class PlayerLogic {
 
 	/**
 	 * this play method play a featured playlist from spotify
+	 * 
 	 * @return
 	 */
 	public String play() {
@@ -250,7 +257,7 @@ public class PlayerLogic {
 				skipUsersPlaybackToNextTrackRequest.execute();
 				return "Playback skip";
 			} catch (IOException | SpotifyWebApiException e) {
-				System.out.println("Error: " + e.getMessage());
+				System.err.println("Error: " + e.getMessage());
 				return "A problem occur";
 			}
 		}
@@ -271,7 +278,7 @@ public class PlayerLogic {
 				skipUsersPlaybackToPreviousTrackRequest.execute();
 				return "Playback back";
 			} catch (IOException | SpotifyWebApiException e) {
-				System.out.println("Error: " + e.getMessage());
+				System.err.println("Error: " + e.getMessage());
 				return "A problem occur";
 			}
 		}
@@ -279,8 +286,34 @@ public class PlayerLogic {
 	}
 
 	/**
+	 * gives the actual played song in the spotify client back 
+	 * @return a hashMap with the keys name and artist
+	 */
+	public HashMap<String, String> getCurrentSong() {
+		HashMap<String, String> result = new HashMap<>();
+		GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = this.auth
+				.getSpotifyApi().getInformationAboutUsersCurrentPlayback().build();
+		try {
+			CurrentlyPlayingContext currentlyPlayingContext = getInformationAboutUsersCurrentPlaybackRequest.execute();
+			result.put("name", currentlyPlayingContext.getItem().getName());
+			String artists = "";
+			for (ArtistSimplified artist : currentlyPlayingContext.getItem().getArtists()) {
+				artists = artists + artist.getName();
+
+			}
+			result.put("artist", artists);
+			return result;
+		} catch (SpotifyWebApiException | IOException e) {
+			System.err.println("Error: " + e.getMessage());
+			return null;
+		}
+	}
+
+	/**
 	 * this method controls the volume of the player
-	 * @param volumeString allowed strings: mute, max, up, down
+	 * 
+	 * @param volumeString
+	 *            allowed strings: mute, max, up, down
 	 * @return
 	 */
 	public String setVolume(String volumeString) {
@@ -293,20 +326,20 @@ public class PlayerLogic {
 				setVolume(100);
 				return "Volume max";
 			case "up":
-				if(this.volume + 10 <= 100) {
+				if (this.volume + 10 <= 100) {
 					this.volume += 10;
 					setVolume(this.volume);
 					return "Volume on " + this.volume + " percent";
 				}
 				return "Volume on 100 percent";
 			case "down":
-				if(this.volume + 10 >= 0) {
+				if (this.volume + 10 >= 0) {
 					this.volume += 10;
 					setVolume(this.volume);
 					return "Volume on " + this.volume + " percent";
 				}
 				return "Volume on 0 percent";
-				
+
 			default:
 				return "Incorrect volume command";
 			}
@@ -317,6 +350,7 @@ public class PlayerLogic {
 
 	/**
 	 * set the volume from the remote spotify player
+	 * 
 	 * @param volume
 	 */
 	private void setVolume(int volume) {
@@ -379,7 +413,8 @@ public class PlayerLogic {
 		} else if (this.auth.getSpotifyApi() == null) {
 			return "Please initialize the spotify api with the client id and client secret";
 			// } else if (!getDevices().contains(this.deviceID)) {
-			// return "the current device has been disconnected. Please select a new
+			// return "the current device has been disconnected. Please select a
+			// new
 			// device.";
 		}
 		return null;
@@ -417,7 +452,9 @@ public class PlayerLogic {
 		pc.back();
 		pc.setVolume("max");
 		pc.setVolume("mute");
+		System.out.println(pc.getCurrentSong().get("name"));
 		
+
 		sc.close();
 	}
 }

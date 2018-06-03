@@ -44,6 +44,7 @@ public class MusicResource {
 	@Path("currentSong")
 	@Produces(MediaType.APPLICATION_JSON)
 	public MusicEntity getMusic() {
+		this.musicEntity = new MusicEntity(this.logic.getCurrentSong().get("name"), this.logic.getCurrentSong().get("artist"));
 		return this.musicEntity;
 	}
 	

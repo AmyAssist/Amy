@@ -13,20 +13,30 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Music Entity for JSON
  * 
- * @author Muhammed Kaya
+ * @author Muhammed Kaya, Lars Buttgereit
  */
 @XmlRootElement
 public class MusicEntity {
 
+	public MusicEntity(String title, String artist) {
+		this.title = title;
+		this.artist = artist;
+	}
+	
+	public MusicEntity()
+	{
+		
+	}
+	
 	/**
 	 * the artist of the music
 	 */
-	public String artist = "";
+	public String artist;
 	
 	/**
 	 * the title of the music
 	 */
-	public String title = "";
+	public String title;
 	
 	/**
 	 * @see java.lang.Object#toString()
