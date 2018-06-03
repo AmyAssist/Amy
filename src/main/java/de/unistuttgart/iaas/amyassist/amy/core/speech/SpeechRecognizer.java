@@ -15,6 +15,8 @@ import java.util.concurrent.Future;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
@@ -40,6 +42,12 @@ public class SpeechRecognizer implements SpeechIO {
 	// Grammar Location
 	private String grammarPath;
 	private String grammarName;
+	
+	//Sound return from the recognizer, 
+	public enum SOUND{
+		WAKEUP, GOSLEEP, ACCEPT
+	}
+	public static boolean soundPlayed = false;
 
 	// Audio Input Source for the Recognition
 	private AudioInputStream ais = null;
@@ -120,7 +128,7 @@ public class SpeechRecognizer implements SpeechIO {
 			 * wait for input from the recognizer
 			 */
 			SpeechResult speechResult = null;
-			while (speechResult == null) {
+			while (speechResult == null || SpeechRecognizer.soundPlayed) {
 				speechResult = this.recognizer.getResult();
 				if (Thread.interrupted()) {
 					break loop;
@@ -131,22 +139,19 @@ public class SpeechRecognizer implements SpeechIO {
 			speechRecognitionResult = speechResult.getHypothesis();
 
 			// check wakeUp/sleep/shutdown
-			if (speechRecognitionResult.contains(this.shutDown)) {
-				// TODO: Shutdown the System
-				// System.exit(0);
-			} else if (!listening) {
-				if (speechRecognitionResult.startsWith(this.wakeUp)) {
-					listening = true;
-					if (!speechRecognitionResult.equals(this.wakeUp)) {
-						makeDecision(speechRecognitionResult);
-					}
-				} else {
-
-				}
-			} else {
-				if (speechRecognitionResult.equals(this.goSleep)) {
+			if(speechRecognitionResult.equals(this.wakeUp)){
+				listening = true;
+				(new Thread(new Output(getFormat(), SOUND.WAKEUP))).start();
+			}else if(speechRecognitionResult.startsWith(this.wakeUp + " ")){
+				listening = true;
+				(new Thread(new Output(getFormat(), SOUND.ACCEPT))).start();
+				makeDecision(speechRecognitionResult.replaceFirst(this.wakeUp + " ", ""));
+			}else if (listening){
+				if(speechRecognitionResult.equals(this.goSleep)){
 					listening = false;
-				} else {
+					(new Thread(new Output(getFormat(), SOUND.GOSLEEP))).start();
+				}else{
+					(new Thread(new Output(getFormat(), SOUND.ACCEPT))).start();
 					makeDecision(speechRecognitionResult);
 				}
 			}
@@ -172,9 +177,7 @@ public class SpeechRecognizer implements SpeechIO {
 		// You said?
 		System.out.println("You said: [" + result + "]");
 
-		if (result.startsWith(this.wakeUp)) {
-			result = result.replaceFirst(this.wakeUp + " ", "");
-		}
+		
 
 		Future<String> handle = this.inputHandler.handle(result);
 		try {
@@ -199,6 +202,10 @@ public class SpeechRecognizer implements SpeechIO {
 		this.inputHandler = handler;
 	}
 
+	//===============================================================================================
+	
+		
+		
 	// ===============================================================================================
 
 	/**
@@ -250,6 +257,97 @@ public class SpeechRecognizer implements SpeechIO {
 		boolean signed = true;
 		boolean bigEndian = false;
 		return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
+	}
+	
+	// ===============================================================================================
+	
+	private class Output implements Runnable {
+		
+		AudioFormat af;
+		private Clip c;
+		private SpeechRecognizer.SOUND soundType;
+		
+		public Output(AudioFormat af, SpeechRecognizer.SOUND soundType){
+			this.af = af;
+			this.soundType = soundType;
+		}
+		
+		public void run() {
+			SpeechRecognizer.soundPlayed = true;
+			double frequency1 = 0;
+			double frequency2 = 0;
+			int lenght = 250;
+			switch(soundType){
+			case WAKEUP:
+				frequency1 = 329.23;
+				frequency2 = 440.00;
+				lenght = 300;
+				break;
+			case GOSLEEP:
+				frequency1 = 329.23;
+				frequency2 = 261.63;
+				break;
+			case ACCEPT:
+				frequency1 = 440.00;
+				frequency2 = 392.00;
+				break;
+			default:
+				break;
+			}
+			try {
+				play(frequency1);
+				Thread.sleep(lenght);
+				play(frequency2);
+				Thread.sleep(750);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			SpeechRecognizer.soundPlayed = false;
+			this.c.close();
+		}
+		
+		/**
+		 * creates Sinus Wave sound with requested frequency
+		 * @param frequency requested frequency
+		 * @param af Audioformat
+		 * @return Sinus Wave Sound
+		 */
+		private byte[] getSinusTone(double frequency, AudioFormat af) {
+	        byte sample_size = (byte) (af.getSampleSizeInBits() / 8);
+	        byte[] data = new byte[(int) af.getSampleRate() * sample_size];
+	        double step_width = (2 * Math.PI) / af.getSampleRate();
+	        double x = 0;
+
+	        for (int i = 0; i < data.length/4; i += sample_size) {
+	            int sample_max_value = (int) Math.pow(2, af.getSampleSizeInBits()) / 2 - 1;
+	            int value = (int) (sample_max_value * Math.sin(frequency * x));
+	            for (int j = 0; j < sample_size; j++) {
+	                byte sample_byte = (byte) ((value >> (8 * j)) & 0xff);
+	                data[i + j] = sample_byte;
+	            }
+	            x += step_width;
+	        }
+	        return data;
+	    }
+		
+		/**
+		 * opens Outputline and playes sound
+		 * @param frequenzy frequency of requested SinusWaveound
+		 */
+		private void play(double frequenzy) {
+	        byte[] data = getSinusTone(frequenzy, this.af);
+	       
+	        try {
+	            this.c = (Clip) AudioSystem.getLine(new Line.Info(Clip.class));
+
+	            this.c.open(this.af, data, 0, data.length);
+	            this.c.start();
+	            
+	        } catch (LineUnavailableException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
 	}
 
 }
