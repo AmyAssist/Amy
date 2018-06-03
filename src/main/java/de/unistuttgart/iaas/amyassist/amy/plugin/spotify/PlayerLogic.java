@@ -49,6 +49,7 @@ public class PlayerLogic {
 		init();
 	}
 
+	@Init
 	public void init() {
 		this.auth = new Authorization();
 		this.auth.init();
@@ -146,10 +147,7 @@ public class PlayerLogic {
 	 *            artist, track, playlist, album
 	 * @param limit
 	 *            how many results maximal searched for
-	 * @return a array list of the result entrys. every entry has at 0 the uri
-	 *         of the item and at 1 a output String with information about the
-	 *         item and at 2 the type of the item. if no element found a empty
-	 *         list is returned
+	 * @return one output String with all results
 	 */
 	public String search(String searchText, String type, int limit) {
 		if (checkPlayerState() == null) {
@@ -170,17 +168,21 @@ public class PlayerLogic {
 	/**
 	 * this play method play a featured playlist from spotify
 	 * 
-	 * @return
+	 * @return a string with the playlist name
 	 */
 	public String play() {
-		ArrayList<String[]> playLists = this.search.getFeaturedPlaylists();
-		if (playLists != null) {
-			if (1 < this.search.getFeaturedPlaylists().size()) {
-				playListFromUri(playLists.get(1)[0]);
-				return playLists.get(1)[1];
+		if (checkPlayerState() == null) {
+			ArrayList<String[]> playLists = this.search.getFeaturedPlaylists();
+			if (playLists != null) {
+				if (1 < this.search.getFeaturedPlaylists().size()) {
+					playListFromUri(playLists.get(1)[0]);
+					return playLists.get(1)[1];
+				}
 			}
+			return "no featured playlist found";
 		}
-		return "no featured playlist found";
+		System.err.println(checkPlayerState());
+		return checkPlayerState();
 	}
 
 	/**
@@ -207,82 +209,87 @@ public class PlayerLogic {
 	/**
 	 * resume the actual playback
 	 * 
-	 * @return short String about the execute action
+	 * @return  a boolean. true if the command was executed, else if the command failed
 	 */
-	public String resume() {
+	public boolean resume() {
 		if (checkPlayerState() == null) {
 			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = this.auth.getSpotifyApi()
 					.startResumeUsersPlayback().device_id(this.deviceID).build();
 			try {
 				startResumeUsersPlaybackRequest.execute();
-				return "Playback resume";
+				return true;
 			} catch (SpotifyWebApiException | IOException e) {
-				System.err.println(e.getMessage());
-				return "A problem occur";
+				System.err.println("Error: " + e.getMessage());
+				return false;
 			}
 		}
-		return checkPlayerState();
+		System.err.println(checkPlayerState());
+		return false;
+		
 	}
 
 	/**
 	 * pause the actual playback
 	 * 
-	 * @return short String about the execute action
+	 * @return  a boolean. true if the command was executed, else if the command failed
 	 */
-	public String pausePlayback() {
+	public boolean pausePlayback() {
 		if (checkPlayerState() == null) {
 			PauseUsersPlaybackRequest pauseUsersPlaybackRequest = this.auth.getSpotifyApi().pauseUsersPlayback()
 					.device_id(this.deviceID).build();
 			try {
 				pauseUsersPlaybackRequest.execute();
-				return "Playback pause";
+				return true;
 			} catch (SpotifyWebApiException | IOException e) {
-				System.err.println(e.getMessage());
-				return "A problem occur";
+				System.out.println("Error: " + e.getMessage());
+				return false;
 			}
 		}
-		return checkPlayerState();
+		System.err.println(checkPlayerState());
+		return false;
 	}
 
 	/**
 	 * goes one song forward in the playlist or album
 	 * 
-	 * @return short String about the execute action
+	 * @return  a boolean. true if the command was executed, else if the command failed
 	 */
-	public String skip() {
+	public boolean skip() {
 		if (checkPlayerState() == null) {
 			SkipUsersPlaybackToNextTrackRequest skipUsersPlaybackToNextTrackRequest = this.auth.getSpotifyApi()
 					.skipUsersPlaybackToNextTrack().device_id(this.deviceID).build();
 			try {
 				skipUsersPlaybackToNextTrackRequest.execute();
-				return "Playback skip";
+				return true;
 			} catch (IOException | SpotifyWebApiException e) {
-				System.err.println(e.getMessage());
-				return "A problem occur";
+				System.err.println("Error: " + e.getMessage());
+				return false;
 			}
 		}
-		return checkPlayerState();
+		System.err.println(checkPlayerState());
+		return false;
 	}
 
 	/**
 	 * goes one song back in the playlist or album
 	 * 
-	 * @return short String about the execute action
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
-	public String back() {
+	public boolean back() {
 		if (checkPlayerState() == null) {
 
 			SkipUsersPlaybackToPreviousTrackRequest skipUsersPlaybackToPreviousTrackRequest = this.auth.getSpotifyApi()
 					.skipUsersPlaybackToPreviousTrack().device_id(this.deviceID).build();
 			try {
 				skipUsersPlaybackToPreviousTrackRequest.execute();
-				return "Playback back";
+				return true;
 			} catch (IOException | SpotifyWebApiException e) {
-				System.err.println(e.getMessage());
-				return "A problem occur";
+				System.err.println("Error: " + e.getMessage());
+				return false;
 			}
 		}
-		return checkPlayerState();
+		System.err.println(checkPlayerState());
+		return false;
 	}
 
 	/**
@@ -292,22 +299,27 @@ public class PlayerLogic {
 	 */
 	public HashMap<String, String> getCurrentSong() {
 		HashMap<String, String> result = new HashMap<>();
-		GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = this.auth
-				.getSpotifyApi().getInformationAboutUsersCurrentPlayback().build();
-		try {
-			CurrentlyPlayingContext currentlyPlayingContext = getInformationAboutUsersCurrentPlaybackRequest.execute();
-			result.put("name", currentlyPlayingContext.getItem().getName());
-			String artists = "";
-			for (ArtistSimplified artist : currentlyPlayingContext.getItem().getArtists()) {
-				artists = artists + artist.getName();
+		if (checkPlayerState() == null) {
+			GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = this.auth
+					.getSpotifyApi().getInformationAboutUsersCurrentPlayback().build();
+			try {
+				CurrentlyPlayingContext currentlyPlayingContext = getInformationAboutUsersCurrentPlaybackRequest
+						.execute();
+				result.put("name", currentlyPlayingContext.getItem().getName());
+				String artists = "";
+				for (ArtistSimplified artist : currentlyPlayingContext.getItem().getArtists()) {
+					artists = artists + artist.getName();
 
+				}
+				result.put("artist", artists);
+				return result;
+			} catch (SpotifyWebApiException | IOException e) {
+				System.err.println("Error: " + e.getMessage());
+				return null;
 			}
-			result.put("artist", artists);
-			return result;
-		} catch (SpotifyWebApiException | IOException e) {
-			System.err.println(e.getMessage());
-			return null;
 		}
+		System.err.println(checkPlayerState());
+		return null;
 	}
 
 	/**
@@ -315,38 +327,36 @@ public class PlayerLogic {
 	 * 
 	 * @param volumeString
 	 *            allowed strings: mute, max, up, down
-	 * @return
+	 * @return a int from 0-100. This represent the Volume in percent. if the Playerstate incorrect return -1
 	 */
-	public String setVolume(String volumeString) {
+	public int setVolume(String volumeString) {
 		if (checkPlayerState() == null) {
 			switch (volumeString) {
 			case "mute":
 				setVolume(0);
-				return "Volume mute";
+				this.volume = 0;
+				return this.volume;
 			case "max":
 				setVolume(100);
-				return "Volume max";
 			case "up":
 				if (this.volume + 10 <= 100) {
 					this.volume += 10;
 					setVolume(this.volume);
-					return "Volume on " + this.volume + " percent";
 				}
-				return "Volume on 100 percent";
 			case "down":
 				if (this.volume + 10 >= 0) {
 					this.volume += 10;
 					setVolume(this.volume);
-					return "Volume on " + this.volume + " percent";
 				}
-				return "Volume on 0 percent";
 
 			default:
-				return "Incorrect volume command";
+				System.err.println( "Incorrect volume command" );
 			}
+			return this.volume;
 		}
 
-		return checkPlayerState();
+		System.err.println(checkPlayerState());
+		return -1;
 	}
 
 	/**
@@ -361,7 +371,7 @@ public class PlayerLogic {
 		try {
 			setVolumeForUsersPlaybackRequest.execute();
 		} catch (SpotifyWebApiException | IOException e) {
-			System.err.println(e.getMessage());
+			System.err.println("Error: " + e.getMessage());
 		}
 
 	}
@@ -380,7 +390,7 @@ public class PlayerLogic {
 			startResumeUsersPlaybackRequest.execute();
 			return true;
 		} catch (SpotifyWebApiException | IOException e) {
-			System.err.println(e.getMessage());
+			System.err.println("Error: " + e.getCause().getMessage());
 			return false;
 		}
 	}
@@ -398,7 +408,7 @@ public class PlayerLogic {
 			startResumeUsersPlaybackRequest.execute();
 			return true;
 		} catch (SpotifyWebApiException | IOException e) {
-			System.err.println(e.getMessage());
+			System.err.println("Error: " + e.getCause().getMessage());
 			return false;
 		}
 	}
