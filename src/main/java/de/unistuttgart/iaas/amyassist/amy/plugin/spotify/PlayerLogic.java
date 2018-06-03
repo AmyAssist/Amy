@@ -101,8 +101,7 @@ public class PlayerLogic {
 					deviceNames.add(device.getName());
 				}
 			} catch (SpotifyWebApiException | IOException e) {
-				System.err.println(e);
-				e.printStackTrace();
+				System.err.println(e.getMessage());
 			}
 
 			return deviceNames;
@@ -131,8 +130,7 @@ public class PlayerLogic {
 				}
 				return "This device was not found";
 			} catch (SpotifyWebApiException | IOException e) {
-				e.printStackTrace();
-				System.err.println(e);
+				System.err.println(e.getMessage());
 				return "A problem has occurred";
 			}
 
@@ -219,7 +217,7 @@ public class PlayerLogic {
 				startResumeUsersPlaybackRequest.execute();
 				return "Playback resume";
 			} catch (SpotifyWebApiException | IOException e) {
-				System.out.println("Error: " + e.getMessage());
+				System.err.println(e.getMessage());
 				return "A problem occur";
 			}
 		}
@@ -239,7 +237,7 @@ public class PlayerLogic {
 				pauseUsersPlaybackRequest.execute();
 				return "Playback pause";
 			} catch (SpotifyWebApiException | IOException e) {
-				System.out.println("Error: " + e.getMessage());
+				System.err.println(e.getMessage());
 				return "A problem occur";
 			}
 		}
@@ -259,7 +257,7 @@ public class PlayerLogic {
 				skipUsersPlaybackToNextTrackRequest.execute();
 				return "Playback skip";
 			} catch (IOException | SpotifyWebApiException e) {
-				System.err.println("Error: " + e.getMessage());
+				System.err.println(e.getMessage());
 				return "A problem occur";
 			}
 		}
@@ -280,7 +278,7 @@ public class PlayerLogic {
 				skipUsersPlaybackToPreviousTrackRequest.execute();
 				return "Playback back";
 			} catch (IOException | SpotifyWebApiException e) {
-				System.err.println("Error: " + e.getMessage());
+				System.err.println(e.getMessage());
 				return "A problem occur";
 			}
 		}
@@ -307,7 +305,7 @@ public class PlayerLogic {
 			result.put("artist", artists);
 			return result;
 		} catch (SpotifyWebApiException | IOException e) {
-			System.err.println("Error: " + e.getMessage());
+			System.err.println(e.getMessage());
 			return null;
 		}
 	}
@@ -363,7 +361,7 @@ public class PlayerLogic {
 		try {
 			setVolumeForUsersPlaybackRequest.execute();
 		} catch (SpotifyWebApiException | IOException e) {
-			System.out.println("Error: " + e.getMessage());
+			System.err.println(e.getMessage());
 		}
 
 	}
@@ -382,7 +380,7 @@ public class PlayerLogic {
 			startResumeUsersPlaybackRequest.execute();
 			return true;
 		} catch (SpotifyWebApiException | IOException e) {
-			System.out.println("Error: " + e.getCause().getMessage());
+			System.err.println(e.getMessage());
 			return false;
 		}
 	}
@@ -400,7 +398,7 @@ public class PlayerLogic {
 			startResumeUsersPlaybackRequest.execute();
 			return true;
 		} catch (SpotifyWebApiException | IOException e) {
-			System.out.println("Error: " + e.getCause().getMessage());
+			System.err.println(e.getMessage());
 			return false;
 		}
 	}

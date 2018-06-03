@@ -116,8 +116,7 @@ public class Authorization {
 			this.idExport.put("refresh", this.refreshToken);
 			writeToFile();
 		} catch (SpotifyWebApiException | IOException e) {
-			System.err.println(e);
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 	}
 
@@ -136,8 +135,7 @@ public class Authorization {
 			stream.writeObject(this.idExport);
 			fos.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 
 	}
@@ -159,6 +157,7 @@ public class Authorization {
 					return null;
 				}
 			} catch (SpotifyWebApiException | IOException e) {
+				System.err.println(e.getMessage());
 				return null;
 			}
 			this.firstTime = false;
@@ -172,7 +171,7 @@ public class Authorization {
 				this.spotifyApi.setAccessToken(this.authorizationCodeCredentials.getAccessToken());
 
 			} catch (SpotifyWebApiException | IOException e) {
-				System.out.println("Error: " + e.getMessage());
+				System.err.println(e.getMessage());
 				return null;
 			}
 			return this.spotifyApi;
