@@ -49,7 +49,6 @@ public class PlayerLogic {
 		init();
 	}
 
-	@Init
 	public void init() {
 		this.auth = new Authorization();
 		this.auth.init();
@@ -66,7 +65,6 @@ public class PlayerLogic {
 	 * @return login link to a personal spotify account
 	 */
 	public URI firstTimeInit(String clientID, String clientSecret) {
-		this.auth = new Authorization();
 		this.auth.setClientID(clientID);
 		this.auth.setClientSecret(clientSecret);
 		return this.auth.authorizationCodeUri();
