@@ -49,7 +49,6 @@ public class PlayerLogic {
 		init();
 	}
 
-	@Init
 	public void init() {
 		this.auth = new Authorization();
 		this.auth.init();
@@ -149,7 +148,10 @@ public class PlayerLogic {
 	 *            artist, track, playlist, album
 	 * @param limit
 	 *            how many results maximal searched for
-	 * @return one output String with all results
+	 * @return a array list of the result entrys. every entry has at 0 the uri
+	 *         of the item and at 1 a output String with information about the
+	 *         item and at 2 the type of the item. if no element found a empty
+	 *         list is returned
 	 */
 	public String search(String searchText, String type, int limit) {
 		if (checkPlayerState() == null) {
@@ -286,7 +288,8 @@ public class PlayerLogic {
 	}
 
 	/**
-	 * gives the actual played song in the spotify client back 
+	 * gives the actual played song in the spotify client back
+	 * 
 	 * @return a hashMap with the keys name and artist
 	 */
 	public HashMap<String, String> getCurrentSong() {
@@ -420,41 +423,4 @@ public class PlayerLogic {
 		return null;
 	}
 
-	// testing
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		String clientId;
-		String clientSecret;
-		PlayerLogic pc = new PlayerLogic();
-		System.out.println("first? (y/n)");
-		if (sc.nextLine().equals("y")) {
-			System.out.println("Input ClientId:");
-			clientId = sc.nextLine();
-			System.out.println("Input ClientSecret");
-			clientSecret = sc.nextLine();
-			System.out.println("Copy this to your browser:");
-			System.out.println(pc.firstTimeInit(clientId, clientSecret));
-			System.out.println("copy result code from browser in the console");
-			pc.inputAuthCode(sc.nextLine());
-		} else {
-			pc.init();
-		}
-		pc.getDevices();
-		for (int i = 0; i < pc.getDevices().size(); i++) {
-			System.out.println(pc.getDevices().get(i));
-		}
-		// System.out.println(pc.search("game of thrones", "playlist", 5));
-		// System.out.println(pc.play(2));
-		System.out.println(pc.play());
-		pc.pausePlayback();
-		pc.resume();
-		pc.skip();
-		pc.back();
-		pc.setVolume("max");
-		pc.setVolume("mute");
-		System.out.println(pc.getCurrentSong().get("name"));
-		
-
-		sc.close();
-	}
 }

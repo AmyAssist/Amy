@@ -203,7 +203,10 @@ public class Authorization {
 		writeToFile();
 	}
 
-	// test without UI or speech
+	/**
+	 * needed for first init. It takes until the UI can control the authorization process. Probably after Sprint 2.
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		Authorization auth = new Authorization();
