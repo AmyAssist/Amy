@@ -333,22 +333,27 @@ public class PlayerLogic {
 			case "mute":
 				setVolume(0);
 				this.volume = 0;
-				return this.volume;
+				break;
 			case "max":
 				setVolume(100);
+				break;
 			case "up":
 				if (this.volume + 10 <= 100) {
 					this.volume += 10;
 					setVolume(this.volume);
+					
 				}
+				break;
 			case "down":
 				if (this.volume + 10 >= 0) {
 					this.volume += 10;
 					setVolume(this.volume);
+					
 				}
-
+				break;
 			default:
 				System.err.println( "Incorrect volume command" );
+				break;
 			}
 			return this.volume;
 		}

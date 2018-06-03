@@ -72,13 +72,12 @@ public class Authorization {
 						.setRedirectUri(this.redirectURI).build();
 
 			} else {
-				fis.close();
 				return false;
 			}
 			if (this.idExport.get("refresh") != null) {
 				this.refreshToken = this.idExport.get("refresh");
 			}
-			fis.close();
+			
 			return true;
 
 		} catch (FileNotFoundException e) {
@@ -88,6 +87,9 @@ public class Authorization {
 			System.err.println("Authentifcation error. " + e);
 			e.printStackTrace();
 			return false;
+		}
+		finally {
+			fis.close();
 		}
 
 	}
@@ -133,9 +135,12 @@ public class Authorization {
 			fos = new FileOutputStream(f);
 			ObjectOutputStream stream = new ObjectOutputStream(fos);
 			stream.writeObject(this.idExport);
-			fos.close();
+			
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
+		}
+		finally {
+			fos.close();
 		}
 
 	}
