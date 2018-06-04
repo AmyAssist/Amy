@@ -13,16 +13,16 @@ public class WeatherSpeechCommand {
 
     @Grammar("today")
     public String weatherToday(String... words) {
-        return weatherAPI.getReportToday();
+        return weatherAPI.getReportToday().toString();
     }
 
     @Grammar("tomorrow")
     public String weatherTomorrow(String... words) {
-        return weatherAPI.getReportTomorrow();
+        return weatherAPI.getReportTomorrow().toString();
     }
 
     @Grammar("week")
     public String weatherWeek(String... words) {
-        return weatherAPI.getReportWeek();
+        return weatherAPI.getReportWeek().toString();
     }
 }

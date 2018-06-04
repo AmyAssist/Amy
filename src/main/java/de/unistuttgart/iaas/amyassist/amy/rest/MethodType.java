@@ -14,5 +14,5 @@ package de.unistuttgart.iaas.amyassist.amy.rest;
  */
 public enum MethodType {
 
-	GET, POST;
+	GET, POST, DELETE;
 }

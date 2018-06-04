@@ -25,30 +25,17 @@ public class WeatherDarkSkyAPI {
         return dailyReports;
     }
 
-    private String trimQuotes(String s) {
-        return s.replaceAll("^\"|\"$", "");
-    }
-
-    private long round(double d) {
-        return Math.round(d);
-    }
-
-    private String formatDaySummary(FIODataPoint p) {
-        return trimQuotes(p.summary()) + " " + round(p.precipProbability() * 100) + "% probability of " + trimQuotes(p.precipType()) + ". Between " + round(p.temperatureMin()) + " and " + round(p.temperatureMax()) + "°C" +". Sunrise is at " + p.sunriseTime() + " and sunset at " + p.sunsetTime();
-    }
-
-    public String getReportToday() {
+    public WeatherReportDay getReportToday() {
         FIODaily d = getDailyReports();
-        return "This is the weather report for today. " + formatDaySummary(d.getDay(0));
+        return new WeatherReportDay("This is the weather report for today.", d.getDay(0));
     }
 
-    public String getReportTomorrow() {
+    public WeatherReportDay getReportTomorrow() {
         FIODaily d = getDailyReports();
-        return "This is the weather report for tomorrow. " + formatDaySummary(d.getDay(1));
+        return new WeatherReportDay("This is the weather report for tomorrow.", d.getDay(1));
     }
 
-    public String getReportWeek() {
-        FIODaily d = getDailyReports();
-        return "This is the weather report for the week. " + d.getSummary();
+    public WeatherReportWeek getReportWeek() {
+        return new WeatherReportWeek("This is the weather report for the week. ", getDailyReports());
     }
 }
