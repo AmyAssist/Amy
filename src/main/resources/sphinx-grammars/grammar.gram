@@ -7,9 +7,35 @@
 grammar grammar;
 public <wakeup> = ( amy );
 public <sleep> = ( sleep );
-public <shutdown> = ( amy shutdown );
+public <shutdown> = ( amy shotdown );
 
 //pre defined rules 
 <digit> = (one | two | three | four | five | six | seven |nine | ten | eleven | twelve | thirteen | fourteen | fifteen | sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | fifty | sixty  | seventy | eighty | ninety | hundred | thousand |million | and )+; 
 
 //custom rules 
+public <5315c8a8-94d1-462a-9845-d74ebeb64a24> = weather week; 
+public <a6eb25bc-d263-4c9d-be61-7b30e746c172> = weather today; 
+public <24faebc3-4b51-443c-ab9a-894a56bfe1d0> = weather tomorrow; 
+public <c938be45-1c42-4dad-8b5d-8e50e0d3f4b8> = Hello world say hello; 
+public <7b52d589-544c-473a-8ec0-f79baa8ec7e7> = music resume; 
+public <56220120-2091-489b-b322-69b1b7e3e9e3> = spotify resume; 
+public <414b2988-5720-488c-9340-a5f08f912e5e> = music play; 
+public <7073ecf2-7739-4242-b54d-192af9fdcd23> = spotify play; 
+public <ab4ea262-62c1-4405-bc62-f36cfaf14984> = music volume (mute|max|up|down); 
+public <124566be-2056-4bf5-88f5-5c7a94b8295f> = spotify volume (mute|max|up|down); 
+public <a6cc4fea-d7e1-4281-911a-7f4e69eaf3e7> = music get currently played song; 
+public <e539ff8d-2b94-4387-8bcf-1053756c63cf> = spotify get currently played song; 
+public <a4645e80-00f3-4bb8-9e11-069051c3b983> = music back; 
+public <3388c884-bf1e-45a4-b260-d6859fb6004f> = spotify back; 
+public <ed7d0361-1b75-43fe-b8fa-b36827779283> = music skip; 
+public <f187a082-d41b-4be1-ac67-3bb2745f98af> = spotify skip; 
+public <9104906f-2959-4e59-8323-69c58f1e8a39> = music get devices; 
+public <ee533924-21ef-430f-a093-be9e66134dd4> = spotify get devices; 
+public <568e0590-5e4f-4fba-951b-63a68a5536c6> = music set device <digit>; 
+public <06431ebd-197e-47de-adea-d44315b7490b> = spotify set device <digit>; 
+public <4d4b3f9e-3f39-42af-8a8e-bbd908876ab1> = music pause; 
+public <1b6e739d-5f47-47b4-ac16-88410dc9565d> = spotify pause; 
+public <ae311fe0-42c1-46c2-89a4-81b755dc664a> = what is the date; 
+public <72024f37-8dd4-477f-af15-af4bbffe4528> = tell me the date; 
+public <d9a1e965-32b4-49b8-875d-1f5a00b3c5e6> = what is the time; 
+public <35d243ff-d4c1-4d0a-9720-99ffe1d523db> = tell me the time; 

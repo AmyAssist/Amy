@@ -78,32 +78,46 @@ public class SpotifySpeech {
 	}
 
 	@Grammar("resume")
-	public void resume(String... params) {
-		this.playerLogic.resume();
+	public String resume(String... params) {
+		if(this.playerLogic.resume()) {
+		return "resume";
+		}
+		return "An error occurred";
 	}
 
 	@Grammar("pause")
-	public void pause(String... params) {
-		this.playerLogic.pausePlayback();
+	public String pause(String... params) {
+		if(this.playerLogic.pausePlayback()) {
+		return "pause";
+		}
+		return "An error occurred";
 	}
 
 	@Grammar("skip")
-	public void skip(String... params) {
-		this.playerLogic.skip();
+	public String skip(String... params) {
+		if(this.playerLogic.skip()) {
+		return "skip";
+		}
+		return "An error occurred";
 	}
 
 	@Grammar("back")
-	public void back(String... params) {
-		this.playerLogic.back();
+	public String back(String... params) {
+		if (this.playerLogic.back()) {
+		return "back";
+		}
+		return "An error occurred";
 	}
 
 	@Grammar("volume (mute|max|up|down)")
-	public void volume(String... params) {
-		if (1 < params.length)
-			this.playerLogic.setVolume(params[1]);
+	public String volume(String... params) {
+		if (1 < params.length) {
+			return Integer.toString(this.playerLogic.setVolume(params[1]));
+		}
+		return "not enough arguments";
 	}
 	@Grammar("get currently played song")
-	public String getCurrentlyPlayed() {
+	public String getCurrentlyPlayed(String... params) {
 		return "track: " + playerLogic.getCurrentSong().get("name") + " by " + playerLogic.getCurrentSong().get("artist");
 	}
 }
