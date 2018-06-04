@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.unistuttgart.iaas.amyassist</groupId>
 	<artifactId>amy</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0</version>
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
 	<properties>
