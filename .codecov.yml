@@ -1,0 +1,13 @@
+codecov:
+  strict_yaml_branch: dev  # only use the latest copy on dev branch
+coverage:
+  range: 50..100
+  status:
+    project:
+      default:
+        target: 90
+        threshold: 10
+    patch:
+      default:
+        threshold: 5
+comment: off

@@ -1,0 +1,282 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "AmyAssistDescription TODO",
+    "version": "1.0",
+    "title": "AmyAssist"
+  },
+  "tags": [
+    {
+      "name": "weather",
+      "description": "all about weather"
+    },
+    {
+      "name": "music"
+    },
+    {
+      "name": "alarmclock"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/weather/today": {
+      "get": {
+        "tags": [
+          "weather"
+        ],
+        "summary": "get todays weather",
+        "description": "returns a weather forcast",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/weatherDay"
+            }
+          }
+        }
+      }
+    },
+    "/weather/tomorrow": {
+      "get": {
+        "tags": [
+          "weather"
+        ],
+        "summary": "get tomorrows weather",
+        "description": "returns a weather forcast",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/weatherDay"
+            }
+          }
+        }
+      }
+    },
+    "/weather/week": {
+      "get": {
+        "tags": [
+          "weather"
+        ],
+        "summary": "get the weather for the week",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/weatherWeek"
+            }
+          }
+        }
+      }
+    },
+    "/music/currentsong": {
+      "get": {
+        "tags": [
+          "music"
+        ],
+        "summary": "get the current song",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/music"
+            }
+          },
+          "400": {
+            "description": "no song playing"
+          }
+        }
+      }
+    },
+    "/music/play": {
+      "post": {
+        "tags": [
+          "music"
+        ],
+        "summary": "play music",
+        "description": "play the music of your choice",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "the music to be played",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/music"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/music/playlist": {
+      "get": {
+        "tags": [
+          "music"
+        ],
+        "summary": "get a playlist",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/playlist"
+            }
+          }
+        }
+      }
+    },
+    "/clock/alarms": {
+      "get": {
+        "tags": [
+          "alarmclock"
+        ],
+        "summary": "get all alarms",
+        "description": "gets all alarms that are currently set",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/clock/alarms/1": {
+      "get": {
+        "tags": [
+          "alarmclock"
+        ],
+        "summary": "get the first alarm",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/clock/newalarm": {
+      "post": {
+        "tags": [
+          "alarmclock"
+        ],
+        "summary": "set a new alarm",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "the new alarm time",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/timestamp"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "weatherDay": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "precipProbability": {
+          "type": "string"
+        },
+        "precipType": {
+          "type": "string"
+        },
+        "temperatureMin": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "temperatureMax": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "sunriseTime": {
+          "type": "string"
+        },
+        "sunsetTime": {
+          "type": "string"
+        }
+      }
+    },
+    "weatherWeek": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "days": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/weatherDay"
+          }
+        }
+      }
+    },
+    "music": {
+      "type": "object",
+      "properties": {
+        "artist": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "playlist": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "songs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/music"
+          }
+        }
+      }
+    },
+    "timestamp": {
+      "type": "object",
+      "properties": {
+        "hour": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minute": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    }
+  }
+}

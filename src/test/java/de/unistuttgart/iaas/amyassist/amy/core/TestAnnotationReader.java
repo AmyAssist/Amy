@@ -1,20 +1,32 @@
 /*
- * Amy Assist
- *
- * Personal Assistance System
- *
- * @author Tim Neumann, Leon Kiefer, Benno Krauss, Christian Braeuner, Felix Burk, Florian Bauer, Kai Menzel, Lars Buttgereit, Muhammed Kaya, Patrick Gebhardt, Patrick Singer, Tobias Siemonsen
- *
+ * This source file is part of the Amy open source project.
+ * For more information see github.com/AmyAssist
+ * 
+ * Copyright (c) 2018 the Amy project authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at 
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package de.unistuttgart.iaas.amyassist.amy.core;
-
-import java.lang.reflect.Method;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.lang.reflect.Method;
+import java.util.Map;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
@@ -38,8 +50,7 @@ class TestAnnotationReader {
 
 	@Test
 	void testSpeechKeyword() {
-		String[] speechKeyword = this.annotationReader
-				.getSpeechKeyword(Plugin.class);
+		String[] speechKeyword = this.annotationReader.getSpeechKeyword(Plugin.class);
 
 		assertThat(speechKeyword, is(arrayWithSize(2)));
 		assertThat(speechKeyword, is(arrayContainingInAnyOrder("test", "unittest")));
@@ -47,9 +58,10 @@ class TestAnnotationReader {
 
 	@Test
 	public void testGrammar() {
-		List<String> grammars = this.annotationReader.getGrammars(Plugin.class);
+		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> grammars = this.annotationReader
+				.getGrammars(Plugin.class);
 
-		assertThat(grammars, containsInAnyOrder("count", "say (hello|test)"));
+		assertThat(grammars.keySet(), containsInAnyOrder("count", "say (hello|test)"));
 	}
 
 	@Test
@@ -57,6 +69,16 @@ class TestAnnotationReader {
 		Method initMethod = this.annotationReader.getInitMethod(Plugin.class);
 
 		assertThat(initMethod, is(notNullValue()));
+	}
+
+	@Test
+	public void testNoSpeechKeyword() {
+		assertThrows(RuntimeException.class, () -> this.annotationReader.getSpeechKeyword(TestAnnotationReader.class));
+	}
+
+	@Test
+	public void testNoInitMethod() {
+		assertThat(this.annotationReader.getInitMethod(TestAnnotationReader.class), is(nullValue()));
 	}
 
 	@SpeechCommand({ "test", "unittest" })
@@ -67,13 +89,40 @@ class TestAnnotationReader {
 		}
 
 		@Grammar("say (hello|test)")
-		public String say(String... s) {
+		public String say(String[] s) {
 			return s[0];
 		}
 
 		@Init
 		public void foo(ICore core) {
 
+		}
+	}
+
+	@Test
+	public void testIllegalTypes() {
+		assertThrows(IllegalArgumentException.class, () -> this.annotationReader.getGrammars(Brocken.class));
+	}
+
+	@SpeechCommand({})
+	class Brocken {
+		@Grammar("count")
+		public int count(int i) {
+			return i;
+		}
+	}
+
+	@Test
+	public void testIllegalReturnType() {
+		String message = assertThrows(IllegalArgumentException.class, () -> this.annotationReader.getGrammars(BrockenReturnType.class)).getMessage();
+		assertThat(message, equalTo("The returntype of a method annotated with @Grammar should be String."));
+	}
+
+	@SpeechCommand({})
+	class BrockenReturnType {
+		@Grammar("count")
+		public int count(String[] i) {
+			return 0;
 		}
 	}
 

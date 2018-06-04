@@ -1,16 +1,29 @@
 /*
- * Amy Assist
- *
- * Personal Assistance System
- *
- * @author Tim Neumann, Leon Kiefer, Benno Krauss, Christian Braeuner, Felix Burk, Florian Bauer, Kai Menzel, Lars Buttgereit, Muhammed Kaya, Patrick Gebhardt, Patrick Singer, Tobias Siemonsen
- *
+ * This source file is part of the Amy open source project.
+ * For more information see github.com/AmyAssist
+ * 
+ * Copyright (c) 2018 the Amy project authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at 
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.reflect.MethodUtils;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
@@ -31,27 +44,25 @@ public class AnnotationReader {
 	 *            The class of which to get the init method
 	 * @return the method or null if not found
 	 */
+	@Deprecated
 	public Method getInitMethod(Class<?> cls) {
-		for (Method method : cls.getMethods()) {
-			if (method.isAnnotationPresent(Init.class)) {
-				if (!method.getReturnType().equals(Void.TYPE)) {
-					System.err.println(
-							"The method annotated with @Init must have return type void");
-					return null;
-				}
-				Class<?>[] parameterTypes = method.getParameterTypes();
-				Class<ICore> c = ICore.class;
-				if (parameterTypes.length != 1
-						|| !parameterTypes[0].equals(c)) {
-					System.err.println(
-							"The method annotated with @Init must have only one parameter of type ICore");
-					return null;
-				}
-
-				return method;
-			}
+		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Init.class);
+		if (methodsWithAnnotation.length != 1) {
+			return null;
 		}
-		return null;
+		Method method = methodsWithAnnotation[0];
+		if (!method.getReturnType().equals(Void.TYPE)) {
+			System.err.println("The method annotated with @Init must have return type void");
+			return null;
+		}
+		Class<?>[] parameterTypes = method.getParameterTypes();
+		Class<ICore> c = ICore.class;
+		if (parameterTypes.length != 1 || !parameterTypes[0].equals(c)) {
+			System.err.println("The method annotated with @Init must have only one parameter of type ICore");
+			return null;
+		}
+
+		return method;
 	}
 
 	/**
@@ -61,16 +72,25 @@ public class AnnotationReader {
 	 *            The class of which to get the grammars
 	 * @return a List of grammars
 	 */
-	public List<String> getGrammars(Class<?> cls) {
-		List<String> list = new ArrayList<>();
-		for (Method method : cls.getMethods()) {
-			if (method.isAnnotationPresent(Grammar.class)) {
-				String grammar = method.getAnnotation(Grammar.class).value();
-				list.add(grammar);
-
+	public Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> getGrammars(Class<?> cls) {
+		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> map = new HashMap<>();
+		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Grammar.class);
+		for (Method method : methodsWithAnnotation) {
+			Class<?>[] parameterTypes = method.getParameterTypes();
+			if (parameterTypes.length != 1 || !parameterTypes[0].isArray()
+					|| !parameterTypes[0].getComponentType().equals(String.class)) {
+				throw new IllegalArgumentException("The method " + method.toString()
+						+ " does not have the correct parameter type. It should be String[].");
 			}
+			if (!method.getReturnType().equals(String.class)) {
+				throw new IllegalArgumentException(
+						"The returntype of a method annotated with @Grammar should be String.");
+			}
+			String grammar = method.getAnnotation(Grammar.class).value();
+			map.put(grammar, new de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand(method, grammar, cls));
+
 		}
-		return list;
+		return map;
 	}
 
 	/**
@@ -82,8 +102,9 @@ public class AnnotationReader {
 	 */
 	public String[] getSpeechKeyword(Class<?> cls) {
 		SpeechCommand speechCommand = cls.getAnnotation(SpeechCommand.class);
-		if (speechCommand != null)
-			return speechCommand.value();
-		return null;
+		if (speechCommand == null)
+			throw new RuntimeException("The class " + cls.getName() + " have no SpeechCommand Annotation.");
+
+		return speechCommand.value();
 	}
 }

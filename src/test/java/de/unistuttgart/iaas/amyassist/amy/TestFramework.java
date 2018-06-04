@@ -1,22 +1,34 @@
 /*
- * Amy Assist
- *
- * Personal Assistance System
- *
- * @author Tim Neumann, Leon Kiefer, Benno Krauss, Christian Braeuner, Felix Burk, Florian Bauer, Kai Menzel, Lars Buttgereit, Muhammed Kaya, Patrick Gebhardt, Patrick Singer, Tobias Siemonsen
- *
+ * This source file is part of the Amy open source project.
+ * For more information see github.com/AmyAssist
+ * 
+ * Copyright (c) 2018 the Amy project authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at 
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package de.unistuttgart.iaas.amyassist.amy;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
+
+import javax.ws.rs.Path;
 
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
+import de.unistuttgart.iaas.amyassist.amy.core.GlobalStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.Storage;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -32,25 +44,35 @@ import de.unistuttgart.iaas.amyassist.amy.rest.Server;
 public class TestFramework {
 
 	private IStorage storage;
-	DependencyInjection dependencyInjection;
-
-	/**
-	 * Get's {@link #dependencyInjection dependencyInjection}
-	 * 
-	 * @return dependencyInjection
-	 */
-	public DependencyInjection getDependencyInjection() {
-		return this.dependencyInjection;
-	}
+	private DependencyInjection dependencyInjection;
+	private Server server;
+	private List<Class<?>> restResources = new ArrayList<>();
 
 	public TestFramework() {
-		this.storage = Mockito.mock(IStorage.class);
+		this.storage = Mockito.mock(Storage.class, Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS)
+				.useConstructor("", new GlobalStorage()));
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
-		this.dependencyInjection.addExternalService(IStorage.class,
-				this.storage);
-		this.dependencyInjection.addExternalService(Server.class,
-				new Server(this.dependencyInjection));
+		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
+		this.dependencyInjection.register(Server.class);
+	}
+
+	void setup(Object testInstance) {
+		this.dependencyInjection.inject(testInstance);
+	}
+
+	public void before() {
+		if (!this.restResources.isEmpty()) {
+			this.server = this.dependencyInjection.getService(Server.class);
+			this.server.start(this.restResources.toArray(new Class<?>[this.restResources.size()]));
+		}
+
+	}
+
+	public void after() {
+		if (this.server != null) {
+			this.server.shutdown();
+		}
 	}
 
 	@Service(ICore.class)
@@ -85,52 +107,10 @@ public class TestFramework {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection#get(Class)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection#getService(Class)
 	 */
 	public <T> T get(Class<T> serviceType) {
-		return this.dependencyInjection.get(serviceType);
-	}
-
-	/**
-	 * Instantiate a plugin class with core components. Can only be used on
-	 * SpeechCommend classes.
-	 * 
-	 * @param cls
-	 *            the plugin class
-	 * @return an instance of the given class
-	 */
-	public <T> T init(Class<T> cls) {
-		AnnotationReader annotationReader = new AnnotationReader();
-		String[] speechKeyword = annotationReader.getSpeechKeyword(cls);
-		if (speechKeyword == null) {
-			fail("The given class: " + cls.getName()
-					+ " does not have a SpeechCommand Annotation");
-			return null;
-		}
-		Method initMethod = annotationReader.getInitMethod(cls);
-
-		try {
-			T newInstance;
-			if (cls.isAnnotationPresent(Service.class)) {
-				newInstance = this.dependencyInjection.get(cls);
-			} else {
-				newInstance = cls.getConstructor().newInstance();
-			}
-
-			if (initMethod != null) {
-				initMethod.invoke(newInstance,
-						this.dependencyInjection.get(ICore.class));
-			}
-
-			return newInstance;
-		} catch (NoSuchMethodException | SecurityException
-				| InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
-			fail("The given class: " + cls.getName()
-					+ " is not managed by the framework and cant be initialized",
-					e);
-		}
-		return null;
+		return this.dependencyInjection.getService(serviceType);
 	}
 
 	public static Consumer<IStorage> store(String key, String value) {
@@ -139,4 +119,46 @@ public class TestFramework {
 			Mockito.when(storage.get(key)).thenReturn(value);
 		};
 	}
+
+	/**
+	 * create a mock for the serviceType and bind it in the DI.
+	 * 
+	 * @param serviceType
+	 * @return the service mock
+	 */
+	public <T> T mockService(Class<T> serviceType) {
+		T mock = Mockito.mock(serviceType);
+		this.dependencyInjection.addExternalService(serviceType, mock);
+		return mock;
+	}
+
+	/**
+	 * specify the Service Under Test
+	 * 
+	 * @param serviceClass
+	 *            the class to be tested
+	 * @return the ServiceUnderTest
+	 */
+	public <T> T setServiceUnderTest(Class<T> serviceClass) {
+		if (serviceClass.isAnnotationPresent(Service.class)) {
+			this.dependencyInjection.register(serviceClass);
+			return this.dependencyInjection.create(serviceClass);
+		}
+		throw new RuntimeException();
+	}
+
+	/**
+	 * specify the Rest resource
+	 * 
+	 * @param resource
+	 *            the class of the Rest resource
+	 */
+	public void setRESTResource(Class<?> resource) {
+		if (resource.isAnnotationPresent(Path.class)) {
+			this.restResources.add(resource);
+		} else {
+			throw new RuntimeException();
+		}
+	}
+
 }

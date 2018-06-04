@@ -1,11 +1,22 @@
 /*
- * Amy Assist
- *
- * Personal Assistance System
- *
- * @author Tim Neumann, Leon Kiefer, Benno Krauss, Christian Braeuner, Felix Burk, Florian Bauer, Kai Menzel, Lars Buttgereit, Muhammed Kaya, Patrick Gebhardt, Patrick Singer, Tobias Siemonsen
- *
+ * This source file is part of the Amy open source project.
+ * For more information see github.com/AmyAssist
+ * 
+ * Copyright (c) 2018 the Amy project authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at 
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.util.ArrayList;
@@ -16,7 +27,7 @@ import java.util.Map;
 /**
  * generates a valid *.gram file, keywords get replaced by pre defined rules
  * JSGF specification: https://www.w3.org/TR/jsgf/
- * 
+ *
  * @author Felix Burk
  */
 public class GrammarParser {
@@ -31,15 +42,22 @@ public class GrammarParser {
 
 	/**
 	 * initializes the parser
-	 * 
-	 * possible expansions: more custom keywords, weights may be supported, <NULL>
-	 * and <VOID> support, Unary Operators (kleene star, plus operator and tags)
-	 * 
+	 *
+	 * possible expansions: more custom keywords, weights may be supported,
+	 * <NULL> and <VOID> support, Unary Operators (kleene star, plus operator
+	 * and tags)
+	 *
+	 * @param name
+	 *            The name of the grammar
+	 *
 	 * @param wakeup
+	 *            The wakeup call in this grammar.
 	 * @param sleep
+	 *            The sleep call in this grammar.
 	 * @param shutdown
+	 *            The shutdown call in this grammar.
 	 */
-	GrammarParser(String name, String wakeup, String sleep, String shutdown) {
+	public GrammarParser(String name, String wakeup, String sleep, String shutdown) {
 		this.wakeup = wakeup;
 		this.sleep = sleep;
 		this.shutdown = shutdown;
@@ -50,7 +68,10 @@ public class GrammarParser {
 
 	}
 
-	String getGrammar() {
+	/**
+	 * @return The grammar generated
+	 */
+	public String getGrammar() {
 		// header
 		String grammar = "#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n" + " */\n" + "\n";
 
@@ -59,16 +80,17 @@ public class GrammarParser {
 		grammar += "public <sleep> = ( " + this.sleep + " );\n";
 		grammar += "public <shutdown> = ( " + this.shutdown + " );\n";
 
-		grammar += "\n#pre defined rules \n";
+		grammar += "\n//pre defined rules \n";
 
 		// pre defined rules
 		// TODO add them to external file via import rule in JSGF
 		grammar += "<digit> = (one | two | three | four | five | six | seven |"
 				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
 				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
-				+ "fifty | sixty  | seventy | eighty | ninety | hundred | thousand |" + "million | and )+ \n";
+				+ "fifty | sixty  | seventy | eighty | ninety | hundred | thousand |" + "million | and )+; \n";
 
-		grammar += "\n#custom rules \n";
+		grammar += "\n//custom rules \n";
+		
 		for (String s : this.addedRules) {
 			grammar += s;
 		}
@@ -76,15 +98,25 @@ public class GrammarParser {
 		return grammar;
 	}
 
-	void addRule(String ruleName, String keyword) {
-		this.addedRules.add("public " + "<" + ruleName + ">" + " = " + parseKeyword(keyword) + "; \n");
+	/**
+	 * Adds a rule to the grammar
+	 *
+	 * @param ruleName
+	 *            The name of the rule
+	 * @param keyword
+	 *            The keyword
+	 */
+	public void addRule(String ruleName, String keyword, String grammar) {
+		this.addedRules.add("public " + "<" + ruleName + ">" + " = " + this.parseKeyword(keyword) + " "
+				+ this.parseKeyword(grammar) + "; \n");
 	}
 
 	/**
 	 * replace keywords with corresponding pre defined rule
-	 * 
+	 *
 	 * @param keyword
-	 * @return
+	 *            The keyword
+	 * @return the corresponding rule
 	 */
 	private String parseKeyword(String keyword) {
 		String parsedKeyword = "";

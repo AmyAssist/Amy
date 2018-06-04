@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.unistuttgart.iaas.amyassist</groupId>
 	<artifactId>amy</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0</version>
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
 	<properties>
@@ -17,7 +17,33 @@
 		<jersey.version>2.27</jersey.version>
 		<jackson.version>2.27</jackson.version>
 	</properties>
+	<repositories>
+		<repository>
+      		<id>snapshots-repo</id>
+        	<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        	<releases><enabled>false</enabled></releases>
+        	<snapshots><enabled>true</enabled></snapshots>
+		</repository>
+	</repositories>
 	<dependencies>
+
+		<!-- Spotify Web API -->
+		<dependency>
+			<groupId>se.michaelthelin.spotify</groupId>
+			<artifactId>spotify-web-api-java</artifactId>
+			<version>2.0.2</version>
+		</dependency>
+
+		<dependency>
+	  		<groupId>edu.cmu.sphinx</groupId>
+	  		<artifactId>sphinx4-core</artifactId>
+	  		<version>5prealpha-SNAPSHOT</version>
+		</dependency>
+	  	<dependency>
+	  		<groupId>edu.cmu.sphinx</groupId>
+	  		<artifactId>sphinx4-data</artifactId>
+	  		<version>5prealpha-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
@@ -76,16 +102,16 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.7</version>
 		</dependency>
-		<!-- Workaround TODO remove -->
-		<dependency>
-			<groupId>org.reflections</groupId>
-			<artifactId>reflections</artifactId>
-			<version>0.9.11</version>
-		</dependency>
 		<dependency>
 			<groupId>com.googlecode.clichemaven</groupId>
 			<artifactId>cliche</artifactId>
 			<version>110413</version>
+		</dependency>
+		<!-- weather plugin -->
+		<dependency>
+			<groupId>com.github.dvdme</groupId>
+			<artifactId>ForecastIOLib</artifactId>
+			<version>LATEST</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -97,11 +123,6 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.eluder.coveralls</groupId>
-				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>4.3.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
