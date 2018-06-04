@@ -13,7 +13,7 @@ cache:
 jobs:
   include:
     - stage: deploy
-      script: ./deploy.sh
+      script: ./scripts/deployGH-Pages.sh
       deploy:
         provider: pages
         skip_cleanup: true
