@@ -1,5 +1,5 @@
-target/
-src/main/resources/sphinx-grammars/
+*/target/
+*/src/main/resources/sphinx-grammars/
 
 pom.xml.tag
 pom.xml.releaseBackup
