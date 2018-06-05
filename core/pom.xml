@@ -5,50 +5,50 @@
 	<artifactId>amy-core</artifactId>
 	<name>Amy Core</name>
 	<description>The Amy core framework</description>
-        <parent>
-                <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                <artifactId>amy</artifactId>
-                <version>0.2.0-Snapshot</version>
-                <relativePath>../pom.xml</relativePath>
-        </parent>
-        <properties>
-                <sphinx.version>5prealpha-SNAPSHOT</sphinx.version>
-                <cliche.version>110413</cliche.version>
-        </properties>
+	<parent>
+		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<artifactId>amy</artifactId>
+		<version>0.2.0-Snapshot</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<properties>
+		<sphinx.version>5prealpha-SNAPSHOT</sphinx.version>
+		<cliche.version>110413</cliche.version>
+	</properties>
 	<dependencies>
-                <dependency>
-	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-di</artifactId>
-                        <version>${amy.di.version}</version>
-		</dependency>
-                <dependency>
-	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-api</artifactId>
-                        <version>${amy.api.version}</version>
-		</dependency>
-                <dependency>
-	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-http-server</artifactId>
-                        <version>${amy.http-server.version}</version>
-		</dependency>
-                <dependency>
-	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-testing-framework</artifactId>
-                        <version>${amy.testing-framework.version}</version>
-                        <scope>test</scope>
-		</dependency>
-                <!-- CMU Sphinx for SR -->
 		<dependency>
-	  		<groupId>edu.cmu.sphinx</groupId>
-	  		<artifactId>sphinx4-core</artifactId>
-	  		<version>${sphinx.version}</version>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-di</artifactId>
+			<version>${amy.di.version}</version>
 		</dependency>
-	  	<dependency>
-	  		<groupId>edu.cmu.sphinx</groupId>
-	  		<artifactId>sphinx4-data</artifactId>
-	  		<version>${sphinx.version}</version>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-api</artifactId>
+			<version>${amy.api.version}</version>
 		</dependency>
-		<!--  Cliche for Console -->
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-http-server</artifactId>
+			<version>${amy.http-server.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-testing-framework</artifactId>
+			<version>${amy.testing-framework.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- CMU Sphinx for SR -->
+		<dependency>
+			<groupId>edu.cmu.sphinx</groupId>
+			<artifactId>sphinx4-core</artifactId>
+			<version>${sphinx.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.cmu.sphinx</groupId>
+			<artifactId>sphinx4-data</artifactId>
+			<version>${sphinx.version}</version>
+		</dependency>
+		<!-- Cliche for Console -->
 		<dependency>
 			<groupId>com.googlecode.clichemaven</groupId>
 			<artifactId>cliche</artifactId>

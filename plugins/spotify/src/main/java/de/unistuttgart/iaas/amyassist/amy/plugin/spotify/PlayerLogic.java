@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 
 import com.google.gson.JsonParser;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -39,7 +38,6 @@ import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrack
 import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
 
 /**
  * TODO: This class have methods to control a spotify client from a user. For

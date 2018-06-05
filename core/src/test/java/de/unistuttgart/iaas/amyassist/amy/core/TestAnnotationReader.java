@@ -23,15 +23,12 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 /**
@@ -65,20 +62,8 @@ class TestAnnotationReader {
 	}
 
 	@Test
-	public void testInit() {
-		Method initMethod = this.annotationReader.getInitMethod(Plugin.class);
-
-		assertThat(initMethod, is(notNullValue()));
-	}
-
-	@Test
 	public void testNoSpeechKeyword() {
 		assertThrows(RuntimeException.class, () -> this.annotationReader.getSpeechKeyword(TestAnnotationReader.class));
-	}
-
-	@Test
-	public void testNoInitMethod() {
-		assertThat(this.annotationReader.getInitMethod(TestAnnotationReader.class), is(nullValue()));
 	}
 
 	@SpeechCommand({ "test", "unittest" })
@@ -91,11 +76,6 @@ class TestAnnotationReader {
 		@Grammar("say (hello|test)")
 		public String say(String[] s) {
 			return s[0];
-		}
-
-		@Init
-		public void foo(ICore core) {
-
 		}
 	}
 
@@ -114,7 +94,8 @@ class TestAnnotationReader {
 
 	@Test
 	public void testIllegalReturnType() {
-		String message = assertThrows(IllegalArgumentException.class, () -> this.annotationReader.getGrammars(BrockenReturnType.class)).getMessage();
+		String message = assertThrows(IllegalArgumentException.class,
+				() -> this.annotationReader.getGrammars(BrockenReturnType.class)).getMessage();
 		assertThat(message, equalTo("The returntype of a method annotated with @Grammar should be String."));
 	}
 

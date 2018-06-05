@@ -22,8 +22,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 /**
@@ -87,17 +85,4 @@ public class AlarmClockSpeech {
 	private boolean editAlarm() {
 		return this.logic.editAlarm("1", "10");
 	}
-
-	/**
-	 * Initialization method
-	 *
-	 * @param core
-	 *            The core
-	 */
-	@Init
-	public void init(ICore core) {
-		this.logic = new AlarmClockLogic();
-		this.logic.init(core);
-	}
-
 }

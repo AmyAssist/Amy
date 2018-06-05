@@ -30,7 +30,6 @@ import javax.ws.rs.Path;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
@@ -48,7 +47,7 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
  * 
  * @author Tim Neumann, Leon Kiefer
  */
-public class Core implements ICore, SpeechInputHandler {
+public class Core implements SpeechInputHandler {
 	private List<Thread> threads;
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 	private DependencyInjection di = new DependencyInjection();
@@ -143,14 +142,6 @@ public class Core implements ICore, SpeechInputHandler {
 				this.server.register(cls);
 			}
 		}
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore#getStorage()
-	 */
-	@Override
-	public IStorage getStorage() {
-		return this.storage;
 	}
 
 	/**

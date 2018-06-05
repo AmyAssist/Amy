@@ -28,9 +28,7 @@ import javax.ws.rs.Path;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 
@@ -71,22 +69,6 @@ public class TestFramework {
 		if (this.server != null) {
 			this.server.shutdown();
 		}
-	}
-
-	@Service(ICore.class)
-	private class Core implements ICore {
-
-		@Reference
-		private IStorage storage;
-
-		/**
-		 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore#getStorage()
-		 */
-		@Override
-		public IStorage getStorage() {
-			return this.storage;
-		}
-
 	}
 
 	public IStorage storage(Consumer<IStorage>... modifiers) {

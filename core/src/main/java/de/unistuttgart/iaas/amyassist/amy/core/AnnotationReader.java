@@ -26,8 +26,6 @@ import java.util.Map;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Init;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 /**
@@ -36,34 +34,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
  * @author Leon Kiefer
  */
 public class AnnotationReader {
-
-	/**
-	 * Get's the with @Init annotated init method of the class
-	 * 
-	 * @param cls
-	 *            The class of which to get the init method
-	 * @return the method or null if not found
-	 */
-	@Deprecated
-	public Method getInitMethod(Class<?> cls) {
-		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Init.class);
-		if (methodsWithAnnotation.length != 1) {
-			return null;
-		}
-		Method method = methodsWithAnnotation[0];
-		if (!method.getReturnType().equals(Void.TYPE)) {
-			System.err.println("The method annotated with @Init must have return type void");
-			return null;
-		}
-		Class<?>[] parameterTypes = method.getParameterTypes();
-		Class<ICore> c = ICore.class;
-		if (parameterTypes.length != 1 || !parameterTypes[0].equals(c)) {
-			System.err.println("The method annotated with @Init must have only one parameter of type ICore");
-			return null;
-		}
-
-		return method;
-	}
 
 	/**
 	 * Get's the annotated grammars of this class

@@ -27,7 +27,6 @@ import javax.sound.sampled.Clip;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.ICore;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 
@@ -49,7 +48,8 @@ public class AlarmClockLogic {
 	private static final String ALARMCOUNTER = "alarmCounter";
 	private static final String TIMERCOUNTER = "timerCounter";
 
-	private static final File ALARMSOUND = new File("src/main/resources/alarmsound.wav");
+	private static final File ALARMSOUND = new File(
+			"src/main/resources/alarmsound.wav");
 
 	/**
 	 * Reads out the given alarm per Text-to-speech
@@ -69,12 +69,12 @@ public class AlarmClockLogic {
 	 * @return runnable
 	 *
 	 */
-	@SuppressWarnings("resource")
 	private Runnable createAlarmRunnable(int alarmNumber) {
 		return () -> {
 			if (this.storage.has("alarm" + alarmNumber)) {
 				try {
-					while (this.storage.get("alarm" + alarmNumber).split(";")[2].equals("true")) {
+					while (this.storage.get("alarm" + alarmNumber).split(";")[2]
+							.equals("true")) {
 						Clip clip = AudioSystem.getClip();
 						clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
 						clip.start();
@@ -101,7 +101,8 @@ public class AlarmClockLogic {
 		return () -> {
 			if (this.storage.has("timer" + timerNumber)) {
 				try {
-					while (this.storage.get("timer" + timerNumber).split(";")[2].equals("true")) {
+					while (this.storage.get("timer" + timerNumber).split(";")[2]
+							.equals("true")) {
 						Clip clip = AudioSystem.getClip();
 						clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
 						clip.start();
@@ -130,7 +131,8 @@ public class AlarmClockLogic {
 		int counter = Integer.parseInt(this.storage.get(ALARMCOUNTER));
 		counter++;
 		this.storage.put(ALARMCOUNTER, Integer.toString(counter));
-		this.storage.put("alarm" + counter, alarmTime + ";" + "" + System.currentTimeMillis() + ";" + "true");
+		this.storage.put("alarm" + counter, alarmTime + ";" + ""
+				+ System.currentTimeMillis() + ";" + "true");
 
 		Runnable alarmRunnable = createAlarmRunnable(counter);
 		Calendar current = Calendar.getInstance();
@@ -156,7 +158,8 @@ public class AlarmClockLogic {
 		int counter = Integer.parseInt(this.storage.get(TIMERCOUNTER));
 		counter++;
 		this.storage.put(TIMERCOUNTER, Integer.toString(counter));
-		this.storage.put("timer" + counter, "" + delay + ";" + "" + System.currentTimeMillis() + ";" + "true");
+		this.storage.put("timer" + counter, "" + delay + ";" + ""
+				+ System.currentTimeMillis() + ";" + "true");
 		Runnable timerRunnable = createTimerRunnable(counter);
 		Calendar alarmTime = Calendar.getInstance();
 		alarmTime.add(Calendar.MILLISECOND, (int) delay);
@@ -224,7 +227,8 @@ public class AlarmClockLogic {
 			String alarm = this.storage.get(specificAlarm);
 			String[] params = alarm.split(";");
 			try {
-				this.storage.put(specificAlarm, params[0] + ";" + params[1] + ";" + "false");
+				this.storage.put(specificAlarm,
+						params[0] + ";" + params[1] + ";" + "false");
 			} catch (ArrayIndexOutOfBoundsException e) {
 				System.err.println("Something went wrong!");
 				return false;
@@ -255,7 +259,8 @@ public class AlarmClockLogic {
 	 */
 	protected String[] getAllAlarms() {
 		String[] allAlarms = {};
-		for (int i = 1; i <= Integer.parseInt(this.storage.get(ALARMCOUNTER)); i++) {
+		for (int i = 1; i <= Integer
+				.parseInt(this.storage.get(ALARMCOUNTER)); i++) {
 			if (this.storage.has("alarm" + i)) {
 				alarmOutput(this.storage.get("alarm" + i));
 				allAlarms[i] = "alarm" + i;
@@ -283,12 +288,12 @@ public class AlarmClockLogic {
 	}
 
 	/**
-	 * Init method for logic class.
+	 * Init method for logic class. TODO call die method from DI
 	 *
 	 * @param core
 	 *            The core
 	 */
-	public void init(ICore core) {
+	public void init() {
 		if (!this.storage.has(ALARMCOUNTER))
 			this.storage.put(ALARMCOUNTER, "0");
 		if (!this.storage.has(TIMERCOUNTER))
