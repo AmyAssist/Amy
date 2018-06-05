@@ -12,6 +12,7 @@
 		<!-- General settings -->
                 <java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<dependency.locations.enabled>false</dependency.locations.enabled>
 		<!-- Amy versions to depend on -->
 		<amy.di.api.version>0.2.0-Snapshot</amy.di.api.version>
 		<amy.di.version>0.2.0-Snapshot</amy.di.version>
