@@ -9,17 +9,36 @@
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
 	<properties>
+		<!-- General settings -->
                 <java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- Amy versions to depend on -->
+		<amy.di.api.version>0.2.0-Snapshot</amy.di.api.version>
+		<amy.di.version>0.2.0-Snapshot</amy.di.version>
+                <amy.api.version>0.2.0-Snapshot</amy.api.version>
+                <amy.http-server.version>0.2.0-Snapshot</amy.http-server.version>
+                <amy.testing-framework.version>0.2.0-Snapshot</amy.testing-framework.version>
+                <amy.core.version>0.2.0-Snapshot</amy.core.version>
+                <!-- External dependency versions. Only project wide dependencies here -->
                 <junit.jupiter.version>5.1.0</junit.jupiter.version>
 		<junit.platform.version>1.1.0</junit.platform.version>
 		<hamcrest.version>1.3</hamcrest.version>
-		<mockito.version>2.18.3</mockito.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jersey.version>2.27</jersey.version>
-		<jackson.version>2.27</jackson.version>
+                <mockito.version>2.18.3</mockito.version>
+                <jersey.version>2.27</jersey.version>
+                <jackson.version>2.27</jackson.version>
 	</properties>
         <modules>
+                <module>di-api</module>
+                <module>di</module>
+                <module>api</module>
+                <module>http-server</module>
+                <module>testing-framework</module>
                 <module>core</module>
+                <module>plugins/alarmclock</module>
+                <module>plugins/example</module>
+                <module>plugins/spotify</module>
+                <module>plugins/systemtime</module>
+                <module>plugins/weather</module>
         </modules>
 	<repositories>
 		<repository>
@@ -29,38 +48,14 @@
         	<snapshots><enabled>true</enabled></snapshots>
 		</repository>
 	</repositories>
-	<dependencies>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>${junit.jupiter.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>${junit.jupiter.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
+        <dependencies>
+                <dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-launcher</artifactId>
 			<version>${junit.platform.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-all</artifactId>
-			<version>${hamcrest.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>${mockito.version}</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+        </dependencies>
 	<build>
 		<plugins>
 			<plugin>

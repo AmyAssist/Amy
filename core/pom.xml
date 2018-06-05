@@ -6,74 +6,53 @@
 	<name>Amy Core</name>
 	<description>The Amy core framework</description>
         <parent>
-            <groupId>de.unistuttgart.iaas.amyassist</groupId>
-            <artifactId>amy</artifactId>
-            <version>0.2.0-Snapshot</version>
+                <groupId>de.unistuttgart.iaas.amyassist</groupId>
+                <artifactId>amy</artifactId>
+                <version>0.2.0-Snapshot</version>
+                <relativePath>../pom.xml</relativePath>
         </parent>
+        <properties>
+                <sphinx.version>5prealpha-SNAPSHOT</sphinx.version>
+                <cliche.version>110413</cliche.version>
+        </properties>
 	<dependencies>
-
-		<!-- Spotify Web API -->
-		<dependency>
-			<groupId>se.michaelthelin.spotify</groupId>
-			<artifactId>spotify-web-api-java</artifactId>
-			<version>2.0.2</version>
+                <dependency>
+	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+                        <artifactId>amy-di</artifactId>
+                        <version>${amy.di.version}</version>
 		</dependency>
-
+                <dependency>
+	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+                        <artifactId>amy-api</artifactId>
+                        <version>${amy.api.version}</version>
+		</dependency>
+                <dependency>
+	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+                        <artifactId>amy-http-server</artifactId>
+                        <version>${amy.http-server.version}</version>
+		</dependency>
+                <dependency>
+	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+                        <artifactId>amy-testing-framework</artifactId>
+                        <version>${amy.testing-framework.version}</version>
+                        <scope>test</scope>
+		</dependency>
+                <!-- CMU Sphinx for SR -->
 		<dependency>
 	  		<groupId>edu.cmu.sphinx</groupId>
 	  		<artifactId>sphinx4-core</artifactId>
-	  		<version>5prealpha-SNAPSHOT</version>
+	  		<version>${sphinx.version}</version>
 		</dependency>
 	  	<dependency>
 	  		<groupId>edu.cmu.sphinx</groupId>
 	  		<artifactId>sphinx4-data</artifactId>
-	  		<version>5prealpha-SNAPSHOT</version>
+	  		<version>${sphinx.version}</version>
 		</dependency>
-		<!-- Jersey JAX-RS -->
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-grizzly2-http</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.inject</groupId>
-			<artifactId>jersey-hk2</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<!-- Prevents java.lang.NoClassDefFoundError: javax/annotation/Priority caused by jersey-->
-		<dependency>
-  			<groupId>javax.annotation</groupId>
-  			<artifactId>javax.annotation-api</artifactId>
-  			<version>1.3.1</version>
-		</dependency>
-
-
-		<!-- Jackson as JSON provider -->
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.7</version>
-		</dependency>
+		<!--  Cliche for Console -->
 		<dependency>
 			<groupId>com.googlecode.clichemaven</groupId>
 			<artifactId>cliche</artifactId>
-			<version>110413</version>
-		</dependency>
-		<!-- weather plugin -->
-		<dependency>
-			<groupId>com.github.dvdme</groupId>
-			<artifactId>ForecastIOLib</artifactId>
-			<version>LATEST</version>
+			<version>${cliche.version}</version>
 		</dependency>
 	</dependencies>
 </project>

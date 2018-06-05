@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>amy-http-server</artifactId>
+	<name>Amy http-server</name>
+	<description>The Amy http server</description>
+        <parent>
+                <groupId>de.unistuttgart.iaas.amyassist</groupId>
+                <artifactId>amy</artifactId>
+                <version>0.2.0-Snapshot</version>
+                <relativePath>../pom.xml</relativePath>
+        </parent>
+        <dependencies>
+                <dependency>
+	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+                        <artifactId>amy-di-api</artifactId>
+                        <version>${amy.di.api.version}</version>
+		</dependency>
+		 <dependency>
+	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+                        <artifactId>amy-api</artifactId>
+                        <version>${amy.api.version}</version>
+		</dependency>
+		 <!-- Jersey JAX-RS -->
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-grizzly2-http</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.inject</groupId>
+			<artifactId>jersey-hk2</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+
+		<!-- Jackson as JSON provider -->
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+	</dependencies>
+</project>
