@@ -1,6 +1,5 @@
 #!/bin/bash
 mkdir gh-pages
-mvn install
-mvn project-info-reports:dependencies
+mvn project-info-reports:dependencies -DskipTests=true
 mv target/site gh-pages/dependencies
 mv gh-pages/dependencies/dependencies.html gh-pages/dependencies/index.html
