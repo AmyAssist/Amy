@@ -17,18 +17,13 @@
         <dependencies>
                 <dependency>
                         <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-di</artifactId>
+                        <artifactId>amy-di-api</artifactId>
                         <version>${amy.di.version}</version>
                 </dependency>
                 <dependency>
                         <groupId>de.unistuttgart.iaas.amyassist</groupId>
                         <artifactId>amy-api</artifactId>
                         <version>${amy.api.version}</version>
-                </dependency>
-                <dependency>
-                        <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-http-server</artifactId>
-                        <version>${amy.http-server.version}</version>
                 </dependency>
                 <dependency>
                         <groupId>de.unistuttgart.iaas.amyassist</groupId>
@@ -43,4 +38,24 @@
 			<version>${spotify-web-api.version}</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

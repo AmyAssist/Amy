@@ -14,8 +14,8 @@
         <dependencies>
                 <dependency>
                         <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-di</artifactId>
-                        <version>${amy.di.version}</version>
+                        <artifactId>amy-di-api</artifactId>
+                        <version>${amy.di.api.version}</version>
                 </dependency>
                 <dependency>
                         <groupId>de.unistuttgart.iaas.amyassist</groupId>
@@ -24,14 +24,29 @@
                 </dependency>
                 <dependency>
                         <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-http-server</artifactId>
-                        <version>${amy.http-server.version}</version>
-                </dependency>
-                <dependency>
-                        <groupId>de.unistuttgart.iaas.amyassist</groupId>
                         <artifactId>amy-testing-framework</artifactId>
                         <version>${amy.testing-framework.version}</version>
                         <scope>test</scope>
                 </dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

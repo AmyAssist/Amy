@@ -6,7 +6,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -64,7 +64,7 @@ public class PomParser {
 		}
 
 		this.document.getDocumentElement().normalize();
-		//this.logXML(this.getRoot(), "");
+		// this.logXML(this.getRoot(), "");
 	}
 
 	/**
@@ -78,21 +78,44 @@ public class PomParser {
 	 * @return the id of the artifact
 	 */
 	public String getId() {
-		return this.getFirstChildNodeWithName(this.getRoot(), "artifactId").getFirstChild().getNodeValue();
+		Node artifactNode = this.getFirstChildNodeWithName(this.getRoot(), "artifactId");
+		if (artifactNode == null)
+			throw new IllegalStateException("No artifact node...");
+		return artifactNode.getFirstChild().getNodeValue();
 	}
 
 	/**
 	 * @return the group id of the artifact
 	 */
 	public String getGroupId() {
-		return this.getFirstChildNodeWithName(this.getRoot(), "groupId").getFirstChild().getNodeValue();
+		Node groupNode = this.getFirstChildNodeWithName(this.getRoot(), "groupId");
+		if (groupNode == null) {
+			Node parentNode = this.getFirstChildNodeWithName(this.getRoot(), "parent");
+			if (parentNode == null)
+				throw new IllegalStateException("No group node and no parent node...");
+			groupNode = this.getFirstChildNodeWithName(parentNode, "groupId");
+		}
+		if (groupNode == null)
+			throw new IllegalStateException("No group node and no group node in parent node...");
+
+		return groupNode.getFirstChild().getNodeValue();
 	}
 
 	/**
 	 * @return the version of the artifact
 	 */
 	public String getVersion() {
-		return this.getFirstChildNodeWithName(this.getRoot(), "version").getFirstChild().getNodeValue();
+		Node versionNode = this.getFirstChildNodeWithName(this.getRoot(), "version");
+		if (versionNode == null) {
+			Node parentNode = this.getFirstChildNodeWithName(this.getRoot(), "parent");
+			if (parentNode == null)
+				throw new IllegalStateException("No version node and no parent node...");
+			versionNode = this.getFirstChildNodeWithName(parentNode, "version");
+		}
+		if (versionNode == null)
+			throw new IllegalStateException("No version node and no version node in parent node...");
+
+		return versionNode.getFirstChild().getNodeValue();
 	}
 
 	/**
@@ -109,6 +132,8 @@ public class PomParser {
 	 */
 	public String[] getDependencyIds() {
 		Node dependencies = this.getFirstChildNodeWithName(this.getRoot(), "dependencies");
+		if (dependencies == null)
+			return new String[0];
 		ArrayList<String> res = new ArrayList<>();
 		for (int i = 0; i < dependencies.getChildNodes().getLength(); i++) {
 			Node dep = dependencies.getChildNodes().item(i);
@@ -128,12 +153,12 @@ public class PomParser {
 	 * @return The root node
 	 */
 	private Node getRoot() {
-		return this.document.getFirstChild();
+		return this.document.getDocumentElement();
 	}
 
 	/**
-	 * Get's the first child node with the given name.
-	 * Only searches in the direct childs, and does not go deeper into the tree.
+	 * Get's the first child node with the given name. Only searches in the
+	 * direct childs, and does not go deeper into the tree.
 	 * 
 	 * @param name
 	 *            The name of the node to search
@@ -174,12 +199,14 @@ public class PomParser {
 
 	private String getNodeAttributeString(Node node) {
 
-		if (node.getAttributes() == null || node.getAttributes().getLength() < 1) return "()";
+		if (node.getAttributes() == null || node.getAttributes().getLength() < 1)
+			return "()";
 
 		String res = "(";
 
 		for (int i = 0; i < node.getAttributes().getLength(); i++) {
-			res += node.getAttributes().item(i).getNodeName() + ":" + node.getAttributes().item(i).getNodeValue() + ", ";
+			res += node.getAttributes().item(i).getNodeName() + ":" + node.getAttributes().item(i).getNodeValue()
+					+ ", ";
 		}
 		res = res.substring(0, res.length() - 2);
 		res += ")";
