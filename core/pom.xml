@@ -15,6 +15,19 @@
 		<sphinx.version>5prealpha-SNAPSHOT</sphinx.version>
 		<cliche.version>110413</cliche.version>
 	</properties>
+	<repositories>
+  	  <!-- used for MARY repository -->
+	  <repository>
+	  	<id>mary-repo</id>
+	    <url>https://jcenter.bintray.com</url>
+	  </repository>
+      <repository>
+      	<id>snapshots-repo</id>
+        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        <releases><enabled>false</enabled></releases>
+        <snapshots><enabled>true</enabled></snapshots>
+      </repository>
+	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
@@ -53,6 +66,11 @@
 			<groupId>com.googlecode.clichemaven</groupId>
 			<artifactId>cliche</artifactId>
 			<version>${cliche.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.dfki.mary</groupId>
+			<artifactId>voice-dfki-poppy-hsmm</artifactId>
+			<version>5.2</version>
 		</dependency>
 	</dependencies>
 </project>
