@@ -50,7 +50,6 @@ public class AlarmClockTest {
 	public void setup() {
 		this.mockService = this.framework.mockService(TaskSchedulerAPI.class);
 		this.acl = this.framework.setServiceUnderTest(AlarmClockLogic.class);
-		this.acl.init();
 	}
 
 	/**

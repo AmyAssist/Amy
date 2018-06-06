@@ -122,7 +122,9 @@ public class TestFramework {
 	public <T> T setServiceUnderTest(Class<T> serviceClass) {
 		if (serviceClass.isAnnotationPresent(Service.class)) {
 			this.dependencyInjection.register(serviceClass);
-			return this.dependencyInjection.create(serviceClass);
+			T instance = this.dependencyInjection.create(serviceClass);
+			this.dependencyInjection.postConstruct(instance);
+			return instance;
 		}
 		throw new RuntimeException();
 	}
