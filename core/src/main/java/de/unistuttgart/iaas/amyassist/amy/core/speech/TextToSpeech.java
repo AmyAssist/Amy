@@ -22,12 +22,27 @@ import marytts.modules.synthesis.Voice;
  * Before running as thread set the String-To-Say with setOutputString
  * @author Tim Neumann, Kai Menzel
  */
-public class TextToSpeech implements SpeechIO{
+public class TextToSpeech implements Runnable{
 	
-	private SpeechInputHandler handler;
 	private String outputString;
 	
 	private LocalMaryInterface mary = null;
+	
+	// -----------------------------------------------------------------------------------------------
+	
+	/**
+	 * 
+	 */
+	public TextToSpeech() {
+		// TODO Auto-generated constructor stub
+		try {
+			this.mary = new LocalMaryInterface();
+			this.mary.setVoice("dfki-poppy-hsmm");
+		} catch (MaryConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	// -----------------------------------------------------------------------------------------------
 		
@@ -62,20 +77,6 @@ public class TextToSpeech implements SpeechIO{
 	}
 	
 	// -----------------------------------------------------------------------------------------------
-
-	/**
-	 * needs to be called first
-	 * creates MaryTTS interface and sets a beautiful british Voice
-	 */
-	public void setup() {
-		try {
-			this.mary = new LocalMaryInterface();
-			this.mary.setVoice("dfki-poppy-hsmm");
-		} catch (MaryConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
 	/**
 	 * set String to say, before you start the Thread
@@ -84,16 +85,4 @@ public class TextToSpeech implements SpeechIO{
 	public void setOutputString(String s) {
 		this.outputString = s;
 	}
-	
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO#setSpeechInputHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler)
-	 */
-	@Override
-	public void setSpeechInputHandler(SpeechInputHandler handler) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
-	
 }
