@@ -12,7 +12,7 @@
 		<!-- General settings -->
                 <java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<dependency.locations.enabled>false</dependency.locations.enabled>
+		
 		<!-- Amy versions to depend on -->
 		<amy.di.api.version>0.2.0-Snapshot</amy.di.api.version>
 		<amy.di.version>0.2.0-Snapshot</amy.di.version>
@@ -20,7 +20,8 @@
                 <amy.http-server.version>0.2.0-Snapshot</amy.http-server.version>
                 <amy.testing-framework.version>0.2.0-Snapshot</amy.testing-framework.version>
                 <amy.core.version>0.2.0-Snapshot</amy.core.version>
-                <!-- External dependency versions. Only project wide dependencies here -->
+                
+                <!-- External dependency versions. Only project wide or core dependencies here -->
                 <junit.jupiter.version>5.1.0</junit.jupiter.version>
 		<junit.platform.version>1.1.0</junit.platform.version>
 		<hamcrest.version>1.3</hamcrest.version>

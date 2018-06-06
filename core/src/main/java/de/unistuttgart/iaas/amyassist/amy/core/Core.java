@@ -48,6 +48,11 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
  * @author Tim Neumann, Leon Kiefer
  */
 public class Core implements SpeechInputHandler {
+	/**
+	 * The project directory.
+	 */
+	public static final File projectDir = new File(".").getAbsoluteFile().getParentFile().getParentFile();
+
 	private List<Thread> threads;
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 	private DependencyInjection di = new DependencyInjection();
@@ -108,16 +113,23 @@ public class Core implements SpeechInputHandler {
 	 * load the plugins
 	 */
 	private void loadPlugins() {
-		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.example", "amy.plugin.example",
-				"de.unistuttgart.iaas.amyassist", "0.0.1");
-		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.systemtime", "amy.plugin.systemtime",
-				"de.unistuttgart.iaas.amyassist", "0.0.1");
-		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.weather", "amy.plugin.weather",
-				"de.unistuttgart.iaas.amyassist", "0.0.1");
-		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock", "amy.plugin.alarmclock",
-				"de.unistuttgart.iaas.amyassist", "0.0.1");
-		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.spotify", "amy.plugin.spotify",
-				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		System.out.println(projectDir.toString());
+
+		ArrayList<File> plugins = new ArrayList<>();
+		plugins.add(new File(projectDir, "plugins/alarmclock"));
+		plugins.add(new File(projectDir, "plugins/example"));
+		// plugins.add(new File(projectDir, "plugins/spotify"));
+		plugins.add(new File(projectDir, "plugins/systemtime"));
+		plugins.add(new File(projectDir, "plugins/weather"));
+
+		for (File p : plugins) {
+			for (File child : new File(p, "target").listFiles()) {
+				if (child.getName().endsWith("with-dependencies.jar")) {
+					this.pluginLoader.loadPlugin(child.toURI());
+					break;
+				}
+			}
+		}
 
 		for (Plugin p : this.pluginLoader.getPlugins()) {
 			this.processPlugin(p);

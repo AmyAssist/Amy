@@ -27,8 +27,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 public interface ServiceLocator {
 
 	/**
-	 * Instantiate the given class and inject dependencies. The object created
-	 * in this way will not be managed by the DI.
+	 * Instantiate the given class and inject dependencies. The object created in
+	 * this way will not be managed by the DI.
 	 * 
 	 * @param serviceClass
 	 * @return
@@ -49,4 +49,11 @@ public interface ServiceLocator {
 	 * @param instance
 	 */
 	void inject(Object instance);
+
+	/**
+	 * init the instance
+	 * 
+	 * @param instance
+	 */
+	void postConstruct(Object instance);
 }

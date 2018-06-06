@@ -6,7 +6,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -81,6 +81,7 @@ public class PluginLoader {
 				} else if (jarEntry.getName().endsWith(".class")) {
 					String className = jarEntry.getName().substring(0, jarEntry.getName().length() - 6);
 					className = className.replace("/", ".");
+					System.out.println(className);
 					Class<?> c = childLoader.loadClass(className);
 					classes.add(c);
 				}

@@ -20,6 +20,8 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
@@ -28,7 +30,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
@@ -155,8 +159,8 @@ public class DependencyInjection implements ServiceLocator {
 	}
 
 	/**
-	 * Resolve the dependency of a Service implementation and create an instance
-	 * of the Service
+	 * Resolve the dependency of a Service implementation and create an instance of
+	 * the Service
 	 * 
 	 * @param serviceClass
 	 *            the implementation class of a Service
@@ -176,6 +180,7 @@ public class DependencyInjection implements ServiceLocator {
 		try {
 			T instance = serviceClass.newInstance();
 			this.inject(instance, stack, resolved);
+			this.postConstruct(instance);
 
 			resolved.put(serviceClass, instance);
 			stack.pop();
@@ -199,6 +204,19 @@ public class DependencyInjection implements ServiceLocator {
 				FieldUtils.writeField(field, instance, object, true);
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	@Override
+	public void postConstruct(Object instance) {
+		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(instance.getClass(), PostConstruct.class);
+		for (Method m : methodsWithAnnotation) {
+			try {
+				m.invoke(instance);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
