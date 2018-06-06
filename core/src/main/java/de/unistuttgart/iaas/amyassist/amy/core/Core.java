@@ -113,7 +113,18 @@ public class Core implements SpeechInputHandler {
 	 * load the plugins
 	 */
 	private void loadPlugins() {
-		System.out.println(projectDir.toString());
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.example", "amy.plugin.example",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.systemtime", "amy.plugin.systemtime",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.weather", "amy.plugin.weather",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock", "amy.plugin.alarmclock",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.spotify", "amy.plugin.spotify",
+				"de.unistuttgart.iaas.amyassist", "0.0.1");
+		
+		/*System.out.println(projectDir.toString());
 
 		ArrayList<File> plugins = new ArrayList<>();
 		plugins.add(new File(projectDir, "plugins/alarmclock"));
@@ -129,7 +140,7 @@ public class Core implements SpeechInputHandler {
 					break;
 				}
 			}
-		}
+		}*/
 
 		for (Plugin p : this.pluginLoader.getPlugins()) {
 			this.processPlugin(p);

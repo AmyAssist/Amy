@@ -72,5 +72,30 @@
 			<artifactId>voice-dfki-poppy-hsmm</artifactId>
 			<version>5.2</version>
 		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-plugin-alarmclock</artifactId>
+			<version>0.2.0-Snapshot</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-plugin-example</artifactId>
+			<version>0.2.0-Snapshot</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-plugin-spotify</artifactId>
+			<version>0.2.0-Snapshot</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-plugin-systemtime</artifactId>
+			<version>0.2.0-Snapshot</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-plugin-weather</artifactId>
+			<version>0.2.0-Snapshot</version>
+		</dependency>
 	</dependencies>
 </project>
