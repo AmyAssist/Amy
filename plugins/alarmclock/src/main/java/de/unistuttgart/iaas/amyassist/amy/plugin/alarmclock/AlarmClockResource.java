@@ -27,7 +27,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
@@ -39,21 +38,21 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
  */
 @Path("clock")
 public class AlarmClockResource {
-	
+
 	@Reference
 	private AlarmClockLogic logic;
 
 	/**
 	 * gets a alarm
 	 * 
-	 * @return alarm1 or null if there is no alarm1 
+	 * @return alarm1 or null if there is no alarm1
 	 */
 	@GET
 	@Path("alarms/1")
 	public String getAlarm() {
-		return this.logic.getAlarm();
+		return this.logic.getAlarm(1);
 	}
-	
+
 	/**
 	 * returns all alrams
 	 * 
@@ -64,11 +63,12 @@ public class AlarmClockResource {
 	public String[] getAllAlarms() {
 		return this.logic.getAllAlarms();
 	}
-	
+
 	/**
 	 * sets a alarm to a given timestamp
 	 * 
-	 * @param alarmTime the timestamp for the alarm
+	 * @param alarmTime
+	 *            the timestamp for the alarm
 	 * @return HTTP Response
 	 */
 	@POST
@@ -76,19 +76,21 @@ public class AlarmClockResource {
 	@Path("newalarm")
 	public Response setAlarm(Timestamp alarmTime) {
 		Response r;
-		if(alarmTime.isValid()) {
-			this.logic.setAlarm(alarmTime.toString());
+		if (alarmTime.isValid()) {
+			this.logic.setAlarm(new String[] { "" + alarmTime.hour, "" + alarmTime.minute });
 			r = Response.ok().build();
 		} else {
 			r = Response.status(Status.BAD_REQUEST).build();
 		}
 		return r;
 	}
-	
+
+	/**
+	 * @param alarmNumber
+	 */
 	@DELETE
-	public void deleteAlarm(String specificAlarm) {
-		this.logic.deleteAlarm(specificAlarm);
+	public void deleteAlarm(int alarmNumber) {
+		this.logic.deleteAlarm(alarmNumber);
 	}
-	
-	
+
 }
