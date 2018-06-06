@@ -61,6 +61,7 @@ public class Server {
 
 		ResourceConfig resourceConfig = new ResourceConfig(classes);
 		resourceConfig.registerClasses(this.restResources);
+		resourceConfig.register(ThrowableExceptionMapper.class);
 		resourceConfig.register(new AbstractBinder() {
 			@Override
 			protected void configure() {
