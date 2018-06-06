@@ -28,7 +28,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class WeatherDarkSkyAPI {
     private static final String STUTTGART_COORDINATES_LAT = "48.745295";
     private static final String STUTTGART_COORDINATES_LONG = "9.10502";
-    private static final String API_SECRET = System.getenv("DARKSKY_API_SECRET");
+    private static final String API_SECRET = new ConfigLoader().get("DARKSKY_API_SECRET");
 
     private FIODaily getDailyReports() {
         ForecastIO fio = new ForecastIO(API_SECRET);

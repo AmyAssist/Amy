@@ -25,6 +25,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.github.dvdme.ForecastIOLib.FIODataPoint;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 @XmlRootElement
 public class WeatherReportDay {
     public String preamble;
@@ -35,6 +39,8 @@ public class WeatherReportDay {
     public long temperatureMax;
     public String sunriseTime;
     public String sunsetTime;
+    public String weekday;
+    public long timestamp;
 
     private String trimQuotes(String s) {
         return s.replaceAll("^\"|\"$", "");
@@ -49,6 +55,10 @@ public class WeatherReportDay {
         this.temperatureMax = Math.round(p.temperatureMax());
         this.sunriseTime = p.sunriseTime();
         this.sunsetTime = p.sunsetTime();
+
+        Date date = new Date(p.timestamp() * 1000);
+        this.weekday = new SimpleDateFormat("EEEE").format(date);
+        this.timestamp = p.timestamp();
     }
 
     public String toString() {

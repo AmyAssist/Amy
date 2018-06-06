@@ -25,6 +25,7 @@ import java.util.Calendar;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
@@ -288,11 +289,12 @@ public class AlarmClockLogic {
 	}
 
 	/**
-	 * Init method for logic class. TODO call die method from DI
+	 * Init method for logic class.
 	 *
 	 * @param core
 	 *            The core
 	 */
+	@PostConstruct
 	public void init() {
 		if (!this.storage.has(ALARMCOUNTER))
 			this.storage.put(ALARMCOUNTER, "0");
