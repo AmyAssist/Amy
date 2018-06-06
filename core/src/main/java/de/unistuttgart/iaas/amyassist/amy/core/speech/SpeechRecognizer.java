@@ -146,7 +146,7 @@ public class SpeechRecognizer implements SpeechIO {
 
 			// Get the hypothesis (Result as String)
 			speechRecognitionResult = speechResult.getHypothesis();
-			if(speechRecognitionResult.equals(this.shutDown)) System.exit(0);
+//			if(speechRecognitionResult.equals(this.shutDown)) System.exit(0);
 
 			// check wakeUp/sleep/shutdown
 			if(speechRecognitionResult.equals(this.wakeUp)){
