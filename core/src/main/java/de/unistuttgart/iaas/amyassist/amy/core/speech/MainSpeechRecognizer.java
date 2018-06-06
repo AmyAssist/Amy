@@ -1,3 +1,4 @@
+package de.unistuttgart.iaas.amyassist.amy.core.speech;
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
@@ -17,15 +18,20 @@
  * limitations under the License.
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.TargetDataLine;
 
+import asg.cliche.example.HelloWorld;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;
@@ -36,20 +42,21 @@ import edu.cmu.sphinx.api.StreamSpeechRecognizer;
  * 
  * @author Kai Menzel
  */
-public class SpeechRecognizer implements Runnable {
+public class MainSpeechRecognizer implements Runnable {
 
 	// wakeup-sleep-shutdown-commands
+	private String wakeUp;
 	private String goSleep;
-	
-	// this Grammar
+
+	// this Grammar 
 	private Grammar grammar;
 	
-	// Grammar to switch to
-	private Grammar nextGrammar;
-
+	//Grammar to switch to
+	private Grammar nextGrammar = null;
+	
 
 	// Audio Input Source for the Recognition
-	private AudioInputStream ais;
+	private AudioInputStream ais = null;
 
 	/**
 	 * Handler who use the translated String for commanding the System
@@ -64,15 +71,23 @@ public class SpeechRecognizer implements Runnable {
 	/**
 	 * Creates the Recognizers and Configures them
 	 * 
+	 * @param wakeUp
+	 *            call to start the recognition
 	 * @param goSleep
 	 *            call to stop the recognition
-	 * @param grammar the grammar Object of current Recognizer
-	 * @param inputHandler handles the recognition output
+	 * @param shutDown
+	 *            call to shutdown the whole system
+	 * @param grammarPath
+	 *            Path to the folder of the different Grammars
+	 * @param grammarName
+	 *            Name of the to Used Grammar (without ".gram")
 	 * @param ais
 	 *            set custom AudioInputStream. Set *null* for default microphone
 	 *            input
 	 */
-	public SpeechRecognizer(String goSleep, Grammar grammar, SpeechInputHandler inputHandler, AudioInputStream ais) {
+	public MainSpeechRecognizer(String wakeUp, String goSleep, Grammar grammar, SpeechInputHandler inputHandler,
+			AudioInputStream ais) {
+		this.wakeUp = wakeUp;
 		this.goSleep = goSleep;
 		this.grammar = grammar;
 		this.inputHandler = inputHandler;
@@ -80,7 +95,7 @@ public class SpeechRecognizer implements Runnable {
 		
 		// Create the Recognizer
 		try {
-			SpeechRecognizer.this.recognizer = new StreamSpeechRecognizer(createConfiguration());
+			MainSpeechRecognizer.this.recognizer = new StreamSpeechRecognizer(createConfiguration());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -94,7 +109,7 @@ public class SpeechRecognizer implements Runnable {
 	 */
 	@Override
 	public void run() {
-		System.out.println("hello");
+		
 
 		// starts Recognition
 		this.recognizer.startRecognition(this.ais);
@@ -106,7 +121,11 @@ public class SpeechRecognizer implements Runnable {
 		String speechRecognitionResult;
 
 		loop: while (!Thread.interrupted() && AudioUserInteraction.threadRunning) {
-			
+			if (!listening)
+				System.out.println("I am sleeping");
+			if (listening)
+				System.out.println("I am awake");
+
 			/**
 			 * wait for input from the recognizer
 			 */
@@ -120,14 +139,25 @@ public class SpeechRecognizer implements Runnable {
 
 			// Get the hypothesis (Result as String)
 			speechRecognitionResult = speechResult.getHypothesis();
+			
 //			if(speechRecognitionResult.equals(this.shutDown)) System.exit(0);
 
-			if(speechRecognitionResult.equals(this.goSleep)){
-				AudioUserInteraction.say("now sleeping");
-				this.stop();
-			}else{
-				makeDecision(speechRecognitionResult);
+			// check wakeUp/sleep/shutdown
+			if(speechRecognitionResult.equals(this.wakeUp)){
+				listening = true;
+				AudioUserInteraction.say("waking up");
+			}else if(speechRecognitionResult.startsWith(this.wakeUp + " ")){
+				listening = true;
+				makeDecision(speechRecognitionResult.replaceFirst(this.wakeUp + " ", ""));
+			}else if (listening){
+				if(speechRecognitionResult.equals(this.goSleep)){
+					listening = false;
+					AudioUserInteraction.say("now sleeping");
+				}else{
+					makeDecision(speechRecognitionResult);
+				}
 			}
+
 		}
 		this.recognizer.stopRecognition();
 		AudioUserInteraction.switchGrammar(this.nextGrammar);
@@ -151,7 +181,7 @@ public class SpeechRecognizer implements Runnable {
 		System.out.println("You said: [" + result + "]");
 
 		AudioUserInteraction.say("Repeating: " + result);
-
+		
 		if(!this.grammar.getSwitchList().isEmpty()){
 			for (Map.Entry<String, Grammar> entry : this.grammar.getSwitchList().entrySet()) {
 				if(result.equalsIgnoreCase(entry.getKey())){
@@ -173,24 +203,19 @@ public class SpeechRecognizer implements Runnable {
     			}
     		}
 		}
-
-	}
+	}	
 	
 	//-----------------------------------------------------------------------------------------------
 	
-		private void stop(Grammar grammar){
-			AudioUserInteraction.threadRunning = false;
-			this.nextGrammar = grammar;
-		}
-		
-		private void stop(){
-			AudioUserInteraction.threadRunning = false;
-			this.nextGrammar = null;
-		}
-
-	//===============================================================================================
+	private void stop(Grammar grammar){
+		AudioUserInteraction.threadRunning = false;
+		this.nextGrammar = grammar;
+	}
 	
-		
+	private void stop(){
+		AudioUserInteraction.threadRunning = false;
+		this.nextGrammar = null;
+	}
 		
 	// ===============================================================================================
 

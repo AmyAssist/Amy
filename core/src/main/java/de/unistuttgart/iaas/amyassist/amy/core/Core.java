@@ -34,6 +34,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
@@ -85,8 +87,10 @@ public class Core implements SpeechInputHandler {
 		console.setSpeechInputHandler(this);
 		this.threads.add(new Thread(console));
 
-		SpeechIO sr = new SpeechRecognizer("amy", "sleep", "amy shotdown",
-				new File("src/main/resources", "/sphinx-grammars/grammar.gram").getParent(), "grammar", null);
+		AudioUserInteraction aui = new AudioUserInteraction();
+		aui.setData("amy", "sleep", "amy shutdown", new Grammar("grammar", new File("src/main/resources", "/sphinx-grammars/grammar.gram")), null);
+
+		SpeechIO sr = aui;
 		this.di.inject(sr);
 		sr.setSpeechInputHandler(this);
 		this.threads.add(new Thread(sr));

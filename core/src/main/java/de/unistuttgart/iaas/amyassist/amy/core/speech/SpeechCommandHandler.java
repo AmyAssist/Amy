@@ -45,7 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class SpeechCommandHandler {
 	private AnnotationReader annotationReader = new AnnotationReader();
 	private TextToPlugin textToPlugin;
-	private GrammarParser generator = new GrammarParser("grammar", "amy", "sleep", "amy shotdown");
+	private GrammarParser generator = new GrammarParser("grammar", "amy", "sleep", "amy shutdown");
 
 	private Map<PluginGrammarInfo, Class<?>> grammarInfos = new HashMap<>();
 	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> speechCommands = new HashMap<>();
