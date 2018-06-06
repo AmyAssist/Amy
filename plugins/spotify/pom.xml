@@ -37,20 +37,22 @@
 			<artifactId>spotify-web-api-java</artifactId>
 			<version>${spotify-web-api.version}</version>
 		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
 			<version>4.4.9</version>
 		</dependency>
-
-
 		<!-- https://mvnrepository.com/artifact/org.soulwing.ssl/ssl-context-tools -->
 		<dependency>
 			<groupId>org.soulwing.ssl</groupId>
 			<artifactId>ssl-context-tools</artifactId>
 			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>${javax.ws.rs.version}</version>
 		</dependency>
 	</dependencies>
 	<build>

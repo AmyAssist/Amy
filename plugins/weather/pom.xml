@@ -5,37 +5,42 @@
 	<artifactId>amy-plugin-weather</artifactId>
 	<name>Amy plugin weather</name>
 	<description>The Amy weather plugin</description>
-        <parent>
-            <groupId>de.unistuttgart.iaas.amyassist</groupId>
-            <artifactId>amy</artifactId>
-            <version>0.2.0-Snapshot</version>
-            <relativePath>../../pom.xml</relativePath>
-        </parent>
-        <properties>
-                <ForecastIOLib.version>LATEST</ForecastIOLib.version>
-        </properties>
-        <dependencies>
-                <dependency>
-                        <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-di-api</artifactId>
-                        <version>${amy.di.api.version}</version>
-                </dependency>
-                <dependency>
-                        <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-api</artifactId>
-                        <version>${amy.api.version}</version>
-                </dependency>
-                <dependency>
-                        <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-testing-framework</artifactId>
-                        <version>${amy.testing-framework.version}</version>
-                        <scope>test</scope>
-                </dependency>
-                <!-- weather plugin -->
+	<parent>
+		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<artifactId>amy</artifactId>
+		<version>0.2.0-Snapshot</version>
+		<relativePath>../../pom.xml</relativePath>
+	</parent>
+	<properties>
+		<ForecastIOLib.version>LATEST</ForecastIOLib.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-di-api</artifactId>
+			<version>${amy.di.api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-api</artifactId>
+			<version>${amy.api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-testing-framework</artifactId>
+			<version>${amy.testing-framework.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- weather plugin -->
 		<dependency>
 			<groupId>com.github.dvdme</groupId>
 			<artifactId>ForecastIOLib</artifactId>
 			<version>${ForecastIOLib.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>${javax.ws.rs.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
