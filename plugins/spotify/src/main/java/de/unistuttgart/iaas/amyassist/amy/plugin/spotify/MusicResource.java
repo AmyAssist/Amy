@@ -19,12 +19,19 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
+import java.io.IOException;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
@@ -39,9 +46,9 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
 @Path("music")
 public class MusicResource {
 	
-	
-	private MusicEntity musicEntity = new MusicEntity();
+	private MusicEntity musicEntity;
 	private Playlist playlist;
+	private Response response;
 	
 	@Reference
 	private PlayerLogic logic;
@@ -54,9 +61,10 @@ public class MusicResource {
 	@GET
 	@Path("currentSong")
 	@Produces(MediaType.APPLICATION_JSON)
-	public MusicEntity getMusic() {
+	public Response getMusic() {
 		this.musicEntity = new MusicEntity(this.logic.getCurrentSong().get("name"), this.logic.getCurrentSong().get("artist"));
-		return this.musicEntity;
+		this.response = Response.status(Status.OK).entity(this.musicEntity).build();
+		return this.response;
 	}
 	
 	/**
@@ -74,6 +82,42 @@ public class MusicResource {
 		this.logic.search(this.musicEntity.toString(), Search.TYPE_TRACK, 5);
 		return this.logic.play(0);
 	}
+	
+	/**
+	 * resumes the actual playback
+	 * 
+	 * @return HTTP Response
+	 */
+	@POST
+	@Path("resume")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response resume() {
+		if (this.logic.resume()) {
+			this.response = Response.status(Status.OK).entity("resume").build();
+		} else {
+			this.response = Response.status(Status.CONFLICT)
+					.entity("Check player state").build();
+		}
+		return this.response;
+	}
+
+	/**
+	 * pauses the actual playback
+	 * 
+	 * @return HTTP Response
+	 */
+	@POST
+	@Path("pause")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response pausePlayback() {
+		if(this.logic.pausePlayback()) {;
+			this.response = Response.status(Status.OK).entity("pause").build();
+		} else {
+			this.response = Response.status(Status.CONFLICT)
+					.entity("Check player state").build();
+		}
+		return this.response;
+	}
 
 	/**
 	 * returns a playlist
@@ -82,8 +126,37 @@ public class MusicResource {
 	 */
 	@GET
 	@Path("playlist")
-	public Playlist getPlaylist() {
-		return this.playlist;
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getPlaylist() {
+		this.response = Response.status(Status.OK).entity(this.playlist).build();
+		return this.response;
+	}
+	
+	/**
+	 * controls the volume of the player
+	 * 
+	 * @param volumeString
+	 *            allowed strings: mute, max, up, down
+	 * @return a int from 0-100. This represent the Volume in percent. if the Playerstate incorrect return -1
+	 */
+	@POST
+	@Path("volume")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response setVolume(String volumeString) {
+		if (volumeString != "mute" && volumeString != "max" 
+				&& volumeString != "up" && volumeString != "down") {
+			return this.response = Response.status(Status.BAD_REQUEST)
+					.entity("Incorrect volume command").build();
+		} else {
+			int volume = this.logic.setVolume(volumeString);
+			if (volume != -1) {
+				return this.response = Response.status(Status.OK).entity(volume).build();
+			} else {
+				return this.response = Response.status(Status.CONFLICT)
+						.entity("Check player state").build();
+			}
+		}
 	}
 
 }
