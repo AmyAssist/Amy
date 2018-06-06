@@ -54,7 +54,10 @@ public class Authorization {
 	private AuthorizationCodeCredentials authorizationCodeCredentials;
 	private AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;
 	// Rules for the spotify user authentication e.g. access to the playcontrol
-	private final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state";
+	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state";
+	private static final String SPOTIFY_CLIENTSECRET = "spotify_clientSecret";
+	private static final String SPOTIFY_CLIENTID = "spotify_clientId";
+	//private static final 
 	// help variable for export/import the different ids
 	private HashMap<String, String> idExport = new HashMap<>();
 	private boolean firstTime = true;
@@ -65,7 +68,7 @@ public class Authorization {
 	 * @return true if succeded, else false
 	 */
 	public boolean init() {
-		InputStream fis = null ;
+		InputStream fis = null;
 		try {
 			File tmp = new File(System.getProperty("java.io.tmpdir"));
 			File f = new File(tmp, "/spotifyAuth/auth.auth");
@@ -74,7 +77,7 @@ public class Authorization {
 			@SuppressWarnings("unchecked")
 			HashMap<String, String> readObject = ((HashMap<String, String>) stream.readObject());
 			this.idExport = readObject;
-			//cheks if all necessary IDs in file
+			// cheks if all necessary IDs in file
 			if (this.idExport.get("clientID") != null && this.idExport.get("clientSecret") != null) {
 				this.clientID = this.idExport.get("clientID");
 				this.clientSecret = this.idExport.get("clientSecret");
@@ -87,7 +90,7 @@ public class Authorization {
 			if (this.idExport.get("refresh") != null) {
 				this.refreshToken = this.idExport.get("refresh");
 			}
-			
+
 			return true;
 
 		} catch (FileNotFoundException e) {
@@ -97,14 +100,12 @@ public class Authorization {
 			System.err.println("Authentifcation error. " + e);
 			e.printStackTrace();
 			return false;
-		}
-		finally {
+		} finally {
 			try {
-				if(fis != null) {
-				fis.close();
+				if (fis != null) {
+					fis.close();
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -112,7 +113,9 @@ public class Authorization {
 	}
 
 	/**
-	 * create a authenitcation link for the User to authenticate his spotify account. The Link create a authenitcation code for the next step
+	 * create a authenitcation link for the User to authenticate his spotify
+	 * account. The Link create a authenitcation code for the next step
+	 * 
 	 * @return
 	 */
 	public URI authorizationCodeUri() {
@@ -122,10 +125,12 @@ public class Authorization {
 		final URI uri = authorizationCodeUriRequest.execute();
 		return uri;
 	}
-	
+
 	/**
 	 * create a persistent refresh token with the authentifaction Code
-	 * @param authCode from authorizationCodeUri()
+	 * 
+	 * @param authCode
+	 *            from authorizationCodeUri()
 	 */
 	public void createRefreshToken(String authCode) {
 		AuthorizationCodeRequest authorizationCodeRequest = this.spotifyApi.authorizationCode(authCode).build();
@@ -140,7 +145,8 @@ public class Authorization {
 	}
 
 	/**
-	 * write alle Token and IDs to file in the temp folder of the system. Only for testing without persistent storage in Core
+	 * write alle Token and IDs to file in the temp folder of the system. Only for
+	 * testing without persistent storage in Core
 	 */
 	private void writeToFile() {
 		FileOutputStream fos = null;
@@ -149,18 +155,17 @@ public class Authorization {
 			File f = new File(tmp, "/spotifyAuth/auth.auth");
 			f.delete();
 			f.getParentFile().mkdirs();
-			
+
 			fos = new FileOutputStream(f);
 			ObjectOutputStream stream = new ObjectOutputStream(fos);
 			stream.writeObject(this.idExport);
-			
+
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
-		}
-		finally {
+		} finally {
 			try {
-				if(fos != null) {
-				fos.close();
+				if (fos != null) {
+					fos.close();
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -171,8 +176,11 @@ public class Authorization {
 	}
 
 	/**
-	 * in the first execution create this method a spotifyApi object and get these back, after the first execution the method checks the access token valid and refresh the access token if invalid 
-	 *@return a spotifyAPI object for queries to the Spotify Web API
+	 * in the first execution create this method a spotifyApi object and get these
+	 * back, after the first execution the method checks the access token valid and
+	 * refresh the access token if invalid
+	 * 
+	 * @return a spotifyAPI object for queries to the Spotify Web API
 	 */
 	public SpotifyApi getSpotifyApi() {
 		if (this.firstTime) {
@@ -233,13 +241,15 @@ public class Authorization {
 	}
 
 	/**
-	 * needed for first init. It takes until the UI can control the authorization process. Probably after Sprint 2.
+	 * needed for first init. It takes until the UI can control the authorization
+	 * process. Probably after Sprint 2.
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		Authorization auth = new Authorization();
-		//insert here ClientID and ClientSecret for testing
+		// insert here ClientID and ClientSecret for testing
 		auth.setClientID("");
 		auth.setClientSecret("");
 		auth.init();
