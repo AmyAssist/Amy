@@ -57,9 +57,11 @@ public class Authorization {
 	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state";
 	private static final String SPOTIFY_CLIENTSECRET = "spotify_clientSecret";
 	private static final String SPOTIFY_CLIENTID = "spotify_clientId";
-	//private static final 
-	// help variable for export/import the different ids
-	private HashMap<String, String> idExport = new HashMap<>();
+	private static final String SPOTIFY_REFRSHTOKEN = "spotify_refreshToken";
+	// private static final
+
+	private ConfigLoader configLoader = new ConfigLoader();
+
 	private boolean firstTime = true;
 
 	/**
@@ -68,48 +70,23 @@ public class Authorization {
 	 * @return true if succeded, else false
 	 */
 	public boolean init() {
-		InputStream fis = null;
-		try {
-			File tmp = new File(System.getProperty("java.io.tmpdir"));
-			File f = new File(tmp, "/spotifyAuth/auth.auth");
-			fis = new FileInputStream(f);
-			ObjectInputStream stream = new ObjectInputStream(fis);
-			@SuppressWarnings("unchecked")
-			HashMap<String, String> readObject = ((HashMap<String, String>) stream.readObject());
-			this.idExport = readObject;
-			// cheks if all necessary IDs in file
-			if (this.idExport.get("clientID") != null && this.idExport.get("clientSecret") != null) {
-				this.clientID = this.idExport.get("clientID");
-				this.clientSecret = this.idExport.get("clientSecret");
-				this.spotifyApi = new SpotifyApi.Builder().setClientId(this.clientID).setClientSecret(this.clientSecret)
-						.setRedirectUri(this.redirectURI).build();
-
-			} else {
-				return false;
-			}
-			if (this.idExport.get("refresh") != null) {
-				this.refreshToken = this.idExport.get("refresh");
-			}
-
-			return true;
-
-		} catch (FileNotFoundException e) {
-			System.err.println("Please set ClientID and ClientSecret");
+		if (configLoader.get(SPOTIFY_CLIENTID) != null && configLoader.get(SPOTIFY_CLIENTSECRET) != null) {
+			this.clientID = configLoader.get(SPOTIFY_CLIENTID);
+			this.clientSecret = configLoader.get(SPOTIFY_CLIENTSECRET);
+			this.spotifyApi = new SpotifyApi.Builder().setClientId(this.clientID).setClientSecret(this.clientSecret)
+					.setRedirectUri(this.redirectURI).build();
+		} else {
+			System.err.println("Client Secret and ID missing. Please insert the config file");
 			return false;
-		} catch (IOException | ClassNotFoundException e) {
-			System.err.println("Authentifcation error. " + e);
-			e.printStackTrace();
-			return false;
-		} finally {
-			try {
-				if (fis != null) {
-					fis.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
-
+		
+		if (configLoader.get(SPOTIFY_REFRSHTOKEN) != null) {
+			this.refreshToken = configLoader.get(SPOTIFY_REFRSHTOKEN);
+		} else {
+			System.err.println("Please exec the Authorization first");
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -121,7 +98,7 @@ public class Authorization {
 	public URI authorizationCodeUri() {
 		init();
 		AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri().state("TEST")
-				.scope(this.SPOTIFY_RULES).show_dialog(true).build();
+				.scope(SPOTIFY_RULES).show_dialog(true).build();
 		final URI uri = authorizationCodeUriRequest.execute();
 		return uri;
 	}
@@ -137,42 +114,10 @@ public class Authorization {
 		try {
 			AuthorizationCodeCredentials authorizationCodeCredentials1 = authorizationCodeRequest.execute();
 			this.refreshToken = authorizationCodeCredentials1.getRefreshToken();
-			this.idExport.put("refresh", this.refreshToken);
-			writeToFile();
+			this.configLoader.set(SPOTIFY_REFRSHTOKEN, refreshToken);
 		} catch (SpotifyWebApiException | IOException e) {
 			System.err.println(e.getMessage());
 		}
-	}
-
-	/**
-	 * write alle Token and IDs to file in the temp folder of the system. Only for
-	 * testing without persistent storage in Core
-	 */
-	private void writeToFile() {
-		FileOutputStream fos = null;
-		try {
-			File tmp = new File(System.getProperty("java.io.tmpdir"));
-			File f = new File(tmp, "/spotifyAuth/auth.auth");
-			f.delete();
-			f.getParentFile().mkdirs();
-
-			fos = new FileOutputStream(f);
-			ObjectOutputStream stream = new ObjectOutputStream(fos);
-			stream.writeObject(this.idExport);
-
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		} finally {
-			try {
-				if (fos != null) {
-					fos.close();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
 	}
 
 	/**
@@ -222,11 +167,8 @@ public class Authorization {
 	 * @param clientID
 	 */
 	public void setClientID(String clientID) {
+		this.configLoader.set(SPOTIFY_CLIENTID, clientID);
 		this.clientID = clientID;
-		this.idExport.put("clientID", clientID);
-
-		writeToFile();
-
 	}
 
 	/**
@@ -235,29 +177,27 @@ public class Authorization {
 	 * @param clientSecret
 	 */
 	public void setClientSecret(String clientSecret) {
+		this.configLoader.set(SPOTIFY_CLIENTSECRET, clientSecret);
 		this.clientSecret = clientSecret;
-		this.idExport.put("clientSecret", clientSecret);
-		writeToFile();
 	}
 
 	/**
 	 * needed for first init. It takes until the UI can control the authorization
 	 * process. Probably after Sprint 2.
+	 * Please follow the instruction the instruction in the console
 	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		Authorization auth = new Authorization();
-		// insert here ClientID and ClientSecret for testing
-		auth.setClientID("");
-		auth.setClientSecret("");
 		auth.init();
+		System.out.println("copy this link in your browser an follow the login process");
 		System.out.println(auth.authorizationCodeUri());
-		System.out.println("Please insert Auth Code");
+		System.out.println("Please insert Auth Code form the result link. Copy all between 'code=' and '&'. For example for this result: http://localhost:8888/?code=AQComIDO...qHvVw&state=TEST) you cope only this: 'AQComIDO...qHvVw'");
 		auth.createRefreshToken(sc.nextLine());
 		System.out.println(auth.getSpotifyApi().getAccessToken());
 		sc.close();
-
 	}
+
 }
