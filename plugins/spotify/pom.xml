@@ -5,37 +5,52 @@
 	<artifactId>amy-plugin-spotify</artifactId>
 	<name>Amy plugin spotify</name>
 	<description>The Amy spotify plugin</description>
-        <parent>
-            <groupId>de.unistuttgart.iaas.amyassist</groupId>
-            <artifactId>amy</artifactId>
-            <version>0.2.0-Snapshot</version>
-            <relativePath>../../pom.xml</relativePath>
-        </parent>
-        <properties>
-                <spotify-web-api.version>2.0.2</spotify-web-api.version>
-        </properties>
-        <dependencies>
-                <dependency>
-                        <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-di-api</artifactId>
-                        <version>${amy.di.version}</version>
-                </dependency>
-                <dependency>
-                        <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-api</artifactId>
-                        <version>${amy.api.version}</version>
-                </dependency>
-                <dependency>
-                        <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-testing-framework</artifactId>
-                        <version>${amy.testing-framework.version}</version>
-                        <scope>test</scope>
-                </dependency>
-                <!-- Spotify Web API -->
+	<parent>
+		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<artifactId>amy</artifactId>
+		<version>0.2.0-Snapshot</version>
+		<relativePath>../../pom.xml</relativePath>
+	</parent>
+	<properties>
+		<spotify-web-api.version>2.0.2</spotify-web-api.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-di-api</artifactId>
+			<version>${amy.di.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-api</artifactId>
+			<version>${amy.api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-testing-framework</artifactId>
+			<version>${amy.testing-framework.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- Spotify Web API -->
 		<dependency>
 			<groupId>se.michaelthelin.spotify</groupId>
 			<artifactId>spotify-web-api-java</artifactId>
 			<version>${spotify-web-api.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.4.9</version>
+		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/org.soulwing.ssl/ssl-context-tools -->
+		<dependency>
+			<groupId>org.soulwing.ssl</groupId>
+			<artifactId>ssl-context-tools</artifactId>
+			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
 	<build>
