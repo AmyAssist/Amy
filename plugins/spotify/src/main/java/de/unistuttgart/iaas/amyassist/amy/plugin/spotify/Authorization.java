@@ -19,16 +19,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Scanner;
 
 import com.wrapper.spotify.SpotifyApi;
@@ -50,19 +42,21 @@ public class Authorization {
 	private String clientSecret = null;
 	private final URI redirectURI = SpotifyHttpManager.makeUri("http://localhost:8888");
 	private String refreshToken = null;
-	private SpotifyApi spotifyApi = null;
+	
 	private AuthorizationCodeCredentials authorizationCodeCredentials;
 	private AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;
 	// Rules for the spotify user authentication e.g. access to the playcontrol
 	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state";
+	
 	private static final String SPOTIFY_CLIENTSECRET = "spotify_clientSecret";
 	private static final String SPOTIFY_CLIENTID = "spotify_clientId";
 	private static final String SPOTIFY_REFRSHTOKEN = "spotify_refreshToken";
-	// private static final
 
 	private ConfigLoader configLoader = new ConfigLoader();
 
 	private boolean firstTime = true;
+	
+	private SpotifyApi spotifyApi = null;
 
 	/**
 	 * only succsefull if clientID and ClientSecret was written to file first
@@ -79,7 +73,7 @@ public class Authorization {
 			System.err.println("Client Secret and ID missing. Please insert the config file");
 			return false;
 		}
-		
+
 		if (configLoader.get(SPOTIFY_REFRSHTOKEN) != null) {
 			this.refreshToken = configLoader.get(SPOTIFY_REFRSHTOKEN);
 		} else {
@@ -183,8 +177,8 @@ public class Authorization {
 
 	/**
 	 * needed for first init. It takes until the UI can control the authorization
-	 * process. Probably after Sprint 2.
-	 * Please follow the instruction the instruction in the console
+	 * process. Probably after Sprint 2. Please follow the instruction the
+	 * instruction in the console
 	 * 
 	 * @param args
 	 */
@@ -194,9 +188,10 @@ public class Authorization {
 		auth.init();
 		System.out.println("copy this link in your browser an follow the login process");
 		System.out.println(auth.authorizationCodeUri());
-		System.out.println("Please insert Auth Code form the result link. Copy all between 'code=' and '&'. For example for this result: http://localhost:8888/?code=AQComIDO...qHvVw&state=TEST) you cope only this: 'AQComIDO...qHvVw'");
+		System.out.println(
+				"Please insert Auth Code form the result link. Copy all between 'code=' and '&'. For example for this result: http://localhost:8888/?code=AQComIDO...qHvVw&state=TEST) you cope only this: 'AQComIDO...qHvVw'");
 		auth.createRefreshToken(sc.nextLine());
-		System.out.println(auth.getSpotifyApi().getAccessToken());
+		System.out.println("complete");
 		sc.close();
 	}
 
