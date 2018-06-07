@@ -34,12 +34,17 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The class responsible for loading plugins.
  * 
  * @author Tim Neumann
  */
 public class PluginLoader {
+
+	private final Logger logger = LoggerFactory.getLogger(PluginLoader.class);
 
 	private HashMap<String, Plugin> plugins = new HashMap<>();
 
@@ -79,9 +84,8 @@ public class PluginLoader {
 				if (jarEntry.getName().endsWith(".class")) {
 					String className = jarEntry.getName().substring(0, jarEntry.getName().length() - 6);
 					className = className.replace("/", ".");
-					// FIXME: Better check if is from plugin or not.
 					if (className.contains("amy")) {
-						//System.out.println(className);
+						this.logger.debug("load class {}", className);
 						Class<?> c = Class.forName(className, true, childLoader);
 						classes.add(c);
 					}
@@ -96,7 +100,7 @@ public class PluginLoader {
 			plugin.setClasses(classes);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("Exception while loading plugin {}", uri, e);
 			return false;
 		}
 
@@ -127,7 +131,7 @@ public class PluginLoader {
 		try {
 			packageFile = new File(URLDecoder.decode(packageURL.getFile(), "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			this.logger.error("converting URL to File", e);
 			return false;
 		}
 		ArrayList<Class<?>> classes = this.findClassesInPackage(packageFile,
@@ -160,7 +164,7 @@ public class PluginLoader {
 			try {
 				classes.add(Class.forName(className));
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				this.logger.error("try to get class {}", className, e);
 				return null;
 			}
 		}

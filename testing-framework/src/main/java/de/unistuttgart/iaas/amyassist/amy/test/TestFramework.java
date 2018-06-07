@@ -22,10 +22,12 @@ package de.unistuttgart.iaas.amyassist.amy.test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.LogManager;
 
 import javax.ws.rs.Path;
 
 import org.mockito.Mockito;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -39,17 +41,26 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
  */
 public class TestFramework {
 
+	static {
+		LogManager.getLogManager().reset();
+		SLF4JBridgeHandler.install();
+		// workaround for
+		// https://github.com/cmusphinx/sphinx4/blob/master/sphinx4-core/src/main/java/edu/cmu/sphinx/util/props/ConfigurationManagerUtils.java#L138
+		System.setProperty("java.util.logging.config.file", "");
+	}
+
 	private IStorage storage;
 	private DependencyInjection dependencyInjection;
 	private Server server;
 	private List<Class<?>> restResources = new ArrayList<>();
 
 	public TestFramework() {
-		this.storage = Mockito.mock(Storage.class, Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS)
-				.useConstructor());
+		this.storage = Mockito.mock(Storage.class, Mockito.withSettings()
+				.defaultAnswer(Mockito.CALLS_REAL_METHODS).useConstructor());
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
-		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
+		this.dependencyInjection.addExternalService(IStorage.class,
+				this.storage);
 		this.dependencyInjection.register(Server.class);
 	}
 
@@ -60,7 +71,8 @@ public class TestFramework {
 	public void before() {
 		if (!this.restResources.isEmpty()) {
 			this.server = this.dependencyInjection.getService(Server.class);
-			this.server.start(this.restResources.toArray(new Class<?>[this.restResources.size()]));
+			this.server.start(this.restResources
+					.toArray(new Class<?>[this.restResources.size()]));
 		}
 
 	}

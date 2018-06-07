@@ -6,7 +6,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -23,6 +23,7 @@ import java.util.Set;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 
 /**
@@ -42,8 +43,18 @@ public class ConfigurationImpl implements Configuration {
 	@Override
 	public String[] getInstalledPlugins() {
 		Set<String> pluginNames = this.loader.getPluginNames();
-		String[] array = pluginNames.toArray(new String[pluginNames.size()]);
-		return array;
+		return pluginNames.toArray(new String[pluginNames.size()]);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.Configuration#getPluginVersion(java.lang.String)
+	 */
+	@Override
+	public String getPluginVersion(String pluginName) {
+		Plugin plugin = this.loader.getPlugin(pluginName);
+		if (plugin != null)
+			return plugin.getVersion();
+		return null;
 	}
 
 }
