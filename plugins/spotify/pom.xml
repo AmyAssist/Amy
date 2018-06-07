@@ -7,30 +7,14 @@
 	<description>The Amy spotify plugin</description>
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
-		<artifactId>amy</artifactId>
+		<artifactId>amy-plugin</artifactId>
 		<version>0.2.0-Snapshot</version>
-		<relativePath>../../pom.xml</relativePath>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<properties>
 		<spotify-web-api.version>2.0.2</spotify-web-api.version>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-di-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-testing-framework</artifactId>
-			<version>${amy.testing-framework.version}</version>
-			<scope>test</scope>
-		</dependency>
 		<!-- Spotify Web API -->
 		<dependency>
 			<groupId>se.michaelthelin.spotify</groupId>
@@ -49,30 +33,5 @@
 			<artifactId>ssl-context-tools</artifactId>
 			<version>1.0.1</version>
 		</dependency>
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>
