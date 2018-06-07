@@ -171,7 +171,6 @@ public class TextToPlugin {
 			result = 0;
 			gr = m.group();
 			String[] nmbs = gr.split(" ");
-			System.out.println(gr);
 
 			for (String s : nmbs) {
 				s = s.replace(" ", "");
