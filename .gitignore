@@ -1,6 +1,7 @@
 target/
 */target/
-*/src/main/resources/sphinx-grammars/
+*.gram
+weather_config.properties
 
 pom.xml.tag
 pom.xml.releaseBackup
@@ -16,7 +17,7 @@ buildNumber.properties
 
 #Other -neumantm
 .directory
-.log
+*.log
 
 #Other -sinpat
 .idea
