@@ -54,7 +54,9 @@ public class Console implements SpeechIO {
 	public String say(String... speechInput) {
 		try {
 			return this.handler.handle(String.join(" ", speechInput)).get();
-		} catch (InterruptedException | ExecutionException e) {
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		} catch (ExecutionException e) {
 			this.logger.error("Error while handling input {}", speechInput, e);
 		}
 		return "";

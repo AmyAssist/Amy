@@ -5,46 +5,41 @@
 	<artifactId>amy-di</artifactId>
 	<name>Amy di</name>
 	<description>The Amy dependency injection</description>
-        <parent>
-                <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                <artifactId>amy</artifactId>
-                <version>0.2.0-Snapshot</version>
-                <relativePath>../pom.xml</relativePath>
-        </parent>
-        <properties>
-                <commons-lang3.version>3.7</commons-lang3.version>
-        </properties>
-           
+	<parent>
+		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<artifactId>amy</artifactId>
+		<version>0.2.0-Snapshot</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<properties>
+		<commons-lang3.version>3.7</commons-lang3.version>
+	</properties>
+
 	<dependencies>
-                <dependency>
-	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-di-api</artifactId>
-                        <version>${amy.di.api.version}</version>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-di-api</artifactId>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons-lang3.version}</version>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<version>${junit.jupiter.version}</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>${junit.jupiter.version}</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>
-			<version>${hamcrest.version}</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

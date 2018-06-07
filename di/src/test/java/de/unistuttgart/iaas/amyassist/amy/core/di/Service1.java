@@ -19,6 +19,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
@@ -28,5 +29,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  */
 @Service
 public class Service1 {
+	public int init = 0;
 
+	@PostConstruct
+	public void init() {
+		this.init++;
+	}
 }
