@@ -39,7 +39,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
