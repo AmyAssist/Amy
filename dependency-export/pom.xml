@@ -13,6 +13,9 @@
                 <version>0.2.0-Snapshot</version>
                 <relativePath>../pom.xml</relativePath>
         </parent>
+	<modules>
+		<module>../plugins</module>
+	</modules>
 	<properties>
                 <amy.version>0.2.0-Snapshot</amy.version>
 	</properties>
