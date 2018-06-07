@@ -19,6 +19,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
@@ -32,6 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
 @Service
 public class HelloWorldImpl implements HelloWorldService {
 	private static final String KEY = "hellocount";
+	private final Logger logger = LoggerFactory.getLogger(HelloWorldImpl.class);
 
 	/**
 	 * A reference to the storage.
@@ -42,12 +46,14 @@ public class HelloWorldImpl implements HelloWorldService {
 	@Override
 	public String helloWorld() {
 		if (!this.storage.has(KEY)) {
+			this.logger.debug("init storage");
 			this.storage.put(KEY, "0");
 		}
 		int count = Integer.parseInt(this.storage.get(KEY));
 		count++;
 
 		String countString = String.valueOf(count);
+		this.logger.debug("put {} into storage", countString);
 		this.storage.put(KEY, countString);
 
 		return "hello" + countString;
@@ -55,12 +61,14 @@ public class HelloWorldImpl implements HelloWorldService {
 
 	@Override
 	public String helloWorldXTimes(int times) {
-		String hellos = "";
-		
-		for(int i=0; i<times; i++) {
-			hellos += "hello" + " ";
+		this.logger.debug("helloWorldXTimes called with {}", times);
+
+		StringBuilder hellos = new StringBuilder();
+
+		for (int i = 0; i < times; i++) {
+			hellos.append("hello ");
 		}
-		
-		return hellos.trim();
+
+		return hellos.toString().trim();
 	}
 }

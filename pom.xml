@@ -29,6 +29,7 @@
 		<jersey.version>2.27</jersey.version>
 		<jackson.version>2.27</jackson.version>
 		<javax.ws.rs.version>2.1</javax.ws.rs.version>
+		<slf4j.version>1.7.25</slf4j.version>
 	</properties>
 	<modules>
 		<module>di-api</module>
@@ -131,6 +132,16 @@
 				<groupId>javax.ws.rs</groupId>
 				<artifactId>javax.ws.rs-api</artifactId>
 				<version>${javax.ws.rs.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>1.2.3</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
