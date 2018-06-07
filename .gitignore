@@ -16,6 +16,7 @@ buildNumber.properties
 
 #Other -neumantm
 .directory
+.log
 
 #Other -sinpat
 .idea
