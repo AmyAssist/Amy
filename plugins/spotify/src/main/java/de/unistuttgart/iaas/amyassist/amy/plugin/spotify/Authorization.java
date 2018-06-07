@@ -187,8 +187,6 @@ public class Authorization {
 		Scanner sc = new Scanner(System.in);
 		Authorization auth = new Authorization();
 		auth.init();
-		auth.setClientID("463c0be72d1e4e598d00096676e957bf");
-		auth.setClientSecret("d7c76f4fa90341cba67ac56c445ff7b0");
 		System.out.println("copy this link in your browser an follow the login process");
 		System.out.println(auth.authorizationCodeUri());
 		System.out.println(

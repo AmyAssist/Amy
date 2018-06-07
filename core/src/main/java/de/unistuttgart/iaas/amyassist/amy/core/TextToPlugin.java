@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,9 +56,12 @@ public class TextToPlugin {
 	 * @param text
 	 * @return String[] 0 contains matching keyword, 1 contains matching grammar
 	 */
-	public String[] pluginActionFromText(String text) {
-		ArrayList<String> results = new ArrayList<>();
-		String finalResult = null;
+	public List<String> pluginActionFromText(String text) {
+		Map<String,String> grammarResults = new HashMap<>();
+		//0 contains the keyword, 1 the matching grammar, everything after contains the keywords
+		List<String> result = new ArrayList<>();
+		
+		String finalGrammarResult = null;
 
 		for (PluginGrammarInfo currentGrammar : this.infos) {
 
@@ -68,6 +72,7 @@ public class TextToPlugin {
 
 				// keyword found! try to match the grammar
 				if (index != -1) {
+					result.add(0, keyword);
 					textTemp = text.substring(index + keyword.length(), text.length());
 
 					Collection<String> grammars = currentGrammar.grammars;
@@ -77,15 +82,22 @@ public class TextToPlugin {
 						Pattern p = Pattern.compile(regex);
 						Matcher m = p.matcher(textTemp);
 
-						if (m.find())
-							results.add(s);
-
+						if (m.find()) {
+							grammarResults.put(s, m.group());
+						}
+							
 					}
-					// find looks for matching substrings
-					// ! the first matching grammar is returned !
-					if (!results.isEmpty()) {
-						finalResult = Collections.max(results, Comparator.comparing(s -> s.length()));
-						return new String[] { keyword, finalResult };
+					
+					// use the longest matching grammar
+					if (!grammarResults.isEmpty()) {
+						finalGrammarResult = Collections.max(grammarResults.keySet(), Comparator.comparing(s -> s.length()));
+						result.add(1, finalGrammarResult);
+						
+						String[] paramsList = stringToNumber(grammarResults.get(finalGrammarResult)).split(" ");
+						for(String param : paramsList) {
+							result.add(result.size(), param);
+						}
+						return result;
 					}
 
 				}
@@ -129,9 +141,9 @@ public class TextToPlugin {
 		// numbers are easy)
 		// \\bnumber\\b is not needed here because of the previous for loop
 		regex = regex.replaceAll("#",
-				"((zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelfe|thirteen"
+				"(((zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelfe|thirteen"
 						+ "|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|"
-						+ "ten|twenty|thirty|forty|fifty|sixty|seventy|eigthty|ninety)+|([0-9]+))");
+						+ "ten|twenty|thirty|forty|fifty|sixty|seventy|eigthty|ninety)+|([0-9]+))\\\\s{0,1})+");
 
 		// at last replace whitespace with an arbitrary number of whitespaces
 		// makes things like @Grammar(this has lots of space) possible
@@ -150,13 +162,12 @@ public class TextToPlugin {
 	}
 
 	/**
-	 * get a number as int from any string only one number in the sentence is
-	 * supported right now! and only numbers ranging from 0 to 99
+	 * replace written numbers in a string with digits
 	 * 
 	 * @param text
 	 * @return result
 	 */
-	List<Integer> stringToNumber(String text) {
+	String stringToNumber(String text) {
 		List<Integer> results = new ArrayList<>();
 
 		String regex = "((\\bzero\\b|\\bone\\b|\\btwo\\b|\\bthree\\b|\\bfour\\b|\\bfive\\b|\\bsix\\b|\\bseven\\b|\\beight\\b|\\bnine\\b|"
@@ -165,23 +176,25 @@ public class TextToPlugin {
 				+ "\\bten\\b|\\btwenty\\b|\\bthirty\\b|\\bforty\\b|\\bfifty\\b|\\bsixty\\b|\\bseventy\\b|\\beigthty\\b|\\bninety\\b)\\s{0,1})+";
 
 		String gr;
+		String resultText = text;
 		Matcher m = Pattern.compile(regex).matcher(text);
 		int result;
 		while (m.find()) {
 			result = 0;
 			gr = m.group();
 			String[] nmbs = gr.split(" ");
-			System.out.println(gr);
 
 			for (String s : nmbs) {
 				s = s.replace(" ", "");
 				result += Integer.valueOf(stringToNmb.get(s));
 			}
 			results.add(result);
+			resultText = resultText.replaceAll(gr, String.valueOf(result)+" ");
 
 		}
-
-		return results;
+		
+		//trim removes leading or trailing whitespaces
+		return resultText.trim();
 	}
 
 	private HashMap<String, Integer> stringToNmb = new HashMap<>();

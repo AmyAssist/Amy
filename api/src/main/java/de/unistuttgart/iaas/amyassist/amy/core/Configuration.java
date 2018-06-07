@@ -31,4 +31,13 @@ public interface Configuration {
 	 * @return array of all names
 	 */
 	String[] getInstalledPlugins();
+
+	/**
+	 * Get the version of a installed plugin
+	 * 
+	 * @param pluginName
+	 *            the name of the plugin
+	 * @return the version of the plugin
+	 */
+	String getPluginVersion(String pluginName);
 }

@@ -28,6 +28,9 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.ws.rs.Path;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
@@ -39,7 +42,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
@@ -54,6 +56,8 @@ public class Core implements SpeechInputHandler {
 	 * The project directory.
 	 */
 	public static final File projectDir = new File(".").getAbsoluteFile().getParentFile().getParentFile();
+
+	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
 	private List<Thread> threads;
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -127,13 +131,13 @@ public class Core implements SpeechInputHandler {
 				"de.unistuttgart.iaas.amyassist", "0.0.1");
 		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.spotify", "amy.plugin.spotify",
 				"de.unistuttgart.iaas.amyassist", "0.0.1");
-		
-		/*System.out.println(projectDir.toString());
+
+		/*this.logger.debug("projectDir: {}", projectDir);
 
 		ArrayList<File> plugins = new ArrayList<>();
 		plugins.add(new File(projectDir, "plugins/alarmclock"));
 		plugins.add(new File(projectDir, "plugins/example"));
-		// plugins.add(new File(projectDir, "plugins/spotify"));
+		plugins.add(new File(projectDir, "plugins/spotify"));
 		plugins.add(new File(projectDir, "plugins/systemtime"));
 		plugins.add(new File(projectDir, "plugins/weather"));
 

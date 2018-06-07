@@ -22,6 +22,9 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import asg.cliche.Command;
 import asg.cliche.ShellFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -37,6 +40,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 @Service(Console.class)
 public class Console implements SpeechIO {
 
+	private Logger logger = LoggerFactory.getLogger(Console.class);
+
 	@Reference
 	private Configuration configuration;
 
@@ -50,7 +55,7 @@ public class Console implements SpeechIO {
 		try {
 			return this.handler.handle(String.join(" ", speechInput)).get();
 		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
+			this.logger.error("Error while handling input {}", speechInput, e);
 		}
 		return "";
 	}
@@ -62,7 +67,8 @@ public class Console implements SpeechIO {
 			return String.join("\n", this.configuration.getInstalledPlugins());
 
 		default:
-			throw new IllegalArgumentException(command);
+			this.logger.warn("command {} doesn't exists", command);
+			return "command doesn't exists";
 		}
 	}
 
@@ -74,7 +80,7 @@ public class Console implements SpeechIO {
 		try {
 			ShellFactory.createConsoleShell("amy", "", this).commandLoop();
 		} catch (IOException e) {
-			e.printStackTrace();
+			this.logger.error("Error while running the console", e);
 		}
 		this.core.stop();
 	}

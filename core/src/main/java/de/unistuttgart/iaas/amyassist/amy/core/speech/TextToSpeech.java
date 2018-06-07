@@ -13,7 +13,6 @@ import javax.sound.sampled.LineUnavailableException;
 import marytts.LocalMaryInterface;
 import marytts.exceptions.MaryConfigurationException;
 import marytts.exceptions.SynthesisException;
-import marytts.modules.synthesis.Voice;
 
 /**
  * Class Based on MaryTTS: https://github.com/marytts/marytts

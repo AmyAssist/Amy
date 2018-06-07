@@ -66,4 +66,13 @@ public class HelloWorldTest {
 
 		Mockito.verify(storage).put("hellocount", "11");
 	}
+	
+	@Test
+	public void textHelloWorldXTimes() {
+		HelloWorldImpl helloWorld = this.testFramework
+				.setServiceUnderTest(HelloWorldImpl.class);
+		
+		assertThat(helloWorld.helloWorldXTimes(3), equalTo("hello hello hello"));
+		
+	}
 }

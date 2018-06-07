@@ -32,8 +32,8 @@ public class PluginGrammarInfo {
 	List<String> keywords;
 	Set<String> grammars;
 
-	public PluginGrammarInfo(List<String> keywords, Set<String> set) {
+	public PluginGrammarInfo(List<String> keywords, Set<String> grammars) {
 		this.keywords = keywords;
-		this.grammars = set;
+		this.grammars = grammars;
 	}
 }

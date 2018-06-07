@@ -92,7 +92,7 @@ public class GrammarParser {
 		grammar += "\n//custom rules \n";
 		
 		for (String s : this.addedRules) {
-			grammar += s;
+			grammar += s.toLowerCase();
 		}
 
 		return grammar;

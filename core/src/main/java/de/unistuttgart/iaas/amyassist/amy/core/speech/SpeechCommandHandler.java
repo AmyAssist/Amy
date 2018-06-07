@@ -25,6 +25,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -86,14 +87,15 @@ public class SpeechCommandHandler {
 	}
 
 	public String handleSpeechInput(String input) {
-		String[] pluginActionFromText = this.textToPlugin.pluginActionFromText(input);
+		List<String> pluginActionFromText = this.textToPlugin.pluginActionFromText(input);
 		if (pluginActionFromText == null) {
 			throw new IllegalArgumentException(input);
 		}
-		return this.call(this.speechCommands.get(pluginActionFromText[1]), input);
+		String[] args = pluginActionFromText.subList(2, pluginActionFromText.size()).toArray(new String[0]);
+		return this.call(this.speechCommands.get(pluginActionFromText.get(1)), args);
 	}
 
-	private String call(SpeechCommand command, String input) {
+	private String call(SpeechCommand command, String[] input) {
 		Class<?> speechCommandClass = command.getSpeechCommandClass();
 		Object speechCommandClassInstance = this.serviceLocator.create(speechCommandClass);
 		return command.call(speechCommandClassInstance, input);

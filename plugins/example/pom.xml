@@ -5,48 +5,16 @@
 	<artifactId>amy-plugin-example</artifactId>
 	<name>Amy plugin example</name>
 	<description>The Amy example plugin</description>
-        <parent>
-            <groupId>de.unistuttgart.iaas.amyassist</groupId>
-            <artifactId>amy</artifactId>
-            <version>0.2.0-Snapshot</version>
-            <relativePath>../../pom.xml</relativePath>
-        </parent>
-        <dependencies>
-                <dependency>
-                        <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-di-api</artifactId>
-                        <version>${amy.di.api.version}</version>
-                </dependency>
-                <dependency>
-                        <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-api</artifactId>
-                        <version>${amy.api.version}</version>
-                </dependency>
-                <dependency>
-                        <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-testing-framework</artifactId>
-                        <version>${amy.testing-framework.version}</version>
-                        <scope>test</scope>
-                </dependency>
+	<parent>
+		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<artifactId>amy-plugin</artifactId>
+		<version>0.2.0-Snapshot</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>
