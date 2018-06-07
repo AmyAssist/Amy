@@ -69,14 +69,12 @@ public class Server {
 		resourceConfig.register(new AbstractBinder() {
 			@Override
 			protected void configure() {
-				this.bind(new ServiceInjectionResolver(Server.this.di))
-						.to(new TypeLiteral<Reference>() {
-						});
+				this.bind(new ServiceInjectionResolver(Server.this.di)).to(new TypeLiteral<Reference>() {
+				});
 			}
 		});
 		// java.util.logging.Logger.getLogger("org.glassfish.grizzly").setLevel(Level.WARNING);
-		this.httpServer = GrizzlyHttpServerFactory.createHttpServer(BASE_URI,
-				resourceConfig);
+		this.httpServer = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, resourceConfig);
 	}
 
 	/**
@@ -96,12 +94,12 @@ public class Server {
 	 */
 	public void register(Class<?> cls) {
 		if (!cls.isAnnotationPresent(Path.class)) {
-			this.logger.error(
-					"can't register class {}, because it dont have the Path annotation",
-					cls);
-			throw new RuntimeException();
+			this.logger.error("can't register class {}, because it dont have the Path annotation", cls);
+			throw new IllegalArgumentException();
 		}
 
+		if (this.httpServer != null)
+			throw new IllegalStateException("The Server is already started");
 		this.restResources.add(cls);
 	}
 
