@@ -19,12 +19,27 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import java.util.logging.LogManager;
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+
 /**
  * TODO: Description
  * 
- * @author Tim Neumann
+ * @author Tim Neumann, Leon Kiefer
  */
 public class Main {
+
+	static {
+		LogManager.getLogManager().reset();
+		SLF4JBridgeHandler.install();
+		//workaround for https://github.com/cmusphinx/sphinx4/blob/master/sphinx4-core/src/main/java/edu/cmu/sphinx/util/props/ConfigurationManagerUtils.java#L138
+		System.setProperty("java.util.logging.config.file", "");
+	}
 
 	/**
 	 * The main entry point of the program
@@ -33,6 +48,8 @@ public class Main {
 	 *            [not used] The command line arguments
 	 */
 	public static void main(String[] args) {
+		Logger root = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		root.setLevel(Level.WARN);
 		Core core = new Core();
 		core.run();
 	}

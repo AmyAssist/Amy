@@ -5,24 +5,26 @@
 	<artifactId>amy-http-server</artifactId>
 	<name>Amy http-server</name>
 	<description>The Amy http server</description>
-        <parent>
-                <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                <artifactId>amy</artifactId>
-                <version>0.2.0-Snapshot</version>
-                <relativePath>../pom.xml</relativePath>
-        </parent>
-        <dependencies>
-                <dependency>
-	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-di-api</artifactId>
-                        <version>${amy.di.api.version}</version>
+	<parent>
+		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<artifactId>amy</artifactId>
+		<version>0.2.0-Snapshot</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
 		</dependency>
-		 <dependency>
-	  		<groupId>de.unistuttgart.iaas.amyassist</groupId>
-                        <artifactId>amy-api</artifactId>
-                        <version>${amy.api.version}</version>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-di-api</artifactId>
 		</dependency>
-		 <!-- Jersey JAX-RS -->
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-api</artifactId>
+		</dependency>
+		<!-- Jersey JAX-RS -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
