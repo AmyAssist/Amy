@@ -52,4 +52,15 @@ public class HelloWorldImpl implements HelloWorldService {
 
 		return "hello" + countString;
 	}
+
+	@Override
+	public String helloWorldXTimes(int times) {
+		String hellos = "";
+		
+		for(int i=0; i<times; i++) {
+			hellos += "hello" + " ";
+		}
+		
+		return hellos.trim();
+	}
 }

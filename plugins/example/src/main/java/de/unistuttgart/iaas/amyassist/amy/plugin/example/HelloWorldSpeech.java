@@ -31,7 +31,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
  * @author Leon Kiefer, Tim Neumann
  */
 @Service
-@SpeechCommand("Hello world")
+@SpeechCommand("hello")
 public class HelloWorldSpeech {
 
 	/**
@@ -51,4 +51,10 @@ public class HelloWorldSpeech {
 	public String say(String... params) {
 		return this.helloWorld.helloWorld();
 	}
+	
+	@Grammar("say hello # times")
+	public String sayXTimes(String... params) {
+		return this.helloWorld.helloWorldXTimes(Integer.parseInt(params[2]));
+	}
 }
+

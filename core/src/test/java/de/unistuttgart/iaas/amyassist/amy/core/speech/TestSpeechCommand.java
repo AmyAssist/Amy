@@ -32,7 +32,7 @@ public class TestSpeechCommand {
 
 	@Grammar("simple #")
 	public String simpleCommand(String... s) {
-		return s[0];
+		return s[1];
 	}
 
 }

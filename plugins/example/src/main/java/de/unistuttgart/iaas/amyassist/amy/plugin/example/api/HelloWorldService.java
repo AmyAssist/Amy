@@ -32,5 +32,7 @@ public interface HelloWorldService {
 	 * @return the response
 	 */
 	String helloWorld();
+	
+	String helloWorldXTimes(int times);
 
 }
