@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>amy-core</artifactId>
@@ -80,31 +79,6 @@
 			<groupId>de.dfki.mary</groupId>
 			<artifactId>voice-dfki-poppy-hsmm</artifactId>
 			<version>5.2</version>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-plugin-alarmclock</artifactId>
-			<version>0.2.0-Snapshot</version>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-plugin-example</artifactId>
-			<version>0.2.0-Snapshot</version>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-plugin-spotify</artifactId>
-			<version>0.2.0-Snapshot</version>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-plugin-systemtime</artifactId>
-			<version>0.2.0-Snapshot</version>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-plugin-weather</artifactId>
-			<version>0.2.0-Snapshot</version>
 		</dependency>
 	</dependencies>
 	<build>

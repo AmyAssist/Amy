@@ -87,7 +87,8 @@ public class Core implements SpeechInputHandler {
 		this.threads.add(new Thread(console));
 
 		AudioUserInteraction aui = new AudioUserInteraction();
-		aui.setData("amy", "sleep", "amy shutdown", new Grammar("grammar", new File("src/main/resources", "/sphinx-grammars/grammar.gram")), null);
+		aui.setData("amy", "sleep", "amy shutdown",
+				new Grammar("grammar", new File("src/main/resources", "/sphinx-grammars/grammar.gram")), null);
 
 		SpeechIO sr = aui;
 		this.di.inject(sr);
@@ -116,23 +117,28 @@ public class Core implements SpeechInputHandler {
 	 * load the plugins
 	 */
 	private void loadPlugins() {
-		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.example", "amy.plugin.example",
-				"de.unistuttgart.iaas.amyassist", "0.0.1");
-		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.systemtime", "amy.plugin.systemtime",
-				"de.unistuttgart.iaas.amyassist", "0.0.1");
-		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.weather", "amy.plugin.weather",
-				"de.unistuttgart.iaas.amyassist", "0.0.1");
-		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock", "amy.plugin.alarmclock",
-				"de.unistuttgart.iaas.amyassist", "0.0.1");
-		this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.spotify", "amy.plugin.spotify",
-				"de.unistuttgart.iaas.amyassist", "0.0.1");
-		
-		/*System.out.println(projectDir.toString());
+		// this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.example",
+		// "amy.plugin.example",
+		// "0.0.1");
+		// this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.systemtime",
+		// "amy.plugin.systemtime",
+		// "0.0.1");
+		// this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.weather",
+		// "amy.plugin.weather",
+		// "0.0.1");
+		// this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock",
+		// "amy.plugin.alarmclock",
+		// "0.0.1");
+		// this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.spotify",
+		// "amy.plugin.spotify",
+		// "0.0.1");
+
+		System.out.println(projectDir.toString());
 
 		ArrayList<File> plugins = new ArrayList<>();
 		plugins.add(new File(projectDir, "plugins/alarmclock"));
 		plugins.add(new File(projectDir, "plugins/example"));
-		// plugins.add(new File(projectDir, "plugins/spotify"));
+		plugins.add(new File(projectDir, "plugins/spotify"));
 		plugins.add(new File(projectDir, "plugins/systemtime"));
 		plugins.add(new File(projectDir, "plugins/weather"));
 
@@ -143,7 +149,7 @@ public class Core implements SpeechInputHandler {
 					break;
 				}
 			}
-		}*/
+		}
 
 		for (Plugin p : this.pluginLoader.getPlugins()) {
 			this.processPlugin(p);

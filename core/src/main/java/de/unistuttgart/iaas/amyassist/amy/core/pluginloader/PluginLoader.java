@@ -26,13 +26,13 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 /**
  * The class responsible for loading plugins.
@@ -65,24 +65,23 @@ public class PluginLoader {
 			Enumeration<JarEntry> jarEntries = jar.entries();
 			URL[] urls = { file.toURI().toURL() };
 
+			// We need that classLoader to stay open. TODO:Make sure it get's
+			// closed eventually.
+			@SuppressWarnings("resource")
 			URLClassLoader childLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
 
-			HashMap<String, PomParser> foundPoms = new HashMap<>();
+			Manifest mf = jar.getManifest();
 
 			ArrayList<Class<?>> classes = new ArrayList<>();
 
 			while (jarEntries.hasMoreElements()) {
 				JarEntry jarEntry = jarEntries.nextElement();
-				if (jarEntry.getName().endsWith("pom.xml")) {
-					String path = "jar:" + uri.toString() + "!/" + jarEntry.getName();
-					URI pomUri = new URI(path);
-					PomParser pomParser = new PomParser(pomUri.toURL().openStream());
-					foundPoms.put(pomParser.getFullId(), pomParser);
-				} else if (jarEntry.getName().endsWith(".class")) {
+				if (jarEntry.getName().endsWith(".class")) {
 					String className = jarEntry.getName().substring(0, jarEntry.getName().length() - 6);
 					className = className.replace("/", ".");
+					// FIXME: Better check if is from plugin or not.
 					if (className.contains("amy")) {
-						System.out.println(className);
+						//System.out.println(className);
 						Class<?> c = Class.forName(className, true, childLoader);
 						classes.add(c);
 					}
@@ -92,29 +91,8 @@ public class PluginLoader {
 			// can find there references
 			// childLoader.close();
 
-			ArrayList<String> foundToBeLibaries = new ArrayList<>();
-
-			for (PomParser pom : foundPoms.values()) {
-				foundToBeLibaries.addAll(Arrays.asList(pom.getDependencyIds()));
-			}
-
-			for (String libary : foundToBeLibaries) {
-				if (foundPoms.containsKey(libary)) {
-					foundPoms.remove(libary);
-				}
-			}
-
-			if (foundPoms.size() > 1)
-				throw new IllegalStateException("More then one non-libary artifact found in jar!");
-			if (foundPoms.size() < 1)
-				throw new IllegalStateException("No artifact found in jar!");
-
-			PomParser pom = foundPoms.values().iterator().next();
-
 			plugin.setClassLoader(childLoader);
-			plugin.setMavenArtifactId(pom.getId());
-			plugin.setMavenGroupId(pom.getGroupId());
-			plugin.setMavenVersion(pom.getVersion());
+			plugin.setManifest(mf);
 			plugin.setClasses(classes);
 
 		} catch (Exception e) {
@@ -131,16 +109,16 @@ public class PluginLoader {
 	 * 
 	 * @param packageName
 	 *            The package name of the plugin to load
-	 * @param mavenArtifactId
-	 *            The maven artifactId of the plugin
-	 * @param mavenGroupId
-	 *            The maven groupId of the plugin
-	 * @param mavenVersion
-	 *            The maven version of the plugin
+	 * @param name
+	 *            The name of the plugin
+	 * @param version
+	 *            The version of the plugin
+	 * 
 	 * @return Whether it worked.
 	 * 
 	 */
-	public boolean loadPlugin(String packageName, String mavenArtifactId, String mavenGroupId, String mavenVersion) {
+	@Deprecated
+	public boolean loadPlugin(String packageName, String name, String version) {
 		String packagePath = packageName.replace(".", "/");
 		URL packageURL = Thread.currentThread().getContextClassLoader().getResource(packagePath);
 		if (packageURL == null)
@@ -160,9 +138,8 @@ public class PluginLoader {
 		p.setClasses(classes);
 		p.setClassLoader(Thread.currentThread().getContextClassLoader());
 		p.setFile(null);
-		p.setMavenArtifactId(mavenArtifactId);
-		p.setMavenGroupId(mavenGroupId);
-		p.setMavenVersion(mavenVersion);
+		p.setFakeName(name);
+		p.setFakeVersion(version);
 		this.plugins.put(p.getUniqueName(), p);
 		return true;
 	}
@@ -209,6 +186,11 @@ public class PluginLoader {
 		return this.plugins.keySet();
 	}
 
+	/**
+	 * Returns a List of all Plugins.
+	 * 
+	 * @return the list of plugins.
+	 */
 	public List<Plugin> getPlugins() {
 		return new ArrayList<>(this.plugins.values());
 	}

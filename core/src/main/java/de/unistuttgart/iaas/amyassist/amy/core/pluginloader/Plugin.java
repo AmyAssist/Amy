@@ -6,7 +6,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -21,6 +21,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.jar.Attributes.Name;
+import java.util.jar.Manifest;
 
 /**
  * A representation of loaded plugin
@@ -38,22 +40,12 @@ public class Plugin {
 	 */
 	private ClassLoader classLoader;
 
-	/**
-	 * The maven group id of the plugin
-	 */
-	private String mavenGroupId;
-
-	/**
-	 * The maven artifact id of the plugin
-	 */
-	private String mavenArtifactId;
-
-	/**
-	 * The version of the plugin
-	 */
-	private String mavenVersion;
+	private Manifest manifest;
 
 	private ArrayList<Class<?>> classes = new ArrayList<>();
+
+	private String fakeName = "";
+	private String fakeVersion = "";
 
 	/**
 	 * Get's {@link #file file}
@@ -79,34 +71,20 @@ public class Plugin {
 	 * @return uniqueName
 	 */
 	public String getUniqueName() {
-		return this.mavenGroupId + "." + this.mavenArtifactId;
+		if (this.manifest == null)
+			return this.fakeName;
+		return this.manifest.getMainAttributes().getValue(Name.IMPLEMENTATION_TITLE);
 	}
 
 	/**
-	 * Get's {@link #mavenGroupId mavenGroupId}
-	 * 
-	 * @return mavenGroupId
-	 */
-	public String getMavenGroupId() {
-		return this.mavenGroupId;
-	}
-
-	/**
-	 * Get's {@link #mavenArtifactId mavenArtifactId}
-	 * 
-	 * @return mavenArtifactId
-	 */
-	public String getMavenArtifactId() {
-		return this.mavenArtifactId;
-	}
-
-	/**
-	 * Get's {@link #mavenVersion mavenVersion}
+	 * Get's the version of this plugin
 	 * 
 	 * @return mavenVersion
 	 */
-	public String getMavenVersion() {
-		return this.mavenVersion;
+	public String getVersion() {
+		if (this.manifest == null)
+			return this.fakeVersion;
+		return this.manifest.getMainAttributes().getValue(Name.IMPLEMENTATION_VERSION);
 	}
 
 	/**
@@ -116,6 +94,15 @@ public class Plugin {
 	 */
 	public ArrayList<Class<?>> getClasses() {
 		return new ArrayList<>(this.classes);
+	}
+
+	/**
+	 * Get's {@link #manifest manifest}
+	 * 
+	 * @return manifest
+	 */
+	public Manifest getManifest() {
+		return this.manifest;
 	}
 
 	/**
@@ -139,36 +126,6 @@ public class Plugin {
 	}
 
 	/**
-	 * Set's {@link #mavenGroupId mavenGroupId}
-	 * 
-	 * @param mavenGroupId
-	 *            mavenGroupId
-	 */
-	protected void setMavenGroupId(String mavenGroupId) {
-		this.mavenGroupId = mavenGroupId;
-	}
-
-	/**
-	 * Set's {@link #mavenArtifactId mavenArtifactId}
-	 * 
-	 * @param mavenArtifactId
-	 *            mavenArtifactId
-	 */
-	protected void setMavenArtifactId(String mavenArtifactId) {
-		this.mavenArtifactId = mavenArtifactId;
-	}
-
-	/**
-	 * Set's {@link #mavenVersion mavenVersion}
-	 * 
-	 * @param mavenVersion
-	 *            mavenVersion
-	 */
-	protected void setMavenVersion(String mavenVersion) {
-		this.mavenVersion = mavenVersion;
-	}
-
-	/**
 	 * Set's {@link #classes classes}
 	 * 
 	 * @param classes
@@ -176,6 +133,36 @@ public class Plugin {
 	 */
 	protected void setClasses(ArrayList<Class<?>> classes) {
 		this.classes = classes;
+	}
+
+	/**
+	 * Set's {@link #manifest manifest}
+	 * 
+	 * @param manifest
+	 *            manifest
+	 */
+	protected void setManifest(Manifest manifest) {
+		this.manifest = manifest;
+	}
+
+	/**
+	 * Set's {@link #fakeName fakeName}
+	 * 
+	 * @param fakeName
+	 *            fakeName
+	 */
+	protected void setFakeName(String fakeName) {
+		this.fakeName = fakeName;
+	}
+
+	/**
+	 * Set's {@link #fakeVersion fakeVersion}
+	 * 
+	 * @param fakeVersion
+	 *            fakeVersion
+	 */
+	protected void setFakeVersion(String fakeVersion) {
+		this.fakeVersion = fakeVersion;
 	}
 
 }
