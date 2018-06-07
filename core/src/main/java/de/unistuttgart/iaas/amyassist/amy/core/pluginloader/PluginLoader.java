@@ -57,7 +57,8 @@ public class PluginLoader {
 	 * @throws IllegalArgumentException
 	 *             When the given location is not a valid plugin file
 	 */
-	public boolean loadPlugin(URI uri) throws IllegalArgumentException {
+	public boolean loadPlugin(URI uri) {
+		this.logger.debug("try to load plugin from {}", uri);
 		File file = new File(uri);
 
 		if (!file.exists() || file.isDirectory())
@@ -103,8 +104,7 @@ public class PluginLoader {
 			this.logger.error("Exception while loading plugin {}", uri, e);
 			return false;
 		}
-
-		this.plugins.put(plugin.getUniqueName(), plugin);
+		this.addPlugin(plugin);
 		return true;
 	}
 
@@ -144,8 +144,13 @@ public class PluginLoader {
 		p.setFile(null);
 		p.setFakeName(name);
 		p.setFakeVersion(version);
-		this.plugins.put(p.getUniqueName(), p);
+		this.addPlugin(p);
 		return true;
+	}
+
+	private void addPlugin(Plugin plugin) {
+		this.logger.info("loaded plugin {}", plugin.getUniqueName());
+		this.plugins.put(plugin.getUniqueName(), plugin);
 	}
 
 	private ArrayList<Class<?>> findClassesInPackage(File packageFile, String parent_packageName) {
