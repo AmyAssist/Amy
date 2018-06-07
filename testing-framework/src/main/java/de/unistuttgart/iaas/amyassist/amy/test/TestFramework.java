@@ -135,7 +135,6 @@ public class TestFramework {
 		if (serviceClass.isAnnotationPresent(Service.class)) {
 			this.dependencyInjection.register(serviceClass);
 			T instance = this.dependencyInjection.create(serviceClass);
-			this.dependencyInjection.postConstruct(instance);
 			return instance;
 		}
 		throw new RuntimeException();

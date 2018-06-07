@@ -65,56 +65,47 @@ class DependencyInjectionTest {
 		this.dependencyInjection.register(Service4.class);
 		this.dependencyInjection.register(Service5.class);
 
-		assertThrows(RuntimeException.class,
-				() -> this.dependencyInjection.getService(Service4.class));
+		assertThrows(RuntimeException.class, () -> this.dependencyInjection.getService(Service4.class));
 	}
 
 	@Test()
 	void testRegisterNotAService() {
 		String message = assertThrows(ClassIsNotAServiceException.class,
-				() -> this.dependencyInjection.register(NotAService.class))
-						.getMessage();
+				() -> this.dependencyInjection.register(NotAService.class)).getMessage();
 
-		assertThat(message, equalTo("The class " + NotAService.class.getName()
-				+ " is not a Service"));
+		assertThat(message, equalTo("The class " + NotAService.class.getName() + " is not a Service"));
 	}
 
 	@Test()
 	void testServiceNotFoundException() {
 		this.dependencyInjection.register(Service6.class);
 		String message = assertThrows(ServiceNotFoundException.class,
-				() -> this.dependencyInjection.getService(Service6.class))
-						.getMessage();
+				() -> this.dependencyInjection.getService(Service6.class)).getMessage();
 
-		assertThat(message, equalTo("The Service " + Service7API.class.getName()
-				+ " is not registered in the DI or do not exists."));
+		assertThat(message, equalTo(
+				"The Service " + Service7API.class.getName() + " is not registered in the DI or do not exists."));
 	}
 
 	@Test()
 	void testDuplicateServiceException() {
 		this.dependencyInjection.register(Service6.class);
-		assertThrows(DuplicateServiceException.class,
-				() -> this.dependencyInjection.register(Service6.class));
+		assertThrows(DuplicateServiceException.class, () -> this.dependencyInjection.register(Service6.class));
 	}
 
 	@Test()
 	void testDuplicateServiceException2() {
-		this.dependencyInjection.addExternalService(Service7API.class,
-				new Service7());
+		this.dependencyInjection.addExternalService(Service7API.class, new Service7());
 		assertThrows(DuplicateServiceException.class,
-				() -> this.dependencyInjection
-						.addExternalService(Service7API.class, new Service7()));
+				() -> this.dependencyInjection.addExternalService(Service7API.class, new Service7()));
 	}
 
 	@Test()
 	void testConstructorCheck() {
 		String message = assertThrows(RuntimeException.class,
-				() -> this.dependencyInjection
-						.register(ServiceWithConstructor.class)).getMessage();
+				() -> this.dependencyInjection.register(ServiceWithConstructor.class)).getMessage();
 
 		assertThat(message,
-				equalTo("There is no default public constructor on class "
-						+ ServiceWithConstructor.class.getName()));
+				equalTo("There is no default public constructor on class " + ServiceWithConstructor.class.getName()));
 	}
 
 	@Test()
@@ -125,19 +116,24 @@ class DependencyInjectionTest {
 		this.dependencyInjection.register(ServiceWithDuplicateDependency.class);
 
 		assertThat(outContent.toString(),
-				equalToIgnoringWhiteSpace("The Service "
-						+ ServiceWithDuplicateDependency.class.getName()
-						+ " have a duplicate dependeny on "
-						+ Service6.class.getName()));
+				equalToIgnoringWhiteSpace("The Service " + ServiceWithDuplicateDependency.class.getName()
+						+ " have a duplicate dependeny on " + Service6.class.getName()));
 	}
 
 	@Test()
 	void testIllegalAccessException() {
-		Throwable cause = assertThrows(RuntimeException.class,
-				() -> this.dependencyInjection.create(Service8.class))
-						.getCause();
+		Throwable cause = assertThrows(RuntimeException.class, () -> this.dependencyInjection.create(Service8.class))
+				.getCause();
 
 		assertThat(cause.getClass(), equalTo(InstantiationException.class));
+	}
+
+	@Test()
+	void testPostConstruct() {
+		Service1 service1 = this.dependencyInjection.create(Service1.class);
+		assertThat(service1.init, is(1));
+		this.dependencyInjection.postConstruct(service1);
+		assertThat(service1.init, is(2));
 	}
 
 }

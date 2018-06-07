@@ -19,9 +19,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Global storage placeholder until a database or similar mechanisms are
@@ -33,19 +33,14 @@ public class GlobalStorage {
 	/**
 	 * The map in which everything is stored.
 	 */
-	protected Map<String, String> store;
+	protected ConcurrentMap<String, String> store;
 
 	/**
 	 * Creates a new Global Storage.
 	 * This should only be called once.
 	 */
 	public GlobalStorage() {
-		Map<String, String> tempMap = new HashMap<>();
-		
-		//creates a thread save HashMap
-		//it's not perfect for performance but ensures consistency
-		//ConcurrentHashMap might be an alternative
-		this.store = Collections.synchronizedMap(tempMap);
+		this.store = new ConcurrentHashMap<>();
 	}
 
 	/**

@@ -31,6 +31,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -49,6 +51,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * @author Leon Kiefer
  */
 public class DependencyInjection implements ServiceLocator {
+
+	protected final Logger logger = LoggerFactory.getLogger(DependencyInjection.class);
 
 	protected Map<Class<?>, Class<?>> register;
 
@@ -159,8 +163,8 @@ public class DependencyInjection implements ServiceLocator {
 	}
 
 	/**
-	 * Resolve the dependency of a Service implementation and create an instance of
-	 * the Service
+	 * Resolve the dependency of a Service implementation and create an instance
+	 * of the Service
 	 * 
 	 * @param serviceClass
 	 *            the implementation class of a Service
@@ -203,7 +207,7 @@ public class DependencyInjection implements ServiceLocator {
 			try {
 				FieldUtils.writeField(field, instance, object, true);
 			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
+				this.logger.error("tryed to inject the dependency {} into {} but failed", object, instance, e);
 			}
 		}
 	}
@@ -215,8 +219,7 @@ public class DependencyInjection implements ServiceLocator {
 			try {
 				m.invoke(instance);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				this.logger.error("tryed to invoke method {} but got an error", m, e);
 			}
 		}
 	}
