@@ -21,6 +21,10 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
@@ -42,8 +46,9 @@ public class SystemTimeResource {
 	 */
 	@GET
 	@Path("time")
-	public String getTime() {
-		return this.logic.getTime();
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response getTime() {
+		return Response.status(Status.OK).entity(this.logic.getTime()).build();
 	}
 	
 	/**
@@ -53,9 +58,9 @@ public class SystemTimeResource {
 	 */
 	@GET
 	@Path("date")
-	public String getDate() {
-		return this.logic.getDate();
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response getDate() {
+		return Response.status(Status.OK).entity(this.logic.getDate()).build();
 	}
-	
 
 }

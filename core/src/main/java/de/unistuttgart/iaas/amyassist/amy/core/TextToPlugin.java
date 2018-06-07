@@ -141,9 +141,9 @@ public class TextToPlugin {
 		// numbers are easy)
 		// \\bnumber\\b is not needed here because of the previous for loop
 		regex = regex.replaceAll("#",
-				"((zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelfe|thirteen"
+				"(((zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelfe|thirteen"
 						+ "|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|"
-						+ "ten|twenty|thirty|forty|fifty|sixty|seventy|eigthty|ninety)+|([0-9]+))");
+						+ "ten|twenty|thirty|forty|fifty|sixty|seventy|eigthty|ninety)+|([0-9]+))\\\\s{0,1})+");
 
 		// at last replace whitespace with an arbitrary number of whitespaces
 		// makes things like @Grammar(this has lots of space) possible
