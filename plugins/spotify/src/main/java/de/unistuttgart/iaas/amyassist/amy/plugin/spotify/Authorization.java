@@ -109,6 +109,7 @@ public class Authorization {
 			AuthorizationCodeCredentials authorizationCodeCredentials1 = authorizationCodeRequest.execute();
 			this.refreshToken = authorizationCodeCredentials1.getRefreshToken();
 			this.configLoader.set(SPOTIFY_REFRSHTOKEN, refreshToken);
+			System.out.println(refreshToken);
 		} catch (SpotifyWebApiException | IOException e) {
 			System.err.println(e.getMessage());
 		}
@@ -134,7 +135,7 @@ public class Authorization {
 					return null;
 				}
 			} catch (SpotifyWebApiException | IOException e) {
-				System.err.println(e.getMessage());
+				System.err.println(e.getCause().getMessage());
 				return null;
 			}
 			this.firstTime = false;
@@ -148,7 +149,7 @@ public class Authorization {
 				this.spotifyApi.setAccessToken(this.authorizationCodeCredentials.getAccessToken());
 
 			} catch (SpotifyWebApiException | IOException e) {
-				System.err.println(e.getMessage());
+				System.err.println(e.getCause().getMessage());
 				return null;
 			}
 			return this.spotifyApi;
@@ -186,6 +187,8 @@ public class Authorization {
 		Scanner sc = new Scanner(System.in);
 		Authorization auth = new Authorization();
 		auth.init();
+		auth.setClientID("463c0be72d1e4e598d00096676e957bf");
+		auth.setClientSecret("d7c76f4fa90341cba67ac56c445ff7b0");
 		System.out.println("copy this link in your browser an follow the login process");
 		System.out.println(auth.authorizationCodeUri());
 		System.out.println(
