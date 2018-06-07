@@ -81,13 +81,16 @@ public class PluginLoader {
 				} else if (jarEntry.getName().endsWith(".class")) {
 					String className = jarEntry.getName().substring(0, jarEntry.getName().length() - 6);
 					className = className.replace("/", ".");
-					System.out.println(className);
-					Class<?> c = childLoader.loadClass(className);
-					classes.add(c);
+					if (className.contains("amy")) {
+						System.out.println(className);
+						Class<?> c = Class.forName(className, true, childLoader);
+						classes.add(c);
+					}
 				}
 			}
-
-			childLoader.close();
+			// Don't close the loader, so the references of the loaded classes
+			// can find there references
+			// childLoader.close();
 
 			ArrayList<String> foundToBeLibaries = new ArrayList<>();
 
