@@ -19,8 +19,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
-import java.io.IOException;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,9 +27,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
@@ -48,7 +43,6 @@ public class MusicResource {
 	
 	private MusicEntity musicEntity;
 	private Playlist playlist;
-	private Response response;
 	
 	@Reference
 	private PlayerLogic logic;
@@ -63,60 +57,58 @@ public class MusicResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getMusic() {
 		this.musicEntity = new MusicEntity(this.logic.getCurrentSong().get("name"), this.logic.getCurrentSong().get("artist"));
-		this.response = Response.status(Status.OK).entity(this.musicEntity).build();
-		return this.response;
+		return Response.status(Status.OK).entity(this.musicEntity).build();
 	}
 	
 	/**
 	 * plays the given music
 	 * 
-	 * @param music the music to be played
+	 * @param music
+	 *            the music to be played
 	 * @return the answer from the player
 	 */
 	@POST
 	@Path("play")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String play(MusicEntity music) {
+	public Response play(MusicEntity music) {
 		this.musicEntity = music;
 		this.logic.search(this.musicEntity.toString(), Search.TYPE_TRACK, 5);
-		return this.logic.play(0);
+		return Response.status(Status.OK).entity(this.logic.play(0)).build();
 	}
 	
 	/**
 	 * resumes the actual playback
 	 * 
-	 * @return HTTP Response
+	 * @return HTTP Response with player status
 	 */
 	@POST
 	@Path("resume")
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response resume() {
 		if (this.logic.resume()) {
-			this.response = Response.status(Status.OK).entity("resume").build();
+			return Response.status(Status.OK).entity("resume").build();
 		} else {
-			this.response = Response.status(Status.CONFLICT)
+			return Response.status(Status.CONFLICT)
 					.entity("Check player state").build();
 		}
-		return this.response;
 	}
 
 	/**
 	 * pauses the actual playback
 	 * 
-	 * @return HTTP Response
+	 * @return HTTP Response with player status
 	 */
 	@POST
 	@Path("pause")
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response pausePlayback() {
 		if(this.logic.pausePlayback()) {;
-			this.response = Response.status(Status.OK).entity("pause").build();
+			return Response.status(Status.OK).entity("pause").build();
 		} else {
-			this.response = Response.status(Status.CONFLICT)
+			return Response.status(Status.CONFLICT)
 					.entity("Check player state").build();
 		}
-		return this.response;
 	}
 
 	/**
@@ -128,8 +120,7 @@ public class MusicResource {
 	@Path("playlist")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getPlaylist() {
-		this.response = Response.status(Status.OK).entity(this.playlist).build();
-		return this.response;
+		return Response.status(Status.OK).entity(this.playlist).build();
 	}
 	
 	/**
@@ -146,14 +137,14 @@ public class MusicResource {
 	public Response setVolume(String volumeString) {
 		if (volumeString != "mute" && volumeString != "max" 
 				&& volumeString != "up" && volumeString != "down") {
-			return this.response = Response.status(Status.BAD_REQUEST)
+			return Response.status(Status.BAD_REQUEST)
 					.entity("Incorrect volume command").build();
 		} else {
 			int volume = this.logic.setVolume(volumeString);
 			if (volume != -1) {
-				return this.response = Response.status(Status.OK).entity(volume).build();
+				return Response.status(Status.OK).entity(volume).build();
 			} else {
-				return this.response = Response.status(Status.CONFLICT)
+				return Response.status(Status.CONFLICT)
 						.entity("Check player state").build();
 			}
 		}

@@ -23,6 +23,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
@@ -52,8 +54,8 @@ public class WeatherResource {
 	@GET
 	@Path("today")
 	@Produces(MediaType.APPLICATION_JSON)
-	public WeatherReportDay getWeatherToday() {
-		return this.weatherLogic.getReportToday();
+	public Response getWeatherToday() {
+		return Response.status(Status.OK).entity(this.weatherLogic.getReportToday()).build();
 		
 	}
 	/**
@@ -64,8 +66,8 @@ public class WeatherResource {
 	@GET
 	@Path("tomorrow")
 	@Produces(MediaType.APPLICATION_JSON)
-	public WeatherReportDay getWeatherTomorrow() {
-		return this.weatherLogic.getReportTomorrow();
+	public Response getWeatherTomorrow() {
+		return Response.status(Status.OK).entity(this.weatherLogic.getReportTomorrow()).build();
 	}
 	
 	/**
@@ -76,9 +78,8 @@ public class WeatherResource {
 	@GET
 	@Path("week")
 	@Produces(MediaType.APPLICATION_JSON)
-	public WeatherReportWeek getWeatherWeek() {
-		return this.weatherLogic.getReportWeek();
+	public Response getWeatherWeek() {
+		return Response.status(Status.OK).entity(this.weatherLogic.getReportWeek()).build();
 	}
-
 
 }
