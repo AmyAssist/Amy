@@ -77,6 +77,9 @@ public class PluginLoader {
 			URLClassLoader childLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
 
 			Manifest mf = jar.getManifest();
+			if (mf == null) {
+				this.logger.error("Can't find manifest for plugin {}", uri);
+			}
 
 			ArrayList<Class<?>> classes = new ArrayList<>();
 
@@ -149,7 +152,17 @@ public class PluginLoader {
 	}
 
 	private void addPlugin(Plugin plugin) {
-		this.logger.info("loaded plugin {}", plugin.getUniqueName());
+		if (plugin.getClasses().size() < 1) {
+			this.logger.warn("Plugin contains no class: {}", plugin.getUniqueName());
+		}
+		if (plugin.getUniqueName().equals("")) {
+			this.logger.warn("Can't get name of plugin {}", plugin.getUniqueName());
+		}
+		if (plugin.getVersion().equals("")) {
+			this.logger.warn("Can't get version of plugin {}", plugin.getUniqueName());
+		}
+
+		this.logger.info("loaded plugin {} with {} classes", plugin.getUniqueName(), "" + plugin.getClasses().size());
 		this.plugins.put(plugin.getUniqueName(), plugin);
 	}
 

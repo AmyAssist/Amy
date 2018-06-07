@@ -24,12 +24,18 @@ import java.util.ArrayList;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A representation of loaded plugin
  * 
  * @author Tim Neumann
  */
 public class Plugin {
+
+	private final Logger logger = LoggerFactory.getLogger(Plugin.class);
+
 	/**
 	 * The file of the jar of the plugin.
 	 */
@@ -40,8 +46,14 @@ public class Plugin {
 	 */
 	private ClassLoader classLoader;
 
+	/**
+	 * The manifest file of the loaded jar.
+	 */
 	private Manifest manifest;
 
+	/**
+	 * The list of all classes of this plugin
+	 */
 	private ArrayList<Class<?>> classes = new ArrayList<>();
 
 	private String fakeName = "";
@@ -71,8 +83,15 @@ public class Plugin {
 	 * @return uniqueName
 	 */
 	public String getUniqueName() {
-		if (this.manifest == null)
-			return this.fakeName;
+		if (this.manifest == null) {
+			if (this.fakeName != "") {
+				this.logger.warn("manifest is null, using fakeName: {}" + this.fakeName);
+				return this.fakeName;
+			}
+			this.logger.error("manifest is null and fakeName empty. Falling back to file name!: {}",
+					this.file.getName());
+			return this.file.getName();
+		}
 		return this.manifest.getMainAttributes().getValue(Name.IMPLEMENTATION_TITLE);
 	}
 
@@ -82,8 +101,10 @@ public class Plugin {
 	 * @return mavenVersion
 	 */
 	public String getVersion() {
-		if (this.manifest == null)
+		if (this.manifest == null) {
+			this.logger.warn("manifest is null, using fakeVersion: {}" + this.fakeName);
 			return this.fakeVersion;
+		}
 		return this.manifest.getMainAttributes().getValue(Name.IMPLEMENTATION_VERSION);
 	}
 
