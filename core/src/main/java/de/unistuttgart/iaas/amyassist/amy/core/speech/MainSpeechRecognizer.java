@@ -25,13 +25,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.TargetDataLine;
 
-import asg.cliche.example.HelloWorld;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;
@@ -43,10 +38,6 @@ import edu.cmu.sphinx.api.StreamSpeechRecognizer;
  * @author Kai Menzel
  */
 public class MainSpeechRecognizer implements Runnable {
-
-	// wakeup-sleep-shutdown-commands
-	private String wakeUp;
-	private String goSleep;
 
 	// this Grammar 
 	private Grammar grammar;
@@ -70,25 +61,14 @@ public class MainSpeechRecognizer implements Runnable {
 
 	/**
 	 * Creates the Recognizers and Configures them
-	 * 
-	 * @param wakeUp
-	 *            call to start the recognition
-	 * @param goSleep
-	 *            call to stop the recognition
-	 * @param shutDown
-	 *            call to shutdown the whole system
-	 * @param grammarPath
-	 *            Path to the folder of the different Grammars
-	 * @param grammarName
-	 *            Name of the to Used Grammar (without ".gram")
+	 * @param grammar Grammar to use in this Recognizer
+	 * @param inputHandler Handler which will handle the input
 	 * @param ais
 	 *            set custom AudioInputStream. Set *null* for default microphone
 	 *            input
 	 */
-	public MainSpeechRecognizer(String wakeUp, String goSleep, Grammar grammar, SpeechInputHandler inputHandler,
+	public MainSpeechRecognizer(Grammar grammar, SpeechInputHandler inputHandler,
 			AudioInputStream ais) {
-		this.wakeUp = wakeUp;
-		this.goSleep = goSleep;
 		this.grammar = grammar;
 		this.inputHandler = inputHandler;
 		this.ais = ais;
@@ -121,10 +101,6 @@ public class MainSpeechRecognizer implements Runnable {
 		String speechRecognitionResult;
 
 		loop: while (!Thread.interrupted() && AudioUserInteraction.threadRunning) {
-			if (!listening)
-				System.out.println("I am sleeping");
-			if (listening)
-				System.out.println("I am awake");
 
 			/**
 			 * wait for input from the recognizer
@@ -143,14 +119,14 @@ public class MainSpeechRecognizer implements Runnable {
 //			if(speechRecognitionResult.equals(this.shutDown)) System.exit(0);
 
 			// check wakeUp/sleep/shutdown
-			if(speechRecognitionResult.equals(this.wakeUp)){
+			if(speechRecognitionResult.equals(AudioUserInteraction.wakeUp)){
 				listening = true;
 				AudioUserInteraction.say("waking up");
-			}else if(speechRecognitionResult.startsWith(this.wakeUp + " ")){
+			}else if(speechRecognitionResult.startsWith(AudioUserInteraction.wakeUp + " ")){
 				listening = true;
-				makeDecision(speechRecognitionResult.replaceFirst(this.wakeUp + " ", ""));
+				makeDecision(speechRecognitionResult.replaceFirst(AudioUserInteraction.wakeUp + " ", ""));
 			}else if (listening){
-				if(speechRecognitionResult.equals(this.goSleep)){
+				if(speechRecognitionResult.equals(AudioUserInteraction.goSleep)){
 					listening = false;
 					AudioUserInteraction.say("now sleeping");
 				}else{
@@ -176,11 +152,6 @@ public class MainSpeechRecognizer implements Runnable {
 		if (result.replace(" ", "").equals("") || result.equals("<unk>")) {
 			return;
 		}
-
-		// You said?
-		System.out.println("You said: [" + result + "]");
-
-		AudioUserInteraction.say("Repeating: " + result);
 		
 		if(!this.grammar.getSwitchList().isEmpty()){
 			for (Map.Entry<String, Grammar> entry : this.grammar.getSwitchList().entrySet()) {
@@ -193,11 +164,13 @@ public class MainSpeechRecognizer implements Runnable {
 		if(!Thread.interrupted() && this.inputHandler!=null){
     		Future<String> handle = this.inputHandler.handle(result);
     		try {
-    			System.out.println(handle.get());
-    			System.out.println();
+    			AudioUserInteraction.say(handle.get());
+//    			System.out.println(handle.get());
+//    			System.out.println();
     		} catch (InterruptedException | ExecutionException e) {
     			if (e.getCause() != null && e.getCause().getClass().equals(IllegalArgumentException.class)) {
-    				System.out.println("Unknown command");
+    				AudioUserInteraction.say("unknown command");
+//    				System.out.println("Unknown command");
     			} else {
     				e.printStackTrace();
     			}
@@ -207,14 +180,9 @@ public class MainSpeechRecognizer implements Runnable {
 	
 	//-----------------------------------------------------------------------------------------------
 	
-	private void stop(Grammar grammar){
+	private void stop(Grammar switchGrammar){
 		AudioUserInteraction.threadRunning = false;
-		this.nextGrammar = grammar;
-	}
-	
-	private void stop(){
-		AudioUserInteraction.threadRunning = false;
-		this.nextGrammar = null;
+		this.nextGrammar = switchGrammar;
 	}
 		
 	// ===============================================================================================

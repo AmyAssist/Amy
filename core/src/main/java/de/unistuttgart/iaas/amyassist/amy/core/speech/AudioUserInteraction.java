@@ -17,17 +17,16 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
-import org.apache.commons.math3.special.Gamma;
-
 /**
  * Class to handle the Speech Input and Output
  * @author Kai Menzel
  */
 public class AudioUserInteraction implements SpeechIO {
 	
-	private String wakeUp;
-	private String goSleep;
-	private String shutdown;
+	public static final String wakeUp = "amy wake up";
+	public static final String goSleep = "go to sleep";
+	public static final String shutdown = "amy shutdown";
+	
 	
 	/**
 	 * Information for the Recognizers
@@ -44,7 +43,7 @@ public class AudioUserInteraction implements SpeechIO {
 	private static TextToSpeech output = new TextToSpeech();
 	private static Thread tts;
 	
-	private Grammar mainGrammar;
+	private static Grammar mainGrammar;
 	private ArrayList<Grammar> switchableGrammars;
 	
 	private static MainSpeechRecognizer mainRecognizer;
@@ -59,11 +58,11 @@ public class AudioUserInteraction implements SpeechIO {
 	public void run() {
 		// TODO Auto-generated method stub
 		createNewAudioInputStream();
-		AudioUserInteraction.mainRecognizer = new MainSpeechRecognizer(this.wakeUp, this.goSleep, this.mainGrammar, this.inputHandler, this.ais);
+		AudioUserInteraction.mainRecognizer = new MainSpeechRecognizer(AudioUserInteraction.mainGrammar, this.inputHandler, this.ais);
 		if(this.switchableGrammars != null && !this.switchableGrammars.isEmpty()){
 			for (Grammar grammar : this.switchableGrammars) {
 				if(!AudioUserInteraction.recognizerList.containsKey(grammar.getName())){
-					AudioUserInteraction.recognizerList.put(grammar.getName(), new SpeechRecognizer(this.goSleep, grammar, this.inputHandler, this.ais));					
+					AudioUserInteraction.recognizerList.put(grammar.getName(), new SpeechRecognizer(grammar, this.inputHandler, this.ais));					
 				}
 			}
 		}
@@ -77,7 +76,7 @@ public class AudioUserInteraction implements SpeechIO {
 	 */
 	public static void switchGrammar(Grammar grammar){
 		AudioUserInteraction.currentRecognizer.interrupt();
-		if(grammar == null){
+		if(grammar == null || grammar.getName().equals(AudioUserInteraction.mainGrammar.getName())){
 			AudioUserInteraction.currentRecognizer = new Thread(AudioUserInteraction.mainRecognizer);
 		}else{
 			AudioUserInteraction.currentRecognizer = new Thread(recognizerList.get(grammar.getName()));
@@ -118,17 +117,11 @@ public class AudioUserInteraction implements SpeechIO {
 	/**
 	 * call this to initiate Data
 	 * call before start()
-	 * @param wakeUp
-	 * @param goSleep
-	 * @param shutdown
-	 * @param mainGrammar
-	 * @param swtichableGrammars
+	 * @param mainGrammar The Main Grammar Mary uses
+	 * @param swtichableGrammars All possible Grammar that can be changed to
 	 */
-	public void setData(String wakeUp, String goSleep, String shutdown, Grammar mainGrammar, ArrayList<Grammar> swtichableGrammars){
-		this.wakeUp = wakeUp;
-		this.goSleep = goSleep;
-		this.shutdown = shutdown;
-		this.mainGrammar = mainGrammar;
+	public void setData(Grammar mainGrammar, ArrayList<Grammar> swtichableGrammars){
+		AudioUserInteraction.mainGrammar = mainGrammar;
 		this.switchableGrammars = swtichableGrammars;		
 	}
 	

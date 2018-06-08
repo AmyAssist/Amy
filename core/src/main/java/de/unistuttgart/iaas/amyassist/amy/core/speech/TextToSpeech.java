@@ -79,9 +79,21 @@ public class TextToSpeech implements Runnable{
 	
 	/**
 	 * set String to say, before you start the Thread
-	 * @param s
+	 * @param s String Mary shall say
 	 */
 	public void setOutputString(String s) {
-		this.outputString = s;
+		this.outputString = preProcessing(s);
+	}
+	
+	/**
+	 * cleans String of SubString Mary can't pronounce
+	 * @param s String Mary shall say
+	 * @return cleaned String Mary shall say
+	 */
+	private String preProcessing(String s) {
+		String text = s;
+		text = text.replace("°C", " degree Celsius");
+		text = text.replace("°F", " degree Fahrenheit");
+		return text;
 	}
 }

@@ -37,15 +37,12 @@ import edu.cmu.sphinx.api.StreamSpeechRecognizer;
  * @author Kai Menzel
  */
 public class SpeechRecognizer implements Runnable {
-
-	// wakeup-sleep-shutdown-commands
-	private String goSleep;
 	
 	// this Grammar
 	private Grammar grammar;
 	
 	// Grammar to switch to
-	private Grammar nextGrammar;
+	private Grammar nextGrammar = null;
 
 
 	// Audio Input Source for the Recognition
@@ -63,17 +60,13 @@ public class SpeechRecognizer implements Runnable {
 
 	/**
 	 * Creates the Recognizers and Configures them
-	 * 
-	 * @param goSleep
-	 *            call to stop the recognition
 	 * @param grammar the grammar Object of current Recognizer
 	 * @param inputHandler handles the recognition output
 	 * @param ais
 	 *            set custom AudioInputStream. Set *null* for default microphone
 	 *            input
 	 */
-	public SpeechRecognizer(String goSleep, Grammar grammar, SpeechInputHandler inputHandler, AudioInputStream ais) {
-		this.goSleep = goSleep;
+	public SpeechRecognizer(Grammar grammar, SpeechInputHandler inputHandler, AudioInputStream ais) {
 		this.grammar = grammar;
 		this.inputHandler = inputHandler;
 		this.ais = ais;
@@ -94,13 +87,9 @@ public class SpeechRecognizer implements Runnable {
 	 */
 	@Override
 	public void run() {
-		System.out.println("hello");
 
 		// starts Recognition
 		this.recognizer.startRecognition(this.ais);
-
-		// Boolean to check if we are supposed to listen (sleeping)
-		boolean listening = false;
 
 		// The result of the Recognition
 		String speechRecognitionResult;
@@ -122,9 +111,9 @@ public class SpeechRecognizer implements Runnable {
 			speechRecognitionResult = speechResult.getHypothesis();
 //			if(speechRecognitionResult.equals(this.shutDown)) System.exit(0);
 
-			if(speechRecognitionResult.equals(this.goSleep)){
+			if(speechRecognitionResult.equals(AudioUserInteraction.goSleep)){
 				AudioUserInteraction.say("now sleeping");
-				this.stop();
+				this.stop(null);
 			}else{
 				makeDecision(speechRecognitionResult);
 			}
@@ -163,11 +152,13 @@ public class SpeechRecognizer implements Runnable {
 		if(!Thread.interrupted() && this.inputHandler!=null){
     		Future<String> handle = this.inputHandler.handle(result);
     		try {
-    			System.out.println(handle.get());
-    			System.out.println();
+    			AudioUserInteraction.say(handle.get());
+//    			System.out.println(handle.get());
+//    			System.out.println();
     		} catch (InterruptedException | ExecutionException e) {
     			if (e.getCause() != null && e.getCause().getClass().equals(IllegalArgumentException.class)) {
-    				System.out.println("Unknown command");
+    				AudioUserInteraction.say("unknown command");
+//    				System.out.println("Unknown command");
     			} else {
     				e.printStackTrace();
     			}
@@ -178,14 +169,9 @@ public class SpeechRecognizer implements Runnable {
 	
 	//-----------------------------------------------------------------------------------------------
 	
-		private void stop(Grammar grammar){
+		private void stop(Grammar switchGrammar){
 			AudioUserInteraction.threadRunning = false;
-			this.nextGrammar = grammar;
-		}
-		
-		private void stop(){
-			AudioUserInteraction.threadRunning = false;
-			this.nextGrammar = null;
+			this.nextGrammar = switchGrammar;
 		}
 
 	//===============================================================================================

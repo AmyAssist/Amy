@@ -92,7 +92,7 @@ public class Core implements SpeechInputHandler {
 		this.threads.add(new Thread(console));
 
 		AudioUserInteraction aui = new AudioUserInteraction();
-		aui.setData("amy", "sleep", "amy shutdown", new Grammar("grammar", new File("src/main/resources", "/sphinx-grammars/grammar.gram")), null);
+		aui.setData(new Grammar("grammar", new File("src/main/resources", "/sphinx-grammars/grammar.gram")), null);
 
 		SpeechIO sr = aui;
 		this.di.inject(sr);
