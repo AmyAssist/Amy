@@ -20,12 +20,16 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.github.dvdme.ForecastIOLib.FIODaily;
 
 @XmlRootElement
 public class WeatherReportWeek {
+	
+	@XmlTransient
     public String preamble;
+	
     public WeatherReportDay[] days;
     public String summary;
 

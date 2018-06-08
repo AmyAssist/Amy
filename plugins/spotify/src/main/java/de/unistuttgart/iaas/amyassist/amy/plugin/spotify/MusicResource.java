@@ -19,6 +19,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
+import java.util.HashMap;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -56,7 +58,11 @@ public class MusicResource {
 	@Path("currentSong")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getMusic() {
-		this.musicEntity = new MusicEntity(this.logic.getCurrentSong().get("name"), this.logic.getCurrentSong().get("artist"));
+		HashMap<String, String> currentSong = this.logic.getCurrentSong();
+		this.musicEntity = new MusicEntity();
+		if(currentSong != null && currentSong.containsKey("name") && currentSong.containsKey("artist") ) {
+			this.musicEntity = new MusicEntity(currentSong.get("name"), currentSong.get("artist"));			
+		}
 		return Response.status(Status.OK).entity(this.musicEntity).build();
 	}
 	

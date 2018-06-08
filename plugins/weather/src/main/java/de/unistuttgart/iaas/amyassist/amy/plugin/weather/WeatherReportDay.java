@@ -22,6 +22,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 import static java.lang.Math.round;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.github.dvdme.ForecastIOLib.FIODataPoint;
 
@@ -31,7 +32,10 @@ import java.util.Date;
 
 @XmlRootElement
 public class WeatherReportDay {
+	
+	@XmlTransient
     public String preamble;
+	
     public String summary;
     public String precipProbability;
     public String precipType;
