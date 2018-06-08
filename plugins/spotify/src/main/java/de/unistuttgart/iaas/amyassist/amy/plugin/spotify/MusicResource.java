@@ -109,7 +109,7 @@ public class MusicResource {
 	@Path("pause")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String pausePlayback() {
-		if(this.logic.pausePlayback()) {;
+		if(this.logic.pausePlayback()) {
 			return "pause";
 		}		
 		throw new WebApplicationException("Check player state", Status.CONFLICT);		
