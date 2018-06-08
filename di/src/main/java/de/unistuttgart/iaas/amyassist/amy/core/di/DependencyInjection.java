@@ -100,8 +100,8 @@ public class DependencyInjection implements ServiceLocator {
 		for (Field field : dependencyFields) {
 			Class<?> dependency = field.getType();
 			if (dependencies.contains(dependency)) {
-				System.out.println(
-						"The Service " + cls.getName() + " have a duplicate dependeny on " + dependency.getName());
+				this.logger.warn("The Service {} have a duplicate dependeny on {}", cls.getName(),
+						dependency.getName());
 			} else {
 				dependencies.add(dependency);
 			}

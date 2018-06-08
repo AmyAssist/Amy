@@ -19,17 +19,17 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static uk.org.lidalia.slf4jtest.LoggingEvent.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import uk.org.lidalia.slf4jtest.TestLogger;
+import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 /**
  * Test for DependencyInjection
@@ -110,14 +110,12 @@ class DependencyInjectionTest {
 
 	@Test()
 	void testServiceWithDuplicateDependency() {
-		ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(outContent));
+		TestLogger logger = TestLoggerFactory.getTestLogger(DependencyInjection.class);
 
 		this.dependencyInjection.register(ServiceWithDuplicateDependency.class);
 
-		assertThat(outContent.toString(),
-				equalToIgnoringWhiteSpace("The Service " + ServiceWithDuplicateDependency.class.getName()
-						+ " have a duplicate dependeny on " + Service6.class.getName()));
+		assertThat(logger.getLoggingEvents(), contains(warn("The Service {} have a duplicate dependeny on {}",
+				ServiceWithDuplicateDependency.class.getName(), Service6.class.getName())));
 	}
 
 	@Test()
@@ -134,6 +132,11 @@ class DependencyInjectionTest {
 		assertThat(service1.init, is(1));
 		this.dependencyInjection.postConstruct(service1);
 		assertThat(service1.init, is(2));
+	}
+
+	@AfterEach
+	public void clearLoggers() {
+		TestLoggerFactory.clear();
 	}
 
 }
