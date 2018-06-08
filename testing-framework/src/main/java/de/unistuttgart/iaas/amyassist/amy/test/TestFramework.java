@@ -146,8 +146,9 @@ public class TestFramework {
 	public void setRESTResource(Class<?> resource) {
 		if (resource.isAnnotationPresent(Path.class)) {
 			this.restResources.add(resource);
+		} else {
+			throw new IllegalArgumentException();
 		}
-		throw new IllegalArgumentException();
 	}
 
 }
