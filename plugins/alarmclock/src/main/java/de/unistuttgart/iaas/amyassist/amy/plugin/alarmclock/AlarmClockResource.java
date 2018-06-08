@@ -106,7 +106,7 @@ public class AlarmClockResource {
 	 * @return the newly created alarm
 	 */
 	@POST
-	@Path("alarm/new")
+	@Path("alarms/new")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Timestamp setAlarm(Timestamp alarmTime) {
