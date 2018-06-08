@@ -54,8 +54,8 @@ public class WeatherResource {
 	@GET
 	@Path("today")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getWeatherToday() {
-		return Response.status(Status.OK).entity(this.weatherLogic.getReportToday()).build();
+	public WeatherReportDay getWeatherToday() {
+		return this.weatherLogic.getReportToday();
 		
 	}
 	/**
@@ -66,8 +66,8 @@ public class WeatherResource {
 	@GET
 	@Path("tomorrow")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getWeatherTomorrow() {
-		return Response.status(Status.OK).entity(this.weatherLogic.getReportTomorrow()).build();
+	public WeatherReportDay getWeatherTomorrow() {
+		return this.weatherLogic.getReportTomorrow();
 	}
 	
 	/**
@@ -78,8 +78,8 @@ public class WeatherResource {
 	@GET
 	@Path("week")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getWeatherWeek() {
-		return Response.status(Status.OK).entity(this.weatherLogic.getReportWeek()).build();
+	public WeatherReportWeek getWeatherWeek() {
+		return this.weatherLogic.getReportWeek();
 	}
 
 }

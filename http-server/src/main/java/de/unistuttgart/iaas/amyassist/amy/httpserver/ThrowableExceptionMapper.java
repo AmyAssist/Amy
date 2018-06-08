@@ -1,5 +1,6 @@
 package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -18,6 +19,15 @@ public class ThrowableExceptionMapper implements ExceptionMapper<Throwable> {
 
 	@Override
 	public Response toResponse(Throwable t) {
+		if (t instanceof WebApplicationException) {
+			WebApplicationException webEx = (WebApplicationException) t;
+			ResponseBuilder rb = Response.status(webEx.getResponse().getStatus());
+			String message = webEx.getLocalizedMessage();
+			if(webEx.getCause() != null) {
+				message = message + " caused by " + webEx.getCause().toString();
+			}
+			return rb.entity(message).type(MediaType.TEXT_PLAIN).build();
+		}
 		ResponseBuilder rb = Response.status(Status.INTERNAL_SERVER_ERROR);
 		String message = t.toString();
 		this.logger.error("Error while HTTP Request on the Server", t);

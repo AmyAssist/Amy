@@ -47,8 +47,8 @@ public class SystemTimeResource {
 	@GET
 	@Path("time")
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response getTime() {
-		return Response.status(Status.OK).entity(this.logic.getTime()).build();
+	public String getTime() {
+		return this.logic.getTime();
 	}
 	
 	/**
@@ -59,8 +59,8 @@ public class SystemTimeResource {
 	@GET
 	@Path("date")
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response getDate() {
-		return Response.status(Status.OK).entity(this.logic.getDate()).build();
+	public String getDate() {
+		return this.logic.getDate();
 	}
 
 }

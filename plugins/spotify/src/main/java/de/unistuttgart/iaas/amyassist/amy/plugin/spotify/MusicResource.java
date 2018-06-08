@@ -26,8 +26,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -57,13 +58,13 @@ public class MusicResource {
 	@GET
 	@Path("currentSong")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getMusic() {
+	public MusicEntity getCurrentSong() {
 		HashMap<String, String> currentSong = this.logic.getCurrentSong();
 		this.musicEntity = new MusicEntity();
 		if(currentSong != null && currentSong.containsKey("name") && currentSong.containsKey("artist") ) {
 			this.musicEntity = new MusicEntity(currentSong.get("name"), currentSong.get("artist"));			
 		}
-		return Response.status(Status.OK).entity(this.musicEntity).build();
+		return this.musicEntity;
 	}
 	
 	/**
@@ -77,10 +78,10 @@ public class MusicResource {
 	@Path("play")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response play(MusicEntity music) {
+	public String play(MusicEntity music) {
 		this.musicEntity = music;
 		this.logic.search(this.musicEntity.toString(), Search.TYPE_TRACK, 5);
-		return Response.status(Status.OK).entity(this.logic.play(0)).build();
+		return this.logic.play(0);
 	}
 	
 	/**
@@ -91,13 +92,12 @@ public class MusicResource {
 	@POST
 	@Path("resume")
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response resume() {
+	public String resume() {
 		if (this.logic.resume()) {
-			return Response.status(Status.OK).entity("resume").build();
-		} else {
-			return Response.status(Status.CONFLICT)
-					.entity("Check player state").build();
-		}
+			return "resume";
+		} 
+		throw new WebApplicationException("Check player state", Status.CONFLICT);
+					
 	}
 
 	/**
@@ -108,13 +108,11 @@ public class MusicResource {
 	@POST
 	@Path("pause")
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response pausePlayback() {
+	public String pausePlayback() {
 		if(this.logic.pausePlayback()) {;
-			return Response.status(Status.OK).entity("pause").build();
-		} else {
-			return Response.status(Status.CONFLICT)
-					.entity("Check player state").build();
-		}
+			return "pause";
+		}		
+		throw new WebApplicationException("Check player state", Status.CONFLICT);		
 	}
 
 	/**
@@ -125,35 +123,43 @@ public class MusicResource {
 	@GET
 	@Path("playlist")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getPlaylist() {
-		return Response.status(Status.OK).entity(this.playlist).build();
+	public Playlist getPlaylist() {
+		return this.playlist;
 	}
 	
 	/**
 	 * controls the volume of the player
 	 * 
 	 * @param volumeString
-	 *            allowed strings: mute, max, up, down
-	 * @return a int from 0-100. This represent the Volume in percent. if the Playerstate incorrect return -1
+	 *            allowed strings: mute, max, up, down, or a volume value between 0 and 100
+	 * @return a int from 0-100. This represent the Volume in percent.
 	 */
 	@POST
 	@Path("volume")
-	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response setVolume(String volumeString) {
+	public String setVolume(@QueryParam("volume") String volumeString) {
+		try {
+			int volume = Integer.parseInt(volumeString);
+			if(volume < 0 || volume > 100) {
+				throw new WebApplicationException("Incorrect volume value", Status.BAD_REQUEST);
+			}
+			this.logic.setVolume(volume);
+			return String.valueOf(volume);
+		} catch (NumberFormatException e) {
 		if (volumeString != "mute" && volumeString != "max" 
 				&& volumeString != "up" && volumeString != "down") {
-			return Response.status(Status.BAD_REQUEST)
-					.entity("Incorrect volume command").build();
+			throw new WebApplicationException("Incorrect volume command", Status.BAD_REQUEST);
 		} else {
 			int volume = this.logic.setVolume(volumeString);
 			if (volume != -1) {
-				return Response.status(Status.OK).entity(volume).build();
-			} else {
-				return Response.status(Status.CONFLICT)
-						.entity("Check player state").build();
+				return String.valueOf(volume);
 			}
+			throw new WebApplicationException("Check player state", Status.CONFLICT);		
+			
 		}
+			
+		}
+		
 	}
 
 }

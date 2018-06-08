@@ -376,7 +376,8 @@ public class PlayerLogic {
 	 * 
 	 * @param volume
 	 */
-	private void setVolume(int volume) {
+	protected void setVolume(int volume) {
+		this.volume = volume;
 		SetVolumeForUsersPlaybackRequest setVolumeForUsersPlaybackRequest = this.auth.getSpotifyApi()
 				.setVolumeForUsersPlayback(volume).device_id(this.deviceID).build();
 
