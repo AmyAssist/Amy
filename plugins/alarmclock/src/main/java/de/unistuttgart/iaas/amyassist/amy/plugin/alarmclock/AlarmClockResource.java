@@ -24,6 +24,8 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -43,18 +45,32 @@ public class AlarmClockResource {
 	private AlarmClockLogic logic;
 
 	/**
-	 * gets a alarm
+	 * returns a specific alarm
 	 * 
-	 * @return alarm1 or null if there is no alarm1
+	 * @param alarmnumber the requested alarm
+	 * @return the specific alarm, 404 if there is no such alarm and 500 if something went wrong
 	 */
 	@GET
-	@Path("alarms/1")
-	public String getAlarm() {
-		return this.logic.getAlarm(1);
+	@Path("alarms/{pathid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAlarm(@PathParam("pathid") int alarmnumber) {
+		String alarm = this.logic.getAlarm(alarmnumber);
+		if(alarm == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		try {
+			String[] split = alarm.split(";");
+			Timestamp ts = new Timestamp(split[0]);
+			return Response.ok().entity(ts).build();
+			
+		} catch (Exception e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
 	}
 
 	/**
-	 * returns all alrams
+	 * returns all alarms
 	 * 
 	 * @return all alarms
 	 */

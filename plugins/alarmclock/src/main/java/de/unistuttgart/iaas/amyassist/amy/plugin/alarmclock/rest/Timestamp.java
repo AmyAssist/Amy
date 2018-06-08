@@ -32,12 +32,12 @@ public class Timestamp {
 	/**
 	 * the hour of the timestamp
 	 */
-	public int hour;
+	public int hour = 0;
 	
 	/**
 	 * the minute of the timestamp
 	 */
-	public int minute;
+	public int minute = 0;
 	
 	
 	/**
@@ -45,6 +45,16 @@ public class Timestamp {
 	 */
 	public Timestamp() {
 		// needed for JSON
+	}
+	
+	public Timestamp(String time) throws IllegalArgumentException {
+		try {
+			String[] timeSplit = time.split(":");
+			this.hour = Integer.parseInt(timeSplit[0]);
+			this.minute = Integer.parseInt(timeSplit[1]);
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
+		}
 	}
 	
 	

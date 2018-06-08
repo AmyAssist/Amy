@@ -278,11 +278,11 @@ public class AlarmClockLogic {
 	 * @return true if everything went well
 	 */
 	protected String[] getAllAlarms() {
-		String[] allAlarms = {};
+		String[] allAlarms = new String[Integer.parseInt(this.storage.get(ALARMCOUNTER))];
 		for (int i = 1; i <= Integer.parseInt(this.storage.get(ALARMCOUNTER)); i++) {
 			if (this.storage.has("alarm" + i)) {
 				alarmOutput(this.storage.get("alarm" + i));
-				allAlarms[i] = "alarm" + i;
+				allAlarms[i] = this.storage.get("alarm" + i);
 			}
 		}
 		return allAlarms;
