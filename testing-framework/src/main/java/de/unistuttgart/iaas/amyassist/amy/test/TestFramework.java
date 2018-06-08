@@ -55,12 +55,11 @@ public class TestFramework {
 	private List<Class<?>> restResources = new ArrayList<>();
 
 	public TestFramework() {
-		this.storage = Mockito.mock(Storage.class, Mockito.withSettings()
-				.defaultAnswer(Mockito.CALLS_REAL_METHODS).useConstructor());
+		this.storage = Mockito.mock(Storage.class,
+				Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS).useConstructor());
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
-		this.dependencyInjection.addExternalService(IStorage.class,
-				this.storage);
+		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
 		this.dependencyInjection.register(Server.class);
 	}
 
@@ -71,8 +70,7 @@ public class TestFramework {
 	public void before() {
 		if (!this.restResources.isEmpty()) {
 			this.server = this.dependencyInjection.getService(Server.class);
-			this.server.start(this.restResources
-					.toArray(new Class<?>[this.restResources.size()]));
+			this.server.start(this.restResources.toArray(new Class<?>[this.restResources.size()]));
 		}
 
 	}
@@ -106,7 +104,7 @@ public class TestFramework {
 	}
 
 	public static Consumer<IStorage> store(String key, String value) {
-		return (storage) -> {
+		return storage -> {
 			Mockito.when(storage.has(key)).thenReturn(true);
 			Mockito.when(storage.get(key)).thenReturn(value);
 		};
@@ -134,10 +132,9 @@ public class TestFramework {
 	public <T> T setServiceUnderTest(Class<T> serviceClass) {
 		if (serviceClass.isAnnotationPresent(Service.class)) {
 			this.dependencyInjection.register(serviceClass);
-			T instance = this.dependencyInjection.create(serviceClass);
-			return instance;
+			return this.dependencyInjection.create(serviceClass);
 		}
-		throw new RuntimeException();
+		throw new IllegalArgumentException();
 	}
 
 	/**
@@ -149,8 +146,8 @@ public class TestFramework {
 	public void setRESTResource(Class<?> resource) {
 		if (resource.isAnnotationPresent(Path.class)) {
 			this.restResources.add(resource);
-		} else
-			throw new RuntimeException();
+		}
+		throw new IllegalArgumentException();
 	}
 
 }

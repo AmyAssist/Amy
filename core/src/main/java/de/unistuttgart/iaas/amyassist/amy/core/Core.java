@@ -121,22 +121,6 @@ public class Core implements SpeechInputHandler {
 	 * load the plugins
 	 */
 	private void loadPlugins() {
-		// this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.example",
-		// "amy.plugin.example",
-		// "0.0.1");
-		// this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.systemtime",
-		// "amy.plugin.systemtime",
-		// "0.0.1");
-		// this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.weather",
-		// "amy.plugin.weather",
-		// "0.0.1");
-		// this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock",
-		// "amy.plugin.alarmclock",
-		// "0.0.1");
-		// this.pluginLoader.loadPlugin("de.unistuttgart.iaas.amyassist.amy.plugin.spotify",
-		// "amy.plugin.spotify",
-		// "0.0.1");
-
 		this.logger.debug("projectDir: {}", projectDir);
 
 		ArrayList<File> plugins = new ArrayList<>();

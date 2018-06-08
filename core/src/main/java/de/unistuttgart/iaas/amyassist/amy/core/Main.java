@@ -37,7 +37,8 @@ public class Main {
 	static {
 		LogManager.getLogManager().reset();
 		SLF4JBridgeHandler.install();
-		//workaround for https://github.com/cmusphinx/sphinx4/blob/master/sphinx4-core/src/main/java/edu/cmu/sphinx/util/props/ConfigurationManagerUtils.java#L138
+		// workaround for
+		// https://github.com/cmusphinx/sphinx4/blob/master/sphinx4-core/src/main/java/edu/cmu/sphinx/util/props/ConfigurationManagerUtils.java#L138
 		System.setProperty("java.util.logging.config.file", "");
 	}
 
@@ -48,10 +49,23 @@ public class Main {
 	 *            [not used] The command line arguments
 	 */
 	public static void main(String[] args) {
-		Logger root = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-		root.setLevel(Level.WARN);
+		setLogLevel(org.slf4j.Logger.ROOT_LOGGER_NAME, Level.INFO);
+		setLogLevel("marytts", Level.WARN);
+		setLogLevel("default.config.edu.cmu.sphinx", Level.WARN);
 		Core core = new Core();
 		core.run();
+	}
+
+	/**
+	 * Set the log level for all Logger of a given package
+	 * 
+	 * @param name
+	 *            the name of the package
+	 * @param level
+	 *            the log level
+	 */
+	public static void setLogLevel(String name, Level level) {
+		((Logger) LoggerFactory.getLogger(name)).setLevel(level);
 	}
 
 }

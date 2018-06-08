@@ -10,7 +10,6 @@
 package de.unistuttgart.iaas.amyassist.amy.test;
 
 import java.util.HashMap;
-import java.util.NoSuchElementException;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
@@ -20,12 +19,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 public class Storage implements IStorage {
 
 	private HashMap<String, String> map = new HashMap<>();
-
-	/**
-	 * Creates new storage
-	 */
-	public Storage() {
-	}
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage#put(java.lang.String,
@@ -40,7 +33,7 @@ public class Storage implements IStorage {
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage#get(java.lang.String)
 	 */
 	@Override
-	public String get(String key) throws NoSuchElementException {
+	public String get(String key) {
 		return this.map.get(key);
 	}
 

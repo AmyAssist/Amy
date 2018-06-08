@@ -85,7 +85,7 @@ public class Plugin {
 	public String getUniqueName() {
 		if (this.manifest == null) {
 			if (this.fakeName != "") {
-				this.logger.warn("manifest is null, using fakeName: {}" + this.fakeName);
+				this.logger.warn("manifest is null, using fakeName: {}", this.fakeName);
 				return this.fakeName;
 			}
 			this.logger.error("manifest is null and fakeName empty. Falling back to file name!: {}",
@@ -102,7 +102,7 @@ public class Plugin {
 	 */
 	public String getVersion() {
 		if (this.manifest == null) {
-			this.logger.warn("manifest is null, using fakeVersion: {}" + this.fakeName);
+			this.logger.warn("manifest is null, using fakeVersion: {}", this.fakeName);
 			return this.fakeVersion;
 		}
 		return this.manifest.getMainAttributes().getValue(Name.IMPLEMENTATION_VERSION);
