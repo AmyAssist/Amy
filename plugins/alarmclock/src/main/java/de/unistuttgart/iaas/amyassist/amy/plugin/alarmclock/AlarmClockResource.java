@@ -91,7 +91,7 @@ public class AlarmClockResource {
 		if (!alarmTime.isValid()) {
 			throw new WebApplicationException("The given time wasn't a valid time", Status.BAD_REQUEST);
 		}
-		if (this.logic.editAlarm(alarmnumber, new String[] { "" + alarmTime.hour, "" + alarmTime.minute })) {
+		if (!this.logic.editAlarm(alarmnumber, new String[] { "" + alarmTime.hour, "" + alarmTime.minute }).equals("alarm not found")) {
 			return alarmTime;
 		}
 		throw new WebApplicationException("there is no alarm" + alarmnumber, Status.NOT_FOUND);

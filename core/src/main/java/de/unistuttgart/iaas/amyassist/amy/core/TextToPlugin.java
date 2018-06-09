@@ -64,11 +64,7 @@ public class TextToPlugin {
 		String finalGrammarResult = null;
 
 		for (PluginGrammarInfo currentGrammar : this.infos) {
-			for(String gram : currentGrammar.grammars) {
-				System.out.println(gram);
-
-			}
-
+			
 			for (String keyword : currentGrammar.keywords) {
 
 				int index = text.indexOf(keyword);

@@ -44,6 +44,7 @@ public class AnnotationReader {
 	 */
 	public Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> getGrammars(Class<?> cls) {
 		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> map = new HashMap<>();
+		System.out.println("cls name " + cls.getName());
 		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Grammar.class);
 		for (Method method : methodsWithAnnotation) {
 			Class<?>[] parameterTypes = method.getParameterTypes();

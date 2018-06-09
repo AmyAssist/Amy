@@ -63,8 +63,9 @@ public class SpeechCommandHandler {
 		this.grammarInfos.put(pluginGrammarInfo, class1);
 		this.speechCommands.putAll(grammars);
 		for (Map.Entry<String, SpeechCommand> e : grammars.entrySet()) {
-			for (String keyword : speechKeyword)
+			for (String keyword : speechKeyword) {
 				this.generator.addRule(UUID.randomUUID().toString(), keyword, e.getKey());
+			}
 		}
 
 	}

@@ -42,52 +42,52 @@ public class AlarmClockSpeech {
 	 * @return true if everything went well
 	 */
 	@Grammar("set alarm at # oh #")
-	private boolean setAlarm(String[] params) {
+	public String setAlarm(String[] params) {
 		return this.logic.setAlarm(new String[] { params[3], params[5] });
 	}
 
 	@Grammar("set timer on # minutes")
-	private boolean setTimer(String[] params) {
+	public String setTimer(String[] params) {
 		return this.logic.setAlarm(Integer.parseInt(params[3]) * 60000);
 	}
 
 	@Grammar("delete alarm #")
-	private boolean deleteAlarm(String[] params) {
+	public String deleteAlarm(String[] params) {
 		return this.logic.deleteAlarm(Integer.parseInt(params[2]));
 	}
 
 	@Grammar("deactivate alarm #")
-	private boolean deactivateAlarm(String[] params) {
+	public String deactivateAlarm(String[] params) {
 		return this.logic.deactivateAlarm("alarm" + params[2]);
 	}
 
 	@Grammar("reset alarms")
-	private boolean resetAlarms() {
+	public String resetAlarms(String[] params) {
 		return this.logic.resetAlarms();
 	}
 
 	@Grammar("reset timers")
-	private boolean resetTimers() {
+	public String resetTimers(String[] params) {
 		return this.logic.resetTimers();
 	}
 
 	@Grammar("get alarm #")
-	private String getAlarm(String[] params) {
+	public String getAlarm(String[] params) {
 		return this.logic.getAlarm(Integer.parseInt(params[2]));
 	}
 
 	@Grammar("get timer #")
-	private String getTimer(String[] params) {
+	public String getTimer(String[] params) {
 		return this.logic.getTimer(Integer.parseInt(params[2]));
 	}
 
 	@Grammar("get all")
-	private String[] getAllAlarms() {
-		return this.logic.getAllAlarms();
+	public String getAllAlarms(String[] params) {
+		return String.join(" ", this.logic.getAllAlarms());
 	}
 
 	@Grammar("edit alarm # to # oh #")
-	private boolean editAlarm(String[] params) {
+	public String editAlarm(String[] params) {
 		return this.logic.editAlarm(Integer.parseInt(params[2]), new String[] { params[4], params[6] });
 	}
 }
