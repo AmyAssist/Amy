@@ -6,7 +6,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -19,10 +19,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static uk.org.lidalia.slf4jtest.LoggingEvent.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.org.lidalia.slf4jtest.LoggingEvent.warn;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,6 +58,12 @@ class DependencyInjectionTest {
 	void testDependencyInjection() {
 		Service2 service2 = this.dependencyInjection.getService(Service2.class);
 		assertThat(service2.checkServices(), is(true));
+	}
+
+	void testServiceRegistry() {
+		Service1 s1 = this.dependencyInjection.getService(Service1.class);
+		Service1 s2 = this.dependencyInjection.getService(Service1.class);
+		assertThat(s1, theInstance(s2));
 	}
 
 	@Test
@@ -119,19 +125,38 @@ class DependencyInjectionTest {
 	}
 
 	@Test()
-	void testIllegalAccessException() {
+	void testPostConstruct() {
+		Service1 service1 = this.dependencyInjection.getService(Service1.class);
+		assertThat(service1.init, is(1));
+		this.dependencyInjection.postConstruct(service1);
+		assertThat(service1.init, is(2));
+	}
+
+	@Test()
+	void testCreateService() {
+		Service2 s2_1 = this.dependencyInjection.getService(Service2.class);
+		Service2 s2_2 = this.dependencyInjection.create(Service2.class);
+		assertThat(s2_1, not(theInstance(s2_2)));
+		assertThat(s2_1.getService3(), theInstance(s2_2.getService3()));
+	}
+
+	@Test()
+	void testCreateNotAService() {
+		NotAService2 nas = this.dependencyInjection.create(NotAService2.class);
+		assertThat(nas.getInit(), is(1));
+		Service1 s1 = this.dependencyInjection.getService(Service1.class);
+		this.dependencyInjection.postConstruct(s1);
+		assertThat(nas.getInit(), is(2));
+		NotAService2 nas2 = this.dependencyInjection.create(NotAService2.class);
+		assertThat(nas2, not(theInstance(nas)));
+	}
+
+	@Test()
+	void testCreateIllegalAccessException() {
 		Throwable cause = assertThrows(RuntimeException.class, () -> this.dependencyInjection.create(Service8.class))
 				.getCause();
 
 		assertThat(cause.getClass(), equalTo(InstantiationException.class));
-	}
-
-	@Test()
-	void testPostConstruct() {
-		Service1 service1 = this.dependencyInjection.create(Service1.class);
-		assertThat(service1.init, is(1));
-		this.dependencyInjection.postConstruct(service1);
-		assertThat(service1.init, is(2));
 	}
 
 	@AfterEach
