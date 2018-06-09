@@ -11,10 +11,4 @@
 		<version>0.2.0-Snapshot</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-	</dependencies>
 </project>
