@@ -43,12 +43,15 @@ public class AlarmClockSpeech {
 	 */
 	@Grammar("set alarm at # oh #")
 	public String setAlarm(String[] params) {
+		if (Integer.parseInt(params[3]) > 23 || Integer.parseInt(params[5]) > 59)
+			return "Not a valid time of day.";
+
 		return this.logic.setAlarm(new String[] { params[3], params[5] });
 	}
 
 	@Grammar("set timer on # minutes")
 	public String setTimer(String[] params) {
-		return this.logic.setAlarm(Integer.parseInt(params[3]) * 60000);
+		return this.logic.setAlarm(Integer.parseInt(params[3]));
 	}
 
 	@Grammar("delete alarm #")
@@ -83,7 +86,7 @@ public class AlarmClockSpeech {
 
 	@Grammar("get all")
 	public String getAllAlarms(String[] params) {
-		return String.join(" ", this.logic.getAllAlarms());
+		return String.join("\n", this.logic.getAllAlarms());
 	}
 
 	@Grammar("edit alarm # to # oh #")

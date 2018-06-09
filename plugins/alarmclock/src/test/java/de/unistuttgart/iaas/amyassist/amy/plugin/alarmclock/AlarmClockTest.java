@@ -56,18 +56,10 @@ public class AlarmClockTest {
 	}
 
 	/**
-	 * Tests if the keywords are correct
+	 * Tests the setAlarm method
 	 */
 	@Test
-	public void testKeywords() {
-
-	}
-
-	/**
-	 * Tests the setAlarms method
-	 */
-	@Test
-	public void testSet() {
+	public void testSetAlarm() {
 		this.acl.setAlarm(new String[] { "15", "20" });
 
 		Mockito.verify(this.mockService).schedule(ArgumentMatchers.any(Runnable.class),
@@ -75,11 +67,81 @@ public class AlarmClockTest {
 	}
 
 	/**
-	 * 
+	 * Tests the setTimer method
 	 */
 	@Test
-	public void testGetAll() {
+	public void testSetTimer() {
+		this.acl.setAlarm(2);
+		Mockito.verify(this.mockService).schedule(ArgumentMatchers.any(Runnable.class),
+				ArgumentMatchers.any(Date.class));
+	}
+
+	/**
+	 * Tests the resetAlarms method
+	 */
+	@Test
+	public void testResetAlarms() {
+		this.acl.setAlarm(new String[] { "12", "25" });
+		this.acl.setAlarm(new String[] { "5", "45" });
+		this.acl.setAlarm(new String[] { "20", "00" });
+
+		this.acl.resetTimers();
 
 	}
 
+	/**
+	 * Tests the resetTimers method
+	 */
+	@Test
+	protected void testResetTimers() {
+
+	}
+
+	/**
+	 * Tests the deleteAlarm method
+	 */
+	@Test
+	protected void testDeleteAlarm() {
+
+	}
+
+	/**
+	 * Tests the deactivateAlarm method
+	 */
+	@Test
+	protected void testDeactivateAlarm() {
+
+	}
+
+	/**
+	 * Tests the getAlarm method
+	 */
+	@Test
+	protected void testGetAlarm() {
+
+	}
+
+	/**
+	 * Tests the getTimer method
+	 */
+	@Test
+	protected void testGetTimer() {
+
+	}
+
+	/**
+	 * Tests the getAllAlarms method
+	 */
+	@Test
+	protected void testGetAllAlarms() {
+
+	}
+
+	/**
+	 * Tests the editAlarm method
+	 */
+	@Test
+	protected void testEditAlarm() {
+
+	}
 }
