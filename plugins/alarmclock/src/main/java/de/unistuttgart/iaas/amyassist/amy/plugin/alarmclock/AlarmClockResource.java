@@ -24,10 +24,11 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
@@ -39,56 +40,92 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
  */
 @Path("clock")
 public class AlarmClockResource {
-	
+
 	@Reference
 	private AlarmClockLogic logic;
 
 	/**
-	 * gets a alarm
-	 * 
-	 * @return alarm1 or null if there is no alarm1 
-	 */
-	@GET
-	@Path("alarms/1")
-	public String getAlarm() {
-		return this.logic.getAlarm();
-	}
-	
-	/**
-	 * returns all alrams
+	 * returns all alarms
 	 * 
 	 * @return all alarms
 	 */
 	@GET
 	@Path("alarms")
-	public String[] getAllAlarms() {
-		return this.logic.getAllAlarms();
+	@Produces(MediaType.APPLICATION_JSON)
+	public Timestamp[] getAllAlarms() {
+		String[] alarms = this.logic.getAllAlarms();
+		Timestamp[] timestamps = new Timestamp[alarms.length];
+		for(int i = 0; i < alarms.length; i++) {
+			if(alarms[i] != null && alarms[i] != "") {
+				String[] split = alarms[i].split(";");
+				timestamps[i] = new Timestamp(split[0]);
+			}
+		}
+		return timestamps;
 	}
+
+	/**
+	 * returns a specific alarm
+	 * 	
+	 * @param alarmnumber the requested alarm
+	 * @return the specific alarm
+	 */
+	@GET
+	@Path("alarms/{pathid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Timestamp getAlarm(@PathParam("pathid") int alarmnumber) {
+		String alarm = this.logic.getAlarm(alarmnumber);
+		if(alarm == null) {
+			throw new WebApplicationException("there is no alarm" + alarmnumber, Status.NOT_FOUND);
+		}
+		String[] split = alarm.split(";");
+		Timestamp ts = new Timestamp(split[0]);
+		return ts;	
+	}
+
+	@POST
+	@Path("alarms/{pathid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Timestamp editAlarm(@PathParam("pathid") int alarmnumber, Timestamp alarmTime) {
+		if (!alarmTime.isValid()) {
+			throw new WebApplicationException("The given time wasn't a valid time", Status.BAD_REQUEST);
+		}
+		if (this.logic.editAlarm(alarmnumber, new String[] { "" + alarmTime.hour, "" + alarmTime.minute })) {
+			return alarmTime;
+		}
+		throw new WebApplicationException("there is no alarm" + alarmnumber, Status.NOT_FOUND);
 	
+	}
+
 	/**
 	 * sets a alarm to a given timestamp
 	 * 
-	 * @param alarmTime the timestamp for the alarm
-	 * @return HTTP Response
+	 * @param alarmTime
+	 *            the timestamp for the alarm
+	 * @return the newly created alarm
 	 */
 	@POST
+	@Path("alarms/new")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("newalarm")
-	public Response setAlarm(Timestamp alarmTime) {
-		Response r;
-		if(alarmTime.isValid()) {
-			this.logic.setAlarm(alarmTime.toString());
-			r = Response.ok().build();
-		} else {
-			r = Response.status(Status.BAD_REQUEST).build();
+	@Produces(MediaType.APPLICATION_JSON)
+	public Timestamp setAlarm(Timestamp alarmTime) {
+		if (alarmTime.isValid()) {
+			this.logic.setAlarm(new String[] { "" + alarmTime.hour, "" + alarmTime.minute });
+			return alarmTime;
 		}
-		return r;
+		throw new WebApplicationException("The given time wasn't a valid time", Status.BAD_REQUEST);
 	}
-	
+
+	/**
+	 * deletes an alarm
+	 * 
+	 * @param alarmNumber the alarm to delete
+	 */
 	@DELETE
-	public void deleteAlarm(String specificAlarm) {
-		this.logic.deleteAlarm(specificAlarm);
+	@Path("alarms/{pathid}")
+	public void deleteAlarm(@PathParam("pathid") int alarmNumber) {
+		this.logic.deleteAlarm(alarmNumber);
 	}
-	
-	
+
 }

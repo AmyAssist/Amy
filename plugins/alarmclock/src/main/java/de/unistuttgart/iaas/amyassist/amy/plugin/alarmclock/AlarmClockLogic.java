@@ -49,17 +49,29 @@ public class AlarmClockLogic {
 	private static final String ALARMCOUNTER = "alarmCounter";
 	private static final String TIMERCOUNTER = "timerCounter";
 
-	private static final File ALARMSOUND = new File(
-			"src/main/resources/alarmsound.wav");
+	private static final File ALARMSOUND = new File("src/main/resources/alarmsound.wav");
 
 	/**
-	 * Reads out the given alarm per Text-to-speech
+	 * Reads out the given alarm per Text-to-speech. e.g.: "This alarm rings
+	 * tomorrow/today at 15:15"
 	 *
 	 * @param alarm
 	 *            the alarm to output
 	 */
 	protected void alarmOutput(String alarm) {
 
+	}
+
+	/**
+	 * Reads out the given delay per Text-to-speech. e.g.: "This timer rings in 5
+	 * minutes"
+	 * 
+	 * @param timer
+	 */
+	protected void timerOutput(String timer) {
+		/*
+		 * need info from runnable
+		 */
 	}
 
 	/**
@@ -74,8 +86,7 @@ public class AlarmClockLogic {
 		return () -> {
 			if (this.storage.has("alarm" + alarmNumber)) {
 				try {
-					while (this.storage.get("alarm" + alarmNumber).split(";")[2]
-							.equals("true")) {
+					while (this.storage.get("alarm" + alarmNumber).split(";")[2].equals("true")) {
 						Clip clip = AudioSystem.getClip();
 						clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
 						clip.start();
@@ -102,8 +113,7 @@ public class AlarmClockLogic {
 		return () -> {
 			if (this.storage.has("timer" + timerNumber)) {
 				try {
-					while (this.storage.get("timer" + timerNumber).split(";")[2]
-							.equals("true")) {
+					while (this.storage.get("timer" + timerNumber).split(";")[2].equals("true")) {
 						Clip clip = AudioSystem.getClip();
 						clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
 						clip.start();
@@ -122,24 +132,22 @@ public class AlarmClockLogic {
 	 * Set new alarm and schedule it
 	 *
 	 * @param alarmTime
-	 *            the time of alarm (e.g. 12:15)
+	 *            String array with two integers. First entry is hour second is
+	 *            minute
 	 *
 	 * @return true, if everything went well
 	 */
-	public boolean setAlarm(String alarmTime) {
-		int hour = Integer.parseInt(alarmTime.substring(0, 2));
-		int minute = Integer.parseInt(alarmTime.substring(3, 5));
+	public boolean setAlarm(String[] alarmTime) {
 		int counter = Integer.parseInt(this.storage.get(ALARMCOUNTER));
 		counter++;
 		this.storage.put(ALARMCOUNTER, Integer.toString(counter));
-		this.storage.put("alarm" + counter, alarmTime + ";" + ""
-				+ System.currentTimeMillis() + ";" + "true");
+		this.storage.put("alarm" + counter, alarmTime[0] + ":" + alarmTime[1] + ";" + "true");
 
 		Runnable alarmRunnable = createAlarmRunnable(counter);
 		Calendar current = Calendar.getInstance();
 		Calendar alarmCalendar = Calendar.getInstance();
-		alarmCalendar.set(Calendar.HOUR_OF_DAY, hour);
-		alarmCalendar.set(Calendar.MINUTE, minute);
+		alarmCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(alarmTime[0]));
+		alarmCalendar.set(Calendar.MINUTE, Integer.parseInt(alarmTime[0]));
 		if (alarmCalendar.before(current)) {
 			alarmCalendar.add(Calendar.DATE, 1);
 		}
@@ -159,8 +167,7 @@ public class AlarmClockLogic {
 		int counter = Integer.parseInt(this.storage.get(TIMERCOUNTER));
 		counter++;
 		this.storage.put(TIMERCOUNTER, Integer.toString(counter));
-		this.storage.put("timer" + counter, "" + delay + ";" + ""
-				+ System.currentTimeMillis() + ";" + "true");
+		this.storage.put("timer" + counter, "" + delay + ";" + "true");
 		Runnable timerRunnable = createTimerRunnable(counter);
 		Calendar alarmTime = Calendar.getInstance();
 		alarmTime.add(Calendar.MILLISECOND, (int) delay);
@@ -202,15 +209,14 @@ public class AlarmClockLogic {
 
 	/**
 	 * Delete one alarm
-	 *
-	 * @param specificAlarm
-	 *            the alarm name
-	 *
+	 * 
+	 * @param alarmNumber
+	 *            alarmNumber in the storage
 	 * @return true if everything went well
 	 */
-	protected boolean deleteAlarm(String specificAlarm) {
-		if (this.storage.has(specificAlarm)) {
-			this.storage.delete(specificAlarm);
+	protected boolean deleteAlarm(int alarmNumber) {
+		if (this.storage.has("alarm" + alarmNumber)) {
+			this.storage.delete("alarm" + alarmNumber);
 			return true;
 		}
 		return false;
@@ -228,8 +234,7 @@ public class AlarmClockLogic {
 			String alarm = this.storage.get(specificAlarm);
 			String[] params = alarm.split(";");
 			try {
-				this.storage.put(specificAlarm,
-						params[0] + ";" + params[1] + ";" + "false");
+				this.storage.put(specificAlarm, params[0] + ";" + params[1] + ";" + "false");
 			} catch (ArrayIndexOutOfBoundsException e) {
 				System.err.println("Something went wrong!");
 				return false;
@@ -241,14 +246,29 @@ public class AlarmClockLogic {
 
 	/**
 	 * Read out one alarm
+	 * 
+	 * @param alarmNumber
+	 *            number of the alarm in the storage
 	 *
 	 * @return true if everything went well
 	 */
-	protected String getAlarm() {
-		String specificAlarm = Integer.toString(1);
-		if (this.storage.has("alarm" + specificAlarm)) {
-			alarmOutput(this.storage.get("alarm" + specificAlarm));
-			return this.storage.get("alarm" + specificAlarm);
+	protected String getAlarm(int alarmNumber) {
+		if (this.storage.has("alarm" + alarmNumber)) {
+			alarmOutput(this.storage.get("alarm" + alarmNumber));
+			return this.storage.get("alarm" + alarmNumber);
+		}
+		return null;
+	}
+
+	/**
+	 * @param timerNumber
+	 *            number of the timer in storage
+	 * @return
+	 */
+	protected String getTimer(int timerNumber) {
+		if (this.storage.has("timer" + timerNumber)) {
+			timerOutput(this.storage.get("timer" + timerNumber));
+			return this.storage.get("timer" + timerNumber);
 		}
 		return null;
 	}
@@ -259,12 +279,11 @@ public class AlarmClockLogic {
 	 * @return true if everything went well
 	 */
 	protected String[] getAllAlarms() {
-		String[] allAlarms = {};
-		for (int i = 1; i <= Integer
-				.parseInt(this.storage.get(ALARMCOUNTER)); i++) {
+		String[] allAlarms = new String[Integer.parseInt(this.storage.get(ALARMCOUNTER))];
+		for (int i = 1; i <= Integer.parseInt(this.storage.get(ALARMCOUNTER)); i++) {
 			if (this.storage.has("alarm" + i)) {
 				alarmOutput(this.storage.get("alarm" + i));
-				allAlarms[i] = "alarm" + i;
+				allAlarms[i] = this.storage.get("alarm" + i);
 			}
 		}
 		return allAlarms;
@@ -273,15 +292,15 @@ public class AlarmClockLogic {
 	/**
 	 * Edit a specific Alarm
 	 *
-	 * @param specificAlarm
+	 * @param alarmNumber
 	 *            name of the alarm
 	 * @param alarmTime
 	 *            new alarm time
 	 * @return true if everything went well
 	 */
-	protected boolean editAlarm(String specificAlarm, String alarmTime) {
-		if (this.storage.has(specificAlarm)) {
-			deleteAlarm(specificAlarm);
+	protected boolean editAlarm(int alarmNumber, String[] alarmTime) {
+		if (this.storage.has("alarm" + alarmNumber)) {
+			deleteAlarm(alarmNumber);
 			setAlarm(alarmTime);
 			return true;
 		}
@@ -289,10 +308,8 @@ public class AlarmClockLogic {
 	}
 
 	/**
-	 * Init method for logic class.
 	 *
-	 * @param core
-	 *            The core
+	 * Initialization method for logic class. TODO call die method from DI
 	 */
 	@PostConstruct
 	public void init() {

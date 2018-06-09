@@ -30,7 +30,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
 @Service(AlarmClockSpeech.class)
-@SpeechCommand({ "Alarm", "Alarm clock" })
+@SpeechCommand({ "alarm", "alarm clock" })
 public class AlarmClockSpeech {
 
 	@Reference
@@ -41,24 +41,24 @@ public class AlarmClockSpeech {
 	 *
 	 * @return true if everything went well
 	 */
-	@Grammar("set alarm")
-	private boolean setAlarm() {
-		return this.logic.setAlarm("10:00");
+	@Grammar("set alarm at # oh #")
+	private boolean setAlarm(String[] params) {
+		return this.logic.setAlarm(new String[] { params[3], params[5] });
 	}
 
-	@Grammar("set timer")
-	private boolean setTimer() {
-		return this.logic.setAlarm(60000);
+	@Grammar("set timer on # minutes")
+	private boolean setTimer(String[] params) {
+		return this.logic.setAlarm(Integer.parseInt(params[3]) * 60000);
 	}
 
-	@Grammar("delete")
-	private boolean deleteAlarm() {
-		return this.logic.deleteAlarm("1");
+	@Grammar("delete alarm #")
+	private boolean deleteAlarm(String[] params) {
+		return this.logic.deleteAlarm(Integer.parseInt(params[2]));
 	}
 
-	@Grammar("deactivate")
-	private boolean deactivateAlarm() {
-		return this.logic.deactivateAlarm("alarm1");
+	@Grammar("deactivate alarm #")
+	private boolean deactivateAlarm(String[] params) {
+		return this.logic.deactivateAlarm("alarm" + params[2]);
 	}
 
 	@Grammar("reset alarms")
@@ -71,9 +71,14 @@ public class AlarmClockSpeech {
 		return this.logic.resetTimers();
 	}
 
-	@Grammar("get")
-	private String getAlarm() {
-		return this.logic.getAlarm();
+	@Grammar("get alarm #")
+	private String getAlarm(String[] params) {
+		return this.logic.getAlarm(Integer.parseInt(params[2]));
+	}
+
+	@Grammar("get timer #")
+	private String getTimer(String[] params) {
+		return this.logic.getTimer(Integer.parseInt(params[2]));
 	}
 
 	@Grammar("get all")
@@ -81,8 +86,8 @@ public class AlarmClockSpeech {
 		return this.logic.getAllAlarms();
 	}
 
-	@Grammar("edit")
-	private boolean editAlarm() {
-		return this.logic.editAlarm("1", "10");
+	@Grammar("edit alarm # to # oh #")
+	private boolean editAlarm(String[] params) {
+		return this.logic.editAlarm(Integer.parseInt(params[2]), new String[] { params[4], params[6] });
 	}
 }
