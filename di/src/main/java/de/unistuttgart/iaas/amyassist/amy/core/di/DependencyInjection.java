@@ -6,7 +6,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -164,14 +164,27 @@ public class DependencyInjection implements ServiceLocator {
 
 	/**
 	 * Resolve the dependency of a Service implementation and create an instance
-	 * of the Service
+	 * of the Service.
+	 * 
+	 * Does the same as {@link #create(Class)}.
 	 * 
 	 * @param serviceClass
 	 *            the implementation class of a Service
 	 * @return the instance of the Service implementation
 	 */
 	public <T> T resolve(Class<T> serviceClass) {
-		return this.resolve(serviceClass, new ArrayDeque<>(), this.instances);
+		Deque<Class<?>> stack = new ArrayDeque<>();
+		stack.push(serviceClass);
+		try {
+			T instance = serviceClass.newInstance();
+			this.inject(instance, stack, this.instances);
+			this.postConstruct(instance);
+
+			stack.pop();
+			return instance;
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private <T> T resolve(Class<T> serviceClass, Deque<Class<?>> stack, Map<Class<?>, Object> resolved) {
@@ -231,6 +244,8 @@ public class DependencyInjection implements ServiceLocator {
 	}
 
 	/**
+	 * Does the same as {@link #resolve(Class)}
+	 * 
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator#create(java.lang.Class)
 	 */
 	@Override

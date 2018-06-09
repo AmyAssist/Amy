@@ -6,7 +6,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -37,5 +37,23 @@ public class Service2 {
 
 	public boolean checkServices() {
 		return this.service1 != null && this.service3 != null;
+	}
+
+	/**
+	 * Get's {@link #service1 service1}
+	 * 
+	 * @return service1
+	 */
+	public Service1 getService1() {
+		return this.service1;
+	}
+
+	/**
+	 * Get's {@link #service3 service3}
+	 * 
+	 * @return service3
+	 */
+	public Service3 getService3() {
+		return this.service3;
 	}
 }
