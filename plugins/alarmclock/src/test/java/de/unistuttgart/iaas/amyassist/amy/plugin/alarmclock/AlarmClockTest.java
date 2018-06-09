@@ -46,6 +46,9 @@ public class AlarmClockTest {
 
 	private TaskSchedulerAPI mockService;
 
+	/**
+	 * 
+	 */
 	@BeforeEach
 	public void setup() {
 		this.mockService = this.framework.mockService(TaskSchedulerAPI.class);
@@ -65,13 +68,15 @@ public class AlarmClockTest {
 	 */
 	@Test
 	public void testSet() {
-		this.acl.setAlarm("15:20");
+		this.acl.setAlarm(new String[] { "15", "20" });
 
-		Mockito.verify(this.mockService).schedule(
-				ArgumentMatchers.any(Runnable.class),
+		Mockito.verify(this.mockService).schedule(ArgumentMatchers.any(Runnable.class),
 				ArgumentMatchers.any(Date.class));
 	}
 
+	/**
+	 * 
+	 */
 	@Test
 	public void testGetAll() {
 
