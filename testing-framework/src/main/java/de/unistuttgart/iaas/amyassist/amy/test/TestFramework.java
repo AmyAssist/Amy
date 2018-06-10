@@ -81,11 +81,7 @@ public class TestFramework {
 		}
 	}
 
-	public IStorage storage(Consumer<IStorage>... modifiers) {
-		for (Consumer<IStorage> modifier : modifiers) {
-			modifier.accept(this.storage);
-		}
-
+	public IStorage storage() {
 		return this.storage;
 	}
 
@@ -101,13 +97,6 @@ public class TestFramework {
 	 */
 	public <T> T get(Class<T> serviceType) {
 		return this.dependencyInjection.getService(serviceType);
-	}
-
-	public static Consumer<IStorage> store(String key, String value) {
-		return storage -> {
-			Mockito.when(storage.has(key)).thenReturn(true);
-			Mockito.when(storage.get(key)).thenReturn(value);
-		};
 	}
 
 	/**

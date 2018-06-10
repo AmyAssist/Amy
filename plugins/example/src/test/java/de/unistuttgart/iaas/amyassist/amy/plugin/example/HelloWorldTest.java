@@ -44,8 +44,7 @@ public class HelloWorldTest {
 
 	@Test
 	public void testInit() {
-		HelloWorldImpl helloWorld = this.testFramework
-				.setServiceUnderTest(HelloWorldImpl.class);
+		HelloWorldImpl helloWorld = this.testFramework.setServiceUnderTest(HelloWorldImpl.class);
 
 		IStorage storage = this.testFramework.storage();
 
@@ -56,23 +55,21 @@ public class HelloWorldTest {
 
 	@Test
 	public void testcount() {
-		HelloWorldImpl helloWorld = this.testFramework
-				.setServiceUnderTest(HelloWorldImpl.class);
+		HelloWorldImpl helloWorld = this.testFramework.setServiceUnderTest(HelloWorldImpl.class);
 
-		IStorage storage = this.testFramework
-				.storage(TestFramework.store("hellocount", "10"));
+		IStorage storage = this.testFramework.storage();
+		storage.put("hellocount", "10");
 
 		assertThat(helloWorld.helloWorld(), equalTo("hello11"));
 
 		Mockito.verify(storage).put("hellocount", "11");
 	}
-	
+
 	@Test
 	public void textHelloWorldXTimes() {
-		HelloWorldImpl helloWorld = this.testFramework
-				.setServiceUnderTest(HelloWorldImpl.class);
-		
+		HelloWorldImpl helloWorld = this.testFramework.setServiceUnderTest(HelloWorldImpl.class);
+
 		assertThat(helloWorld.helloWorldXTimes(3), equalTo("hello hello hello"));
-		
+
 	}
 }
