@@ -54,16 +54,6 @@ public class AlarmClockSpeech {
 		return this.logic.setAlarm(Integer.parseInt(params[3]));
 	}
 
-	@Grammar("delete alarm #")
-	public String deleteAlarm(String[] params) {
-		return this.logic.deleteAlarm(Integer.parseInt(params[2]));
-	}
-
-	@Grammar("deactivate alarm #")
-	public String deactivateAlarm(String[] params) {
-		return this.logic.deactivateAlarm("alarm" + params[2]);
-	}
-
 	@Grammar("reset alarms")
 	public String resetAlarms(String[] params) {
 		return this.logic.resetAlarms();
@@ -72,6 +62,26 @@ public class AlarmClockSpeech {
 	@Grammar("reset timers")
 	public String resetTimers(String[] params) {
 		return this.logic.resetTimers();
+	}
+
+	@Grammar("delete alarm #")
+	public String deleteAlarm(String[] params) {
+		return this.logic.deleteAlarm(Integer.parseInt(params[2]));
+	}
+
+	@Grammar("delete timer #")
+	public String deleteTimer(String[] params) {
+		return this.logic.deleteTimer(Integer.parseInt(params[2]));
+	}
+
+	@Grammar("deactivate alarm #")
+	public String deactivateAlarm(String[] params) {
+		return this.logic.deactivateAlarm(Integer.parseInt(params[2]));
+	}
+
+	@Grammar("deactivate timer #")
+	public String deactivateTimer(String[] params) {
+		return this.logic.deactivateTimer(Integer.parseInt(params[2]));
 	}
 
 	@Grammar("get alarm #")
@@ -84,9 +94,14 @@ public class AlarmClockSpeech {
 		return this.logic.getTimer(Integer.parseInt(params[2]));
 	}
 
-	@Grammar("get all")
+	@Grammar("get all alarms")
 	public String getAllAlarms(String[] params) {
 		return String.join("\n", this.logic.getAllAlarms());
+	}
+
+	@Grammar("get all timers")
+	public String getAllTimers(String[] params) {
+		return String.join("\n", this.logic.getAllTimers());
 	}
 
 	@Grammar("edit alarm # to # oh #")
