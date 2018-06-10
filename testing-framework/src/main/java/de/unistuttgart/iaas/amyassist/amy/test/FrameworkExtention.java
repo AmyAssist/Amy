@@ -24,6 +24,8 @@ import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 
+import uk.org.lidalia.slf4jtest.TestLoggerFactory;
+
 /**
  * A Jupiter Extension for the TestFramework
  * 
@@ -57,6 +59,7 @@ public class FrameworkExtention
 	 */
 	@Override
 	public void afterTestExecution(ExtensionContext arg0) throws Exception {
+		TestLoggerFactory.clear();
 		this.testFramework.after();
 	}
 }

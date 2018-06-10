@@ -312,7 +312,7 @@ public class AlarmClockLogic {
 
 	/**
 	 *
-	 * Initialization method for logic class. TODO call die method from DI
+	 * Initialization method for logic class.
 	 */
 	@PostConstruct
 	public void init() {

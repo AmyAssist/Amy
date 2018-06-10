@@ -60,8 +60,10 @@
 			<artifactId>log4j-over-slf4j</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
+			<groupId>uk.org.lidalia</groupId>
+			<artifactId>slf4j-test</artifactId>
+			<version>1.2.0</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>
