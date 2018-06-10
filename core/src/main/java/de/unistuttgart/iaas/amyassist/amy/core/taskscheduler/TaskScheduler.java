@@ -23,6 +23,9 @@ import java.util.Date;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 
 /**
@@ -31,6 +34,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAP
  * @author Leon Kiefer
  */
 public class TaskScheduler implements TaskSchedulerAPI {
+
+	private final Logger logger = LoggerFactory.getLogger(TaskScheduler.class);
 
 	private ScheduledExecutorService scheduledExecutorService;
 
@@ -55,9 +60,10 @@ public class TaskScheduler implements TaskSchedulerAPI {
 	 */
 	@Override
 	public void schedule(Runnable task, Date date) {
-		this.scheduledExecutorService.schedule(task,
-				date.getTime() - System.currentTimeMillis(),
-				TimeUnit.MILLISECONDS);
+		this.logger.debug("schedule task for {}", date);
+		long delay = date.getTime() - System.currentTimeMillis();
+		this.logger.debug("the delay of the task is {} ms", delay);
+		this.scheduledExecutorService.schedule(task, delay, TimeUnit.MILLISECONDS);
 	}
 
 }

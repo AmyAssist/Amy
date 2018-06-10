@@ -20,10 +20,16 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -39,6 +45,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAP
  */
 @Service
 public class AlarmClockLogic {
+
+	private final Logger logger = LoggerFactory.getLogger(AlarmClockLogic.class);
 
 	@Reference
 	private IStorage storage;
@@ -68,8 +76,8 @@ public class AlarmClockLogic {
 	}
 
 	/**
-	 * Reads out the given delay per Text-to-speech. e.g.: "This timer rings in 5
-	 * minutes"
+	 * Reads out the given delay per Text-to-speech. e.g.: "This timer rings in
+	 * 5 minutes"
 	 * 
 	 * @param timer
 	 * @return
@@ -88,19 +96,21 @@ public class AlarmClockLogic {
 	 */
 	private Runnable createAlarmRunnable(int alarmNumber) {
 		return () -> {
-			if (this.storage.has("alarm" + alarmNumber)) {
+			if (this.storage.has("alarm" + alarmNumber)
+					&& this.storage.get("alarm" + alarmNumber).split(";")[2].equals("true")) {
 				try {
-					while (this.storage.get("alarm" + alarmNumber).split(";")[2].equals("true")) {
-						Clip clip = AudioSystem.getClip();
-						clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
-						clip.start();
-						Thread.sleep(clip.getMicrosecondLength() / 1000);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+					Clip clip = AudioSystem.getClip();
+					clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
+					clip.start();
+					Calendar instance = Calendar.getInstance();
+					instance.add(Calendar.MILLISECOND, (int) (clip.getMicrosecondLength() / 1000));
+					this.taskScheduler.schedule(this.createAlarmRunnable(alarmNumber), instance.getTime());
+				} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+					this.logger.error("Cant play alarm sound", e);
 				}
 			}
 		};
+
 	}
 
 	/**
@@ -112,21 +122,20 @@ public class AlarmClockLogic {
 	 *            the number of the timer in storage
 	 * @return runnable
 	 */
-	@SuppressWarnings("resource")
 	private Runnable createTimerRunnable(int timerNumber) {
 		return () -> {
-			if (this.storage.has("timer" + timerNumber)) {
+			if (this.storage.has("timer" + timerNumber)
+					&& this.storage.get("timer" + timerNumber).split(";")[1].equals("true")) {
 				try {
-					while (this.storage.get("timer" + timerNumber).split(";")[1].equals("true")) {
-						Clip clip = AudioSystem.getClip();
-						clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
-						clip.start();
-						Thread.sleep(clip.getMicrosecondLength() / 1000);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+					Clip clip = AudioSystem.getClip();
+					clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
+					clip.start();
+					Calendar instance = Calendar.getInstance();
+					instance.add(Calendar.MILLISECOND, (int) (clip.getMicrosecondLength() / 1000));
+					this.taskScheduler.schedule(this.createTimerRunnable(timerNumber), instance.getTime());
+				} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+					this.logger.error("Cant play alarm sound", e);
 				}
-
 			}
 		};
 
@@ -164,8 +173,8 @@ public class AlarmClockLogic {
 	 * Sets new timer and schedules it
 	 * 
 	 * @param delay
-	 *            delay until alarm in seconds
-	 * @return
+	 *            delay until alarm in minutes
+	 * @return true if everything went well
 	 */
 	protected String setAlarm(int delay) {
 		int counter = Integer.parseInt(this.storage.get(TIMERCOUNTER));
@@ -174,7 +183,7 @@ public class AlarmClockLogic {
 		this.storage.put("timer" + counter, delay + ";" + "true");
 		Runnable timerRunnable = createTimerRunnable(counter);
 		Calendar alarmTime = Calendar.getInstance();
-		alarmTime.add(Calendar.MILLISECOND, delay * 60000);
+		alarmTime.add(Calendar.MINUTE, delay);
 		this.taskScheduler.schedule(timerRunnable, alarmTime.getTime());
 		return "Timer " + TIMERCOUNTER + " set on " + delay + " minutes";
 	}
@@ -245,7 +254,7 @@ public class AlarmClockLogic {
 				if (params[2].equals("true"))
 					this.storage.put("alarm" + alarmNumber, params[0] + ";" + params[1] + ";" + "false");
 			} catch (ArrayIndexOutOfBoundsException e) {
-				System.err.println("Something went wrong!");
+				this.logger.error("Something went wrong!", e);
 				return "something went wrong";
 			}
 			return "alarm" + alarmNumber + " deactivated";
