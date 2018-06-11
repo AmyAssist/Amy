@@ -21,3 +21,7 @@ buildNumber.properties
 
 #Other -sinpat
 .idea
+
+#Ignore config files
+apikeys/
+*.properties
