@@ -13,7 +13,7 @@ public class ConfigLoader {
     public ConfigLoader() {
         p = new Properties();
         try {
-            p.load(new FileReader("weather_config.properties"));
+            p.load(new FileReader("apikeys/weather_config.properties"));
         } catch (IOException e) {
             System.err.println("Error loading config file for weather plugin");
             e.printStackTrace();
