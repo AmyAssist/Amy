@@ -55,12 +55,24 @@ public class WeatherReportDay {
         this.precipType = trimQuotes(p.precipType());
         this.temperatureMin = Math.round(p.temperatureMin());
         this.temperatureMax = Math.round(p.temperatureMax());
-        this.sunriseTime = p.sunriseTime();
-        this.sunsetTime = p.sunsetTime();
+        this.sunriseTime = convertTimeString(p.sunriseTime());
+        this.sunsetTime = convertTimeString(p.sunsetTime());
 
         Date date = new Date(p.timestamp() * 1000);
         this.weekday = new SimpleDateFormat("EEEE").format(date);
         this.timestamp = p.timestamp();
+    }
+
+    /**
+     * convert string from HH:mm:ss to HH mm
+     * @param s
+     * @return
+     */
+    private String convertTimeString(String s) {
+        if (s.length() == 8) {
+            return s.substring(0, 5).replace(':', ' ');
+        }
+        return s;
     }
 
     private String description(boolean tldr) {
