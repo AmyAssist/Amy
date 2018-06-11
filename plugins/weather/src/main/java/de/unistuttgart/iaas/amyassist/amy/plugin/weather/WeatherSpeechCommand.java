@@ -23,6 +23,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
+import java.util.Calendar;
+import java.util.Date;
+
 
 @SpeechCommand({"weather"})
 public class WeatherSpeechCommand {
@@ -43,5 +46,39 @@ public class WeatherSpeechCommand {
     @Grammar("week")
     public String weatherWeek(String... words) {
         return weatherAPI.getReportWeek().toString();
+    }
+
+    @Grammar("weekend")
+    public String weatherWeekend(String... words) {
+
+        WeatherReportWeek report = weatherAPI.getReportWeek();
+        Calendar c = Calendar.getInstance();
+
+        int weekday = c.get(Calendar.DAY_OF_WEEK);
+        if (weekday == Calendar.SATURDAY) {
+            if (report.days.length < 2) {
+                throw new RuntimeException("WeatherAPI not working as expected");
+            }
+            return "Today, " + report.days[0].shortDescription() + " and tomorrow, " + report.days[1].shortDescription();
+        }
+        else if (weekday == Calendar.SUNDAY) {
+            return "Today, " + report.days[0].shortDescription();
+        }
+        else {
+            // Get weekend days
+            String saturdayReport = null;
+            String sundayReport = null;
+            for (WeatherReportDay d: report.days) {
+                c.setTime(new Date(d.timestamp * 1000));
+                weekday = c.get(Calendar.DAY_OF_WEEK);
+                if (weekday == Calendar.SATURDAY) {
+                    saturdayReport = d.shortDescription();
+                }
+                else if (weekday == Calendar.SUNDAY) {
+                    sundayReport = d.shortDescription();
+                }
+            }
+            return "On Saturday, " + saturdayReport + " and on Sunday " + sundayReport;
+        }
     }
 }
