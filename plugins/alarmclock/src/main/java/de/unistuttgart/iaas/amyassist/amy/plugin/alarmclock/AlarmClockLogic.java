@@ -59,7 +59,7 @@ public class AlarmClockLogic {
 
 	protected static final String TIMERCOUNTER = "timerCounter";
 
-	private static final File ALARMSOUND = new File("src/main/resources/alarmsound.wav");
+	private static final File ALARMSOUND = new File("resources/alarmsound.wav");
 
 	/**
 	 * Reads out the given alarm per Text-to-speech. e.g.: "This alarm rings
@@ -323,11 +323,12 @@ public class AlarmClockLogic {
 		}
 		return "Alarm not found";
 	}
-	
+
 	/**
 	 * get one alram without speech output
 	 * 
-	 * @param alarmNumber  number of the alarm in the storage
+	 * @param alarmNumber
+	 *            number of the alarm in the storage
 	 * @return
 	 */
 	protected String getAlarmNoOutput(int alarmNumber) {
