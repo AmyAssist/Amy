@@ -58,7 +58,7 @@ public class AlarmClockResource {
 		for(int i = 0; i < alarms.length; i++) {
 			if(alarms[i] != null && alarms[i] != "") {
 				String[] split = alarms[i].split(";");
-				timestamps[i] = new Timestamp(split[0]);
+				timestamps[i] = new Timestamp(split[1] + ":" + split[2]);
 			}
 		}
 		return timestamps;
@@ -74,12 +74,12 @@ public class AlarmClockResource {
 	@Path("alarms/{pathid}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Timestamp getAlarm(@PathParam("pathid") int alarmnumber) {
-		String alarm = this.logic.getAlarm(alarmnumber);
+		String alarm = this.logic.getAlarmNoOutput(alarmnumber);
 		if(alarm == null) {
 			throw new WebApplicationException("there is no alarm" + alarmnumber, Status.NOT_FOUND);
 		}
 		String[] split = alarm.split(";");
-		Timestamp ts = new Timestamp(split[0]);
+		Timestamp ts = new Timestamp(split[0] + ":" + split[1]);
 		return ts;	
 	}
 

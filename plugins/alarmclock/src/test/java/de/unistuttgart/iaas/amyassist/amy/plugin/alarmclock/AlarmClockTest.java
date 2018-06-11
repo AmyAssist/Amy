@@ -245,7 +245,7 @@ public class AlarmClockTest {
 		this.storage.put("alarm1", "20;15;true");
 		this.storage.put("alarm2", "6;30;false");
 		this.storage.put("alarm5", "10;00;true");
-		String[] alarms = { "1: 20;15;true", "2: 6;30;false", "5: 10;00;true" };
+		String[] alarms = { "1;20;15;true", "2;6;30;false", "5;10;00;true" };
 		Mockito.reset(this.storage);
 
 		assertArrayEquals(alarms, this.acl.getAllAlarms());

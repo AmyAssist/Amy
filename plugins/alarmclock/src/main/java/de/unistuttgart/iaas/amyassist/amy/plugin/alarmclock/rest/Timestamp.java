@@ -20,6 +20,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * A timestamp
@@ -53,7 +54,7 @@ public class Timestamp {
 			this.hour = Integer.parseInt(timeSplit[0]);
 			this.minute = Integer.parseInt(timeSplit[1]);
 		} catch (Exception e) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(time);
 		}
 	}
 	
@@ -74,6 +75,7 @@ public class Timestamp {
 		return sh + ":" + sm;
 	}
 	
+	@XmlTransient
 	public boolean isValid() {
 		return ((this.hour>=0 && this.hour < 24) && (this.minute >= 0 && this.minute < 60));
 	}
