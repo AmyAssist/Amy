@@ -1,15 +1,15 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- * 
+ *
  * Copyright (c) 2018 the Amy project authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,14 +48,14 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 
 /**
  * The central core of the application
- * 
+ *
  * @author Tim Neumann, Leon Kiefer
  */
 public class Core implements SpeechInputHandler {
 	/**
 	 * The project directory.
 	 */
-	public static final File projectDir = new File(".").getAbsoluteFile().getParentFile().getParentFile();
+	public static final File projectDir = new File(".").getAbsoluteFile().getParentFile();
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
@@ -69,7 +69,7 @@ public class Core implements SpeechInputHandler {
 
 	/**
 	 * The method executed by the main method
-	 * 
+	 *
 	 */
 	void run() {
 		this.init();
@@ -91,8 +91,13 @@ public class Core implements SpeechInputHandler {
 		console.setSpeechInputHandler(this);
 		this.threads.add(new Thread(console));
 
+		File resourceDir = new File(projectDir, "resources");
+		File grammarFile = new File(resourceDir, "/sphinx-grammars/grammar.gram");
+
+		this.speechCommandHandler.setFileToSaveGrammarTo(grammarFile);
+
 		AudioUserInteraction aui = new AudioUserInteraction();
-		aui.setData(new Grammar("grammar", new File("src/main/resources", "/sphinx-grammars/grammar.gram")), null);
+		aui.setData(new Grammar("grammar", grammarFile), null);
 
 		SpeechIO sr = aui;
 		this.di.inject(sr);
@@ -123,15 +128,38 @@ public class Core implements SpeechInputHandler {
 	private void loadPlugins() {
 		this.logger.debug("projectDir: {}", projectDir);
 
+		if (!projectDir.exists()) {
+			this.logger.error("Project directory does not exist.");
+			return;
+		}
+
+		File pluginDir = new File(projectDir, "plugins");
+
+		if (!pluginDir.exists()) {
+			this.logger
+					.error("Plugin directory does not exist. Is the project path correct for your working directory?");
+			return;
+		}
+
 		ArrayList<File> plugins = new ArrayList<>();
-		plugins.add(new File(projectDir, "plugins/alarmclock"));
-		plugins.add(new File(projectDir, "plugins/example"));
-		plugins.add(new File(projectDir, "plugins/spotify"));
-		plugins.add(new File(projectDir, "plugins/systemtime"));
-		plugins.add(new File(projectDir, "plugins/weather"));
+		plugins.add(new File(pluginDir, "alarmclock"));
+		plugins.add(new File(pluginDir, "example"));
+		plugins.add(new File(pluginDir, "spotify"));
+		plugins.add(new File(pluginDir, "systemtime"));
+		plugins.add(new File(pluginDir, "weather"));
 
 		for (File p : plugins) {
-			for (File child : new File(p, "target").listFiles()) {
+			if (!p.exists()) {
+				this.logger.warn("The plugin {} does not exist in the plugin directory.", p.getName());
+				continue;
+			}
+			File target = new File(p, "target");
+			if (!target.exists()) {
+				this.logger.warn("Plugin {} has no target directory. Did you run mvn install?", p.getName());
+				continue;
+			}
+
+			for (File child : target.listFiles()) {
 				if (child.getName().endsWith("with-dependencies.jar")) {
 					this.pluginLoader.loadPlugin(child.toURI());
 					break;
@@ -147,7 +175,7 @@ public class Core implements SpeechInputHandler {
 
 	/**
 	 * Process the plugin components and register them at the right Services
-	 * 
+	 *
 	 * @param plugin
 	 */
 	private void processPlugin(Plugin plugin) {
