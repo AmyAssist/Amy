@@ -1,7 +1,7 @@
 target/
 */target/
 *.gram
-weather_config.properties
+apikeys/
 
 pom.xml.tag
 pom.xml.releaseBackup

@@ -17,7 +17,7 @@ public class ConfigLoader {
 
 	public String get(String s) {
 		try {
-				p.load(new FileReader("spotify_config.properties"));
+				p.load(new FileReader("apikeys/spotify_config.properties"));
 				return p.getProperty(s);
 		} catch (IOException e) {
 			System.err.println("Error loading config file for spotify plugin");
@@ -30,7 +30,7 @@ public class ConfigLoader {
 	public void set(String key, String value) {
 		p.setProperty(key, value);
 		try {
-			p.store(new FileWriter("spotify_config.properties"), "Spotify Plugin");
+			p.store(new FileWriter("apikeys/spotify_config.properties"), "Spotify Plugin");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
