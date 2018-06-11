@@ -354,8 +354,8 @@ public class PlayerLogic {
 				}
 				break;
 			case "down":
-				if (this.volume + 10 >= 0) {
-					this.volume += 10;
+				if (this.volume - 10 >= 0) {
+					this.volume -= 10;
 					setVolume(this.volume);
 					
 				}
