@@ -166,7 +166,8 @@ public class AlarmClockLogic {
 		Calendar current = Calendar.getInstance();
 		Calendar alarmCalendar = Calendar.getInstance();
 		alarmCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(alarmTime[0]));
-		alarmCalendar.set(Calendar.MINUTE, Integer.parseInt(alarmTime[0]));
+		alarmCalendar.set(Calendar.MINUTE, Integer.parseInt(alarmTime[1]));
+		alarmCalendar.set(Calendar.SECOND, 0);
 		if (alarmCalendar.before(current)) {
 			alarmCalendar.add(Calendar.DATE, 1);
 		}
