@@ -23,6 +23,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.File;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +47,11 @@ class SpeechCommandHandlerTest {
 	@BeforeEach
 	public void setup() {
 		this.speechCammandHandler = this.framework.setServiceUnderTest(SpeechCommandHandler.class);
+		File resourceDir = new File(new File("."), "resources");
+		File grammarFile = new File(resourceDir, "/sphinx-grammars/grammar.gram");
+
+		this.speechCammandHandler.setFileToSaveGrammarTo(grammarFile);
+
 	}
 
 	@Test

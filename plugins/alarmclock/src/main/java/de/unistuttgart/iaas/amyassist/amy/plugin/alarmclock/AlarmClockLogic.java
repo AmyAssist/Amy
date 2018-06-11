@@ -166,7 +166,8 @@ public class AlarmClockLogic {
 		Calendar current = Calendar.getInstance();
 		Calendar alarmCalendar = Calendar.getInstance();
 		alarmCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(alarmTime[0]));
-		alarmCalendar.set(Calendar.MINUTE, Integer.parseInt(alarmTime[0]));
+		alarmCalendar.set(Calendar.MINUTE, Integer.parseInt(alarmTime[1]));
+		alarmCalendar.set(Calendar.SECOND, 0);
 		if (alarmCalendar.before(current)) {
 			alarmCalendar.add(Calendar.DATE, 1);
 		}
@@ -322,6 +323,19 @@ public class AlarmClockLogic {
 		}
 		return "Alarm not found";
 	}
+	
+	/**
+	 * get one alram without speech output
+	 * 
+	 * @param alarmNumber  number of the alarm in the storage
+	 * @return
+	 */
+	protected String getAlarmNoOutput(int alarmNumber) {
+		if (this.storage.has("alarm" + alarmNumber)) {
+			return this.storage.get("alarm" + alarmNumber);
+		}
+		return "Alarm not found";
+	}
 
 	/**
 	 * @param timerNumber
@@ -344,7 +358,7 @@ public class AlarmClockLogic {
 		ArrayList<String> allAlarms = new ArrayList<>();
 		for (int i = 1; i <= Integer.parseInt(this.storage.get(ALARMCOUNTER)); i++) {
 			if (this.storage.has("alarm" + i)) {
-				allAlarms.add(i + ": " + this.storage.get("alarm" + i));
+				allAlarms.add(i + ";" + this.storage.get("alarm" + i));
 			}
 		}
 		return allAlarms.toArray(new String[allAlarms.size()]);

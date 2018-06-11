@@ -6,7 +6,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -46,26 +46,29 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class SpeechCommandHandler {
 	private AnnotationReader annotationReader = new AnnotationReader();
 	private TextToPlugin textToPlugin;
-	private GrammarParser generator = new GrammarParser("grammar", AudioUserInteraction.wakeUp, AudioUserInteraction.goSleep, AudioUserInteraction.shutdown);
+	private GrammarParser generator = new GrammarParser("grammar", AudioUserInteraction.wakeUp,
+			AudioUserInteraction.goSleep, AudioUserInteraction.shutdown);
 
 	private Map<PluginGrammarInfo, Class<?>> grammarInfos = new HashMap<>();
 	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> speechCommands = new HashMap<>();
 	@Reference
 	private ServiceLocator serviceLocator;
 
+	/** The file to save the grammer to */
+	private File fileToSaveGrammarTo;
+
 	public void registerSpeechCommand(Class<?> class1) {
-		if (!class1.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand.class)) {
+		if (!class1.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand.class))
 			throw new RuntimeException();
-		}
 		String[] speechKeyword = this.annotationReader.getSpeechKeyword(class1);
 		Map<String, SpeechCommand> grammars = this.annotationReader.getGrammars(class1);
 		PluginGrammarInfo pluginGrammarInfo = new PluginGrammarInfo(Arrays.asList(speechKeyword), grammars.keySet());
 		this.grammarInfos.put(pluginGrammarInfo, class1);
 		this.speechCommands.putAll(grammars);
 		for (Map.Entry<String, SpeechCommand> e : grammars.entrySet()) {
-			for (String keyword : speechKeyword) {
-				this.generator.addRule(UUID.randomUUID().toString(), keyword, e.getKey());
-			}
+		//	for (String keyword : speechKeyword) {
+				this.generator.addRule(UUID.randomUUID().toString(), speechKeyword, e.getKey());
+		//	}
 		}
 
 	}
@@ -75,10 +78,9 @@ public class SpeechCommandHandler {
 	 */
 	public void completeSetup() {
 		String grammar = this.generator.getGrammar();
-		File grammarFile = new File("src/main/resources", "/sphinx-grammars/grammar.gram");
-		grammarFile.getParentFile().mkdirs();
+		this.getFileToSaveGrammarTo().getParentFile().mkdirs();
 
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(grammarFile))) {
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.getFileToSaveGrammarTo()))) {
 			bw.write(grammar);
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -88,10 +90,10 @@ public class SpeechCommandHandler {
 	}
 
 	public String handleSpeechInput(String input) {
+		System.out.println("input " + input);
 		List<String> pluginActionFromText = this.textToPlugin.pluginActionFromText(input);
-		if (pluginActionFromText == null) {
+		if (pluginActionFromText == null)
 			throw new IllegalArgumentException(input);
-		}
 		String[] args = pluginActionFromText.subList(2, pluginActionFromText.size()).toArray(new String[0]);
 		return this.call(this.speechCommands.get(pluginActionFromText.get(1)), args);
 	}
@@ -100,5 +102,24 @@ public class SpeechCommandHandler {
 		Class<?> speechCommandClass = command.getSpeechCommandClass();
 		Object speechCommandClassInstance = this.serviceLocator.create(speechCommandClass);
 		return command.call(speechCommandClassInstance, input);
+	}
+
+	/**
+	 * Get's {@link #fileToSaveGrammarTo fileToSaveToGrammar}
+	 * 
+	 * @return fileToSaveToGrammar
+	 */
+	public File getFileToSaveGrammarTo() {
+		return this.fileToSaveGrammarTo;
+	}
+
+	/**
+	 * Set's {@link #fileToSaveGrammarTo fileToSaveToGrammar}
+	 * 
+	 * @param fileToSaveToGrammar
+	 *            fileToSaveToGrammar
+	 */
+	public void setFileToSaveGrammarTo(File fileToSaveToGrammar) {
+		this.fileToSaveGrammarTo = fileToSaveToGrammar;
 	}
 }

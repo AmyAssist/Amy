@@ -87,10 +87,10 @@ public class GrammarParser {
 		grammar += "<digit> = (one | two | three | four | five | six | seven |"
 				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
 				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
-				+ "fifty | sixty  | seventy | eighty | ninety | hundred | thousand |" + "million | and )+; \n";
+				+ "fifty | sixty  | seventy | eighty | ninety | and )+; \n";
 
 		grammar += "\n//custom rules \n";
-		
+
 		for (String s : this.addedRules) {
 			grammar += s.toLowerCase();
 		}
@@ -106,9 +106,22 @@ public class GrammarParser {
 	 * @param keyword
 	 *            The keyword
 	 */
-	public void addRule(String ruleName, String keyword, String grammar) {
-		this.addedRules.add("public " + "<" + ruleName + ">" + " = " + this.parseKeyword(keyword) + " "
-				+ this.parseKeyword(grammar) + "; \n");
+	public void addRule(String ruleName, String[] keywords, String grammar) {
+		String rule = "public <" + ruleName + ">" + " = ";
+
+		if (keywords.length > 1) {
+			rule += "(";
+			for (String keyword : keywords) {
+				rule += this.parseKeyword(keyword) + "|";
+			}
+			rule = rule.substring(0, rule.length() - 1);
+			rule += ") " + this.parseKeyword(grammar) + "; \n";
+		}else {
+			rule += this.parseKeyword(keywords[0]) + " " + this.parseKeyword(grammar) + "; \n";
+		}
+
+
+		this.addedRules.add(rule);
 	}
 
 	/**
