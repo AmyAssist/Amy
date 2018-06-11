@@ -19,16 +19,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
-import static java.lang.Math.round;
+import com.github.dvdme.ForecastIOLib.FIODataPoint;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
-import com.github.dvdme.ForecastIOLib.FIODataPoint;
-
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+
+import static java.lang.Math.round;
 
 @XmlRootElement
 public class WeatherReportDay {
@@ -65,7 +63,19 @@ public class WeatherReportDay {
         this.timestamp = p.timestamp();
     }
 
+    private String description(boolean tldr) {
+        String result = (this.preamble != null ? this.preamble + " " : "") + this.summary + " " + this.precipProbability +  " probability of " + this.precipType + ". Between " + this.temperatureMin + " and " + this.temperatureMax + "°C.";
+        if (!tldr) {
+            result += " Sunrise is at " + this.sunriseTime + " and sunset at " + this.sunsetTime;
+        }
+        return result;
+    }
+
+    public String shortDescription() {
+        return description(true);
+    }
+
     public String toString() {
-        return (this.preamble != null ? this.preamble + " " : "") + this.summary + " " + this.precipProbability +  " probability of " + this.precipType + ". Between " + this.temperatureMin + " and " + this.temperatureMax + "°C" +". Sunrise is at " + this.sunriseTime + " and sunset at " + this.sunsetTime;
+        return description(false);
     }
 }
