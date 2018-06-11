@@ -63,9 +63,9 @@ public class SpeechCommandHandler {
 		this.grammarInfos.put(pluginGrammarInfo, class1);
 		this.speechCommands.putAll(grammars);
 		for (Map.Entry<String, SpeechCommand> e : grammars.entrySet()) {
-			for (String keyword : speechKeyword) {
-				this.generator.addRule(UUID.randomUUID().toString(), keyword, e.getKey());
-			}
+		//	for (String keyword : speechKeyword) {
+				this.generator.addRule(UUID.randomUUID().toString(), speechKeyword, e.getKey());
+		//	}
 		}
 
 	}
@@ -88,6 +88,7 @@ public class SpeechCommandHandler {
 	}
 
 	public String handleSpeechInput(String input) {
+		System.out.println("input " + input);
 		List<String> pluginActionFromText = this.textToPlugin.pluginActionFromText(input);
 		if (pluginActionFromText == null) {
 			throw new IllegalArgumentException(input);
