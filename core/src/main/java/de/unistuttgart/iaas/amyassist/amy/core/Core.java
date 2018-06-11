@@ -1,15 +1,15 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- * 
+ *
  * Copyright (c) 2018 the Amy project authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,7 +48,7 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 
 /**
  * The central core of the application
- * 
+ *
  * @author Tim Neumann, Leon Kiefer
  */
 public class Core implements SpeechInputHandler {
@@ -69,7 +69,7 @@ public class Core implements SpeechInputHandler {
 
 	/**
 	 * The method executed by the main method
-	 * 
+	 *
 	 */
 	void run() {
 		this.init();
@@ -175,7 +175,7 @@ public class Core implements SpeechInputHandler {
 
 	/**
 	 * Process the plugin components and register them at the right Services
-	 * 
+	 *
 	 * @param plugin
 	 */
 	private void processPlugin(Plugin plugin) {
