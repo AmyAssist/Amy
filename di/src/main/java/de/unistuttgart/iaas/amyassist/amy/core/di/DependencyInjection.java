@@ -99,6 +99,8 @@ public class DependencyInjection implements ServiceLocator {
 		this.dependencyRegister = new HashMap<>();
 		this.global_instances = new HashMap<>();
 		this.externalServices = new HashMap<>();
+		this.class_instances = new HashMap<>();
+		this.plugin_instances = new HashMap<>();
 
 		this.addExternalService(ServiceLocator.class, this);
 	}
@@ -250,12 +252,18 @@ public class DependencyInjection implements ServiceLocator {
 			resolved = this.global_instances;
 		}
 
-		if (scope.getScope() == Scope.PLUGIN && this.plugin_instances.containsKey(scope.getPlugin())) {
+		if (scope.getScope() == Scope.PLUGIN) {
+			if (!this.plugin_instances.containsKey(scope.getPlugin())) {
+				this.plugin_instances.put(scope.getPlugin(), new HashMap<>());
+			}
 			resolved = this.plugin_instances.get(scope.getPlugin());
 		}
 
-		if (scope.getScope() == Scope.CLASS && this.class_instances.containsKey(scope.getClass())) {
-			resolved = this.class_instances.get(scope.getClass());
+		if (scope.getScope() == Scope.CLASS) {
+			if (!this.class_instances.containsKey(scope.getCls())) {
+				this.class_instances.put(scope.getCls(), new HashMap<>());
+			}
+			resolved = this.class_instances.get(scope.getCls());
 		}
 
 		if (resolved.containsKey(serviceClass))
