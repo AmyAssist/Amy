@@ -35,7 +35,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
@@ -167,7 +166,7 @@ public class Core implements SpeechInputHandler {
 			}
 		}
 
-		for (Plugin p : this.pluginLoader.getPlugins()) {
+		for (IPlugin p : this.pluginLoader.getPlugins()) {
 			this.processPlugin(p);
 		}
 		this.speechCommandHandler.completeSetup();
@@ -178,7 +177,7 @@ public class Core implements SpeechInputHandler {
 	 *
 	 * @param plugin
 	 */
-	private void processPlugin(Plugin plugin) {
+	private void processPlugin(IPlugin plugin) {
 		for (Class<?> cls : plugin.getClasses()) {
 			if (cls.isAnnotationPresent(SpeechCommand.class)) {
 				this.speechCommandHandler.registerSpeechCommand(cls);

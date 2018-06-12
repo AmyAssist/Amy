@@ -37,6 +37,8 @@ import java.util.jar.Manifest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
+
 /**
  * The class responsible for loading plugins.
  * 
@@ -197,7 +199,7 @@ public class PluginLoader {
 	 * @return The plugin with the given name or null, if no Plugin with this
 	 *         name is loaded.
 	 */
-	public Plugin getPlugin(String name) {
+	public IPlugin getPlugin(String name) {
 		return this.plugins.get(name);
 	}
 

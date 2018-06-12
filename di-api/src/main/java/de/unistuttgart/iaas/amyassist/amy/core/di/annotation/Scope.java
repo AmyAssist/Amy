@@ -16,27 +16,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package de.unistuttgart.iaas.amyassist.amy.core.di.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Declare a runtime dependency
+ * This enum contains the possible scopes for the dependency injection.
  * 
- * @author Leon Kiefer
+ * @author Tim Neumann
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Target(java.lang.annotation.ElementType.FIELD)
-public @interface Reference {
-	/**
-	 * The {@link Scope scope} of this reference.
-	 * 
-	 * @return the scope.
-	 */
-	Scope value() default Scope.GLOBAL;
+public enum Scope {
+	/** Inject the global instance of this class */
+	GLOBAL,
+	/** Inject the instance bound to the plugin */
+	PLUGIN,
+	/** Inject a instance bound to this class */
+	CLASS,
+	/** Inject a new instance, which is never used again after that. */
+	ONCE
 }
