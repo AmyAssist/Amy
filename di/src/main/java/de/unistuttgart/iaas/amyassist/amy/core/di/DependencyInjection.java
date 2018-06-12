@@ -59,9 +59,9 @@ public class DependencyInjection implements ServiceLocator {
 	protected final Logger logger = LoggerFactory.getLogger(DependencyInjection.class);
 
 	/**
-	 * A register which maps a class to it's service type.
+	 * A register which maps a class to it's service provider.
 	 */
-	protected Map<Class<?>, Class<?>> register;
+	protected Map<Class<?>, ServiceProvider<?>> register;
 
 	/**
 	 * A register which maps a class to it's dependencies, for each dependency
@@ -70,19 +70,19 @@ public class DependencyInjection implements ServiceLocator {
 	protected Map<Class<?>, Map<Class<?>, Scope>> dependencyRegister;
 
 	/**
-	 * The map of global instances for each service class
+	 * The map of global instances for each service provider
 	 */
-	protected Map<Class<?>, Object> global_instances;
+	protected Map<ServiceProvider<?>, Object> globalInstances;
 
 	/**
 	 * The map of class instances for a class
 	 */
-	protected Map<Class<?>, Map<Class<?>, Object>> class_instances;
+	protected Map<Class<?>, Map<ServiceProvider<?>, Object>> classInstances;
 
 	/**
 	 * The map of class instances for a plugin
 	 */
-	protected Map<IPlugin, Map<Class<?>, Object>> plugin_instances;
+	protected Map<IPlugin, Map<ServiceProvider<?>, Object>> pluginInstances;
 
 	/**
 	 * The map of external services
@@ -97,10 +97,10 @@ public class DependencyInjection implements ServiceLocator {
 	public DependencyInjection() {
 		this.register = new HashMap<>();
 		this.dependencyRegister = new HashMap<>();
-		this.global_instances = new HashMap<>();
+		this.globalInstances = new HashMap<>();
 		this.externalServices = new HashMap<>();
-		this.class_instances = new HashMap<>();
-		this.plugin_instances = new HashMap<>();
+		this.classInstances = new HashMap<>();
+		this.pluginInstances = new HashMap<>();
 
 		this.addExternalService(ServiceLocator.class, this);
 	}
@@ -159,8 +159,10 @@ public class DependencyInjection implements ServiceLocator {
 				dependencies.put(dependency, annotations[0].value());
 			}
 		}
+
 		for (Class<?> serviceType : serviceTypes) {
-			this.register.put(serviceType, cls);
+			ServiceProvider<?> p = new ServiceProvider<>(cls);
+			this.register.put(serviceType, p);
 		}
 		this.dependencyRegister.put(cls, dependencies);
 	}
@@ -208,7 +210,7 @@ public class DependencyInjection implements ServiceLocator {
 
 	@Override
 	public <T> T getService(Class<T> serviceType) {
-		return this.get(serviceType, new ArrayDeque<>(), new ScopeInformation(Scope.GLOBAL));
+		return this.getService(serviceType, new ArrayDeque<>(), new ScopeInformation(Scope.GLOBAL));
 	}
 
 	/**
@@ -224,13 +226,34 @@ public class DependencyInjection implements ServiceLocator {
 	 *            The stack of classes, for which this service is needed.
 	 * @return The instance of the service.
 	 */
-	private <T> T get(Class<T> serviceType, Deque<Class<?>> stack, ScopeInformation scope) {
+	private <T> T getService(Class<T> serviceType, Deque<ServiceProvider<?>> stack, ScopeInformation scope) {
 		if (this.externalServices.containsKey(serviceType)) {
 			if (scope.getScope() == Scope.GLOBAL)
 				return (T) this.externalServices.get(serviceType);
 		}
-		Class<?> required = this.getRequired(serviceType);
-		return (T) this.resolve(required, stack, scope);
+		ServiceProvider<?> provider = this.getProvider(serviceType);
+		return (T) this.resolve(provider, stack, scope);
+	}
+
+	private Map<ServiceProvider<?>, Object> getResolved(ScopeInformation scope) {
+		if (scope.getScope() == Scope.GLOBAL) {
+			return this.globalInstances;
+		}
+
+		if (scope.getScope() == Scope.PLUGIN) {
+			if (!this.pluginInstances.containsKey(scope.getPlugin())) {
+				this.pluginInstances.put(scope.getPlugin(), new HashMap<>());
+			}
+			return this.pluginInstances.get(scope.getPlugin());
+		}
+
+		if (scope.getScope() == Scope.CLASS) {
+			if (!this.classInstances.containsKey(scope.getCls())) {
+				this.classInstances.put(scope.getCls(), new HashMap<>());
+			}
+			return this.classInstances.get(scope.getCls());
+		}
+		return new HashMap<>();
 	}
 
 	/**
@@ -240,46 +263,29 @@ public class DependencyInjection implements ServiceLocator {
 	 * 
 	 * @param <T>
 	 *            The type of the class
-	 * @param serviceClass
-	 *            The class of the type.
+	 * @param serviceProvider
+	 *            The Service Provider.
 	 * @param stack
 	 *            The stack of classes, for which this class is needed.
 	 * @return The instance of the class.
 	 */
-	private <T> T resolve(Class<T> serviceClass, Deque<Class<?>> stack, ScopeInformation scope) {
-		Map<Class<?>, Object> resolved = new HashMap<>();
-		if (scope.getScope() == Scope.GLOBAL) {
-			resolved = this.global_instances;
-		}
+	private <T> T resolve(ServiceProvider<T> serviceProvider, Deque<ServiceProvider<?>> stack, ScopeInformation scope) {
+		Map<ServiceProvider<?>, Object> resolved = this.getResolved(scope);
 
-		if (scope.getScope() == Scope.PLUGIN) {
-			if (!this.plugin_instances.containsKey(scope.getPlugin())) {
-				this.plugin_instances.put(scope.getPlugin(), new HashMap<>());
-			}
-			resolved = this.plugin_instances.get(scope.getPlugin());
-		}
+		if (resolved.containsKey(serviceProvider))
+			return (T) resolved.get(serviceProvider);
 
-		if (scope.getScope() == Scope.CLASS) {
-			if (!this.class_instances.containsKey(scope.getCls())) {
-				this.class_instances.put(scope.getCls(), new HashMap<>());
-			}
-			resolved = this.class_instances.get(scope.getCls());
-		}
-
-		if (resolved.containsKey(serviceClass))
-			return (T) resolved.get(serviceClass);
-
-		if (stack.contains(serviceClass))
+		if (stack.contains(serviceProvider))
 			throw new RuntimeException("circular dependencies");
 
-		stack.push(serviceClass);
+		stack.push(serviceProvider);
 
 		try {
-			T instance = serviceClass.newInstance();
+			T instance = serviceProvider.newInstance();
 			this.inject(instance, stack);
 			this.postConstruct(instance);
 
-			resolved.put(serviceClass, instance);
+			resolved.put(serviceProvider, instance);
 			stack.pop();
 			return instance;
 		} catch (InstantiationException | IllegalAccessException e) {
@@ -292,7 +298,7 @@ public class DependencyInjection implements ServiceLocator {
 		this.inject(instance, new ArrayDeque<>());
 	}
 
-	private void inject(Object instance, Deque<Class<?>> stack) {
+	private void inject(Object instance, Deque<ServiceProvider<?>> stack) {
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(instance.getClass(), Reference.class);
 		for (Field field : dependencyFields) {
 			Class<?> dependency = field.getType();
@@ -319,7 +325,7 @@ public class DependencyInjection implements ServiceLocator {
 				si = new ScopeInformation(s);
 				break;
 			}
-			Object object = this.get(dependency, stack, si);
+			Object object = this.getService(dependency, stack, si);
 			try {
 				FieldUtils.writeField(field, instance, object, true);
 			} catch (IllegalAccessException e) {
@@ -340,7 +346,7 @@ public class DependencyInjection implements ServiceLocator {
 		}
 	}
 
-	private Class<?> getRequired(Class<?> serviceType) {
+	private <T> ServiceProvider<?> getProvider(Class<T> serviceType) {
 		if (!this.register.containsKey(serviceType))
 			throw new ServiceNotFoundException(serviceType);
 		return this.register.get(serviceType);
@@ -351,10 +357,11 @@ public class DependencyInjection implements ServiceLocator {
 	 */
 	@Override
 	public <T> T create(Class<T> serviceClass) {
-		Deque<Class<?>> stack = new ArrayDeque<>();
-		stack.push(serviceClass);
+		Deque<ServiceProvider<?>> stack = new ArrayDeque<>();
+		ServiceProvider<T> provider = new ServiceProvider<>(serviceClass);
+		stack.push(provider);
 		try {
-			T instance = serviceClass.newInstance();
+			T instance = provider.newInstance();
 			this.inject(instance, stack);
 			this.postConstruct(instance);
 
