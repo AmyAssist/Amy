@@ -198,6 +198,7 @@ public class MainSpeechRecognizer implements Runnable {
 	// -----------------------------------------------------------------------------------------------
 
 	private void say(String s) {
+		this.tts.stopOutput();
 		this.tts.say(s);
 	}
 	
