@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -151,8 +152,8 @@ public class SearchTest {
 
 	@Test
 	public void testSearchSpeechStringTrack() {
-		ArrayList<String[]> erg1 = this.search.createSpeechList(this.tracks1, "track");
-		ArrayList<String[]> erg2 = this.search.createSpeechList(this.tracks2, "track");
+		List<String[]> erg1 = this.search.createSpeechList(this.tracks1, "track");
+		List<String[]> erg2 = this.search.createSpeechList(this.tracks2, "track");
 		assertEquals("0. Track name is Flames by David Guetta", erg1.get(0)[1]);
 		assertEquals("1. Track name is Say Something by Justin Timberlake", erg1.get(1)[1]);
 		assertEquals("123", erg1.get(0)[0]);
@@ -163,8 +164,8 @@ public class SearchTest {
 
 	@Test
 	public void testSearchSpeechStringArtist() {
-		ArrayList<String[]> erg1 = this.search.createSpeechList(this.artists1, "artist");
-		ArrayList<String[]> erg2 = this.search.createSpeechList(this.artists2, "artist");
+		List<String[]> erg1 = this.search.createSpeechList(this.artists1, "artist");
+		List<String[]> erg2 = this.search.createSpeechList(this.artists2, "artist");
 		assertEquals("0. Artist name is David Guetta in the genre Pop", erg1.get(0)[1]);
 		assertEquals("1. Artist name is Cro in the genre Rock", erg1.get(1)[1]);
 		assertEquals("123", erg1.get(0)[0]);
@@ -175,7 +176,7 @@ public class SearchTest {
 
 	@Test
 	public void testSearchSpeechStringPlaylist() {
-		ArrayList<String[]> erg1 = this.search.createSpeechList(this.playlists1, "playlist");
+		List<String[]> erg1 = this.search.createSpeechList(this.playlists1, "playlist");
 		assertEquals("0. Playlist name is Flames created by David Guetta", erg1.get(0)[1]);
 		assertEquals("1. Playlist name is Say Something created by Justin Timberlake" + "", erg1.get(1)[1]);
 		assertEquals("123", erg1.get(0)[0]);
@@ -184,8 +185,8 @@ public class SearchTest {
 
 	@Test
 	public void testSearchSpeechStringAlbum() {
-		ArrayList<String[]> erg1 = this.search.createSpeechList(this.albums1, "album");
-		ArrayList<String[]> erg2 = this.search.createSpeechList(this.albums2, "album");
+		List<String[]> erg1 = this.search.createSpeechList(this.albums1, "album");
+		List<String[]> erg2 = this.search.createSpeechList(this.albums2, "album");
 		assertEquals("0. Album name is Flames by David Guetta", erg1.get(0)[1]);
 		assertEquals("1. Album name is Say Something by Justin Timberlake", erg1.get(1)[1]);
 		assertEquals("123", erg1.get(0)[0]);
@@ -196,59 +197,59 @@ public class SearchTest {
 	
 	@Test
 	public void testSearchHashMapTrack() {
-		ArrayList<HashMap<String, String>> erg1 = this.search.createHashMap(tracks1, "track");
-		ArrayList<HashMap<String, String>> erg2 = this.search.createHashMap(tracks2, "track");
-		assertEquals("Flames", erg1.get(0).get(this.search.ITEM_NAME));
-		assertEquals("David Guetta", erg1.get(0).get(this.search.ARTIST_NAME));
-		assertEquals("Say Something",  erg1.get(1).get(this.search.ITEM_NAME));
-		assertEquals("Justin Timberlake",  erg1.get(1).get(this.search.ARTIST_NAME));
-		assertEquals("123",  erg1.get(0).get(this.search.ITEM_URI));
-		assertEquals("abc",  erg1.get(1).get(this.search.ITEM_URI));
-		assertEquals("track",  erg1.get(0).get(this.search.ITEM_TYPE));
-		assertEquals("David Guetta, Hans Dieter",  erg2.get(0).get(this.search.ARTIST_NAME));
-		assertEquals("Justin Timberlake, Hans Dieter",  erg2.get(1).get(this.search.ARTIST_NAME));	
+		List<HashMap<String, String>> erg1 = this.search.createHashMap(tracks1, "track");
+		List<HashMap<String, String>> erg2 = this.search.createHashMap(tracks2, "track");
+		assertEquals("Flames", erg1.get(0).get(Search.ITEM_NAME));
+		assertEquals("David Guetta", erg1.get(0).get(Search.ARTIST_NAME));
+		assertEquals("Say Something",  erg1.get(1).get(Search.ITEM_NAME));
+		assertEquals("Justin Timberlake",  erg1.get(1).get(Search.ARTIST_NAME));
+		assertEquals("123",  erg1.get(0).get(Search.ITEM_URI));
+		assertEquals("abc",  erg1.get(1).get(Search.ITEM_URI));
+		assertEquals("track",  erg1.get(0).get(Search.ITEM_TYPE));
+		assertEquals("David Guetta, Hans Dieter",  erg2.get(0).get(Search.ARTIST_NAME));
+		assertEquals("Justin Timberlake, Hans Dieter",  erg2.get(1).get(Search.ARTIST_NAME));	
 	}
 	
 	@Test
 	public void testSearchHashMapPlaylist() {
-		ArrayList<HashMap<String, String>> erg1 = this.search.createHashMap(playlists1, "playlist");
-		assertEquals("Flames", erg1.get(0).get(this.search.ITEM_NAME));
-		assertEquals("David Guetta", erg1.get(0).get(this.search.ARTIST_NAME));
-		assertEquals("Say Something",  erg1.get(1).get(this.search.ITEM_NAME));
-		assertEquals("Justin Timberlake",  erg1.get(1).get(this.search.ARTIST_NAME));
-		assertEquals("123",  erg1.get(0).get(this.search.ITEM_URI));
-		assertEquals("abc",  erg1.get(1).get(this.search.ITEM_URI));
-		assertEquals("playlist",  erg1.get(0).get(this.search.ITEM_TYPE));
+		List<HashMap<String, String>> erg1 = this.search.createHashMap(playlists1, "playlist");
+		assertEquals("Flames", erg1.get(0).get(Search.ITEM_NAME));
+		assertEquals("David Guetta", erg1.get(0).get(Search.ARTIST_NAME));
+		assertEquals("Say Something",  erg1.get(1).get(Search.ITEM_NAME));
+		assertEquals("Justin Timberlake",  erg1.get(1).get(Search.ARTIST_NAME));
+		assertEquals("123",  erg1.get(0).get(Search.ITEM_URI));
+		assertEquals("abc",  erg1.get(1).get(Search.ITEM_URI));
+		assertEquals("playlist",  erg1.get(0).get(Search.ITEM_TYPE));
 	}
 	
 	@Test
 	public void testSearchHashMapAlbum() {
-		ArrayList<HashMap<String, String>> erg1 = this.search.createHashMap(albums1, "album");
-		ArrayList<HashMap<String, String>> erg2 = this.search.createHashMap(albums2, "album");
-		assertEquals("Flames", erg1.get(0).get(this.search.ITEM_NAME));
-		assertEquals("David Guetta", erg1.get(0).get(this.search.ARTIST_NAME));
-		assertEquals("Say Something",  erg1.get(1).get(this.search.ITEM_NAME));
-		assertEquals("Justin Timberlake",  erg1.get(1).get(this.search.ARTIST_NAME));
-		assertEquals("123",  erg1.get(0).get(this.search.ITEM_URI));
-		assertEquals("abc",  erg1.get(1).get(this.search.ITEM_URI));
-		assertEquals("album",  erg1.get(0).get(this.search.ITEM_TYPE));
-		assertEquals("David Guetta, Hans Dieter",  erg2.get(0).get(this.search.ARTIST_NAME));
-		assertEquals("Justin Timberlake, Hans Dieter",  erg2.get(1).get(this.search.ARTIST_NAME));	
+		List<HashMap<String, String>> erg1 = this.search.createHashMap(albums1, "album");
+		List<HashMap<String, String>> erg2 = this.search.createHashMap(albums2, "album");
+		assertEquals("Flames", erg1.get(0).get(Search.ITEM_NAME));
+		assertEquals("David Guetta", erg1.get(0).get(Search.ARTIST_NAME));
+		assertEquals("Say Something",  erg1.get(1).get(Search.ITEM_NAME));
+		assertEquals("Justin Timberlake",  erg1.get(1).get(Search.ARTIST_NAME));
+		assertEquals("123",  erg1.get(0).get(Search.ITEM_URI));
+		assertEquals("abc",  erg1.get(1).get(Search.ITEM_URI));
+		assertEquals("album",  erg1.get(0).get(Search.ITEM_TYPE));
+		assertEquals("David Guetta, Hans Dieter",  erg2.get(0).get(Search.ARTIST_NAME));
+		assertEquals("Justin Timberlake, Hans Dieter",  erg2.get(1).get(Search.ARTIST_NAME));	
 	}
 	
 	@Test
 	public void testSearchHashMapArtist() {
-		ArrayList<HashMap<String, String>> erg1 = this.search.createHashMap(artists1, "artist");
-		ArrayList<HashMap<String, String>> erg2 = this.search.createHashMap(artists2, "artist");
-		assertEquals("David Guetta", erg1.get(0).get(this.search.ITEM_NAME));
-		assertEquals("Cro",  erg1.get(1).get(this.search.ITEM_NAME));
-		assertEquals("Pop", erg1.get(0).get(this.search.GENRE));
-		assertEquals("Rock", erg1.get(1).get(this.search.GENRE));
-		assertEquals("123",  erg1.get(0).get(this.search.ITEM_URI));
-		assertEquals("abc",  erg1.get(1).get(this.search.ITEM_URI));
-		assertEquals("artist",  erg1.get(0).get(this.search.ITEM_TYPE));
-		assertEquals("Pop, Rock", erg2.get(0).get(this.search.GENRE));
-		assertEquals("Rock, Electro", erg2.get(1).get(this.search.GENRE));
+		List<HashMap<String, String>> erg1 = this.search.createHashMap(artists1, "artist");
+		List<HashMap<String, String>> erg2 = this.search.createHashMap(artists2, "artist");
+		assertEquals("David Guetta", erg1.get(0).get(Search.ITEM_NAME));
+		assertEquals("Cro",  erg1.get(1).get(Search.ITEM_NAME));
+		assertEquals("Pop", erg1.get(0).get(Search.GENRE));
+		assertEquals("Rock", erg1.get(1).get(Search.GENRE));
+		assertEquals("123",  erg1.get(0).get(Search.ITEM_URI));
+		assertEquals("abc",  erg1.get(1).get(Search.ITEM_URI));
+		assertEquals("artist",  erg1.get(0).get(Search.ITEM_TYPE));
+		assertEquals("Pop, Rock", erg2.get(0).get(Search.GENRE));
+		assertEquals("Rock, Electro", erg2.get(1).get(Search.GENRE));
 
 	}
 }

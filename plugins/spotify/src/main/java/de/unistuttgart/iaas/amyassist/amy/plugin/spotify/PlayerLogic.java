@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.google.gson.JsonParser;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -52,7 +53,7 @@ public class PlayerLogic {
 	private Search search;
 	private int volume = 50;
 	// private String deviceName = null;
-	private ArrayList<String[]> actualSearchResult = null;
+	private List<String[]> actualSearchResult = null;
 
 	public PlayerLogic() {
 		init();
@@ -158,7 +159,7 @@ public class PlayerLogic {
 	 */
 	public String search(String searchText, String type, int limit) {
 		if (checkPlayerState() == null) {
-			this.actualSearchResult = this.search.SearchAnything(searchText, type, limit);
+			this.actualSearchResult = this.search.searchAnything(searchText, type, limit);
 			String resultString = "";
 			for (int i = 0; i < this.actualSearchResult.size(); i++) {
 				resultString = resultString + "\n" + this.actualSearchResult.get(i)[1];
@@ -180,7 +181,7 @@ public class PlayerLogic {
 	public String play() {
 		if (checkPlayerState() == null) {
 			ArrayList<String[]> playLists = this.search.getFeaturedPlaylists();
-			if (playLists != null) {
+			if (playLists.size() > 0) {
 				if (1 < this.search.getFeaturedPlaylists().size()) {
 					playListFromUri(playLists.get(1)[0]);
 					return playLists.get(1)[1];
