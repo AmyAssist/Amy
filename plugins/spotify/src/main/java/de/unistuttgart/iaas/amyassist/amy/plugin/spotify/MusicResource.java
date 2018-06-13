@@ -25,8 +25,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -135,9 +135,9 @@ public class MusicResource {
 	 * @return a int from 0-100. This represent the Volume in percent.
 	 */
 	@POST
-	@Path("volume")
+	@Path("volume/{volumeValue}")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setVolume(@QueryParam("volume") String volumeString) {
+	public String setVolume(@PathParam("volumeValue") String volumeString) {
 		try {
 			int volume = Integer.parseInt(volumeString);
 			if(volume < 0 || volume > 100) {

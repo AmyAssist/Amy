@@ -20,7 +20,6 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -122,10 +121,29 @@ public class AlarmClockResource {
 	 * 
 	 * @param alarmNumber the alarm to delete
 	 */
-	@DELETE
-	@Path("alarms/{pathid}")
+	@POST
+	@Path("alarms/{pathid}/delete")
 	public void deleteAlarm(@PathParam("pathid") int alarmNumber) {
 		this.logic.deleteAlarm(alarmNumber);
 	}
 
+	/**
+	 * deactivates an alarm
+	 * 
+	 * @param alarmNumber the alarm to deactivate
+	 */
+	@POST
+	@Path("alarms/{pathid}/deactivate")
+	public void deactivateAlarm(@PathParam("pathid") int alarmNumber) {
+		this.logic.deactivateAlarm(alarmNumber);
+	}
+	
+	/**
+	 * deletes all alarms
+	 */
+	@POST
+	@Path("alarms/reset")
+	public void resetAlarms() {
+		this.logic.resetAlarms();
+	}
 }

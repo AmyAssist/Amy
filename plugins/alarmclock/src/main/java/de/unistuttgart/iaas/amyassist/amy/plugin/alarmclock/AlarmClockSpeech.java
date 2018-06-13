@@ -54,53 +54,38 @@ public class AlarmClockSpeech {
 		return this.logic.setAlarm(Integer.parseInt(params[3]));
 	}
 
-	@Grammar("reset alarms")
+	@Grammar("reset (alarms|timers)")
 	public String resetAlarms(String[] params) {
-		return this.logic.resetAlarms();
-	}
-
-	@Grammar("reset timers")
-	public String resetTimers(String[] params) {
+		if (params[1].equals("alarms"))
+			return this.logic.resetAlarms();
 		return this.logic.resetTimers();
 	}
 
-	@Grammar("delete alarm #")
+	@Grammar("delete (alarm|timer) #")
 	public String deleteAlarm(String[] params) {
-		return this.logic.deleteAlarm(Integer.parseInt(params[2]));
-	}
-
-	@Grammar("delete timer #")
-	public String deleteTimer(String[] params) {
+		if (params[1].equals("alarm"))
+			return this.logic.deleteAlarm(Integer.parseInt(params[2]));
 		return this.logic.deleteTimer(Integer.parseInt(params[2]));
 	}
 
-	@Grammar("deactivate alarm #")
+	@Grammar("deactivate (alarm|timer) #")
 	public String deactivateAlarm(String[] params) {
-		return this.logic.deactivateAlarm(Integer.parseInt(params[2]));
-	}
-
-	@Grammar("deactivate timer #")
-	public String deactivateTimer(String[] params) {
+		if (params[1].equals("alarm"))
+			return this.logic.deactivateAlarm(Integer.parseInt(params[2]));
 		return this.logic.deactivateTimer(Integer.parseInt(params[2]));
 	}
 
-	@Grammar("get alarm #")
+	@Grammar("get (alarm|timer) #")
 	public String getAlarm(String[] params) {
-		return this.logic.getAlarm(Integer.parseInt(params[2]));
-	}
-
-	@Grammar("get timer #")
-	public String getTimer(String[] params) {
+		if (params[1].equals("alarm"))
+			return this.logic.getAlarm(Integer.parseInt(params[2]));
 		return this.logic.getTimer(Integer.parseInt(params[2]));
 	}
 
-	@Grammar("get all alarms")
+	@Grammar("get all (alarms|timers)")
 	public String getAllAlarms(String[] params) {
-		return String.join("\n", this.logic.getAllAlarms());
-	}
-
-	@Grammar("get all timers")
-	public String getAllTimers(String[] params) {
+		if (params[2].equals("alarms"))
+			return String.join("\n", this.logic.getAllAlarms());
 		return String.join("\n", this.logic.getAllTimers());
 	}
 
