@@ -98,7 +98,9 @@ public class TextToSpeech {
 	 * Method to close the outputClip
 	 */
 	public void stopOutput() {
+		if(this.outputClip != null) {
 		this.outputClip.close();
+		}
 	}
 	
 	// -----------------------------------------------------------------------------------------------
