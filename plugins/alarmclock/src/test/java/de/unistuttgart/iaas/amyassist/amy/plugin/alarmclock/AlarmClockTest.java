@@ -67,11 +67,26 @@ public class AlarmClockTest {
 	 */
 	@Test
 	public void testSetAlarm() {
-		assertEquals("Alarm 1 set for 15:20", this.acl.setAlarm(new String[] { "15", "20" }));
+		// 1
+		assertEquals("Alarm 1 set for 00:00", this.acl.setAlarm(new String[] { "00", "00" }));
 		Mockito.verify(this.storage).put(AlarmClockLogic.ALARMCOUNTER, "1");
-		Mockito.verify(this.storage).put("alarm1", "15;20;true");
+		Mockito.verify(this.storage).put("alarm1", "00;00;true");
 		Mockito.verify(this.mockService).schedule(ArgumentMatchers.any(Runnable.class),
 				ArgumentMatchers.any(Date.class));
+		Mockito.reset(this.storage);
+		Mockito.reset(this.mockService);
+
+		// 2
+		assertEquals("Alarm 2 set for 23:59", this.acl.setAlarm(new String[] { "23", "59" }));
+		Mockito.verify(this.storage).put(AlarmClockLogic.ALARMCOUNTER, "2");
+		Mockito.verify(this.storage).put("alarm2", "23;59;true");
+		Mockito.verify(this.mockService).schedule(ArgumentMatchers.any(Runnable.class),
+				ArgumentMatchers.any(Date.class));
+
+		// storage values
+		assertEquals("2", this.storage.get(AlarmClockLogic.ALARMCOUNTER));
+		assertEquals("00;00;true", this.storage.get("alarm1"));
+		assertEquals("23;59;true", this.storage.get("alarm2"));
 	}
 
 	/**
@@ -79,11 +94,25 @@ public class AlarmClockTest {
 	 */
 	@Test
 	public void testSetTimer() {
+		// 1
 		assertEquals("Timer 1 set on 2 minutes", this.acl.setAlarm(2));
 		Mockito.verify(this.storage).put(AlarmClockLogic.TIMERCOUNTER, "1");
 		Mockito.verify(this.storage).put("timer1", "2;true");
 		Mockito.verify(this.mockService).schedule(ArgumentMatchers.any(Runnable.class),
 				ArgumentMatchers.any(Date.class));
+		Mockito.reset(this.storage);
+		Mockito.reset(this.mockService);
+
+		// 2
+		assertEquals("No valid delay", this.acl.setAlarm(0));
+		Mockito.verify(this.storage, Mockito.never()).put(AlarmClockLogic.TIMERCOUNTER, "2");
+		Mockito.verify(this.storage, Mockito.never()).put("timer2", "0;true");
+		Mockito.verify(this.mockService, Mockito.never()).schedule(ArgumentMatchers.any(Runnable.class),
+				ArgumentMatchers.any(Date.class));
+
+		// storage values
+		assertEquals("1", this.storage.get(AlarmClockLogic.TIMERCOUNTER));
+		assertEquals("2;true", this.storage.get("timer1"));
 	}
 
 	/**
@@ -91,15 +120,28 @@ public class AlarmClockTest {
 	 */
 	@Test
 	public void testResetAlarms() {
-		this.storage.put(AlarmClockLogic.ALARMCOUNTER, "8");
-		this.storage.put("alarm5", "15;20;true");
+
+		// 1
+		this.storage.put(AlarmClockLogic.ALARMCOUNTER, "0");
+		Mockito.reset(this.storage);
+		assertEquals("No alarms found", this.acl.resetAlarms());
+		Mockito.verify(this.storage, Mockito.never()).put(AlarmClockLogic.ALARMCOUNTER, "0");
+		Mockito.verify(this.storage, Mockito.never()).delete(ArgumentMatchers.anyString());
+		assertEquals("0", this.storage.get(AlarmClockLogic.ALARMCOUNTER));
+
+		// 2
+		this.storage.put(AlarmClockLogic.ALARMCOUNTER, "10");
+		this.storage.put("alarm4", "15;20;true");
 		this.storage.put("alarm8", "14;00;false");
 		Mockito.reset(this.storage);
 
 		assertEquals("2 alarms deleted", this.acl.resetAlarms());
 		Mockito.verify(this.storage).put(AlarmClockLogic.ALARMCOUNTER, "0");
-		Mockito.verify(this.storage).delete("alarm5");
+		Mockito.verify(this.storage).delete("alarm4");
+		Mockito.verify(this.storage).delete("alarm8");
 		assertEquals("0", this.storage.get(AlarmClockLogic.ALARMCOUNTER));
+		Mockito.reset(this.storage);
+
 	}
 
 	/**
@@ -107,14 +149,25 @@ public class AlarmClockTest {
 	 */
 	@Test
 	protected void testResetTimers() {
-		this.storage.put(AlarmClockLogic.TIMERCOUNTER, "6");
-		this.storage.put("timer2", "5;true");
-		this.storage.put("timer3", "1;false");
+		// 1
+		this.storage.put(AlarmClockLogic.TIMERCOUNTER, "0");
+		Mockito.reset(this.storage);
+		assertEquals("No timers found", this.acl.resetTimers());
+		Mockito.verify(this.storage, Mockito.never()).put(AlarmClockLogic.TIMERCOUNTER, "0");
+		Mockito.verify(this.storage, Mockito.never()).delete(ArgumentMatchers.anyString());
+		assertEquals("0", this.storage.get(AlarmClockLogic.TIMERCOUNTER));
+		Mockito.reset(this.storage);
+
+		// 2
+		this.storage.put(AlarmClockLogic.TIMERCOUNTER, "10");
+		this.storage.put("timer4", "10;true");
+		this.storage.put("timer8", "5;false");
 		Mockito.reset(this.storage);
 
 		assertEquals("2 timers deleted", this.acl.resetTimers());
 		Mockito.verify(this.storage).put(AlarmClockLogic.TIMERCOUNTER, "0");
-		Mockito.verify(this.storage).delete("timer2");
+		Mockito.verify(this.storage).delete("timer4");
+		Mockito.verify(this.storage).delete("timer8");
 		assertEquals("0", this.storage.get(AlarmClockLogic.TIMERCOUNTER));
 	}
 
@@ -126,9 +179,11 @@ public class AlarmClockTest {
 		this.storage.put("alarm2", "2;5;true");
 		this.storage.put("alarm5", "3;3;false");
 		Mockito.reset(this.storage);
-
+		// 1
 		assertEquals("Alarm 2 deleted", this.acl.deleteAlarm(2));
 		Mockito.verify(this.storage).delete("alarm2");
+
+		// 2
 		assertEquals("Alarm 4 not found", this.acl.deleteAlarm(4));
 		Mockito.verify(this.storage, Mockito.never()).delete("alarm4");
 	}
@@ -142,8 +197,11 @@ public class AlarmClockTest {
 		this.storage.put("timer5", "3;false");
 		Mockito.reset(this.storage);
 
+		// 1
 		assertEquals("Timer 2 deleted", this.acl.deleteTimer(2));
 		Mockito.verify(this.storage).delete("timer2");
+
+		// 2
 		assertEquals("Timer 4 not found", this.acl.deleteTimer(4));
 		Mockito.verify(this.storage, Mockito.never()).delete("alarm4");
 	}
@@ -155,21 +213,31 @@ public class AlarmClockTest {
 	protected void testDeactivateAlarm() {
 		this.storage.put("alarm2", "12;25;true");
 		this.storage.put("alarm8", "22;57;false");
+		this.storage.put("alarm9", "1;5");
 		Mockito.reset(this.storage);
 
-		this.acl.deactivateAlarm(2);
+		// active
+		assertEquals("Alarm 2 deactivated", this.acl.deactivateAlarm(2));
 		Mockito.verify(this.storage).put("alarm2", "12;25;false");
 		assertEquals("12;25;false", this.storage.get("alarm2"));
 		Mockito.reset(this.storage);
 
-		this.acl.deactivateAlarm(3);
-		Mockito.verify(this.storage, Mockito.only()).has("alarm3");
-		Mockito.reset(this.storage);
-
-		this.acl.deactivateAlarm(8);
+		// inactive
+		assertEquals("Alarm 8 is already inactive", this.acl.deactivateAlarm(8));
 		Mockito.verify(this.storage).has("alarm8");
 		Mockito.verify(this.storage).get("alarm8");
 		assertEquals("22;57;false", this.storage.get("alarm8"));
+		Mockito.reset(this.storage);
+
+		// not found
+		assertEquals("Alarm 10 not found", this.acl.deactivateAlarm(10));
+		Mockito.verify(this.storage, Mockito.only()).has("alarm10");
+		Mockito.reset(this.storage);
+
+		// array size problem
+		assertEquals("Something went wrong", this.acl.deactivateAlarm(9));
+		Mockito.verify(this.storage).has("alarm9");
+		Mockito.verify(this.storage).get("alarm9");
 	}
 
 	/**
@@ -178,22 +246,32 @@ public class AlarmClockTest {
 	@Test
 	protected void testDeactivateTimer() {
 		this.storage.put("timer2", "12;true");
-		this.storage.put("timer8", "7;false");
+		this.storage.put("timer8", "22;false");
+		this.storage.put("timer9", "1");
 		Mockito.reset(this.storage);
 
-		this.acl.deactivateTimer(2);
+		// active
+		assertEquals("Timer 2 deactivated", this.acl.deactivateTimer(2));
 		Mockito.verify(this.storage).put("timer2", "12;false");
 		assertEquals("12;false", this.storage.get("timer2"));
 		Mockito.reset(this.storage);
 
-		this.acl.deactivateTimer(3);
-		Mockito.verify(this.storage, Mockito.only()).has("timer3");
-		Mockito.reset(this.storage);
-
-		this.acl.deactivateTimer(8);
+		// inactive
+		assertEquals("Timer 8 is already inactive", this.acl.deactivateTimer(8));
 		Mockito.verify(this.storage).has("timer8");
 		Mockito.verify(this.storage).get("timer8");
-		assertEquals("7;false", this.storage.get("timer8"));
+		assertEquals("22;false", this.storage.get("timer8"));
+		Mockito.reset(this.storage);
+
+		// not found
+		assertEquals("Timer 10 not found", this.acl.deactivateTimer(10));
+		Mockito.verify(this.storage, Mockito.only()).has("timer10");
+		Mockito.reset(this.storage);
+
+		// array size problem
+		assertEquals("Something went wrong", this.acl.deactivateTimer(9));
+		Mockito.verify(this.storage).has("timer9");
+		Mockito.verify(this.storage).get("timer9");
 	}
 
 	/**
@@ -204,14 +282,17 @@ public class AlarmClockTest {
 		this.storage.put("alarm1", "20;15;true");
 		this.storage.put("alarm2", "20;15;false");
 
+		// active
 		assertEquals("This alarm is set for 20:15 and active.", this.acl.getAlarm(1));
 		Mockito.verify(this.storage).get("alarm1");
 		Mockito.reset(this.storage);
 
+		// inactive
 		assertEquals("This alarm is set for 20:15 and NOT active.", this.acl.getAlarm(2));
 		Mockito.verify(this.storage).get("alarm2");
 		Mockito.reset(this.storage);
 
+		// not found
 		assertEquals("Alarm not found", this.acl.getAlarm(3));
 		Mockito.verify(this.storage, Mockito.only()).has("alarm3");
 	}
@@ -224,14 +305,17 @@ public class AlarmClockTest {
 		this.storage.put("timer1", "2;true");
 		this.storage.put("timer2", "5;false");
 
+		// active
 		assertEquals("This timer was set on 2 minutes and is active.", this.acl.getTimer(1));
 		Mockito.verify(this.storage).get("timer1");
 		Mockito.reset(this.storage);
 
+		// inactive
 		assertEquals("This timer was set on 5 minutes and is NOT active.", this.acl.getTimer(2));
 		Mockito.verify(this.storage).get("timer2");
 		Mockito.reset(this.storage);
 
+		// not found
 		assertEquals("Timer not found", this.acl.getTimer(3));
 		Mockito.verify(this.storage, Mockito.only()).has("timer3");
 	}
@@ -241,6 +325,11 @@ public class AlarmClockTest {
 	 */
 	@Test
 	protected void testGetAllAlarms() {
+		// no alarms
+		this.storage.put(AlarmClockLogic.ALARMCOUNTER, "20");
+		assertArrayEquals(new String[] {}, this.acl.getAllAlarms());
+
+		// some alarms
 		this.storage.put(AlarmClockLogic.ALARMCOUNTER, "10");
 		this.storage.put("alarm1", "20;15;true");
 		this.storage.put("alarm2", "6;30;false");
@@ -258,7 +347,12 @@ public class AlarmClockTest {
 	 */
 	@Test
 	protected void testGetAllTimers() {
+		// no timers
 		this.storage.put(AlarmClockLogic.TIMERCOUNTER, "15");
+		assertArrayEquals(new String[] {}, this.acl.getAllTimers());
+
+		// some timers
+		this.storage.put(AlarmClockLogic.TIMERCOUNTER, "10");
 		this.storage.put("timer1", "2;true");
 		this.storage.put("timer2", "5;false");
 		this.storage.put("timer3", "10;true");
@@ -266,7 +360,7 @@ public class AlarmClockTest {
 		Mockito.reset(this.storage);
 
 		assertArrayEquals(timers, this.acl.getAllTimers());
-		Mockito.verify(this.storage, Mockito.times(15)).has(ArgumentMatchers.anyString());
+		Mockito.verify(this.storage, Mockito.times(10)).has(ArgumentMatchers.anyString());
 
 	}
 
@@ -275,13 +369,16 @@ public class AlarmClockTest {
 	 */
 	@Test
 	protected void testEditAlarm() {
-		this.storage.put(AlarmClockLogic.ALARMCOUNTER, "1");
+		// alarm not found
+		assertEquals("Alarm not found", this.acl.editAlarm(5, new String[] { "15", "13" }));
+
+		// normal cases
+		this.storage.put(AlarmClockLogic.ALARMCOUNTER, "2");
 		this.storage.put("alarm1", "15;50;true");
+		this.storage.put("alarm2", "2;2;false");
 
 		assertEquals("Alarm 1 changed to 4:20", this.acl.editAlarm(1, new String[] { "4", "20" }));
 		Mockito.verify(this.storage).delete("alarm1");
-		assertEquals("4;20;true", this.storage.get("alarm2"));
-
-		assertEquals("Alarm not found", this.acl.editAlarm(5, new String[] { "6", "40" }));
+		assertEquals("4;20;true", this.storage.get("alarm3"));
 	}
 }

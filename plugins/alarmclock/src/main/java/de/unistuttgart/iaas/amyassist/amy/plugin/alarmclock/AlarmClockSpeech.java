@@ -41,7 +41,7 @@ public class AlarmClockSpeech {
 	 *
 	 * @return true if everything went well
 	 */
-	@Grammar("set alarm at # oh #")
+	@Grammar("set alarm (at|for) # oh #")
 	public String setAlarm(String[] params) {
 		if (Integer.parseInt(params[3]) > 23 || Integer.parseInt(params[5]) > 59)
 			return "Not a valid time of day.";
@@ -91,6 +91,8 @@ public class AlarmClockSpeech {
 
 	@Grammar("edit alarm # to # oh #")
 	public String editAlarm(String[] params) {
+		if (Integer.parseInt(params[4]) > 23 || Integer.parseInt(params[6]) > 59)
+			return "Not a valid time of day.";
 		return this.logic.editAlarm(Integer.parseInt(params[2]), new String[] { params[4], params[6] });
 	}
 }
