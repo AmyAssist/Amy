@@ -10,6 +10,8 @@ addons:
 cache:
   directories:
   - "$HOME/.m2"
+before_cache:
+  - rm -rf $HOME/.m2/repository/de/unistuttgart
 jobs:
   include:
     - stage: deploy
