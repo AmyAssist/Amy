@@ -19,8 +19,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.plugin.api;
 
-import java.util.NoSuchElementException;
-
 /**
  * Interface that defines the storage provided by the core.
  * 
@@ -36,7 +34,7 @@ public interface IStorage {
 	 * @param value
 	 *            The value of the data to store
 	 */
-	public void put(String key, String value);
+	void put(String key, String value);
 
 	/**
 	 * Returns the value for the given key
@@ -44,10 +42,9 @@ public interface IStorage {
 	 * @param key
 	 *            The key of the data to return
 	 * @return the value of the data
-	 * @throws NoSuchElementException
 	 *             when the given key is not set
 	 */
-	public String get(String key) throws NoSuchElementException;
+	String get(String key);
 
 	/**
 	 * Check if a given key is set
@@ -56,7 +53,7 @@ public interface IStorage {
 	 *            The key to check
 	 * @return Whether the key is set
 	 */
-	public boolean has(String key);
+	boolean has(String key);
 
 	/**
 	 * delete value corresponding to key
@@ -64,6 +61,6 @@ public interface IStorage {
 	 * @param key
 	 *            The key of the data to delete
 	 */
-	public void delete(String key);
+	void delete(String key);
 
 }

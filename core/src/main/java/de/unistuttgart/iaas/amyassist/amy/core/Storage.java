@@ -20,7 +20,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
@@ -64,7 +63,7 @@ public class Storage implements IStorage {
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage#get(java.lang.String)
 	 */
 	@Override
-	public String get(String key) throws NoSuchElementException {
+	public String get(String key) {
 		return this.globStorage.get(this.prefix + key);
 	}
 
