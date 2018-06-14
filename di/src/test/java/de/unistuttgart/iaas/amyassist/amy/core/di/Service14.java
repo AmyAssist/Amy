@@ -10,7 +10,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Scope;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
@@ -20,6 +19,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  */
 @Service
 public class Service14 {
-	@Reference(Scope.PLUGIN)
-	Service12 s;
+	@Reference
+	ServiceForPlugins s;
 }

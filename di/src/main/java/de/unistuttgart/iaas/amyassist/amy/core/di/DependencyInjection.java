@@ -20,24 +20,26 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Scope;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.ClassProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ClassServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingeltonServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
  * Dependency Injection Used to manage dependencies and Service instantiation at
@@ -61,59 +63,19 @@ public class DependencyInjection implements ServiceLocator {
 	/**
 	 * A register which maps a class to it's service provider.
 	 */
-	protected Map<Class<?>, ServiceProvider<?>> register;
+	protected Map<Class<?>, ServiceFunction<?>> register;
 
-	/**
-	 * A register which maps a class to it's dependencies, for each dependency
-	 * also noting the scope.
-	 */
-	protected Map<Class<?>, Map<Class<?>, Scope>> dependencyRegister;
-
-	/**
-	 * The map of global instances for each service provider
-	 */
-	protected Map<ServiceProvider<?>, Object> globalInstances;
-
-	/**
-	 * The map of class instances for a class
-	 */
-	protected Map<Class<?>, Map<ServiceProvider<?>, Object>> classInstances;
-
-	/**
-	 * The map of class instances for a plugin
-	 */
-	protected Map<IPlugin, Map<ServiceProvider<?>, Object>> pluginInstances;
-
-	/**
-	 * The map of external services
-	 */
-	protected Map<Class<?>, Object> externalServices;
-
-	private List<IPlugin> plugins;
+	protected Map<Class<?>, StaticProvider<?>> staticProvider;
 
 	/**
 	 * Creates a new Dependency Injection
 	 */
 	public DependencyInjection() {
 		this.register = new HashMap<>();
-		this.dependencyRegister = new HashMap<>();
-		this.globalInstances = new HashMap<>();
-		this.externalServices = new HashMap<>();
-		this.classInstances = new HashMap<>();
-		this.pluginInstances = new HashMap<>();
+		this.staticProvider = new HashMap<>();
 
+		this.registerContextProvider(ClassProvider.class, new ClassProvider());
 		this.addExternalService(ServiceLocator.class, this);
-	}
-
-	/**
-	 * Set's the internal list of plugins, which the DI needs to be able to
-	 * understand the scope plugin.
-	 * 
-	 * @param p_plugins
-	 *            The list of plugins
-	 */
-	public void setPlugins(List<IPlugin> p_plugins) {
-		this.plugins = p_plugins;
 	}
 
 	/**
@@ -134,37 +96,24 @@ public class DependencyInjection implements ServiceLocator {
 			serviceTypes = new Class[1];
 			serviceTypes[0] = cls;
 		}
-		// TODO check if serviceType matches cls
+
 		for (Class<?> serviceType : serviceTypes) {
-			if (this.hasServiceOfType(serviceType))
+			if (this.hasServiceOfType(serviceType)) {
 				throw new DuplicateServiceException();
-		}
-
-		if (!this.constructorCheck(cls))
-			throw new RuntimeException("There is no default public constructor on class " + cls.getName());
-
-		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(cls, Reference.class);
-		Map<Class<?>, Scope> dependencies = new HashMap<>();
-		for (Field field : dependencyFields) {
-			Class<?> dependency = field.getType();
-			if (dependencies.containsKey(dependency)) {
-				this.logger.warn("The Service {} have a duplicate dependeny on {}", cls.getName(),
-						dependency.getName());
-			} else {
-				Reference[] annotations = field.getAnnotationsByType(Reference.class);
-				if (annotations.length > 1) {
-					this.logger.warn("In the service {} the field {} has the annotation @Reference multiple times."
-							+ "Only respecting the first.", cls.getName(), field.getName());
-				}
-				dependencies.put(dependency, annotations[0].value());
+			}
+			if (!serviceType.isAssignableFrom(cls)) {
+				throw new IllegalArgumentException();
 			}
 		}
 
 		for (Class<?> serviceType : serviceTypes) {
-			ServiceProvider<?> p = new ServiceProvider<>(cls);
+			ServiceFunction<?> p = new ClassServiceProvider<>(cls);
 			this.register.put(serviceType, p);
 		}
-		this.dependencyRegister.put(cls, dependencies);
+	}
+
+	public synchronized void registerContextProvider(Class<?> key, StaticProvider<?> staticProvider) {
+		this.staticProvider.put(key, staticProvider);
 	}
 
 	/**
@@ -180,176 +129,98 @@ public class DependencyInjection implements ServiceLocator {
 	public synchronized void addExternalService(Class<?> serviceType, Object externalService) {
 		if (this.hasServiceOfType(serviceType))
 			throw new DuplicateServiceException();
-		this.externalServices.put(serviceType, externalService);
+		this.register.put(serviceType, new SingeltonServiceProvider<>(externalService));
 	}
 
 	private boolean hasServiceOfType(Class<?> serviceType) {
-		if (this.register.containsKey(serviceType))
-			return true;
-		if (this.externalServices.containsKey(serviceType))
-			return true;
-		return false;
-	}
-
-	/**
-	 * check if default constructor exists and is accessible
-	 * 
-	 * @param cls
-	 *            The class to check
-	 * @return Whether the default constructor is present.
-	 */
-	@SuppressWarnings("static-method")
-	private boolean constructorCheck(Class<?> cls) {
-		try {
-			cls.getConstructor();
-			return true;
-		} catch (NoSuchMethodException | SecurityException e) {
-			return false;
-		}
+		return this.register.containsKey(serviceType);
 	}
 
 	@Override
 	public <T> T getService(Class<T> serviceType) {
-		return this.getService(serviceType, new ArrayDeque<>(), new ScopeInformation(Scope.GLOBAL));
+		ServiceFunction<T> provider = this.getServiceProvider(serviceType);
+		ServiceFactory<T> factory = this.resolve(provider);
+		return factory.build();
 	}
 
 	/**
-	 * Get the service of the given type, considering the stack of classes, for
-	 * which this service is needed. This method can return external services
-	 * and does return a object of the type registered for the service type.
+	 * Resolve the dependencies of the ServiceProvider and creates a factory for
+	 * the Service.
 	 * 
 	 * @param <T>
-	 *            The type of the service.
-	 * @param serviceType
-	 *            The class of the service type.
-	 * @param stack
-	 *            The stack of classes, for which this service is needed.
-	 * @return The instance of the service.
+	 *            The type of the service
+	 * @param serviceProvider
+	 *            The Service Provider.
+	 * @return The factory for a Service of the ServiceProvider.
 	 */
-	private <T> T getService(Class<T> serviceType, Deque<ServiceProvider<?>> stack, ScopeInformation scope) {
-		if (this.externalServices.containsKey(serviceType)) {
-			if (scope.getScope() == Scope.GLOBAL)
-				return (T) this.externalServices.get(serviceType);
-		}
-		ServiceProvider<?> provider = this.getProvider(serviceType);
-		return (T) this.resolve(provider, stack, scope);
-	}
-
-	private Map<ServiceProvider<?>, Object> getResolved(ScopeInformation scope) {
-		if (scope.getScope() == Scope.GLOBAL) {
-			return this.globalInstances;
-		}
-
-		if (scope.getScope() == Scope.PLUGIN) {
-			if (!this.pluginInstances.containsKey(scope.getPlugin())) {
-				this.pluginInstances.put(scope.getPlugin(), new HashMap<>());
-			}
-			return this.pluginInstances.get(scope.getPlugin());
-		}
-
-		if (scope.getScope() == Scope.CLASS) {
-			if (!this.classInstances.containsKey(scope.getCls())) {
-				this.classInstances.put(scope.getCls(), new HashMap<>());
-			}
-			return this.classInstances.get(scope.getCls());
-		}
-		return new HashMap<>();
+	private <T> ServiceFactory<T> resolve(ServiceFunction<T> serviceProvider) {
+		return this.resolve(serviceProvider, new ArrayDeque<>(), null);
 	}
 
 	/**
-	 * Resolve a class considering the stack of classes, for which this class is
-	 * needed. This method does not return external services and can only return
-	 * a instance of the exact type
+	 * Resolve the dependencies of the ServiceProvider and creates a factory for
+	 * the Service. considering the stack of dependencies, for which this
+	 * ServiceProvider is needed.
 	 * 
 	 * @param <T>
-	 *            The type of the class
+	 *            The type of the service
 	 * @param serviceProvider
 	 *            The Service Provider.
 	 * @param stack
 	 *            The stack of classes, for which this class is needed.
-	 * @return The instance of the class.
+	 * @return The factory for a Service of the ServiceProvider.
 	 */
-	private <T> T resolve(ServiceProvider<T> serviceProvider, Deque<ServiceProvider<?>> stack, ScopeInformation scope) {
-		Map<ServiceProvider<?>, Object> resolved = this.getResolved(scope);
-
-		if (resolved.containsKey(serviceProvider))
-			return (T) resolved.get(serviceProvider);
-
-		if (stack.contains(serviceProvider))
-			throw new RuntimeException("circular dependencies");
-
-		stack.push(serviceProvider);
-
-		try {
-			T instance = serviceProvider.newInstance();
-			this.inject(instance, stack);
-			this.postConstruct(instance);
-
-			resolved.put(serviceProvider, instance);
-			stack.pop();
-			return instance;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException(e);
+	private <T> ServiceFactory<T> resolve(ServiceFunction<T> serviceProvider, Deque<ServiceProvider<?>> stack,
+			ServiceConsumer consumer) {
+		if (stack.contains(serviceProvider)) {
+			throw new IllegalStateException("circular dependencies");
+		} else {
+			stack.push(serviceProvider);
 		}
+		ServiceProviderServiceFactory<T> serviceProviderServiceFactory = new ServiceProviderServiceFactory<>(
+				serviceProvider);
+		for (Class<?> dependency : serviceProvider.getDependencies()) {
+			ServiceFunction<?> provider = this.getServiceProvider(dependency);
+			ServiceFactory<?> dependencyFactory = this.resolve(provider, stack, serviceProvider);
+			serviceProviderServiceFactory.resolved(dependency, dependencyFactory);
+		}
+
+		for (Class<?> requiredContextProviderType : serviceProvider.getRequiredContextProviderTypes()) {
+			StaticProvider<?> contextProvider = this.getContextProvider(requiredContextProviderType);
+			serviceProviderServiceFactory.setContextProvider(requiredContextProviderType, contextProvider);
+		}
+		serviceProviderServiceFactory.setConsumer(consumer);
+		stack.pop();
+		return serviceProviderServiceFactory;
+
 	}
 
 	@Override
 	public void inject(Object instance) {
-		this.inject(instance, new ArrayDeque<>());
-	}
-
-	private void inject(Object instance, Deque<ServiceProvider<?>> stack) {
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(instance.getClass(), Reference.class);
 		for (Field field : dependencyFields) {
 			Class<?> dependency = field.getType();
-			Reference[] annotations = field.getAnnotationsByType(Reference.class);
-			if (annotations.length > 1) {
-				this.logger.warn("In the class {} the field {} has the annotation @Reference multiple times."
-						+ "Only respecting the first.", instance.getClass().getName(), field.getName());
-			}
-			Scope s = annotations[0].value();
-			ScopeInformation si = null;
-			switch (s) {
-			case CLASS:
-				si = new ScopeInformation(instance.getClass());
-				break;
-			case PLUGIN:
-				IPlugin p = this.getPluginFromClass(instance.getClass());
-				if (p == null) {
-					si = new ScopeInformation(instance.getClass());
-				} else {
-					si = new ScopeInformation(p);
-				}
-				break;
-			default:
-				si = new ScopeInformation(s);
-				break;
-			}
-			Object object = this.getService(dependency, stack, si);
-			try {
-				FieldUtils.writeField(field, instance, object, true);
-			} catch (IllegalAccessException e) {
-				this.logger.error("tryed to inject the dependency {} into {} but failed", object, instance, e);
-			}
+			Object object = this.getService(dependency);
+			Util.inject(instance, object, field);
 		}
 	}
 
 	@Override
 	public void postConstruct(Object instance) {
-		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(instance.getClass(), PostConstruct.class);
-		for (Method m : methodsWithAnnotation) {
-			try {
-				m.invoke(instance);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				this.logger.error("tryed to invoke method {} but got an error", m, e);
-			}
-		}
+		Util.postConstruct(instance);
 	}
 
-	private <T> ServiceProvider<?> getProvider(Class<T> serviceType) {
+	@SuppressWarnings("unchecked")
+	private <T> ServiceFunction<T> getServiceProvider(Class<T> serviceType) {
 		if (!this.register.containsKey(serviceType))
 			throw new ServiceNotFoundException(serviceType);
-		return this.register.get(serviceType);
+		return (ServiceFunction<T>) this.register.get(serviceType);
+	}
+
+	private StaticProvider<?> getContextProvider(Class<?> contextProviderType) {
+		if (!this.staticProvider.containsKey(contextProviderType))
+			throw new NoSuchElementException(contextProviderType.getName());
+		return this.staticProvider.get(contextProviderType);
 	}
 
 	/**
@@ -358,27 +229,9 @@ public class DependencyInjection implements ServiceLocator {
 	@Override
 	public <T> T create(Class<T> serviceClass) {
 		Deque<ServiceProvider<?>> stack = new ArrayDeque<>();
-		ServiceProvider<T> provider = new ServiceProvider<>(serviceClass);
-		stack.push(provider);
-		try {
-			T instance = provider.newInstance();
-			this.inject(instance, stack);
-			this.postConstruct(instance);
+		ServiceFunction<T> provider = new ClassServiceProvider<>(serviceClass);
+		ServiceFactory<T> serviceFactory = this.resolve(provider, stack, null);
 
-			stack.pop();
-			return instance;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private IPlugin getPluginFromClass(Class<?> cls) {
-		for (IPlugin p : this.plugins) {
-			if (p.getClasses().contains(cls))
-				return p;
-		}
-		this.logger.error("The class {} does not seem to belong to any plugin. Falling back to class scope.",
-				cls.getName());
-		return null;
+		return serviceFactory.build();
 	}
 }

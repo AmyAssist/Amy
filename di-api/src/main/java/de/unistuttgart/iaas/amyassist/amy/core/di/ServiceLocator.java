@@ -27,8 +27,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 public interface ServiceLocator {
 
 	/**
-	 * Instantiate the given class and inject dependencies. The object created in
-	 * this way will not be managed by the DI.
+	 * Instantiate the given class and inject dependencies. The object created
+	 * in this way will not be managed by the DI.
 	 * 
 	 * @param serviceClass
 	 * @return
@@ -36,7 +36,9 @@ public interface ServiceLocator {
 	<T> T create(Class<T> serviceClass);
 
 	/**
-	 * Get a Service instance
+	 * Get the service of the given type. This method can return external
+	 * services and does return a object of the type registered for the service
+	 * type.
 	 * 
 	 * @param serviceType
 	 * @return

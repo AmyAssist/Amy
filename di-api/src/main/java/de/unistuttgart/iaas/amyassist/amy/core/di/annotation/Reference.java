@@ -33,10 +33,5 @@ import java.lang.annotation.Target;
 @Documented
 @Target(java.lang.annotation.ElementType.FIELD)
 public @interface Reference {
-	/**
-	 * The {@link Scope scope} of this reference.
-	 * 
-	 * @return the scope.
-	 */
-	Scope value() default Scope.GLOBAL;
+
 }
