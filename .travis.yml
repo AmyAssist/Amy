@@ -10,10 +10,12 @@ addons:
 cache:
   directories:
   - "$HOME/.m2"
+before_cache:
+  - rm -rf $HOME/.m2/repository/de/unistuttgart
 jobs:
   include:
     - stage: deploy
-      script: ./deploy.sh
+      script: ./scripts/deployGH-Pages.sh
       deploy:
         provider: pages
         skip_cleanup: true

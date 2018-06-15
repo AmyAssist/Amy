@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>amy-plugin-spotify</artifactId>
+	<name>Amy plugin spotify</name>
+	<description>The Amy spotify plugin</description>
+	<parent>
+		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<artifactId>amy-plugin</artifactId>
+		<version>0.2.0</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<properties>
+		<spotify-web-api.version>2.0.2</spotify-web-api.version>
+	</properties>
+	<dependencies>
+		<!-- Spotify Web API -->
+		<dependency>
+			<groupId>se.michaelthelin.spotify</groupId>
+			<artifactId>spotify-web-api-java</artifactId>
+			<version>${spotify-web-api.version}</version>
+		</dependency>
+	</dependencies>
+</project>
