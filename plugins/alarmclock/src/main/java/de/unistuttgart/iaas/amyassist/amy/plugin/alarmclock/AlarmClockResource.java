@@ -20,12 +20,13 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -83,19 +84,37 @@ public class AlarmClockResource {
 		return ts;	
 	}
 
+	/**
+	 * changes the properties of an alarm
+	 * 
+	 * @param alarmNumber the number of the alarm
+	 * @param mode what to do: allowed paramters: edit, delete, deactivate
+	 * @param alarmTime the new time
+	 * @return the new alarmtime or null
+	 */
 	@POST
 	@Path("alarms/{pathid}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Timestamp editAlarm(@PathParam("pathid") int alarmnumber, Timestamp alarmTime) {
-		if (!alarmTime.isValid()) {
-			throw new WebApplicationException("The given time wasn't a valid time", Status.BAD_REQUEST);
+	public Timestamp editAlarm(@PathParam("pathid") int alarmNumber, @QueryParam("mode")@DefaultValue("edit")String mode, Timestamp alarmTime) {
+		switch(mode) {
+		case "edit":
+			if (!alarmTime.isValid()) {
+				throw new WebApplicationException("The given time wasn't a valid time", Status.BAD_REQUEST);
+			}
+			if (!this.logic.editAlarm(alarmNumber, new String[] { "" + alarmTime.hour, "" + alarmTime.minute }).equalsIgnoreCase("alarm not found")) {
+				return alarmTime;
+			}
+			throw new WebApplicationException("there is no alarm" + alarmNumber, Status.NOT_FOUND);
+
+		case "delete":
+			this.logic.deleteAlarm(alarmNumber);
+			break;
+		case "deactivate":
+			this.logic.deactivateAlarm(alarmNumber);
+			break;
 		}
-		if (!this.logic.editAlarm(alarmnumber, new String[] { "" + alarmTime.hour, "" + alarmTime.minute }).equals("alarm not found")) {
-			return alarmTime;
-		}
-		throw new WebApplicationException("there is no alarm" + alarmnumber, Status.NOT_FOUND);
-	
+		return null;
 	}
 
 	/**
@@ -118,14 +137,11 @@ public class AlarmClockResource {
 	}
 
 	/**
-	 * deletes an alarm
-	 * 
-	 * @param alarmNumber the alarm to delete
+	 * deletes all alarms
 	 */
-	@DELETE
-	@Path("alarms/{pathid}")
-	public void deleteAlarm(@PathParam("pathid") int alarmNumber) {
-		this.logic.deleteAlarm(alarmNumber);
+	@POST
+	@Path("alarms/reset")
+	public void resetAlarms() {
+		this.logic.resetAlarms();
 	}
-
 }

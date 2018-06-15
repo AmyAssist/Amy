@@ -21,7 +21,6 @@ package de.unistuttgart.iaas.amyassist.amy.test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.logging.LogManager;
 
 import javax.ws.rs.Path;

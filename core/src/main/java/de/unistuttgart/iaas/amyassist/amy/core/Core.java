@@ -95,8 +95,8 @@ public class Core implements SpeechInputHandler {
 
 		this.speechCommandHandler.setFileToSaveGrammarTo(grammarFile);
 
-		AudioUserInteraction aui = new AudioUserInteraction();
-		aui.setData(new Grammar("grammar", grammarFile), null);
+		AudioUserInteraction aui = AudioUserInteraction.getAudioUI();
+		aui.setGrammars(new Grammar("grammar", grammarFile), null);
 
 		SpeechIO sr = aui;
 		this.di.inject(sr);

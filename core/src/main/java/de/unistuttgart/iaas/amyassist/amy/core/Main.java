@@ -28,7 +28,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 
 /**
- * TODO: Description
+ * The main entry point of the application
  * 
  * @author Tim Neumann, Leon Kiefer
  */

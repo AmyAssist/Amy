@@ -21,19 +21,11 @@ import marytts.exceptions.SynthesisException;
  * Before running as thread set the String-To-Say with setOutputString
  * @author Tim Neumann, Kai Menzel
  */
-public class TextToSpeech implements Runnable{
+public class TextToSpeech {
 	
-	private String outputString;
+	private static TextToSpeech tts;
 	
-	private LocalMaryInterface mary = null;
-	
-	// -----------------------------------------------------------------------------------------------
-	
-	/**
-	 * 
-	 */
-	public TextToSpeech() {
-		// TODO Auto-generated constructor stub
+	private TextToSpeech() {
 		try {
 			this.mary = new LocalMaryInterface();
 			this.mary.setVoice("dfki-poppy-hsmm");
@@ -43,31 +35,39 @@ public class TextToSpeech implements Runnable{
 		}
 	}
 	
+	public static TextToSpeech getTTS() {
+		if(tts == null) {
+			tts = new TextToSpeech();
+		}
+		return tts;
+	}
+	
 	// -----------------------------------------------------------------------------------------------
-		
+	
+	private LocalMaryInterface mary = null;
+	
 	/**
-	 * first set the string to say
-	 * @see java.lang.Runnable#run()
+	 * 
 	 */
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		speak(this.outputString);
-	}	
+	private AudioInputStream audio;
+	
+	private Clip outputClip;
+	
+	// -----------------------------------------------------------------------------------------------
+
 	
 	/**
 	 * outputs Speech translated from given String
-	 * @param s
+	 * @param s String that shall be said
 	 */
 	private void speak(String s){
-		AudioInputStream audio;
 		try {
-			audio = this.mary.generateAudio(s);
-			AudioFormat format = audio.getFormat();
+			this.audio = this.mary.generateAudio(s);
+			AudioFormat format = this.audio.getFormat();
 		    DataLine.Info info = new DataLine.Info(Clip.class, format);
-		    Clip clip = (Clip) AudioSystem.getLine(info);
-		    clip.open(audio);
-		    clip.start();
+		    this.outputClip = (Clip) AudioSystem.getLine(info);
+		    this.outputClip.open(this.audio);
+		    this.outputClip.start();
 		} catch (SynthesisException | LineUnavailableException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -75,15 +75,12 @@ public class TextToSpeech implements Runnable{
 	    
 	}
 	
-	// -----------------------------------------------------------------------------------------------
-	
-	/**
-	 * set String to say, before you start the Thread
-	 * @param s String Mary shall say
-	 */
-	public void setOutputString(String s) {
-		this.outputString = preProcessing(s);
+	public void say(String s) {
+		speak(preProcessing(s));
 	}
+	
+	
+	// -----------------------------------------------------------------------------------------------
 	
 	/**
 	 * cleans String of SubString Mary can't pronounce
@@ -96,4 +93,24 @@ public class TextToSpeech implements Runnable{
 		text = text.replace("°F", " degree Fahrenheit");
 		return text;
 	}
+	
+	/**
+	 * Method to close the outputClip
+	 */
+	public void stopOutput() {
+		if(this.outputClip != null) {
+		this.outputClip.close();
+		}
+	}
+	
+	// -----------------------------------------------------------------------------------------------
+
+	/**
+	 * Get's {@link #outputClip outputClip}
+	 * @return  outputClip
+	 */
+	public Clip getOutputClip() {
+		return this.outputClip;
+	}
+	
 }

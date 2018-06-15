@@ -14,6 +14,7 @@ import java.util.HashMap;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
@@ -23,31 +24,39 @@ import javax.sound.sampled.TargetDataLine;
  */
 public class AudioUserInteraction implements SpeechIO {
 	
-	public static final String wakeUp = "amy wake up";
-	public static final String goSleep = "go to sleep";
-	public static final String shutdown = "amy shutdown";
+	private static AudioUserInteraction audioUI;
 	
+	private AudioUserInteraction() {}
 	
-	/**
-	 * Information for the Recognizers
-	 */
-	public static boolean soundPlaying = false;
-	public static boolean threadRunning = false;
+	public static AudioUserInteraction getAudioUI() {
+		if(audioUI == null) {
+			audioUI = new AudioUserInteraction();
+		}
+		return audioUI;
+	}
 	
-	private static Thread currentRecognizer;
+	//===============================================================================================
+	
+	private final String WAKEUP = "amy wake up";
+	private final String GOSLEEP = "go to sleep";
+	private final String SHUTDOWN = "amy shut up";
+	
+	// -----------------------------------------------------------------------------------------------
+
+	private boolean recognitionThreadRunning = false;
+	
+	private Thread currentRecognizer;
 	
 	private SpeechInputHandler inputHandler;
 	
 	private AudioInputStream ais;
-	
-	private static TextToSpeech output = new TextToSpeech();
-	private static Thread tts;
-	
-	private static Grammar mainGrammar;
+
+	private Grammar mainGrammar;
 	private ArrayList<Grammar> switchableGrammars;
 	
-	private static MainSpeechRecognizer mainRecognizer;
-	private static HashMap<String, SpeechRecognizer> recognizerList = new HashMap<>();
+	private MainSpeechRecognizer mainRecognizer;
+	private HashMap<String, SpeechRecognizer> recognizerList = new HashMap<>();
+	
 	
 	// -----------------------------------------------------------------------------------------------
 
@@ -58,48 +67,32 @@ public class AudioUserInteraction implements SpeechIO {
 	public void run() {
 		// TODO Auto-generated method stub
 		createNewAudioInputStream();
-		AudioUserInteraction.mainRecognizer = new MainSpeechRecognizer(AudioUserInteraction.mainGrammar, this.inputHandler, this.ais);
+		this.mainRecognizer = new MainSpeechRecognizer(audioUI, this.mainGrammar, this.inputHandler, this.ais);
 		if(this.switchableGrammars != null && !this.switchableGrammars.isEmpty()){
 			for (Grammar grammar : this.switchableGrammars) {
-				if(!AudioUserInteraction.recognizerList.containsKey(grammar.getName())){
-					AudioUserInteraction.recognizerList.put(grammar.getName(), new SpeechRecognizer(grammar, this.inputHandler, this.ais));					
+				if(!this.recognizerList.containsKey(grammar.getName())){
+					this.recognizerList.put(grammar.getName(), new SpeechRecognizer(audioUI, grammar, this.inputHandler, this.ais));					
 				}
 			}
 		}
-		AudioUserInteraction.currentRecognizer = new Thread(mainRecognizer);
-		AudioUserInteraction.threadRunning = true;
-		AudioUserInteraction.currentRecognizer.start();
+		this.currentRecognizer = new Thread(this.mainRecognizer);
+		this.recognitionThreadRunning = true;
+		this.currentRecognizer.start();
 	}
 	
 	/**
 	 * @param grammar Grammar to switch to
 	 */
-	public static void switchGrammar(Grammar grammar){
-		AudioUserInteraction.currentRecognizer.interrupt();
-		if(grammar == null || grammar.getName().equals(AudioUserInteraction.mainGrammar.getName())){
-			AudioUserInteraction.currentRecognizer = new Thread(AudioUserInteraction.mainRecognizer);
+	public void switchGrammar(Grammar grammar){
+		this.currentRecognizer.interrupt();
+		if(grammar == null || grammar.getName().equals(this.mainGrammar.getName())){
+			this.currentRecognizer = new Thread(this.mainRecognizer);
 		}else{
-			AudioUserInteraction.currentRecognizer = new Thread(recognizerList.get(grammar.getName()));
+			this.currentRecognizer = new Thread(this.recognizerList.get(grammar.getName()));
 		}
-		AudioUserInteraction.threadRunning = true;
-		AudioUserInteraction.currentRecognizer.start();
+		this.recognitionThreadRunning = true;
+		this.currentRecognizer.start();
 		
-	}
-	
-	
-	/**
-	 * tell Amy to say something
-	 * @param s String you want Amy to say
-	 */
-	public static void say(String s) {
-		AudioUserInteraction.soundPlaying = true;
-		AudioUserInteraction.output.setOutputString(s);
-		AudioUserInteraction.tts = new Thread(AudioUserInteraction.output);
-		AudioUserInteraction.tts.start();
-		while(AudioUserInteraction.tts.isAlive()) {
-			AudioUserInteraction.currentRecognizer.yield();
-		}
-		AudioUserInteraction.soundPlaying = false;
 	}
 	
 	// -----------------------------------------------------------------------------------------------
@@ -120,8 +113,8 @@ public class AudioUserInteraction implements SpeechIO {
 	 * @param mainGrammar The Main Grammar Mary uses
 	 * @param swtichableGrammars All possible Grammar that can be changed to
 	 */
-	public void setData(Grammar mainGrammar, ArrayList<Grammar> swtichableGrammars){
-		AudioUserInteraction.mainGrammar = mainGrammar;
+	public void setGrammars(Grammar mainGrammar, ArrayList<Grammar> swtichableGrammars){
+		this.mainGrammar = mainGrammar;
 		this.switchableGrammars = swtichableGrammars;		
 	}
 	
@@ -134,6 +127,80 @@ public class AudioUserInteraction implements SpeechIO {
 		this.ais = ais;
 	}
 	
+	//===============================================================================================
+	
+	/**
+	 * Get's {@link #WAKEUP wAKEUP}
+	 * @return  wAKEUP
+	 */
+	public String getWAKEUP() {
+		return this.WAKEUP;
+	}
+
+	/**
+	 * Get's {@link #GOSLEEP gOSLEEP}
+	 * @return  gOSLEEP
+	 */
+	public String getGOSLEEP() {
+		return this.GOSLEEP;
+	}
+
+	/**
+	 * Get's {@link #SHUTDOWN sHUTDOWN}
+	 * @return  sHUTDOWN
+	 */
+	public String getSHUTDOWN() {
+		return this.SHUTDOWN;
+	}
+
+	/**
+	 * Get's {@link #recognitionThreadRunning recognitionThreadRunning}
+	 * @return  recognitionThreadRunning
+	 */
+	public boolean isRecognitionThreadRunning() {
+		return this.recognitionThreadRunning;
+	}
+
+	/**
+	 * Get's {@link #currentRecognizer currentRecognizer}
+	 * @return  currentRecognizer
+	 */
+	public Thread getCurrentRecognizer() {
+		return this.currentRecognizer;
+	}
+
+	/**
+	 * Get's {@link #mainGrammar mainGrammar}
+	 * @return  mainGrammar
+	 */
+	public Grammar getMainGrammar() {
+		return this.mainGrammar;
+	}
+
+	/**
+	 * Get's {@link #switchableGrammars switchableGrammars}
+	 * @return  switchableGrammars
+	 */
+	public ArrayList<Grammar> getSwitchableGrammars() {
+		return this.switchableGrammars;
+	}
+
+	/**
+	 * Set's {@link #recognitionThreadRunning recognitionThreadRunning}
+	 * @param recognitionThreadRunning  recognitionThreadRunning
+	 */
+	public void setRecognitionThreadRunning(boolean recognitionThreadRunning) {
+		this.recognitionThreadRunning = recognitionThreadRunning;
+	}
+
+	/**
+	 * Set's {@link #currentRecognizer currentRecognizer}
+	 * @param currentRecognizer  currentRecognizer
+	 */
+	private void setCurrentRecognizer(Thread currentRecognizer) {
+		this.currentRecognizer = currentRecognizer;
+	}
+
 	//===============================================================================================
 	
 	/**
@@ -167,6 +234,8 @@ public class AudioUserInteraction implements SpeechIO {
 		boolean bigEndian = false;
 		return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
 	}
+
+	
 		
 	// -----------------------------------------------------------------------------------------------
 	// ===============================================================================================

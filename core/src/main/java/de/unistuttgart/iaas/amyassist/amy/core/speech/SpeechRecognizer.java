@@ -43,10 +43,15 @@ public class SpeechRecognizer implements Runnable {
 	
 	// Grammar to switch to
 	private Grammar nextGrammar = null;
-
+	
+	//Handler that handles all Recognizers and the TTS
+	private AudioUserInteraction audioUI;
 
 	// Audio Input Source for the Recognition
 	private AudioInputStream ais;
+	
+	private TextToSpeech tts;
+	private boolean soundPlaying = false;
 
 	/**
 	 * Handler who use the translated String for commanding the System
@@ -60,16 +65,19 @@ public class SpeechRecognizer implements Runnable {
 
 	/**
 	 * Creates the Recognizers and Configures them
+	 * @param audioUI Handler that handles all Recognizers and the TTS
 	 * @param grammar the grammar Object of current Recognizer
 	 * @param inputHandler handles the recognition output
 	 * @param ais
-	 *            set custom AudioInputStream. Set *null* for default microphone
-	 *            input
+	 *            set custom AudioInputStream.
 	 */
-	public SpeechRecognizer(Grammar grammar, SpeechInputHandler inputHandler, AudioInputStream ais) {
+	public SpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler, AudioInputStream ais) {
+		this.audioUI = audioUI;
 		this.grammar = grammar;
 		this.inputHandler = inputHandler;
 		this.ais = ais;
+		
+		this.tts = TextToSpeech.getTTS();
 		
 		// Create the Recognizer
 		try {
@@ -94,13 +102,13 @@ public class SpeechRecognizer implements Runnable {
 		// The result of the Recognition
 		String speechRecognitionResult;
 
-		loop: while (!Thread.interrupted() && AudioUserInteraction.threadRunning) {
+		loop: while (!Thread.interrupted() && this.audioUI.isRecognitionThreadRunning()) {
 			
 			/**
 			 * wait for input from the recognizer
 			 */
 			SpeechResult speechResult = null;
-			while (speechResult == null || AudioUserInteraction.soundPlaying) {
+			while (speechResult == null || soundPlaying) {
 				speechResult = this.recognizer.getResult();
 				if (Thread.interrupted()) {
 					break loop;
@@ -109,17 +117,19 @@ public class SpeechRecognizer implements Runnable {
 
 			// Get the hypothesis (Result as String)
 			speechRecognitionResult = speechResult.getHypothesis();
-//			if(speechRecognitionResult.equals(this.shutDown)) System.exit(0);
 
-			if(speechRecognitionResult.equals(AudioUserInteraction.goSleep)){
-				AudioUserInteraction.say("now sleeping");
+			if(speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
+				 this.tts.stopOutput();
+			 }
+			else if(speechRecognitionResult.equals(this.audioUI.getGOSLEEP())){
+				say("now sleeping");
 				this.stop(null);
 			}else{
 				makeDecision(speechRecognitionResult);
 			}
 		}
 		this.recognizer.stopRecognition();
-		AudioUserInteraction.switchGrammar(this.nextGrammar);
+		this.audioUI.switchGrammar(this.nextGrammar);
 	}
 
 	// -----------------------------------------------------------------------------------------------
@@ -136,11 +146,6 @@ public class SpeechRecognizer implements Runnable {
 			return;
 		}
 
-		// You said?
-		System.out.println("You said: [" + result + "]");
-
-		AudioUserInteraction.say("Repeating: " + result);
-
 		if(!this.grammar.getSwitchList().isEmpty()){
 			for (Map.Entry<String, Grammar> entry : this.grammar.getSwitchList().entrySet()) {
 				if(result.equalsIgnoreCase(entry.getKey())){
@@ -152,12 +157,12 @@ public class SpeechRecognizer implements Runnable {
 		if(!Thread.interrupted() && this.inputHandler!=null){
     		Future<String> handle = this.inputHandler.handle(result);
     		try {
-    			AudioUserInteraction.say(handle.get());
+    			say(handle.get());
 //    			System.out.println(handle.get());
 //    			System.out.println();
     		} catch (InterruptedException | ExecutionException e) {
     			if (e.getCause() != null && e.getCause().getClass().equals(IllegalArgumentException.class)) {
-    				AudioUserInteraction.say("unknown command");
+    				say("unknown command");
 //    				System.out.println("Unknown command");
     			} else {
     				e.printStackTrace();
@@ -167,10 +172,17 @@ public class SpeechRecognizer implements Runnable {
 
 	}
 	
-	//-----------------------------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------------------------
+
+		private void say(String s) {
+			this.tts.stopOutput();
+			this.tts.say(s);
+		}
+		
+	// ===============================================================================================
 	
 		private void stop(Grammar switchGrammar){
-			AudioUserInteraction.threadRunning = false;
+			this.audioUI.setRecognitionThreadRunning(false);
 			this.nextGrammar = switchGrammar;
 		}
 

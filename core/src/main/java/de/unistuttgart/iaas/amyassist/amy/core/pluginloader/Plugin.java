@@ -21,6 +21,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
 
@@ -56,7 +57,7 @@ public class Plugin implements IPlugin {
 	/**
 	 * The list of all classes of this plugin
 	 */
-	private ArrayList<Class<?>> classes = new ArrayList<>();
+	private List<Class<?>> classes = new ArrayList<>();
 
 	private String fakeName = "";
 	private String fakeVersion = "";
@@ -110,7 +111,7 @@ public class Plugin implements IPlugin {
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getClasses()
 	 */
 	@Override
-	public ArrayList<Class<?>> getClasses() {
+	public List<Class<?>> getClasses() {
 		return new ArrayList<>(this.classes);
 	}
 
