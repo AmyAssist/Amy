@@ -9,7 +9,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.Manifest;
 
 /**
@@ -52,7 +52,7 @@ public interface IPlugin {
 	 * 
 	 * @return classes
 	 */
-	ArrayList<Class<?>> getClasses();
+	List<Class<?>> getClasses();
 
 	/**
 	 * Get's the manifest of this plugin
