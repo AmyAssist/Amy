@@ -4,20 +4,20 @@
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>pom</packaging>
 	<artifactId>amy-dependency-export</artifactId>
-	<version>0.2.0</version>
+	<version>0.3.0-Snapshot</version>
 	<name>Amy dependency export</name>
 	<description>The dependency export for amy</description>
         <parent>
                 <groupId>de.unistuttgart.iaas.amyassist</groupId>
                 <artifactId>amy</artifactId>
-                <version>0.2.0</version>
+                <version>0.3.0-Snapshot</version>
                 <relativePath>../pom.xml</relativePath>
         </parent>
 	<modules>
 		<module>../plugins</module>
 	</modules>
 	<properties>
-                <amy.version>0.2.0</amy.version>
+                <amy.version>0.3.0-Snapshot</amy.version>
 	</properties>
         <dependencies>
                 <dependency>
