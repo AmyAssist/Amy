@@ -27,15 +27,15 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.PluginProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.CustomProvider;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 /**
@@ -84,21 +84,16 @@ public class DependencyInjectionScopeTest {
 		this.dependencyInjection.register(Service16.class);
 		this.dependencyInjection.register(ServiceForPlugins.class);
 
-		ArrayList<IPlugin> plugins = new ArrayList<>();
-		this.dependencyInjection.registerContextProvider(PluginProvider.class, new PluginProvider(plugins));
+		Map<Class<?>, Integer> plugins = new HashMap<>();
+		this.dependencyInjection.registerContextProvider(CustomProvider.class, new CustomProvider<>(plugins));
 
 		Class<?> cls1 = Service14.class;
 		Class<?> cls2 = Service15.class;
 		Class<?> cls3 = Service16.class;
 
-		ArrayList<Class<?>> classes1 = new ArrayList<>();
-		classes1.add(cls1);
-		classes1.add(cls2);
-		plugins.add(new TestPlugin(classes1));
-
-		ArrayList<Class<?>> classes2 = new ArrayList<>();
-		classes2.add(cls3);
-		plugins.add(new TestPlugin(classes2));
+		plugins.put(cls1, 1);
+		plugins.put(cls2, 1);
+		plugins.put(cls3, 2);
 
 		Service14 s1 = this.dependencyInjection.getService(Service14.class);
 		Service15 s2 = this.dependencyInjection.getService(Service15.class);
@@ -127,7 +122,7 @@ public class DependencyInjectionScopeTest {
 
 		String message = assertThrows(NoSuchElementException.class,
 				() -> this.dependencyInjection.getService(Service16.class)).getMessage();
-		assertThat(message, equalTo(PluginProvider.class.getName()));
+		assertThat(message, equalTo(CustomProvider.class.getName()));
 	}
 
 	/**

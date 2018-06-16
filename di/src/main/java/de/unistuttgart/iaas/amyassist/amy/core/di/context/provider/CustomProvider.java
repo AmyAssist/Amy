@@ -21,22 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.CustomProvider;
+import java.util.Map;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 
 /**
- * A test service for DependencyInjectionScopeTest
+ * A ContextProvider for custom informations
  * 
  * @author Leon Kiefer
  */
-@Service
-public class ServiceForPlugins {
+public class CustomProvider<T> implements StaticProvider<T> {
 
-	@Context(CustomProvider.class)
-	private Integer plugin;
+	private Map<Class<?>, T> mapping;
 
-	public int id;
+	public CustomProvider(Map<Class<?>, T> mapping) {
+		this.mapping = mapping;
+	}
+
+	@Override
+	public T getContext(Class<?> consumer) {
+		return this.mapping.get(consumer);
+	}
+
 }
