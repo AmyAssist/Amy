@@ -30,6 +30,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +82,7 @@ public abstract class SpeechRecognizer implements Runnable {
 	/**
 	 * 
 	 */
-	protected boolean soundPlaying = false;
+	boolean soundPlaying = false;
 	
 	/**
 	 * Boolean to check if we are supposed to listen (sleeping)
@@ -100,6 +103,16 @@ public abstract class SpeechRecognizer implements Runnable {
 	 * The Recognizer which Handles the Recognition
 	 */
 	protected StreamSpeechRecognizer recognizer;
+	
+	private LineListener listener = new LineListener(){
+		@Override
+		public void update(LineEvent event) {
+			if(event.getType() == LineEvent.Type.STOP) {
+				((Clip) event.getSource()).close();
+				SpeechRecognizer.this.soundPlaying = false;
+			}
+		}
+	};
 
 	// -----------------------------------------------------------------------------------------------
 
@@ -154,7 +167,7 @@ public abstract class SpeechRecognizer implements Runnable {
 			 * wait for input from the recognizer
 			 */
 			SpeechResult speechResult = null;
-			while (speechResult == null || this.soundPlaying) {
+			while (speechResult == null) {
 				speechResult = this.recognizer.getResult();
 				if (Thread.interrupted()) {
 					break loop;
@@ -164,7 +177,13 @@ public abstract class SpeechRecognizer implements Runnable {
 			// Get the hypothesis (Result as String)
 			this.speechRecognitionResult = speechResult.getHypothesis();
 			
-			 predefinedInputHandling();
+			if(!this.soundPlaying) {
+				predefinedInputHandling();
+			}else {
+				if(this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
+					this.tts.stopOutput();
+				}
+			}
 
 		}
 		this.recognizer.stopRecognition();
@@ -179,8 +198,6 @@ public abstract class SpeechRecognizer implements Runnable {
 	protected abstract void predefinedInputHandling();
 	
 	// ===============================================================================================
-
-	// -----------------------------------------------------------------------------------------------
 
 	/**
 	 * Gives Input to Handler checks if input is useful
@@ -227,8 +244,9 @@ public abstract class SpeechRecognizer implements Runnable {
 	 * @param s String that shall be said
 	 */
 	protected void say(String s) {
+		this.soundPlaying = true;
 		this.tts.stopOutput();
-		this.tts.say(s);
+		this.tts.say(this.listener, s);
 	}
 	
 	// -----------------------------------------------------------------------------------------------

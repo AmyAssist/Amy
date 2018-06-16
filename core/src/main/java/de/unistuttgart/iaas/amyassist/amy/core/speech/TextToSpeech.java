@@ -31,6 +31,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 
 import marytts.LocalMaryInterface;
@@ -81,15 +82,17 @@ public class TextToSpeech {
 	
 	/**
 	 * outputs Speech translated from given String
+	 * @param listener 
 	 * @param s String that shall be said
 	 */
-	private void speak(String s){
+	private void speak(LineListener listener, String s){
 		System.out.println("[OUTPUT] :: " + s);
 		try {
 			this.audio = this.mary.generateAudio(s);
 			AudioFormat format = this.audio.getFormat();
 		    DataLine.Info info = new DataLine.Info(Clip.class, format);
 		    this.outputClip = (Clip) AudioSystem.getLine(info);
+		    this.outputClip.addLineListener(listener);
 		    this.outputClip.open(this.audio);
 		    this.outputClip.start();
 		} catch (SynthesisException | LineUnavailableException | IOException e) {
@@ -101,10 +104,11 @@ public class TextToSpeech {
 	
 	/**
 	 * Voice Output
+	 * @param listener 
 	 * @param s String to say
 	 */
-	public void say(String s) {
-		speak(preProcessing(s));
+	public void say(LineListener listener, String s) {
+		speak(listener, preProcessing(s));
 	}
 	
 	
@@ -127,7 +131,7 @@ public class TextToSpeech {
 	 */
 	public void stopOutput() {
 		if(this.outputClip != null) {
-		this.outputClip.close();
+		this.outputClip.stop();
 		}
 	}
 	
