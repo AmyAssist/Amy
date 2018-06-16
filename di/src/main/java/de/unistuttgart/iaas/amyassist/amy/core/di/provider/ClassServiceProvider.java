@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
@@ -40,9 +39,7 @@ import org.slf4j.LoggerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.NTuple;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
@@ -108,20 +105,17 @@ public class ClassServiceProvider<T> implements ServiceFunction<T> {
 		}
 	}
 
-	private NTuple<?> getContextTuple(Map<String, StaticProvider<?>> contextProviders,
-			@Nullable ServiceConsumer consumer) {
-		if (consumer == null) {
+	private NTuple<?> getContextTuple(Map<String, ?> context) {
+		if (context == null) {
 			return new NTuple<>(this.contextType.n);
 		}
-
-		Class<?> consumerClass = consumer.getConsumerClass();
-		return this.contextType.map(type -> contextProviders.get(type).getContext(consumerClass));
+		return this.contextType.map(context::get);
 	}
 
 	@Override
 	public T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies,
-			Map<String, StaticProvider<?>> contextProviders, @Nullable ServiceConsumer consumer) {
-		NTuple<?> contextTuple = this.getContextTuple(contextProviders, consumer);
+			Map<String, ?> context) {
+		NTuple<?> contextTuple = this.getContextTuple(context);
 		if (this.serviceInstances.containsKey(contextTuple)) {
 			return this.serviceInstances.get(contextTuple);
 		}

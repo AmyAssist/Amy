@@ -30,8 +30,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 
 /**
  * 
@@ -43,12 +41,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvide
 public interface ServiceProvider<T> {
 	@Nonnull
 	default T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies) {
-		return this.getService(resolvedDependencies, null, null);
+		return this.getService(resolvedDependencies, null);
 	}
 
 	@Nonnull
 	T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies,
-			@Nullable Map<String, StaticProvider<?>> contextProviders, @Nullable ServiceConsumer consumer);
+			@Nullable Map<String, ?> context);
 
 	/**
 	 * 

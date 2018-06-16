@@ -28,6 +28,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Maps;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
@@ -44,7 +46,7 @@ public class ServiceProviderServiceFactory<T> implements ServiceFactory<T> {
 	private Map<Class<?>, ServiceFactory<?>> resolvedDependencies = new HashMap<>();
 	private Map<String, StaticProvider<?>> contextProviders = new HashMap<>();
 	@Nullable
-	private ServiceConsumer consumerClass;
+	private ServiceConsumer consumer;
 
 	private T buildedInstance;
 
@@ -55,10 +57,19 @@ public class ServiceProviderServiceFactory<T> implements ServiceFactory<T> {
 	@Override
 	public T build() {
 		if (this.buildedInstance == null) {
-			this.buildedInstance = this.serviceProvider.getService(this.resolvedDependencies, this.contextProviders,
-					this.consumerClass);
+			Map<String, ?> context = this.getContext(this.contextProviders, this.consumer);
+			this.buildedInstance = this.serviceProvider.getService(this.resolvedDependencies, context);
 		}
 		return this.buildedInstance;
+	}
+
+	private Map<String, ?> getContext(Map<String, StaticProvider<?>> contextProviders,
+			@Nullable ServiceConsumer consumer) {
+		if (consumer == null) {
+			return null;
+		}
+		Class<?> consumerClass = consumer.getConsumerClass();
+		return Maps.transformValues(contextProviders, e -> e.getContext(consumerClass));
 	}
 
 	public void resolved(Class<?> dependency, ServiceFactory<?> dependencyFactory) {
@@ -70,6 +81,6 @@ public class ServiceProviderServiceFactory<T> implements ServiceFactory<T> {
 	}
 
 	public void setConsumer(@Nullable ServiceConsumer consumer) {
-		this.consumerClass = consumer;
+		this.consumer = consumer;
 	}
 }
