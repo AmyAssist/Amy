@@ -10,11 +10,11 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
@@ -37,9 +37,9 @@ public class AudioUserInteraction implements SpeechIO {
 	
 	//===============================================================================================
 	
-	private final String WAKEUP = "amy wake up";
-	private final String GOSLEEP = "go to sleep";
-	private final String SHUTDOWN = "amy shut up";
+	private final static String WAKEUP = "amy wake up";
+	private final static String GOSLEEP = "go to sleep";
+	private final static String SHUTDOWN = "amy shut up";
 	
 	// -----------------------------------------------------------------------------------------------
 
@@ -55,7 +55,7 @@ public class AudioUserInteraction implements SpeechIO {
 	private ArrayList<Grammar> switchableGrammars;
 	
 	private MainSpeechRecognizer mainRecognizer;
-	private HashMap<String, SpeechRecognizer> recognizerList = new HashMap<>();
+	private HashMap<String, AdditionalSpeechRecognizer> recognizerList = new HashMap<>();
 	
 	
 	// -----------------------------------------------------------------------------------------------
@@ -71,7 +71,8 @@ public class AudioUserInteraction implements SpeechIO {
 		if(this.switchableGrammars != null && !this.switchableGrammars.isEmpty()){
 			for (Grammar grammar : this.switchableGrammars) {
 				if(!this.recognizerList.containsKey(grammar.getName())){
-					this.recognizerList.put(grammar.getName(), new SpeechRecognizer(audioUI, grammar, this.inputHandler, this.ais));					
+					this.recognizerList.put(grammar.getName(),
+							new AdditionalSpeechRecognizer(audioUI, grammar, this.inputHandler, this.ais));					
 				}
 			}
 		}
@@ -134,7 +135,7 @@ public class AudioUserInteraction implements SpeechIO {
 	 * @return  wAKEUP
 	 */
 	public String getWAKEUP() {
-		return this.WAKEUP;
+		return WAKEUP;
 	}
 
 	/**
@@ -142,7 +143,7 @@ public class AudioUserInteraction implements SpeechIO {
 	 * @return  gOSLEEP
 	 */
 	public String getGOSLEEP() {
-		return this.GOSLEEP;
+		return GOSLEEP;
 	}
 
 	/**
@@ -150,7 +151,7 @@ public class AudioUserInteraction implements SpeechIO {
 	 * @return  sHUTDOWN
 	 */
 	public String getSHUTDOWN() {
-		return this.SHUTDOWN;
+		return SHUTDOWN;
 	}
 
 	/**
@@ -181,7 +182,7 @@ public class AudioUserInteraction implements SpeechIO {
 	 * Get's {@link #switchableGrammars switchableGrammars}
 	 * @return  switchableGrammars
 	 */
-	public ArrayList<Grammar> getSwitchableGrammars() {
+	public List<Grammar> getSwitchableGrammars() {
 		return this.switchableGrammars;
 	}
 
@@ -227,11 +228,11 @@ public class AudioUserInteraction implements SpeechIO {
 	 * @return fitting AudioFormat
 	 */
 	public AudioFormat getFormat() {
-		float sampleRate = 16000.0f;
-		int sampleSizeInBits = 16;
-		int channels = 1;
-		boolean signed = true;
-		boolean bigEndian = false;
+		final float sampleRate = 16000.0f;
+		final int sampleSizeInBits = 16;
+		final int channels = 1;
+		final boolean signed = true;
+		final boolean bigEndian = false;
 		return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
 	}
 

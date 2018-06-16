@@ -36,7 +36,7 @@ import edu.cmu.sphinx.api.StreamSpeechRecognizer;
  * 
  * @author Kai Menzel
  */
-public class SpeechRecognizer implements Runnable {
+public class AdditionalSpeechRecognizer implements Runnable {
 	
 	// this Grammar
 	private Grammar grammar;
@@ -71,7 +71,7 @@ public class SpeechRecognizer implements Runnable {
 	 * @param ais
 	 *            set custom AudioInputStream.
 	 */
-	public SpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler, AudioInputStream ais) {
+	public AdditionalSpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler, AudioInputStream ais) {
 		this.audioUI = audioUI;
 		this.grammar = grammar;
 		this.inputHandler = inputHandler;
@@ -81,7 +81,7 @@ public class SpeechRecognizer implements Runnable {
 		
 		// Create the Recognizer
 		try {
-			SpeechRecognizer.this.recognizer = new StreamSpeechRecognizer(createConfiguration());
+			AdditionalSpeechRecognizer.this.recognizer = new StreamSpeechRecognizer(createConfiguration());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

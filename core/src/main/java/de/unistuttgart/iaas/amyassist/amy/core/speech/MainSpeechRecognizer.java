@@ -128,10 +128,15 @@ public class MainSpeechRecognizer implements Runnable {
 					break loop;
 				}
 			}
+			if(true) {
+    			System.out.println(speechResult.getResult().getActiveTokens());
+    			System.out.println(speechResult.getResult().toCreateLattice());
+    			System.out.println(speechResult.getResult().getBestPronunciationResult());
+			}
 			
-
 			// Get the hypothesis (Result as String)
 			speechRecognitionResult = speechResult.getHypothesis();
+			
 
 			 if(speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
 				 this.tts.stopOutput();

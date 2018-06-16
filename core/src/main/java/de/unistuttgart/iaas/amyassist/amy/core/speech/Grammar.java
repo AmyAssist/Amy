@@ -10,6 +10,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Grammar Object, that contains all important Information of a Grammar
@@ -61,7 +62,7 @@ public class Grammar {
 		return this.file;
 	}
 
-	public HashMap<String, Grammar> getSwitchList() {
+	public Map<String, Grammar> getSwitchList() {
 		return this.switchList;
 	}
 
