@@ -91,7 +91,6 @@ public class StringGeneratorTest {
 	public void testSearchSpeechStringTrack() {
 		assertEquals("0. Track name is Flames by David Guetta\n1. Track name is Say Something by Justin Timberlake\n",
 				stringGenerator.generateSearchOutputString(tracks));
-		System.out.println("0. Track name is Flames by David Guetta\n1. Track name is Say Something by Justin Timberlake\n");
 	}
 
 	@Test

@@ -17,8 +17,8 @@ public class ConfigLoader {
 
 	public String get(String s) {
 		try {
-				p.load(new FileReader("apikeys/spotify_config.properties"));
-				return p.getProperty(s);
+			p.load(new FileReader("apikeys/spotify_config.properties"));
+			return p.getProperty(s);
 		} catch (IOException e) {
 			System.err.println("Error loading config file for spotify plugin");
 			e.printStackTrace();

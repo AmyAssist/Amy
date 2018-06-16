@@ -19,7 +19,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -36,17 +36,16 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
 
 /**
- * Rest Resource for music
- * TODO extend functionality
+ * Rest Resource for music TODO extend functionality
  * 
  * @author Muhammed Kaya, Christian Bräuner
  */
 @Path("music")
 public class MusicResource {
-	
+
 	private MusicEntity musicEntity;
 	private Playlist playlist;
-	
+
 	@Reference
 	private PlayerLogic logic;
 
@@ -59,14 +58,14 @@ public class MusicResource {
 	@Path("currentSong")
 	@Produces(MediaType.APPLICATION_JSON)
 	public MusicEntity getCurrentSong() {
-		HashMap<String, String> currentSong = this.logic.getCurrentSong();
+		Map<String, String> currentSong = this.logic.getCurrentSong();
 		this.musicEntity = new MusicEntity();
-		if(currentSong != null && currentSong.containsKey("name") && currentSong.containsKey("artist") ) {
-			this.musicEntity = new MusicEntity(currentSong.get("name"), currentSong.get("artist"));			
+		if (currentSong != null && currentSong.containsKey("name") && currentSong.containsKey("artist")) {
+			this.musicEntity = new MusicEntity(currentSong.get("name"), currentSong.get("artist"));
 		}
 		return this.musicEntity;
 	}
-	
+
 	/**
 	 * plays the given music
 	 * 
@@ -83,7 +82,7 @@ public class MusicResource {
 		this.logic.search(this.musicEntity.toString(), SpotifyConstants.TYPE_TRACK, 5);
 		return this.logic.convertSearchOutputToSingleString(this.logic.play(0));
 	}
-	
+
 	/**
 	 * resumes the actual playback
 	 * 
@@ -95,9 +94,9 @@ public class MusicResource {
 	public String resume() {
 		if (this.logic.resume()) {
 			return "resume";
-		} 
+		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);
-					
+
 	}
 
 	/**
@@ -109,10 +108,10 @@ public class MusicResource {
 	@Path("pause")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String pausePlayback() {
-		if(this.logic.pausePlayback()) {
+		if (this.logic.pausePlayback()) {
 			return "pause";
-		}		
-		throw new WebApplicationException("Check player state", Status.CONFLICT);		
+		}
+		throw new WebApplicationException("Check player state", Status.CONFLICT);
 	}
 
 	/**
@@ -126,12 +125,13 @@ public class MusicResource {
 	public Playlist getPlaylist() {
 		return this.playlist;
 	}
-	
+
 	/**
 	 * controls the volume of the player
 	 * 
 	 * @param volumeString
-	 *            allowed strings: mute, max, up, down, or a volume value between 0 and 100
+	 *            allowed strings: mute, max, up, down, or a volume value between 0
+	 *            and 100
 	 * @return a int from 0-100. This represent the Volume in percent.
 	 */
 	@POST
@@ -140,26 +140,25 @@ public class MusicResource {
 	public String setVolume(@QueryParam("volume") String volumeString) {
 		try {
 			int volume = Integer.parseInt(volumeString);
-			if(volume < 0 || volume > 100) {
+			if (volume < 0 || volume > 100) {
 				throw new WebApplicationException("Incorrect volume value", Status.BAD_REQUEST);
 			}
 			this.logic.setVolume(volume);
 			return String.valueOf(volume);
 		} catch (NumberFormatException e) {
-		if (volumeString != "mute" && volumeString != "max" 
-				&& volumeString != "up" && volumeString != "down") {
-			throw new WebApplicationException("Incorrect volume command", Status.BAD_REQUEST);
-		} else {
-			int volume = this.logic.setVolume(volumeString);
-			if (volume != -1) {
-				return String.valueOf(volume);
+			if (volumeString != "mute" && volumeString != "max" && volumeString != "up" && volumeString != "down") {
+				throw new WebApplicationException("Incorrect volume command", Status.BAD_REQUEST);
+			} else {
+				int volume = this.logic.setVolume(volumeString);
+				if (volume != -1) {
+					return String.valueOf(volume);
+				}
+				throw new WebApplicationException("Check player state", Status.CONFLICT);
+
 			}
-			throw new WebApplicationException("Check player state", Status.CONFLICT);		
-			
+
 		}
-			
-		}
-		
+
 	}
 
 }

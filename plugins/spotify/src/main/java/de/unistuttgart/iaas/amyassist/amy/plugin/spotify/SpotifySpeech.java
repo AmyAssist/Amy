@@ -19,7 +19,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -35,22 +35,24 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 @SpeechCommand({ "music", "spotify" })
 public class SpotifySpeech {
 
-	private final int SEARCH_LIMIT = 4;
+	private static final String ERROR_MESSAGE = "An error occurred";
 
 	@Reference
 	PlayerLogic playerLogic;
 
 	/**
 	 * get a String of all name of all devices
-	 * @param params not used here
-	 * @return 
+	 * 
+	 * @param params
+	 *            not used here
+	 * @return
 	 */
 	@Grammar("get devices")
 	public String getDevices(String... params) {
-		ArrayList<String> devices = this.playerLogic.getDevices();
+		List<String> devices = this.playerLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
-			output = output + i + ". " + devices.get(i);
+			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i));
 		}
 		if (output.equals("")) {
 			return "no deivce found";
@@ -61,7 +63,8 @@ public class SpotifySpeech {
 	/**
 	 * set the device in the player logic # is a number between 0 and theoretically
 	 * infinite
-	 * @param params 
+	 * 
+	 * @param params
 	 * 
 	 * @return
 	 */
@@ -74,9 +77,8 @@ public class SpotifySpeech {
 				return "Input please as Integer";
 			}
 		}
-		return "Wrong request";
+		return ERROR_MESSAGE;
 	}
-
 
 	/**
 	 * play a featured playlist
@@ -90,34 +92,34 @@ public class SpotifySpeech {
 
 	@Grammar("resume")
 	public String resume(String... params) {
-		if(this.playerLogic.resume()) {
-		return "resume";
+		if (this.playerLogic.resume()) {
+			return "resume";
 		}
-		return "An error occurred";
+		return ERROR_MESSAGE;
 	}
 
 	@Grammar("pause")
 	public String pause(String... params) {
-		if(this.playerLogic.pausePlayback()) {
-		return "pause";
+		if (this.playerLogic.pausePlayback()) {
+			return "pause";
 		}
-		return "An error occurred";
+		return ERROR_MESSAGE;
 	}
 
 	@Grammar("skip")
 	public String skip(String... params) {
-		if(this.playerLogic.skip()) {
-		return "skip";
+		if (this.playerLogic.skip()) {
+			return "skip";
 		}
-		return "An error occurred";
+		return ERROR_MESSAGE;
 	}
 
 	@Grammar("back")
 	public String back(String... params) {
 		if (this.playerLogic.back()) {
-		return "back";
+			return "back";
 		}
-		return "An error occurred";
+		return ERROR_MESSAGE;
 	}
 
 	@Grammar("volume (mute|max|up|down)")
@@ -127,9 +129,10 @@ public class SpotifySpeech {
 		}
 		return "not enough arguments";
 	}
+
 	@Grammar("get currently played song")
 	public String getCurrentlyPlayed(String... params) {
-		return "track: " + playerLogic.getCurrentSong().get("name") + " by " + playerLogic.getCurrentSong().get("artist");
+		return "track: " + playerLogic.getCurrentSong().get("name") + " by "
+				+ playerLogic.getCurrentSong().get("artist");
 	}
 }
- 

@@ -58,9 +58,9 @@ public class Search {
 	 *            what is searched for (track, artist, album, playlist)
 	 * @param limit
 	 *            max length of the result list
-	 * @return a list with search result entries. every entry has a Map
-	 *         with different attributes. e.g. artist, ... every entry has a uri to
-	 *         the song an the type (track, artist, album, palylist)
+	 * @return a list with search result entries. every entry has a Map with
+	 *         different attributes. e.g. artist, ... every entry has a uri to the
+	 *         song an the type (track, artist, album, palylist)
 	 * @throws IOException
 	 * @throws SpotifyWebApiException
 	 */
@@ -94,9 +94,9 @@ public class Search {
 	 * create a List with all SearchResults when the type is a track
 	 * 
 	 * @param searchResult
-	 * @return a list with search result entries. every entry has a Map
-	 *         with different attributes. e.g. artist, ... every entry has a uri to
-	 *         the song an the type track
+	 * @return a list with search result entries. every entry has a Map with
+	 *         different attributes. e.g. artist, ... every entry has a uri to the
+	 *         song an the type track
 	 */
 	private List<Map<String, String>> createTrackSearchResult(SearchResult searchResult, String type) {
 		HashMap<String, String> entry;
@@ -127,9 +127,9 @@ public class Search {
 	 * create a List with all SearchResults when the type is a album
 	 * 
 	 * @param searchResult
-	 * @return a  list with search result entries. every entry has a Map
-	 *         with different attributes. e.g. artist, ... every entry has a uri to
-	 *         the song an the type album
+	 * @return a list with search result entries. every entry has a Map with
+	 *         different attributes. e.g. artist, ... every entry has a uri to the
+	 *         song an the type album
 	 */
 	private List<Map<String, String>> createAlbumSearchResult(SearchResult searchResult, String type) {
 		HashMap<String, String> entry;
@@ -160,9 +160,9 @@ public class Search {
 	 * create a List with all SearchResults when the type is a artist
 	 * 
 	 * @param searchResult
-	 * @return a list with search result entries. every entry has a Map
-	 *         with different attributes. e.g. artist, ... every entry has a uri to
-	 *         the song an the type artist
+	 * @return a list with search result entries. every entry has a Map with
+	 *         different attributes. e.g. artist, ... every entry has a uri to the
+	 *         song an the type artist
 	 */
 	private List<Map<String, String>> createArtistSearchResult(SearchResult searchResult, String type) {
 		HashMap<String, String> entry;
@@ -193,9 +193,9 @@ public class Search {
 	 * create a List with all SearchResults when the type is a playlist
 	 * 
 	 * @param searchResult
-	 * @return a list with search result entries. every entry has a Map
-	 *         with different attributes. e.g. artist, ... every entry has a uri to
-	 *         the song an the type playlist
+	 * @return a list with search result entries. every entry has a Map with
+	 *         different attributes. e.g. artist, ... every entry has a uri to the
+	 *         song an the type playlist
 	 */
 	private List<Map<String, String>> createPlaylistSearchResult(SearchResult searchResult, String type) {
 		HashMap<String, String> entry;
@@ -244,9 +244,9 @@ public class Search {
 	/**
 	 * this method get a list from 10 featured playlist back
 	 * 
-	 * @return a list with search result entries. every entry has a Map
-	 *         with different attributes. e.g. artist, ... every entry has a uri to
-	 *         the song an the type playlist
+	 * @return a list with search result entries. every entry has a Map with
+	 *         different attributes. e.g. artist, ... every entry has a uri to the
+	 *         song an the type playlist
 	 * @throws IOException
 	 * @throws SpotifyWebApiException
 	 * 

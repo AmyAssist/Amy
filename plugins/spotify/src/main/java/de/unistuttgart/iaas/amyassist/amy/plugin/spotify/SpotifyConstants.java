@@ -11,9 +11,9 @@ public class SpotifyConstants {
 	public static final String ARTIST_NAME = "artisName";
 	public static final String ITEM_URI = "uri";
 	public static final String ITEM_TYPE = "type";
-	
+
 	private SpotifyConstants() {
-		
+
 	}
 
 }
