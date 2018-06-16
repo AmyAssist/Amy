@@ -178,6 +178,20 @@ class DependencyInjectionTest {
 		assertThrows(IllegalArgumentException.class, () -> this.dependencyInjection.register(AbstractService.class));
 	}
 
+	@Test()
+	void testInject() {
+		Service10 service10 = new Service10(10);
+		this.dependencyInjection.inject(service10);
+		assertThat(service10.isInit(), is(false));
+		assertThat(service10.getService1(), is(notNullValue()));
+		assertThat(service10.getService1(), is(instanceOf(Service1.class)));
+	}
+
+	@Test()
+	void testServiceType() {
+		assertThrows(IllegalArgumentException.class, () -> this.dependencyInjection.register(Service17.class));
+	}
+
 	@AfterEach
 	public void clearLoggers() {
 		TestLoggerFactory.clear();

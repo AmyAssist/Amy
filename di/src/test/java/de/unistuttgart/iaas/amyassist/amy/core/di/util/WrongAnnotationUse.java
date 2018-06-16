@@ -21,38 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package de.unistuttgart.iaas.amyassist.amy.core.di.util;
 
-import java.util.Collection;
-import java.util.Map;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
-
-/**
- * 
- * @author Leon Kiefer
- *
- * @param <T>
- *            service type
- */
-public interface ServiceProvider<T> {
-	@Nonnull
-	T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context);
-
-	/**
-	 * 
-	 * @return the dependencies
-	 */
-	@Nonnull
-	Collection<Class<?>> getDependencies();
-
-	/**
-	 * @return the requiredContextProviderTypes
-	 */
-	@Nonnull
-	Collection<String> getRequiredContextIdentifiers();
-
+@Service
+public class WrongAnnotationUse {
+	@Reference
+	@Context("c1")
+	private Object property;
 }

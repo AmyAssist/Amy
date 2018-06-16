@@ -21,38 +21,49 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.util.Collection;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
+ * Test Service for DI
  * 
  * @author Leon Kiefer
- *
- * @param <T>
- *            service type
  */
-public interface ServiceProvider<T> {
-	@Nonnull
-	T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context);
+public class Service10 {
+	@Reference
+	private Service1 service1;
+	private int i;
+	private boolean init = false;
 
 	/**
-	 * 
-	 * @return the dependencies
+	 * @return the init
 	 */
-	@Nonnull
-	Collection<Class<?>> getDependencies();
+	public boolean isInit() {
+		return init;
+	}
 
 	/**
-	 * @return the requiredContextProviderTypes
+	 * @return the service1
 	 */
-	@Nonnull
-	Collection<String> getRequiredContextIdentifiers();
+	public Service1 getService1() {
+		return service1;
+	}
 
+	/**
+	 * @return the i
+	 */
+	public int getI() {
+		return i;
+	}
+
+	public Service10(int important) {
+		this.i = important;
+	}
+
+	@PostConstruct
+	public void setup() {
+		init = true;
+	}
 }

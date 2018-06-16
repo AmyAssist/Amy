@@ -26,9 +26,15 @@ package de.unistuttgart.iaas.amyassist.amy.core.di.util;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.Service1;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Service2;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Service3;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Service4;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Service5;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Service8;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceWithConstructor;
 
 /**
@@ -38,10 +44,28 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceWithConstructor;
  */
 class UtilTest {
 
-	@Test()
-	void testConstructorCheck() {
-		assertThat(Util.constructorCheck(ServiceWithConstructor.class), is(false));
-		assertThat(Util.constructorCheck(Service1.class), is(true));
+	@ParameterizedTest
+	@ValueSource(classes = { Service1.class, Service2.class, Service3.class, Service4.class, Service5.class })
+	void testClassCheckTrue(Class<?> testClass) {
+		assertThat(Util.classCheck(testClass), is(true));
+	}
+
+	@ParameterizedTest
+	@ValueSource(classes = { ServiceWithConstructor.class, WrongAnnotationUse.class, Service8.class })
+	void testClassCheckFalse(Class<?> testClass) {
+		assertThat(Util.classCheck(testClass), is(false));
+	}
+
+	@ParameterizedTest
+	@ValueSource(classes = { Service1.class, WrongAnnotationUse.class })
+	void testConstructorCheckTrue(Class<?> testClass) {
+		assertThat(Util.constructorCheck(testClass), is(true));
+	}
+
+	@ParameterizedTest
+	@ValueSource(classes = { ServiceWithConstructor.class, Service8.class })
+	void testConstructorCheckFalse(Class<?> testClass) {
+		assertThat(Util.constructorCheck(testClass), is(false));
 	}
 
 }

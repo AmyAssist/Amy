@@ -45,12 +45,7 @@ public class ContextInjectionPoint extends InjetionPoint {
 
 	public ContextInjectionPoint(Field field) {
 		super(field);
-		Context[] annotations = field.getAnnotationsByType(Context.class);
-		if (annotations.length > 1) {
-			throw new IllegalArgumentException("In the service " + field.getDeclaringClass().getName() + " the field "
-					+ field.getName() + " has the annotation @Context multiple times.");
-		}
-		Context context = annotations[0];
+		Context context = field.getAnnotation(Context.class);
 		this.contextIdentifier = context.value();
 	}
 
