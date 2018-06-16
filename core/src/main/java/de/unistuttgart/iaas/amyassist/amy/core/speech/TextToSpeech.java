@@ -84,6 +84,7 @@ public class TextToSpeech {
 	 * @param s String that shall be said
 	 */
 	private void speak(String s){
+		System.out.println("[OUTPUT] :: " + s);
 		try {
 			this.audio = this.mary.generateAudio(s);
 			AudioFormat format = this.audio.getFormat();
@@ -98,6 +99,10 @@ public class TextToSpeech {
 	    
 	}
 	
+	/**
+	 * Voice Output
+	 * @param s String to say
+	 */
 	public void say(String s) {
 		speak(preProcessing(s));
 	}
@@ -135,5 +140,6 @@ public class TextToSpeech {
 	public Clip getOutputClip() {
 		return this.outputClip;
 	}
+	
 	
 }

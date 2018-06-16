@@ -43,6 +43,9 @@ public class AudioUserInteraction implements SpeechIO {
 	
 	private AudioUserInteraction() {}
 	
+	/**
+	 * @return The audioUI Object
+	 */
 	public static AudioUserInteraction getAudioUI() {
 		if(audioUI == null) {
 			audioUI = new AudioUserInteraction();
@@ -52,9 +55,9 @@ public class AudioUserInteraction implements SpeechIO {
 	
 	//===============================================================================================
 	
-	private final static String WAKEUP = "amy wake up";
-	private final static String GOSLEEP = "go to sleep";
-	private final static String SHUTDOWN = "amy shut up";
+	private final String WAKEUP = "amy wake up";
+	private final String GOSLEEP = "go to sleep";
+	private final String SHUTDOWN = "amy shut up";
 	
 	// -----------------------------------------------------------------------------------------------
 
@@ -80,7 +83,6 @@ public class AudioUserInteraction implements SpeechIO {
 	 */
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		createNewAudioInputStream();
 		this.mainRecognizer = new MainSpeechRecognizer(audioUI, this.mainGrammar, this.inputHandler, this.ais);
 		if(this.switchableGrammars != null && !this.switchableGrammars.isEmpty()){
@@ -119,7 +121,6 @@ public class AudioUserInteraction implements SpeechIO {
 	 */
 	@Override
 	public void setSpeechInputHandler(SpeechInputHandler handler) {
-		// TODO Auto-generated method stub
 		this.inputHandler = handler;
 	}
 	
@@ -150,7 +151,7 @@ public class AudioUserInteraction implements SpeechIO {
 	 * @return  wAKEUP
 	 */
 	public String getWAKEUP() {
-		return WAKEUP;
+		return this.WAKEUP;
 	}
 
 	/**
@@ -158,7 +159,7 @@ public class AudioUserInteraction implements SpeechIO {
 	 * @return  gOSLEEP
 	 */
 	public String getGOSLEEP() {
-		return GOSLEEP;
+		return this.GOSLEEP;
 	}
 
 	/**
@@ -166,7 +167,7 @@ public class AudioUserInteraction implements SpeechIO {
 	 * @return  sHUTDOWN
 	 */
 	public String getSHUTDOWN() {
-		return SHUTDOWN;
+		return this.SHUTDOWN;
 	}
 
 	/**
@@ -224,7 +225,6 @@ public class AudioUserInteraction implements SpeechIO {
 	 */
 	private void createNewAudioInputStream() {
 		if(this.ais == null){
-    		// TODO Auto-generated method stub
     		TargetDataLine mic = null;
     		try {
     			mic = AudioSystem.getTargetDataLine(this.getFormat());
@@ -232,7 +232,6 @@ public class AudioUserInteraction implements SpeechIO {
     			mic.start();
     			this.ais = new AudioInputStream(mic);
     		} catch (LineUnavailableException e) {
-    			// TODO Auto-generated catch block
     			e.printStackTrace();
     		}
 		}

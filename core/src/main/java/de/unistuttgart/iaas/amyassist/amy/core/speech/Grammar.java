@@ -43,7 +43,6 @@ public class Grammar {
 	 * 
 	 */
 	public Grammar(String name, File file) {
-		// TODO Auto-generated constructor stub
 		this.name = name;
 		this.file = file;
 	}
@@ -54,7 +53,6 @@ public class Grammar {
 	 * @param switchList List of all possible Grammar changes
 	 */
 	public Grammar(String name, File file, HashMap<String, Grammar> switchList) {
-		// TODO Auto-generated constructor stub
 		this.name = name;
 		this.file = file;
 		this.switchList = switchList;
