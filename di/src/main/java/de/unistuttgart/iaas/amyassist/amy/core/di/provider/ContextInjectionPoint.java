@@ -34,13 +34,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
  */
 public class ContextInjectionPoint extends InjetionPoint {
 
-	private Class<?> contextProviderType;
+	private String contextIdentifier;
 
 	/**
 	 * @return the contextProviderType
 	 */
-	public Class<?> getContextProviderType() {
-		return this.contextProviderType;
+	public String getContextIdentifier() {
+		return this.contextIdentifier;
 	}
 
 	public ContextInjectionPoint(Field field) {
@@ -51,7 +51,7 @@ public class ContextInjectionPoint extends InjetionPoint {
 					+ field.getName() + " has the annotation @Context multiple times.");
 		}
 		Context context = annotations[0];
-		this.contextProviderType = context.value();
+		this.contextIdentifier = context.value();
 	}
 
 }

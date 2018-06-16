@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.ClassProvider;
 
 /**
  * Test Service for DI
@@ -34,6 +33,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.ClassProvider
  */
 @Service
 public class Service9 {
-	@Context(ClassProvider.class)
+	@Context("class")
 	private Class<?> consumerClass;
 }

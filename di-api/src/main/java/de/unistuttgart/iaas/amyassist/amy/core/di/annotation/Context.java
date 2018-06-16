@@ -38,10 +38,9 @@ import java.lang.annotation.Target;
 @Target(java.lang.annotation.ElementType.FIELD)
 public @interface Context {
 	/**
-	 * The class of the context provider to use for getting the context
-	 * information
+	 * The string identifier of the context
 	 * 
-	 * @return the ContextProvider class
+	 * @return the string identifier
 	 */
-	Class<?> value();
+	String value();
 }

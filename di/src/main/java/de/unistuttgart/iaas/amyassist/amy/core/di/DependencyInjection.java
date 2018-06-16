@@ -69,7 +69,7 @@ public class DependencyInjection implements ServiceLocator {
 	 */
 	protected Map<Class<?>, ServiceFunction<?>> register;
 
-	protected Map<Class<?>, StaticProvider<?>> staticProvider;
+	protected Map<String, StaticProvider<?>> staticProvider;
 
 	/**
 	 * Creates a new Dependency Injection
@@ -78,7 +78,7 @@ public class DependencyInjection implements ServiceLocator {
 		this.register = new HashMap<>();
 		this.staticProvider = new HashMap<>();
 
-		this.registerContextProvider(ClassProvider.class, new ClassProvider());
+		this.registerContextProvider("class", new ClassProvider());
 		this.addExternalService(ServiceLocator.class, this);
 	}
 
@@ -116,7 +116,7 @@ public class DependencyInjection implements ServiceLocator {
 		}
 	}
 
-	public synchronized void registerContextProvider(Class<?> key, StaticProvider<?> staticProvider) {
+	public synchronized void registerContextProvider(String key, StaticProvider<?> staticProvider) {
 		this.staticProvider.put(key, staticProvider);
 	}
 
@@ -189,7 +189,7 @@ public class DependencyInjection implements ServiceLocator {
 			serviceProviderServiceFactory.resolved(dependency, dependencyFactory);
 		}
 
-		for (Class<?> requiredContextProviderType : serviceProvider.getRequiredContextProviderTypes()) {
+		for (String requiredContextProviderType : serviceProvider.getRequiredContextIdentifiers()) {
 			StaticProvider<?> contextProvider = this.getContextProvider(requiredContextProviderType);
 			serviceProviderServiceFactory.setContextProvider(requiredContextProviderType, contextProvider);
 		}
@@ -221,9 +221,9 @@ public class DependencyInjection implements ServiceLocator {
 		return (ServiceFunction<T>) this.register.get(serviceType);
 	}
 
-	private StaticProvider<?> getContextProvider(Class<?> contextProviderType) {
+	private StaticProvider<?> getContextProvider(String contextProviderType) {
 		if (!this.staticProvider.containsKey(contextProviderType))
-			throw new NoSuchElementException(contextProviderType.getName());
+			throw new NoSuchElementException(contextProviderType);
 		return this.staticProvider.get(contextProviderType);
 	}
 

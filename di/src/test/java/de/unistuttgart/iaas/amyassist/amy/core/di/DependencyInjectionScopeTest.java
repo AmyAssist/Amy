@@ -85,7 +85,7 @@ public class DependencyInjectionScopeTest {
 		this.dependencyInjection.register(ServiceForPlugins.class);
 
 		Map<Class<?>, Integer> plugins = new HashMap<>();
-		this.dependencyInjection.registerContextProvider(CustomProvider.class, new CustomProvider<>(plugins));
+		this.dependencyInjection.registerContextProvider("custom", new CustomProvider<>(plugins));
 
 		Class<?> cls1 = Service14.class;
 		Class<?> cls2 = Service15.class;
@@ -122,7 +122,7 @@ public class DependencyInjectionScopeTest {
 
 		String message = assertThrows(NoSuchElementException.class,
 				() -> this.dependencyInjection.getService(Service16.class)).getMessage();
-		assertThat(message, equalTo(CustomProvider.class.getName()));
+		assertThat(message, equalTo("custom"));
 	}
 
 	/**

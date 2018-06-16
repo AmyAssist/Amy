@@ -25,17 +25,16 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.CustomProvider;
 
 /**
  * A test service for DependencyInjectionScopeTest
  * 
  * @author Leon Kiefer
- */
+ */	
 @Service
 public class ServiceForPlugins {
 
-	@Context(CustomProvider.class)
+	@Context("custom")
 	private Integer plugin;
 
 	public int id;

@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.ClassProvider;
 
 /**
  * A test service for DependencyInjectionScopeTest
@@ -35,7 +34,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.ClassProvider
 @Service
 public class Service12 {
 
-	@Context(ClassProvider.class)
+	@Context("class")
 	private Class<?> consumerClass;
 
 	/**

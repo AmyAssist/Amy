@@ -50,7 +50,7 @@ public class SingeltonServiceProvider<T> implements ServiceFunction<T> {
 
 	@Override
 	public T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies,
-			@Nullable Map<Class<?>, StaticProvider<?>> contextProviders, @Nullable ServiceConsumer consumer) {
+			@Nullable Map<String, StaticProvider<?>> contextProviders, @Nullable ServiceConsumer consumer) {
 		return this.instance;
 	}
 
@@ -60,7 +60,7 @@ public class SingeltonServiceProvider<T> implements ServiceFunction<T> {
 	}
 
 	@Override
-	public Collection<Class<?>> getRequiredContextProviderTypes() {
+	public Collection<String> getRequiredContextIdentifiers() {
 		return Collections.emptySet();
 	}
 

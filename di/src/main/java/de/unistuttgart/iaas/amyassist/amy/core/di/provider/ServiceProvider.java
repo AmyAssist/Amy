@@ -48,7 +48,7 @@ public interface ServiceProvider<T> {
 
 	@Nonnull
 	T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies,
-			@Nullable Map<Class<?>, StaticProvider<?>> contextProviders, @Nullable ServiceConsumer consumer);
+			@Nullable Map<String, StaticProvider<?>> contextProviders, @Nullable ServiceConsumer consumer);
 
 	/**
 	 * 
@@ -61,6 +61,6 @@ public interface ServiceProvider<T> {
 	 * @return the requiredContextProviderTypes
 	 */
 	@Nonnull
-	Collection<Class<?>> getRequiredContextProviderTypes();
+	Collection<String> getRequiredContextIdentifiers();
 
 }

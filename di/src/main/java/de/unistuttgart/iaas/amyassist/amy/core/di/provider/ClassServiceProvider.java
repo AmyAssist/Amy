@@ -45,6 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.NTuple;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
+
 /**
  * A ClassServiceProvider which provides service instances for a class
  * 
@@ -60,14 +61,14 @@ public class ClassServiceProvider<T> implements ServiceFunction<T> {
 	 */
 	private Collection<Class<?>> dependencies = new HashSet<>();
 	private Collection<InjetionPoint> injetionPoints = new HashSet<>();
-	private Collection<Class<?>> requiredContextProviderTypes = new HashSet<>();
-	private final NTuple<Class<?>> contextType;
+	private Collection<String> requiredContextIdentifiers = new HashSet<>();
+	private final NTuple<String> contextType;
 	private final NTuple<ContextInjectionPoint> contextInjectionPoints;
 	private Map<NTuple<?>, T> serviceInstances = new HashMap<>();
 
 	@Override
-	public Collection<Class<?>> getRequiredContextProviderTypes() {
-		return Collections.unmodifiableCollection(this.requiredContextProviderTypes);
+	public Collection<String> getRequiredContextIdentifiers() {
+		return Collections.unmodifiableCollection(this.requiredContextIdentifiers);
 	}
 
 	@Override
@@ -83,10 +84,6 @@ public class ClassServiceProvider<T> implements ServiceFunction<T> {
 		this.cls = cls;
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(cls, Reference.class);
 		for (Field field : dependencyFields) {
-			if (field.isAnnotationPresent(Context.class)) {
-				throw new IllegalArgumentException();
-			}
-
 			InjetionPoint injetionPoint = new InjetionPoint(field);
 			this.injetionPoints.add(injetionPoint);
 			Class<?> dependency = injetionPoint.getType();
@@ -104,14 +101,14 @@ public class ClassServiceProvider<T> implements ServiceFunction<T> {
 		int i = 0;
 		for (Field field : contextFields) {
 			ContextInjectionPoint injetionPoint = new ContextInjectionPoint(field);
-			this.requiredContextProviderTypes.add(injetionPoint.getContextProviderType());
-			this.contextType.set(i, injetionPoint.getContextProviderType());
+			this.requiredContextIdentifiers.add(injetionPoint.getContextIdentifier());
+			this.contextType.set(i, injetionPoint.getContextIdentifier());
 			this.contextInjectionPoints.set(i, injetionPoint);
 			i++;
 		}
 	}
 
-	private NTuple<?> getContextTuple(Map<Class<?>, StaticProvider<?>> contextProviders,
+	private NTuple<?> getContextTuple(Map<String, StaticProvider<?>> contextProviders,
 			@Nullable ServiceConsumer consumer) {
 		if (consumer == null) {
 			return new NTuple<>(this.contextType.n);
@@ -123,7 +120,7 @@ public class ClassServiceProvider<T> implements ServiceFunction<T> {
 
 	@Override
 	public T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies,
-			Map<Class<?>, StaticProvider<?>> contextProviders, @Nullable ServiceConsumer consumer) {
+			Map<String, StaticProvider<?>> contextProviders, @Nullable ServiceConsumer consumer) {
 		NTuple<?> contextTuple = this.getContextTuple(contextProviders, consumer);
 		if (this.serviceInstances.containsKey(contextTuple)) {
 			return this.serviceInstances.get(contextTuple);

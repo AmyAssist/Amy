@@ -36,7 +36,9 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * Util for checks and java reflection
@@ -58,8 +60,17 @@ public class Util {
 	 * @return
 	 */
 	public static boolean classCheck(@Nonnull Class<?> cls) {
-		return constructorCheck(cls) && !cls.isArray() && !cls.isInterface()
-				&& !Modifier.isAbstract(cls.getModifiers());
+		if (!constructorCheck(cls) || cls.isArray() || cls.isInterface() || Modifier.isAbstract(cls.getModifiers())) {
+			return false;
+		}
+
+		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(cls, Reference.class);
+		for (Field field : dependencyFields) {
+			if (field.isAnnotationPresent(Context.class)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
