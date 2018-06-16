@@ -30,6 +30,7 @@ import java.util.logging.LogManager;
 import javax.ws.rs.Path;
 
 import org.mockito.Mockito;
+import org.slf4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
@@ -64,6 +65,7 @@ public class TestFramework {
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
 		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
 		this.dependencyInjection.register(Server.class);
+		this.dependencyInjection.register(Logger.class, new LoggerProvider());
 	}
 
 	void setup(Object testInstance) {
