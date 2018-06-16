@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
-
 import java.io.IOException;
 
 import javax.sound.sampled.AudioFormat;
@@ -34,28 +33,39 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import marytts.LocalMaryInterface;
 import marytts.exceptions.MaryConfigurationException;
 import marytts.exceptions.SynthesisException;
 
 /**
- * Class Based on MaryTTS: https://github.com/marytts/marytts
- * Class that gives out a String input as Speech
- * First setup() the TTS to make the output later Faster
- * Before running as thread set the String-To-Say with setOutputString
+ * Class Based on MaryTTS: https://github.com/marytts/marytts. Class that gives
+ * out a String input as Speech. First setup() the TTS to make the output later
+ * Faster. Before running as thread set the String-To-Say with setOutputString
+ * 
  * @author Tim Neumann, Kai Menzel
  */
 public class TextToSpeech {
 	
+	private final Logger logger = LoggerFactory.getLogger(TextToSpeech.class);
+
 	private static TextToSpeech tts;
 	
+	private final LocalMaryInterface mary;
+
+	private AudioInputStream audio;
+
+	private Clip outputClip;
+
 	private TextToSpeech() {
 		try {
 			this.mary = new LocalMaryInterface();
 			this.mary.setVoice("dfki-poppy-hsmm");
 		} catch (MaryConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("initialization error", e);
+			throw new IllegalStateException(e);
 		}
 	}
 	
@@ -66,14 +76,13 @@ public class TextToSpeech {
 		return tts;
 	}
 	
-	// -----------------------------------------------------------------------------------------------
-	
-	private LocalMaryInterface mary = null;
-	
 	/**
+	 * outputs Speech translated from given String
 	 * 
+	 * @param s
+	 *            String that shall be said
 	 */
-	private AudioInputStream audio;
+private AudioInputStream audio;
 	
 	private Clip outputClip;
 	
@@ -84,9 +93,8 @@ public class TextToSpeech {
 	 * outputs Speech translated from given String
 	 * @param listener 
 	 * @param s String that shall be said
-	 */
-	private void speak(LineListener listener, String s){
-		System.out.println("[OUTPUT] :: " + s);
+	 */	private void speak(LineListener listener, String s){
+		this.logger.info("saying: {}", s);
 		try {
 			this.audio = this.mary.generateAudio(s);
 			AudioFormat format = this.audio.getFormat();
@@ -96,8 +104,7 @@ public class TextToSpeech {
 		    this.outputClip.open(this.audio);
 		    this.outputClip.start();
 		} catch (SynthesisException | LineUnavailableException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("output error", e);
 		}
 	    
 	}
@@ -111,12 +118,13 @@ public class TextToSpeech {
 		speak(listener, preProcessing(s));
 	}
 	
-	
 	// -----------------------------------------------------------------------------------------------
 	
 	/**
 	 * cleans String of SubString Mary can't pronounce
-	 * @param s String Mary shall say
+	 * 
+	 * @param s
+	 *            String Mary shall say
 	 * @return cleaned String Mary shall say
 	 */
 	private String preProcessing(String s) {
@@ -139,11 +147,11 @@ public class TextToSpeech {
 
 	/**
 	 * Get's {@link #outputClip outputClip}
+	 * 
 	 * @return  outputClip
 	 */
 	public Clip getOutputClip() {
 		return this.outputClip;
 	}
-	
 	
 }

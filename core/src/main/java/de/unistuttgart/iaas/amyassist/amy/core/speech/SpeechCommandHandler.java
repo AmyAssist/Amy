@@ -33,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
 import de.unistuttgart.iaas.amyassist.amy.core.GrammarParser;
 import de.unistuttgart.iaas.amyassist.amy.core.PluginGrammarInfo;
@@ -48,6 +51,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  */
 @Service
 public class SpeechCommandHandler {
+	private final Logger logger = LoggerFactory.getLogger(SpeechCommandHandler.class);
+
 	private AnnotationReader annotationReader = new AnnotationReader();
 	private TextToPlugin textToPlugin;
 	private GrammarParser generator = new GrammarParser("grammar", AudioUserInteraction.getAudioUI().getWAKEUP(),
@@ -63,16 +68,14 @@ public class SpeechCommandHandler {
 
 	public void registerSpeechCommand(Class<?> class1) {
 		if (!class1.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand.class))
-			throw new RuntimeException();
+			throw new IllegalArgumentException();
 		String[] speechKeyword = this.annotationReader.getSpeechKeyword(class1);
 		Map<String, SpeechCommand> grammars = this.annotationReader.getGrammars(class1);
 		PluginGrammarInfo pluginGrammarInfo = new PluginGrammarInfo(Arrays.asList(speechKeyword), grammars.keySet());
 		this.grammarInfos.put(pluginGrammarInfo, class1);
 		this.speechCommands.putAll(grammars);
 		for (Map.Entry<String, SpeechCommand> e : grammars.entrySet()) {
-		//	for (String keyword : speechKeyword) {
-				this.generator.addRule(UUID.randomUUID().toString(), speechKeyword, e.getKey());
-		//	}
+			this.generator.addRule(UUID.randomUUID().toString(), speechKeyword, e.getKey());
 		}
 
 	}
@@ -87,14 +90,14 @@ public class SpeechCommandHandler {
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.getFileToSaveGrammarTo()))) {
 			bw.write(grammar);
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			this.logger.error("Can't write grammar file", e1);
 		}
 
 		this.textToPlugin = new TextToPlugin(this.grammarInfos.keySet());
 	}
 
 	public String handleSpeechInput(String input) {
-		System.out.println("input " + input);
+		this.logger.debug("input {}", input);
 		List<String> pluginActionFromText = this.textToPlugin.pluginActionFromText(input);
 		if (pluginActionFromText == null)
 			throw new IllegalArgumentException(input);
