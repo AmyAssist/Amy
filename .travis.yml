@@ -3,15 +3,12 @@ jdk:
   - oraclejdk8
   - oraclejdk9
   - openjdk8
-addons:
-  sonarcloud:
-    organization: "amyassist"
-    token: $SONAR_TOKEN
-cache:
-  directories:
-  - "$HOME/.m2"
 jobs:
   include:
+    - install: skip
+      script:
+      - ./scripts/fixAllFileComments.sh
+      - git diff --exit-code
     - stage: deploy
       script: ./scripts/deployGH-Pages.sh
       deploy:
@@ -25,6 +22,10 @@ jobs:
       - mvn clean test jacoco:report
       - bash <(curl -s https://codecov.io/bash)
     - script: mvn clean test jacoco:report sonar:sonar
+      addons:
+        sonarcloud:
+          organization: "amyassist"
+          token: $SONAR_TOKEN
 notifications:
   slack:
     secure: hyZgENH3vLXBUvpyztX3e6Fo8VEaBJYjHCbX1czIzBmX8txIAE41nzwvL5I+D8rUzI7Fy6L0eF4CYltx0HYm27XHhlpOExpo4kEyid7ndO2iwrXeMShbzF1G1ayW0XSzJ51Hb23hPjulTJUZxCDJAiX5hZ+8PTIb0FTm2omC77HfnaV80KX0jcc2s7ULOMpLvvPLJV3bT982RYSPUWwuCCZtjhgjvdNAAhU0tY4WCAjlRTbIjxdTthg+5SeKwCGCw1bWtBG1Z53FDaEIKGOe1NuD5Qq5cGa4sjsZwPEg1o/ENadahhtisH5c/OzqEIIKK0Yg2K1SZgI8YCyl774YBE9XOwHCvgBSJGOHzY5MAJIM68hyEn+bgWQkzxmfuauZNQnIjUi9Z/VKb0sf7YUzWHM4P93MhoDE4nxddIiLND5z1n6E0et3aXIGkw51hR8aIi7I3SOHgZPFKCoOsxci/S730Nt3MGgiTuPjJZKGvzAe/LEj/nPpyQj7/ZGxT1gtYlQNQR0bK5IffRHy9Gj1WyPU27g6wFwxu+DSUV6cJ/ZtDFnVGJsleXAZnX9Sp4Ski1/QZ5o/C84hnq/wINcrOydZVzcXkFxV/VIBjS7mp0S+Ln6olPBmgzxs0K3g7YVgZfSosIhPZjaYoeERK91R8plhfZsGb/DQ1qfH2pnWR8Y=

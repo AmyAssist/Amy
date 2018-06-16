@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +17,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * For more information see notice.md
  */
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
@@ -64,7 +67,7 @@ public class Storage implements IStorage {
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage#get(java.lang.String)
 	 */
 	@Override
-	public String get(String key) throws NoSuchElementException {
+	public String get(String key) {
 		return this.globStorage.get(this.prefix + key);
 	}
 

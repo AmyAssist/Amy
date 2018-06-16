@@ -3,10 +3,12 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may obtain a copy of the License at 
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -15,6 +17,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * For more information see notice.md
  */
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
@@ -34,6 +38,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +91,7 @@ public class PluginLoader {
 			while (jarEntries.hasMoreElements()) {
 				JarEntry jarEntry = jarEntries.nextElement();
 				if (jarEntry.getName().endsWith(".class")) {
-					String className = jarEntry.getName().substring(0, jarEntry.getName().length() - 6);
+					String className = StringUtils.removeEnd(jarEntry.getName(), ".class");
 					className = className.replace("/", ".");
 					if (className.contains("amy")) {
 						this.logger.debug("load class {}", className);
@@ -152,7 +157,7 @@ public class PluginLoader {
 	}
 
 	private void addPlugin(Plugin plugin) {
-		if (plugin.getClasses().size() < 1) {
+		if (plugin.getClasses().isEmpty()) {
 			this.logger.warn("Plugin contains no class: {}", plugin.getUniqueName());
 		}
 		if (plugin.getUniqueName().equals("")) {
@@ -162,23 +167,23 @@ public class PluginLoader {
 			this.logger.warn("Can't get version of plugin {}", plugin.getUniqueName());
 		}
 
-		this.logger.info("loaded plugin {} with {} classes", plugin.getUniqueName(), "" + plugin.getClasses().size());
+		this.logger.info("loaded plugin {} with {} classes", plugin.getUniqueName(), plugin.getClasses().size());
 		this.plugins.put(plugin.getUniqueName(), plugin);
 	}
 
-	private ArrayList<Class<?>> findClassesInPackage(File packageFile, String parent_packageName) {
+	@Deprecated
+	private ArrayList<Class<?>> findClassesInPackage(File packageFile, String parentPackageName) {
 		ArrayList<Class<?>> classes = new ArrayList<>();
 		if (packageFile.isDirectory()) {
 			for (File child : packageFile.listFiles()) {
 				ArrayList<Class<?>> newClasses = this.findClassesInPackage(child,
-						parent_packageName + "." + packageFile.getName());
+						parentPackageName + "." + packageFile.getName());
 				if (newClasses == null)
 					return null;
 				classes.addAll(newClasses);
 			}
 		} else if (packageFile.getName().endsWith(".class")) {
-			String className = parent_packageName + "."
-					+ packageFile.getName().substring(0, packageFile.getName().length() - 6);
+			String className = parentPackageName + "." + StringUtils.removeEnd(packageFile.getName(), ".class");
 			try {
 				classes.add(Class.forName(className));
 			} catch (ClassNotFoundException e) {

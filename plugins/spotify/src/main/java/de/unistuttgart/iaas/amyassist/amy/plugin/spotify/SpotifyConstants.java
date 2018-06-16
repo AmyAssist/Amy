@@ -21,21 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.annotation;
+package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public class SpotifyConstants {
 
-/**
- * Declare a init method
- * 
- * @author Leon Kiefer
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Target(java.lang.annotation.ElementType.METHOD)
-public @interface PostConstruct {
+	public static final String TYPE_ARTIST = "artist";
+	public static final String TYPE_TRACK = "track";
+	public static final String TYPE_PLAYLIST = "playlist";
+	public static final String TYPE_ALBUM = "album";
+	public static final String ITEM_NAME = "name";
+	public static final String GENRE = "genre";
+	public static final String ARTIST_NAME = "artisName";
+	public static final String ITEM_URI = "uri";
+	public static final String ITEM_TYPE = "type";
+
+	private SpotifyConstants() {
+
+	}
 
 }

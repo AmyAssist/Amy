@@ -3,10 +3,12 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may obtain a copy of the License at 
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -15,12 +17,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * For more information see notice.md
  */
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
 
@@ -54,7 +59,7 @@ public class Plugin {
 	/**
 	 * The list of all classes of this plugin
 	 */
-	private ArrayList<Class<?>> classes = new ArrayList<>();
+	private List<Class<?>> classes = new ArrayList<>();
 
 	private String fakeName = "";
 	private String fakeVersion = "";
@@ -113,7 +118,7 @@ public class Plugin {
 	 * 
 	 * @return classes
 	 */
-	public ArrayList<Class<?>> getClasses() {
+	public List<Class<?>> getClasses() {
 		return new ArrayList<>(this.classes);
 	}
 
