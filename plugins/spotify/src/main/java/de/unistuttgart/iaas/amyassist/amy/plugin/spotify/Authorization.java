@@ -27,6 +27,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -36,22 +39,37 @@ import com.wrapper.spotify.requests.authorization.authorization_code.Authorizati
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 
 /**
- * TODO: Description
+ * This class regulated the complete authorization for the Spotify Web Api. For
+ * example generates Refresh Tokens, Access Tokens, ...
  * 
  * @author Lars Buttgereit
  */
 public class Authorization {
 
+	/**
+	 * clientID from a spotify developer account
+	 */
 	private String clientID = null;
+	/**
+	 * clientSecret from a spotify developer account
+	 */
 	private String clientSecret = null;
+	/**
+	 * URI to redirect callbacks from the login screen
+	 */
 	private final URI redirectURI = SpotifyHttpManager.makeUri("http://localhost:8888");
+	/**
+	 * refreshToken is needed to generate new access tokens
+	 */
 	private String refreshToken = null;
-	
+
 	private AuthorizationCodeCredentials authorizationCodeCredentials;
 	private AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;
-	// Rules for the spotify user authentication e.g. access to the playcontrol
+	/**
+	 *  Rules for the spotify user authentication e.g. access to the playcontrol
+	 */
 	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state";
-	
+
 	private static final String SPOTIFY_CLIENTSECRET = "spotify_clientSecret";
 	private static final String SPOTIFY_CLIENTID = "spotify_clientId";
 	private static final String SPOTIFY_REFRSHTOKEN = "spotify_refreshToken";
@@ -59,37 +77,39 @@ public class Authorization {
 	private ConfigLoader configLoader = new ConfigLoader();
 
 	private boolean firstTime = true;
-	
+	private Logger logger;
+
 	private SpotifyApi spotifyApi = null;
 
 	/**
-	 * only succsefull if clientID and ClientSecret was written to file first
+	 * only successful if clientID and ClientSecret was written to file first
 	 * 
-	 * @return true if succeded, else false
+	 * @return true if succeed, else false
 	 */
 	public boolean init() {
+		this.logger = LoggerFactory.getLogger(Authorization.class);
 		if (configLoader.get(SPOTIFY_CLIENTID) != null && configLoader.get(SPOTIFY_CLIENTSECRET) != null) {
 			this.clientID = configLoader.get(SPOTIFY_CLIENTID);
 			this.clientSecret = configLoader.get(SPOTIFY_CLIENTSECRET);
 			this.spotifyApi = new SpotifyApi.Builder().setClientId(this.clientID).setClientSecret(this.clientSecret)
 					.setRedirectUri(this.redirectURI).build();
 		} else {
-			System.err.println("Client Secret and ID missing. Please insert the config file");
+			this.logger.warn("Client Secret and ID missing. Please insert the config file");
 			return false;
 		}
 
 		if (configLoader.get(SPOTIFY_REFRSHTOKEN) != null) {
 			this.refreshToken = configLoader.get(SPOTIFY_REFRSHTOKEN);
 		} else {
-			System.err.println("Please exec the Authorization first");
+			this.logger.warn("Please exec the Authorization first");
 			return false;
 		}
 		return true;
 	}
 
 	/**
-	 * create a authenitcation link for the User to authenticate his spotify
-	 * account. The Link create a authenitcation code for the next step
+	 * create a authentication link for the User to authenticate his spotify
+	 * account. The Link create a authentication code for the next step
 	 * 
 	 * @return
 	 */
@@ -97,12 +117,11 @@ public class Authorization {
 		init();
 		AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri().state("TEST")
 				.scope(SPOTIFY_RULES).show_dialog(true).build();
-		final URI uri = authorizationCodeUriRequest.execute();
-		return uri;
+		return authorizationCodeUriRequest.execute();
 	}
 
 	/**
-	 * create a persistent refresh token with the authentifaction Code
+	 * create a persistent refresh token with the authentication Code
 	 * 
 	 * @param authCode
 	 *            from authorizationCodeUri()
@@ -113,9 +132,8 @@ public class Authorization {
 			AuthorizationCodeCredentials authorizationCodeCredentials1 = authorizationCodeRequest.execute();
 			this.refreshToken = authorizationCodeCredentials1.getRefreshToken();
 			this.configLoader.set(SPOTIFY_REFRSHTOKEN, refreshToken);
-			System.out.println(refreshToken);
 		} catch (SpotifyWebApiException | IOException e) {
-			System.err.println(e.getMessage());
+			this.logger.error(e.getMessage());
 		}
 	}
 
@@ -139,7 +157,7 @@ public class Authorization {
 					return null;
 				}
 			} catch (SpotifyWebApiException | IOException e) {
-				System.err.println(e.getCause().getMessage());
+				this.logger.error(e.getCause().getMessage());
 				return null;
 			}
 			this.firstTime = false;
@@ -153,7 +171,7 @@ public class Authorization {
 				this.spotifyApi.setAccessToken(this.authorizationCodeCredentials.getAccessToken());
 
 			} catch (SpotifyWebApiException | IOException e) {
-				System.err.println(e.getCause().getMessage());
+				this.logger.error(e.getCause().getMessage());
 				return null;
 			}
 			return this.spotifyApi;
