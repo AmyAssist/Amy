@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.JsonParser;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -53,7 +54,8 @@ public class PlayerLogic {
 	private Search search;
 	private int volume = 50;
 	// private String deviceName = null;
-	private List<String[]> actualSearchResult = null;
+	private List<Map<String, String>> actualSearchResult = null;
+	private StringGenerator stringGenerator = new StringGenerator();
 
 	public PlayerLogic() {
 		init();
@@ -94,8 +96,7 @@ public class PlayerLogic {
 	/**
 	 * get all devices that logged in at the moment
 	 * 
-	 * @return empty ArrayList if no device available else the name of the
-	 *         devices
+	 * @return empty ArrayList if no device available else the name of the devices
 	 */
 	public ArrayList<String> getDevices() {
 
@@ -123,8 +124,8 @@ public class PlayerLogic {
 	 * set the given device as acutal active device for playing music
 	 * 
 	 * @param deviceNumber
-	 *            index of the device array. Order is the same as in the output
-	 *            in getDevices
+	 *            index of the device array. Order is the same as in the output in
+	 *            getDevices
 	 * @return selected device
 	 */
 	public String setDevice(int deviceNumber) {
@@ -157,20 +158,44 @@ public class PlayerLogic {
 	 *            how many results maximal searched for
 	 * @return one output String with all results
 	 */
-	public String search(String searchText, String type, int limit) {
+	public List<Map<String, String>> search(String searchText, String type, int limit) {
 		if (checkPlayerState() == null) {
-			this.actualSearchResult = this.search.searchAnything(searchText, type, limit);
-			String resultString = "";
-			for (int i = 0; i < this.actualSearchResult.size(); i++) {
-				resultString = resultString + "\n" + this.actualSearchResult.get(i)[1];
+			try {
+				this.actualSearchResult = this.search.searchList(searchText, type, limit);
+			} catch (SpotifyWebApiException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			for (String[] result : this.actualSearchResult) {
-				resultString = resultString + "\n" + result[1];
-			}
-			return resultString;
+
+			return actualSearchResult;
 		} else {
-			return checkPlayerState();
+			// return checkplaystate()
+			return new ArrayList<>();
 		}
+	}
+
+	/**
+	 * generate one String out of the search result map. Useful for example for
+	 * console or speech output
+	 * 
+	 * @param input
+	 *            the map from a search
+	 * @return one String with all search results includes the name, artist, ...
+	 */
+	public String convertSearchOutputToSingleString(Map<String, String> input) {
+		return stringGenerator.generateSearchOutputString(input);
+	}
+
+	/**
+	 * generate one String out of the search result list. Useful for example for
+	 * console or speech output
+	 * 
+	 * @param input
+	 *            the list from a search
+	 * @return one String with all search results includes the name, artist, ...
+	 */
+	public String convertSearchOutputToSingleString(List<Map<String, String>> input) {
+		return stringGenerator.generateSearchOutputString(input);
 	}
 
 	/**
@@ -178,19 +203,27 @@ public class PlayerLogic {
 	 * 
 	 * @return a string with the playlist name
 	 */
-	public String play() {
+	public Map<String, String> play() {
 		if (checkPlayerState() == null) {
-			ArrayList<String[]> playLists = this.search.getFeaturedPlaylists();
-			if (playLists.size() > 0) {
-				if (1 < this.search.getFeaturedPlaylists().size()) {
-					playListFromUri(playLists.get(1)[0]);
-					return playLists.get(1)[1];
+			List<Map<String, String>> playLists;
+			try {
+				playLists = this.search.getFeaturedPlaylists();
+				if (!playLists.isEmpty()) {
+					if (1 < playLists.size()) {
+						playListFromUri(playLists.get(1).get(SpotifyConstants.ITEM_URI));
+						return playLists.get(1);
+					}
 				}
+			} catch (SpotifyWebApiException | IOException e) {
+				e.printStackTrace();
 			}
-			return "no featured playlist found";
+
+			// return "no featured playlist found";
+
 		}
 		System.err.println(checkPlayerState());
-		return checkPlayerState();
+		// return checkPlayerState();
+		return new HashMap<>();
 	}
 
 	/**
@@ -200,24 +233,26 @@ public class PlayerLogic {
 	 *            number of the item form the search before
 	 * @return
 	 */
-	public String play(int songNumber) {
+	public Map<String, String> play(int songNumber) {
 		if (this.actualSearchResult != null && songNumber < this.actualSearchResult.size()) {
-			if (this.actualSearchResult.get(songNumber)[2].equals("track")) {
-				playSongFromUri(this.actualSearchResult.get(songNumber)[0]);
-				return this.actualSearchResult.get(songNumber)[1];
+			if (this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_TYPE)
+					.equals(SpotifyConstants.TYPE_TRACK)) {
+				playSongFromUri(this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_URI));
+				return this.actualSearchResult.get(songNumber);
 			} else {
-				playListFromUri(this.actualSearchResult.get(songNumber)[0]);
-				return this.actualSearchResult.get(songNumber)[1];
+				playListFromUri(this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_URI));
+				return this.actualSearchResult.get(songNumber);
 			}
 		} else {
-			return "Please search before you call this or choose a smaller number";
+			return new HashMap<>();
 		}
 	}
 
 	/**
 	 * resume the actual playback
 	 * 
-	 * @return  a boolean. true if the command was executed, else if the command failed
+	 * @return a boolean. true if the command was executed, else if the command
+	 *         failed
 	 */
 	public boolean resume() {
 		if (checkPlayerState() == null) {
@@ -233,13 +268,14 @@ public class PlayerLogic {
 		}
 		System.err.println(checkPlayerState());
 		return false;
-		
+
 	}
 
 	/**
 	 * pause the actual playback
 	 * 
-	 * @return  a boolean. true if the command was executed, else if the command failed
+	 * @return a boolean. true if the command was executed, else if the command
+	 *         failed
 	 */
 	public boolean pausePlayback() {
 		if (checkPlayerState() == null) {
@@ -260,7 +296,8 @@ public class PlayerLogic {
 	/**
 	 * goes one song forward in the playlist or album
 	 * 
-	 * @return  a boolean. true if the command was executed, else if the command failed
+	 * @return a boolean. true if the command was executed, else if the command
+	 *         failed
 	 */
 	public boolean skip() {
 		if (checkPlayerState() == null) {
@@ -281,7 +318,8 @@ public class PlayerLogic {
 	/**
 	 * goes one song back in the playlist or album
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command failed
+	 * @return a boolean. true if the command was executed, else if the command
+	 *         failed
 	 */
 	public boolean back() {
 		if (checkPlayerState() == null) {
@@ -335,7 +373,8 @@ public class PlayerLogic {
 	 * 
 	 * @param volumeString
 	 *            allowed strings: mute, max, up, down
-	 * @return a int from 0-100. This represent the Volume in percent. if the Playerstate incorrect return -1
+	 * @return a int from 0-100. This represent the Volume in percent. if the
+	 *         Playerstate incorrect return -1
 	 */
 	public int setVolume(String volumeString) {
 		if (checkPlayerState() == null) {
@@ -351,18 +390,18 @@ public class PlayerLogic {
 				if (this.volume + 10 <= 100) {
 					this.volume += 10;
 					setVolume(this.volume);
-					
+
 				}
 				break;
 			case "down":
 				if (this.volume - 10 >= 0) {
 					this.volume -= 10;
 					setVolume(this.volume);
-					
+
 				}
 				break;
 			default:
-				System.err.println( "Incorrect volume command" );
+				System.err.println("Incorrect volume command");
 				break;
 			}
 			return this.volume;

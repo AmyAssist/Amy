@@ -85,7 +85,7 @@ public class SpotifySpeech {
 	 */
 	@Grammar("play")
 	public String playFeaturedPlaylist(String... params) {
-		return this.playerLogic.play();
+		return this.playerLogic.convertSearchOutputToSingleString(this.playerLogic.play());
 	}
 
 	@Grammar("resume")
@@ -132,3 +132,4 @@ public class SpotifySpeech {
 		return "track: " + playerLogic.getCurrentSong().get("name") + " by " + playerLogic.getCurrentSong().get("artist");
 	}
 }
+ 

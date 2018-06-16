@@ -80,8 +80,8 @@ public class MusicResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String play(MusicEntity music) {
 		this.musicEntity = music;
-		this.logic.search(this.musicEntity.toString(), Search.TYPE_TRACK, 5);
-		return this.logic.play(0);
+		this.logic.search(this.musicEntity.toString(), SpotifyConstants.TYPE_TRACK, 5);
+		return this.logic.convertSearchOutputToSingleString(this.logic.play(0));
 	}
 	
 	/**
