@@ -69,6 +69,9 @@ public class TextToSpeech {
 		}
 	}
 	
+	/**
+	 * @return TODO
+	 */
 	public static TextToSpeech getTTS() {
 		if(tts == null) {
 			tts = new TextToSpeech();
@@ -76,22 +79,12 @@ public class TextToSpeech {
 		return tts;
 	}
 	
-	/**
-	 * outputs Speech translated from given String
-	 * 
-	 * @param s
-	 *            String that shall be said
-	 */
-private AudioInputStream audio;
-	
-	private Clip outputClip;
-	
 	// -----------------------------------------------------------------------------------------------
 
 	
 	/**
 	 * outputs Speech translated from given String
-	 * @param listener 
+	 * @param listener TODO
 	 * @param s String that shall be said
 	 */	private void speak(LineListener listener, String s){
 		this.logger.info("saying: {}", s);
@@ -111,7 +104,7 @@ private AudioInputStream audio;
 	
 	/**
 	 * Voice Output
-	 * @param listener 
+	 * @param listener TODO
 	 * @param s String to say
 	 */
 	public void say(LineListener listener, String s) {
