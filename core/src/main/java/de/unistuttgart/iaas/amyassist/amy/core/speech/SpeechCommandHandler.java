@@ -100,7 +100,7 @@ public class SpeechCommandHandler {
 	public String handleSpeechInput(String input) {
 		this.logger.debug("input {}", input);
 		GrammarCommand pluginActionFromText = this.textToPlugin.resolveText(input);
-		if (pluginActionFromText == null)
+		if (pluginActionFromText.getMatchingGrammar() == null || pluginActionFromText.getMatchingKeyword() == null)
 			throw new IllegalArgumentException(input);
 		String[] splitByWhitespaceCommand = pluginActionFromText.getWholeCommand().split(" ");
 		return this.call(this.speechCommands.get(pluginActionFromText.getMatchingGrammar()), splitByWhitespaceCommand);
