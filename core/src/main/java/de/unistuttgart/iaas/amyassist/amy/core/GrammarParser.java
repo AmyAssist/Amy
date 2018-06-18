@@ -87,8 +87,8 @@ public class GrammarParser {
 		grammar += "\n//pre defined rules \n";
 
 		// pre defined rules
-		// TODO add them to external file via import rule in JSGF
-		grammar += "<digit> = (one | two | three | four | five | six | seven |"
+		// maybe add them to external file via import rule in JSGF
+		grammar += "<digit> = (one | two | three | four | five | six | seven | eight "
 				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
 				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
 				+ "fifty | sixty  | seventy | eighty | ninety | and )+; \n";
@@ -138,9 +138,11 @@ public class GrammarParser {
 	private String parseKeyword(String keyword) {
 		String parsedKeyword = "";
 
-		for (String s : this.mapKeywordRule.keySet()) {
-			parsedKeyword = keyword.replace(s, this.mapKeywordRule.get(s));
+		for(Map.Entry<String,String> entry : this.mapKeywordRule.entrySet()) {
+			parsedKeyword = keyword.replace(entry.getKey(), entry.getValue());
+
 		}
+
 		return parsedKeyword;
 	}
 
