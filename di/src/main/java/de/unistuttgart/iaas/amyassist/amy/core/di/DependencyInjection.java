@@ -45,6 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.ClassProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ClassServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ClassServiceProviderWithoutDependencies;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingeltonServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
@@ -259,8 +260,8 @@ public class DependencyInjection implements ServiceLocator {
 	}
 
 	@Override
-	public void postConstruct(@Nonnull Object instance) {
-		Util.postConstruct(instance);
+	public void postConstruct(@Nonnull Object postConstructMe) {
+		Util.postConstruct(postConstructMe);
 	}
 
 	@Nonnull
@@ -279,9 +280,17 @@ public class DependencyInjection implements ServiceLocator {
 
 	@Override
 	public <T> T create(@Nonnull Class<T> serviceClass) {
-		ServiceFunction<T> provider = new ClassServiceProvider<>(serviceClass);
+		ServiceFunction<T> provider = new ClassServiceProviderWithoutDependencies<>(serviceClass);
 		ServiceFactory<T> serviceFactory = this.resolve(provider);
 
 		return serviceFactory.build();
+	}
+
+	@Override
+	public <T> T createAndInitialize(Class<T> serviceClass) {
+		T service = this.create(serviceClass);
+		this.inject(service);
+		this.postConstruct(service);
+		return service;
 	}
 }

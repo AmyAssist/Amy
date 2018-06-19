@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.NTuple;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
@@ -48,10 +47,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  * 
  * @author Leon Kiefer
  */
-public class ClassServiceProvider<T> implements ServiceFunction<T> {
+public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependencies<T> {
 	private final Logger logger = LoggerFactory.getLogger(ServiceProvider.class);
-
-	private final Class<? extends T> cls;
 
 	/**
 	 * A register which contains all dependencies
@@ -74,11 +71,7 @@ public class ClassServiceProvider<T> implements ServiceFunction<T> {
 	}
 
 	public ClassServiceProvider(@Nonnull Class<? extends T> cls) {
-		if (!Util.classCheck(cls))
-			throw new IllegalArgumentException(
-					"There is a problem with the class " + cls.getName() + ". It can't be used as a Service");
-
-		this.cls = cls;
+		super(cls);
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(cls, Reference.class);
 		for (Field field : dependencyFields) {
 			InjetionPoint injetionPoint = new InjetionPoint(field);
@@ -113,8 +106,7 @@ public class ClassServiceProvider<T> implements ServiceFunction<T> {
 	}
 
 	@Override
-	public T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies,
-			Map<String, ?> context) {
+	public T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
 		NTuple<?> contextTuple = this.getContextTuple(context);
 		if (this.serviceInstances.containsKey(contextTuple)) {
 			return this.serviceInstances.get(contextTuple);
@@ -135,23 +127,18 @@ public class ClassServiceProvider<T> implements ServiceFunction<T> {
 	 * @return
 	 */
 	private T createService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, NTuple<?> contextTuple) {
-		try {
-			T serviceInstance = this.cls.newInstance();
-			for (InjetionPoint injetionPoint : injetionPoints) {
-				ServiceFactory<?> serviceFactory = resolvedDependencies.get(injetionPoint.getType());
-				injetionPoint.inject(serviceInstance, serviceFactory.build());
-			}
-			for (int i = 0; i < this.contextInjectionPoints.n; i++) {
-				ContextInjectionPoint contextInjectionPoint = this.contextInjectionPoints.get(i);
-				contextInjectionPoint.inject(serviceInstance, contextTuple.get(i));
-			}
-
-			Util.postConstruct(serviceInstance);
-			return serviceInstance;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new IllegalStateException("The constructor of " + this.cls.getName() + " should have been checked",
-					e);
+		T serviceInstance = this.createService();
+		for (InjetionPoint injetionPoint : injetionPoints) {
+			ServiceFactory<?> serviceFactory = resolvedDependencies.get(injetionPoint.getType());
+			injetionPoint.inject(serviceInstance, serviceFactory.build());
 		}
+		for (int i = 0; i < this.contextInjectionPoints.n; i++) {
+			ContextInjectionPoint contextInjectionPoint = this.contextInjectionPoints.get(i);
+			contextInjectionPoint.inject(serviceInstance, contextTuple.get(i));
+		}
+
+		Util.postConstruct(serviceInstance);
+		return serviceInstance;
 	}
 
 	@Override

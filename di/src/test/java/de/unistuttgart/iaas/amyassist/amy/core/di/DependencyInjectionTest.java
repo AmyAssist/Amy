@@ -139,21 +139,30 @@ class DependencyInjectionTest {
 	}
 
 	@Test()
-	void testCreateService() {
+	void testCreateAndInitializeService() {
 		Service2 s2_1 = this.dependencyInjection.getService(Service2.class);
-		Service2 s2_2 = this.dependencyInjection.create(Service2.class);
+		Service2 s2_2 = this.dependencyInjection.createAndInitialize(Service2.class);
 		assertThat(s2_1, not(theInstance(s2_2)));
 		assertThat(s2_1.getService3(), theInstance(s2_2.getService3()));
 	}
 
 	@Test()
+	void testCreateService() {
+		Service2 s2 = this.dependencyInjection.create(Service2.class);
+		assertThat(s2.getService3(), nullValue());
+
+		Service1 service1 = this.dependencyInjection.create(Service1.class);
+		assertThat(service1.init, is(0));
+	}
+
+	@Test()
 	void testCreateNotAService() {
-		NotAService2 nas = this.dependencyInjection.create(NotAService2.class);
+		NotAService2 nas = this.dependencyInjection.createAndInitialize(NotAService2.class);
 		assertThat(nas.getInit(), is(1));
 		Service1 s1 = this.dependencyInjection.getService(Service1.class);
 		this.dependencyInjection.postConstruct(s1);
 		assertThat(nas.getInit(), is(2));
-		NotAService2 nas2 = this.dependencyInjection.create(NotAService2.class);
+		NotAService2 nas2 = this.dependencyInjection.createAndInitialize(NotAService2.class);
 		assertThat(nas2, not(theInstance(nas)));
 	}
 
@@ -190,6 +199,13 @@ class DependencyInjectionTest {
 	@Test()
 	void testServiceType() {
 		assertThrows(IllegalArgumentException.class, () -> this.dependencyInjection.register(Service17.class));
+	}
+
+	@Test()
+	void testCreateAndInitialize() {
+		Service1 service1 = this.dependencyInjection.createAndInitialize(Service1.class);
+		assertThat(service1, notNullValue());
+		assertThat(service1.init, is(1));
 	}
 
 	@AfterEach
