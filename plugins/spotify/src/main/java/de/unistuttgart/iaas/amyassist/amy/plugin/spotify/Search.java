@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.neovisionaries.i18n.CountryCode;
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
@@ -38,8 +37,8 @@ import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
 import com.wrapper.spotify.model_objects.specification.Artist;
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
-import com.wrapper.spotify.requests.data.browse.GetListOfFeaturedPlaylistsRequest;
-import com.wrapper.spotify.requests.data.search.SearchItemRequest;
+
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.data.SpotifyConstants;
 
 /**
  * This class create search query to the spotify web api and parse the results
@@ -48,10 +47,11 @@ import com.wrapper.spotify.requests.data.search.SearchItemRequest;
  * @author Lars Buttgereit
  */
 public class Search {
-	private Authorization auth;
+	private SpotifyAPICalls spotifyAPICalls;
+	private static final int SEARCH_LIMIT = 10;
 
-	public Search(Authorization auth) {
-		this.auth = auth;
+	public Search(SpotifyAPICalls spotifyAPICalls) {
+		this.spotifyAPICalls = spotifyAPICalls;
 	}
 
 	/**
@@ -68,10 +68,12 @@ public class Search {
 	 * @throws IOException
 	 * @throws SpotifyWebApiException
 	 */
-	public List<Map<String, String>> searchList(String searchItem, String type, int limit)
-			throws SpotifyWebApiException, IOException {
-		SearchResult searchResult = searchInSpotify(searchItem, type, limit);
+	public List<Map<String, String>> searchList(String searchItem, String type, int limit) {
+		SearchResult searchResult = spotifyAPICalls.searchInSpotify(searchItem, type, limit);
+		if(searchResult != null) {
 		return createMap(searchResult, type);
+		}
+		return new ArrayList<>();
 	}
 
 	public List<Map<String, String>> createMap(SearchResult searchResult, String type) {
@@ -223,29 +225,6 @@ public class Search {
 	}
 
 	/**
-	 * create a search query for spotify.
-	 * 
-	 * @param searchItem
-	 * @param type
-	 *            type of the search (artis, track, album, playlist)
-	 * @param limit
-	 *            how many entry the result maximal have
-	 * @return a object of the type SearchResult from the spoitfy library
-	 */
-	private SearchResult searchInSpotify(String searchItem, String type, int limit)
-			throws SpotifyWebApiException, IOException {
-		SearchResult searchResult;
-		if (typeCheck(type)) {
-			SearchItemRequest searchItemRequest = this.auth.getSpotifyApi().searchItem(searchItem, type.toLowerCase())
-					.limit(Integer.valueOf(limit)).offset(Integer.valueOf(0)).build();
-			searchResult = searchItemRequest.execute();
-			return searchResult;
-
-		}
-		return null;
-	}
-
-	/**
 	 * this method get a list from 10 featured playlist back
 	 * 
 	 * @return a list with search result entries. every entry has a Map with
@@ -255,13 +234,10 @@ public class Search {
 	 * @throws SpotifyWebApiException
 	 * 
 	 */
-	public List<Map<String, String>> getFeaturedPlaylists() throws SpotifyWebApiException, IOException {
+	public List<Map<String, String>> getFeaturedPlaylists() {
 		List<Map<String, String>> result = new ArrayList<>();
 		HashMap<String, String> entry;
-		GetListOfFeaturedPlaylistsRequest getListOfFeaturedPlaylistsRequest = this.auth.getSpotifyApi()
-				.getListOfFeaturedPlaylists().country(CountryCode.DE).limit(Integer.valueOf(10))
-				.offset(Integer.valueOf(0)).build();
-		FeaturedPlaylists featuredPlaylists = getListOfFeaturedPlaylistsRequest.execute();
+		FeaturedPlaylists featuredPlaylists = spotifyAPICalls.getFeaturedPlaylists(SEARCH_LIMIT);
 		for (PlaylistSimplified playlist : featuredPlaylists.getPlaylists().getItems()) {
 			entry = new HashMap<>();
 			if (playlist.getName() != null) {

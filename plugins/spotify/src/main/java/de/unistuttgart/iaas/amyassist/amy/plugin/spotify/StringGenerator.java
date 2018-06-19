@@ -26,8 +26,12 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 import java.util.List;
 import java.util.Map;
 
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.data.SpotifyConstants;
+
 /**
- * This class generate from the search result or other maps or lists with tracks, playlists or albums one output string
+ * This class generate from the search result or other maps or lists with
+ * tracks, playlists or albums one output string
+ * 
  * @author Lars Buttgereit
  *
  */
@@ -38,8 +42,10 @@ public class StringGenerator {
 	 * console or speech output
 	 * 
 	 * @param input
-	 *            the list from a search or a list with maps with attributes from track, album, playlist
-	 * @return  a single String with useful information for the user from all elements from the list
+	 *            the list from a search or a list with maps with attributes from
+	 *            track, album, playlist
+	 * @return a single String with useful information for the user from all
+	 *         elements from the list
 	 */
 	public String generateSearchOutputString(List<Map<String, String>> input) {
 		String result = "";
@@ -54,12 +60,13 @@ public class StringGenerator {
 	}
 
 	/**
-	 * generate one String out of the search result map or other maps with track, album or playlist attributes. Useful for example for
-	 * console or speech output
+	 * generate one String out of the search result map or other maps with track,
+	 * album or playlist attributes. Useful for example for console or speech output
 	 * 
 	 * @param input
-	 *            the map from a search or a map with attributes from track, album, playlist
-	 * @return  a single String with useful information for the user
+	 *            the map from a search or a map with attributes from track, album,
+	 *            playlist
+	 * @return a single String with useful information for the user
 	 */
 	public String generateSearchOutputString(Map<String, String> input) {
 		switch (input.get(SpotifyConstants.ITEM_TYPE)) {
@@ -78,6 +85,7 @@ public class StringGenerator {
 
 	/**
 	 * build a single string out of a map with the type "track"
+	 * 
 	 * @param track
 	 * @return a single String with useful information for the user about the track
 	 */
@@ -87,8 +95,10 @@ public class StringGenerator {
 				.concat(track.get(SpotifyConstants.ARTIST_NAME));
 		return result;
 	}
+
 	/**
 	 * build a single string out of a map with the type "album"
+	 * 
 	 * @param album
 	 * @return a single String with useful information for the user about the album
 	 */
@@ -98,8 +108,10 @@ public class StringGenerator {
 				.concat(album.get(SpotifyConstants.ARTIST_NAME));
 		return result;
 	}
+
 	/**
 	 * build a single string out of a map with the type "artist"
+	 * 
 	 * @param artist
 	 * @return a single String with useful information for the user
 	 */
@@ -112,13 +124,15 @@ public class StringGenerator {
 
 	/**
 	 * build a single string out of a map with the type "playlist"
+	 * 
 	 * @param playlist
-	 * @return a single String with useful information for the user about the playlist
+	 * @return a single String with useful information for the user about the
+	 *         playlist
 	 */
 	private String playlistOutputString(Map<String, String> playlist) {
 		String result = "";
-		result = result.concat("Playlist name is ").concat(playlist.get(SpotifyConstants.ITEM_NAME)).concat(" created by ")
-				.concat(playlist.get(SpotifyConstants.ARTIST_NAME));
+		result = result.concat("Playlist name is ").concat(playlist.get(SpotifyConstants.ITEM_NAME))
+				.concat(" created by ").concat(playlist.get(SpotifyConstants.ARTIST_NAME));
 		return result;
 	}
 }

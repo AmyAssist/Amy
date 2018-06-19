@@ -56,7 +56,7 @@ public class SpotifySpeech {
 		List<String> devices = this.playerLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
-			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i));
+			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i).concat("\n"));
 		}
 		if (output.equals("")) {
 			return "no deivce found";

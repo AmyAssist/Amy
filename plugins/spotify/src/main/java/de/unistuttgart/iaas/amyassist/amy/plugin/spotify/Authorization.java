@@ -66,13 +66,14 @@ public class Authorization {
 	private AuthorizationCodeCredentials authorizationCodeCredentials;
 	private AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;
 	/**
-	 *  Rules for the spotify user authentication e.g. access to the playcontrol
+	 * Rules for the spotify user authentication e.g. access to the playcontrol
 	 */
 	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state";
 
 	private static final String SPOTIFY_CLIENTSECRET = "spotify_clientSecret";
 	private static final String SPOTIFY_CLIENTID = "spotify_clientId";
 	private static final String SPOTIFY_REFRSHTOKEN = "spotify_refreshToken";
+	private static final int TOKEN_EXPIRE_TIME = 120;
 
 	private ConfigLoader configLoader = new ConfigLoader();
 
@@ -162,7 +163,7 @@ public class Authorization {
 			}
 			this.firstTime = false;
 			return this.spotifyApi;
-		} else if (this.authorizationCodeCredentials.getExpiresIn().intValue() > 120) {
+		} else if (this.authorizationCodeCredentials.getExpiresIn().intValue() > TOKEN_EXPIRE_TIME) {
 			return this.spotifyApi;
 		} else {
 			try {

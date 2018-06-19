@@ -25,8 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,12 +39,12 @@ import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
 import com.wrapper.spotify.model_objects.specification.Artist;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import com.wrapper.spotify.model_objects.specification.Paging;
-import com.wrapper.spotify.model_objects.specification.Playlist;
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.User;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.data.SpotifyConstants;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtention;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -59,7 +57,6 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 public class SearchTest {
 	@Reference
 	private TestFramework testFramework;
-	private PlayerLogic playerLogic;
 
 	private SearchResult albums1;
 	private SearchResult artists1;
@@ -67,17 +64,16 @@ public class SearchTest {
 	private SearchResult tracks1;
 	private SearchResult albums2;
 	private SearchResult artists2;
-	private SearchResult playlists2;
 	private SearchResult tracks2;
 	private Search search;
 
 	@Mock
-	Authorization auth;
+	SpotifyAPICalls spotifyAPICalls;
 
 	@BeforeEach
 	public void init() {
 		createSearchResults();
-		search = new Search(auth);
+		search = new Search(spotifyAPICalls);
 	}
 
 	public void createSearchResults() {
