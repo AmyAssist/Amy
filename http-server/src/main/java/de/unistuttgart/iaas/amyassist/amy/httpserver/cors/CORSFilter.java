@@ -25,13 +25,24 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
 
 import java.io.IOException;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 
 public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilter {
+	
+	private static final String OPTIONS = "OPTIONS";
+	private static final String ACCESS_DENIED = "access.denied";
+	
+	private static final String ALLOWED_ORIGIN = "https://amyassist.github.io";
+	private static final String ALLOWED_HEADERS = "Content-Type";
+	private static final String ALLOWED_METHODS = "GET, POST";
 	
 	
 	@Override
@@ -48,7 +59,35 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
+		String origin = requestContext.getHeaderString(Headers.ORIGIN);
+		if(origin != null) {
+			if(requestContext.getMethod().equalsIgnoreCase(OPTIONS)) {
+				preflight(requestContext,origin);
+			} else {
+				checkOrigin(requestContext,origin);
+			}
+		}
+	}
+
+
+	private void preflight(ContainerRequestContext requestContext, String origin) {
+		checkOrigin(requestContext, origin);
 		
+		ResponseBuilder builder = Response.ok();
+		builder.header(Headers.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+		builder.header(Headers.ACCESS_CONTROL_ALLOW_HEADERS, ALLOWED_HEADERS);
+		builder.header(Headers.ACCESS_CONTROL_ALLOW_METHODS, ALLOWED_METHODS);
+		
+		requestContext.abortWith(builder.build());
+		
+	}
+
+
+	private void checkOrigin(ContainerRequestContext requestContext, String origin) {
+		if(!origin.equals(ALLOWED_ORIGIN)) {
+			requestContext.setProperty(ACCESS_DENIED, true);
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}
 		
 	}
 }
