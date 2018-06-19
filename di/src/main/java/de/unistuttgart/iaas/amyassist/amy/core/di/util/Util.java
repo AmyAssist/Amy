@@ -89,6 +89,12 @@ public class Util {
 		}
 	}
 
+	/**
+	 * Call the Methods annotated with {@link PostConstruct} on the given
+	 * instance
+	 * 
+	 * @param instance
+	 */
 	public static void postConstruct(@Nonnull Object instance) {
 		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(instance.getClass(), PostConstruct.class);
 		for (Method m : methodsWithAnnotation) {
@@ -100,6 +106,17 @@ public class Util {
 		}
 	}
 
+	/**
+	 * Inject object into field of instance. Checks if the type of object can be
+	 * injected into the field.
+	 * 
+	 * @param instance
+	 *            the instance to be modified
+	 * @param object
+	 *            the value which should be injected into the field
+	 * @param field
+	 *            the field of the class in which to inject
+	 */
 	public static void inject(@Nonnull Object instance, @Nullable Object object, @Nonnull Field field) {
 		if (object != null && !field.getType().isAssignableFrom(object.getClass())) {
 			throw new IllegalArgumentException(
