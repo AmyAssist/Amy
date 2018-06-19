@@ -48,12 +48,13 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	@Override
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
 			throws IOException {
-
-		MultivaluedMap<String, Object> headers = responseContext.getHeaders();
-
-		headers.add("Access-Control-Allow-Origin", "https://amyassist.github.io");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Methods", "GET, POST");
+		String origin = requestContext.getHeaderString(Headers.ORIGIN);
+		if(origin == null || requestContext.getMethod().equalsIgnoreCase(OPTIONS) || requestContext.getProperty(ACCESS_DENIED) != null) {
+			//do nothing, either it isn't a cors request or an options call or already failed
+			return;
+		}
+		responseContext.getHeaders().putSingle(Headers.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+		responseContext.getHeaders().putSingle(Headers.VARY, Headers.ORIGIN);
 	}
 	
 
