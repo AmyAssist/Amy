@@ -90,7 +90,7 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	private void checkOrigin(ContainerRequestContext requestContext, String origin) {
 		if(!origin.equals(ALLOWED_ORIGIN)) {
 			requestContext.setProperty(ACCESS_DENIED, true);
-			throw new WebApplicationException(Status.FORBIDDEN);
+			throw new WebApplicationException(origin + " not allowed", Status.FORBIDDEN);
 		}
 		
 	}
