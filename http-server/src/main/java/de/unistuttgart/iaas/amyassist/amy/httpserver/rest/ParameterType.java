@@ -21,13 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
 
 /**
- * The possible Http Methods
+ * TODO: Description
  * @author Tim Neumann
  */
-public enum MethodType {
-
-	GET, POST, DELETE;
+public enum ParameterType {
+	String, Integer, Float;
 }

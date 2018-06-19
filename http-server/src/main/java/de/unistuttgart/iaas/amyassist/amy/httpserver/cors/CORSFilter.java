@@ -21,16 +21,19 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
 
 import java.io.IOException;
 
 import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MultivaluedMap;
 
-public class CORSFilter implements ContainerResponseFilter {
+public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilter {
+	
+	
 	@Override
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
 			throws IOException {
@@ -41,5 +44,11 @@ public class CORSFilter implements ContainerResponseFilter {
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Methods", "GET, POST");
 	}
+	
 
+	@Override
+	public void filter(ContainerRequestContext requestContext) throws IOException {
+		
+		
+	}
 }
