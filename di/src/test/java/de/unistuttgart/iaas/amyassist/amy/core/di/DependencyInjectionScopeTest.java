@@ -116,6 +116,17 @@ public class DependencyInjectionScopeTest {
 	}
 
 	@Test
+	public void testInjectContextValue() {
+		this.dependencyInjection.register(Service12.class);
+
+		Service11 s1 = new Service11();
+
+		this.dependencyInjection.inject(s1);
+		assertThat(s1.s.getConsumerClass(), notNullValue());
+		assertThat(s1.s.getConsumerClass(), equalTo(Service11.class));
+	}
+
+	@Test
 	public void testNoContextProvider() {
 		this.dependencyInjection.register(Service16.class);
 		this.dependencyInjection.register(ServiceForPlugins.class);

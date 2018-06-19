@@ -30,6 +30,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNullableByDefault;
+
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +61,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  * 
  * @author Leon Kiefer, Tim Neumann
  */
+@ParametersAreNullableByDefault
 public class DependencyInjection implements ServiceLocator {
 
 	/**
@@ -102,7 +107,7 @@ public class DependencyInjection implements ServiceLocator {
 	 * @param cls
 	 *            The service to register.
 	 */
-	public synchronized void register(Class<?> cls) {
+	public synchronized void register(@Nonnull Class<?> cls) {
 		Service annotation = cls.getAnnotation(Service.class);
 		if (annotation == null)
 			throw new ClassIsNotAServiceException(cls);
@@ -144,7 +149,7 @@ public class DependencyInjection implements ServiceLocator {
 	 * @param externalService
 	 *            The instance of this service
 	 */
-	public synchronized void addExternalService(Class<?> serviceType, Object externalService) {
+	public synchronized void addExternalService(@Nonnull Class<?> serviceType, @Nonnull Object externalService) {
 		this.register(serviceType, new SingeltonServiceProvider<>(externalService));
 	}
 
@@ -154,8 +159,15 @@ public class DependencyInjection implements ServiceLocator {
 
 	@Override
 	public <T> T getService(Class<T> serviceType) {
+		return this.getService(serviceType, null);
+	}
+
+	/**
+	 * @see ServiceLocator#getService(Class)
+	 */
+	public <T> T getService(Class<T> serviceType, @Nullable ServiceConsumer consumer) {
 		ServiceFunction<T> provider = this.getServiceProvider(serviceType);
-		ServiceFactory<T> factory = this.resolve(provider);
+		ServiceFactory<T> factory = this.resolve(provider, consumer);
 		return factory.build();
 	}
 
@@ -169,8 +181,25 @@ public class DependencyInjection implements ServiceLocator {
 	 *            The Service Provider.
 	 * @return The factory for a Service of the ServiceProvider.
 	 */
-	private <T> ServiceFactory<T> resolve(ServiceFunction<T> serviceProvider) {
-		return this.resolve(serviceProvider, new ArrayDeque<>(), null);
+	private <T> ServiceFactory<T> resolve(@Nonnull ServiceFunction<T> serviceProvider) {
+		return this.resolve(serviceProvider, null);
+	}
+
+	/**
+	 * Resolve the dependencies of the ServiceProvider and creates a factory for
+	 * the Service.
+	 * 
+	 * @param <T>
+	 *            The type of the service
+	 * @param serviceProvider
+	 *            The Service Provider.
+	 * @param consumer
+	 *            the consumer of the resolved service
+	 * @return The factory for a Service of the ServiceProvider.
+	 */
+	private <T> ServiceFactory<T> resolve(@Nonnull ServiceFunction<T> serviceProvider,
+			@Nullable ServiceConsumer consumer) {
+		return this.resolve(serviceProvider, new ArrayDeque<>(), consumer);
 	}
 
 	/**
@@ -184,10 +213,12 @@ public class DependencyInjection implements ServiceLocator {
 	 *            The Service Provider.
 	 * @param stack
 	 *            The stack of classes, for which this class is needed.
+	 * @param consumer
+	 *            the consumer of the resolved service
 	 * @return The factory for a Service of the ServiceProvider.
 	 */
-	private <T> ServiceFactory<T> resolve(ServiceFunction<T> serviceProvider, Deque<ServiceProvider<?>> stack,
-			ServiceConsumer consumer) {
+	private <T> ServiceFactory<T> resolve(@Nonnull ServiceFunction<T> serviceProvider,
+			@Nonnull Deque<ServiceProvider<?>> stack, @Nullable ServiceConsumer consumer) {
 		if (stack.contains(serviceProvider)) {
 			throw new IllegalStateException("circular dependencies");
 		} else {
@@ -212,20 +243,27 @@ public class DependencyInjection implements ServiceLocator {
 	}
 
 	@Override
-	public void inject(Object instance) {
-		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(instance.getClass(), Reference.class);
+	public void inject(@Nonnull Object instance) {
+		Class<? extends Object> classOfInstance = instance.getClass();
+		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(classOfInstance, Reference.class);
 		for (Field field : dependencyFields) {
 			Class<?> dependency = field.getType();
-			Object object = this.getService(dependency);
+			Object object = this.getService(dependency, new ServiceConsumer() {
+				@Override
+				public Class<?> getConsumerClass() {
+					return classOfInstance;
+				}
+			});
 			Util.inject(instance, object, field);
 		}
 	}
 
 	@Override
-	public void postConstruct(Object instance) {
+	public void postConstruct(@Nonnull Object instance) {
 		Util.postConstruct(instance);
 	}
 
+	@Nonnull
 	@SuppressWarnings("unchecked")
 	private <T> ServiceFunction<T> getServiceProvider(Class<T> serviceType) {
 		if (!this.register.containsKey(serviceType))
@@ -233,20 +271,16 @@ public class DependencyInjection implements ServiceLocator {
 		return (ServiceFunction<T>) this.register.get(serviceType);
 	}
 
-	private StaticProvider<?> getContextProvider(String contextProviderType) {
+	private StaticProvider<?> getContextProvider(@Nonnull String contextProviderType) {
 		if (!this.staticProvider.containsKey(contextProviderType))
 			throw new NoSuchElementException(contextProviderType);
 		return this.staticProvider.get(contextProviderType);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator#create(java.lang.Class)
-	 */
 	@Override
-	public <T> T create(Class<T> serviceClass) {
-		Deque<ServiceProvider<?>> stack = new ArrayDeque<>();
+	public <T> T create(@Nonnull Class<T> serviceClass) {
 		ServiceFunction<T> provider = new ClassServiceProvider<>(serviceClass);
-		ServiceFactory<T> serviceFactory = this.resolve(provider, stack, null);
+		ServiceFactory<T> serviceFactory = this.resolve(provider);
 
 		return serviceFactory.build();
 	}

@@ -120,7 +120,8 @@ public class NTuple<T> {
 	public int hashCode() {
 		int hashCode = 0;
 		for (T value : this.vector) {
-			hashCode += value.hashCode();
+			if (value != null)
+				hashCode += value.hashCode();
 		}
 		return hashCode;
 	}
