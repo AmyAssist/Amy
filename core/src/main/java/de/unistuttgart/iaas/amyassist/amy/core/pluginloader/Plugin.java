@@ -88,7 +88,7 @@ public class Plugin implements IPlugin {
 	@Override
 	public String getUniqueName() {
 		if (this.manifest == null) {
-			if (this.fakeName != "") {
+			if (!this.fakeName.isEmpty()) {
 				this.logger.warn("manifest is null, using fakeName: {}", this.fakeName);
 				return this.fakeName;
 			}

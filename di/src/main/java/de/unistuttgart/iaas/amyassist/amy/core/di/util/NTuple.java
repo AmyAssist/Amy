@@ -28,27 +28,65 @@ import java.util.function.Function;
 /**
  * A simple n Tuple implementation
  * 
+ * @param <T>
+ *            the type of the values in the tuple
  * @author Leon Kiefer
  */
 public class NTuple<T> {
 	private T[] vector;
 
+	/**
+	 * The number of elements
+	 */
 	public final int n;
 
+	/**
+	 * Create a new Tuple with the given size. The Components are initialized
+	 * with null
+	 * 
+	 * @param size
+	 */
 	@SuppressWarnings("unchecked")
 	public NTuple(int size) {
 		this.n = size;
 		this.vector = (T[]) new Object[size];
 	}
 
+	/**
+	 * Get the component i from the tuple
+	 * 
+	 * @param i
+	 *            the index
+	 * @return the value of the component
+	 */
 	public T get(int i) {
 		return this.vector[i];
 	}
 
+	/**
+	 * Set the component i of the tuple.
+	 * 
+	 * @param i
+	 *            the index
+	 * @param value
+	 *            the value to set
+	 */
 	public void set(int i, T value) {
 		this.vector[i] = value;
 	}
 
+	/**
+	 * Map this NTuple to a new NTuple by applying the given function on every
+	 * component.
+	 * 
+	 * @param function
+	 *            the mapping function which produces the new values from the
+	 *            actual values
+	 * @return the new NTuple with the new values
+	 * 
+	 * @param <R>
+	 *            the type of the new NTuple
+	 */
 	public <R> NTuple<R> map(Function<T, R> function) {
 		NTuple<R> nTuple = new NTuple<>(this.n);
 		for (int i = 0; i < this.n; i++) {
