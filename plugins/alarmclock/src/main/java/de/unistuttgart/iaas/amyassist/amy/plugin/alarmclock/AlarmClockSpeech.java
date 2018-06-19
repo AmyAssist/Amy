@@ -79,6 +79,13 @@ public class AlarmClockSpeech {
 		return this.logic.deactivateTimer(Integer.parseInt(params[2]));
 	}
 
+	@Grammar("activate (alarm|timer) #")
+	public String activateAlarm(String[] params) {
+		if (params[1].equals("alarm"))
+			return this.logic.activateAlarm(Integer.parseInt(params[2]));
+		return this.logic.activateTimer(Integer.parseInt(params[2]));
+	}
+
 	@Grammar("get (alarm|timer) #")
 	public String getAlarm(String[] params) {
 		if (params[1].equals("alarm"))
