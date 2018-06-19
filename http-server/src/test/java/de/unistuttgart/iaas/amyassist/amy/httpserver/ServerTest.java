@@ -49,7 +49,7 @@ class ServerTest {
 	@Test
 	void test() {
 		assertTimeout(ofSeconds(2), () -> {
-			Server server = this.dependencyInjection.create(Server.class);
+			Server server = this.dependencyInjection.createAndInitialize(Server.class);
 			server.start(TestRestResource.class);
 			server.shutdown();
 		}, "The Server start and shotdown takes longer then 2 Seconds");
@@ -58,7 +58,7 @@ class ServerTest {
 
 	@Test
 	void testCantStartServerTwice() {
-		Server server = this.dependencyInjection.create(Server.class);
+		Server server = this.dependencyInjection.createAndInitialize(Server.class);
 		String message = assertThrows(IllegalStateException.class, () -> {
 			server.start(TestRestResource.class);
 			server.start(TestRestResource.class);
@@ -69,7 +69,7 @@ class ServerTest {
 
 	@Test
 	void testRegister() {
-		Server server = this.dependencyInjection.create(Server.class);
+		Server server = this.dependencyInjection.createAndInitialize(Server.class);
 		server.register(TestRestResource.class);
 		server.start();
 		server.shutdown();
@@ -77,7 +77,7 @@ class ServerTest {
 
 	@Test
 	void testRegisterNonResourceClass() {
-		Server server = this.dependencyInjection.create(Server.class);
+		Server server = this.dependencyInjection.createAndInitialize(Server.class);
 		assertThrows(IllegalArgumentException.class, () -> {
 			server.register(ServerTest.class);
 		}, "The Server dont throw an IllegalArgumentException if a registered class is not a Rest Resource");

@@ -107,7 +107,7 @@ public class SpeechCommandHandler {
 
 	private String call(SpeechCommand command, String[] input) {
 		Class<?> speechCommandClass = command.getSpeechCommandClass();
-		Object speechCommandClassInstance = this.serviceLocator.create(speechCommandClass);
+		Object speechCommandClassInstance = this.serviceLocator.createAndInitialize(speechCommandClass);
 		return command.call(speechCommandClassInstance, input);
 	}
 

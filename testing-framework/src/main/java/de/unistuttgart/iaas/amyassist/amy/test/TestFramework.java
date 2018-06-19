@@ -126,7 +126,7 @@ public class TestFramework {
 	public <T> T setServiceUnderTest(Class<T> serviceClass) {
 		if (serviceClass.isAnnotationPresent(Service.class)) {
 			this.dependencyInjection.register(serviceClass);
-			return this.dependencyInjection.create(serviceClass);
+			return this.dependencyInjection.createAndInitialize(serviceClass);
 		}
 		throw new IllegalArgumentException();
 	}
