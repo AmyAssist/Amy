@@ -53,9 +53,11 @@ public class Main {
 	 *            [not used] The command line arguments
 	 */
 	public static void main(String[] args) {
-		setLogLevel(org.slf4j.Logger.ROOT_LOGGER_NAME, Level.INFO);
+		setLogLevel(org.slf4j.Logger.ROOT_LOGGER_NAME, Level.WARN);
+		setLogLevel("de.unistuttgart.iaas.amyassist.amy", Level.INFO);
 		setLogLevel("marytts", Level.WARN);
 		setLogLevel("default.config.edu.cmu.sphinx", Level.WARN);
+		setLogLevel("org.glassfish.grizzly.http.server", Level.WARN);
 		Core core = new Core();
 		core.run();
 	}

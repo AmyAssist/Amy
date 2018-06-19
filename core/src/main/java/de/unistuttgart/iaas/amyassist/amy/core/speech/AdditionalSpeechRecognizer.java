@@ -31,7 +31,7 @@ import javax.sound.sampled.AudioInputStream;
  * 
  * @author Kai Menzel
  */
-public class MainSpeechRecognizer extends SpeechRecognizer {
+public class AdditionalSpeechRecognizer extends SpeechRecognizer {
 
 	/**
 	 * @param audioUI
@@ -39,7 +39,7 @@ public class MainSpeechRecognizer extends SpeechRecognizer {
 	 * @param inputHandler
 	 * @param ais
 	 */
-	public MainSpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler,
+	public AdditionalSpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler,
 			AudioInputStream ais) {
 		super(audioUI, grammar, inputHandler, ais);
 	}
@@ -51,22 +51,12 @@ public class MainSpeechRecognizer extends SpeechRecognizer {
 	protected void predefinedInputHandling() {
 		if(this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
 			 this.tts.stopOutput();
-		 } else if (this.speechRecognitionResult.equals(this.audioUI.getWAKEUP())) {
-			this.listening = true;
-			say("waking up");
-		} else if (this.speechRecognitionResult.startsWith(this.audioUI.getWAKEUP() + " ")) {
-			this.listening = true;
-			this.makeDecision(this.speechRecognitionResult.replaceFirst(this.audioUI.getWAKEUP() + " ", ""));
-		} else if (this.listening) {
-			if (this.speechRecognitionResult.equals(this.audioUI.getGOSLEEP())) {
-				this.listening = false;
-				say("now sleeping");
-			} else {
-				this.makeDecision(this.speechRecognitionResult);
-			}
+		 } else if(this.speechRecognitionResult.equals(this.audioUI.getGOSLEEP())){
+			say("now sleeping");
+			this.stop(null);
+		} else{
+			makeDecision(this.speechRecognitionResult);
 		}
 	}
-
-	
 
 }

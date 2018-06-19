@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Grammar Object, that contains all important Information of a Grammar
@@ -42,7 +43,6 @@ public class Grammar {
 	 * 
 	 */
 	public Grammar(String name, File file) {
-		// TODO Auto-generated constructor stub
 		this.name = name;
 		this.file = file;
 	}
@@ -53,7 +53,6 @@ public class Grammar {
 	 * @param switchList List of all possible Grammar changes
 	 */
 	public Grammar(String name, File file, HashMap<String, Grammar> switchList) {
-		// TODO Auto-generated constructor stub
 		this.name = name;
 		this.file = file;
 		this.switchList = switchList;
@@ -76,7 +75,7 @@ public class Grammar {
 		return this.file;
 	}
 
-	public HashMap<String, Grammar> getSwitchList() {
+	public Map<String, Grammar> getSwitchList() {
 		return this.switchList;
 	}
 

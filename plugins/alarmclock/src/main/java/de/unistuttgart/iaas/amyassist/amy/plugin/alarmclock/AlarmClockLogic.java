@@ -327,6 +327,57 @@ public class AlarmClockLogic {
 	}
 
 	/**
+	 * Activates an existing alarm, so it will ring
+	 * 
+	 * @param alarmNumber
+	 *            number of the alarm
+	 * @return
+	 */
+	protected String activateAlarm(int alarmNumber) {
+		if (this.storage.has("alarm" + alarmNumber)) {
+			String alarm = this.storage.get("alarm" + alarmNumber);
+			String[] params = alarm.split(";");
+			try {
+				if (params[2].equals("false"))
+					this.storage.put("alarm" + alarmNumber, params[0] + ";" + params[1] + ";" + "true");
+				else
+					return "Alarm " + alarmNumber + " is already active";
+			} catch (ArrayIndexOutOfBoundsException e) {
+				this.logger.error("Something went wrong!", e);
+				return "Something went wrong";
+			}
+			return "Alarm " + alarmNumber + " activated";
+		}
+		return "Alarm " + alarmNumber + " not found";
+
+	}
+
+	/**
+	 * Activates an existing timer, so it will ring.
+	 * 
+	 * @param timerNumber
+	 *            number of the timer
+	 * @return
+	 */
+	protected String activateTimer(int timerNumber) {
+		if (this.storage.has("timer" + timerNumber)) {
+			String alarm = this.storage.get("timer" + timerNumber);
+			String[] params = alarm.split(";");
+			try {
+				if (params[1].equals("false"))
+					this.storage.put("timer" + timerNumber, params[0] + ";" + "true");
+				else
+					return "Timer " + timerNumber + " is already active";
+			} catch (ArrayIndexOutOfBoundsException e) {
+				this.logger.error("Something went wrong!", e);
+				return "Something went wrong";
+			}
+			return "Timer " + timerNumber + " activated";
+		}
+		return "Timer " + timerNumber + " not found";
+	}
+
+	/**
 	 * Read out one alarm
 	 * 
 	 * @param alarmNumber

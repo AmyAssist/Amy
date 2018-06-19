@@ -25,11 +25,11 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
@@ -43,6 +43,9 @@ public class AudioUserInteraction implements SpeechIO {
 	
 	private AudioUserInteraction() {}
 	
+	/**
+	 * @return The audioUI Object
+	 */
 	public static AudioUserInteraction getAudioUI() {
 		if(audioUI == null) {
 			audioUI = new AudioUserInteraction();
@@ -70,7 +73,7 @@ public class AudioUserInteraction implements SpeechIO {
 	private ArrayList<Grammar> switchableGrammars;
 	
 	private MainSpeechRecognizer mainRecognizer;
-	private HashMap<String, SpeechRecognizer> recognizerList = new HashMap<>();
+	private HashMap<String, AdditionalSpeechRecognizer> recognizerList = new HashMap<>();
 	
 	
 	// -----------------------------------------------------------------------------------------------
@@ -80,13 +83,13 @@ public class AudioUserInteraction implements SpeechIO {
 	 */
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		createNewAudioInputStream();
 		this.mainRecognizer = new MainSpeechRecognizer(audioUI, this.mainGrammar, this.inputHandler, this.ais);
 		if(this.switchableGrammars != null && !this.switchableGrammars.isEmpty()){
 			for (Grammar grammar : this.switchableGrammars) {
 				if(!this.recognizerList.containsKey(grammar.getName())){
-					this.recognizerList.put(grammar.getName(), new SpeechRecognizer(audioUI, grammar, this.inputHandler, this.ais));					
+					this.recognizerList.put(grammar.getName(),
+							new AdditionalSpeechRecognizer(audioUI, grammar, this.inputHandler, this.ais));					
 				}
 			}
 		}
@@ -118,7 +121,6 @@ public class AudioUserInteraction implements SpeechIO {
 	 */
 	@Override
 	public void setSpeechInputHandler(SpeechInputHandler handler) {
-		// TODO Auto-generated method stub
 		this.inputHandler = handler;
 	}
 	
@@ -196,7 +198,7 @@ public class AudioUserInteraction implements SpeechIO {
 	 * Get's {@link #switchableGrammars switchableGrammars}
 	 * @return  switchableGrammars
 	 */
-	public ArrayList<Grammar> getSwitchableGrammars() {
+	public List<Grammar> getSwitchableGrammars() {
 		return this.switchableGrammars;
 	}
 
@@ -223,7 +225,6 @@ public class AudioUserInteraction implements SpeechIO {
 	 */
 	private void createNewAudioInputStream() {
 		if(this.ais == null){
-    		// TODO Auto-generated method stub
     		TargetDataLine mic = null;
     		try {
     			mic = AudioSystem.getTargetDataLine(this.getFormat());
@@ -231,7 +232,6 @@ public class AudioUserInteraction implements SpeechIO {
     			mic.start();
     			this.ais = new AudioInputStream(mic);
     		} catch (LineUnavailableException e) {
-    			// TODO Auto-generated catch block
     			e.printStackTrace();
     		}
 		}
@@ -242,11 +242,11 @@ public class AudioUserInteraction implements SpeechIO {
 	 * @return fitting AudioFormat
 	 */
 	public AudioFormat getFormat() {
-		float sampleRate = 16000.0f;
-		int sampleSizeInBits = 16;
-		int channels = 1;
-		boolean signed = true;
-		boolean bigEndian = false;
+		final float sampleRate = 16000.0f;
+		final int sampleSizeInBits = 16;
+		final int channels = 1;
+		final boolean signed = true;
+		final boolean bigEndian = false;
 		return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
 	}
 

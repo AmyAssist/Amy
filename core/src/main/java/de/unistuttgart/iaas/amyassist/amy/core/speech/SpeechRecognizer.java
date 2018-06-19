@@ -24,11 +24,18 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.SpeechResult;
@@ -37,55 +44,103 @@ import edu.cmu.sphinx.api.StreamSpeechRecognizer;
 /**
  * Class that translate Aduio-Input into Strings, powered by CMU Sphinx -
  * https://cmusphinx.github.io/ which is Licenced under BSD
- * 
+ *
  * @author Kai Menzel
  */
-public class SpeechRecognizer implements Runnable {
-	
-	// this Grammar
-	private Grammar grammar;
-	
-	// Grammar to switch to
-	private Grammar nextGrammar = null;
-	
-	//Handler that handles all Recognizers and the TTS
-	private AudioUserInteraction audioUI;
+public abstract class SpeechRecognizer implements Runnable {
 
-	// Audio Input Source for the Recognition
-	private AudioInputStream ais;
-	
-	private TextToSpeech tts;
-	private boolean soundPlaying = false;
+	/**
+	 * 
+	 */
+	protected final Logger logger = LoggerFactory.getLogger(SpeechRecognizer.class);
+
+	/**
+	 * this Grammar
+	 */
+	protected Grammar grammar;
+
+	/**
+	 * Grammar to switch to
+	 */
+	protected Grammar nextGrammar = null;
+
+	/**
+	 * Audio Input Source for the Recognition
+	 */
+	protected AudioInputStream ais = null;
+
+	/**
+	 * Handler of all Recognizers and the TTS
+	 */
+	protected AudioUserInteraction audioUI;
+
+	/**
+	 * 
+	 */
+	protected TextToSpeech tts;
+
+	/**
+	 * 
+	 */
+	boolean soundPlaying = false;
+
+	/**
+	 * Boolean to check if we are supposed to listen (sleeping)
+	 */
+	protected boolean listening = false;
+
+	/**
+	 * The result of the Recognition
+	 */
+	protected String speechRecognitionResult = null;
 
 	/**
 	 * Handler who use the translated String for commanding the System
 	 */
-	private SpeechInputHandler inputHandler;
+	protected SpeechInputHandler inputHandler;
 
-	// The Recognizer which Handles the Recognition
-	private StreamSpeechRecognizer recognizer;
+	/**
+	 * The Recognizer which Handles the Recognition
+	 */
+	protected StreamSpeechRecognizer recognizer;
+	
+	private LineListener listener = new LineListener(){
+		@Override
+		public void update(LineEvent event) {
+			if(event.getType() == LineEvent.Type.STOP) {
+				((Clip) event.getSource()).close();
+				SpeechRecognizer.this.soundPlaying = false;
+			}
+		}
+	};
 
 	// -----------------------------------------------------------------------------------------------
 
 	/**
 	 * Creates the Recognizers and Configures them
-	 * @param audioUI Handler that handles all Recognizers and the TTS
-	 * @param grammar the grammar Object of current Recognizer
-	 * @param inputHandler handles the recognition output
+	 * 
+	 * @param audioUI
+	 *            Handler of all recognizers and the TTS
+	 *
+	 * @param grammar
+	 *            Grammar to use in this Recognizer
+	 * @param inputHandler
+	 *            Handler which will handle the input
 	 * @param ais
 	 *            set custom AudioInputStream.
 	 */
-	public SpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler, AudioInputStream ais) {
+	public SpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler,
+			AudioInputStream ais) {
 		this.audioUI = audioUI;
 		this.grammar = grammar;
 		this.inputHandler = inputHandler;
 		this.ais = ais;
-		
+
 		this.tts = TextToSpeech.getTTS();
-		
+
 		// Create the Recognizer
 		try {
-			SpeechRecognizer.this.recognizer = new StreamSpeechRecognizer(createConfiguration());
+			SpeechRecognizer.this.recognizer = new StreamSpeechRecognizer(this.createConfiguration());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -103,16 +158,18 @@ public class SpeechRecognizer implements Runnable {
 		// starts Recognition
 		this.recognizer.startRecognition(this.ais);
 
-		// The result of the Recognition
-		String speechRecognitionResult;
+		this.logger.info("[INFORMATION] :: Speech Recognition activated");
+
+		// Boolean to check if we are supposed to listen (sleeping)
+		this.listening = false;
 
 		loop: while (!Thread.interrupted() && this.audioUI.isRecognitionThreadRunning()) {
-			
+
 			/**
 			 * wait for input from the recognizer
 			 */
 			SpeechResult speechResult = null;
-			while (speechResult == null || soundPlaying) {
+			while (speechResult == null) {
 				speechResult = this.recognizer.getResult();
 				if (Thread.interrupted()) {
 					break loop;
@@ -120,85 +177,102 @@ public class SpeechRecognizer implements Runnable {
 			}
 
 			// Get the hypothesis (Result as String)
-			speechRecognitionResult = speechResult.getHypothesis();
-
-			if(speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
-				 this.tts.stopOutput();
-			 }
-			else if(speechRecognitionResult.equals(this.audioUI.getGOSLEEP())){
-				say("now sleeping");
-				this.stop(null);
-			}else{
-				makeDecision(speechRecognitionResult);
+			this.speechRecognitionResult = speechResult.getHypothesis();
+			if(!this.soundPlaying) {
+				predefinedInputHandling();
+			}else {
+				if(this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
+					this.tts.stopOutput();
+				}
 			}
 		}
 		this.recognizer.stopRecognition();
 		this.audioUI.switchGrammar(this.nextGrammar);
 	}
 
-	// -----------------------------------------------------------------------------------------------
+	// ===============================================================================================
+
+	/**
+	 * 
+	 */
+	protected abstract void predefinedInputHandling();
+
+	// ===============================================================================================
 
 	/**
 	 * Gives Input to Handler checks if input is useful
 	 * 
-	 * @param speech
+	 * @param result
 	 *            the speechRecognitionResultString
 	 */
-	public void makeDecision(String speech) {
-		String result = speech;
+	public void makeDecision(String result) {
 		if (result.replace(" ", "").equals("") || result.equals("<unk>")) {
 			return;
 		}
 
-		if(!this.grammar.getSwitchList().isEmpty()){
+		checkGrammarSwitch(result);
+
+		if (!Thread.interrupted() && this.inputHandler != null) {
+			Future<String> handle = this.inputHandler.handle(result);
+			try {
+				this.say(handle.get());
+			} catch (ExecutionException e) {
+				if (e.getCause() != null && e.getCause().getClass().equals(IllegalArgumentException.class)) {
+					this.say("unknown command");
+					this.logger.warn("unknown command");
+				} else {
+					this.logger.error("unknown error", e);
+				}
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
+	}
+
+	// ===============================================================================================
+
+	private void checkGrammarSwitch(String result) {
+		if (!this.grammar.getSwitchList().isEmpty()) {
 			for (Map.Entry<String, Grammar> entry : this.grammar.getSwitchList().entrySet()) {
-				if(result.equalsIgnoreCase(entry.getKey())){
+				if (result.equalsIgnoreCase(entry.getKey())) {
 					this.stop(entry.getValue());
 				}
 			}
 		}
-
-		if(!Thread.interrupted() && this.inputHandler!=null){
-    		Future<String> handle = this.inputHandler.handle(result);
-    		try {
-    			say(handle.get());
-//    			System.out.println(handle.get());
-//    			System.out.println();
-    		} catch (InterruptedException | ExecutionException e) {
-    			if (e.getCause() != null && e.getCause().getClass().equals(IllegalArgumentException.class)) {
-    				say("unknown command");
-//    				System.out.println("Unknown command");
-    			} else {
-    				e.printStackTrace();
-    			}
-    		}
-		}
-
 	}
-	
+
 	// -----------------------------------------------------------------------------------------------
 
-		private void say(String s) {
-			this.tts.stopOutput();
-			this.tts.say(s);
-		}
-		
-	// ===============================================================================================
-	
-		private void stop(Grammar switchGrammar){
-			this.audioUI.setRecognitionThreadRunning(false);
-			this.nextGrammar = switchGrammar;
-		}
+	/**
+	 * Output
+	 * 
+	 * @param s
+	 *            String that shall be said
+	 */
+	protected void say(String s) {
+		this.soundPlaying = true;
+		this.tts.stopOutput();
+		this.tts.say(this.listener, s);
+	}
 
-	//===============================================================================================
-	
-		
-		
+	// -----------------------------------------------------------------------------------------------
+
+	/**
+	 * void to stop the Actual Recognizer in preparation to start the next
+	 * 
+	 * @param switchGrammar
+	 *            Grammar to Switch to
+	 */
+	protected void stop(Grammar switchGrammar) {
+		this.audioUI.setRecognitionThreadRunning(false);
+		this.nextGrammar = switchGrammar;
+	}
+
 	// ===============================================================================================
 
 	/**
 	 * creates Configuration for the recognizers
-	 * 
+	 *
 	 * @return the configuration
 	 */
 	private Configuration createConfiguration() {
@@ -207,8 +281,12 @@ public class SpeechRecognizer implements Runnable {
 		configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
 		configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
 		configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
-		configuration.setGrammarPath(this.grammar.getFile().getParent());
 		if (this.grammar.getFile().toString().endsWith(".gram")) {
+			try {
+				configuration.setGrammarPath(this.grammar.getFile().getParentFile().toURI().toURL().toString());
+			} catch (MalformedURLException e) {
+				this.logger.error("", e);
+			}
 			configuration.setGrammarName(this.grammar.getFile().getName().replace(".gram", ""));
 			configuration.setUseGrammar(true);
 		} else {
@@ -217,7 +295,7 @@ public class SpeechRecognizer implements Runnable {
 
 		return configuration;
 	}
-	
+
 	// ===============================================================================================
-	
+
 }
