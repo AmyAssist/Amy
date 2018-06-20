@@ -49,14 +49,19 @@ public class WeatherReportDay {
     public String weekday;
     public long timestamp;
 
+
+    private static final String TRIM_QUOTES_REGEX = "^\"|\"$";
+    private static final int FRACTION_TO_PERCENT_FACTOR = 100;
+    private static final int SECONDS_TO_MILLIS_FACTOR = 1000;
+
     private String trimQuotes(String s) {
-        return s.replaceAll("^\"|\"$", "");
+        return s.replaceAll(TRIM_QUOTES_REGEX, "");
     }
 
     public WeatherReportDay(String preamble, FIODataPoint p) {
         this.preamble = preamble;
         this.summary = trimQuotes(p.summary());
-        this.precipProbability = round(p.precipProbability() * 100) + "%";
+        this.precipProbability = round(p.precipProbability() * FRACTION_TO_PERCENT_FACTOR) + "%";
         this.precipType = trimQuotes(p.precipType());
         this.precip = p.precipProbability() > 0;
         this.temperatureMin = Math.round(p.temperatureMin());
@@ -64,7 +69,7 @@ public class WeatherReportDay {
         this.sunriseTime = convertTimeString(p.sunriseTime());
         this.sunsetTime = convertTimeString(p.sunsetTime());
 
-        Date date = new Date(p.timestamp() * 1000);
+        Date date = new Date(p.timestamp() * SECONDS_TO_MILLIS_FACTOR);
         this.weekday = new SimpleDateFormat("EEEE").format(date);
         this.timestamp = p.timestamp();
     }
