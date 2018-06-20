@@ -89,7 +89,7 @@ public class TextToPluginTest {
 		keywords.add("number");
 
 		Set<String> grammars2 = new HashSet<>();
-		grammars2.add("amy says [great|bad] (bluuub|blub) things");
+		grammars2.add("amy says [great] (bluuub|blub) things");
 		grammars2.add("search # in (artist|track|playlist|album)");
 		grammars2.add("this [grammar|(is | really | (bad | hehe))]");
 
@@ -203,9 +203,9 @@ public class TextToPluginTest {
 		assertThat(test.resolveText("testGrammar play ten").getMatchingGrammar(), equalTo("play # [#] [#]"));
 		assertThat(test.resolveText("dawdad awddaw da dawd    testGrammar play ten dwad ad awdwad ad").getMatchingGrammar(), equalTo("play # [#] [#]"));
 		assertThat(test.resolveText("number ten two oh fifty three oh 99").getMatchingGrammar(), equalTo("# oh # [oh #]"));
-		assertThat(test.resolveText("keyword2 amy says blub things").getMatchingGrammar(), equalTo("amy says [great|bad] (bluuub|blub) things"));
-		assertThat(test.resolveText("jdwpojdpa keyword2 amy says blub things jdwopajd").getMatchingGrammar(),
-				equalTo("amy says [great|bad] (bluuub|blub) things"));
+		assertThat(test.resolveText("keyword2 amy says blub things").getMatchingGrammar(), equalTo("amy says [great] (bluuub|blub) things"));
+		assertThat(test.resolveText("jdwpojdpa keyword2 amy says great blub things jdwopajd").getMatchingGrammar(),
+				equalTo("amy says [great] (bluuub|blub) things"));
 		assertThat(test.resolveText("amy says great blub things").getMatchingGrammar(), equalTo(null));
 		assertThat(test.resolveText("testGrammar get devices").getMatchingGrammar(), equalTo("get devices"));
 		assertThat(test.resolveText("blah testiGrammar count count count count count blah").getMatchingGrammar(), 

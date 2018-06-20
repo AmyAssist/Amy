@@ -33,6 +33,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * This class maps a sentence to one of the given grammars in jsgf format
@@ -40,7 +43,9 @@ import java.util.regex.Pattern;
  * @author Felix Burk
  */
 public class TextToGrammarMapper {
-
+	
+	protected final Logger logger = LoggerFactory.getLogger(TextToGrammarMapper.class);
+	
 	/**
 	 * 
 	 */
@@ -82,20 +87,66 @@ public class TextToGrammarMapper {
 		}
 		inputParsedNumbers = inputParsedNumbers.trim();
 		//replace double spacings accidentally created by replace in for loop
-		//reason: the number matcher in extract numbers matches "thirty two " not "thirty two" -- TODO
+		//reason: the number matcher in extract numbers matches "thirty two " not "thirty two" 
 		inputParsedNumbers = inputParsedNumbers.replaceAll("\\s+", " ");
 		grammarCommand.setWholeCommand(inputParsedNumbers);
 		
 		String matchingKeyword = extractMatchingKeyword(inputText);
 		grammarCommand.setMatchingKeyword(matchingKeyword);
 		
-		if(matchingKeyword != null)
-			grammarCommand.setMatchingGrammar(stringToGrammar(inputText, matchingKeyword));
+		if(matchingKeyword != null) {
+			String grammar = stringToGrammar(inputText, matchingKeyword);
+			if(grammar != null) {
+    			grammarCommand.setMatchingGrammar(stringToGrammar(inputText, matchingKeyword));
+			}
+		}
 			
+		
 		return grammarCommand; 
 	}
 	
 	
+	/**
+	 * @param grammar
+	 * @param inputText
+	 * @return
+	 */
+	private HashMap<String, Boolean> resolveOptionalGroups(String grammar, String inputText) {
+		return null;
+	}
+
+	/**
+	 * @param grammar grammar 
+	 * @param inputText inputText
+	 * @return HashMap<String,Boolean>
+	 */
+	private List<String> getGroups(String grammar, List<String> groups, char start, char end) {
+		int openBr = 0;
+		int startBrIndize = 0;
+		char c;
+		
+		for(int i = 0; i<grammar.length(); i++) {
+			c = grammar.charAt(i);
+			if(c == start) {
+				openBr++;
+				if(startBrIndize == 0)
+					startBrIndize = i;
+			}else if(c == end) {
+				openBr--;
+				
+				if(openBr == 0) {
+					String group = grammar.substring(startBrIndize+1, i);
+					groups.add(grammar.substring(startBrIndize, i+1));
+					if(group.length() >= 1) {
+						getGroups(group, groups, start, end);
+					}
+				}
+			}
+			
+		}
+		return groups;
+	}
+
 	/**
 	 * extracts first matching keyword
 	 * 
@@ -116,7 +167,7 @@ public class TextToGrammarMapper {
 						
 						this.matchingGrammar = currentGrammar;
 					}else {
-						//TODO throw exception - multiple matching keywords
+						this.logger.warn("multiple matching keywords found");
 					}
     				
 				}
@@ -145,7 +196,6 @@ public class TextToGrammarMapper {
 				grammarResults.add(grammar);
 			}
 		}
-		
 		return Collections.max(grammarResults, Comparator.comparing(String::length));
 		
 	}
@@ -279,7 +329,7 @@ public class TextToGrammarMapper {
 			this.stringToNmb.put(s, i);
 			i += 10;
 		}
-	}
+	}	
 
 
 }
