@@ -39,6 +39,7 @@ public class WeatherReportDay {
     public String preamble;
 	
     public String summary;
+    public boolean precip;
     public String precipProbability;
     public String precipType;
     public long temperatureMin;
@@ -57,6 +58,7 @@ public class WeatherReportDay {
         this.summary = trimQuotes(p.summary());
         this.precipProbability = round(p.precipProbability() * 100) + "%";
         this.precipType = trimQuotes(p.precipType());
+        this.precip = p.precipProbability() > 0;
         this.temperatureMin = Math.round(p.temperatureMin());
         this.temperatureMax = Math.round(p.temperatureMax());
         this.sunriseTime = convertTimeString(p.sunriseTime());
@@ -80,7 +82,11 @@ public class WeatherReportDay {
     }
 
     private String description(boolean tldr) {
-        String result = (this.preamble != null ? this.preamble + " " : "") + this.summary + " " + this.precipProbability +  " probability of " + this.precipType + ". Between " + this.temperatureMin + " and " + this.temperatureMax + "°C.";
+        String result = (this.preamble != null ? this.preamble + " " : "") + this.summary;
+        if (this.precip) {
+            result += " " + this.precipProbability +  " probability of " + this.precipType + ".";
+        }
+        result += " Between " + this.temperatureMin + " and " + this.temperatureMax + "°C.";
         if (!tldr) {
             result += " Sunrise is at " + this.sunriseTime + " and sunset at " + this.sunsetTime;
         }
