@@ -37,7 +37,7 @@ public class WeatherDarkSkyAPI {
 	private static final String API_SECRET_CONFIG_KEY = "DARKSKY_API_SECRET";
 
 	@Reference
-	public ConfigLoader config;
+	private ConfigLoader config;
 
 	private FIODaily getDailyReports() {
 		ForecastIO fio = new ForecastIO(config.get(API_SECRET_CONFIG_KEY));

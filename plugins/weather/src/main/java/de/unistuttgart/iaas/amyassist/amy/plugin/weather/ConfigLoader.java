@@ -38,7 +38,7 @@ import java.util.Properties;
 public class ConfigLoader {
 
     @Reference
-    public Logger logger;
+    private Logger logger;
 
     private Properties p;
 
