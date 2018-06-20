@@ -48,7 +48,7 @@ public class ConfigLoader {
         try {
             p.load(new FileReader("apikeys/weather_config.properties"));
         } catch (IOException e) {
-            logger.error("Error loading config file for weather plugin");
+            logger.error("Error loading config file for weather plugin", e);
             e.printStackTrace();
         }
     }
