@@ -58,11 +58,11 @@ public class SystemTimeSpeech {
 	/**
 	 * A method which returns the current time
 	 * 
-	 * @return current time (hour minute) in a string, e.g. it is 10 30
+	 * @return current time (hour minute) in a string, e.g. it is 10:30
 	 */
 	@Grammar("the time")
 	public String time(String[] s) {
-		return "it is " + this.logic.getHour() + " " + this.logic.getMinute();
+		return "it is " + this.logic.getHour() + ":" + this.logic.getMinute();
 	}
 
 	/**
