@@ -23,6 +23,12 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
 
+/**
+ * proviedes header values as constants
+ * 
+ * @author Christian Bräuner
+ *
+ */
 public class Headers {
 
 	private Headers() {

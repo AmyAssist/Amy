@@ -36,6 +36,12 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * a filter for CORS requests and OPTIONS calls
+ * 
+ * @author Christian Bräuner
+ *
+ */
 @Provider
 @PreMatching
 public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilter {

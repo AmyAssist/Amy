@@ -32,13 +32,15 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 
+/**
+ * test class for {@link CORSFilter}
+ * @author Christian
+ *
+ */
 class CORSFilterTest {
 
 	private static final String ALLOWED_ORIGIN = "https://amyassist.github.io";
