@@ -23,22 +23,32 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import org.slf4j.Logger;
+
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 
+@Service
 public class ConfigLoader {
+
+    @Reference
+    public Logger logger;
 
     private Properties p;
 
-    public ConfigLoader() {
+    @PostConstruct
+    public void init() {
         p = new Properties();
         try {
             p.load(new FileReader("apikeys/weather_config.properties"));
         } catch (IOException e) {
-            System.err.println("Error loading config file for weather plugin");
+            logger.error("Error loading config file for weather plugin");
             e.printStackTrace();
         }
     }

@@ -26,17 +26,21 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 import com.github.dvdme.ForecastIOLib.FIODaily;
 import com.github.dvdme.ForecastIOLib.FIODataPoint;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
-
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 @Service
 public class WeatherDarkSkyAPI {
 	private static final String STUTTGART_COORDINATES_LAT = "48.745295";
 	private static final String STUTTGART_COORDINATES_LONG = "9.10502";
-	private String API_SECRET = new ConfigLoader().get("DARKSKY_API_SECRET");
+
+	private static final String API_SECRET_CONFIG_KEY = "DARKSKY_API_SECRET";
+
+	@Reference
+	public ConfigLoader config;
 
 	private FIODaily getDailyReports() {
-		ForecastIO fio = new ForecastIO(this.API_SECRET);
+		ForecastIO fio = new ForecastIO(config.get(API_SECRET_CONFIG_KEY));
 		fio.setUnits(ForecastIO.UNITS_SI);
 		fio.getForecast(WeatherDarkSkyAPI.STUTTGART_COORDINATES_LAT, WeatherDarkSkyAPI.STUTTGART_COORDINATES_LONG);
 
