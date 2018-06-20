@@ -21,35 +21,37 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+
+import java.lang.reflect.Field;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
- * A exception of the dependency injection
+ * A InjectionPoint is an abstraction of where an object is injected into an
+ * instance.
  * 
  * @author Leon Kiefer
  */
-public class ServiceNotFoundException extends RuntimeException {
+class InjetionPoint {
+	private Field field;
+
+	public InjetionPoint(Field field) {
+		this.field = field;
+	}
 
 	/**
 	 * 
+	 * @return
 	 */
-	private static final long serialVersionUID = 2441944380474159637L;
-	private final Class<?> serviceType;
-
-	/**
-	 * @param serviceType
-	 */
-	public ServiceNotFoundException(Class<?> serviceType) {
-		this.serviceType = serviceType;
+	public Class<?> getType() {
+		return this.field.getType();
 	}
 
-	/**
-	 * @see java.lang.Throwable#getMessage()
-	 */
-	@Override
-	public String getMessage() {
-		return "The Service " + this.serviceType.getName()
-				+ " is not registered in the DI or do not exists.";
+	public void inject(@Nonnull Object instance, @Nullable Object object) {
+		Util.inject(instance, object, this.field);
 	}
-
 }

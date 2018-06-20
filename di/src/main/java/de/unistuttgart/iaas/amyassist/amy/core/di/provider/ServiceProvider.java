@@ -21,35 +21,38 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+
+import java.util.Collection;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 
 /**
- * A exception of the dependency injection
  * 
  * @author Leon Kiefer
+ *
+ * @param <T>
+ *            service type
  */
-public class ServiceNotFoundException extends RuntimeException {
+public interface ServiceProvider<T> {
+	@Nonnull
+	T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context);
 
 	/**
 	 * 
+	 * @return the dependencies
 	 */
-	private static final long serialVersionUID = 2441944380474159637L;
-	private final Class<?> serviceType;
+	@Nonnull
+	Collection<Class<?>> getDependencies();
 
 	/**
-	 * @param serviceType
+	 * @return the requiredContextProviderTypes
 	 */
-	public ServiceNotFoundException(Class<?> serviceType) {
-		this.serviceType = serviceType;
-	}
-
-	/**
-	 * @see java.lang.Throwable#getMessage()
-	 */
-	@Override
-	public String getMessage() {
-		return "The Service " + this.serviceType.getName()
-				+ " is not registered in the DI or do not exists.";
-	}
+	@Nonnull
+	Collection<String> getRequiredContextIdentifiers();
 
 }

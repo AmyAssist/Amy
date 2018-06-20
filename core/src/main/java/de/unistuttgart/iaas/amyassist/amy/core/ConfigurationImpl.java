@@ -27,7 +27,6 @@ import java.util.Set;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 
 /**
@@ -55,7 +54,7 @@ public class ConfigurationImpl implements Configuration {
 	 */
 	@Override
 	public String getPluginVersion(String pluginName) {
-		Plugin plugin = this.loader.getPlugin(pluginName);
+		IPlugin plugin = this.loader.getPlugin(pluginName);
 		if (plugin != null)
 			return plugin.getVersion();
 		return null;

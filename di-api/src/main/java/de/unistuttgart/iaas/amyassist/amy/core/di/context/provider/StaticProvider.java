@@ -21,35 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
 
 /**
- * A exception of the dependency injection
+ * A Static Context Provider which provides context information from then
+ * consumer class.
  * 
  * @author Leon Kiefer
  */
-public class ServiceNotFoundException extends RuntimeException {
-
+public interface StaticProvider<T> {
 	/**
 	 * 
+	 * @param consumer
+	 *            the class of the consumer
+	 * @return the context information
 	 */
-	private static final long serialVersionUID = 2441944380474159637L;
-	private final Class<?> serviceType;
-
-	/**
-	 * @param serviceType
-	 */
-	public ServiceNotFoundException(Class<?> serviceType) {
-		this.serviceType = serviceType;
-	}
-
-	/**
-	 * @see java.lang.Throwable#getMessage()
-	 */
-	@Override
-	public String getMessage() {
-		return "The Service " + this.serviceType.getName()
-				+ " is not registered in the DI or do not exists.";
-	}
-
+	T getContext(Class<?> consumer);
 }

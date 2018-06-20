@@ -21,35 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.di.consumer;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 
 /**
- * A exception of the dependency injection
+ * A combination of ServiceConsumer and ServiceProvider
  * 
  * @author Leon Kiefer
  */
-public class ServiceNotFoundException extends RuntimeException {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2441944380474159637L;
-	private final Class<?> serviceType;
-
-	/**
-	 * @param serviceType
-	 */
-	public ServiceNotFoundException(Class<?> serviceType) {
-		this.serviceType = serviceType;
-	}
-
-	/**
-	 * @see java.lang.Throwable#getMessage()
-	 */
-	@Override
-	public String getMessage() {
-		return "The Service " + this.serviceType.getName()
-				+ " is not registered in the DI or do not exists.";
-	}
+public interface ServiceFunction<T> extends ServiceConsumer, ServiceProvider<T> {
 
 }

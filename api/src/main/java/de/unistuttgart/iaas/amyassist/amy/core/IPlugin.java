@@ -21,35 +21,59 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core;
+
+import java.io.File;
+import java.util.List;
+import java.util.jar.Manifest;
 
 /**
- * A exception of the dependency injection
+ * A representation of a plugin
  * 
- * @author Leon Kiefer
+ * @author Tim Neumann
  */
-public class ServiceNotFoundException extends RuntimeException {
+public interface IPlugin {
 
 	/**
+	 * Get's the file of this plugin
 	 * 
+	 * @return file
 	 */
-	private static final long serialVersionUID = 2441944380474159637L;
-	private final Class<?> serviceType;
+	File getFile();
 
 	/**
-	 * @param serviceType
+	 * Get's the classloader which was used to load this plugin
+	 * 
+	 * @return classLoader
 	 */
-	public ServiceNotFoundException(Class<?> serviceType) {
-		this.serviceType = serviceType;
-	}
+	ClassLoader getClassLoader();
 
 	/**
-	 * @see java.lang.Throwable#getMessage()
+	 * Get's the unique name of the plugin
+	 * 
+	 * @return uniqueName
 	 */
-	@Override
-	public String getMessage() {
-		return "The Service " + this.serviceType.getName()
-				+ " is not registered in the DI or do not exists.";
-	}
+	String getUniqueName();
+
+	/**
+	 * Get's the version of this plugin
+	 * 
+	 * @return mavenVersion
+	 */
+	String getVersion();
+
+	/**
+	 * Get's a list of all classes of this plugin
+	 * 
+	 * @return classes
+	 */
+	List<Class<?>> getClasses();
+
+	/**
+	 * Get's the manifest of this plugin
+	 * 
+	 * @return manifest
+	 */
+	Manifest getManifest();
 
 }
