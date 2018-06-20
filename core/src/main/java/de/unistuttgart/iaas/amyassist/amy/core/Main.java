@@ -1,5 +1,4 @@
 /*
-/*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
  * 
