@@ -28,5 +28,5 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
  * @author Tim Neumann
  */
 public enum ParameterType {
-	String, Integer, Float;
+	STRING, INTEGER, FLOAT;
 }

@@ -52,7 +52,8 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
 			throws IOException {
 		String origin = requestContext.getHeaderString(Headers.ORIGIN);
-		if(origin == null || requestContext.getMethod().equalsIgnoreCase(OPTIONS) || requestContext.getProperty(ACCESS_DENIED) != null) {
+		if(origin == null || requestContext.getMethod().equalsIgnoreCase(OPTIONS) 
+				|| requestContext.getProperty(ACCESS_DENIED) != null) {
 			//do nothing, either it isn't a cors request or an options call or already failed
 			return;
 		}
