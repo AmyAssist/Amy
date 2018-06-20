@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- * 
+ *
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
- * 
+ * You may obtain a copy of the License at
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAP
 /**
  * This class implements the logic for all the functions that our alarm clock
  * and timer are capable of
- *
+ * 
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
 @Service
@@ -79,8 +79,8 @@ public class AlarmClockLogic {
 	}
 
 	/**
-	 * Reads out the given delay per Text-to-speech. e.g.: "This timer rings in 5
-	 * minutes"
+	 * Reads out the given delay per Text-to-speech. e.g.: "This timer rings in
+	 * 5 minutes"
 	 * 
 	 * @param timer
 	 * @return
@@ -112,7 +112,7 @@ public class AlarmClockLogic {
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
 	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel
 	 * Simion
-	 * 
+	 *
 	 * @return runnable
 	 *
 	 */
@@ -138,7 +138,7 @@ public class AlarmClockLogic {
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
 	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel
 	 * Simion
-	 * 
+	 *
 	 * @param timerNumber
 	 *            the number of the timer in storage
 	 * @return runnable
@@ -181,11 +181,11 @@ public class AlarmClockLogic {
 
 	/**
 	 * Sets new timer and schedules it
-	 * 
+	 *
 	 * @param hours
 	 * @param minutes
 	 * @param seconds
-	 * 
+	 *
 	 * @return true if everything went well
 	 */
 	protected String setTimer(int hours, int minutes, int seconds) {
@@ -226,7 +226,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * Delete all timers and reset timerCounter
-	 * 
+	 *
 	 * @return
 	 */
 	protected String resetTimers() {
@@ -248,7 +248,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * Delete one alarm
-	 * 
+	 *
 	 * @param alarmNumber
 	 *            alarmNumber in the storage
 	 * @return
@@ -262,7 +262,7 @@ public class AlarmClockLogic {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param timerNumber
 	 *            timerNumber in the storage
 	 * @return
@@ -277,10 +277,10 @@ public class AlarmClockLogic {
 
 	/**
 	 * Deactivates specific alarm so it will not go off
-	 * 
+	 *
 	 * @param alarmNumber
 	 *            number of the alarm
-	 * 
+	 *
 	 * @return
 	 */
 	protected String deactivateAlarm(int alarmNumber) {
@@ -304,7 +304,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * Deactivated specific timer so it will not go off
-	 * 
+	 *
 	 * @param timerNumber
 	 *            number of the timer
 	 * @return
@@ -330,7 +330,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * Activates an existing alarm, so it will ring
-	 * 
+	 *
 	 * @param alarmNumber
 	 *            number of the alarm
 	 * @return
@@ -356,7 +356,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * Activates an existing timer, so it will ring.
-	 * 
+	 *
 	 * @param timerNumber
 	 *            number of the timer
 	 * @return
@@ -380,7 +380,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * Read out one alarm
-	 * 
+	 *
 	 * @param alarmNumber
 	 *            number of the alarm in the storage
 	 *
@@ -395,7 +395,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * get one alram without speech output
-	 * 
+	 *
 	 * @param alarmNumber
 	 *            number of the alarm in the storage
 	 * @return
@@ -437,7 +437,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * Get all timers
-	 * 
+	 *
 	 * @return Array of all timers
 	 */
 	protected String[] getAllTimers() {
@@ -453,7 +453,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * Edit a specific Alarm
-	 *
+	 * 
 	 * @param alarmNumber
 	 *            name of the alarm
 	 * @param alarmTime
@@ -472,8 +472,8 @@ public class AlarmClockLogic {
 	/*
 	 * @PostConstruct public void init() { if
 	 * (!this.acStorage.hasKey("ALARMCOUNTER")) this.acStorage.put(ALARMCOUNTER,
-	 * "0"); if (!this.acStorage.has(TIMERCOUNTER)) this.acStorage.put(TIMERCOUNTER,
-	 * "0"); }
+	 * "0"); if (!this.acStorage.has(TIMERCOUNTER))
+	 * this.acStorage.put(TIMERCOUNTER, "0"); }
 	 */
 
 }
