@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -115,7 +117,7 @@ public class WeatherRestTest {
 		
 		Response response = this.target.path("weather").path("today").request().get();
 
-		assertEquals(200, response.getStatus());
+		assertThat(response.getStatus(), is(200));
 		assertEquals(this.obj.toString(), response.readEntity(String.class));
 	}
 
@@ -128,8 +130,8 @@ public class WeatherRestTest {
 		Mockito.when(this.logic.getReportTomorrow()).thenReturn(this.day);
 		
 		Response response = this.target.path("weather").path("tomorrow").request().get();
-		
-		assertEquals(200, response.getStatus());
+
+		assertThat(response.getStatus(), is(200));
 		assertEquals(this.obj.toString(), response.readEntity(String.class));
 	}
 
@@ -142,8 +144,8 @@ public class WeatherRestTest {
 		Mockito.when(this.logic.getReportWeek()).thenReturn(this.week);
 		
 		Response response = this.target.path("weather").path("week").request().get();
-		
-		assertEquals(200, response.getStatus());
+
+		assertThat(response.getStatus(), is(200));
 		assertTrue(response.readEntity(String.class).contains(this.week.summary));
 	}
 
