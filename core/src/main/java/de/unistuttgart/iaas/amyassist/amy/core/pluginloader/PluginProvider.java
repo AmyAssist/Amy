@@ -21,35 +21,40 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
+
+import java.util.Collection;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 
 /**
- * A exception of the dependency injection
+ * A ContextProvider for Plugin informations
  * 
  * @author Leon Kiefer
  */
-public class ServiceNotFoundException extends RuntimeException {
+public class PluginProvider implements StaticProvider<IPlugin> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2441944380474159637L;
-	private final Class<?> serviceType;
+	private final Logger logger = LoggerFactory.getLogger(PluginProvider.class);
 
-	/**
-	 * @param serviceType
-	 */
-	public ServiceNotFoundException(Class<?> serviceType) {
-		this.serviceType = serviceType;
+	private Collection<IPlugin> plugins;
+
+	public PluginProvider(Collection<IPlugin> plugins) {
+		this.plugins = plugins;
 	}
 
-	/**
-	 * @see java.lang.Throwable#getMessage()
-	 */
 	@Override
-	public String getMessage() {
-		return "The Service " + this.serviceType.getName()
-				+ " is not registered in the DI or do not exists.";
+	public IPlugin getContext(Class<?> consumer) {
+		for (IPlugin p : this.plugins) {
+			if (p.getClasses().contains(consumer)) {
+				return p;
+			}
+		}
+		this.logger.error("The class {} does not seem to belong to any plugin.", consumer.getName());
+		return null;
 	}
 
 }

@@ -21,35 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
+
+import java.util.Map;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 
 /**
- * A exception of the dependency injection
+ * A ContextProvider for custom informations
  * 
  * @author Leon Kiefer
  */
-public class ServiceNotFoundException extends RuntimeException {
+public class CustomProvider<T> implements StaticProvider<T> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2441944380474159637L;
-	private final Class<?> serviceType;
+	private Map<Class<?>, T> mapping;
 
-	/**
-	 * @param serviceType
-	 */
-	public ServiceNotFoundException(Class<?> serviceType) {
-		this.serviceType = serviceType;
+	public CustomProvider(Map<Class<?>, T> mapping) {
+		this.mapping = mapping;
 	}
 
-	/**
-	 * @see java.lang.Throwable#getMessage()
-	 */
 	@Override
-	public String getMessage() {
-		return "The Service " + this.serviceType.getName()
-				+ " is not registered in the DI or do not exists.";
+	public T getContext(Class<?> consumer) {
+		return this.mapping.get(consumer);
 	}
 
 }

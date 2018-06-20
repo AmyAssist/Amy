@@ -24,32 +24,18 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 /**
- * A exception of the dependency injection
+ * The interface of all ServiceFactories
  * 
  * @author Leon Kiefer
  */
-public class ServiceNotFoundException extends RuntimeException {
-
+public interface ServiceFactory<T> {
 	/**
+	 * Build the Service after all configuration is done. This doesn't mean a
+	 * new instance is created. Multiple calls of this method must return the
+	 * same instance. So after calling this method the configuration can't be
+	 * changed.
 	 * 
+	 * @return the instance of the Service
 	 */
-	private static final long serialVersionUID = 2441944380474159637L;
-	private final Class<?> serviceType;
-
-	/**
-	 * @param serviceType
-	 */
-	public ServiceNotFoundException(Class<?> serviceType) {
-		this.serviceType = serviceType;
-	}
-
-	/**
-	 * @see java.lang.Throwable#getMessage()
-	 */
-	@Override
-	public String getMessage() {
-		return "The Service " + this.serviceType.getName()
-				+ " is not registered in the DI or do not exists.";
-	}
-
+	T build();
 }

@@ -23,33 +23,47 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+
 /**
- * A exception of the dependency injection
+ * Test Service for DI
  * 
  * @author Leon Kiefer
  */
-public class ServiceNotFoundException extends RuntimeException {
+public class Service10 {
+	@Reference
+	private Service1 service1;
+	private int i;
+	private boolean init = false;
 
 	/**
-	 * 
+	 * @return the init
 	 */
-	private static final long serialVersionUID = 2441944380474159637L;
-	private final Class<?> serviceType;
-
-	/**
-	 * @param serviceType
-	 */
-	public ServiceNotFoundException(Class<?> serviceType) {
-		this.serviceType = serviceType;
+	public boolean isInit() {
+		return init;
 	}
 
 	/**
-	 * @see java.lang.Throwable#getMessage()
+	 * @return the service1
 	 */
-	@Override
-	public String getMessage() {
-		return "The Service " + this.serviceType.getName()
-				+ " is not registered in the DI or do not exists.";
+	public Service1 getService1() {
+		return service1;
 	}
 
+	/**
+	 * @return the i
+	 */
+	public int getI() {
+		return i;
+	}
+
+	public Service10(int important) {
+		this.i = important;
+	}
+
+	@PostConstruct
+	public void setup() {
+		init = true;
+	}
 }

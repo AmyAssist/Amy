@@ -25,11 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.util.logging.LogManager;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 
 /**
  * The main entry point of the application
@@ -53,25 +49,7 @@ public class Main {
 	 *            [not used] The command line arguments
 	 */
 	public static void main(String[] args) {
-		setLogLevel(org.slf4j.Logger.ROOT_LOGGER_NAME, Level.WARN);
-		setLogLevel("de.unistuttgart.iaas.amyassist.amy", Level.INFO);
-		setLogLevel("marytts", Level.WARN);
-		setLogLevel("default.config.edu.cmu.sphinx", Level.WARN);
-		setLogLevel("org.glassfish.grizzly.http.server", Level.WARN);
 		Core core = new Core();
 		core.run();
 	}
-
-	/**
-	 * Set the log level for all Logger of a given package
-	 * 
-	 * @param name
-	 *            the name of the package
-	 * @param level
-	 *            the log level
-	 */
-	public static void setLogLevel(String name, Level level) {
-		((Logger) LoggerFactory.getLogger(name)).setLevel(level);
-	}
-
 }
