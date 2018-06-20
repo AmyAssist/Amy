@@ -21,12 +21,24 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
 
 /**
- * TODO: Description
- * @author Tim Neumann
+ * proviedes header values as constants
+ * 
+ * @author Christian Bräuner
+ *
  */
-public enum ParameterType {
-	String, Integer, Float;
+public class Headers {
+
+	private Headers() {
+		//empty constructor
+	}
+	
+	
+	public static final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+	public static final String ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
+	public static final String ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
+	public static final String ORIGIN = "Origin";
+	public static final String VARY = "Vary";
 }
