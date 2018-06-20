@@ -25,7 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
 
 /**
  * The possible Http Methods
- * @author Tim Neumann
+ * 
+ * @author Christian Bräuner
  */
 public enum MethodType {
 

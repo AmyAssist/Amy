@@ -24,8 +24,9 @@
 package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
 
 /**
- * TODO: Description
- * @author Tim Neumann
+ * possible parameter types for methods
+ * 
+ * @author Christian Bräuner
  */
 public enum ParameterType {
 	STRING, INTEGER, FLOAT;
