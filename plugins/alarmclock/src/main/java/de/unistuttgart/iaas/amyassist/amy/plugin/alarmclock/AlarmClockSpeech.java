@@ -29,7 +29,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 /**
- * TODO: Description
+ * Speech class for alarm clock
  *
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
@@ -53,9 +53,12 @@ public class AlarmClockSpeech {
 		return this.logic.setAlarm(new String[] { params[3], params[5] });
 	}
 
-	@Grammar("set timer on # minutes")
+	@Grammar("set timer on [# hours] [# minutes] [# seconds]")
 	public String setTimer(String[] params) {
-		return this.logic.setAlarm(Integer.parseInt(params[3]));
+		if (params.length >= 5) {
+			// TODO: implement
+		}
+		return "";
 	}
 
 	@Grammar("reset (alarms|timers)")

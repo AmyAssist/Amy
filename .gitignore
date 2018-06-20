@@ -16,6 +16,7 @@ dependency-reduced-pom.xml
 
 #Other -sinpat
 .idea
+.settings
 
 #Ignore config files
 apikeys/
