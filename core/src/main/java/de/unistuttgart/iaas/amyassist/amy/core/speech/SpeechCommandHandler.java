@@ -37,13 +37,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
-import de.unistuttgart.iaas.amyassist.amy.core.GrammarCommand;
-import de.unistuttgart.iaas.amyassist.amy.core.GrammarParser;
-import de.unistuttgart.iaas.amyassist.amy.core.PluginGrammarInfo;
-import de.unistuttgart.iaas.amyassist.amy.core.TextToGrammarMapper;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.naturallang.GrammarCommand;
+import de.unistuttgart.iaas.amyassist.amy.naturallang.GrammarParser;
+import de.unistuttgart.iaas.amyassist.amy.naturallang.PluginGrammarInfo;
+import de.unistuttgart.iaas.amyassist.amy.naturallang.TextToGrammarMapper;
 
 /**
  * Handles incoming SpeechCommand requests

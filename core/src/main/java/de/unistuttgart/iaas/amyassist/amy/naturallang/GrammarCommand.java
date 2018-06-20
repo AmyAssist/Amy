@@ -20,7 +20,7 @@
  *
  * For more information see notice.md
  */
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.naturallang;
 
 import java.util.HashMap;
 import java.util.List;

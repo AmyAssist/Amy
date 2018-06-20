@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.naturallang;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -41,13 +41,16 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.unistuttgart.iaas.amyassist.amy.naturallang.PluginGrammarInfo;
+import de.unistuttgart.iaas.amyassist.amy.naturallang.TextToGrammarMapper;
+
 /**
  * Test class for TextToPlugin mainly used to test the regex expressions feel
  * free to test your plugin grammar here
  * 
  * @author Felix Burk
  */
-public class TextToPluginTest {
+public class TextToGrammarMapperTest {
 	
 	/**
 	 * helper variable to turn words representations of a number to 

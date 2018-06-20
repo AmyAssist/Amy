@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.naturallang;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -112,6 +112,9 @@ public class TextToGrammarMapper {
 	 * @return
 	 */
 	private HashMap<String, Boolean> resolveOptionalGroups(String grammar, String inputText) {
+		List<String> groups = getGroups(grammar, new ArrayList<>(), '[', ']');
+		
+	
 		return null;
 	}
 
