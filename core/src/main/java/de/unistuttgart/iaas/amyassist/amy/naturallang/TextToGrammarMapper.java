@@ -73,6 +73,7 @@ public class TextToGrammarMapper {
 	 * returns generated Grammar Command
 	 * @param inputText inputText
 	 * @return grammarCommand grammarCommand
+	 * @throws NoMatchingGrammarFoundException, NoMatchingKeywordFoundException 
 	 */
 	public GrammarCommand resolveText(String inputText) {
 		GrammarCommand grammarCommand = new GrammarCommand();
@@ -98,7 +99,9 @@ public class TextToGrammarMapper {
 			String grammar = stringToGrammar(inputText, matchingKeyword);
 			if(grammar != null) {
     			grammarCommand.setMatchingGrammar(stringToGrammar(inputText, matchingKeyword));
-			}
+			} 
+		}else {
+			throw new NoMachtingKeywordFoundException(" for input " + inputText);
 		}
 			
 		
@@ -107,9 +110,9 @@ public class TextToGrammarMapper {
 	
 	
 	/**
-	 * @param grammar
-	 * @param inputText
-	 * @return
+	 * @param grammar grammar 
+	 * @param inputText inputText
+	 * @return HashMap<String,Boolean>
 	 */
 	private HashMap<String, Boolean> resolveOptionalGroups(String grammar, String inputText) {
 		List<String> groups = getGroups(grammar, new ArrayList<>(), '[', ']');
@@ -198,6 +201,9 @@ public class TextToGrammarMapper {
 			if (m.find()) {
 				grammarResults.add(grammar);
 			}
+		}
+		if(grammarResults.isEmpty()) {
+			throw new NoMatchingGrammarFoundException(" for Keyword " + keyword);
 		}
 		return Collections.max(grammarResults, Comparator.comparing(String::length));
 		

@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.naturallang;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.Matchers.anyOf;
 
 import java.security.SecureRandom;
@@ -40,6 +41,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 
 import de.unistuttgart.iaas.amyassist.amy.naturallang.PluginGrammarInfo;
 import de.unistuttgart.iaas.amyassist.amy.naturallang.TextToGrammarMapper;
@@ -209,14 +211,22 @@ public class TextToGrammarMapperTest {
 		assertThat(test.resolveText("keyword2 amy says blub things").getMatchingGrammar(), equalTo("amy says [great] (bluuub|blub) things"));
 		assertThat(test.resolveText("jdwpojdpa keyword2 amy says great blub things jdwopajd").getMatchingGrammar(),
 				equalTo("amy says [great] (bluuub|blub) things"));
-		assertThat(test.resolveText("amy says great blub things").getMatchingGrammar(), equalTo(null));
 		assertThat(test.resolveText("testGrammar get devices").getMatchingGrammar(), equalTo("get devices"));
 		assertThat(test.resolveText("blah testiGrammar count count count count count blah").getMatchingGrammar(), 
 				equalTo("count count count [count]"));
 		assertThat(test.resolveText("keyword2 this bad").getMatchingGrammar(), equalTo("this [grammar|(is | really | (bad | hehe))]"));
 		assertThat(test.resolveText("keyword3 this").getMatchingGrammar(), equalTo("this [grammar|(is | really | (bad | hehe))]"));
+	}
+	
+	/**
+	 * 
+	 */
+	@Test
+	void testExceptions() {
+		TextToGrammarMapper test = new TextToGrammarMapper(this.infos);
 
-
+		assertThrows(NoMachtingKeywordFoundException.class, ()->test.resolveText("amy says great blub things"));
+		assertThrows(NoMatchingGrammarFoundException.class, ()->test.resolveText("keyword2"));
 	}
 		
 	/**
