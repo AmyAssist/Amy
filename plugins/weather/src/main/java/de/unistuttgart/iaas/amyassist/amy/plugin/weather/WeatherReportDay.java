@@ -34,21 +34,18 @@ import static java.lang.Math.round;
 
 @XmlRootElement
 public class WeatherReportDay {
-	
-	@XmlTransient
-    public String preamble;
-	
-    public String summary;
-    public boolean precip;
-    public String precipProbability;
-    public String precipType;
-    public long temperatureMin;
-    public long temperatureMax;
-    public String sunriseTime;
-    public String sunsetTime;
-    public String weekday;
-    public long timestamp;
 
+    private String preamble;
+    private String summary;
+    private boolean precip;
+    private String precipProbability;
+    private String precipType;
+    private long temperatureMin;
+    private long temperatureMax;
+    private String sunriseTime;
+    private String sunsetTime;
+    private String weekday;
+    private long timestamp;
 
     private static final String TRIM_QUOTES_REGEX = "^\"|\"$";
     private static final int FRACTION_TO_PERCENT_FACTOR = 100;
@@ -104,5 +101,52 @@ public class WeatherReportDay {
 
     public String toString() {
         return description(false);
+    }
+
+    // Boilerplate getters (ffs it's 2018, when's java gonna get automatic property synthesis?
+
+    @XmlTransient
+    public String getPreamble() {
+        return preamble;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public boolean isPrecip() {
+        return precip;
+    }
+
+    public String getPrecipProbability() {
+        return precipProbability;
+    }
+
+    public String getPrecipType() {
+        return precipType;
+    }
+
+    public long getTemperatureMin() {
+        return temperatureMin;
+    }
+
+    public long getTemperatureMax() {
+        return temperatureMax;
+    }
+
+    public String getSunriseTime() {
+        return sunriseTime;
+    }
+
+    public String getSunsetTime() {
+        return sunsetTime;
+    }
+
+    public String getWeekday() {
+        return weekday;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 }
