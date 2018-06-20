@@ -36,6 +36,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
+import com.eclipsesource.json.JsonObject;
+import com.github.dvdme.ForecastIOLib.FIODataPoint;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtention;
@@ -55,6 +58,7 @@ public class WeatherRestTest {
 	private WeatherDarkSkyAPI logic;
 	private WeatherReportDay day;
 	private WeatherReportWeek week;
+	private JsonObject obj;
 
 	private WebTarget target;
 
@@ -71,16 +75,29 @@ public class WeatherRestTest {
 	}
 	
 	private void createDay() {
-		this.day = Mockito.mock(WeatherReportDay.class);
-		this.day.summary = "Clear throughout the day";
-		this.day.precipProbability = "0%";
-		this.day.precipType = "no data";
-		this.day.temperatureMin = 15;
-		this.day.temperatureMax = 25;
-		this.day.sunriseTime= "05:00:00";
-		this.day.sunsetTime= "21:00:00";
-		this.day.weekday = "Monday";
-		this.day.timestamp = 12345;
+		FIODataPoint p = Mockito.mock(FIODataPoint.class);
+		Mockito.when(p.summary()).thenReturn("Clear throughout the day");
+		Mockito.when(p.precipProbability()).thenReturn((double) 0);
+		Mockito.when(p.precipType()).thenReturn("no data");
+		Mockito.when(p.temperatureMin()).thenReturn((double) 15);
+		Mockito.when(p.temperatureMax()).thenReturn((double) 25);
+		Mockito.when(p.sunriseTime()).thenReturn("05:00:00");
+		Mockito.when(p.sunsetTime()).thenReturn("21:00:00");
+		Mockito.when(p.timestamp()).thenReturn((long) 12345);
+		
+		this.day = new WeatherReportDay("This is the weather report for today.", p);
+		
+		this.obj = new JsonObject();
+		this.obj.add("summary", this.day.getSummary());
+		this.obj.add("precip", this.day.isPrecip());
+		this.obj.add("precipProbability", this.day.getPrecipProbability());
+		this.obj.add("precipType", this.day.getPrecipType());
+		this.obj.add("temperatureMin", this.day.getTemperatureMin());
+		this.obj.add("temperatureMax", this.day.getTemperatureMax());
+		this.obj.add("sunriseTime", this.day.getSunriseTime());
+		this.obj.add("sunsetTime", this.day.getSunsetTime());
+		this.obj.add("weekday", this.day.getWeekday());
+		this.obj.add("timestamp", this.day.getTimestamp());
 	}
 	
 	private void createWeek() {
@@ -98,18 +115,8 @@ public class WeatherRestTest {
 		
 		Response response = this.target.path("weather").path("today").request().get();
 
-		String result = response.readEntity(String.class);
-		
 		assertEquals(200, response.getStatus());
-		assertTrue(result.contains(this.day.summary));
-		assertTrue(result.contains(this.day.precipProbability));
-		assertTrue(result.contains(this.day.precipType));
-		assertTrue(result.contains(String.valueOf(this.day.temperatureMin)));
-		assertTrue(result.contains(String.valueOf(this.day.temperatureMax)));
-		assertTrue(result.contains(this.day.sunriseTime));
-		assertTrue(result.contains(this.day.sunsetTime));
-		assertTrue(result.contains(this.day.weekday));
-		assertTrue(result.contains(String.valueOf(this.day.timestamp)));
+		assertEquals(this.obj.toString(), response.readEntity(String.class));
 	}
 
 	/**
@@ -122,18 +129,8 @@ public class WeatherRestTest {
 		
 		Response response = this.target.path("weather").path("tomorrow").request().get();
 		
-		String result = response.readEntity(String.class);
-		
 		assertEquals(200, response.getStatus());
-		assertTrue(result.contains(this.day.summary));
-		assertTrue(result.contains(this.day.precipProbability));
-		assertTrue(result.contains(this.day.precipType));
-		assertTrue(result.contains(String.valueOf(this.day.temperatureMin)));
-		assertTrue(result.contains(String.valueOf(this.day.temperatureMax)));
-		assertTrue(result.contains(this.day.sunriseTime));
-		assertTrue(result.contains(this.day.sunsetTime));
-		assertTrue(result.contains(this.day.weekday));
-		assertTrue(result.contains(String.valueOf(this.day.timestamp)));
+		assertEquals(this.obj.toString(), response.readEntity(String.class));
 	}
 
 	/**
@@ -145,11 +142,9 @@ public class WeatherRestTest {
 		Mockito.when(this.logic.getReportWeek()).thenReturn(this.week);
 		
 		Response response = this.target.path("weather").path("week").request().get();
-
-		String result = response.readEntity(String.class);
 		
 		assertEquals(200, response.getStatus());
-		assertTrue(result.contains(this.week.summary));
+		assertTrue(response.readEntity(String.class).contains(this.week.summary));
 	}
 
 }
