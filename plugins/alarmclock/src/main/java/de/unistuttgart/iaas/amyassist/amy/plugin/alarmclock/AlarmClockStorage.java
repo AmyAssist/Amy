@@ -7,7 +7,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 /**
  * Implements the IAlarmStorage
  * 
- * @author padyf
+ * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  *
  */
 public class AlarmClockStorage implements IAlarmClockStorage {

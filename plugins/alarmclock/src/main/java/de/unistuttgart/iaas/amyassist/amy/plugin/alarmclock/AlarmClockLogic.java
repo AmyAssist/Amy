@@ -66,8 +66,9 @@ public class AlarmClockLogic {
 	 * tomorrow/today at 15:15"
 	 * 
 	 * @param alarm
+	 *            the time the alarm is set for
 	 * 
-	 * @return
+	 * @return alarm
 	 */
 	protected static String alarmOutput(Alarm alarm) {
 		if (alarm.isActive())
@@ -83,7 +84,8 @@ public class AlarmClockLogic {
 	 * 5 minutes"
 	 * 
 	 * @param timer
-	 * @return
+	 *            the date of the timer
+	 * @return hourDiff, minuteDiff, secondDiff
 	 */
 	protected static String timerOutput(Timer timer) {
 		Calendar current = Calendar.getInstance();
@@ -112,9 +114,9 @@ public class AlarmClockLogic {
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
 	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel
 	 * Simion
-	 *
+	 * 
 	 * @return runnable
-	 *
+	 * 
 	 */
 	private Runnable createAlarmRunnable(int alarmNumber) {
 		return () -> {
@@ -138,7 +140,7 @@ public class AlarmClockLogic {
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
 	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel
 	 * Simion
-	 *
+	 * 
 	 * @param timerNumber
 	 *            the number of the timer in storage
 	 * @return runnable
@@ -163,12 +165,12 @@ public class AlarmClockLogic {
 
 	/**
 	 * Set new alarm and schedule it
-	 *
+	 * 
 	 * @param alarmTime
 	 *            String array with two integers. First entry is hour second is
 	 *            minute
-	 *
-	 * @return
+	 * 
+	 * @return counter, alarmTime[0], alarmTime[1]
 	 */
 	protected String setAlarm(String[] alarmTime) {
 		int counter = this.acStorage.incrementAlarmCounter();
@@ -181,12 +183,15 @@ public class AlarmClockLogic {
 
 	/**
 	 * Sets new timer and schedules it
-	 *
+	 * 
 	 * @param hours
+	 *            number of hours of the timer
 	 * @param minutes
+	 *            number of minutes of the timer
 	 * @param seconds
-	 *
-	 * @return true if everything went well
+	 *            number of seconds of the timer
+	 * 
+	 * @return counter, hours, minutes, seconds
 	 */
 	protected String setTimer(int hours, int minutes, int seconds) {
 
@@ -204,8 +209,8 @@ public class AlarmClockLogic {
 
 	/**
 	 * Delete all alarms and reset alarmCounter
-	 *
-	 * @return
+	 * 
+	 * @return counter counts the existing alarms
 	 */
 	protected String resetAlarms() {
 		int amount = this.acStorage.getAlarmCounter();
@@ -226,8 +231,8 @@ public class AlarmClockLogic {
 
 	/**
 	 * Delete all timers and reset timerCounter
-	 *
-	 * @return
+	 * 
+	 * @return counter counts the existing timers
 	 */
 	protected String resetTimers() {
 		int amount = this.acStorage.getTimerCounter();
@@ -248,10 +253,10 @@ public class AlarmClockLogic {
 
 	/**
 	 * Delete one alarm
-	 *
+	 * 
 	 * @param alarmNumber
 	 *            alarmNumber in the storage
-	 * @return
+	 * @return alarmNumber
 	 */
 	protected String deleteAlarm(int alarmNumber) {
 		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
@@ -262,10 +267,10 @@ public class AlarmClockLogic {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param timerNumber
 	 *            timerNumber in the storage
-	 * @return
+	 * @return timerNumber
 	 */
 	protected String deleteTimer(int timerNumber) {
 		if (this.acStorage.hasKey("alarm" + timerNumber)) {
@@ -277,11 +282,11 @@ public class AlarmClockLogic {
 
 	/**
 	 * Deactivates specific alarm so it will not go off
-	 *
+	 * 
 	 * @param alarmNumber
 	 *            number of the alarm
-	 *
-	 * @return
+	 * 
+	 * @return alarmNumber
 	 */
 	protected String deactivateAlarm(int alarmNumber) {
 		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
@@ -304,10 +309,10 @@ public class AlarmClockLogic {
 
 	/**
 	 * Deactivated specific timer so it will not go off
-	 *
+	 * 
 	 * @param timerNumber
 	 *            number of the timer
-	 * @return
+	 * @return timerNumber
 	 */
 	protected String deactivateTimer(int timerNumber) {
 		if (this.acStorage.hasKey("timer" + timerNumber)) {
@@ -330,10 +335,10 @@ public class AlarmClockLogic {
 
 	/**
 	 * Activates an existing alarm, so it will ring
-	 *
+	 * 
 	 * @param alarmNumber
 	 *            number of the alarm
-	 * @return
+	 * @return alarmNumber
 	 */
 	protected String activateAlarm(int alarmNumber) {
 		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
@@ -356,10 +361,10 @@ public class AlarmClockLogic {
 
 	/**
 	 * Activates an existing timer, so it will ring.
-	 *
+	 * 
 	 * @param timerNumber
 	 *            number of the timer
-	 * @return
+	 * @return timerNumber
 	 */
 	protected String activateTimer(int timerNumber) {
 		if (this.acStorage.hasKey("timer" + timerNumber)) {
@@ -380,11 +385,11 @@ public class AlarmClockLogic {
 
 	/**
 	 * Read out one alarm
-	 *
+	 * 
 	 * @param alarmNumber
 	 *            number of the alarm in the storage
-	 *
-	 * @return
+	 * 
+	 * @return alarmNumber
 	 */
 	protected String getAlarm(int alarmNumber) {
 		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
@@ -394,11 +399,11 @@ public class AlarmClockLogic {
 	}
 
 	/**
-	 * get one alram without speech output
-	 *
+	 * get one alarm without speech output
+	 * 
 	 * @param alarmNumber
 	 *            number of the alarm in the storage
-	 * @return
+	 * @return alarmNumber
 	 */
 	protected String getAlarmNoOutput(int alarmNumber) {
 		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
@@ -410,7 +415,7 @@ public class AlarmClockLogic {
 	/**
 	 * @param timerNumber
 	 *            number of the timer in storage
-	 * @return
+	 * @return timerNumber
 	 */
 	protected String getTimer(int timerNumber) {
 		if (this.acStorage.hasKey("timer" + timerNumber)) {
@@ -421,7 +426,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * Get all alarms
-	 *
+	 * 
 	 * @return Array of all alarms
 	 */
 	protected String[] getAllAlarms() {
@@ -437,7 +442,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * Get all timers
-	 *
+	 * 
 	 * @return Array of all timers
 	 */
 	protected String[] getAllTimers() {
@@ -458,7 +463,7 @@ public class AlarmClockLogic {
 	 *            name of the alarm
 	 * @param alarmTime
 	 *            new alarm time
-	 * @return
+	 * @return alarmNumber + alarmTime new Time of the edited Alarm
 	 */
 	protected String editAlarm(int alarmNumber, String[] alarmTime) {
 		if (this.acStorage.hasKey("alarm" + alarmNumber)) {

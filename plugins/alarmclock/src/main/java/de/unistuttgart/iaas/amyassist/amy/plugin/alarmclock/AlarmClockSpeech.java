@@ -44,7 +44,6 @@ public class AlarmClockSpeech {
 	 * Sets new alarm with this scheme: hh:mm
 	 * 
 	 * @param params
-	 * 
 	 * @return params[3], params[5]
 	 */
 	@Grammar("set alarm (at|for) # oh #")

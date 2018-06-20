@@ -5,7 +5,7 @@ import java.util.Calendar;
 /**
  * Class that defines alarm attributes and behaviour
  * 
- * @author padyf
+ * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  *
  */
 public class Timer {

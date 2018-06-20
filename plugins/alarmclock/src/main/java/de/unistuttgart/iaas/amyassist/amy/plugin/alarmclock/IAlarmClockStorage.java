@@ -4,7 +4,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
  * Interface that defines the methods the alarmclock logic needs to store the
  * alarms and timers
  * 
- * @author padyf
+ * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  *
  */
 public interface IAlarmClockStorage {
