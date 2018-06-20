@@ -23,15 +23,18 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
-import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
@@ -44,36 +47,69 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * @author Muhammed Kaya
  */
 @ExtendWith(FrameworkExtention.class)
-@Disabled
 public class WeatherRestTest {
 
 	@Reference
 	private TestFramework testFramework;
+	
+	private WeatherDarkSkyAPI logic;
+	private WeatherReportDay day;
+	private WeatherReportWeek week;
 
-	@Reference
-	private Server server;
-
-	@Reference
-	private WeatherResource weatherLogic;
-
-	private HttpServer httpServer;
 	private WebTarget target;
 
 	@BeforeEach
 	public void setUp() {
 		this.testFramework.setRESTResource(WeatherResource.class);
+		this.logic = this.testFramework.mockService(WeatherDarkSkyAPI.class);
 
 		Client c = ClientBuilder.newClient();
 		this.target = c.target(Server.BASE_URI);
+		
+		this.createDay();
+		this.createWeek();
 	}
-
+	
+	private void createDay() {
+		this.day = Mockito.mock(WeatherReportDay.class);
+		this.day.summary = "Clear throughout the day";
+		this.day.precipProbability = "0%";
+		this.day.precipType = "no data";
+		this.day.temperatureMin = 15;
+		this.day.temperatureMax = 25;
+		this.day.sunriseTime= "05:00:00";
+		this.day.sunsetTime= "21:00:00";
+		this.day.weekday = "Monday";
+		this.day.timestamp = 12345;
+	}
+	
+	private void createWeek() {
+		this.week = Mockito.mock(WeatherReportWeek.class);
+		this.week.summary = "Clear throughout the day";
+	}
+	
 	/**
 	 * Test method for
 	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherToday()}.
 	 */
 	@Test
-	void testGetWeatherReportToday() {
-		// TODO
+	void testGetWeatherToday() {
+		Mockito.when(this.logic.getReportToday()).thenReturn(this.day);
+		
+		Response response = this.target.path("weather").path("today").request().get();
+
+		String result = response.readEntity(String.class);
+		
+		assertEquals(200, response.getStatus());
+		assertTrue(result.contains(this.day.summary));
+		assertTrue(result.contains(this.day.precipProbability));
+		assertTrue(result.contains(this.day.precipType));
+		assertTrue(result.contains(String.valueOf(this.day.temperatureMin)));
+		assertTrue(result.contains(String.valueOf(this.day.temperatureMax)));
+		assertTrue(result.contains(this.day.sunriseTime));
+		assertTrue(result.contains(this.day.sunsetTime));
+		assertTrue(result.contains(this.day.weekday));
+		assertTrue(result.contains(String.valueOf(this.day.timestamp)));
 	}
 
 	/**
@@ -81,17 +117,39 @@ public class WeatherRestTest {
 	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherTomorrow()}.
 	 */
 	@Test
-	void testGetWeatherReportTomorrow() {
-		// TODO
+	void testGetWeatherTomorrow() {
+		Mockito.when(this.logic.getReportTomorrow()).thenReturn(this.day);
+		
+		Response response = this.target.path("weather").path("tomorrow").request().get();
+		
+		String result = response.readEntity(String.class);
+		
+		assertEquals(200, response.getStatus());
+		assertTrue(result.contains(this.day.summary));
+		assertTrue(result.contains(this.day.precipProbability));
+		assertTrue(result.contains(this.day.precipType));
+		assertTrue(result.contains(String.valueOf(this.day.temperatureMin)));
+		assertTrue(result.contains(String.valueOf(this.day.temperatureMax)));
+		assertTrue(result.contains(this.day.sunriseTime));
+		assertTrue(result.contains(this.day.sunsetTime));
+		assertTrue(result.contains(this.day.weekday));
+		assertTrue(result.contains(String.valueOf(this.day.timestamp)));
 	}
 
-	//	/**
-	//	 * Test method for
-	//	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherWeek()}.
-	//	 */
-	//	@Test
-	//	void testGetWeatherReportWeek() {
-	//		// TODO
-	//	}
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherWeek()}.
+	 */
+	@Test
+	void testGetWeatherWeek() {
+		Mockito.when(this.logic.getReportWeek()).thenReturn(this.week);
+		
+		Response response = this.target.path("weather").path("week").request().get();
+
+		String result = response.readEntity(String.class);
+		
+		assertEquals(200, response.getStatus());
+		assertTrue(result.contains(this.week.summary));
+	}
 
 }
