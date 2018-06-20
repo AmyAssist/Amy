@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- * 
+ *
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
- * 
+ * You may obtain a copy of the License at
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,6 +63,8 @@ public class Core implements SpeechInputHandler {
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
+	private CommandLineArgumentHandler cmaHandler;
+
 	private List<Thread> threads;
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 	private DependencyInjection di = new DependencyInjection();
@@ -74,8 +76,12 @@ public class Core implements SpeechInputHandler {
 	/**
 	 * The method executed by the main method
 	 *
+	 * @param args
+	 *            The arguments for the core.
 	 */
-	void run() {
+	void run(String[] args) {
+		this.cmaHandler = new CommandLineArgumentHandler(args);
+		if (!this.cmaHandler.shouldProgramContinue()) return;
 		this.init();
 		this.threads.forEach(Thread::start);
 		this.server.start();
@@ -209,8 +215,7 @@ public class Core implements SpeechInputHandler {
 	}
 
 	/**
-	 * stop all Threads and terminate the application. This is call form the
-	 * {@link Console}
+	 * stop all Threads and terminate the application. This is call form the {@link Console}
 	 */
 	public void stop() {
 		this.server.shutdown();
