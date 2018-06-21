@@ -38,6 +38,11 @@ public class Alarm {
 		this.active = active;
 	}
 
+	/**
+	 * Returns a string representation of this object
+	 * 
+	 * @return
+	 */
 	public String convertToString() {
 		return this.alarmDate.get(Calendar.HOUR_OF_DAY) + ":" + this.alarmDate.get(Calendar.MINUTE) + ":" + this.active;
 	}

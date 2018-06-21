@@ -1,5 +1,6 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.time.Duration;
 import java.util.Calendar;
 
 /**
@@ -25,9 +26,37 @@ public class Timer {
 		this.active = active;
 	}
 
+	/**
+	 * Returns a string representation of this object
+	 * 
+	 * @return
+	 */
 	public String convertToString() {
 		return this.timerDate.get(Calendar.HOUR_OF_DAY) + ":" + this.timerDate.get(Calendar.MINUTE) + ":"
 				+ this.timerDate.get(Calendar.SECOND) + ":" + this.active;
+	}
+
+	/**
+	 * Returns this timers delay until it goes off
+	 * 
+	 * @return hourDiff, minuteDiff, secondDiff
+	 */
+	public int[] getRemainingTime() {
+		Calendar current = Calendar.getInstance();
+		Calendar future = this.timerDate;
+
+		Duration duration = Duration.between(current.toInstant(), future.toInstant());
+		int diff = (int) duration.getSeconds();
+
+		int hourDiff = diff / 3600;
+		diff %= 3600;
+
+		int minuteDiff = diff / 60;
+		diff %= 60;
+
+		int secondDiff = diff;
+
+		return new int[] { hourDiff, minuteDiff, secondDiff };
 	}
 
 	public int getId() {

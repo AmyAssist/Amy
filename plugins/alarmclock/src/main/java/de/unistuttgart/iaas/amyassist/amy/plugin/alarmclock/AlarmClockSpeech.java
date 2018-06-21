@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.util.NoSuchElementException;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
@@ -40,6 +42,9 @@ public class AlarmClockSpeech {
 	@Reference
 	private AlarmClockLogic logic;
 
+	private static final String ELEMENTNOTFOUND = "Element not found";
+	private static final String PARAMSNOTVALID = "Parameters not valid.";
+
 	/**
 	 * Sets new alarm with this scheme: hh:mm
 	 * 
@@ -49,9 +54,9 @@ public class AlarmClockSpeech {
 	@Grammar("set alarm (at|for) # oh #")
 	public String setAlarm(String[] params) {
 		if (Integer.parseInt(params[3]) > 23 || Integer.parseInt(params[5]) > 59)
-			return "Not a valid time of day.";
+			return PARAMSNOTVALID;
 
-		return this.logic.setAlarm(new String[] { params[3], params[5] });
+		return this.logic.setAlarm(new String[] { params[3], params[5] }).convertToString();
 	}
 
 	/**
@@ -63,27 +68,37 @@ public class AlarmClockSpeech {
 	 */
 	@Grammar("set timer on [# hours] [# minutes] [# seconds]")
 	public String setTimer(String[] params) {
-		if (params.length == 9) {
-			return this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]),
-					Integer.parseInt(params[7]));
-		} else if (params.length == 7) {
-			if (params[4].equals("hours") && params[6].equals("minutes")) {
-				return this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), 0);
-			} else if (params[4].equals("hours") && params[6].equals("seconds")) {
-				return this.logic.setTimer(Integer.parseInt(params[3]), 0, Integer.parseInt(params[5]));
-			} else if (params[4].equals("minutes") && params[6].equals("seconds")) {
-				return this.logic.setTimer(0, Integer.parseInt(params[3]), Integer.parseInt(params[5]));
+		try {
+			if (params.length == 9) {
+				return this.logic
+						.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), Integer.parseInt(params[7]))
+						.convertToString();
+			} else if (params.length == 7) {
+				if (params[4].equals("hours") && params[6].equals("minutes")) {
+					return this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), 0)
+							.convertToString();
+				} else if (params[4].equals("hours") && params[6].equals("seconds")) {
+
+					return this.logic.setTimer(Integer.parseInt(params[3]), 0, Integer.parseInt(params[5]))
+							.convertToString();
+				} else if (params[4].equals("minutes") && params[6].equals("seconds")) {
+					return this.logic.setTimer(0, Integer.parseInt(params[3]), Integer.parseInt(params[5]))
+							.convertToString();
+
+				}
+			} else if (params.length == 5) {
+				if (params[4].equals("hours")) {
+					return this.logic.setTimer(Integer.parseInt(params[3]), 0, 0).convertToString();
+				} else if (params[4].equals("minutes")) {
+					return this.logic.setTimer(0, Integer.parseInt(params[3]), 0).convertToString();
+				} else if (params[4].equals("seconds")) {
+					return this.logic.setTimer(0, 0, Integer.parseInt(params[3])).convertToString();
+				}
 			}
-		} else if (params.length == 5) {
-			if (params[4].equals("hours")) {
-				return this.logic.setTimer(Integer.parseInt(params[3]), 0, 0);
-			} else if (params[4].equals("minutes")) {
-				return this.logic.setTimer(0, Integer.parseInt(params[3]), 0);
-			} else if (params[4].equals("seconds")) {
-				return this.logic.setTimer(0, 0, Integer.parseInt(params[3]));
-			}
+		} catch (IllegalArgumentException e) {
+			return PARAMSNOTVALID;
 		}
-		return "";
+		return "Speech Command not valid.";
 	}
 
 	/**
@@ -146,9 +161,13 @@ public class AlarmClockSpeech {
 	 */
 	@Grammar("get (alarm|timer) #")
 	public String getAlarm(String[] params) {
-		if (params[1].equals("alarm"))
-			return this.logic.getAlarm(Integer.parseInt(params[2]));
-		return this.logic.getTimer(Integer.parseInt(params[2]));
+		try {
+			if (params[1].equals("alarm"))
+				return this.logic.getAlarm(Integer.parseInt(params[2])).convertToString();
+			return this.logic.getTimer(Integer.parseInt(params[2])).convertToString();
+		} catch (NoSuchElementException e) {
+			return ELEMENTNOTFOUND;
+		}
 	}
 
 	/**
@@ -159,9 +178,20 @@ public class AlarmClockSpeech {
 	 */
 	@Grammar("get all (alarms|timers)")
 	public String getAllAlarms(String[] params) {
-		if (params[2].equals("alarms"))
-			return String.join("\n", this.logic.getAllAlarms());
-		return String.join("\n", this.logic.getAllTimers());
+		if (params[2].equals("alarms")) {
+			Alarm[] alarms = this.logic.getAllAlarms();
+			String[] stringAlarms = new String[alarms.length];
+			for (int i = 0; i < alarms.length; i++) {
+				stringAlarms[i] = alarms[i].convertToString();
+			}
+			return String.join("\n", stringAlarms);
+		}
+		Timer[] timers = this.logic.getAllTimers();
+		String[] stringTimers = new String[timers.length];
+		for (int i = 0; i < timers.length; i++) {
+			stringTimers[i] = timers[i].convertToString();
+		}
+		return String.join("\n", stringTimers);
 	}
 
 	/**
@@ -172,8 +202,13 @@ public class AlarmClockSpeech {
 	 */
 	@Grammar("edit alarm # to # oh #")
 	public String editAlarm(String[] params) {
-		if (Integer.parseInt(params[4]) > 23 || Integer.parseInt(params[6]) > 59)
-			return "Not a valid time of day.";
-		return this.logic.editAlarm(Integer.parseInt(params[2]), new String[] { params[4], params[6] });
+		try {
+			if (Integer.parseInt(params[4]) > 23 || Integer.parseInt(params[6]) > 59)
+				return "Not a valid time of day.";
+			return this.logic.editAlarm(Integer.parseInt(params[2]), new String[] { params[4], params[6] })
+					.convertToString();
+		} catch (NoSuchElementException e) {
+			return ELEMENTNOTFOUND;
+		}
 	}
 }
