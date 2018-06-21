@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
-import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Track;
 
@@ -123,14 +122,14 @@ public class PlayerLogic {
 	 * @return selected device
 	 */
 	public String setDevice(int deviceNumber) {
-			getDevices();
-			if (this.deviceIDs.size() > deviceNumber && this.deviceNames.size() > deviceNumber) {
-				spotifyAPICalls.setCurrentDevice(deviceIDs.get(deviceNumber));
-				return deviceNames.get(deviceNumber);
-			}
-			logger.warn("No device with this number was found");
-			return "No device found";
+		getDevices();
+		if (this.deviceIDs.size() > deviceNumber && this.deviceNames.size() > deviceNumber) {
+			spotifyAPICalls.setCurrentDevice(deviceIDs.get(deviceNumber));
+			return deviceNames.get(deviceNumber);
 		}
+		logger.warn("No device with this number was found");
+		return "No device found";
+	}
 
 	/**
 	 * this call the searchAnaything method in the Search class
@@ -261,8 +260,10 @@ public class PlayerLogic {
 	public Map<String, String> getCurrentSong() {
 		CurrentlyPlayingContext currentlyPlayingContext = spotifyAPICalls.getCurrentSong();
 		if (currentlyPlayingContext != null) {
-			Track[] track = {currentlyPlayingContext.getItem()};
-			return search.createTrackOutput(new Paging.Builder<Track>().setItems(track).build() , SpotifyConstants.TYPE_TRACK).get(0);
+			Track[] track = { currentlyPlayingContext.getItem() };
+			return search
+					.createTrackOutput(new Paging.Builder<Track>().setItems(track).build(), SpotifyConstants.TYPE_TRACK)
+					.get(0);
 		}
 		return new HashMap<>();
 

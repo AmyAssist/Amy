@@ -100,7 +100,7 @@ public class SpotifyAPICalls {
 		init();
 	}
 
-	public void init() {
+	private final void init() {
 		this.logger = LoggerFactory.getLogger(SpotifyAPICalls.class);
 		if (configLoader.get(SPOTIFY_CLIENTID) != null && configLoader.get(SPOTIFY_CLIENTSECRET) != null) {
 			this.clientID = configLoader.get(SPOTIFY_CLIENTID);

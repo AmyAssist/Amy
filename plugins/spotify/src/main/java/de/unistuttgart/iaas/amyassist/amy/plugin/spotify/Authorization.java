@@ -43,10 +43,10 @@ public class Authorization {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		SpotifyAPICalls spotifyAPICalls = new SpotifyAPICalls();
-		spotifyAPICalls.init();
 		System.out.println("copy this link in your browser an follow the login process".concat("\n")
 				.concat(spotifyAPICalls.authorizationCodeUri().toString()).concat("\n")
-				.concat("Please insert Auth Code form the result link. Copy all between 'code=' and '&'. For example for this result: http://localhost:8888/?code=AQComIDO...qHvVw&state=TEST) you cope only this: 'AQComIDO...qHvVw'"));
+				.concat("Please insert Auth Code form the result link. Copy all between 'code=' and '&'.".concat(
+						" For example for this result: http://localhost:8888/?code=AQComIDO...qHvVw&state=TEST) you cope only this: 'AQComIDO...qHvVw'")));
 		spotifyAPICalls.createRefreshToken(sc.nextLine());
 		System.out.println("complete");
 		sc.close();
