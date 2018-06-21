@@ -36,6 +36,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
 
 /**
@@ -43,9 +44,14 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
  * 
  * @author Christian Bräuner
  */
-@Path("clock")
+@Path(AlarmClockResource.PATH)
 public class AlarmClockResource {
 
+	/**
+	 * the resource path for this plugin
+	 */
+	public static final String PATH = "clock";
+	
 	@Reference
 	private AlarmClockLogic logic;
 
@@ -58,12 +64,13 @@ public class AlarmClockResource {
 	@Path("alarms")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Timestamp[] getAllAlarms() {
-		String[] alarms = this.logic.getAllAlarms();
+		String[] alarms = this.logic.getAllAlarmsWithNumber();
 		Timestamp[] timestamps = new Timestamp[alarms.length];
 		for(int i = 0; i < alarms.length; i++) {
 			if(alarms[i] != null && alarms[i] != "") {
-				String[] split = alarms[i].split(";");
+				String[] split = alarms[i].split(":");
 				timestamps[i] = new Timestamp(split[1] + ":" + split[2]);
+				timestamps[i].setLink(Server.BASE_URI.toString() + "/" + PATH + "/" + split[0]);
 			}
 		}
 		return timestamps;
@@ -83,8 +90,8 @@ public class AlarmClockResource {
 		if(alarm == null) {
 			throw new WebApplicationException("there is no alarm" + alarmnumber, Status.NOT_FOUND);
 		}
-		String[] split = alarm.split(";");
-		Timestamp ts = new Timestamp(split[0] + ":" + split[1]);
+		Timestamp ts = new Timestamp(alarm);
+		ts.setLink(Server.BASE_URI.toString() + "/" + PATH + "/" + alarmnumber);
 		return ts;	
 	}
 
@@ -106,7 +113,7 @@ public class AlarmClockResource {
 			if (!alarmTime.isValid()) {
 				throw new WebApplicationException("The given time wasn't a valid time", Status.BAD_REQUEST);
 			}
-			if (!this.logic.editAlarm(alarmNumber, new String[] { "" + alarmTime.hour, "" + alarmTime.minute }).equalsIgnoreCase("alarm not found")) {
+			if (!this.logic.editAlarm(alarmNumber, new String[] { "" + alarmTime.getHour(), "" + alarmTime.getMinute() }).equalsIgnoreCase("alarm not found")) {
 				return alarmTime;
 			}
 			throw new WebApplicationException("there is no alarm" + alarmNumber, Status.NOT_FOUND);
@@ -117,6 +124,8 @@ public class AlarmClockResource {
 		case "deactivate":
 			this.logic.deactivateAlarm(alarmNumber);
 			break;
+		default:
+			throw new WebApplicationException(500);
 		}
 		return null;
 	}
@@ -132,9 +141,10 @@ public class AlarmClockResource {
 	@Path("alarms/new")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Timestamp setAlarm(Timestamp alarmTime) {
+	public Timestamp newAlarm(Timestamp alarmTime) {
 		if (alarmTime.isValid()) {
-			this.logic.setAlarm(new String[] { "" + alarmTime.hour, "" + alarmTime.minute });
+			String result = this.logic.setAlarm(new String[] { "" + alarmTime.getHour(), "" + alarmTime.getMinute() });
+			alarmTime.setLink(Server.BASE_URI.toString() + "/" + PATH + "/" + result.split(" ")[1]);
 			return alarmTime;
 		}
 		throw new WebApplicationException("The given time wasn't a valid time", Status.BAD_REQUEST);

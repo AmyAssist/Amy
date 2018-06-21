@@ -439,6 +439,23 @@ public class AlarmClockLogic {
 		}
 		return allAlarms.toArray(new String[allAlarms.size()]);
 	}
+	
+	/**
+	 * Get all alarms with their number
+	 * 
+	 * @return Array of all alarms
+	 */
+	protected String[] getAllAlarmsWithNumber() {
+		List<String> allAlarms = new ArrayList<>();
+		int alarms = this.acStorage.getAlarmCounter();
+		for (int i = 1; i <= alarms; i++) {
+			if (this.acStorage.hasKey("alarm" + i)) {
+				allAlarms.add(i + ":" + this.acStorage.getAlarm(i).convertToString());
+			}
+		}
+		return allAlarms.toArray(new String[allAlarms.size()]);
+	}
+	
 
 	/**
 	 * Get all timers

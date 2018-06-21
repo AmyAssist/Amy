@@ -37,13 +37,14 @@ public class Timestamp {
 	/**
 	 * the hour of the timestamp
 	 */
-	public int hour = 0;
+	private int hour = 0;
 	
 	/**
 	 * the minute of the timestamp
 	 */
-	public int minute = 0;
+	private int minute = 0;
 	
+	private String link = "";
 	
 	/**
 	 * constructor for a timestamp without set values
@@ -52,6 +53,13 @@ public class Timestamp {
 		// needed for JSON
 	}
 	
+	/**
+	 * creates a timestamp from a string
+	 * 
+	 * @param time the time in format hh:mm
+	 * 
+	 * @throws IllegalArgumentException parameter format wrong
+	 */
 	public Timestamp(String time) throws IllegalArgumentException {
 		try {
 			String[] timeSplit = time.split(":");
@@ -62,6 +70,16 @@ public class Timestamp {
 		}
 	}
 	
+	/**
+	 * creates an initiallized timestamp
+	 * 
+	 * @param hour the hour of the new timestamp
+	 * @param minute the minute of the new timestamp
+	 */
+	public Timestamp(int hour, int minute) {
+		this.hour = hour;
+		this.minute = minute;
+	}
 	
 	/**
 	 * @see java.lang.Object#toString()
@@ -82,5 +100,41 @@ public class Timestamp {
 	@XmlTransient
 	public boolean isValid() {
 		return ((this.hour>=0 && this.hour < 24) && (this.minute >= 0 && this.minute < 60));
+	}
+
+	/**
+	 * @return the hour
+	 */
+	public int getHour() {
+		return hour;
+	}
+
+	/**
+	 * @param hour the hour to set
+	 */
+	public void setHour(int hour) {
+		this.hour = hour;
+	}
+
+	/**
+	 * @return the minute
+	 */
+	public int getMinute() {
+		return minute;
+	}
+
+	/**
+	 * @param minute the minute to set
+	 */
+	public void setMinute(int minute) {
+		this.minute = minute;
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
 	}
 }
