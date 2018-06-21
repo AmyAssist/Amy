@@ -26,6 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 import java.util.EnumMap;
 import java.util.Map;
 
+import asg.cliche.Command;
+
 /**
  * This class handles the command line arguments passed to the core.
  *
@@ -69,10 +71,10 @@ public class CommandLineArgumentHandler {
 				printHelp();
 				return;
 			case VERSION:
-				printVersion();
+				output(version());
 				return;
 			case NOTICE:
-				printNotice();
+				output(notice());
 				return;
 			default:
 				// All other flags don't do anything immediately.
@@ -133,12 +135,24 @@ public class CommandLineArgumentHandler {
 		}
 	}
 
-	private void printVersion() {
-		output("Amy core version: " + getClass().getPackage().getImplementationVersion());
+	/**
+	 * The Version String
+	 * 
+	 * @return the version of amy core
+	 */
+	@Command(name = "version", description = "Prints out the version.")
+	public String version() {
+		return "Amy core version: " + getClass().getPackage().getImplementationVersion();
 	}
 
-	private void printNotice() {
-		output("Copyright (c) 2018 the Amy project authors.\n" + " \n" + "  SPDX-License-Identifier: Apache-2.0\n"
+	/**
+	 * The Notice text
+	 * 
+	 * @return the notice of Amy project
+	 */
+	@Command(name = "notice", description = "Prints out the license notice.")
+	public String notice() {
+		return "Copyright (c) 2018 the Amy project authors.\n" + " \n" + "  SPDX-License-Identifier: Apache-2.0\n"
 				+ " \n" + "  Licensed under the Apache License, Version 2.0 (the \"License\");\n"
 				+ "  you may not use this file except in compliance with the License.\n"
 				+ "  You may obtain a copy of the License at\n" + " \n"
@@ -147,7 +161,7 @@ public class CommandLineArgumentHandler {
 				+ "  distributed under the License is distributed on an \"AS IS\" BASIS,\n"
 				+ "  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n"
 				+ "  See the License for the specific language governing permissions and\n"
-				+ "  limitations under the License.\n" + " \n" + "  For more information see notice.md");
+				+ "  limitations under the License.\n" + " \n" + "  For more information see notice.md";
 	}
 
 	private void output(String s) {
