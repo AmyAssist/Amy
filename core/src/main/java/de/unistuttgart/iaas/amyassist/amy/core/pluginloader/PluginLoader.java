@@ -24,11 +24,10 @@
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -71,7 +70,8 @@ public class PluginLoader {
 		this.logger.debug("try to load plugin from {}", uri);
 		File file = new File(uri);
 
-		if (!file.exists() || file.isDirectory()) throw new IllegalArgumentException("Invalid file");
+		if (!file.exists() || file.isDirectory())
+			throw new IllegalArgumentException("Invalid file");
 
 		Plugin plugin = new Plugin();
 		plugin.setFile(file);
@@ -112,7 +112,7 @@ public class PluginLoader {
 			plugin.setManifest(mf);
 			plugin.setClasses(classes);
 
-		} catch (Exception e) {
+		} catch (IOException | ClassNotFoundException e) {
 			this.logger.error("Exception while loading plugin {}", uri, e);
 			return false;
 		}
@@ -120,79 +120,19 @@ public class PluginLoader {
 		return true;
 	}
 
-	/**
-	 * Loads a plugin, that is in the classpath of the project by packageName
-	 * 
-	 * @param packageName
-	 *            The package name of the plugin to load
-	 * @param name
-	 *            The name of the plugin
-	 * @param version
-	 *            The version of the plugin
-	 * 
-	 * @return Whether it worked.
-	 * 
-	 */
-	@Deprecated
-	public boolean loadPlugin(String packageName, String name, String version) {
-		String packagePath = packageName.replace(".", "/");
-		URL packageURL = Thread.currentThread().getContextClassLoader().getResource(packagePath);
-		if (packageURL == null) return false;
-		File packageFile;
-		try {
-			packageFile = new File(URLDecoder.decode(packageURL.getFile(), "UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			this.logger.error("converting URL to File", e);
-			return false;
-		}
-		ArrayList<Class<?>> classes = this.findClassesInPackage(packageFile,
-				packageName.substring(0, packageName.lastIndexOf(".")));
-		if (classes == null) return false;
-		Plugin p = new Plugin();
-		p.setClasses(classes);
-		p.setClassLoader(Thread.currentThread().getContextClassLoader());
-		p.setFile(null);
-		p.setFakeName(name);
-		p.setFakeVersion(version);
-		this.addPlugin(p);
-		return true;
-	}
-
 	private void addPlugin(Plugin plugin) {
 		if (plugin.getClasses().isEmpty()) {
 			this.logger.warn("Plugin contains no class: {}", plugin.getUniqueName());
 		}
-		if (plugin.getUniqueName().equals("")) {
+		if (plugin.getUniqueName().isEmpty()) {
 			this.logger.warn("Can't get name of plugin {}", plugin.getUniqueName());
 		}
-		if (plugin.getVersion().equals("")) {
+		if (plugin.getVersion().isEmpty()) {
 			this.logger.warn("Can't get version of plugin {}", plugin.getUniqueName());
 		}
 
 		this.logger.info("loaded plugin {} with {} classes", plugin.getUniqueName(), plugin.getClasses().size());
 		this.plugins.put(plugin.getUniqueName(), plugin);
-	}
-
-	@Deprecated
-	private ArrayList<Class<?>> findClassesInPackage(File packageFile, String parentPackageName) {
-		ArrayList<Class<?>> classes = new ArrayList<>();
-		if (packageFile.isDirectory()) {
-			for (File child : packageFile.listFiles()) {
-				ArrayList<Class<?>> newClasses = this.findClassesInPackage(child,
-						parentPackageName + "." + packageFile.getName());
-				if (newClasses == null) return null;
-				classes.addAll(newClasses);
-			}
-		} else if (packageFile.getName().endsWith(".class")) {
-			String className = parentPackageName + "." + StringUtils.removeEnd(packageFile.getName(), ".class");
-			try {
-				classes.add(Class.forName(className));
-			} catch (ClassNotFoundException e) {
-				this.logger.error("try to get class {}", className, e);
-				return null;
-			}
-		}
-		return classes;
 	}
 
 	/**

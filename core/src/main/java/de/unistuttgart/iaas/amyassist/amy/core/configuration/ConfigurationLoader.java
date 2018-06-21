@@ -52,7 +52,7 @@ public class ConfigurationLoader {
 	 * 
 	 * @param configurationName
 	 *            the name of the config file, without the .properties
-	 * @return
+	 * @return the loaded Properties
 	 */
 	public Properties load(String configurationName) {
 		Properties properties = new Properties();
