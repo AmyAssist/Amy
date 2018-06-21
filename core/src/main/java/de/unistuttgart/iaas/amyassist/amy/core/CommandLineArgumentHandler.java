@@ -23,7 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * This class handles the command line arguments passed to the core.
@@ -32,7 +33,7 @@ import java.util.HashMap;
  */
 public class CommandLineArgumentHandler {
 
-	private HashMap<Flag, String> parameters = new HashMap<>();
+	private Map<Flag, String> parameters = new EnumMap<>(Flag.class);
 
 	private boolean flagsValid = true;
 
@@ -51,7 +52,7 @@ public class CommandLineArgumentHandler {
 			}
 			Flag f = Flag.getFlagFromString(s);
 			if (f == null) {
-				output("Unknown command line flag: " + s);
+				output("Unknown command line flag: " + s + ". Run with -h for help.");
 				this.flagsValid = false;
 				return;
 			}
@@ -73,7 +74,7 @@ public class CommandLineArgumentHandler {
 				printNotice();
 				return;
 			default:
-				// DO nothing;
+				// All other flags don't do anything immediately.
 				break;
 			}
 		}
@@ -110,13 +111,13 @@ public class CommandLineArgumentHandler {
 		output("");
 		for (Flag f : Flag.values()) {
 			String s = "  ";
-			if (f.getShortVariant() != "") {
+			if (!f.getShortVariant().isEmpty()) {
 				s += f.getShortVariant();
 			}
-			if (f.getShortVariant() != "" && f.getLongVariant() != "") {
+			if ((!f.getShortVariant().isEmpty()) && (!f.getLongVariant().isEmpty())) {
 				s += " or ";
 			}
-			if (f.getLongVariant() != "") {
+			if (!f.getLongVariant().isEmpty()) {
 				s += f.getLongVariant();
 			}
 
@@ -167,13 +168,13 @@ public class CommandLineArgumentHandler {
 		private boolean hasParameter;
 		private boolean stopExecutaion;
 
-		private Flag(String p_shortVariant, String p_longVariant, String p_description, boolean p_stop_execution,
-				boolean p_hasParameter) {
-			this.shortVariant = p_shortVariant;
-			this.longVariant = p_longVariant;
-			this.description = p_description;
-			this.hasParameter = p_hasParameter;
-			this.stopExecutaion = p_stop_execution;
+		private Flag(String pShortVariant, String pLongVariant, String pDescription, boolean pStopExecution,
+				boolean pHasParameter) {
+			this.shortVariant = pShortVariant;
+			this.longVariant = pLongVariant;
+			this.description = pDescription;
+			this.hasParameter = pHasParameter;
+			this.stopExecutaion = pStopExecution;
 		}
 
 		/**

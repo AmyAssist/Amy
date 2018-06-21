@@ -63,8 +63,6 @@ public class Core implements SpeechInputHandler {
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
-	private CommandLineArgumentHandler cmaHandler;
-
 	private List<Thread> threads;
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 	private DependencyInjection di = new DependencyInjection();
@@ -79,10 +77,17 @@ public class Core implements SpeechInputHandler {
 	 * @param args
 	 *            The arguments for the core.
 	 */
-	void run(String[] args) {
-		this.cmaHandler = new CommandLineArgumentHandler(args);
-		if (!this.cmaHandler.shouldProgramContinue())
-			return;
+	void start(String[] args) {
+		CommandLineArgumentHandler cmaHandler = new CommandLineArgumentHandler(args);
+		if (cmaHandler.shouldProgramContinue()) {
+			run();
+		}
+	}
+
+	/**
+	 * The main entry point for the real core logic.
+	 */
+	private void run() {
 		this.init();
 		this.threads.forEach(Thread::start);
 		this.server.start();
