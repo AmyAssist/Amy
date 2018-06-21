@@ -70,15 +70,15 @@ public class AlarmClockSpeech {
 			if (params[4].equals("hours") && params[6].equals("minutes")) {
 				return this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), 0);
 			} else if (params[4].equals("hours") && params[6].equals("seconds")) {
-				return this.logic.setTimer(Integer.parseInt(params[3]), 0, Integer.parseInt(params[7]));
+				return this.logic.setTimer(Integer.parseInt(params[3]), 0, Integer.parseInt(params[5]));
 			} else if (params[4].equals("minutes") && params[6].equals("seconds")) {
-				return this.logic.setTimer(0, Integer.parseInt(params[5]), Integer.parseInt(params[7]));
+				return this.logic.setTimer(0, Integer.parseInt(params[3]), Integer.parseInt(params[5]));
 			}
 		} else if (params.length == 5) {
 			if (params[4].equals("hours")) {
 				return this.logic.setTimer(Integer.parseInt(params[3]), 0, 0);
 			} else if (params[4].equals("minutes")) {
-				return this.logic.setTimer(0, Integer.parseInt(params[5]), 0);
+				return this.logic.setTimer(0, Integer.parseInt(params[3]), 0);
 			} else if (params[4].equals("seconds")) {
 				return this.logic.setTimer(0, 0, Integer.parseInt(params[3]));
 			}
