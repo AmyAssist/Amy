@@ -100,13 +100,10 @@ public class Core implements SpeechInputHandler {
 
 		this.speechCommandHandler.setFileToSaveGrammarTo(grammarFile);
 
-		AudioUserInteraction aui = AudioUserInteraction.getAudioUI();
+		AudioUserInteraction aui = this.di.createAndInitialize(AudioUserInteraction.class);
 		aui.setGrammars(new Grammar("grammar", grammarFile), null);
-
-		SpeechIO sr = aui;
-		this.di.inject(sr);
-		sr.setSpeechInputHandler(this);
-		this.threads.add(new Thread(sr));
+		aui.setSpeechInputHandler(this);
+		this.threads.add(new Thread(aui));
 
 		this.loadPlugins();
 	}

@@ -103,14 +103,11 @@ public abstract class SpeechRecognizer implements Runnable {
 	 * The Recognizer which Handles the Recognition
 	 */
 	protected StreamSpeechRecognizer recognizer;
-	
-	private LineListener listener = new LineListener(){
-		@Override
-		public void update(LineEvent event) {
-			if(event.getType() == LineEvent.Type.STOP) {
-				((Clip) event.getSource()).close();
-				SpeechRecognizer.this.soundPlaying = false;
-			}
+
+	private LineListener listener = event -> {
+		if (event.getType() == LineEvent.Type.STOP) {
+			((Clip) event.getSource()).close();
+			SpeechRecognizer.this.soundPlaying = false;
 		}
 	};
 

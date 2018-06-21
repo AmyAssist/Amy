@@ -41,18 +41,17 @@ import marytts.exceptions.MaryConfigurationException;
 import marytts.exceptions.SynthesisException;
 
 /**
- * Class Based on MaryTTS: https://github.com/marytts/marytts. Class that gives
- * out a String input as Speech. First setup() the TTS to make the output later
- * Faster. Before running as thread set the String-To-Say with setOutputString
+ * Class Based on MaryTTS: https://github.com/marytts/marytts. Class that gives out a String input as Speech. First
+ * setup() the TTS to make the output later Faster. Before running as thread set the String-To-Say with setOutputString
  * 
  * @author Tim Neumann, Kai Menzel
  */
 public class TextToSpeech {
-	
+
 	private final Logger logger = LoggerFactory.getLogger(TextToSpeech.class);
 
 	private static TextToSpeech tts;
-	
+
 	private final LocalMaryInterface mary;
 
 	private AudioInputStream audio;
@@ -68,51 +67,57 @@ public class TextToSpeech {
 			throw new IllegalStateException(e);
 		}
 	}
-	
+
 	/**
 	 * @return TODO
 	 */
 	public static TextToSpeech getTTS() {
-		if(tts == null) {
+		if (tts == null) {
 			tts = new TextToSpeech();
 		}
 		return tts;
 	}
-	
+
 	// -----------------------------------------------------------------------------------------------
 
-	
 	/**
 	 * outputs Speech translated from given String
-	 * @param listener TODO
-	 * @param s String that shall be said
-	 */	private void speak(LineListener listener, String s){
+	 * 
+	 * @param listener
+	 *            TODO
+	 * @param s
+	 *            String that shall be said
+	 */
+	private void speak(LineListener listener, String s) {
 		this.logger.info("saying: {}", s);
 		try {
 			this.audio = this.mary.generateAudio(s);
 			AudioFormat format = this.audio.getFormat();
-		    DataLine.Info info = new DataLine.Info(Clip.class, format);
-		    this.outputClip = (Clip) AudioSystem.getLine(info);
-		    this.outputClip.addLineListener(listener);
-		    this.outputClip.open(this.audio);
-		    this.outputClip.start();
+			DataLine.Info info = new DataLine.Info(Clip.class, format);
+			this.outputClip = (Clip) AudioSystem.getLine(info);
+			this.outputClip.addLineListener(listener);
+			this.outputClip.open(this.audio);
+			this.outputClip.start();
 		} catch (SynthesisException | LineUnavailableException | IOException e) {
 			this.logger.error("output error", e);
 		}
-	    
+
 	}
-	
+
 	/**
 	 * Voice Output
-	 * @param listener TODO
-	 * @param s String to say
+	 * 
+	 * @param listener
+	 *            TODO
+	 * @param s
+	 *            String to say
 	 */
 	public void say(LineListener listener, String s) {
 		speak(listener, preProcessing(s));
 	}
-	
+
 	// -----------------------------------------------------------------------------------------------
-	
+
 	/**
 	 * cleans String of SubString Mary can't pronounce
 	 * 
@@ -126,25 +131,25 @@ public class TextToSpeech {
 		text = text.replace("°F", " degree Fahrenheit");
 		return text;
 	}
-	
+
 	/**
 	 * Method to close the outputClip
 	 */
 	public void stopOutput() {
-		if(this.outputClip != null) {
-		this.outputClip.stop();
+		if (this.outputClip != null) {
+			this.outputClip.stop();
 		}
 	}
-	
+
 	// -----------------------------------------------------------------------------------------------
 
 	/**
 	 * Get's {@link #outputClip outputClip}
 	 * 
-	 * @return  outputClip
+	 * @return outputClip
 	 */
 	public Clip getOutputClip() {
 		return this.outputClip;
 	}
-	
+
 }
