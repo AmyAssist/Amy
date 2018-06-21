@@ -78,7 +78,8 @@ public class Core implements SpeechInputHandler {
 	 *            The arguments for the core.
 	 */
 	void start(String[] args) {
-		CommandLineArgumentHandler cmaHandler = new CommandLineArgumentHandler(args);
+		CommandLineArgumentHandler cmaHandler = new CommandLineArgumentHandler();
+		cmaHandler.init(args);
 		if (cmaHandler.shouldProgramContinue()) {
 			run();
 		}

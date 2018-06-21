@@ -33,17 +33,18 @@ import java.util.Map;
  */
 public class CommandLineArgumentHandler {
 
-	private Map<Flag, String> parameters = new EnumMap<>(Flag.class);
+	private Map<Flag, String> parameters;
 
 	private boolean flagsValid = true;
 
 	/**
-	 * Creates a new command line argument handler
+	 * Initializes the command line handler
 	 *
 	 * @param args
 	 *            The command line arguments.
 	 */
-	public CommandLineArgumentHandler(String[] args) {
+	public void init(String[] args) {
+		this.parameters = new EnumMap<>(Flag.class);
 		Flag flagExpectingPara = null;
 		for (String s : args) {
 			if (flagExpectingPara != null) {
@@ -83,8 +84,13 @@ public class CommandLineArgumentHandler {
 
 	/**
 	 * @return whether the program should continue with normal execution considering these command line flags
+	 * @throws IllegalStateException
+	 *             When the CommandLineArgumentHandler is not initialized. (When {@link #init(String[]) init} was not
+	 *             called before.)
 	 */
-	public boolean shouldProgramContinue() {
+	public boolean shouldProgramContinue() throws IllegalStateException {
+		if (this.parameters == null)
+			throw new IllegalStateException("Not initialiozed.");
 		if (!this.flagsValid)
 			return false;
 		for (Flag f : this.parameters.keySet()) {
@@ -168,7 +174,7 @@ public class CommandLineArgumentHandler {
 		private boolean hasParameter;
 		private boolean stopExecutaion;
 
-		private Flag(String pShortVariant, String pLongVariant, String pDescription, boolean pStopExecution,
+		Flag(String pShortVariant, String pLongVariant, String pDescription, boolean pStopExecution,
 				boolean pHasParameter) {
 			this.shortVariant = pShortVariant;
 			this.longVariant = pLongVariant;
