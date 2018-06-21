@@ -50,10 +50,10 @@ public class AdditionalSpeechRecognizer extends SpeechRecognizer {
 	@Override
 	protected void predefinedInputHandling() {
 		if(this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
-			 this.tts.stopOutput();
+			this.tts.stopOutput();
 		 } else if(this.speechRecognitionResult.equals(this.audioUI.getGOSLEEP())){
 			say("now sleeping");
-			this.stop(null);
+			this.stop(this.audioUI.mainGrammar);
 		} else{
 			makeDecision(this.speechRecognitionResult);
 		}

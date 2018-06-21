@@ -69,7 +69,7 @@ public class TextToSpeech {
 	}
 
 	/**
-	 * @return TODO
+	 * @return Returns the static tts Object
 	 */
 	public static TextToSpeech getTTS() {
 		if (tts == null) {
@@ -84,12 +84,13 @@ public class TextToSpeech {
 	 * outputs Speech translated from given String
 	 * 
 	 * @param listener
-	 *            TODO
+	 *            Listener for the Output-Clip
 	 * @param s
 	 *            String that shall be said
 	 */
 	private void speak(LineListener listener, String s) {
 		this.logger.info("saying: {}", s);
+		stopOutput();
 		try {
 			this.audio = this.mary.generateAudio(s);
 			AudioFormat format = this.audio.getFormat();
@@ -108,7 +109,7 @@ public class TextToSpeech {
 	 * Voice Output
 	 * 
 	 * @param listener
-	 *            TODO
+	 *            Listener for the Output-Clip
 	 * @param s
 	 *            String to say
 	 */

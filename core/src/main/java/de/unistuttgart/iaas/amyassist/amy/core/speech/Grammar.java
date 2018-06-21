@@ -61,32 +61,56 @@ public class Grammar {
 	/**
 	 * Add a new Grammar that can be switched to
 	 * @param switchCommand Command to say to switch to new Grammar
-	 * @param gram Grammar to change to by said Grammarswitch
+	 * @param grammar Grammar to change to by said Grammarswitch
 	 */
 	public void putChangeGrammar(String switchCommand, Grammar grammar){
 		this.switchList.put(switchCommand, grammar);
 	}
-
+	
+	/**
+	 * Getter
+	 * @return name
+	 */
 	public String getName() {
 		return this.name;
 	}
 
+	/**
+	 * Getter
+	 * @return file
+	 */
 	public File getFile() {
 		return this.file;
 	}
 
+	/**
+	 * Getter
+	 * @return switchList
+	 */
 	public Map<String, Grammar> getSwitchList() {
 		return this.switchList;
 	}
 
+	/**
+	 * Setter
+	 * @param name name of Grammar, should be unique
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Setter
+	 * @param file path to the Grammar file
+	 */
 	public void setFile(File file) {
 		this.file = file;
 	}
 
+	/**
+	 * Setter
+	 * @param switchList List of Possible Grammar Switches
+	 */
 	public void setSwitchList(HashMap<String, Grammar> switchList) {
 		this.switchList = switchList;
 	}

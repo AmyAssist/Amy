@@ -42,15 +42,15 @@ import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;
 
 /**
- * Class that translate Aduio-Input into Strings, powered by CMU Sphinx -
- * https://cmusphinx.github.io/ which is Licenced under BSD
+ * Class that translate Audio-Input into Strings, powered by CMU Sphinx - https://cmusphinx.github.io/ which is Licenced
+ * under BSD
  *
  * @author Kai Menzel
  */
 public abstract class SpeechRecognizer implements Runnable {
 
 	/**
-	 * 
+	 * TODO
 	 */
 	protected final Logger logger = LoggerFactory.getLogger(SpeechRecognizer.class);
 
@@ -75,12 +75,12 @@ public abstract class SpeechRecognizer implements Runnable {
 	protected AudioUserInteraction audioUI;
 
 	/**
-	 * 
+	 * TODO
 	 */
 	protected TextToSpeech tts;
 
 	/**
-	 * 
+	 * TODO
 	 */
 	boolean soundPlaying = false;
 
@@ -146,8 +146,7 @@ public abstract class SpeechRecognizer implements Runnable {
 	// -----------------------------------------------------------------------------------------------
 
 	/**
-	 * @see java.lang.Runnable#run() Starts and runs the recognizer calls
-	 *      makeDecision() with the recognized String
+	 * @see java.lang.Runnable#run() Starts and runs the recognizer calls makeDecision() with the recognized String
 	 */
 	@Override
 	public void run() {
@@ -160,7 +159,7 @@ public abstract class SpeechRecognizer implements Runnable {
 		// Boolean to check if we are supposed to listen (sleeping)
 		this.listening = false;
 
-		loop: while (!Thread.interrupted() && this.audioUI.isRecognitionThreadRunning()) {
+		loop: while (this.audioUI.isRecognitionThreadRunning()) {
 
 			/**
 			 * wait for input from the recognizer
@@ -168,21 +167,23 @@ public abstract class SpeechRecognizer implements Runnable {
 			SpeechResult speechResult = null;
 			while (speechResult == null) {
 				speechResult = this.recognizer.getResult();
-				if (Thread.interrupted()) {
+				if (!this.audioUI.isRecognitionThreadRunning() || Thread.interrupted()) {
+					stop();
 					break loop;
 				}
 			}
 
 			// Get the hypothesis (Result as String)
 			this.speechRecognitionResult = speechResult.getHypothesis();
-			if(!this.soundPlaying) {
+			if (!this.soundPlaying) {
 				predefinedInputHandling();
-			}else {
-				if(this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
+			} else {
+				if (this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
 					this.tts.stopOutput();
 				}
 			}
 		}
+
 		this.recognizer.stopRecognition();
 		this.audioUI.switchGrammar(this.nextGrammar);
 	}
@@ -190,7 +191,7 @@ public abstract class SpeechRecognizer implements Runnable {
 	// ===============================================================================================
 
 	/**
-	 * 
+	 * TODO
 	 */
 	protected abstract void predefinedInputHandling();
 
@@ -233,6 +234,7 @@ public abstract class SpeechRecognizer implements Runnable {
 			for (Map.Entry<String, Grammar> entry : this.grammar.getSwitchList().entrySet()) {
 				if (result.equalsIgnoreCase(entry.getKey())) {
 					this.stop(entry.getValue());
+					break;
 				}
 			}
 		}
@@ -248,7 +250,6 @@ public abstract class SpeechRecognizer implements Runnable {
 	 */
 	protected void say(String s) {
 		this.soundPlaying = true;
-		this.tts.stopOutput();
 		this.tts.say(this.listener, s);
 	}
 
@@ -263,6 +264,14 @@ public abstract class SpeechRecognizer implements Runnable {
 	protected void stop(Grammar switchGrammar) {
 		this.audioUI.setRecognitionThreadRunning(false);
 		this.nextGrammar = switchGrammar;
+	}
+
+	/**
+	 * BE CAREFUL void to stop the Current Recognizer without starting a new one
+	 */
+	public void stop() {
+		this.audioUI.setRecognitionThreadRunning(false);
+		this.nextGrammar = null;
 	}
 
 	// ===============================================================================================

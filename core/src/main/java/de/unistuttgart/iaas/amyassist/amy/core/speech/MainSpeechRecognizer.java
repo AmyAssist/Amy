@@ -50,7 +50,7 @@ public class MainSpeechRecognizer extends SpeechRecognizer {
 	@Override
 	protected void predefinedInputHandling() {
 		if(this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
-			 this.tts.stopOutput();
+			this.tts.stopOutput();
 		 } else if (this.speechRecognitionResult.equals(this.audioUI.getWAKEUP())) {
 			this.listening = true;
 			say("waking up");

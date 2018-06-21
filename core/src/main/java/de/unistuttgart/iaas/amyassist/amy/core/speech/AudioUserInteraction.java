@@ -53,7 +53,10 @@ public class AudioUserInteraction implements SpeechIO {
 
 	private AudioInputStream ais;
 
-	private Grammar mainGrammar;
+	/**
+	 * The Grammar of the Main Menu (default)
+	 */
+	Grammar mainGrammar;
 	private List<Grammar> switchableGrammars;
 
 	private MainSpeechRecognizer mainRecognizer;
@@ -86,8 +89,9 @@ public class AudioUserInteraction implements SpeechIO {
 	 *            Grammar to switch to
 	 */
 	public void switchGrammar(Grammar grammar) {
-		this.currentRecognizer.interrupt();
-		if (grammar == null || grammar.getName().equals(this.mainGrammar.getName())) {
+		if(grammar == null) {
+			//TODO do sth?
+		}else if(grammar.getName().equals(this.mainGrammar.getName())){
 			this.currentRecognizer = new Thread(this.mainRecognizer);
 		} else {
 			this.currentRecognizer = new Thread(this.recognizerList.get(grammar.getName()));
