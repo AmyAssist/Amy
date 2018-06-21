@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.data;
+package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 public class SpotifyConstants {
 

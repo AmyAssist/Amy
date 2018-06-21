@@ -1,3 +1,26 @@
+/*
+ * This source file is part of the Amy open source project.
+ * For more information see github.com/AmyAssist
+ * 
+ * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at 
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * For more information see notice.md
+ */
+
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 import java.io.IOException;
@@ -16,6 +39,7 @@ import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.special.SearchResult;
+import com.wrapper.spotify.requests.IRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
@@ -229,13 +253,13 @@ public class SpotifyAPICalls {
 	 * @return
 	 */
 	public Device[] getDevices() {
+		Device[] devices;
 		if (getSpotifyApi() != null) {
 			GetUsersAvailableDevicesRequest getUsersAvailableDevicesRequest = getSpotifyApi().getUsersAvailableDevices()
 					.build();
-			try {
-				return getUsersAvailableDevicesRequest.execute();
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
+			devices = (Device[]) exceptionHandlingWithResults(getUsersAvailableDevicesRequest);
+			if (devices != null) {
+				return devices;
 			}
 		}
 		return new Device[0];
@@ -257,10 +281,11 @@ public class SpotifyAPICalls {
 
 	/**
 	 * check if the given device logged in an account
+	 * 
 	 * @param deviceID
 	 * @return
 	 */
-	private boolean checkDeviceIsLoggedIn(String deviceID) {
+	public boolean checkDeviceIsLoggedIn(String deviceID) {
 		for (Device device : getDevices()) {
 			if (device.getId().equals(deviceID)) {
 				return true;
@@ -280,13 +305,7 @@ public class SpotifyAPICalls {
 			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = getSpotifyApi().startResumeUsersPlayback()
 					.device_id(this.deviceID).uris(new JsonParser().parse("[\"" + uri + "\"]").getAsJsonArray())
 					.build();
-			try {
-				startResumeUsersPlaybackRequest.execute();
-				return true;
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getCause().getMessage());
-				return false;
-			}
+			return exceptionHandlingWihtBoolean(startResumeUsersPlaybackRequest);
 		}
 		return false;
 	}
@@ -301,13 +320,7 @@ public class SpotifyAPICalls {
 		if (checkPlayerState()) {
 			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = getSpotifyApi().startResumeUsersPlayback()
 					.context_uri(uri).device_id(this.deviceID).build();
-			try {
-				startResumeUsersPlaybackRequest.execute();
-				return true;
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getCause().getMessage());
-				return false;
-			}
+			return exceptionHandlingWihtBoolean(startResumeUsersPlaybackRequest);
 		}
 		return false;
 	}
@@ -322,13 +335,7 @@ public class SpotifyAPICalls {
 		if (checkPlayerState()) {
 			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = getSpotifyApi().startResumeUsersPlayback()
 					.device_id(this.deviceID).build();
-			try {
-				startResumeUsersPlaybackRequest.execute();
-				return true;
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
-				return false;
-			}
+			return exceptionHandlingWihtBoolean(startResumeUsersPlaybackRequest);
 		}
 		return false;
 	}
@@ -339,17 +346,11 @@ public class SpotifyAPICalls {
 	 * @return a boolean. true if the command was executed, else if the command
 	 *         failed
 	 */
-	public boolean pausePlayback() {
+	public boolean pause() {
 		if (checkPlayerState()) {
 			PauseUsersPlaybackRequest pauseUsersPlaybackRequest = getSpotifyApi().pauseUsersPlayback()
 					.device_id(this.deviceID).build();
-			try {
-				pauseUsersPlaybackRequest.execute();
-				return true;
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
-				return false;
-			}
+			return exceptionHandlingWihtBoolean(pauseUsersPlaybackRequest);
 		}
 		return false;
 	}
@@ -364,13 +365,7 @@ public class SpotifyAPICalls {
 		if (checkPlayerState()) {
 			SkipUsersPlaybackToNextTrackRequest skipUsersPlaybackToNextTrackRequest = getSpotifyApi()
 					.skipUsersPlaybackToNextTrack().device_id(this.deviceID).build();
-			try {
-				skipUsersPlaybackToNextTrackRequest.execute();
-				return true;
-			} catch (IOException | SpotifyWebApiException e) {
-				this.logger.error(e.getMessage());
-				return false;
-			}
+			return exceptionHandlingWihtBoolean(skipUsersPlaybackToNextTrackRequest);
 		}
 		return false;
 	}
@@ -385,13 +380,7 @@ public class SpotifyAPICalls {
 		if (checkPlayerState()) {
 			SkipUsersPlaybackToPreviousTrackRequest skipUsersPlaybackToPreviousTrackRequest = getSpotifyApi()
 					.skipUsersPlaybackToPreviousTrack().device_id(this.deviceID).build();
-			try {
-				skipUsersPlaybackToPreviousTrackRequest.execute();
-				return true;
-			} catch (IOException | SpotifyWebApiException e) {
-				this.logger.error(e.getMessage());
-				return false;
-			}
+			return exceptionHandlingWihtBoolean(skipUsersPlaybackToPreviousTrackRequest);
 		}
 		return false;
 	}
@@ -402,16 +391,13 @@ public class SpotifyAPICalls {
 	 * @param volume
 	 *            int between 0 and 100
 	 */
-	protected void setVolume(int volume) {
+	protected boolean setVolume(int volume) {
 		if (checkPlayerState()) {
 			SetVolumeForUsersPlaybackRequest setVolumeForUsersPlaybackRequest = getSpotifyApi()
 					.setVolumeForUsersPlayback(volume).device_id(this.deviceID).build();
-			try {
-				setVolumeForUsersPlaybackRequest.execute();
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
-			}
+			return exceptionHandlingWihtBoolean(setVolumeForUsersPlaybackRequest);
 		}
+		return false;
 	}
 
 	/**
@@ -436,11 +422,8 @@ public class SpotifyAPICalls {
 		if (checkPlayerState()) {
 			GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = getSpotifyApi()
 					.getInformationAboutUsersCurrentPlayback().build();
-			try {
-				return getInformationAboutUsersCurrentPlaybackRequest.execute();
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
-			}
+			return (CurrentlyPlayingContext) exceptionHandlingWithResults(
+					getInformationAboutUsersCurrentPlaybackRequest);
 		}
 		return null;
 	}
@@ -458,15 +441,9 @@ public class SpotifyAPICalls {
 	 */
 	public SearchResult searchInSpotify(String searchItem, String type, int limit) {
 		if (checkPlayerState()) {
-			SearchResult searchResult;
 			SearchItemRequest searchItemRequest = getSpotifyApi().searchItem(searchItem, type.toLowerCase())
 					.limit(Integer.valueOf(limit)).offset(Integer.valueOf(0)).build();
-			try {
-				searchResult = searchItemRequest.execute();
-				return searchResult;
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
-			}
+			return (SearchResult) exceptionHandlingWithResults(searchItemRequest);
 		}
 		return null;
 	}
@@ -483,13 +460,40 @@ public class SpotifyAPICalls {
 			GetListOfFeaturedPlaylistsRequest getListOfFeaturedPlaylistsRequest = getSpotifyApi()
 					.getListOfFeaturedPlaylists().country(CountryCode.DE).limit(Integer.valueOf(limit))
 					.offset(Integer.valueOf(0)).build();
-			try {
-				return getListOfFeaturedPlaylistsRequest.execute();
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
-			}
+			return (FeaturedPlaylists) exceptionHandlingWithResults(getListOfFeaturedPlaylistsRequest);
 		}
 		return null;
+	}
+
+	/**
+	 * handle the exception from the request created by the .excute() method
+	 * 
+	 * @param request
+	 * @return
+	 */
+	private Object exceptionHandlingWithResults(IRequest request) {
+		try {
+			return request.execute();
+		} catch (SpotifyWebApiException | IOException e) {
+			this.logger.error(e.getMessage());
+			return null;
+		}
+	}
+
+	/**
+	 * handle the exception from the request created by the .excute() method
+	 * 
+	 * @param request
+	 * @return if no exception is occurred then true, else false
+	 */
+	private boolean exceptionHandlingWihtBoolean(IRequest request) {
+		try {
+			request.execute();
+			return true;
+		} catch (SpotifyWebApiException | IOException e) {
+			this.logger.error(e.getMessage());
+			return false;
+		}
 	}
 
 }

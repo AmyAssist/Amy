@@ -35,10 +35,10 @@ import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.special.SearchResult;
 import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
 import com.wrapper.spotify.model_objects.specification.Artist;
+import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
-
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.data.SpotifyConstants;
 
 /**
  * This class create search query to the spotify web api and parse the results
@@ -48,7 +48,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.data.SpotifyConstants;
  */
 public class Search {
 	private SpotifyAPICalls spotifyAPICalls;
-	private static final int SEARCH_LIMIT = 10;
+	public static final int SEARCH_LIMIT = 10;
 
 	public Search(SpotifyAPICalls spotifyAPICalls) {
 		this.spotifyAPICalls = spotifyAPICalls;
@@ -69,9 +69,11 @@ public class Search {
 	 * @throws SpotifyWebApiException
 	 */
 	public List<Map<String, String>> searchList(String searchItem, String type, int limit) {
-		SearchResult searchResult = spotifyAPICalls.searchInSpotify(searchItem, type, limit);
-		if(searchResult != null) {
-		return createMap(searchResult, type);
+		if (typeCheck(type)) {
+			SearchResult searchResult = spotifyAPICalls.searchInSpotify(searchItem, type, limit);
+			if (searchResult != null) {
+				return createMap(searchResult, type);
+			}
 		}
 		return new ArrayList<>();
 	}
@@ -81,34 +83,33 @@ public class Search {
 		if (searchResult != null) {
 			switch (type.toLowerCase()) {
 			case SpotifyConstants.TYPE_TRACK:
-				return createTrackSearchResult(searchResult, type);
+				return createTrackOutput(searchResult.getTracks(), type);
 			case SpotifyConstants.TYPE_PLAYLIST:
-				return createPlaylistSearchResult(searchResult, type);
+				return createPlaylistOutput(searchResult.getPlaylists(), type);
 			case SpotifyConstants.TYPE_ARTIST:
-				return createArtistSearchResult(searchResult, type);
+				return createArtistOutput(searchResult.getArtists(), type);
 			case SpotifyConstants.TYPE_ALBUM:
-				return createAlbumSearchResult(searchResult, type);
+				return createAlbumOutput(searchResult.getAlbums(), type);
 			default:
-				break;
-
+				return resultList;
 			}
 		}
 		return resultList;
 	}
 
 	/**
-	 * create a List with all SearchResults when the type is a track
+	 * create a List with all items in a Paging Object when the type is a track
 	 * 
 	 * @param searchResult
 	 * @return a list with search result entries. every entry has a Map with
 	 *         different attributes. e.g. artist, ... every entry has a uri to the
 	 *         song an the type track
 	 */
-	private List<Map<String, String>> createTrackSearchResult(SearchResult searchResult, String type) {
+	public List<Map<String, String>> createTrackOutput(Paging<Track> searchResult, String type) {
 		HashMap<String, String> entry;
 		List<Map<String, String>> result = new ArrayList<>();
-		if (type.equals(SpotifyConstants.TYPE_TRACK)) {
-			for (Track track : searchResult.getTracks().getItems()) {
+		if (type.equals(SpotifyConstants.TYPE_TRACK) && searchResult != null) {
+			for (Track track : searchResult.getItems()) {
 				entry = new HashMap<>();
 				if (track.getName() != null) {
 					entry.put(SpotifyConstants.ITEM_NAME, track.getName());
@@ -137,11 +138,11 @@ public class Search {
 	 *         different attributes. e.g. artist, ... every entry has a uri to the
 	 *         song an the type album
 	 */
-	private List<Map<String, String>> createAlbumSearchResult(SearchResult searchResult, String type) {
+	public List<Map<String, String>> createAlbumOutput(Paging<AlbumSimplified> searchResult, String type) {
 		HashMap<String, String> entry;
 		List<Map<String, String>> result = new ArrayList<>();
-		if (type.equals(SpotifyConstants.TYPE_ALBUM)) {
-			for (AlbumSimplified album : searchResult.getAlbums().getItems()) {
+		if (type.equals(SpotifyConstants.TYPE_ALBUM) && searchResult != null) {
+			for (AlbumSimplified album : searchResult.getItems()) {
 				entry = new HashMap<>();
 				if (album.getName() != null) {
 					entry.put(SpotifyConstants.ITEM_NAME, album.getName());
@@ -170,11 +171,11 @@ public class Search {
 	 *         different attributes. e.g. artist, ... every entry has a uri to the
 	 *         song an the type artist
 	 */
-	private List<Map<String, String>> createArtistSearchResult(SearchResult searchResult, String type) {
+	public List<Map<String, String>> createArtistOutput(Paging<Artist> searchResult, String type) {
 		HashMap<String, String> entry;
 		List<Map<String, String>> result = new ArrayList<>();
-		if (type.equals(SpotifyConstants.TYPE_ARTIST)) {
-			for (Artist artist : searchResult.getArtists().getItems()) {
+		if (type.equals(SpotifyConstants.TYPE_ARTIST) && searchResult != null) {
+			for (Artist artist : searchResult.getItems()) {
 				entry = new HashMap<>();
 				if (artist.getName() != null) {
 					entry.put(SpotifyConstants.ITEM_NAME, artist.getName());
@@ -203,11 +204,11 @@ public class Search {
 	 *         different attributes. e.g. artist, ... every entry has a uri to the
 	 *         song an the type playlist
 	 */
-	private List<Map<String, String>> createPlaylistSearchResult(SearchResult searchResult, String type) {
+	public List<Map<String, String>> createPlaylistOutput(Paging<PlaylistSimplified> searchResult, String type) {
 		HashMap<String, String> entry;
 		List<Map<String, String>> result = new ArrayList<>();
 		if (type.equals(SpotifyConstants.TYPE_PLAYLIST)) {
-			for (PlaylistSimplified playlist : searchResult.getPlaylists().getItems()) {
+			for (PlaylistSimplified playlist : searchResult.getItems()) {
 				entry = new HashMap<>();
 				if (playlist.getName() != null) {
 					entry.put(SpotifyConstants.ITEM_NAME, playlist.getName());
@@ -235,27 +236,20 @@ public class Search {
 	 * 
 	 */
 	public List<Map<String, String>> getFeaturedPlaylists() {
-		List<Map<String, String>> result = new ArrayList<>();
-		HashMap<String, String> entry;
 		FeaturedPlaylists featuredPlaylists = spotifyAPICalls.getFeaturedPlaylists(SEARCH_LIMIT);
-		for (PlaylistSimplified playlist : featuredPlaylists.getPlaylists().getItems()) {
-			entry = new HashMap<>();
-			if (playlist.getName() != null) {
-				entry.put(SpotifyConstants.ITEM_NAME, playlist.getName());
-			}
-
-			if (playlist.getOwner().getDisplayName() != null) {
-				entry.put(SpotifyConstants.ARTIST_NAME, playlist.getOwner().getDisplayName());
-			}
-			entry.put(SpotifyConstants.ITEM_URI, playlist.getUri());
-			entry.put(SpotifyConstants.ITEM_TYPE, SpotifyConstants.TYPE_PLAYLIST);
-			result.add(entry);
+		if (featuredPlaylists != null) {
+				return createPlaylistOutput(featuredPlaylists.getPlaylists(), "playlist");
 		}
-
-		return result;
+		return new ArrayList<>();
 	}
 
-	public static boolean typeCheck(String type) {
+	/**
+	 * check a string if is in the ModelObjectType true, else false
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public boolean typeCheck(String type) {
 		for (int i = 0; i < ModelObjectType.values().length; i++) {
 			if (ModelObjectType.values()[i].toString().equalsIgnoreCase(type)) {
 				return true;

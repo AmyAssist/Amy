@@ -35,8 +35,10 @@ import org.slf4j.LoggerFactory;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.model_objects.specification.Paging;
+import com.wrapper.spotify.model_objects.specification.Track;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.data.SpotifyConstants;
 
 /**
  * This class have methods to control a spotify client from a user. For examlpe
@@ -121,10 +123,6 @@ public class PlayerLogic {
 	 * @return selected device
 	 */
 	public String setDevice(int deviceNumber) {
-		if (this.deviceIDs.size() > deviceNumber && this.deviceNames.size() > deviceNumber) {
-			spotifyAPICalls.setCurrentDevice(deviceIDs.get(deviceNumber));
-			return deviceNames.get(deviceNumber);
-		} else {
 			getDevices();
 			if (this.deviceIDs.size() > deviceNumber && this.deviceNames.size() > deviceNumber) {
 				spotifyAPICalls.setCurrentDevice(deviceIDs.get(deviceNumber));
@@ -133,7 +131,6 @@ public class PlayerLogic {
 			logger.warn("No device with this number was found");
 			return "No device found";
 		}
-	}
 
 	/**
 	 * this call the searchAnaything method in the Search class
@@ -232,8 +229,8 @@ public class PlayerLogic {
 	 * @return a boolean. true if the command was executed, else if the command
 	 *         failed
 	 */
-	public boolean pausePlayback() {
-		return spotifyAPICalls.pausePlayback();
+	public boolean pause() {
+		return spotifyAPICalls.pause();
 	}
 
 	/**
@@ -262,16 +259,10 @@ public class PlayerLogic {
 	 * @return a hashMap with the keys name and artist
 	 */
 	public Map<String, String> getCurrentSong() {
-		HashMap<String, String> result = new HashMap<>();
 		CurrentlyPlayingContext currentlyPlayingContext = spotifyAPICalls.getCurrentSong();
 		if (currentlyPlayingContext != null) {
-			result.put("name", currentlyPlayingContext.getItem().getName());
-			String artists = "";
-			for (ArtistSimplified artist : currentlyPlayingContext.getItem().getArtists()) {
-				artists = artists.concat(artist.getName()).concat(" ");
-			}
-			result.put("artist", artists);
-			return result;
+			Track[] track = {currentlyPlayingContext.getItem()};
+			return search.createTrackOutput(new Paging.Builder<Track>().setItems(track).build() , SpotifyConstants.TYPE_TRACK).get(0);
 		}
 		return new HashMap<>();
 
@@ -291,23 +282,25 @@ public class PlayerLogic {
 			switch (volumeString) {
 			case "mute":
 				spotifyAPICalls.setVolume(VOLUME_MUTE_VALUE);
-				break;
+				return VOLUME_MUTE_VALUE;
 			case "max":
 				spotifyAPICalls.setVolume(VOLUME_MAX_VALUE);
-				break;
+				return VOLUME_MAX_VALUE;
 			case "up":
 				if (volume + VOLUME_UPDOWN_VALUE <= VOLUME_MAX_VALUE) {
 					spotifyAPICalls.setVolume(volume + VOLUME_UPDOWN_VALUE);
+					return volume + VOLUME_UPDOWN_VALUE;
 				}
-				break;
+				return -1;
 			case "down":
 				if (volume - VOLUME_UPDOWN_VALUE >= VOLUME_MUTE_VALUE) {
 					spotifyAPICalls.setVolume(volume - VOLUME_UPDOWN_VALUE);
+					return volume - VOLUME_UPDOWN_VALUE;
 				}
-				break;
+				return -1;
 			default:
 				this.logger.warn("Incorrect volume command");
-				break;
+				return -1;
 			}
 		}
 		return volume;
@@ -320,11 +313,4 @@ public class PlayerLogic {
 		}
 		return -1;
 	}
-
-	public static void main(String[] args) {
-
-		PlayerLogic playerLogic = new PlayerLogic();
-		playerLogic.play();
-	}
-
 }

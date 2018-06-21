@@ -36,7 +36,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.data.SpotifyConstants;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
 
@@ -113,7 +112,7 @@ public class MusicResource {
 	@Path("pause")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String pausePlayback() {
-		if (this.logic.pausePlayback()) {
+		if (this.logic.pause()) {
 			return "pause";
 		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);

@@ -104,7 +104,7 @@ public class SpotifySpeech {
 
 	@Grammar("pause")
 	public String pause(String... params) {
-		if (this.playerLogic.pausePlayback()) {
+		if (this.playerLogic.pause()) {
 			return "pause";
 		}
 		return ERROR_MESSAGE;

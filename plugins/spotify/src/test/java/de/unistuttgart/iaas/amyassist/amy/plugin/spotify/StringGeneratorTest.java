@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.data.SpotifyConstants;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtention;
 
 @ExtendWith({ MockitoExtension.class, FrameworkExtention.class })

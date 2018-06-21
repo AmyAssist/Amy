@@ -26,8 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 import java.util.List;
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.data.SpotifyConstants;
-
 /**
  * This class generate from the search result or other maps or lists with
  * tracks, playlists or albums one output string
