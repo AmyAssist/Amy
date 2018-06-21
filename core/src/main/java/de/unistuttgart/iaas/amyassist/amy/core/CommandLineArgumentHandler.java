@@ -88,7 +88,7 @@ public class CommandLineArgumentHandler {
 	 *             When the CommandLineArgumentHandler is not initialized. (When {@link #init(String[]) init} was not
 	 *             called before.)
 	 */
-	public boolean shouldProgramContinue() throws IllegalStateException {
+	public boolean shouldProgramContinue() {
 		if (this.parameters == null)
 			throw new IllegalStateException("Not initialiozed.");
 		if (!this.flagsValid)
