@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -40,20 +41,22 @@ import java.util.jar.Manifest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
  * The class responsible for loading plugins.
  * 
  * @author Tim Neumann
  */
+@Service
 public class PluginLoader {
+	@Reference
+	private Logger logger;
 
-	private final Logger logger = LoggerFactory.getLogger(PluginLoader.class);
-
-	private HashMap<String, Plugin> plugins = new HashMap<>();
+	private Map<String, Plugin> plugins = new HashMap<>();
 
 	/**
 	 * Loads the plugin found at the uri
@@ -68,8 +71,7 @@ public class PluginLoader {
 		this.logger.debug("try to load plugin from {}", uri);
 		File file = new File(uri);
 
-		if (!file.exists() || file.isDirectory())
-			throw new IllegalArgumentException("Invalid file");
+		if (!file.exists() || file.isDirectory()) throw new IllegalArgumentException("Invalid file");
 
 		Plugin plugin = new Plugin();
 		plugin.setFile(file);
@@ -135,8 +137,7 @@ public class PluginLoader {
 	public boolean loadPlugin(String packageName, String name, String version) {
 		String packagePath = packageName.replace(".", "/");
 		URL packageURL = Thread.currentThread().getContextClassLoader().getResource(packagePath);
-		if (packageURL == null)
-			return false;
+		if (packageURL == null) return false;
 		File packageFile;
 		try {
 			packageFile = new File(URLDecoder.decode(packageURL.getFile(), "UTF-8"));
@@ -146,8 +147,7 @@ public class PluginLoader {
 		}
 		ArrayList<Class<?>> classes = this.findClassesInPackage(packageFile,
 				packageName.substring(0, packageName.lastIndexOf(".")));
-		if (classes == null)
-			return false;
+		if (classes == null) return false;
 		Plugin p = new Plugin();
 		p.setClasses(classes);
 		p.setClassLoader(Thread.currentThread().getContextClassLoader());
@@ -180,8 +180,7 @@ public class PluginLoader {
 			for (File child : packageFile.listFiles()) {
 				ArrayList<Class<?>> newClasses = this.findClassesInPackage(child,
 						parentPackageName + "." + packageFile.getName());
-				if (newClasses == null)
-					return null;
+				if (newClasses == null) return null;
 				classes.addAll(newClasses);
 			}
 		} else if (packageFile.getName().endsWith(".class")) {
@@ -201,8 +200,7 @@ public class PluginLoader {
 	 * 
 	 * @param name
 	 *            The name of the plugin to get
-	 * @return The plugin with the given name or null, if no Plugin with this
-	 *         name is loaded.
+	 * @return The plugin with the given name or null, if no Plugin with this name is loaded.
 	 */
 	public IPlugin getPlugin(String name) {
 		return this.plugins.get(name);
