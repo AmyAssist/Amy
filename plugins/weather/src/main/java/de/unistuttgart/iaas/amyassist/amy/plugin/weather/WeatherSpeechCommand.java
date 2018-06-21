@@ -73,7 +73,7 @@ public class WeatherSpeechCommand {
             String saturdayReport = null;
             String sundayReport = null;
             for (WeatherReportDay d: report.days) {
-                c.setTime(new Date(d.timestamp * 1000));
+                c.setTime(new Date(d.getTimestamp() * 1000));
                 weekday = c.get(Calendar.DAY_OF_WEEK);
                 if (weekday == Calendar.SATURDAY) {
                     saturdayReport = d.shortDescription();

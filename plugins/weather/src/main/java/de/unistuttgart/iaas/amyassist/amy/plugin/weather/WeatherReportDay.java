@@ -34,35 +34,39 @@ import static java.lang.Math.round;
 
 @XmlRootElement
 public class WeatherReportDay {
-	
-	@XmlTransient
-    public String preamble;
-	
-    public String summary;
-    public String precipProbability;
-    public String precipType;
-    public long temperatureMin;
-    public long temperatureMax;
-    public String sunriseTime;
-    public String sunsetTime;
-    public String weekday;
-    public long timestamp;
+
+    private String preamble;
+    private String summary;
+    private boolean precip;
+    private String precipProbability;
+    private String precipType;
+    private long temperatureMin;
+    private long temperatureMax;
+    private String sunriseTime;
+    private String sunsetTime;
+    private String weekday;
+    private long timestamp;
+
+    private static final String TRIM_QUOTES_REGEX = "^\"|\"$";
+    private static final int FRACTION_TO_PERCENT_FACTOR = 100;
+    private static final int SECONDS_TO_MILLIS_FACTOR = 1000;
 
     private String trimQuotes(String s) {
-        return s.replaceAll("^\"|\"$", "");
+        return s.replaceAll(TRIM_QUOTES_REGEX, "");
     }
 
     public WeatherReportDay(String preamble, FIODataPoint p) {
         this.preamble = preamble;
         this.summary = trimQuotes(p.summary());
-        this.precipProbability = round(p.precipProbability() * 100) + "%";
+        this.precipProbability = round(p.precipProbability() * FRACTION_TO_PERCENT_FACTOR) + "%";
         this.precipType = trimQuotes(p.precipType());
+        this.precip = p.precipProbability() > 0;
         this.temperatureMin = Math.round(p.temperatureMin());
         this.temperatureMax = Math.round(p.temperatureMax());
         this.sunriseTime = convertTimeString(p.sunriseTime());
         this.sunsetTime = convertTimeString(p.sunsetTime());
 
-        Date date = new Date(p.timestamp() * 1000);
+        Date date = new Date(p.timestamp() * SECONDS_TO_MILLIS_FACTOR);
         this.weekday = new SimpleDateFormat("EEEE").format(date);
         this.timestamp = p.timestamp();
     }
@@ -80,7 +84,11 @@ public class WeatherReportDay {
     }
 
     private String description(boolean tldr) {
-        String result = (this.preamble != null ? this.preamble + " " : "") + this.summary + " " + this.precipProbability +  " probability of " + this.precipType + ". Between " + this.temperatureMin + " and " + this.temperatureMax + "°C.";
+        String result = (this.preamble != null ? this.preamble + " " : "") + this.summary;
+        if (this.precip) {
+            result += " " + this.precipProbability +  " probability of " + this.precipType + ".";
+        }
+        result += " Between " + this.temperatureMin + " and " + this.temperatureMax + "°C.";
         if (!tldr) {
             result += " Sunrise is at " + this.sunriseTime + " and sunset at " + this.sunsetTime;
         }
@@ -93,5 +101,52 @@ public class WeatherReportDay {
 
     public String toString() {
         return description(false);
+    }
+
+    // Boilerplate getters (ffs it's 2018, when's java gonna get automatic property synthesis?
+
+    @XmlTransient
+    public String getPreamble() {
+        return preamble;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public boolean isPrecip() {
+        return precip;
+    }
+
+    public String getPrecipProbability() {
+        return precipProbability;
+    }
+
+    public String getPrecipType() {
+        return precipType;
+    }
+
+    public long getTemperatureMin() {
+        return temperatureMin;
+    }
+
+    public long getTemperatureMax() {
+        return temperatureMax;
+    }
+
+    public String getSunriseTime() {
+        return sunriseTime;
+    }
+
+    public String getSunsetTime() {
+        return sunsetTime;
+    }
+
+    public String getWeekday() {
+        return weekday;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 }

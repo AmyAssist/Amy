@@ -220,7 +220,7 @@ public class PluginLoader {
 	 * 
 	 * @return the list of plugins.
 	 */
-	public List<Plugin> getPlugins() {
+	public List<IPlugin> getPlugins() {
 		return new ArrayList<>(this.plugins.values());
 	}
 }

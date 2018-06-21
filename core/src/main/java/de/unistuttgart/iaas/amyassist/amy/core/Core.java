@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -35,12 +36,16 @@ import javax.ws.rs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
@@ -134,11 +139,13 @@ public class Core implements SpeechInputHandler {
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
 
 		this.di.register(Logger.class, new LoggerProvider());
+		this.di.register(Properties.class, new PropertiesProvider());
 
 		this.di.register(Server.class);
 		this.di.register(ConfigurationImpl.class);
 		this.di.register(Console.class);
 		this.di.register(SpeechCommandHandler.class);
+		this.di.register(ConfigurationLoader.class);
 	}
 
 	/**
@@ -189,6 +196,8 @@ public class Core implements SpeechInputHandler {
 		for (IPlugin p : this.pluginLoader.getPlugins()) {
 			this.processPlugin(p);
 		}
+
+		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(this.pluginLoader.getPlugins()));
 		this.speechCommandHandler.completeSetup();
 	}
 
