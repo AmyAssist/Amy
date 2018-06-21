@@ -96,7 +96,7 @@ public class DependencyInjection implements ServiceLocator {
 	 * @param serviceFunction
 	 *            The instance of the service provider
 	 */
-	public synchronized void register(Class<?> serviceType, ServiceFunction<?> serviceFunction) {
+	public synchronized<T> void register(Class<T> serviceType, ServiceFunction<T> serviceFunction) {
 		if (this.hasServiceOfType(serviceType))
 			throw new DuplicateServiceException();
 		this.register.put(serviceType, serviceFunction);
@@ -150,7 +150,7 @@ public class DependencyInjection implements ServiceLocator {
 	 * @param externalService
 	 *            The instance of this service
 	 */
-	public synchronized void addExternalService(@Nonnull Class<?> serviceType, @Nonnull Object externalService) {
+	public synchronized <T> void addExternalService(@Nonnull Class<T> serviceType, @Nonnull T externalService) {
 		this.register(serviceType, new SingeltonServiceProvider<>(externalService));
 	}
 
