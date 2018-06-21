@@ -2,6 +2,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
 /**
@@ -10,6 +11,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  *
  */
+@Service
 public class AlarmClockStorage implements IAlarmClockStorage {
 
 	@Reference
