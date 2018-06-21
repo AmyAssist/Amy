@@ -33,14 +33,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class MusicEntity {
 
-	public MusicEntity(String title, String artist) {
-		this.title = title;
-		this.artist = artist;
-	}
-	
+	/**
+	 * constructor for a MusicEntity
+	 */
 	public MusicEntity()
 	{
 		
+	}
+	
+	/**
+	 * constructor for a MusicEntity with set values
+	 */
+	public MusicEntity(String title, String artist) {
+		this.title = title;
+		this.artist = artist;
 	}
 	
 	/**
@@ -58,7 +64,6 @@ public class MusicEntity {
 	 */
 	@Override
 	public String toString() {
-		
 		return this.title + " " + this.artist;
 	}
 }

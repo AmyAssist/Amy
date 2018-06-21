@@ -111,9 +111,39 @@ public class MusicResource {
 	@POST
 	@Path("pause")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String pausePlayback() {
+	public String pause() {
 		if (this.logic.pause()) {
 			return "pause";
+		}
+		throw new WebApplicationException("Check player state", Status.CONFLICT);
+	}
+	
+	/**
+	 * skips the actual playback
+	 * 
+	 * @return HTTP Response with player status
+	 */
+	@POST
+	@Path("skip")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String skip() {
+		if (this.logic.skip()) {
+			return "skip";
+		}
+		throw new WebApplicationException("Check player state", Status.CONFLICT);
+	}
+	
+	/**
+	 * pauses the actual playback
+	 * 
+	 * @return HTTP Response with player status
+	 */
+	@POST
+	@Path("back")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String back() {
+		if (this.logic.back()) {
+			return "back";
 		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);
 	}
@@ -140,6 +170,7 @@ public class MusicResource {
 	 */
 	@POST
 	@Path("volume/{volumeValue}")
+	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String setVolume(@PathParam("volumeValue") String volumeString) {
 		try {
