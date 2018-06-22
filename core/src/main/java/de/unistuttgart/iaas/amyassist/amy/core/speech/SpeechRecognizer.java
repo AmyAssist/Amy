@@ -49,25 +49,26 @@ import edu.cmu.sphinx.api.StreamSpeechRecognizer;
  */
 public abstract class SpeechRecognizer implements Runnable {
 
-	/**
-	 * TODO
-	 */
+	@SuppressWarnings("javadoc")
 	protected final Logger logger = LoggerFactory.getLogger(SpeechRecognizer.class);
 
-	/**
-	 * this Grammar
-	 */
-	protected Grammar grammar;
+	// Grammar of the Current running Recognizer
+	private Grammar grammar;
 
-	/**
-	 * Grammar to switch to
-	 */
-	protected Grammar nextGrammar = null;
+	// The Grammar to switch to, null for Ending all Recognition
+	private Grammar nextGrammar = null;
 
-	/**
-	 * Audio Input Source for the Recognition
-	 */
-	protected AudioInputStream ais = null;
+	// The Input Stream Source
+	private AudioInputStream ais = null;
+
+	// True if there is Sound Output right now
+	private boolean soundPlaying = false;
+
+	// Handler who use the translated String for commanding the System
+	private SpeechInputHandler inputHandler;
+
+	// The Recognizer which Handles the Recognition
+	private StreamSpeechRecognizer recognizer;
 
 	/**
 	 * Handler of all Recognizers and the TTS
@@ -75,14 +76,9 @@ public abstract class SpeechRecognizer implements Runnable {
 	protected AudioUserInteraction audioUI;
 
 	/**
-	 * TODO
+	 * The TextToSpeech Output Object
 	 */
 	protected TextToSpeech tts;
-
-	/**
-	 * TODO
-	 */
-	boolean soundPlaying = false;
 
 	/**
 	 * Boolean to check if we are supposed to listen (sleeping)
@@ -94,16 +90,11 @@ public abstract class SpeechRecognizer implements Runnable {
 	 */
 	protected String speechRecognitionResult = null;
 
-	/**
-	 * Handler who use the translated String for commanding the System
-	 */
-	protected SpeechInputHandler inputHandler;
+	// -----------------------------------------------------------------------------------------------
 
 	/**
-	 * The Recognizer which Handles the Recognition
+	 * listens to the Voice Output
 	 */
-	protected StreamSpeechRecognizer recognizer;
-
 	private LineListener listener = event -> {
 		if (event.getType() == LineEvent.Type.STOP) {
 			((Clip) event.getSource()).close();
@@ -139,7 +130,7 @@ public abstract class SpeechRecognizer implements Runnable {
 		try {
 			SpeechRecognizer.this.recognizer = new StreamSpeechRecognizer(this.createConfiguration());
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			this.logger.error("StreamRecognizer can't be instantiated", e);
 		}
 	}
 
@@ -159,27 +150,23 @@ public abstract class SpeechRecognizer implements Runnable {
 		// Boolean to check if we are supposed to listen (sleeping)
 		this.listening = false;
 
-		loop: while (this.audioUI.isRecognitionThreadRunning()) {
+		while (this.audioUI.isRecognitionThreadRunning() && !Thread.interrupted()) {
+
+			// wait for input from the recognizer
+			SpeechResult speechResult = getSpeechResult();
 
 			/**
-			 * wait for input from the recognizer
+			 * If Thread is not Interrupted, get and use SpeechRecognitionResult
 			 */
-			SpeechResult speechResult = null;
-			while (speechResult == null) {
-				speechResult = this.recognizer.getResult();
-				if (!this.audioUI.isRecognitionThreadRunning() || Thread.interrupted()) {
-					stop();
-					break loop;
-				}
-			}
-
-			// Get the hypothesis (Result as String)
-			this.speechRecognitionResult = speechResult.getHypothesis();
-			if (!this.soundPlaying) {
-				predefinedInputHandling();
-			} else {
-				if (this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
-					this.tts.stopOutput();
+			if (speechResult != null) {
+				// Get the hypothesis (Result as String)
+				this.speechRecognitionResult = speechResult.getHypothesis();
+				if (!this.soundPlaying) {
+					predefinedInputHandling();
+				} else {
+					if (this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
+						this.tts.stopOutput();
+					}
 				}
 			}
 		}
@@ -191,7 +178,8 @@ public abstract class SpeechRecognizer implements Runnable {
 	// ===============================================================================================
 
 	/**
-	 * TODO
+	 * Handles the Recognizer Specific Actions that trigger before giving the input to the inputHandler. Mainly waking
+	 * up and going to Sleep
 	 */
 	protected abstract void predefinedInputHandling();
 
@@ -229,6 +217,12 @@ public abstract class SpeechRecognizer implements Runnable {
 
 	// ===============================================================================================
 
+	/**
+	 * check if the Result is a keyword for a specific GrammarSwitch
+	 * 
+	 * @param result
+	 *            SpeechRecognitionResult
+	 */
 	private void checkGrammarSwitch(String result) {
 		if (!this.grammar.getSwitchList().isEmpty()) {
 			for (Map.Entry<String, Grammar> entry : this.grammar.getSwitchList().entrySet()) {
@@ -238,6 +232,28 @@ public abstract class SpeechRecognizer implements Runnable {
 				}
 			}
 		}
+	}
+
+	// -----------------------------------------------------------------------------------------------
+
+	/**
+	 * wait for input from the recognizer
+	 * 
+	 * @return Result of VoiceInput or null if ThreadIsInterrupted
+	 */
+	private SpeechResult getSpeechResult() {
+		SpeechResult speechResult = null;
+		while (speechResult == null) {
+			speechResult = this.recognizer.getResult();
+			if (!this.audioUI.isRecognitionThreadRunning() || Thread.interrupted()) {
+				if (Thread.interrupted()) {
+					stop();
+				}
+				speechResult = null;
+				break;
+			}
+		}
+		return speechResult;
 	}
 
 	// -----------------------------------------------------------------------------------------------

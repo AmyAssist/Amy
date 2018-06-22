@@ -26,18 +26,25 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 import javax.sound.sampled.AudioInputStream;
 
 /**
- * Class that translate Aduio-Input into Strings, powered by CMU Sphinx -
- * https://cmusphinx.github.io/ which is Licenced under BSD
+ * Class that translate Aduio-Input into Strings, powered by CMU Sphinx - https://cmusphinx.github.io/ which is Licenced
+ * under BSD
  * 
  * @author Kai Menzel
  */
 public class AdditionalSpeechRecognizer extends SpeechRecognizer {
 
 	/**
+	 * Creates the Recognizers and Configures them
+	 * 
 	 * @param audioUI
+	 *            Handler of all recognizers and the TTS
+	 *
 	 * @param grammar
+	 *            Grammar to use in this Recognizer
 	 * @param inputHandler
+	 *            Handler which will handle the input
 	 * @param ais
+	 *            set custom AudioInputStream.
 	 */
 	public AdditionalSpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler,
 			AudioInputStream ais) {
@@ -49,12 +56,12 @@ public class AdditionalSpeechRecognizer extends SpeechRecognizer {
 	 */
 	@Override
 	protected void predefinedInputHandling() {
-		if(this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
+		if (this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
 			this.tts.stopOutput();
-		 } else if(this.speechRecognitionResult.equals(this.audioUI.getGOSLEEP())){
+		} else if (this.speechRecognitionResult.equals(this.audioUI.getGOSLEEP())) {
 			say("now sleeping");
 			this.stop(this.audioUI.mainGrammar);
-		} else{
+		} else {
 			makeDecision(this.speechRecognitionResult);
 		}
 	}
