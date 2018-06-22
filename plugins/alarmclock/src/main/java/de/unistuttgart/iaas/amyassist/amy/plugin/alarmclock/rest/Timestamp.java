@@ -23,8 +23,12 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest;
 
+import java.util.Calendar;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.Alarm;
 
 /**
  * A timestamp
@@ -80,6 +84,17 @@ public class Timestamp {
 		this.hour = hour;
 		this.minute = minute;
 	}
+	
+	public Timestamp(Alarm alarm) {
+		if(alarm == null) {
+			throw new IllegalArgumentException();
+		}
+		Calendar date = alarm.getAlarmDate();
+		this.hour = date.get(Calendar.HOUR_OF_DAY);
+		this.minute = date.get(Calendar.MINUTE);
+	}
+	
+	
 	
 	/**
 	 * @see java.lang.Object#toString()

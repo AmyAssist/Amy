@@ -355,6 +355,7 @@ public class AlarmClockLogic {
 	 *            number of the alarm in the storage
 	 * @return alarmNumber
 	 */
+	@Deprecated
 	protected String getAlarmNoOutput(int alarmNumber) {
 		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
 			return this.acStorage.getAlarm(alarmNumber).convertToString();
@@ -395,6 +396,7 @@ public class AlarmClockLogic {
 	 * 
 	 * @return Array of all alarms
 	 */
+	@Deprecated
 	protected String[] getAllAlarmsWithNumber() {
 		List<String> allAlarms = new ArrayList<>();
 		int alarms = this.acStorage.getAlarmCounter();
