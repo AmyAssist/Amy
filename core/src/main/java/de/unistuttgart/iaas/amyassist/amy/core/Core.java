@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -79,8 +80,21 @@ public class Core implements SpeechInputHandler {
 	/**
 	 * The method executed by the main method
 	 *
+	 * @param args
+	 *            The arguments for the core.
 	 */
-	void run() {
+	void start(String[] args) {
+		CommandLineArgumentHandler cmaHandler = new CommandLineArgumentHandler();
+		cmaHandler.init(args);
+		if (cmaHandler.shouldProgramContinue()) {
+			run();
+		}
+	}
+
+	/**
+	 * The main entry point for the real core logic.
+	 */
+	private void run() {
 		this.init();
 		this.threads.forEach(Thread::start);
 		this.server.start();
@@ -218,8 +232,7 @@ public class Core implements SpeechInputHandler {
 	}
 
 	/**
-	 * stop all Threads and terminate the application. This is call form the
-	 * {@link Console}
+	 * stop all Threads and terminate the application. This is call form the {@link Console}
 	 */
 	public void stop() {
 		this.server.shutdown();
