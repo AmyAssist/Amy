@@ -279,6 +279,74 @@ public class AlarmClockTest {
 	}
 
 	/**
+	 * Tests the deactivateAlarm method
+	 */
+	@Test
+	protected void testActivateAlarm() {
+		this.storage.put("alarm2", "12;25;true");
+		this.storage.put("alarm8", "22;57;false");
+		this.storage.put("alarm9", "1;5");
+		Mockito.reset(this.storage);
+
+		// active
+		assertEquals("Alarm 2 is already active", this.acl.activateAlarm(2));
+		Mockito.verify(this.storage).has("alarm2");
+		Mockito.verify(this.storage).get("alarm2");
+		assertEquals("12;25;true", this.storage.get("alarm2"));
+		Mockito.reset(this.storage);
+
+		// inactive
+		assertEquals("Alarm 8 activated", this.acl.activateAlarm(8));
+		Mockito.verify(this.storage).put("alarm8", "22;57;true");
+		assertEquals("22;57;true", this.storage.get("alarm8"));
+		Mockito.reset(this.storage);
+
+		// not found
+		assertEquals("Alarm 10 not found", this.acl.activateAlarm(10));
+		Mockito.verify(this.storage, Mockito.only()).has("alarm10");
+		Mockito.reset(this.storage);
+
+		// array size problem
+		assertEquals("Something went wrong", this.acl.activateAlarm(9));
+		Mockito.verify(this.storage).has("alarm9");
+		Mockito.verify(this.storage).get("alarm9");
+	}
+
+	/**
+	 * Tests the deactivateTimer method
+	 */
+	@Test
+	protected void testActivateTimer() {
+		this.storage.put("timer2", "12;true");
+		this.storage.put("timer8", "22;false");
+		this.storage.put("timer9", "1");
+		Mockito.reset(this.storage);
+
+		// active
+		assertEquals("Timer 2 is already active", this.acl.activateTimer(2));
+		Mockito.verify(this.storage).has("timer2");
+		Mockito.verify(this.storage).get("timer2");
+		assertEquals("12;true", this.storage.get("timer2"));
+		Mockito.reset(this.storage);
+
+		// inactive
+		assertEquals("Timer 8 activated", this.acl.activateTimer(8));
+		Mockito.verify(this.storage).put("timer8", "22;true");
+		assertEquals("22;true", this.storage.get("timer8"));
+		Mockito.reset(this.storage);
+
+		// not found
+		assertEquals("Timer 10 not found", this.acl.activateTimer(10));
+		Mockito.verify(this.storage, Mockito.only()).has("timer10");
+		Mockito.reset(this.storage);
+
+		// array size problem
+		assertEquals("Something went wrong", this.acl.activateTimer(9));
+		Mockito.verify(this.storage).has("timer9");
+		Mockito.verify(this.storage).get("timer9");
+	}
+
+	/**
 	 * Tests the getAlarm method
 	 */
 	@Test

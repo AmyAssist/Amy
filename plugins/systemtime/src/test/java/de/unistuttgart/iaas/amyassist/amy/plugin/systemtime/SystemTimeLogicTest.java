@@ -72,7 +72,7 @@ class SystemTimeLogicTest {
 		Date time = this.calendar.getTime();
 		Mockito.doReturn(time).when(this.systemTimeLogic).getTimeStamp();
 
-		assertThat(this.systemTimeLogic.getMonth(), equalTo("04"));
+		assertThat(this.systemTimeLogic.getMonth(), equalTo("April"));
 	}
 
 	@Test

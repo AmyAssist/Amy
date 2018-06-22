@@ -57,10 +57,10 @@ public class SystemTimeLogic {
 
 	/**
 	 * 
-	 * @return current month of year as String (MM), e.g. 06
+	 * @return current month of year as String (MMMM), e.g. May
 	 */
 	public String getMonth() {
-		DateFormat monthFormat = new SimpleDateFormat("MM");
+		DateFormat monthFormat = new SimpleDateFormat("MMMM");
 		return monthFormat.format(this.getTimeStamp()).toString();
 	}
 

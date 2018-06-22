@@ -21,15 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * POJO-mapping of JSON method object
- * @author Christian Bräuner
+ * A test service for DependencyInjectionScopeTest
+ * 
+ * @author Tim Neumann
  */
-public class Method {
-
-	private String link;
-	private String description;
-	private MethodType type;
+@Service
+public class Service15 {
+	@Reference
+	ServiceForPlugins s;
 }

@@ -21,25 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
 
-import java.io.IOException;
+import java.util.Map;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.MultivaluedMap;
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 
-public class CORSFilter implements ContainerResponseFilter {
+/**
+ * A ContextProvider for custom informations
+ * 
+ * @author Leon Kiefer
+ */
+public class CustomProvider<T> implements StaticProvider<T> {
+
+	private Map<Class<?>, T> mapping;
+
+	public CustomProvider(Map<Class<?>, T> mapping) {
+		this.mapping = mapping;
+	}
+
 	@Override
-	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
-			throws IOException {
-
-		MultivaluedMap<String, Object> headers = responseContext.getHeaders();
-
-		headers.add("Access-Control-Allow-Origin", "https://amyassist.github.io");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Methods", "GET, POST");
+	public T getContext(Class<?> consumer) {
+		return this.mapping.get(consumer);
 	}
 
 }

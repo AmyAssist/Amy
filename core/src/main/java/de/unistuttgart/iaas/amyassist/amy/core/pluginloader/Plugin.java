@@ -32,12 +32,14 @@ import java.util.jar.Manifest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
+
 /**
- * A representation of loaded plugin
+ * A representation of loaded plugin.
  * 
  * @author Tim Neumann
  */
-public class Plugin {
+public class Plugin implements IPlugin {
 
 	private final Logger logger = LoggerFactory.getLogger(Plugin.class);
 
@@ -65,31 +67,28 @@ public class Plugin {
 	private String fakeVersion = "";
 
 	/**
-	 * Get's {@link #file file}
-	 * 
-	 * @return file
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getFile()
 	 */
+	@Override
 	public File getFile() {
 		return this.file;
 	}
 
 	/**
-	 * Get's {@link #classLoader classLoader}
-	 * 
-	 * @return classLoader
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getClassLoader()
 	 */
+	@Override
 	public ClassLoader getClassLoader() {
 		return this.classLoader;
 	}
 
 	/**
-	 * Get's the unique name of the plugin
-	 * 
-	 * @return uniqueName
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getUniqueName()
 	 */
+	@Override
 	public String getUniqueName() {
 		if (this.manifest == null) {
-			if (this.fakeName != "") {
+			if (!this.fakeName.isEmpty()) {
 				this.logger.warn("manifest is null, using fakeName: {}", this.fakeName);
 				return this.fakeName;
 			}
@@ -101,10 +100,9 @@ public class Plugin {
 	}
 
 	/**
-	 * Get's the version of this plugin
-	 * 
-	 * @return mavenVersion
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getVersion()
 	 */
+	@Override
 	public String getVersion() {
 		if (this.manifest == null) {
 			this.logger.warn("manifest is null, using fakeVersion: {}", this.fakeName);
@@ -114,19 +112,17 @@ public class Plugin {
 	}
 
 	/**
-	 * Get's {@link #classes classes}
-	 * 
-	 * @return classes
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getClasses()
 	 */
+	@Override
 	public List<Class<?>> getClasses() {
 		return new ArrayList<>(this.classes);
 	}
 
 	/**
-	 * Get's {@link #manifest manifest}
-	 * 
-	 * @return manifest
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getManifest()
 	 */
+	@Override
 	public Manifest getManifest() {
 		return this.manifest;
 	}
