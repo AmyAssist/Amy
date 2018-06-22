@@ -37,6 +37,7 @@ import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Track;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
@@ -60,10 +61,8 @@ public class PlayerLogic {
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
 
-	public PlayerLogic() {
-		init();
-	}
 
+	@PostConstruct
 	public void init() {
 		logger = LoggerFactory.getLogger(PlayerLogic.class);
 		this.spotifyAPICalls = new SpotifyAPICalls();

@@ -114,7 +114,7 @@ class MusicRestTest {
 	/**
 	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#play()}.
 	 */
-	/*@Test
+	@Test
 	void testPlay() {
 		Entity<MusicEntity> entity = Entity.entity(this.musicEntity, MediaType.APPLICATION_JSON);
 		List<Map<String, String>> playName = new ArrayList<>();
@@ -133,7 +133,7 @@ class MusicRestTest {
 
 		assertNotNull(response.getEntity());
 		assertThat(response.getStatus(), is(500));
-	}*/
+	}
 
 	/**
 	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#resume()}.
