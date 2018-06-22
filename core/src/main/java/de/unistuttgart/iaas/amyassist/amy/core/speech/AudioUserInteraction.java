@@ -70,18 +70,23 @@ public class AudioUserInteraction implements SpeechIO {
 	@Override
 	public void run() {
 		createNewAudioInputStream();
-		this.mainRecognizer = new MainSpeechRecognizer(this, this.mainGrammar, this.inputHandler, this.ais);
-		if (this.switchableGrammars != null && !this.switchableGrammars.isEmpty()) {
-			for (Grammar grammar : this.switchableGrammars) {
-				if (!this.recognizerList.containsKey(grammar.getName())) {
-					this.recognizerList.put(grammar.getName(),
-							new AdditionalSpeechRecognizer(this, grammar, this.inputHandler, this.ais));
+		if(this.inputHandler == null) {
+			this.logger.error("Not enough Data to start the Recognition - InputHandler not Set");
+		}else {
+			this.mainRecognizer = new MainSpeechRecognizer(this, this.mainGrammar, this.inputHandler, this.ais);
+			if (this.switchableGrammars != null && !this.switchableGrammars.isEmpty()) {
+				for (Grammar grammar : this.switchableGrammars) {
+					if (!this.recognizerList.containsKey(grammar.getName())) {
+						this.recognizerList.put(grammar.getName(),
+								new AdditionalSpeechRecognizer(this, grammar, this.inputHandler, this.ais));
+					}
 				}
 			}
+			this.currentRecognizer = new Thread(this.mainRecognizer);
+			this.recognitionThreadRunning = true;
+			this.currentRecognizer.start();	
 		}
-		this.currentRecognizer = new Thread(this.mainRecognizer);
-		this.recognitionThreadRunning = true;
-		this.currentRecognizer.start();
+		
 	}
 
 	/**
@@ -134,6 +139,16 @@ public class AudioUserInteraction implements SpeechIO {
 	 */
 	public void setAudioInputStream(AudioInputStream ais) {
 		this.ais = ais;
+	}
+	
+	/**
+	 * Set's {@link #recognitionThreadRunning recognitionThreadRunning}
+	 * 
+	 * @param recognitionThreadRunning
+	 *            recognitionThreadRunning
+	 */
+	public void setRecognitionThreadRunning(boolean recognitionThreadRunning) {
+		this.recognitionThreadRunning = recognitionThreadRunning;
 	}
 
 	// ===============================================================================================
@@ -199,16 +214,6 @@ public class AudioUserInteraction implements SpeechIO {
 	 */
 	public List<Grammar> getSwitchableGrammars() {
 		return this.switchableGrammars;
-	}
-
-	/**
-	 * Set's {@link #recognitionThreadRunning recognitionThreadRunning}
-	 * 
-	 * @param recognitionThreadRunning
-	 *            recognitionThreadRunning
-	 */
-	public void setRecognitionThreadRunning(boolean recognitionThreadRunning) {
-		this.recognitionThreadRunning = recognitionThreadRunning;
 	}
 
 	// ===============================================================================================

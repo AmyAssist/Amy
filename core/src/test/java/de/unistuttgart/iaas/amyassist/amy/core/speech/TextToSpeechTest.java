@@ -23,8 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineEvent;
@@ -34,48 +34,46 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Test Class for the Text To Speech Output class
+ * 
  * @author Kai Menzel
  */
 class TextToSpeechTest {
-	
+
 	@SuppressWarnings("javadoc")
 	TextToSpeech tts;
 
-	private LineListener listener = new LineListener(){
-		@SuppressWarnings("boxing")
-		@Override
-		public void update(LineEvent event) {
-			if(event.getType() == LineEvent.Type.STOP) {
-				assertThat(TextToSpeechTest.this.tts.getOutputClip().isActive(), equalTo(false));
-				((Clip) event.getSource()).close();
-				assertThat(TextToSpeechTest.this.tts.getOutputClip().isOpen(), equalTo(false));
-			}
-			if(event.getType() == LineEvent.Type.OPEN) {
-				assertThat(TextToSpeechTest.this.tts.getOutputClip().isOpen(), equalTo(true));
-			}
-			if(event.getType() == LineEvent.Type.START) {
-				assertThat(TextToSpeechTest.this.tts.getOutputClip().isActive(), equalTo(true));
-			}
-			if(event.getType() == LineEvent.Type.CLOSE) {
-				assertThat(TextToSpeechTest.this.tts.getOutputClip().isOpen(), equalTo(false));
-			}
+	@SuppressWarnings("boxing")
+	private LineListener listener = event -> {
+		if (event.getType() == LineEvent.Type.STOP) {
+			assertThat(TextToSpeechTest.this.tts.getOutputClip().isActive(), equalTo(false));
+			((Clip) event.getSource()).close();
+			assertThat(TextToSpeechTest.this.tts.getOutputClip().isOpen(), equalTo(false));
+		}
+		if (event.getType() == LineEvent.Type.OPEN) {
+			assertThat(TextToSpeechTest.this.tts.getOutputClip().isOpen(), equalTo(true));
+		}
+		if (event.getType() == LineEvent.Type.START) {
+			assertThat(TextToSpeechTest.this.tts.getOutputClip().isActive(), equalTo(true));
+		}
+		if (event.getType() == LineEvent.Type.CLOSE) {
+			assertThat(TextToSpeechTest.this.tts.getOutputClip().isOpen(), equalTo(false));
 		}
 	};
-	
+
 	@SuppressWarnings("boxing")
 	@Test
 	void test() {
 		this.tts = TextToSpeech.getTTS();
 		assertThat(this.tts == null, equalTo(false));
-//		this.tts.say(this.listener, "hello");		
+		// this.tts.say(this.listener, "hello");
 	}
-	
+
 	@SuppressWarnings("boxing")
 	@Test
 	void testWithBreak() {
 		this.tts = TextToSpeech.getTTS();
 		assertThat(this.tts == null, equalTo(false));
-//		this.tts.say(this.listener, "hello world");
+		// this.tts.say(this.listener, "hello world");
 		this.tts.stopOutput();
 	}
 
