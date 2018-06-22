@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.util.Random;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -67,11 +69,16 @@ class AlarmClockRestTest {
 	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#getAlarm()}.
 	 */
 	@Test
-	void testGetAlarm() {
-		//		when(this.logic.getAlarm()).thenReturn("16:05");
-		//
-		//		String responseMsg = this.target.path("alarmclock").request().get(String.class);
-		//		assertThat(responseMsg, equalTo("16:05"));
+	void testGetAllAlarms() {
+		Alarm[] alarms = createAlarms(15);
+	}
+
+	private Alarm[] createAlarms(int arraySize) {
+		Random random = new Random();
+		Alarm[] alarms = new Alarm[arraySize];
+		for(int cnt = 0; cnt < arraySize; cnt++) {
+			alarms[cnt] = new Alarm(cnt, random.nextInt(24), random.nextInt(60), true); 
+		}
 	}
 
 	/**

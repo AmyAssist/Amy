@@ -103,7 +103,7 @@ public class AlarmClockResource {
 	 * changes the properties of an alarm
 	 * 
 	 * @param alarmNumber the number of the alarm
-	 * @param mode what to do: allowed paramters: edit, delete, deactivate
+	 * @param mode what to do: allowed paramters: edit, activate, delete, deactivate
 	 * @param alarmTime the new time
 	 * @return the new alarmtime or null
 	 */
@@ -126,6 +126,8 @@ public class AlarmClockResource {
 			Timestamp ts = new Timestamp(alarm);
 			ts.setLink(createAlarmPath(alarm.getId()));
 			return ts;
+		case "activate":
+			this.logic.activateAlarm(alarmNumber);
 		case "delete":
 			this.logic.deleteAlarm(alarmNumber);
 			break;
