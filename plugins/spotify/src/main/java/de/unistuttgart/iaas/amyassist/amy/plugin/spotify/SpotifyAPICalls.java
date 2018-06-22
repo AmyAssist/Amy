@@ -93,7 +93,7 @@ public class SpotifyAPICalls {
 
 	private boolean firstTime = true;
 	private Logger logger;
-
+ 
 	private SpotifyApi spotifyApi = null;
 
 	public SpotifyAPICalls() {
