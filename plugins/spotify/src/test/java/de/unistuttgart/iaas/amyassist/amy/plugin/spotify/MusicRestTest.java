@@ -31,7 +31,6 @@ import java.util.Map;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -104,11 +103,11 @@ class MusicRestTest {
 	 */
 	@Test
 	void testGetCurrentSong() {
-		Builder response = this.target.path("music").path("currentSong").request();
+		Response response = this.target.path("music").path("currentSong").request().get();
 
-		assertNotNull(response.get().getEntity());
-		assertThat(response.get(String.class), is("{\"artist\":\"ArtistName\",\"title\":\"MusicName\"}"));
-		assertThat(response.get().getStatus(), is(200));
+		assertNotNull(response.getEntity());
+		assertThat(response.readEntity(String.class), is("{\"artist\":\"ArtistName\",\"title\":\"MusicName\"}"));
+		assertThat(response.getStatus(), is(200));
 	}
 
 	/**
