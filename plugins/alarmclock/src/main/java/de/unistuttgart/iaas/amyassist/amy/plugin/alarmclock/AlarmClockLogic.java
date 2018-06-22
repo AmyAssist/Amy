@@ -349,21 +349,6 @@ public class AlarmClockLogic {
 	}
 
 	/**
-	 * get one alarm without speech output
-	 * 
-	 * @param alarmNumber
-	 *            number of the alarm in the storage
-	 * @return alarmNumber
-	 */
-	@Deprecated
-	protected String getAlarmNoOutput(int alarmNumber) {
-		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
-			return this.acStorage.getAlarm(alarmNumber).convertToString();
-		}
-		throw new NoSuchElementException();
-	}
-
-	/**
 	 * @param timerNumber
 	 *            number of the timer in storage
 	 * @return timerNumber
@@ -389,23 +374,6 @@ public class AlarmClockLogic {
 			}
 		}
 		return allAlarms.toArray(new Alarm[allAlarms.size()]);
-	}
-
-	/**
-	 * Get all alarms with their number
-	 * 
-	 * @return Array of all alarms
-	 */
-	@Deprecated
-	protected String[] getAllAlarmsWithNumber() {
-		List<String> allAlarms = new ArrayList<>();
-		int alarms = this.acStorage.getAlarmCounter();
-		for (int i = 1; i <= alarms; i++) {
-			if (this.acStorage.hasKey("alarm" + i)) {
-				allAlarms.add(i + ":" + this.acStorage.getAlarm(i).convertToString());
-			}
-		}
-		return allAlarms.toArray(new String[allAlarms.size()]);
 	}
 
 	/**
