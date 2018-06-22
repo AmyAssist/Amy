@@ -152,4 +152,16 @@ public class Timestamp {
 	public void setLink(String link) {
 		this.link = link;
 	}
+	
+	/**
+	 * @see java.lang.object#equals
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof Timestamp) {
+			Timestamp ts = (Timestamp) obj;
+			return this.minute == ts.minute && this.hour == ts.hour;
+		}
+		return false;
+	}
 }

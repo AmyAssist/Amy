@@ -85,5 +85,15 @@ class TimestampTest {
 		ts = new Timestamp(-60, -90);
 		assertFalse(ts.isValid());
 	}
+	
+	@Test
+	void testEquals() {
+		Timestamp ts = new Timestamp();
+		ts.setHour(15);
+		ts.setMinute(15);
+		assertTrue(ts.equals(new Timestamp(15, 15)));
+		assertFalse(ts.equals("15:15"));
+		assertFalse(ts.equals(new Timestamp()));
+	}
 
 }
