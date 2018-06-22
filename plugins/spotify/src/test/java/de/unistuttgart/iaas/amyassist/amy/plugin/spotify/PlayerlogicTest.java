@@ -48,12 +48,18 @@ import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 @ExtendWith({ MockitoExtension.class, FrameworkExtention.class })
 class PlayerlogicTest {
 
 	private PlayerLogic playerLogic;
+	
+	@Reference
+	private TestFramework testFramework;
+	
 	private Device[] devices;
 	private CurrentlyPlayingContext currentlyPlayingContext;
 	private List<Map<String, String>> featuredPlaylists;
@@ -68,6 +74,7 @@ class PlayerlogicTest {
 	@BeforeEach
 	public void init() {
 		playerLogic = new PlayerLogic();
+		playerLogic.init();
 		Field apiCallField;
 		Field searchField;
 		initDevices();
