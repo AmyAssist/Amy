@@ -75,27 +75,27 @@ public class AlarmClockSpeech {
 			if (params.length == 9) {
 				return this.logic
 						.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), Integer.parseInt(params[7]))
-						.convertToString();
+						.toString();
 			} else if (params.length == 7) {
 				if (params[4].equals("hours") && params[6].equals("minutes")) {
 					return this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), 0)
-							.convertToString();
+							.toString();
 				} else if (params[4].equals("hours") && params[6].equals("seconds")) {
 
 					return this.logic.setTimer(Integer.parseInt(params[3]), 0, Integer.parseInt(params[5]))
-							.convertToString();
+							.toString();
 				} else if (params[4].equals("minutes") && params[6].equals("seconds")) {
 					return this.logic.setTimer(0, Integer.parseInt(params[3]), Integer.parseInt(params[5]))
-							.convertToString();
+							.toString();
 
 				}
 			} else if (params.length == 5) {
 				if (params[4].equals("hours")) {
-					return this.logic.setTimer(Integer.parseInt(params[3]), 0, 0).convertToString();
+					return this.logic.setTimer(Integer.parseInt(params[3]), 0, 0).toString();
 				} else if (params[4].equals("minutes")) {
-					return this.logic.setTimer(0, Integer.parseInt(params[3]), 0).convertToString();
+					return this.logic.setTimer(0, Integer.parseInt(params[3]), 0).toString();
 				} else if (params[4].equals("seconds")) {
-					return this.logic.setTimer(0, 0, Integer.parseInt(params[3])).convertToString();
+					return this.logic.setTimer(0, 0, Integer.parseInt(params[3])).toString();
 				}
 			}
 		} catch (IllegalArgumentException e) {
@@ -166,8 +166,8 @@ public class AlarmClockSpeech {
 	public String getAlarm(String[] params) {
 		try {
 			if (params[1].equals("alarm"))
-				return this.logic.getAlarm(Integer.parseInt(params[2])).convertToString();
-			return this.logic.getTimer(Integer.parseInt(params[2])).convertToString();
+				return this.logic.getAlarm(Integer.parseInt(params[2])).toString();
+			return this.logic.getTimer(Integer.parseInt(params[2])).toString();
 		} catch (NoSuchElementException e) {
 			return ELEMENTNOTFOUND;
 		}
@@ -185,14 +185,14 @@ public class AlarmClockSpeech {
 			Alarm[] alarms = this.logic.getAllAlarms();
 			String[] stringAlarms = new String[alarms.length];
 			for (int i = 0; i < alarms.length; i++) {
-				stringAlarms[i] = alarms[i].convertToString();
+				stringAlarms[i] = alarms[i].toString();
 			}
 			return String.join("\n", stringAlarms);
 		}
 		Timer[] timers = this.logic.getAllTimers();
 		String[] stringTimers = new String[timers.length];
 		for (int i = 0; i < timers.length; i++) {
-			stringTimers[i] = timers[i].convertToString();
+			stringTimers[i] = timers[i].toString();
 		}
 		return String.join("\n", stringTimers);
 	}
@@ -209,7 +209,7 @@ public class AlarmClockSpeech {
 			if (Integer.parseInt(params[4]) > 23 || Integer.parseInt(params[6]) > 59)
 				return "Not a valid time of day.";
 			return this.logic.editAlarm(Integer.parseInt(params[2]),
-					new int[] { Integer.parseInt(params[4]), Integer.parseInt(params[6]) }).convertToString();
+					new int[] { Integer.parseInt(params[4]), Integer.parseInt(params[6]) }).toString();
 		} catch (NoSuchElementException e) {
 			return ELEMENTNOTFOUND;
 		}

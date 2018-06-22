@@ -60,7 +60,7 @@ public class AlarmClockStorageTest {
 		Timer timer = new Timer(3, 1, 0, 1, false);
 
 		this.acs.storeTimer(timer);
-		Mockito.verify(this.storage).put("timer3", timer.convertToString());
+		Mockito.verify(this.storage).put("timer3", timer.toString());
 	}
 
 	@Test
@@ -147,7 +147,7 @@ public class AlarmClockStorageTest {
 
 		// usual case
 		this.storage.put("alarm1", "1:15:20:true");
-		assertThat(this.acs.getAlarm(1).convertToString(), is("1:15:20:true"));
+		assertThat(this.acs.getAlarm(1).toString(), is("1:15:20:true"));
 	}
 
 	@Test

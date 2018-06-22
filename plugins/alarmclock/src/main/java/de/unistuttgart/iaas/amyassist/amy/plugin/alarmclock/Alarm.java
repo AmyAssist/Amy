@@ -25,7 +25,7 @@ public class Alarm {
 	 *            minute of the alarm
 	 */
 	public Alarm(int id, int hour, int minute, boolean active) {
-		if (id < 1)
+		if (id < 0)
 			throw new IllegalArgumentException();
 
 		this.id = id;
@@ -37,10 +37,11 @@ public class Alarm {
 
 	/**
 	 * Returns a string representation of this object
+	 * @see java.lang.Object#toString()
 	 * 
 	 * @return
 	 */
-	public String convertToString() {
+	public String toString() {
 		return this.id + ":" + this.alarmDate.get(Calendar.HOUR_OF_DAY) + ":" + this.alarmDate.get(Calendar.MINUTE)
 				+ ":" + this.active;
 	}

@@ -125,7 +125,7 @@ public class AlarmClockResource {
 			Alarm alarm;
 			try {
 				alarm = this.logic.editAlarm(alarmNumber,
-						new String[] { "" + alarmTime.getHour(), "" + alarmTime.getMinute() });
+						new int[] { alarmTime.getHour(), alarmTime.getMinute() });
 			} catch (NoSuchElementException e) {
 				throw new WebApplicationException("there is no alarm" + alarmNumber, e, Status.NOT_FOUND);
 			}
@@ -159,7 +159,7 @@ public class AlarmClockResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Timestamp newAlarm(Timestamp alarmTime) {
 		if (alarmTime.isValid()) {
-			Alarm result = this.logic.setAlarm(new String[] { "" + alarmTime.getHour(), "" + alarmTime.getMinute() });
+			Alarm result = this.logic.setAlarm(new int[] { alarmTime.getHour(), alarmTime.getMinute() });
 			alarmTime.setLink(createAlarmPath(result.getId()));
 			return alarmTime;
 		}

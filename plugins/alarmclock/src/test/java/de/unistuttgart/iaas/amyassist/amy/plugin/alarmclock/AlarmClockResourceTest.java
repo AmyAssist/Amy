@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -38,7 +37,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -163,7 +161,7 @@ class AlarmClockResourceTest {
 	@Test
 	void testNewAlarm() {
 		Alarm newAlarm = new Alarm(17, 20, 1, true);
-		Mockito.when(this.logic.setAlarm(new String[] {"20", "1"})).thenReturn(newAlarm);
+		Mockito.when(this.logic.setAlarm(new int[] {20, 1})).thenReturn(newAlarm);
 		Timestamp ts = new Timestamp(newAlarm);
 		Entity<Timestamp> entity = Entity.entity(ts, MediaType.APPLICATION_JSON);
 		
@@ -192,19 +190,19 @@ class AlarmClockResourceTest {
 		assertEquals("The given time wasn't a valid time", r.readEntity(String.class));
 		
 		Timestamp ts = new Timestamp(alarms[1]);
-		Mockito.when(this.logic.editAlarm(1, new String[] {"10", "20"})).thenReturn(alarms[1]);
+		Mockito.when(this.logic.editAlarm(1, new int[] {10, 20})).thenReturn(alarms[1]);
 		Entity<Timestamp> entity = Entity.entity(new Timestamp(10, 20), MediaType.APPLICATION_JSON);
 		
 		r = this.target.path("alarms/1").request().post(entity);
 		assertEquals(200, r.getStatus());
 		assertEquals(new Timestamp(alarms[1]), r.readEntity(Timestamp.class));
 		
-		Mockito.when(this.logic.editAlarm(20, new String[] {"10", "20"})).thenThrow(new NoSuchElementException());
+		Mockito.when(this.logic.editAlarm(20, new int[] {10, 20})).thenThrow(new NoSuchElementException());
 		r = this.target.path("alarms/20").request().post(entity);
 		assertEquals(404, r.getStatus());
 		assertTrue(r.readEntity(String.class).startsWith("there is no alarm20"));	
 		
-		Mockito.when(this.logic.editAlarm(2, new String[] {"10", "20"})).thenReturn(alarms[2]);
+		Mockito.when(this.logic.editAlarm(2, new int[] {10, 20})).thenReturn(alarms[2]);
 		r = this.target.path("alarms/2").queryParam("mode", "edit").request().post(entity);
 		assertEquals(200, r.getStatus());
 		assertEquals(new Timestamp(alarms[2]), r.readEntity(Timestamp.class));

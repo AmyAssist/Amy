@@ -25,12 +25,12 @@ public class AlarmClockStorage implements IAlarmClockStorage {
 
 	@Override
 	public void storeAlarm(Alarm alarm) {
-		this.storage.put("alarm" + alarm.getId(), alarm.convertToString());
+		this.storage.put("alarm" + alarm.getId(), alarm.toString());
 	}
 
 	@Override
 	public void storeTimer(Timer timer) {
-		this.storage.put("timer" + timer.getId(), timer.convertToString());
+		this.storage.put("timer" + timer.getId(), timer.toString());
 	}
 
 	@Override

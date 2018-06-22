@@ -30,10 +30,12 @@ public class Timer {
 
 	/**
 	 * Returns a string representation of this object
+	 * @see java.lang.Object#toString()
 	 * 
 	 * @return
 	 */
-	public String convertToString() {
+	@Override
+	public String toString() {
 		return this.id + ":" + this.timerDate.get(Calendar.HOUR_OF_DAY) + ":" + this.timerDate.get(Calendar.MINUTE)
 				+ ":" + this.timerDate.get(Calendar.SECOND) + ":" + this.active;
 	}
