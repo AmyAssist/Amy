@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.util.Calendar;
 import java.util.NoSuchElementException;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -55,8 +56,10 @@ public class AlarmClockSpeech {
 	public String setAlarm(String[] params) {
 		if (Integer.parseInt(params[3]) > 23 || Integer.parseInt(params[5]) > 59)
 			return PARAMSNOTVALID;
-
-		return this.logic.setAlarm(new String[] { params[3], params[5] }).convertToString();
+		Alarm alarm = this.logic.setAlarm(new int[] { Integer.parseInt(params[3]), Integer.parseInt(params[5]) });
+		Calendar time = alarm.getAlarmDate();
+		return "Alarm " + alarm.getId() + " set for " + time.get(Calendar.HOUR_OF_DAY) + ":"
+				+ time.get(Calendar.MINUTE);
 	}
 
 	/**
@@ -205,8 +208,8 @@ public class AlarmClockSpeech {
 		try {
 			if (Integer.parseInt(params[4]) > 23 || Integer.parseInt(params[6]) > 59)
 				return "Not a valid time of day.";
-			return this.logic.editAlarm(Integer.parseInt(params[2]), new String[] { params[4], params[6] })
-					.convertToString();
+			return this.logic.editAlarm(Integer.parseInt(params[2]),
+					new int[] { Integer.parseInt(params[4]), Integer.parseInt(params[6]) }).convertToString();
 		} catch (NoSuchElementException e) {
 			return ELEMENTNOTFOUND;
 		}

@@ -25,15 +25,12 @@ public class Alarm {
 	 *            minute of the alarm
 	 */
 	public Alarm(int id, int hour, int minute, boolean active) {
+		if (id < 1)
+			throw new IllegalArgumentException();
+
 		this.id = id;
 
-		this.alarmDate = Calendar.getInstance();
-		this.alarmDate.set(Calendar.HOUR_OF_DAY, hour);
-		this.alarmDate.set(Calendar.MINUTE, minute);
-		this.alarmDate.set(Calendar.SECOND, 0);
-		if (this.alarmDate.before(Calendar.getInstance())) {
-			this.alarmDate.add(Calendar.DATE, 1);
-		}
+		setTime(new int[] { hour, minute });
 
 		this.active = active;
 	}
@@ -44,11 +41,44 @@ public class Alarm {
 	 * @return
 	 */
 	public String convertToString() {
-		return this.alarmDate.get(Calendar.HOUR_OF_DAY) + ":" + this.alarmDate.get(Calendar.MINUTE) + ":" + this.active;
+		return this.id + ":" + this.alarmDate.get(Calendar.HOUR_OF_DAY) + ":" + this.alarmDate.get(Calendar.MINUTE)
+				+ ":" + this.active;
+	}
+
+	/**
+	 * Construct an alarm object from the String that was made by the
+	 * convertToString method
+	 * 
+	 * @param input
+	 *            the String made by convertToString method
+	 * @return the corresponding alarm object
+	 */
+	public static Alarm reconstructObject(String input) {
+		String[] params = input.split(":");
+		if (params.length == 4)
+			return new Alarm(Integer.parseInt(params[0]), Integer.parseInt(params[1]), Integer.parseInt(params[2]),
+					Boolean.valueOf(params[3]));
+		throw new IllegalArgumentException();
+	}
+
+	public void setTime(int[] newTime) {
+		if (newTime.length == 2) {
+			Calendar date = Calendar.getInstance();
+			date.set(Calendar.HOUR_OF_DAY, newTime[0]);
+			date.set(Calendar.MINUTE, newTime[1]);
+			date.set(Calendar.SECOND, 0);
+			if (date.before(Calendar.getInstance()))
+				date.add(Calendar.DATE, 1);
+
+			this.alarmDate = date;
+		} else {
+			throw new IllegalArgumentException();
+		}
+
 	}
 
 	public int getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(int id) {
@@ -59,12 +89,8 @@ public class Alarm {
 		return this.alarmDate;
 	}
 
-	public void setAlarmDate(Calendar alarmDate) {
-		this.alarmDate = alarmDate;
-	}
-
 	public boolean isActive() {
-		return active;
+		return this.active;
 	}
 
 	public void setActive(boolean active) {

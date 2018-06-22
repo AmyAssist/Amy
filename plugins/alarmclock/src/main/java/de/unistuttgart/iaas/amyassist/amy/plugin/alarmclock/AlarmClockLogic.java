@@ -123,9 +123,9 @@ public class AlarmClockLogic {
 	 * 
 	 * @return counter, alarmTime[0], alarmTime[1]
 	 */
-	protected Alarm setAlarm(String[] alarmTime) {
+	protected Alarm setAlarm(int[] alarmTime) {
 		int counter = this.acStorage.incrementAlarmCounter();
-		Alarm alarm = new Alarm(counter, Integer.parseInt(alarmTime[0]), Integer.parseInt(alarmTime[1]), true);
+		Alarm alarm = new Alarm(counter, alarmTime[0], alarmTime[1], true);
 		this.acStorage.storeAlarm(alarm);
 		Runnable alarmRunnable = createAlarmRunnable(counter);
 		this.taskScheduler.schedule(alarmRunnable, alarm.getAlarmDate().getTime());
@@ -154,6 +154,7 @@ public class AlarmClockLogic {
 			this.taskScheduler.schedule(timerRunnable, timer.getTimerDate().getTime());
 			return timer;
 		}
+		this.acStorage.incrementAlarmCounter();
 		throw new IllegalArgumentException();
 	}
 
@@ -213,7 +214,7 @@ public class AlarmClockLogic {
 			this.acStorage.deleteKey("alarm" + alarmNumber);
 			return "Alarm " + alarmNumber + " deleted";
 		}
-		return "Alarm " + alarmNumber + " not found";
+		throw new NoSuchElementException();
 	}
 
 	/**
@@ -223,11 +224,11 @@ public class AlarmClockLogic {
 	 * @return timerNumber
 	 */
 	protected String deleteTimer(int timerNumber) {
-		if (this.acStorage.hasKey("alarm" + timerNumber)) {
-			this.acStorage.deleteKey("alarm" + timerNumber);
-			return "Alarm " + timerNumber + " deleted";
+		if (this.acStorage.hasKey("timer" + timerNumber)) {
+			this.acStorage.deleteKey("timer" + timerNumber);
+			return "Timer " + timerNumber + " deleted";
 		}
-		return "Timer " + timerNumber + " not found";
+		throw new NoSuchElementException();
 	}
 
 	/**
@@ -241,20 +242,14 @@ public class AlarmClockLogic {
 	protected String deactivateAlarm(int alarmNumber) {
 		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
 			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
-			try {
-				if (alarm.isActive()) {
-					alarm.setActive(false);
-					this.acStorage.storeAlarm(alarm);
-				} else {
-					return "Alarm " + alarmNumber + " is already inactive";
-				}
-			} catch (ArrayIndexOutOfBoundsException e) {
-				this.logger.error("Something went wrong!", e);
-				return "Something went wrong";
+			if (alarm.isActive()) {
+				alarm.setActive(false);
+				this.acStorage.storeAlarm(alarm);
+				return "Alarm " + alarmNumber + " deactivated";
 			}
-			return "Alarm " + alarmNumber + " deactivated";
+			return "Alarm " + alarmNumber + " is already inactive";
 		}
-		return "Alarm " + alarmNumber + " not found";
+		throw new NoSuchElementException();
 	}
 
 	/**
@@ -267,20 +262,14 @@ public class AlarmClockLogic {
 	protected String deactivateTimer(int timerNumber) {
 		if (this.acStorage.hasKey("timer" + timerNumber)) {
 			Timer timer = this.acStorage.getTimer(timerNumber);
-			try {
-				if (timer.isActive()) {
-					timer.setActive(false);
-					this.acStorage.storeTimer(timer);
-				} else {
-					return "Timer " + timerNumber + " is already inactive";
-				}
-			} catch (ArrayIndexOutOfBoundsException e) {
-				this.logger.error("Something went wrong!", e);
-				return "Something went wrong";
+			if (timer.isActive()) {
+				timer.setActive(false);
+				this.acStorage.storeTimer(timer);
+				return "Timer " + timerNumber + " deactivated";
 			}
-			return "Timer " + timerNumber + " deactivated";
+			return "Timer " + timerNumber + " is already inactive";
 		}
-		return "Timer " + timerNumber + " not found";
+		throw new NoSuchElementException();
 	}
 
 	/**
@@ -293,20 +282,14 @@ public class AlarmClockLogic {
 	protected String activateAlarm(int alarmNumber) {
 		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
 			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
-			try {
-				if (!alarm.isActive()) {
-					this.acStorage.storeAlarm(alarm);
-				} else {
-					return "Alarm " + alarmNumber + " is already active";
-				}
-			} catch (ArrayIndexOutOfBoundsException e) {
-				this.logger.error("Something went wrong!", e);
-				return "Something went wrong";
+			if (!alarm.isActive()) {
+				alarm.setActive(true);
+				this.acStorage.storeAlarm(alarm);
+				return "Alarm " + alarmNumber + " activated";
 			}
-			return "Alarm " + alarmNumber + " activated";
+			return "Alarm " + alarmNumber + " is already active";
 		}
-		return "Alarm " + alarmNumber + " not found";
-
+		throw new NoSuchElementException();
 	}
 
 	/**
@@ -319,18 +302,14 @@ public class AlarmClockLogic {
 	protected String activateTimer(int timerNumber) {
 		if (this.acStorage.hasKey("timer" + timerNumber)) {
 			Timer timer = this.acStorage.getTimer(timerNumber);
-			try {
-				if (!timer.isActive())
-					this.acStorage.storeTimer(timer);
-				else
-					return "Timer " + timerNumber + " is already active";
-			} catch (ArrayIndexOutOfBoundsException e) {
-				this.logger.error("Something went wrong!", e);
-				return "Something went wrong";
+			if (!timer.isActive()) {
+				timer.setActive(true);
+				this.acStorage.storeTimer(timer);
+				return "Timer " + timerNumber + " activated";
 			}
-			return "Timer " + timerNumber + " activated";
+			return "Timer " + timerNumber + " is already active";
 		}
-		return "Timer " + timerNumber + " not found";
+		throw new NoSuchElementException();
 	}
 
 	/**
@@ -397,15 +376,16 @@ public class AlarmClockLogic {
 	 * 
 	 * @param alarmNumber
 	 *            name of the alarm
-	 * @param alarmTime
+	 * @param newAlarmTime
 	 *            new alarm time
 	 * @return alarmNumber + alarmTime new Time of the edited Alarm
 	 */
-	protected Alarm editAlarm(int alarmNumber, String[] alarmTime) {
+	protected Alarm editAlarm(int alarmNumber, int[] newAlarmTime) {
 		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
-			deleteAlarm(alarmNumber);
-			setAlarm(alarmTime);
-			return this.acStorage.getAlarm(alarmNumber);
+			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
+			alarm.setTime(newAlarmTime);
+			this.acStorage.storeAlarm(alarm);
+			return alarm;
 		}
 		throw new NoSuchElementException();
 	}

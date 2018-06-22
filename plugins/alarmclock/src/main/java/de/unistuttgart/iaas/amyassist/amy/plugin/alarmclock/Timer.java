@@ -16,6 +16,8 @@ public class Timer {
 	private boolean active;
 
 	public Timer(int id, int hours, int minutes, int seconds, boolean active) {
+		if (id < 1)
+			throw new IllegalArgumentException();
 		this.id = id;
 
 		this.timerDate = Calendar.getInstance();
@@ -32,8 +34,24 @@ public class Timer {
 	 * @return
 	 */
 	public String convertToString() {
-		return this.timerDate.get(Calendar.HOUR_OF_DAY) + ":" + this.timerDate.get(Calendar.MINUTE) + ":"
-				+ this.timerDate.get(Calendar.SECOND) + ":" + this.active;
+		return this.id + ":" + this.timerDate.get(Calendar.HOUR_OF_DAY) + ":" + this.timerDate.get(Calendar.MINUTE)
+				+ ":" + this.timerDate.get(Calendar.SECOND) + ":" + this.active;
+	}
+
+	/**
+	 * Construct an alarm object from the String that was made by the
+	 * convertToString method
+	 * 
+	 * @param input
+	 *            the String made by convertToString method
+	 * @return the corresponding alarm object
+	 */
+	public static Timer reconstructObject(String input) {
+		String[] params = input.split(":");
+		if (params.length == 5)
+			return new Timer(Integer.parseInt(params[0]), Integer.parseInt(params[1]), Integer.parseInt(params[2]),
+					Integer.parseInt(params[3]), Boolean.valueOf(params[4]));
+		throw new IllegalArgumentException();
 	}
 
 	/**

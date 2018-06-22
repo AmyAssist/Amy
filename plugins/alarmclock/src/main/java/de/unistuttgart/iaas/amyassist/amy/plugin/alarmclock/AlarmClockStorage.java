@@ -1,5 +1,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.util.NoSuchElementException;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -28,7 +30,7 @@ public class AlarmClockStorage implements IAlarmClockStorage {
 
 	@Override
 	public void storeTimer(Timer timer) {
-		this.storage.put("timer" + timer.getId() + "", timer.convertToString());
+		this.storage.put("timer" + timer.getId(), timer.convertToString());
 	}
 
 	@Override
@@ -81,19 +83,20 @@ public class AlarmClockStorage implements IAlarmClockStorage {
 
 	@Override
 	public Alarm getAlarm(int id) {
-		String alarmString = this.storage.get("alarm" + id);
-		String[] params = alarmString.split(":");
-
-		return new Alarm(id, Integer.parseInt(params[0]), Integer.parseInt(params[1]), Boolean.valueOf(params[2]));
+		if (this.storage.has("alarm" + id)) {
+			String alarmString = this.storage.get("alarm" + id);
+			return Alarm.reconstructObject(alarmString);
+		}
+		throw new NoSuchElementException();
 	}
 
 	@Override
 	public Timer getTimer(int id) {
-		String timerString = this.storage.get("timer" + id);
-		String[] params = timerString.split(":");
-
-		return new Timer(id, Integer.parseInt(params[0]), Integer.parseInt(params[1]), Integer.parseInt(params[2]),
-				Boolean.valueOf(params[3]));
+		if (this.storage.has("timer" + id)) {
+			String timerString = this.storage.get("timer" + id);
+			return Timer.reconstructObject(timerString);
+		}
+		throw new NoSuchElementException();
 	}
 
 	/**

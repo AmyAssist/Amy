@@ -79,7 +79,8 @@ public interface IAlarmClockStorage {
 	public boolean hasKey(String key);
 
 	/**
-	 * Deletes the given key from the storage
+	 * Deletes the given key from the storage. Only use this method, if it's
+	 * guaranteed that the key is actually stored
 	 * 
 	 * @param key
 	 *            key that should be deleted

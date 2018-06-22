@@ -53,7 +53,7 @@ public class AlarmClockResource {
 	 * the resource path for this plugin
 	 */
 	public static final String PATH = "clock";
-	
+
 	@Reference
 	private AlarmClockLogic logic;
 
@@ -68,8 +68,8 @@ public class AlarmClockResource {
 	public Timestamp[] getAllAlarms() {
 		Alarm[] alarms = this.logic.getAllAlarms();
 		Timestamp[] timestamps = new Timestamp[alarms.length];
-		for(int i = 0; i < alarms.length; i++) {
-			if(alarms[i] != null) {
+		for (int i = 0; i < alarms.length; i++) {
+			if (alarms[i] != null) {
 				timestamps[i] = new Timestamp(alarms[i]);
 				timestamps[i].setLink(createAlarmPath(alarms[i].getId()));
 			}
@@ -79,8 +79,9 @@ public class AlarmClockResource {
 
 	/**
 	 * returns a specific alarm
-	 * 	
-	 * @param alarmnumber the requested alarm
+	 * 
+	 * @param alarmnumber
+	 *            the requested alarm
 	 * @return the specific alarm
 	 */
 	@GET
@@ -89,37 +90,42 @@ public class AlarmClockResource {
 	public Timestamp getAlarm(@PathParam("pathid") int alarmnumber) {
 		Alarm alarm;
 		try {
-			alarm = this.logic.getAlarm(alarmnumber);			
+			alarm = this.logic.getAlarm(alarmnumber);
 		} catch (NoSuchElementException e) {
-			throw new WebApplicationException("there is no alarm" + alarmnumber, e, Status.NOT_FOUND);			
+			throw new WebApplicationException("there is no alarm" + alarmnumber, e, Status.NOT_FOUND);
 		}
-		
+
 		Timestamp ts = new Timestamp(alarm);
 		ts.setLink(createAlarmPath(alarmnumber));
-		return ts;	
+		return ts;
 	}
 
 	/**
 	 * changes the properties of an alarm
 	 * 
-	 * @param alarmNumber the number of the alarm
-	 * @param mode what to do: allowed paramters: edit, activate, delete, deactivate
-	 * @param alarmTime the new time
+	 * @param alarmNumber
+	 *            the number of the alarm
+	 * @param mode
+	 *            what to do: allowed paramters: edit, activate, delete, deactivate
+	 * @param alarmTime
+	 *            the new time
 	 * @return the new alarmtime or null
 	 */
 	@POST
 	@Path("alarms/{pathid}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Timestamp editAlarm(@PathParam("pathid") int alarmNumber, @QueryParam("mode")@DefaultValue("edit")String mode, Timestamp alarmTime) {
-		switch(mode) {
+	public Timestamp editAlarm(@PathParam("pathid") int alarmNumber,
+			@QueryParam("mode") @DefaultValue("edit") String mode, Timestamp alarmTime) {
+		switch (mode) {
 		case "edit":
 			if (alarmTime == null || !alarmTime.isValid()) {
 				throw new WebApplicationException("The given time wasn't a valid time", Status.BAD_REQUEST);
 			}
 			Alarm alarm;
 			try {
-				alarm = this.logic.editAlarm(alarmNumber, new String[] { "" + alarmTime.getHour(), "" + alarmTime.getMinute() });
+				alarm = this.logic.editAlarm(alarmNumber,
+						new String[] { "" + alarmTime.getHour(), "" + alarmTime.getMinute() });
 			} catch (NoSuchElementException e) {
 				throw new WebApplicationException("there is no alarm" + alarmNumber, e, Status.NOT_FOUND);
 			}
@@ -168,7 +174,7 @@ public class AlarmClockResource {
 	public void resetAlarms() {
 		this.logic.resetAlarms();
 	}
-	
+
 	private String createAlarmPath(int id) {
 		return Server.BASE_URI.toString() + "/" + PATH + "/alarms/" + id;
 	}
