@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.net.URI;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonParser;
 import com.neovisionaries.i18n.CountryCode;
@@ -104,6 +103,8 @@ public class SpotifyAPICalls {
 	private ConfigLoader configLoader;
 
 	private boolean firstTime = true;
+	
+	@Reference
 	private Logger logger;
 
 	private SpotifyApi spotifyApi = null;
@@ -114,7 +115,6 @@ public class SpotifyAPICalls {
 	 */
 	@PostConstruct
 	private final void init() {
-		this.logger = LoggerFactory.getLogger(SpotifyAPICalls.class);
 		if (this.configLoader.get(SPOTIFY_CLIENTID_KEY) != null
 				&& this.configLoader.get(SPOTIFY_CLIENTSECRET_KEY) != null) {
 			this.clientID = this.configLoader.get(SPOTIFY_CLIENTID_KEY);
