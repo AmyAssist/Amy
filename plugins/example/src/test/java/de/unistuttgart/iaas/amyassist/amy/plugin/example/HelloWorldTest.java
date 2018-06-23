@@ -29,7 +29,6 @@ import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
@@ -41,7 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Leon Kiefer
  */
-@ExtendWith({ MockitoExtension.class, FrameworkExtension.class })
+@ExtendWith(FrameworkExtension.class)
 public class HelloWorldTest {
 	@Reference
 	private TestFramework testFramework;
