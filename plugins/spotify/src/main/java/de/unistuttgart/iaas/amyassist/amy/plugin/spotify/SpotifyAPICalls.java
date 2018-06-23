@@ -53,6 +53,12 @@ import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrack
 import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
 import com.wrapper.spotify.requests.data.search.SearchItemRequest;
 
+/**
+ * 
+ * This class handle every call that goes to the spotify library
+ * 
+ * @author Lars Buttgereit
+ */
 public class SpotifyAPICalls {
 
 	/**
@@ -83,9 +89,9 @@ public class SpotifyAPICalls {
 	private AuthorizationCodeCredentials authorizationCodeCredentials;
 	private AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;
 
-	private static final String SPOTIFY_CLIENTSECRET = "spotify_clientSecret";
-	private static final String SPOTIFY_CLIENTID = "spotify_clientId";
-	private static final String SPOTIFY_REFRSHTOKEN = "spotify_refreshToken";
+	private static final String SPOTIFY_CLIENTSECRET_KEY = "spotify_clientSecret";
+	private static final String SPOTIFY_CLIENTID_KEY = "spotify_clientId";
+	private static final String SPOTIFY_REFRSHTOKEN_KEY = "spotify_refreshToken";
 	private static final String SPOTIFY_DEVICEID = "spotify_device_Id";
 	private static final int TOKEN_EXPIRE_TIME = 120;
 
@@ -93,43 +99,48 @@ public class SpotifyAPICalls {
 
 	private boolean firstTime = true;
 	private Logger logger;
- 
+
 	private SpotifyApi spotifyApi = null;
 
+	/**
+	 * constructor to init the object
+	 */
 	public SpotifyAPICalls() {
 		init();
 	}
 
 	private final void init() {
 		this.logger = LoggerFactory.getLogger(SpotifyAPICalls.class);
-		if (configLoader.get(SPOTIFY_CLIENTID) != null && configLoader.get(SPOTIFY_CLIENTSECRET) != null) {
-			this.clientID = configLoader.get(SPOTIFY_CLIENTID);
-			this.clientSecret = configLoader.get(SPOTIFY_CLIENTSECRET);
+		if (this.configLoader.get(SPOTIFY_CLIENTID_KEY) != null
+				&& this.configLoader.get(SPOTIFY_CLIENTSECRET_KEY) != null) {
+			this.clientID = this.configLoader.get(SPOTIFY_CLIENTID_KEY);
+			this.clientSecret = this.configLoader.get(SPOTIFY_CLIENTSECRET_KEY);
 			this.spotifyApi = new SpotifyApi.Builder().setClientId(this.clientID).setClientSecret(this.clientSecret)
 					.setRedirectUri(this.redirectURI).build();
 		} else {
 			this.logger.warn("Client Secret and ID missing. Please insert the config file");
 		}
 
-		if (configLoader.get(SPOTIFY_REFRSHTOKEN) != null) {
-			this.refreshToken = configLoader.get(SPOTIFY_REFRSHTOKEN);
+		if (this.configLoader.get(SPOTIFY_REFRSHTOKEN_KEY) != null) {
+			this.refreshToken = this.configLoader.get(SPOTIFY_REFRSHTOKEN_KEY);
 		} else {
 			this.logger.warn("Please exec the Authorization first");
 		}
-		if (configLoader.get(SPOTIFY_DEVICEID) != null && checkDeviceIsLoggedIn(configLoader.get(SPOTIFY_DEVICEID))) {
-			deviceID = configLoader.get(SPOTIFY_DEVICEID);
+		if (this.configLoader.get(SPOTIFY_DEVICEID) != null
+				&& checkDeviceIsLoggedIn(this.configLoader.get(SPOTIFY_DEVICEID))) {
+			this.deviceID = this.configLoader.get(SPOTIFY_DEVICEID);
 		} else if (getDevices().length > 0) {
-			deviceID = getDevices()[0].getId();
+			this.deviceID = getDevices()[0].getId();
 		} else {
-			logger.warn("no device is logged in");
+			this.logger.warn("no device is logged in");
 		}
 	}
 
 	/**
-	 * create a authentication link for the User to authenticate his spotify
-	 * account. The Link create a authentication code for the next step
+	 * create a authentication link for the User to authenticate his spotify account. The Link create a authentication
+	 * code for the next step
 	 * 
-	 * @return
+	 * @return a URI to authorize a spotify account
 	 */
 	public URI authorizationCodeUri() {
 		AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri().state("TEST")
@@ -158,41 +169,48 @@ public class SpotifyAPICalls {
 		try {
 			AuthorizationCodeCredentials authorizationCodeCredentials1 = authorizationCodeRequest.execute();
 			this.refreshToken = authorizationCodeCredentials1.getRefreshToken();
-			this.configLoader.set(SPOTIFY_REFRSHTOKEN, refreshToken);
+			this.configLoader.set(SPOTIFY_REFRSHTOKEN_KEY, this.refreshToken);
 		} catch (SpotifyWebApiException | IOException e) {
 			this.logger.error(e.getMessage());
 		}
 	}
 
 	/**
-	 * sets the ClientID from the spotify Web devloper account
+	 * sets the ClientID from the spotify Web developer account
 	 * 
 	 * @param clientID
+	 *            from spotify developer account
 	 */
 	public void setClientID(String clientID) {
-		this.configLoader.set(SPOTIFY_CLIENTID, clientID);
+		this.configLoader.set(SPOTIFY_CLIENTID_KEY, clientID);
 		this.clientID = clientID;
 	}
 
 	/**
-	 * sets the ClientSecret from the spotify Web devloper account
+	 * sets the ClientSecret from the spotify Web developer account
 	 * 
 	 * @param clientSecret
+	 *            from the spotify developer account
 	 */
 	public void setClientSecret(String clientSecret) {
-		this.configLoader.set(SPOTIFY_CLIENTSECRET, clientSecret);
+		this.configLoader.set(SPOTIFY_CLIENTSECRET_KEY, clientSecret);
 		this.clientSecret = clientSecret;
 	}
 
+	/**
+	 * set the current device to the given deviceID
+	 * 
+	 * @param deviceID
+	 *            deviceID from actual active device
+	 */
 	public void setCurrentDevice(String deviceID) {
 		this.deviceID = deviceID;
 		this.configLoader.set(SPOTIFY_DEVICEID, deviceID);
 	}
 
 	/**
-	 * in the first execution create this method a spotifyApi object and get these
-	 * back, after the first execution the method checks the access token valid and
-	 * refresh the access token if invalid
+	 * in the first execution create this method a spotifyApi object and get these back, after the first execution the
+	 * method checks the access token valid and refresh the access token if invalid
 	 * 
 	 * @return a spotifyAPI object for queries to the Spotify Web API
 	 */
@@ -240,7 +258,7 @@ public class SpotifyAPICalls {
 			this.logger.warn("Please initialize the spotify api with the client id and client secret");
 			return false;
 		}
-		if (!checkDeviceIsLoggedIn(deviceID)) {
+		if (!checkDeviceIsLoggedIn(this.deviceID)) {
 			this.logger.warn("Device has been disconnected or is not the active device");
 			return false;
 		}
@@ -250,7 +268,7 @@ public class SpotifyAPICalls {
 	/**
 	 * get all devices that are current logged in the spotify client
 	 * 
-	 * @return
+	 * @return a array of devices
 	 */
 	public Device[] getDevices() {
 		Device[] devices;
@@ -272,7 +290,7 @@ public class SpotifyAPICalls {
 	 */
 	public Device getActiveDevice() {
 		for (Device device : getDevices()) {
-			if (device.getIs_active()) {
+			if (device.getIs_active().booleanValue()) {
 				return device;
 			}
 		}
@@ -282,12 +300,13 @@ public class SpotifyAPICalls {
 	/**
 	 * check if the given device logged in an account
 	 * 
-	 * @param deviceID
-	 * @return
+	 * @param deviceId
+	 *            device to check
+	 * @return if device logged in true, else false
 	 */
-	public boolean checkDeviceIsLoggedIn(String deviceID) {
+	public boolean checkDeviceIsLoggedIn(String deviceId) {
 		for (Device device : getDevices()) {
-			if (device.getId().equals(deviceID)) {
+			if (device.getId().equals(deviceId)) {
 				return true;
 			}
 		}
@@ -298,6 +317,7 @@ public class SpotifyAPICalls {
 	 * this method play the Song from the uri on spotify
 	 * 
 	 * @param uri
+	 *            from a song
 	 * @return true if no problem occur else false
 	 */
 	protected boolean playSongFromUri(String uri) {
@@ -305,7 +325,7 @@ public class SpotifyAPICalls {
 			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = getSpotifyApi().startResumeUsersPlayback()
 					.device_id(this.deviceID).uris(new JsonParser().parse("[\"" + uri + "\"]").getAsJsonArray())
 					.build();
-			return exceptionHandlingWihtBoolean(startResumeUsersPlaybackRequest);
+			return exceptionHandlingWithBoolean(startResumeUsersPlaybackRequest);
 		}
 		return false;
 	}
@@ -314,13 +334,14 @@ public class SpotifyAPICalls {
 	 * play a list of tracks for example a playlists and albums
 	 * 
 	 * @param uri
+	 *            uro from a playlist or album
 	 * @return true if no problem occur else false
 	 */
 	protected boolean playListFromUri(String uri) {
 		if (checkPlayerState()) {
 			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = getSpotifyApi().startResumeUsersPlayback()
 					.context_uri(uri).device_id(this.deviceID).build();
-			return exceptionHandlingWihtBoolean(startResumeUsersPlaybackRequest);
+			return exceptionHandlingWithBoolean(startResumeUsersPlaybackRequest);
 		}
 		return false;
 	}
@@ -328,14 +349,13 @@ public class SpotifyAPICalls {
 	/**
 	 * resume the actual playback
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command
-	 *         failed
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean resume() {
 		if (checkPlayerState()) {
 			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = getSpotifyApi().startResumeUsersPlayback()
 					.device_id(this.deviceID).build();
-			return exceptionHandlingWihtBoolean(startResumeUsersPlaybackRequest);
+			return exceptionHandlingWithBoolean(startResumeUsersPlaybackRequest);
 		}
 		return false;
 	}
@@ -343,14 +363,13 @@ public class SpotifyAPICalls {
 	/**
 	 * pause the actual playback
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command
-	 *         failed
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean pause() {
 		if (checkPlayerState()) {
 			PauseUsersPlaybackRequest pauseUsersPlaybackRequest = getSpotifyApi().pauseUsersPlayback()
 					.device_id(this.deviceID).build();
-			return exceptionHandlingWihtBoolean(pauseUsersPlaybackRequest);
+			return exceptionHandlingWithBoolean(pauseUsersPlaybackRequest);
 		}
 		return false;
 	}
@@ -358,14 +377,13 @@ public class SpotifyAPICalls {
 	/**
 	 * goes one song forward in the playlist or album
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command
-	 *         failed
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean skip() {
 		if (checkPlayerState()) {
 			SkipUsersPlaybackToNextTrackRequest skipUsersPlaybackToNextTrackRequest = getSpotifyApi()
 					.skipUsersPlaybackToNextTrack().device_id(this.deviceID).build();
-			return exceptionHandlingWihtBoolean(skipUsersPlaybackToNextTrackRequest);
+			return exceptionHandlingWithBoolean(skipUsersPlaybackToNextTrackRequest);
 		}
 		return false;
 	}
@@ -373,14 +391,13 @@ public class SpotifyAPICalls {
 	/**
 	 * goes one song back in the playlist or album
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command
-	 *         failed
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean back() {
 		if (checkPlayerState()) {
 			SkipUsersPlaybackToPreviousTrackRequest skipUsersPlaybackToPreviousTrackRequest = getSpotifyApi()
 					.skipUsersPlaybackToPreviousTrack().device_id(this.deviceID).build();
-			return exceptionHandlingWihtBoolean(skipUsersPlaybackToPreviousTrackRequest);
+			return exceptionHandlingWithBoolean(skipUsersPlaybackToPreviousTrackRequest);
 		}
 		return false;
 	}
@@ -390,12 +407,13 @@ public class SpotifyAPICalls {
 	 * 
 	 * @param volume
 	 *            int between 0 and 100
+	 * @return if setVolume success then return true, else false
 	 */
 	protected boolean setVolume(int volume) {
 		if (checkPlayerState()) {
 			SetVolumeForUsersPlaybackRequest setVolumeForUsersPlaybackRequest = getSpotifyApi()
 					.setVolumeForUsersPlayback(volume).device_id(this.deviceID).build();
-			return exceptionHandlingWihtBoolean(setVolumeForUsersPlaybackRequest);
+			return exceptionHandlingWithBoolean(setVolumeForUsersPlaybackRequest);
 		}
 		return false;
 	}
@@ -415,8 +433,7 @@ public class SpotifyAPICalls {
 	/**
 	 * get the current song from the active spotify client
 	 * 
-	 * @return a CurrentlyPlayingContext object from the spotify library, null if a
-	 *         problem occur
+	 * @return a CurrentlyPlayingContext object from the spotify library, null if a problem occur
 	 */
 	public CurrentlyPlayingContext getCurrentSong() {
 		if (checkPlayerState()) {
@@ -432,12 +449,12 @@ public class SpotifyAPICalls {
 	 * create a search query for spotify.
 	 * 
 	 * @param searchItem
+	 *            search text for the search
 	 * @param type
 	 *            type of the search (artist, track, album, playlist)
 	 * @param limit
 	 *            how many entry the result maximal have
-	 * @return a object of the type SearchResult from the spotify library, null if a
-	 *         problem occur
+	 * @return a object of the type SearchResult from the spotify library, null if a problem occur
 	 */
 	public SearchResult searchInSpotify(String searchItem, String type, int limit) {
 		if (checkPlayerState()) {
@@ -452,8 +469,8 @@ public class SpotifyAPICalls {
 	 * get a FeaturedPlaylists object with palylists with the amount of limit
 	 * 
 	 * @param limit
-	 * @return a FeaturedPlaylists object from the Spotify library, null if a
-	 *         problem occur
+	 *            maximum of search results
+	 * @return a FeaturedPlaylists object from the Spotify library, null if a problem occur
 	 */
 	public FeaturedPlaylists getFeaturedPlaylists(int limit) {
 		if (checkPlayerState()) {
@@ -466,10 +483,11 @@ public class SpotifyAPICalls {
 	}
 
 	/**
-	 * handle the exception from the request created by the .excute() method
+	 * handle the exception from the request created by the .execute() method
 	 * 
 	 * @param request
-	 * @return
+	 *            spotify api request
+	 * @return if no exception is occurred then true, else false
 	 */
 	private Object exceptionHandlingWithResults(IRequest request) {
 		try {
@@ -481,12 +499,13 @@ public class SpotifyAPICalls {
 	}
 
 	/**
-	 * handle the exception from the request created by the .excute() method
+	 * handle the exception from the request created by the .execute() method
 	 * 
 	 * @param request
+	 *            spotify api request
 	 * @return if no exception is occurred then true, else false
 	 */
-	private boolean exceptionHandlingWihtBoolean(IRequest request) {
+	private boolean exceptionHandlingWithBoolean(IRequest request) {
 		try {
 			request.execute();
 			return true;

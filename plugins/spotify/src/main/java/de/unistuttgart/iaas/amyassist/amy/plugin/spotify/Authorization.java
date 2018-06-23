@@ -26,17 +26,15 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 import java.util.Scanner;
 
 /**
- * This class is only needed once for the frist authorization. This class will
- * be removed soon.
+ * This class is only needed once for the frist authorization. This class will be removed soon.
  * 
  * @author Lars Buttgereit
  */
 public class Authorization {
 
 	/**
-	 * needed for first init. It takes until the UI can control the authorization
-	 * process. Probably after Sprint 2. Please follow the instruction the
-	 * instruction in the console
+	 * needed for first init. It takes until the UI can control the authorization process. Probably after Sprint 2.
+	 * Please follow the instruction the instruction in the console
 	 * 
 	 * @param args
 	 */
@@ -46,7 +44,8 @@ public class Authorization {
 		System.out.println("copy this link in your browser an follow the login process".concat("\n")
 				.concat(spotifyAPICalls.authorizationCodeUri().toString()).concat("\n")
 				.concat("Please insert Auth Code form the result link. Copy all between 'code=' and '&'.".concat(
-						" For example for this result: http://localhost:8888/?code=AQComIDO...qHvVw&state=TEST) you cope only this: 'AQComIDO...qHvVw'")));
+						" For example for this result: http://localhost:8888/?code=AQComIDO...qHvVw&state=TEST)")
+						.concat("you copy only this: 'AQComIDO...qHvVw'")));
 		spotifyAPICalls.createRefreshToken(sc.nextLine());
 		System.out.println("complete");
 		sc.close();

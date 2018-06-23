@@ -53,13 +53,13 @@ import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtention;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 @ExtendWith({ MockitoExtension.class, FrameworkExtention.class })
-class PlayerlogicTest {
+class PlayerLogicTest {
 
 	private PlayerLogic playerLogic;
-	
+
 	@Reference
 	private TestFramework testFramework;
-	
+
 	private Device[] devices;
 	private CurrentlyPlayingContext currentlyPlayingContext;
 	private List<Map<String, String>> featuredPlaylists;
@@ -69,25 +69,25 @@ class PlayerlogicTest {
 
 	@Mock
 	private Search search;
-	
 
 	@BeforeEach
 	public void init() {
-		playerLogic = new PlayerLogic();
-		playerLogic.init();
+		this.playerLogic = new PlayerLogic();
+		this.playerLogic.init();
 		Field apiCallField;
 		Field searchField;
 		initDevices();
 		initCurrentTrack();
 		initFeaturedPlaylist();
+		reset(spotifyAPICalls);
 
 		try {
 			apiCallField = PlayerLogic.class.getDeclaredField("spotifyAPICalls");
 			apiCallField.setAccessible(true);
-			apiCallField.set(playerLogic, spotifyAPICalls);
+			apiCallField.set(this.playerLogic, this.spotifyAPICalls);
 			searchField = PlayerLogic.class.getDeclaredField("search");
 			searchField.setAccessible(true);
-			searchField.set(playerLogic, search);
+			searchField.set(this.playerLogic, search);
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 		}
 	}
@@ -108,7 +108,7 @@ class PlayerlogicTest {
 				.build();
 		currentlyPlayingContext = new CurrentlyPlayingContext.Builder().setItem(track1).build();
 	}
-	
+
 	public void initFeaturedPlaylist() {
 		featuredPlaylists = new ArrayList<>();
 		Map<String, String> entry1 = new HashMap<>();
@@ -117,54 +117,56 @@ class PlayerlogicTest {
 		Map<String, String> entry2 = new HashMap<>();
 		entry2.put(SpotifyConstants.ITEM_URI, "123");
 		featuredPlaylists.add(entry2);
-		
+
 	}
 
 	@Test
 	public void testFirstTimeInit() {
-		playerLogic.firstTimeInit("abc", "abc");
-		verify(spotifyAPICalls).setClientID("abc");
-		verify(spotifyAPICalls).setClientSecret("abc");
-		verify(spotifyAPICalls).authorizationCodeUri();
-		verifyNoMoreInteractions(spotifyAPICalls);
+		this.playerLogic.firstTimeInit("abc", "abc");
+		verify(this.spotifyAPICalls).setClientID("abc");
+		verify(this.spotifyAPICalls).setClientSecret("abc");
+		verify(this.spotifyAPICalls).authorizationCodeUri();
+		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testInputAuthCode() {
-		playerLogic.inputAuthCode("abc");
-		verify(spotifyAPICalls).createRefreshToken("abc");
-		verifyNoMoreInteractions(spotifyAPICalls);
+		this.playerLogic.inputAuthCode("abc");
+		verify(this.spotifyAPICalls).createRefreshToken("abc");
+		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testGetDevices() {
-		when(spotifyAPICalls.getDevices()).thenReturn(devices);
-		List<String> result = playerLogic.getDevices();
+		when(this.spotifyAPICalls.getDevices()).thenReturn(devices);
+		List<String> result = this.playerLogic.getDevices();
 		assertThat(result.get(0), equalTo("Hello"));
 		assertThat(result.get(1), equalTo("Godbye"));
-		verify(spotifyAPICalls).getDevices();
-		reset(spotifyAPICalls);
+		verify(this.spotifyAPICalls).getDevices();
+	}
 
-		when(spotifyAPICalls.getDevices()).thenReturn(null);
-		List<String> result2 = playerLogic.getDevices();
+	@Test
+	public void testGetDevicesWithNoDevices() {
+		when(this.spotifyAPICalls.getDevices()).thenReturn(null);
+		List<String> result2 = this.playerLogic.getDevices();
 		assertThat(result2.isEmpty(), equalTo(true));
-		verify(spotifyAPICalls).getDevices();
-		reset(spotifyAPICalls);
+		verify(this.spotifyAPICalls).getDevices();
+		reset(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testSetDevice() {
-		when(spotifyAPICalls.getDevices()).thenReturn(null);
-		assertThat(playerLogic.setDevice(0), equalTo("No device found"));
+		when(this.spotifyAPICalls.getDevices()).thenReturn(null);
+		assertThat(this.playerLogic.setDevice(0), equalTo("No device found"));
 
-		when(spotifyAPICalls.getDevices()).thenReturn(devices);
-		assertThat(playerLogic.setDevice(0), equalTo("Hello"));
-		reset(spotifyAPICalls);
+		when(this.spotifyAPICalls.getDevices()).thenReturn(devices);
+		assertThat(this.playerLogic.setDevice(0), equalTo("Hello"));
+		reset(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testSearch() {
-		playerLogic.search("Hello", "track", 1);
+		this.playerLogic.search("Hello", "track", 1);
 		verify(search).searchList("Hello", "track", 1);
 	}
 
@@ -176,118 +178,133 @@ class PlayerlogicTest {
 	@Test
 	public void testPlayEmptyList() {
 		when(search.getFeaturedPlaylists()).thenReturn(new ArrayList<>());
-		assertThat(playerLogic.play().isEmpty(), equalTo(true));
-	
+		assertThat(this.playerLogic.play().isEmpty(), equalTo(true));
+
 	}
-	
+
 	@Test
 	public void testPlayNotEmptyList() {
 		when(search.getFeaturedPlaylists()).thenReturn(featuredPlaylists);
-		when(spotifyAPICalls.playListFromUri(any())).thenReturn(true);
-		assertThat(playerLogic.play().get(SpotifyConstants.ITEM_URI), equalTo("123"));
-		verify(spotifyAPICalls).playListFromUri("123");
+		when(this.spotifyAPICalls.playListFromUri(any())).thenReturn(true);
+		assertThat(this.playerLogic.play().get(SpotifyConstants.ITEM_URI), equalTo("123"));
+		verify(this.spotifyAPICalls).playListFromUri("123");
 	}
-	
 
 	@Test
 	public void testResume() {
-		playerLogic.resume();
-		verify(spotifyAPICalls).resume();
-		verifyNoMoreInteractions(spotifyAPICalls);
+		this.playerLogic.resume();
+		verify(this.spotifyAPICalls).resume();
+		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testPause() {
-		playerLogic.pause();
-		verify(spotifyAPICalls).pause();
-		verifyNoMoreInteractions(spotifyAPICalls);
+		this.playerLogic.pause();
+		verify(this.spotifyAPICalls).pause();
+		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testSkip() {
-		playerLogic.skip();
-		verify(spotifyAPICalls).skip();
-		verifyNoMoreInteractions(spotifyAPICalls);
+		this.playerLogic.skip();
+		verify(this.spotifyAPICalls).skip();
+		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testBack() {
-		playerLogic.back();
-		verify(spotifyAPICalls).back();
-		verifyNoMoreInteractions(spotifyAPICalls);
+		this.playerLogic.back();
+		verify(this.spotifyAPICalls).back();
+		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testGetCurrentSong() {
-		when(spotifyAPICalls.getCurrentSong()).thenReturn(currentlyPlayingContext);
-		when(search.createTrackOutput(any(), any())).thenCallRealMethod();
-		Map<String, String> result1 = playerLogic.getCurrentSong();
+		when(this.spotifyAPICalls.getCurrentSong()).thenReturn(currentlyPlayingContext);
+		when(search.createTrackOutput(any())).thenCallRealMethod();
+		Map<String, String> result1 = this.playerLogic.getCurrentSong();
 		assertThat(result1.get(SpotifyConstants.ITEM_NAME), equalTo("Flames"));
 		assertThat(result1.get(SpotifyConstants.ITEM_TYPE), equalTo("track"));
 		assertThat(result1.get(SpotifyConstants.ITEM_URI), equalTo("123"));
 		assertThat(result1.get(SpotifyConstants.ARTIST_NAME), equalTo("David Guetta, Hans Dieter"));
-		
-		when(spotifyAPICalls.getCurrentSong()).thenReturn(null);
-		Map<String, String> result2 = playerLogic.getCurrentSong();
+
+		when(this.spotifyAPICalls.getCurrentSong()).thenReturn(null);
+		Map<String, String> result2 = this.playerLogic.getCurrentSong();
 		assertThat(result2.isEmpty(), equalTo(true));
 	}
 
 	@Test
-	public void testSetVolumeString() {
-		when(spotifyAPICalls.getVolume()).thenReturn(50);
-		assertThat(playerLogic.setVolume("mute"), equalTo(0));
-		verify(spotifyAPICalls).setVolume(0);
-		verifyNoMoreInteractions(spotifyAPICalls);
-		reset(spotifyAPICalls);
+	public void testSetVolumeStringMute() {
+		when(this.spotifyAPICalls.getVolume()).thenReturn(50);
+		assertThat(this.playerLogic.setVolume("mute"), equalTo(0));
+		verify(this.spotifyAPICalls).setVolume(0);
+		verifyNoMoreInteractions(this.spotifyAPICalls);
+	}
 
-		when(spotifyAPICalls.getVolume()).thenReturn(50);
-		assertThat(playerLogic.setVolume("max"), equalTo(100));
-		verify(spotifyAPICalls).setVolume(100);
-		verifyNoMoreInteractions(spotifyAPICalls);
-		reset(spotifyAPICalls);
+	@Test
+	public void testSetVolumeStringMax() {
+		when(this.spotifyAPICalls.getVolume()).thenReturn(50);
+		assertThat(this.playerLogic.setVolume("max"), equalTo(100));
+		verify(this.spotifyAPICalls).setVolume(100);
+		verifyNoMoreInteractions(this.spotifyAPICalls);
+	}
 
-		when(spotifyAPICalls.getVolume()).thenReturn(90);
-		assertThat(playerLogic.setVolume("up"), equalTo(100));
-		verify(spotifyAPICalls).setVolume(100);
-		verifyNoMoreInteractions(spotifyAPICalls);
-		reset(spotifyAPICalls);
+	@Test
+	public void testSetVolumeStringUpInRange() {
+		when(this.spotifyAPICalls.getVolume()).thenReturn(90);
+		assertThat(this.playerLogic.setVolume("up"), equalTo(100));
+		verify(this.spotifyAPICalls).setVolume(100);
+		verifyNoMoreInteractions(this.spotifyAPICalls);
+	}
 
-		when(spotifyAPICalls.getVolume()).thenReturn(10);
-		assertThat(playerLogic.setVolume("down"), equalTo(0));
-		verify(spotifyAPICalls).setVolume(0);
-		verifyNoMoreInteractions(spotifyAPICalls);
-		reset(spotifyAPICalls);
+	@Test
+	public void testSetVolumeStringDownInRange() {
+		when(this.spotifyAPICalls.getVolume()).thenReturn(10);
+		assertThat(this.playerLogic.setVolume("down"), equalTo(0));
+		verify(this.spotifyAPICalls).setVolume(0);
+		verifyNoMoreInteractions(this.spotifyAPICalls);
+	}
 
-		when(spotifyAPICalls.getVolume()).thenReturn(91);
-		assertThat(playerLogic.setVolume("up"), equalTo(-1));
-		verifyNoMoreInteractions(spotifyAPICalls);
-		reset(spotifyAPICalls);
+	@Test
+	public void testSetVolumeStringUpOurOfRange() {
+		when(this.spotifyAPICalls.getVolume()).thenReturn(91);
+		assertThat(this.playerLogic.setVolume("up"), equalTo(100));
+		verify(this.spotifyAPICalls).setVolume(100);
+		verifyNoMoreInteractions(this.spotifyAPICalls);
+	}
 
-		when(spotifyAPICalls.getVolume()).thenReturn(9);
-		assertThat(playerLogic.setVolume("down"), equalTo(-1));
-		verifyNoMoreInteractions(spotifyAPICalls);
-		reset(spotifyAPICalls);
+	@Test
+	public void testSetVolumeStringDownOutOfRange() {
+		when(this.spotifyAPICalls.getVolume()).thenReturn(9);
+		assertThat(this.playerLogic.setVolume("down"), equalTo(0));
+		verify(this.spotifyAPICalls).setVolume(0);
+		verifyNoMoreInteractions(this.spotifyAPICalls);
+	}
 
-		when(spotifyAPICalls.getVolume()).thenReturn(50);
-		assertThat(playerLogic.setVolume("downM"), equalTo(-1));
-		verifyNoMoreInteractions(spotifyAPICalls);
-		reset(spotifyAPICalls);
+	@Test
+	public void testSetVolumeStringWrongString() {
+		when(this.spotifyAPICalls.getVolume()).thenReturn(50);
+		assertThat(this.playerLogic.setVolume("downM"), equalTo(-1));
+		verifyNoMoreInteractions(this.spotifyAPICalls);
+	}
+
+	@Test
+	public void testVolumeIntOutOfRangeNegative() {
+		assertThat(this.playerLogic.setVolume(-2), equalTo(-1));
+		verifyNoMoreInteractions(this.spotifyAPICalls);
+	}
+
+	@Test
+	public void testVolumeIntOutOfRangePositve() {
+		assertThat(this.playerLogic.setVolume(101), equalTo(-1));
+		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testVolumeInt() {
-		assertThat(playerLogic.setVolume(-2), equalTo(-1));
-		verifyNoMoreInteractions(spotifyAPICalls);
-		reset(spotifyAPICalls);
-
-		assertThat(playerLogic.setVolume(101), equalTo(-1));
-		verifyNoMoreInteractions(spotifyAPICalls);
-		reset(spotifyAPICalls);
-
-		assertThat(playerLogic.setVolume(1), equalTo(1));
-		verify(spotifyAPICalls).setVolume(1);
-		verifyNoMoreInteractions(spotifyAPICalls);
-		reset(spotifyAPICalls);
+		assertThat(this.playerLogic.setVolume(1), equalTo(1));
+		verify(this.spotifyAPICalls).setVolume(1);
+		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 }

@@ -50,109 +50,109 @@ class SpotifyAPICallsTest {
 
 	@BeforeEach
 	public void init() {
-		spotifyAPICalls = new SpotifyAPICalls();
-		spotifyAPICalls = spy(spotifyAPICalls);
+		this.spotifyAPICalls = new SpotifyAPICalls();
+		this.spotifyAPICalls = spy(this.spotifyAPICalls);
 		try {
 			spotifyApi = new SpotifyApi.Builder().setAccessToken("s").setClientId("c").setClientSecret("s").setHost("j")
 					.setRedirectUri(new URI("s")).build();
 		} catch (URISyntaxException e1) {
 
 		}
-		doReturn(spotifyApi).when(spotifyAPICalls).getSpotifyApi();
-		spotifyAPICalls.setCurrentDevice("w");
+		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		this.spotifyAPICalls.setCurrentDevice("w");
 
 	}
 
 	@Test
 	public void testResume() {
-		doReturn(true).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.resume(), equalTo(false));
-		doReturn(false).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.resume(), equalTo(false));
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.resume(), equalTo(false));
+		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.resume(), equalTo(false));
 	}
 
 	@Test
 	public void testPause() {
-		doReturn(true).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.pause(), equalTo(false));
-		doReturn(false).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.pause(), equalTo(false));
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.pause(), equalTo(false));
+		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.pause(), equalTo(false));
 	}
 
 	@Test
 	public void testBack() {
-		doReturn(true).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.back(), equalTo(false));
-		doReturn(false).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.back(), equalTo(false));
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.back(), equalTo(false));
+		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.back(), equalTo(false));
 	}
 
 	@Test
 	public void testSkip() {
-		doReturn(true).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.skip(), equalTo(false));
-		doReturn(false).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.skip(), equalTo(false));
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.skip(), equalTo(false));
+		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.skip(), equalTo(false));
 	}
 
 	@Test
 	public void testplaySongFromUri() {
-		doReturn(true).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.playSongFromUri("a"), equalTo(false));
-		doReturn(false).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.playSongFromUri("b"), equalTo(false));
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.playSongFromUri("a"), equalTo(false));
+		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.playSongFromUri("b"), equalTo(false));
 	}
 
 	@Test
 	public void testplayListFromUri() {
-		doReturn(true).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.playListFromUri("c"), equalTo(false));
-		doReturn(false).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.playListFromUri("d"), equalTo(false));
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.playListFromUri("c"), equalTo(false));
+		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.playListFromUri("d"), equalTo(false));
 	}
 
 	@Test
 	public void testSetVolume() {
-		doReturn(true).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.setVolume(1), equalTo(false));
-		doReturn(false).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.setVolume(1), equalTo(false));
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.setVolume(1), equalTo(false));
+		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.setVolume(1), equalTo(false));
 	}
 
 	@Test
 	public void testGetCurrentSong() {
-		doReturn(true).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.getCurrentSong(), equalTo(null));
-		doReturn(false).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.getCurrentSong(), equalTo(null));
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.getCurrentSong(), equalTo(null));
+		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.getCurrentSong(), equalTo(null));
 	}
 
 	@Test
 	public void testSearch() {
-		doReturn(true).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.searchInSpotify("e", "track", 1), equalTo(null));
-		doReturn(false).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.searchInSpotify("g", "track", 1), equalTo(null));
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.searchInSpotify("e", "track", 1), equalTo(null));
+		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.searchInSpotify("g", "track", 1), equalTo(null));
 	}
 
 	@Test
 	public void testFeaturedPlaylists() {
-		doReturn(true).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.getFeaturedPlaylists(1), equalTo(null));
-		doReturn(false).when(spotifyAPICalls).checkPlayerState();
-		assertThat(spotifyAPICalls.getFeaturedPlaylists(1), equalTo(null));
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.getFeaturedPlaylists(1), equalTo(null));
+		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.getFeaturedPlaylists(1), equalTo(null));
 	}
 
 	@Test
 	public void testgetDevices() {
-		assertThat(spotifyAPICalls.getDevices(), equalTo(new Device[0]));
+		assertThat(this.spotifyAPICalls.getDevices(), equalTo(new Device[0]));
 	}
 
 	@Test
 	public void testCheckPlayerState() {
-		assertThat(spotifyAPICalls.checkPlayerState(), equalTo(false));
-		doReturn(null).when(spotifyAPICalls).getSpotifyApi();
-		assertThat(spotifyAPICalls.checkPlayerState(), equalTo(false));
+		assertThat(this.spotifyAPICalls.checkPlayerState(), equalTo(false));
+		doReturn(null).when(this.spotifyAPICalls).getSpotifyApi();
+		assertThat(this.spotifyAPICalls.checkPlayerState(), equalTo(false));
 	}
 
 }

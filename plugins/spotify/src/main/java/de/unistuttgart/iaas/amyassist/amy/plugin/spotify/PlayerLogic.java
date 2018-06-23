@@ -41,8 +41,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * This class have methods to control a spotify client from a user. For examlpe
- * play, pause playback or search for music tracks etc.
+ * This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music
+ * tracks etc.
  * 
  * @author Lars Buttgereit
  */
@@ -61,20 +61,23 @@ public class PlayerLogic {
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
 
-
+	/**
+	 * init all needed attributes
+	 */
 	@PostConstruct
 	public void init() {
-		logger = LoggerFactory.getLogger(PlayerLogic.class);
+		this.logger = LoggerFactory.getLogger(PlayerLogic.class);
 		this.spotifyAPICalls = new SpotifyAPICalls();
 		this.search = new Search(this.spotifyAPICalls);
 	}
 
 	/**
-	 * needed for the first init. need the clientID and the clientSecret form a
-	 * spotify devloper account
+	 * needed for the first init. need the clientID and the clientSecret form a spotify devloper account
 	 * 
 	 * @param clientID
+	 *            from spotify developer account
 	 * @param clientSecret
+	 *            spotify developer account
 	 * @return login link to a personal spotify account
 	 */
 	public URI firstTimeInit(String clientID, String clientSecret) {
@@ -100,33 +103,32 @@ public class PlayerLogic {
 	 */
 	public List<String> getDevices() {
 
-		deviceNames = new ArrayList<>();
-		deviceIDs = new ArrayList<>();
-		Device[] devices = spotifyAPICalls.getDevices();
+		this.deviceNames = new ArrayList<>();
+		this.deviceIDs = new ArrayList<>();
+		Device[] devices = this.spotifyAPICalls.getDevices();
 		if (devices != null) {
 			for (Device device : devices) {
-				deviceNames.add(device.getName());
-				deviceIDs.add(device.getId());
+				this.deviceNames.add(device.getName());
+				this.deviceIDs.add(device.getId());
 			}
 		}
-		return deviceNames;
+		return this.deviceNames;
 	}
 
 	/**
 	 * set the given device as acutal active device for playing music
 	 * 
 	 * @param deviceNumber
-	 *            index of the device array. Order is the same as in the output in
-	 *            getDevices
+	 *            index of the device array. Order is the same as in the output in getDevices
 	 * @return selected device
 	 */
 	public String setDevice(int deviceNumber) {
 		getDevices();
 		if (this.deviceIDs.size() > deviceNumber && this.deviceNames.size() > deviceNumber) {
-			spotifyAPICalls.setCurrentDevice(deviceIDs.get(deviceNumber));
-			return deviceNames.get(deviceNumber);
+			this.spotifyAPICalls.setCurrentDevice(this.deviceIDs.get(deviceNumber));
+			return this.deviceNames.get(deviceNumber);
 		}
-		logger.warn("No device with this number was found");
+		this.logger.warn("No device with this number was found");
 		return "No device found";
 	}
 
@@ -134,6 +136,7 @@ public class PlayerLogic {
 	 * this call the searchAnaything method in the Search class
 	 * 
 	 * @param searchText
+	 *            the text you want ot search
 	 * @param type
 	 *            artist, track, playlist, album
 	 * @param limit
@@ -146,30 +149,26 @@ public class PlayerLogic {
 	}
 
 	/**
-	 * generate one String out of the search result map or other maps with track,
-	 * album or playlist attributes. Useful for example for console or speech output
+	 * generate one String out of the search result map or other maps with track, album or playlist attributes. Useful
+	 * for example for console or speech output
 	 * 
 	 * @param input
-	 *            the map from a search or a map with attributes from track, album,
-	 *            playlist
+	 *            the map from a search or a map with attributes from track, album, playlist
 	 * @return a single String with useful information for the user
 	 */
 	public String convertSearchOutputToSingleString(Map<String, String> input) {
-		return stringGenerator.generateSearchOutputString(input);
+		return this.stringGenerator.generateSearchOutputString(input);
 	}
 
 	/**
-	 * generate one String out of the search result list. Useful for example for
-	 * console or speech output
+	 * generate one String out of the search result list. Useful for example for console or speech output
 	 * 
 	 * @param input
-	 *            the list from a search or a list with maps with attributes from
-	 *            track, album, playlist
-	 * @return a single String with useful information for the user from all
-	 *         elements from the list
+	 *            the list from a search or a list with maps with attributes from track, album, playlist
+	 * @return a single String with useful information for the user from all elements from the list
 	 */
 	public String convertSearchOutputToSingleString(List<Map<String, String>> input) {
-		return stringGenerator.generateSearchOutputString(input);
+		return this.stringGenerator.generateSearchOutputString(input);
 	}
 
 	/**
@@ -181,7 +180,7 @@ public class PlayerLogic {
 		List<Map<String, String>> playLists;
 		playLists = this.search.getFeaturedPlaylists();
 		if (!playLists.isEmpty() && 1 < playLists.size()
-				&& spotifyAPICalls.playListFromUri(playLists.get(1).get(SpotifyConstants.ITEM_URI))) {
+				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).get(SpotifyConstants.ITEM_URI))) {
 			return playLists.get(1);
 		}
 		this.logger.warn("no featured playlist found");
@@ -193,17 +192,17 @@ public class PlayerLogic {
 	 * 
 	 * @param songNumber
 	 *            number of the item form the search before
-	 * @return
+	 * @return a map with the song data
 	 */
 	public Map<String, String> play(int songNumber) {
 		if (this.actualSearchResult != null && songNumber < this.actualSearchResult.size()) {
 			if (this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_TYPE)
 					.equals(SpotifyConstants.TYPE_TRACK)) {
-				if (spotifyAPICalls
+				if (this.spotifyAPICalls
 						.playSongFromUri(this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_URI))) {
 					return this.actualSearchResult.get(songNumber);
 				}
-			} else if (spotifyAPICalls
+			} else if (this.spotifyAPICalls
 					.playListFromUri(this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_URI))) {
 				return this.actualSearchResult.get(songNumber);
 			}
@@ -214,41 +213,37 @@ public class PlayerLogic {
 	/**
 	 * resume the actual playback
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command
-	 *         failed
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean resume() {
-		return spotifyAPICalls.resume();
+		return this.spotifyAPICalls.resume();
 	}
 
 	/**
 	 * pause the actual playback
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command
-	 *         failed
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean pause() {
-		return spotifyAPICalls.pause();
+		return this.spotifyAPICalls.pause();
 	}
 
 	/**
 	 * goes one song forward in the playlist or album
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command
-	 *         failed
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean skip() {
-		return spotifyAPICalls.skip();
+		return this.spotifyAPICalls.skip();
 	}
 
 	/**
 	 * goes one song back in the playlist or album
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command
-	 *         failed
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean back() {
-		return spotifyAPICalls.back();
+		return this.spotifyAPICalls.back();
 	}
 
 	/**
@@ -257,12 +252,10 @@ public class PlayerLogic {
 	 * @return a hashMap with the keys name and artist
 	 */
 	public Map<String, String> getCurrentSong() {
-		CurrentlyPlayingContext currentlyPlayingContext = spotifyAPICalls.getCurrentSong();
+		CurrentlyPlayingContext currentlyPlayingContext = this.spotifyAPICalls.getCurrentSong();
 		if (currentlyPlayingContext != null) {
 			Track[] track = { currentlyPlayingContext.getItem() };
-			return search
-					.createTrackOutput(new Paging.Builder<Track>().setItems(track).build(), SpotifyConstants.TYPE_TRACK)
-					.get(0);
+			return this.search.createTrackOutput(new Paging.Builder<Track>().setItems(track).build()).get(0);
 		}
 		return new HashMap<>();
 
@@ -273,31 +266,26 @@ public class PlayerLogic {
 	 * 
 	 * @param volumeString
 	 *            allowed strings: mute, max, up, down
-	 * @return a int from 0-100. This represent the Volume in percent. if the volume
-	 *         is unknown the return value is -1
+	 * @return a int from 0-100. This represent the Volume in percent. if the volume is unknown the return value is -1
 	 */
 	public int setVolume(String volumeString) {
-		int volume = spotifyAPICalls.getVolume();
+		int volume = this.spotifyAPICalls.getVolume();
 		if (volume != -1) {
 			switch (volumeString) {
 			case "mute":
-				spotifyAPICalls.setVolume(VOLUME_MUTE_VALUE);
+				this.spotifyAPICalls.setVolume(VOLUME_MUTE_VALUE);
 				return VOLUME_MUTE_VALUE;
 			case "max":
-				spotifyAPICalls.setVolume(VOLUME_MAX_VALUE);
+				this.spotifyAPICalls.setVolume(VOLUME_MAX_VALUE);
 				return VOLUME_MAX_VALUE;
 			case "up":
-				if (volume + VOLUME_UPDOWN_VALUE <= VOLUME_MAX_VALUE) {
-					spotifyAPICalls.setVolume(volume + VOLUME_UPDOWN_VALUE);
-					return volume + VOLUME_UPDOWN_VALUE;
-				}
-				return -1;
+				volume = Math.min(VOLUME_MAX_VALUE, volume + VOLUME_UPDOWN_VALUE);
+				this.spotifyAPICalls.setVolume(volume);
+				return volume;
 			case "down":
-				if (volume - VOLUME_UPDOWN_VALUE >= VOLUME_MUTE_VALUE) {
-					spotifyAPICalls.setVolume(volume - VOLUME_UPDOWN_VALUE);
-					return volume - VOLUME_UPDOWN_VALUE;
-				}
-				return -1;
+				volume = Math.max(VOLUME_MUTE_VALUE, volume - VOLUME_UPDOWN_VALUE);
+				this.spotifyAPICalls.setVolume(volume);
+				return volume;
 			default:
 				this.logger.warn("Incorrect volume command");
 				return -1;
@@ -306,9 +294,16 @@ public class PlayerLogic {
 		return volume;
 	}
 
+	/**
+	 * set the volume direct with an integer
+	 * 
+	 * @param volume
+	 *            a interger between 0 and 100
+	 * @return the new volume. -1 the volume was not between 0 and 100
+	 */
 	public int setVolume(int volume) {
 		if (volume >= VOLUME_MUTE_VALUE && volume <= VOLUME_MAX_VALUE) {
-			spotifyAPICalls.setVolume(volume);
+			this.spotifyAPICalls.setVolume(volume);
 			return volume;
 		}
 		return -1;
