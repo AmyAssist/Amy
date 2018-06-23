@@ -53,12 +53,17 @@ import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrack
 import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
 import com.wrapper.spotify.requests.data.search.SearchItemRequest;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+
 /**
  * 
  * This class handle every call that goes to the spotify library
  * 
  * @author Lars Buttgereit
  */
+@Service(SpotifyAPICalls.class)
 public class SpotifyAPICalls {
 
 	/**
@@ -95,20 +100,19 @@ public class SpotifyAPICalls {
 	private static final String SPOTIFY_DEVICEID = "spotify_device_Id";
 	private static final int TOKEN_EXPIRE_TIME = 120;
 
-	private ConfigLoader configLoader = new ConfigLoader();
+	@Reference
+	private ConfigLoader configLoader;
 
 	private boolean firstTime = true;
 	private Logger logger;
 
 	private SpotifyApi spotifyApi = null;
 
-	/**
-	 * constructor to init the object
-	 */
-	public SpotifyAPICalls() {
-		init();
-	}
 
+	/**
+	 * init the api calls
+	 */
+	@PostConstruct
 	private final void init() {
 		this.logger = LoggerFactory.getLogger(SpotifyAPICalls.class);
 		if (this.configLoader.get(SPOTIFY_CLIENTID_KEY) != null

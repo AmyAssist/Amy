@@ -37,28 +37,25 @@ import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+
 /**
  * This class create search query to the spotify web api and parse the results in a String or in a Hashmap with
  * different attributes
  * 
  * @author Lars Buttgereit
  */
+@Service
 public class Search {
+	@Reference
 	private SpotifyAPICalls spotifyAPICalls;
 	/**
 	 * search limit for a few search queries
 	 */
 	public static final int SEARCH_LIMIT = 10;
 
-	/**
-	 * constructor to init search
-	 * 
-	 * @param spotifyAPICalls
-	 *            instance of SpotifyAPIClass to start a search query
-	 */
-	public Search(SpotifyAPICalls spotifyAPICalls) {
-		this.spotifyAPICalls = spotifyAPICalls;
-	}
+
 
 	/**
 	 * create a search query and output a list with search results

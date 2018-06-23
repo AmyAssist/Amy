@@ -39,18 +39,24 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
-@ExtendWith({ MockitoExtension.class, FrameworkExtention.class })
+@ExtendWith({ MockitoExtension.class, FrameworkExtension.class })
 class SpotifyAPICallsTest {
 
 	private SpotifyApi spotifyApi;
 
 	private SpotifyAPICalls spotifyAPICalls;
+	
+	@Reference
+	private TestFramework testFramework;
 
 	@BeforeEach
 	public void init() {
-		this.spotifyAPICalls = new SpotifyAPICalls();
+		this.testFramework.mockService(ConfigLoader.class);
+		this.spotifyAPICalls = testFramework.setServiceUnderTest(SpotifyAPICalls.class);
 		this.spotifyAPICalls = spy(this.spotifyAPICalls);
 		try {
 			spotifyApi = new SpotifyApi.Builder().setAccessToken("s").setClientId("c").setClientSecret("s").setHost("j")

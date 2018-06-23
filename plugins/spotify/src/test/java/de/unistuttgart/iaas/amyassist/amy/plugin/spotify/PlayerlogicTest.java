@@ -49,10 +49,10 @@ import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
-@ExtendWith({ MockitoExtension.class, FrameworkExtention.class })
+@ExtendWith({ MockitoExtension.class, FrameworkExtension.class })
 class PlayerLogicTest {
 
 	private PlayerLogic playerLogic;
@@ -69,27 +69,21 @@ class PlayerLogicTest {
 
 	@Mock
 	private Search search;
+	
+	
 
 	@BeforeEach
 	public void init() {
-		this.playerLogic = new PlayerLogic();
-		this.playerLogic.init();
-		Field apiCallField;
-		Field searchField;
+		
+		spotifyAPICalls = testFramework.mockService(SpotifyAPICalls.class);
+		search = testFramework.mockService(Search.class);
+		testFramework.mockService(StringGenerator.class);
+		playerLogic = testFramework.setServiceUnderTest(PlayerLogic.class);
 		initDevices();
 		initCurrentTrack();
 		initFeaturedPlaylist();
 		reset(spotifyAPICalls);
 
-		try {
-			apiCallField = PlayerLogic.class.getDeclaredField("spotifyAPICalls");
-			apiCallField.setAccessible(true);
-			apiCallField.set(this.playerLogic, this.spotifyAPICalls);
-			searchField = PlayerLogic.class.getDeclaredField("search");
-			searchField.setAccessible(true);
-			searchField.set(this.playerLogic, search);
-		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-		}
 	}
 
 	public void initDevices() {

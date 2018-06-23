@@ -26,12 +26,15 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 import java.util.List;
 import java.util.Map;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+
 /**
  * This class generate from the search result or other maps or lists with tracks, playlists or albums one output string
  * 
  * @author Lars Buttgereit
  *
  */
+@Service
 public class StringGenerator {
 
 	/**

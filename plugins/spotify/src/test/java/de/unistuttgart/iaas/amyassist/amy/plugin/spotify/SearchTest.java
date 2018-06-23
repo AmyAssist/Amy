@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
@@ -76,8 +75,10 @@ public class SearchTest {
 
 	@BeforeEach
 	public void init() {
+		this.spotifyAPICalls = this.testFramework.mockService(SpotifyAPICalls.class);
+		this.search = this.testFramework.setServiceUnderTest(Search.class);
 		createSearchResults();
-		search = new Search(spotifyAPICalls);	
+		
 		createFeaturedPlaylist();
 	}
 	
@@ -173,57 +174,57 @@ public class SearchTest {
 	public void testSearchHashMapTrack() {
 		List<Map<String, String>> result1 = this.search.createMap(tracks1, "track");
 		List<Map<String, String>> result2 = this.search.createMap(tracks2, "track");
-		assertEquals("Flames", result1.get(0).get(SpotifyConstants.ITEM_NAME));
-		assertEquals("David Guetta", result1.get(0).get(SpotifyConstants.ARTIST_NAME));
-		assertEquals("Say Something",  result1.get(1).get(SpotifyConstants.ITEM_NAME));
-		assertEquals("Justin Timberlake",  result1.get(1).get(SpotifyConstants.ARTIST_NAME));
-		assertEquals("123",  result1.get(0).get(SpotifyConstants.ITEM_URI));
-		assertEquals("abc",  result1.get(1).get(SpotifyConstants.ITEM_URI));
-		assertEquals("track",  result1.get(0).get(SpotifyConstants.ITEM_TYPE));
-		assertEquals("David Guetta, Hans Dieter",  result2.get(0).get(SpotifyConstants.ARTIST_NAME));
-		assertEquals("Justin Timberlake, Hans Dieter",  result2.get(1).get(SpotifyConstants.ARTIST_NAME));	
+		assertThat(result1.get(0).get(SpotifyConstants.ITEM_NAME) , equalTo("Flames"));
+		assertThat(result1.get(0).get(SpotifyConstants.ARTIST_NAME) , equalTo("David Guetta"));
+		assertThat(result1.get(1).get(SpotifyConstants.ITEM_NAME) , equalTo("Say Something"));
+		assertThat(result1.get(1).get(SpotifyConstants.ARTIST_NAME) , equalTo("Justin Timberlake"));
+		assertThat(result1.get(0).get(SpotifyConstants.ITEM_URI) , equalTo("123"));
+		assertThat(result1.get(1).get(SpotifyConstants.ITEM_URI) , equalTo("abc"));
+		assertThat(result1.get(0).get(SpotifyConstants.ITEM_TYPE) , equalTo("track"));
+		assertThat(result2.get(0).get(SpotifyConstants.ARTIST_NAME) , equalTo("David Guetta, Hans Dieter"));
+		assertThat(result2.get(1).get(SpotifyConstants.ARTIST_NAME) , equalTo("Justin Timberlake, Hans Dieter"));	
 	}
 	
 	@Test
 	public void testSearchHashMapPlaylist() {
 		List<Map<String, String>> result1 = this.search.createMap(playlists1, "playlist");
-		assertEquals("Flames", result1.get(0).get(SpotifyConstants.ITEM_NAME));
-		assertEquals("David Guetta", result1.get(0).get(SpotifyConstants.ARTIST_NAME));
-		assertEquals("Say Something",  result1.get(1).get(SpotifyConstants.ITEM_NAME));
-		assertEquals("Justin Timberlake",  result1.get(1).get(SpotifyConstants.ARTIST_NAME));
-		assertEquals("123",  result1.get(0).get(SpotifyConstants.ITEM_URI));
-		assertEquals("abc",  result1.get(1).get(SpotifyConstants.ITEM_URI));
-		assertEquals("playlist",  result1.get(0).get(SpotifyConstants.ITEM_TYPE));
+		assertThat(result1.get(0).get(SpotifyConstants.ITEM_NAME) , equalTo("Flames"));
+		assertThat(result1.get(0).get(SpotifyConstants.ARTIST_NAME) , equalTo("David Guetta"));
+		assertThat(result1.get(1).get(SpotifyConstants.ITEM_NAME) , equalTo("Say Something"));
+		assertThat(result1.get(1).get(SpotifyConstants.ARTIST_NAME) , equalTo("Justin Timberlake"));
+		assertThat(result1.get(0).get(SpotifyConstants.ITEM_URI) , equalTo("123"));
+		assertThat(result1.get(1).get(SpotifyConstants.ITEM_URI) , equalTo("abc"));
+		assertThat(result1.get(0).get(SpotifyConstants.ITEM_TYPE) , equalTo("playlist"));
 	}
 	
 	@Test
 	public void testSearchHashMapAlbum() {
 		List<Map<String, String>> result1 = this.search.createMap(albums1, "album");
 		List<Map<String, String>> result2 = this.search.createMap(albums2, "album");
-		assertEquals("Flames", result1.get(0).get(SpotifyConstants.ITEM_NAME));
-		assertEquals("David Guetta", result1.get(0).get(SpotifyConstants.ARTIST_NAME));
-		assertEquals("Say Something",  result1.get(1).get(SpotifyConstants.ITEM_NAME));
-		assertEquals("Justin Timberlake",  result1.get(1).get(SpotifyConstants.ARTIST_NAME));
-		assertEquals("123",  result1.get(0).get(SpotifyConstants.ITEM_URI));
-		assertEquals("abc",  result1.get(1).get(SpotifyConstants.ITEM_URI));
-		assertEquals("album",  result1.get(0).get(SpotifyConstants.ITEM_TYPE));
-		assertEquals("David Guetta, Hans Dieter",  result2.get(0).get(SpotifyConstants.ARTIST_NAME));
-		assertEquals("Justin Timberlake, Hans Dieter",  result2.get(1).get(SpotifyConstants.ARTIST_NAME));	
+		assertThat(result1.get(0).get(SpotifyConstants.ITEM_NAME) , equalTo("Flames"));
+		assertThat(result1.get(0).get(SpotifyConstants.ARTIST_NAME) , equalTo("David Guetta"));
+		assertThat(result1.get(1).get(SpotifyConstants.ITEM_NAME) , equalTo("Say Something"));
+		assertThat(result1.get(1).get(SpotifyConstants.ARTIST_NAME) , equalTo("Justin Timberlake"));
+		assertThat(result1.get(0).get(SpotifyConstants.ITEM_URI) , equalTo("123"));
+		assertThat(result1.get(1).get(SpotifyConstants.ITEM_URI) , equalTo("abc"));
+		assertThat(result1.get(0).get(SpotifyConstants.ITEM_TYPE) , equalTo("album"));
+		assertThat(result2.get(0).get(SpotifyConstants.ARTIST_NAME) , equalTo("David Guetta, Hans Dieter"));
+		assertThat(result2.get(1).get(SpotifyConstants.ARTIST_NAME) , equalTo("Justin Timberlake, Hans Dieter"));	
 	}
 	
 	@Test
 	public void testSearchHashMapArtist() {
 		List<Map<String, String>> result1 = this.search.createMap(artists1, "artist");
 		List<Map<String, String>> result2 = this.search.createMap(artists2, "artist");
-		assertEquals("David Guetta", result1.get(0).get(SpotifyConstants.ITEM_NAME));
-		assertEquals("Cro",  result1.get(1).get(SpotifyConstants.ITEM_NAME));
-		assertEquals("Pop", result1.get(0).get(SpotifyConstants.GENRE));
-		assertEquals("Rock", result1.get(1).get(SpotifyConstants.GENRE));
-		assertEquals("123",  result1.get(0).get(SpotifyConstants.ITEM_URI));
-		assertEquals("abc",  result1.get(1).get(SpotifyConstants.ITEM_URI));
-		assertEquals("artist",  result1.get(0).get(SpotifyConstants.ITEM_TYPE));
-		assertEquals("Pop, Rock", result2.get(0).get(SpotifyConstants.GENRE));
-		assertEquals("Rock, Electro", result2.get(1).get(SpotifyConstants.GENRE));
+		assertThat(result1.get(0).get(SpotifyConstants.ITEM_NAME) , equalTo("David Guetta"));
+		assertThat(result1.get(1).get(SpotifyConstants.ITEM_NAME) , equalTo("Cro"));
+		assertThat(result1.get(0).get(SpotifyConstants.GENRE) , equalTo("Pop"));
+		assertThat(result1.get(1).get(SpotifyConstants.GENRE) , equalTo("Rock"));
+		assertThat(result1.get(0).get(SpotifyConstants.ITEM_URI) , equalTo("123"));
+		assertThat(result1.get(1).get(SpotifyConstants.ITEM_URI) , equalTo("abc"));
+		assertThat(result1.get(0).get(SpotifyConstants.ITEM_TYPE) , equalTo("artist"));
+		assertThat(result2.get(0).get(SpotifyConstants.GENRE) , equalTo("Pop, Rock"));
+		assertThat(result2.get(1).get(SpotifyConstants.GENRE) , equalTo("Rock, Electro"));
 	}
 		@Test
 		public void testEmptyResult() {
@@ -249,13 +250,13 @@ public class SearchTest {
 		public void testFeaturedPlaylists() {
 			when(spotifyAPICalls.getFeaturedPlaylists(Search.SEARCH_LIMIT)).thenReturn(featuredPlaylists);
 			List<Map<String, String>> result = this.search.getFeaturedPlaylists();
-			assertEquals("Flames", result.get(0).get(SpotifyConstants.ITEM_NAME));
-			assertEquals("David Guetta", result.get(0).get(SpotifyConstants.ARTIST_NAME));
-			assertEquals("Say Something",  result.get(1).get(SpotifyConstants.ITEM_NAME));
-			assertEquals("Justin Timberlake",  result.get(1).get(SpotifyConstants.ARTIST_NAME));
-			assertEquals("123",  result.get(0).get(SpotifyConstants.ITEM_URI));
-			assertEquals("abc",  result.get(1).get(SpotifyConstants.ITEM_URI));
-			assertEquals("playlist",  result.get(0).get(SpotifyConstants.ITEM_TYPE));
+			assertThat(result.get(0).get(SpotifyConstants.ITEM_NAME) , equalTo("Flames"));
+			assertThat(result.get(0).get(SpotifyConstants.ARTIST_NAME) , equalTo("David Guetta"));
+			assertThat(result.get(1).get(SpotifyConstants.ITEM_NAME) , equalTo("Say Something"));
+			assertThat(result.get(1).get(SpotifyConstants.ARTIST_NAME) , equalTo("Justin Timberlake"));
+			assertThat(result.get(0).get(SpotifyConstants.ITEM_URI), equalTo("123"));
+			assertThat(result.get(1).get(SpotifyConstants.ITEM_URI) , equalTo("abc"));
+			assertThat(result.get(0).get(SpotifyConstants.ITEM_TYPE) , equalTo("playlist"));
 		}
 		
 		@Test

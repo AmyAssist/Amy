@@ -29,10 +29,15 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+
+@Service(ConfigLoader.class)
 public class ConfigLoader {
 
+	@Reference
 	private Logger logger;
 	private Properties p;
 	private static final String FILE_PATH = "apikeys/spotify_config.properties";
@@ -40,8 +45,8 @@ public class ConfigLoader {
 	/**
 	 * this class save a config file with different keys
 	 */
-	public ConfigLoader() {
-		this.logger = LoggerFactory.getLogger(ConfigLoader.class);
+	@PostConstruct
+	public void init() {
 		p = new Properties();
 
 	}

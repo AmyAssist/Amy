@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
@@ -38,6 +37,7 @@ import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Track;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
@@ -48,11 +48,16 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  */
 @Service(PlayerLogic.class)
 public class PlayerLogic {
+	@Reference
 	private SpotifyAPICalls spotifyAPICalls;
+	@Reference
 	private Search search;
-	private List<Map<String, String>> actualSearchResult = null;
-	private StringGenerator stringGenerator = new StringGenerator();
+	@Reference
+	private StringGenerator stringGenerator;
+	@Reference
 	private Logger logger;
+	
+	private List<Map<String, String>> actualSearchResult = null;
 
 	private ArrayList<String> deviceNames = new ArrayList<>();
 	private ArrayList<String> deviceIDs = new ArrayList<>();
@@ -61,15 +66,7 @@ public class PlayerLogic {
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
 
-	/**
-	 * init all needed attributes
-	 */
-	@PostConstruct
-	public void init() {
-		this.logger = LoggerFactory.getLogger(PlayerLogic.class);
-		this.spotifyAPICalls = new SpotifyAPICalls();
-		this.search = new Search(this.spotifyAPICalls);
-	}
+
 
 	/**
 	 * needed for the first init. need the clientID and the clientSecret form a spotify devloper account
