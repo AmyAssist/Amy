@@ -53,8 +53,8 @@ public class Util {
 	private static final Logger logger = LoggerFactory.getLogger(Util.class);
 
 	/**
-	 * Checks if the given class can be used as a Service. There for it must be
-	 * a not abstract class with a default constructor.
+	 * Checks if the given class can be used as a Service. There for it must be a not abstract class with a default
+	 * constructor.
 	 * 
 	 * @param cls
 	 * @return
@@ -90,15 +90,16 @@ public class Util {
 	}
 
 	/**
-	 * Call the Methods annotated with {@link PostConstruct} on the given
-	 * instance
+	 * Call the Methods annotated with {@link PostConstruct} on the given instance
 	 * 
 	 * @param instance
 	 */
 	public static void postConstruct(@Nonnull Object instance) {
-		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(instance.getClass(), PostConstruct.class);
+		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(instance.getClass(), PostConstruct.class,
+				true, true);
 		for (Method m : methodsWithAnnotation) {
 			try {
+				m.setAccessible(true);
 				m.invoke(instance);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				logger.error("tryed to invoke method {} but got an error", m, e);
@@ -107,8 +108,7 @@ public class Util {
 	}
 
 	/**
-	 * Inject object into field of instance. Checks if the type of object can be
-	 * injected into the field.
+	 * Inject object into field of instance. Checks if the type of object can be injected into the field.
 	 * 
 	 * @param instance
 	 *            the instance to be modified

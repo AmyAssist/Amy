@@ -34,7 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceNotFoundException;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 
@@ -124,11 +126,16 @@ public class TestFramework {
 	 * @return the ServiceUnderTest
 	 */
 	public <T> T setServiceUnderTest(Class<T> serviceClass) {
-		if (serviceClass.isAnnotationPresent(Service.class)) {
+		if (Util.classCheck(serviceClass) && serviceClass.isAnnotationPresent(Service.class)) {
 			this.dependencyInjection.register(serviceClass);
-			return this.dependencyInjection.createAndInitialize(serviceClass);
+			try {
+				return this.dependencyInjection.createAndInitialize(serviceClass);
+			} catch (ServiceNotFoundException e) {
+				throw new IllegalStateException("The dependencies of " + serviceClass.getName()
+						+ " must be mocked with mockService before calling this method!", e);
+			}
 		}
-		throw new IllegalArgumentException();
+		throw new IllegalArgumentException("Sevices must have a @Service annotation");
 	}
 
 	/**
