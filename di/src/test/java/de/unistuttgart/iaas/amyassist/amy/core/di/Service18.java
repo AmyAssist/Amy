@@ -21,46 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.configuration;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.io.FileReader;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Properties;
-
-import org.slf4j.Logger;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Loads config files from config directoy
+ * Test Service for DI
  * 
  * @author Leon Kiefer
  */
-
 @Service
-public class ConfigurationLoader {
+public class Service18 {
+	public boolean setup = false;
 
-	@Reference
-	private Logger logger;
-
-	private static final String CONFIG_DIR = "apikeys";
-
-	/**
-	 * 
-	 * @param configurationName
-	 *            the name of the config file, without the .properties
-	 * @return the loaded Properties
-	 */
-	public Properties load(String configurationName) {
-		Properties properties = new Properties();
-		try (Reader reader = new FileReader(CONFIG_DIR + "/" + configurationName + ".properties")) {
-			properties.load(reader);
-		} catch (IOException e) {
-			this.logger.error("Error loading config file", e);
-		}
-		return properties;
+	@PostConstruct
+	private void setup() {
+		this.setup = true;
 	}
 }

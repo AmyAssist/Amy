@@ -31,8 +31,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 
-import javax.ws.rs.Path;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,11 +39,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
@@ -72,7 +69,7 @@ public class Core implements SpeechInputHandler {
 	private List<Thread> threads;
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 	private DependencyInjection di = new DependencyInjection();
-	private PluginLoader pluginLoader = new PluginLoader();
+
 	private Server server;
 	private SpeechCommandHandler speechCommandHandler;
 	private IStorage storage = new Storage("", new GlobalStorage());
@@ -127,7 +124,10 @@ public class Core implements SpeechInputHandler {
 		sr.setSpeechInputHandler(this);
 		this.threads.add(new Thread(sr));
 
-		this.loadPlugins();
+		PluginManager pluginManager = this.di.getService(PluginManager.class);
+		pluginManager.loadPlugins();
+		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
+		this.speechCommandHandler.completeSetup();
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class Core implements SpeechInputHandler {
 	 */
 	private void registerAllCoreServices() {
 		this.di.addExternalService(IStorage.class, this.storage);
-		this.di.addExternalService(PluginLoader.class, this.pluginLoader);
+		this.di.addExternalService(DependencyInjection.class, this.di);
 		this.di.addExternalService(Core.class, this);
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
 
@@ -147,78 +147,8 @@ public class Core implements SpeechInputHandler {
 		this.di.register(Console.class);
 		this.di.register(SpeechCommandHandler.class);
 		this.di.register(ConfigurationLoader.class);
-	}
-
-	/**
-	 * load the plugins
-	 */
-	private void loadPlugins() {
-		this.logger.debug("projectDir: {}", projectDir);
-
-		if (!projectDir.exists()) {
-			this.logger.error("Project directory does not exist.");
-			return;
-		}
-
-		File pluginDir = new File(projectDir, "plugins");
-
-		if (!pluginDir.exists()) {
-			this.logger
-					.error("Plugin directory does not exist. Is the project path correct for your working directory?");
-			return;
-		}
-
-		ArrayList<File> plugins = new ArrayList<>();
-		plugins.add(new File(pluginDir, "alarmclock"));
-		plugins.add(new File(pluginDir, "example"));
-		plugins.add(new File(pluginDir, "spotify"));
-		plugins.add(new File(pluginDir, "systemtime"));
-		plugins.add(new File(pluginDir, "weather"));
-
-		for (File p : plugins) {
-			if (!p.exists()) {
-				this.logger.warn("The plugin {} does not exist in the plugin directory.", p.getName());
-				continue;
-			}
-			File target = new File(p, "target");
-			if (!target.exists()) {
-				this.logger.warn("Plugin {} has no target directory. Did you run mvn install?", p.getName());
-				continue;
-			}
-
-			for (File child : target.listFiles()) {
-				if (child.getName().endsWith("with-dependencies.jar")) {
-					this.pluginLoader.loadPlugin(child.toURI());
-					break;
-				}
-			}
-		}
-
-		for (IPlugin p : this.pluginLoader.getPlugins()) {
-			this.processPlugin(p);
-		}
-
-		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(this.pluginLoader.getPlugins()));
-		this.speechCommandHandler.completeSetup();
-	}
-
-	/**
-	 * Process the plugin components and register them at the right Services
-	 *
-	 * @param plugin
-	 */
-	private void processPlugin(IPlugin plugin) {
-		for (Class<?> cls : plugin.getClasses()) {
-			if (cls.isAnnotationPresent(SpeechCommand.class)) {
-				this.speechCommandHandler.registerSpeechCommand(cls);
-			}
-			if (cls.isAnnotationPresent(Service.class)) {
-				this.di.register(cls);
-			}
-			if (cls.isAnnotationPresent(Path.class)) {
-				this.server.register(cls);
-			}
-		}
+		this.di.register(PluginLoader.class);
+		this.di.register(PluginManager.class);
 	}
 
 	/**
