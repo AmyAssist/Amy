@@ -31,7 +31,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,16 +72,15 @@ class PlayerLogicTest {
 	
 
 	@BeforeEach
-	public void init() {
-		
-		spotifyAPICalls = testFramework.mockService(SpotifyAPICalls.class);
-		search = testFramework.mockService(Search.class);
-		testFramework.mockService(StringGenerator.class);
-		playerLogic = testFramework.setServiceUnderTest(PlayerLogic.class);
+	public void init() {	
+		this.spotifyAPICalls = this.testFramework.mockService(SpotifyAPICalls.class);
+		this.search = this.testFramework.mockService(Search.class);
+		this.testFramework.mockService(StringGenerator.class);
+		this.playerLogic = this.testFramework.setServiceUnderTest(PlayerLogic.class);
 		initDevices();
 		initCurrentTrack();
 		initFeaturedPlaylist();
-		reset(spotifyAPICalls);
+		reset(this.spotifyAPICalls);
 
 	}
 

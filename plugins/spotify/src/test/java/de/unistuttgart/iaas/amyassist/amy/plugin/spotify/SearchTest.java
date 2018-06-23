@@ -71,7 +71,7 @@ public class SearchTest {
 	private Search search;
 
 	@Mock
-	SpotifyAPICalls spotifyAPICalls;
+	private SpotifyAPICalls spotifyAPICalls;
 
 	@BeforeEach
 	public void init() {

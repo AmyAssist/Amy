@@ -59,7 +59,7 @@ public class SpotifySpeech {
 			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i).concat("\n"));
 		}
 		if (output.equals("")) {
-			return "no deivce found";
+			return "no device found";
 		}
 		return output;
 	}
