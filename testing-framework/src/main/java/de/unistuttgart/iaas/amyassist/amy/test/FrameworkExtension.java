@@ -35,7 +35,7 @@ import uk.org.lidalia.slf4jtest.TestLoggerFactory;
  * 
  * @author Leon Kiefer
  */
-public class FrameworkExtention
+public class FrameworkExtension
 		implements TestInstancePostProcessor, BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
 	private TestFramework testFramework;

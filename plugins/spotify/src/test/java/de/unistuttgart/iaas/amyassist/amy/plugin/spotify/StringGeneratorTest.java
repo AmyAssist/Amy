@@ -35,9 +35,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 
-@ExtendWith({ MockitoExtension.class, FrameworkExtention.class })
+@ExtendWith({ MockitoExtension.class, FrameworkExtension.class })
 public class StringGeneratorTest {
 	StringGenerator stringGenerator;
 	HashMap<String, String> trackMap1 = new HashMap<>();
