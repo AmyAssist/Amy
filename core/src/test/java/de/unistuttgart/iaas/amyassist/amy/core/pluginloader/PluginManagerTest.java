@@ -39,7 +39,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -47,7 +47,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Leon Kiefer
  */
-@ExtendWith(FrameworkExtention.class)
+@ExtendWith(FrameworkExtension.class)
 class PluginManagerTest {
 	@Reference
 	private TestFramework testFramework;

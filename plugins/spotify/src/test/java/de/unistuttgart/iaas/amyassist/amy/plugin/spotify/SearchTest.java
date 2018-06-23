@@ -48,7 +48,7 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.User;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -56,7 +56,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Lars Buttgereit
  */
-@ExtendWith({ MockitoExtension.class, FrameworkExtention.class })
+@ExtendWith({ MockitoExtension.class, FrameworkExtension.class })
 public class SearchTest {
 	@Reference
 	private TestFramework testFramework;

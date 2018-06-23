@@ -37,7 +37,7 @@ import org.mockito.Mockito;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -45,7 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Patrick Singer
  */
-@ExtendWith(FrameworkExtention.class)
+@ExtendWith(FrameworkExtension.class)
 public class AlarmClockTest {
 	@Reference
 	private TestFramework framework;
