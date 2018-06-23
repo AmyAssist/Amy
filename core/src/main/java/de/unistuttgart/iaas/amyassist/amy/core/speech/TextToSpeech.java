@@ -89,7 +89,7 @@ public class TextToSpeech {
 	 *            String that shall be said
 	 */
 	private void speak(LineListener listener, String s) {
-		this.logger.info("saying: {}", s);
+		log(s);
 		stopOutput();
 		try {
 			this.audio = this.mary.generateAudio(s);
@@ -115,6 +115,14 @@ public class TextToSpeech {
 	 */
 	public void say(LineListener listener, String s) {
 		speak(listener, preProcessing(s));
+	}
+	
+	/**
+	 * Logs the Output String
+	 * @param s String to Log
+	 */
+	public void log(String s) {
+		this.logger.info("saying: {}", s);
 	}
 
 	// -----------------------------------------------------------------------------------------------

@@ -32,6 +32,9 @@ import javax.sound.sampled.LineListener;
 
 import org.junit.jupiter.api.Test;
 
+import uk.org.lidalia.slf4jtest.TestLogger;
+import uk.org.lidalia.slf4jtest.TestLoggerFactory;
+
 /**
  * Test Class for the Text To Speech Output class
  * 
@@ -64,8 +67,12 @@ class TextToSpeechTest {
 	@Test
 	void test() {
 		this.tts = TextToSpeech.getTTS();
+//		TestLogger logger = TestLoggerFactory.getTestLogger(TextToSpeech.class);
 		assertThat(this.tts == null, equalTo(false));
+		this.tts.log("hello");
+//		assertThat(logger.getLoggingEvents(), contains(info("hello")));
 		// this.tts.say(this.listener, "hello");
+//		assertThat(logger.getLoggingEvents(), contains(info("hello")));
 	}
 
 	@SuppressWarnings("boxing")

@@ -45,6 +45,8 @@ public class AudioUserInteraction implements SpeechIO {
 
 	private final Logger logger = LoggerFactory.getLogger(AudioUserInteraction.class);
 
+	private boolean voiceOutput = true;
+
 	private boolean recognitionThreadRunning = false;
 
 	private Thread currentRecognizer;
@@ -70,23 +72,24 @@ public class AudioUserInteraction implements SpeechIO {
 	@Override
 	public void run() {
 		createNewAudioInputStream();
-		if(this.inputHandler == null) {
+		if (this.inputHandler == null) {
 			this.logger.error("Not enough Data to start the Recognition - InputHandler not Set");
-		}else {
-			this.mainRecognizer = new MainSpeechRecognizer(this, this.mainGrammar, this.inputHandler, this.ais);
+		} else {
+			this.mainRecognizer = new MainSpeechRecognizer(this, this.mainGrammar, this.inputHandler, this.ais,
+					this.voiceOutput);
 			if (this.switchableGrammars != null && !this.switchableGrammars.isEmpty()) {
 				for (Grammar grammar : this.switchableGrammars) {
 					if (!this.recognizerList.containsKey(grammar.getName())) {
-						this.recognizerList.put(grammar.getName(),
-								new AdditionalSpeechRecognizer(this, grammar, this.inputHandler, this.ais));
+						this.recognizerList.put(grammar.getName(), new AdditionalSpeechRecognizer(this, grammar,
+								this.inputHandler, this.ais, this.voiceOutput));
 					}
 				}
 			}
 			this.currentRecognizer = new Thread(this.mainRecognizer);
 			this.recognitionThreadRunning = true;
-			this.currentRecognizer.start();	
+			this.currentRecognizer.start();
 		}
-		
+
 	}
 
 	/**
@@ -140,7 +143,7 @@ public class AudioUserInteraction implements SpeechIO {
 	public void setAudioInputStream(AudioInputStream ais) {
 		this.ais = ais;
 	}
-	
+
 	/**
 	 * Set's {@link #recognitionThreadRunning recognitionThreadRunning}
 	 * 
@@ -151,34 +154,17 @@ public class AudioUserInteraction implements SpeechIO {
 		this.recognitionThreadRunning = recognitionThreadRunning;
 	}
 
+	/**
+	 * method to enable or disable the actual Voice TTS Output
+	 * 
+	 * @param isOutput
+	 *            true if voice Output true, default true
+	 */
+	public void setVoiceOutput(boolean isOutput) {
+		this.voiceOutput = isOutput;
+	}
+
 	// ===============================================================================================
-
-	/**
-	 * Get's {@link Constants#WAKEUP}
-	 * 
-	 * @return WAKEUP
-	 */
-	public String getWAKEUP() {
-		return Constants.WAKEUP;
-	}
-
-	/**
-	 * Get's {@link Constants#GOSLEEP}
-	 * 
-	 * @return GOSLEEP
-	 */
-	public String getGOSLEEP() {
-		return Constants.GOSLEEP;
-	}
-
-	/**
-	 * Get's {@link Constants#SHUTDOWN}
-	 * 
-	 * @return SHUTDOWN
-	 */
-	public String getSHUTDOWN() {
-		return Constants.SHUTDOWN;
-	}
 
 	/**
 	 * Get's {@link #recognitionThreadRunning recognitionThreadRunning}

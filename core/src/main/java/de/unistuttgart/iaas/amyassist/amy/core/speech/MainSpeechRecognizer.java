@@ -45,10 +45,12 @@ public class MainSpeechRecognizer extends SpeechRecognizer {
 	 *            Handler which will handle the input
 	 * @param ais
 	 *            set custom AudioInputStream.
+	 * @param voiceOutput
+	 *            true if the TTS shall voice the Answer
 	 */
 	public MainSpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler,
-			AudioInputStream ais) {
-		super(audioUI, grammar, inputHandler, ais);
+			AudioInputStream ais, boolean voiceOutput) {
+		super(audioUI, grammar, inputHandler, ais, voiceOutput);
 	}
 
 	/**
@@ -56,16 +58,16 @@ public class MainSpeechRecognizer extends SpeechRecognizer {
 	 */
 	@Override
 	protected void predefinedInputHandling() {
-		if (this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
+		if (this.speechRecognitionResult.equals(Constants.SHUTDOWN)) {
 			this.tts.stopOutput();
-		} else if (this.speechRecognitionResult.equals(this.audioUI.getWAKEUP())) {
+		} else if (this.speechRecognitionResult.equals(Constants.WAKEUP)) {
 			this.listening = true;
 			say("waking up");
-		} else if (this.speechRecognitionResult.startsWith(this.audioUI.getWAKEUP() + " ")) {
+		} else if (this.speechRecognitionResult.startsWith(Constants.WAKEUP + " ")) {
 			this.listening = true;
-			this.makeDecision(this.speechRecognitionResult.replaceFirst(this.audioUI.getWAKEUP() + " ", ""));
+			this.makeDecision(this.speechRecognitionResult.replaceFirst(Constants.WAKEUP + " ", ""));
 		} else if (this.listening) {
-			if (this.speechRecognitionResult.equals(this.audioUI.getGOSLEEP())) {
+			if (this.speechRecognitionResult.equals(Constants.GOSLEEP)) {
 				this.listening = false;
 				say("now sleeping");
 			} else {

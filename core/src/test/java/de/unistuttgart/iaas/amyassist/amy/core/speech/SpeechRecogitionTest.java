@@ -27,44 +27,54 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * TODO: Description
+ * Test Class for the SpeechRecognition System
  * 
- * @author
+ * @author Kai Menzel
  */
 class SpeechRecogitionTest {
+	private String folder = "src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/speech";
+
+	private String grammarDir = "grammars";
+	private String mainGram = "mainGrammar";
+	private String addGram = "addGrammar";
 	
-	AudioUserInteraction aui;
-	Grammar mainGrammar;
-	Grammar addGrammar;
-	List<Grammar> switchGrammar;
-	SpeechInputHandler handler;
+	private String streamDir = "streams";
+	private String mainStream = "mainStream.wav";
+	
+	private AudioUserInteraction aui;
+	private Grammar mainGrammar;
+	private Grammar addGrammar;
+	private List<Grammar> switchGrammar;
+	private testInputHandler handler;
 	
 	@BeforeEach
 	void setUp() {
 		this.aui = new AudioUserInteraction();
-		this.mainGrammar = new Grammar("mainGrammar", new File("resources/mainGrammar"));
-		this.addGrammar = new Grammar("addGrammar", new File("resources/addGrammar"));
+		this.aui.setVoiceOutput(false);
+		this.mainGrammar = new Grammar(this.mainGram, new File(new File(this.folder, this.grammarDir), this.mainGram + ".gram"));
+		this.addGrammar = new Grammar(this.addGram, new File(new File(this.folder, this.grammarDir), this.addGram + ".gram"));
 		this.handler = new testInputHandler();
 		this.switchGrammar = new ArrayList<>();
+		this.mainGrammar.putChangeGrammar(this.addGram, this.addGrammar);
+		this.switchGrammar.add(this.addGrammar);
 	}
 	
 	@SuppressWarnings("boxing")
 	@Test
-	void testGetterSetter() {
-		assertThat(this.aui.getWAKEUP(), equalTo(Constants.WAKEUP));
-		assertThat(this.aui.getGOSLEEP(), equalTo(Constants.GOSLEEP));
-		assertThat(this.aui.getSHUTDOWN(), equalTo(Constants.SHUTDOWN));
-		
+	void testGetterSetter() {		
 		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(false));
 		assertThat(this.aui.getCurrentRecognizer(), equalTo(null));
 		assertThat(this.aui.getMainGrammar(), equalTo(null));
@@ -72,8 +82,6 @@ class SpeechRecogitionTest {
 		
 		this.aui.setSpeechInputHandler(this.handler);
 		this.aui.setAudioInputStream(null);
-		
-		this.switchGrammar.add(this.addGrammar);
 		
 		this.aui.setRecognitionThreadRunning(true);
 		this.aui.setGrammars(this.mainGrammar, null);
@@ -91,14 +99,33 @@ class SpeechRecogitionTest {
 
 	@Test
 	void overallTest() {
+		this.aui.setSpeechInputHandler(this.handler);
+		this.aui.setGrammars(this.mainGrammar, this.switchGrammar);
 		
+		this.handler.addCommand("hello world");
+		this.handler.addCommand("hello world is dead");
+		this.handler.addCommand("hello world");
 		
-		
+		try {
+			AudioInputStream ais = AudioSystem.getAudioInputStream(new File(new File(this.folder, this.streamDir), this.mainStream));
+			this.aui.setAudioInputStream(ais);
+//			(new Thread(this.aui)).start();
+		} catch (UnsupportedAudioFileException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	void check() {
+//		ArrayList<String> stringList = this.handler.getCommand();
+//		assertThat(stringList.get(0), equalTo("hello world"));
 	}
 	
 	private class testInputHandler implements SpeechInputHandler{
 
-		private String command = null;
+		private ArrayList<String> command = new ArrayList<>();
+		private int i = 0;
 		
 		/**
 		 * 
@@ -106,29 +133,22 @@ class SpeechRecogitionTest {
 		public testInputHandler() {
 			// TODO Auto-generated constructor stub
 		}
-		
+
 		/**
 		 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler#handle(java.lang.String)
 		 */
 		@Override
 		public Future<String> handle(String speechInput) {
-			// TODO Auto-generated method stub
-			setCommand(speechInput);
+			assertThat(speechInput, equalTo(this.command.get(this.i++)));
 			return null;
 		}
+		
 		/**
-		 * Get's {@link #command command}
-		 * @return  command
+		 * add a String for the Return assert Check
+		 * @param s String to check
 		 */
-		public String getCommand() {
-			return this.command;
-		}
-		/**
-		 * Set's {@link #command command}
-		 * @param command  command
-		 */
-		public void setCommand(String command) {
-			this.command = command;
+		public void addCommand(String s) {
+			this.command.add(s);
 		}
 		
 	}

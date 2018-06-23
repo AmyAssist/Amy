@@ -63,6 +63,9 @@ public abstract class SpeechRecognizer implements Runnable {
 
 	// True if there is Sound Output right now
 	private boolean soundPlaying = false;
+	
+	// Check if Answer shall be voiced throgh tts
+	private boolean voiceOutput;
 
 	// Handler who use the translated String for commanding the System
 	private SpeechInputHandler inputHandler;
@@ -116,13 +119,15 @@ public abstract class SpeechRecognizer implements Runnable {
 	 *            Handler which will handle the input
 	 * @param ais
 	 *            set custom AudioInputStream.
+	 * @param voiceOutput true if the TTS shall voice the Answer
 	 */
 	public SpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler,
-			AudioInputStream ais) {
+			AudioInputStream ais, boolean voiceOutput) {
 		this.audioUI = audioUI;
 		this.grammar = grammar;
 		this.inputHandler = inputHandler;
 		this.ais = ais;
+		this.voiceOutput = voiceOutput;
 
 		this.tts = TextToSpeech.getTTS();
 
@@ -164,7 +169,7 @@ public abstract class SpeechRecognizer implements Runnable {
 				if (!this.soundPlaying) {
 					predefinedInputHandling();
 				} else {
-					if (this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
+					if (this.speechRecognitionResult.equals(Constants.SHUTDOWN)) {
 						this.tts.stopOutput();
 					}
 				}
@@ -265,8 +270,12 @@ public abstract class SpeechRecognizer implements Runnable {
 	 *            String that shall be said
 	 */
 	protected void say(String s) {
-		this.soundPlaying = true;
-		this.tts.say(this.listener, s);
+		if(this.voiceOutput){
+			this.soundPlaying = true;
+			this.tts.say(this.listener, s);
+		}else {
+			this.tts.log(s);
+		}
 	}
 
 	// -----------------------------------------------------------------------------------------------
@@ -303,7 +312,11 @@ public abstract class SpeechRecognizer implements Runnable {
 		configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
 		configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
 		configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
-		if (this.grammar.getFile().toString().endsWith(".gram")) {
+		if(this.grammar.getFile() == null) {
+			configuration.setUseGrammar(false);
+		} else if(!this.grammar.getFile().toString().endsWith(".gram")) {
+			configuration.setUseGrammar(false);
+		}else {
 			try {
 				configuration.setGrammarPath(this.grammar.getFile().getParentFile().toURI().toURL().toString());
 			} catch (MalformedURLException e) {
@@ -311,10 +324,7 @@ public abstract class SpeechRecognizer implements Runnable {
 			}
 			configuration.setGrammarName(this.grammar.getFile().getName().replace(".gram", ""));
 			configuration.setUseGrammar(true);
-		} else {
-			configuration.setUseGrammar(false);
 		}
-
 		return configuration;
 	}
 

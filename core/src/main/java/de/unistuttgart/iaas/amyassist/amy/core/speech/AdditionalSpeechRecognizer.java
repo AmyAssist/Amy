@@ -45,10 +45,12 @@ public class AdditionalSpeechRecognizer extends SpeechRecognizer {
 	 *            Handler which will handle the input
 	 * @param ais
 	 *            set custom AudioInputStream.
+	 * @param voiceOutput
+	 *            true if the TTS shall voice the Answer
 	 */
 	public AdditionalSpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler,
-			AudioInputStream ais) {
-		super(audioUI, grammar, inputHandler, ais);
+			AudioInputStream ais, boolean voiceOutput) {
+		super(audioUI, grammar, inputHandler, ais, voiceOutput);
 	}
 
 	/**
@@ -56,9 +58,9 @@ public class AdditionalSpeechRecognizer extends SpeechRecognizer {
 	 */
 	@Override
 	protected void predefinedInputHandling() {
-		if (this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
+		if (this.speechRecognitionResult.equals(Constants.SHUTDOWN)) {
 			this.tts.stopOutput();
-		} else if (this.speechRecognitionResult.equals(this.audioUI.getGOSLEEP())) {
+		} else if (this.speechRecognitionResult.equals(Constants.GOSLEEP)) {
 			say("now sleeping");
 			this.stop(this.audioUI.mainGrammar);
 		} else {
