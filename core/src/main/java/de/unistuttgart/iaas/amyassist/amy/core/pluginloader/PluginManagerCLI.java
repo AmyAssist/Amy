@@ -21,35 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import java.util.logging.LogManager;
-
-import org.slf4j.bridge.SLF4JBridgeHandler;
+import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.Configuration;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * The main entry point of the application
- *
- * @author Tim Neumann, Leon Kiefer
+ * Command Line Interface for the PluginManager
+ * 
+ * @author Leon Kiefer
  */
-public class Main {
+public class PluginManagerCLI {
+	@Reference
+	private Configuration configuration;
 
-	static {
-		LogManager.getLogManager().reset();
-		SLF4JBridgeHandler.install();
-		// workaround for
-		// https://github.com/cmusphinx/sphinx4/blob/master/sphinx4-core/src/main/java/edu/cmu/sphinx/util/props/ConfigurationManagerUtils.java#L138
-		System.setProperty("java.util.logging.config.file", "");
+	@Command(name = "plugin:list", description = "a list of all installed plugins",
+			header = "Currently installed plugins are:")
+	public String plugins() {
+		return String.join("\n", this.configuration.getInstalledPlugins());
 	}
 
-	/**
-	 * The main entry point of the program
-	 *
-	 * @param args
-	 *            The command line arguments. Will be passed to the core.
-	 */
-	public static void main(String[] args) {
-		Core core = new Core();
-		core.start(args);
+	@Command(name = "plugin:version", description = "get the version of an installed plugin")
+	public String pluginVersion(String pluginName) {
+		return this.configuration.getPluginVersion(pluginName);
 	}
 }
