@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 import java.util.List;
+import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -53,10 +54,10 @@ public class SpotifySpeech {
 	 */
 	@Grammar("get devices")
 	public String getDevices(String... params) {
-		List<String> devices = this.playerLogic.getDevices();
+		List<Map<String, String>> devices = this.playerLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
-			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i).concat("\n"));
+			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i).get(SpotifyConstants.DEVICE_NAME).concat("\n"));
 		}
 		if (output.equals("")) {
 			return "no device found";

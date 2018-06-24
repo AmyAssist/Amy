@@ -55,17 +55,12 @@ public class PlayerLogic {
 	private StringGenerator stringGenerator;
 	@Reference
 	private Logger logger;
-	
-	private List<Map<String, String>> actualSearchResult = null;
 
-	private ArrayList<String> deviceNames = new ArrayList<>();
-	private ArrayList<String> deviceIDs = new ArrayList<>();
+	private List<Map<String, String>> actualSearchResult = null;
 
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
-
-
 
 	/**
 	 * needed for the first init. need the clientID and the clientSecret form a spotify devloper account
@@ -95,19 +90,22 @@ public class PlayerLogic {
 	/**
 	 * get all devices that logged in at the moment
 	 * 
-	 * @return empty ArrayList if no device available else the name of the devices
+	 * @return empty ArrayList if no device available else Maps with the name, id and type of the device
 	 */
-	public List<String> getDevices() {
-		this.deviceNames = new ArrayList<>();
-		this.deviceIDs = new ArrayList<>();
+	public List<Map<String, String>> getDevices() {
+		List<Map<String, String>> devicesList = new ArrayList<>();
 		Device[] devices = this.spotifyAPICalls.getDevices();
 		if (devices != null) {
-			for (Device device : devices) {
-				this.deviceNames.add(device.getName());
-				this.deviceIDs.add(device.getId());
+			Map<String, String> entry;
+			for (int i = 0; i < devices.length; i++) {
+				entry = new HashMap<>();
+				entry.put(SpotifyConstants.DEVICE_NAME, devices[i].getName());
+				entry.put(SpotifyConstants.DEVICE_ID, devices[i].getId());
+				entry.put(SpotifyConstants.DEVICE_TYPE, devices[i].getType());
+				devicesList.add(entry);
 			}
 		}
-		return this.deviceNames;
+		return devicesList;
 	}
 
 	/**
@@ -118,10 +116,10 @@ public class PlayerLogic {
 	 * @return selected device
 	 */
 	public String setDevice(int deviceNumber) {
-		getDevices();
-		if (this.deviceIDs.size() > deviceNumber && this.deviceNames.size() > deviceNumber) {
-			this.spotifyAPICalls.setCurrentDevice(this.deviceIDs.get(deviceNumber));
-			return this.deviceNames.get(deviceNumber);
+		List<Map<String, String>> devices = getDevices();
+		if (devices.size() > deviceNumber) {
+			this.spotifyAPICalls.setCurrentDevice(devices.get(deviceNumber).get(SpotifyConstants.DEVICE_ID));
+			return devices.get(deviceNumber).get(SpotifyConstants.DEVICE_NAME);
 		}
 		this.logger.warn("No device with this number was found");
 		return "No device found";

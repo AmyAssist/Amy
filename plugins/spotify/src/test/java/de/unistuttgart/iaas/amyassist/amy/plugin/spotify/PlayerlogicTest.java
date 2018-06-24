@@ -131,17 +131,17 @@ class PlayerLogicTest {
 	@Test
 	public void testGetDevices() {
 		when(this.spotifyAPICalls.getDevices()).thenReturn(devices);
-		List<String> result = this.playerLogic.getDevices();
-		assertThat(result.get(0), equalTo("Hello"));
-		assertThat(result.get(1), equalTo("Godbye"));
+		List<Map<String, String>> result = this.playerLogic.getDevices();
+		assertThat(result.get(0).get(SpotifyConstants.DEVICE_NAME), equalTo("Hello"));
+		assertThat(result.get(1).get(SpotifyConstants.DEVICE_NAME), equalTo("Godbye"));
 		verify(this.spotifyAPICalls).getDevices();
 	}
 
 	@Test
 	public void testGetDevicesWithNoDevices() {
 		when(this.spotifyAPICalls.getDevices()).thenReturn(null);
-		List<String> result2 = this.playerLogic.getDevices();
-		assertThat(result2.isEmpty(), equalTo(true));
+		List<Map<String, String>> result = this.playerLogic.getDevices();
+		assertThat(result.isEmpty(), equalTo(true));
 		verify(this.spotifyAPICalls).getDevices();
 		reset(this.spotifyAPICalls);
 	}
