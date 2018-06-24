@@ -98,7 +98,6 @@ public class PlayerLogic {
 	 * @return empty ArrayList if no device available else the name of the devices
 	 */
 	public List<String> getDevices() {
-
 		this.deviceNames = new ArrayList<>();
 		this.deviceIDs = new ArrayList<>();
 		Device[] devices = this.spotifyAPICalls.getDevices();
