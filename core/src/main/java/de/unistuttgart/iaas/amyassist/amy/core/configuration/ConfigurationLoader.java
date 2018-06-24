@@ -23,30 +23,42 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
-import java.io.FileReader;
-
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
- * Loads config files from config directoy
+ * Loads config files from config directory
  * 
  * @author Leon Kiefer
  */
-
 @Service
 public class ConfigurationLoader {
 
 	@Reference
 	private Logger logger;
+	@Reference
+	private Environment environment;
 
 	private static final String CONFIG_DIR = "apikeys";
+	private Path configDir;
+
+	@PostConstruct
+	private void setup() {
+		this.configDir = this.environment.getWorkingDirectory().resolve(CONFIG_DIR);
+		if (!this.configDir.toFile().isDirectory()) {
+			this.logger.error("the configuration directory {} does not exists", this.configDir.toAbsolutePath());
+		}
+	}
 
 	/**
 	 * 
@@ -56,7 +68,9 @@ public class ConfigurationLoader {
 	 */
 	public Properties load(String configurationName) {
 		Properties properties = new Properties();
-		try (Reader reader = new FileReader(CONFIG_DIR + "/" + configurationName + ".properties")) {
+		Path path = this.configDir.resolve(configurationName + ".properties");
+
+		try (InputStream reader = Files.newInputStream(path)) {
 			properties.load(reader);
 		} catch (IOException e) {
 			this.logger.error("Error loading config file", e);
