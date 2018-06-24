@@ -41,7 +41,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
  */
 public class Plugin implements IPlugin {
 
-	private static final String uniqueNameKey = "PluginID";
+	private static final String UNIQUE_NAME_KEY = "PluginID";
 
 	private final Logger logger = LoggerFactory.getLogger(Plugin.class);
 
@@ -91,7 +91,7 @@ public class Plugin implements IPlugin {
 					this.file.getName());
 			return this.file.getName();
 		}
-		return this.manifest.getMainAttributes().getValue(uniqueNameKey);
+		return this.manifest.getMainAttributes().getValue(UNIQUE_NAME_KEY);
 	}
 
 	/**
@@ -108,8 +108,8 @@ public class Plugin implements IPlugin {
 	@Override
 	public String getVersion() {
 		if (this.manifest == null) {
-			this.logger.error("Plugin manifest is null, returning \"NaN\" for the version");
-			return ("NaN");
+			this.logger.error("Plugin manifest is null, using empty String for the version");
+			return ("");
 		}
 		return this.manifest.getMainAttributes().getValue(Name.IMPLEMENTATION_VERSION);
 	}

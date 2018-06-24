@@ -39,48 +39,48 @@ public interface IPlugin {
 	 * 
 	 * @return file
 	 */
-	public File getFile();
+	File getFile();
 
 	/**
 	 * Get's the classloader which was used to load this plugin
 	 * 
 	 * @return classLoader
 	 */
-	public ClassLoader getClassLoader();
+	ClassLoader getClassLoader();
 
 	/**
 	 * Get's the unique name of the plugin
 	 * 
 	 * @return uniqueName
 	 */
-	public String getUniqueName();
+	String getUniqueName();
 
 	/**
 	 * Get's the dispaly name of the plugin
 	 * 
 	 * @return displayName
 	 */
-	public String getDisplayName();
+	String getDisplayName();
 
 	/**
 	 * Get's the version of this plugin
 	 * 
 	 * @return mavenVersion
 	 */
-	public String getVersion();
+	String getVersion();
 
 	/**
 	 * Get's a list of all classes of this plugin
 	 * 
 	 * @return classes
 	 */
-	public List<Class<?>> getClasses();
+	List<Class<?>> getClasses();
 
 	/**
 	 * Get's the manifest of this plugin
 	 * 
 	 * @return manifest
 	 */
-	public Manifest getManifest();
+	Manifest getManifest();
 
 }
