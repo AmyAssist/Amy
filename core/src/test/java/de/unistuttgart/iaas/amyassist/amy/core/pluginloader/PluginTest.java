@@ -47,10 +47,11 @@ class PluginTest {
 			+ "Specification-Version: ${project.artifact.selectedVersion.majorVersion}.${project.artifact.selectedVersion.minorVersion}\n"
 			+ "Specification-Vendor: ${project.organization.name}\n" + "Implementation-Title: ${project.name}\n"
 			+ "Implementation-Version: ${project.version}\n" + "Implementation-Vendor-Id: ${project.groupId}\n"
-			+ "Implementation-Vendor: ${project.organization.name}\n" + "Implementation-URL: ${project.url}";
+			+ "Implementation-Vendor: ${project.organization.name}\n" + "Implementation-URL: ${project.url}\n"
+			+ "PluginID: ${pluginId}\n\n";
 
 	private Manifest generateMaifest(String javaVersion, String projectName, String majorVersion, String minorVersion,
-			String orgName, String projectVersion, String groupId, String projectURL) {
+			String orgName, String projectVersion, String groupId, String projectURL, String pluginId) {
 		String mf = this.manifest.replaceAll(Pattern.quote("${java.version}"), javaVersion);
 		mf = mf.replaceAll(Pattern.quote("${project.name}"), projectName);
 		mf = mf.replaceAll(Pattern.quote("${project.artifact.selectedVersion.majorVersion}"), majorVersion);
@@ -59,6 +60,7 @@ class PluginTest {
 		mf = mf.replaceAll(Pattern.quote("${project.version}"), projectVersion);
 		mf = mf.replaceAll(Pattern.quote("${project.groupId}"), groupId);
 		mf = mf.replaceAll(Pattern.quote("${project.url}"), projectURL);
+		mf = mf.replaceAll(Pattern.quote("${pluginId}"), pluginId);
 		return this.getManifestFromString(mf);
 	}
 
@@ -100,9 +102,7 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setFile(File)}
-	 * and
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setFile(File)} and
 	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getFile()}.
 	 */
 	@Test
@@ -123,10 +123,8 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setClassLoader(ClassLoader)}
-	 * and
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getClassLoader()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setClassLoader(ClassLoader)}
+	 * and {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getClassLoader()}.
 	 */
 	@Test
 	void testClassLoader() {
@@ -137,24 +135,37 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getUniqueName()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getUniqueName()}.
 	 */
 	@Test
 	void testUniqueName() {
 		Plugin p = new Plugin();
 		Random r = new Random();
 		for (int i = 0; i < 100; i++) {
-			String projectName = "Name" + r.nextInt();
-			Manifest mf = this.generateMaifest("a", projectName, "b", "c", "d", "e", "f", "g");
+			String pluginId = "Name" + r.nextInt();
+			Manifest mf = this.generateMaifest("a", "b", "c", "d", "e", "f", "g", "h", pluginId);
 			p.setManifest(mf);
-			Assertions.assertEquals(projectName, p.getUniqueName(), "WrongName: " + projectName);
+			Assertions.assertEquals(pluginId, p.getUniqueName(), "Wrong unqiue name: " + pluginId);
 		}
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getVersion()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getUniqueName()}.
+	 */
+	@Test
+	void testDispalyName() {
+		Plugin p = new Plugin();
+		Random r = new Random();
+		for (int i = 0; i < 100; i++) {
+			String projectName = "Name" + r.nextInt();
+			Manifest mf = this.generateMaifest("a", projectName, "b", "c", "d", "e", "f", "g", "h");
+			p.setManifest(mf);
+			Assertions.assertEquals(projectName, p.getDisplayName(), "Wrong diplay name: " + projectName);
+		}
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getVersion()}.
 	 */
 	@Test
 	void testVersion() {
@@ -162,7 +173,7 @@ class PluginTest {
 		Random r = new Random();
 		for (int i = 0; i < 100; i++) {
 			String projectVersion = "Version" + r.nextInt();
-			Manifest mf = this.generateMaifest("a", "b", "c", "d", "e", projectVersion, "f", "g");
+			Manifest mf = this.generateMaifest("a", "b", "c", "d", "e", projectVersion, "f", "g", "h");
 			p.setManifest(mf);
 			Assertions.assertEquals(projectVersion, p.getVersion(), "WrongVersion: " + projectVersion);
 		}
@@ -170,8 +181,7 @@ class PluginTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setClasses(java.util.ArrayList)}
-	 * and
+	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setClasses(java.util.ArrayList)} and
 	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getClasses()}.
 	 */
 	@Test
@@ -185,12 +195,11 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getManifest()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getManifest()}.
 	 */
 	@Test
 	void testManifest() {
-		Manifest mf = this.generateMaifest("a", "b", "c", "d", "e", "f", "g", "h");
+		Manifest mf = this.generateMaifest("a", "b", "c", "d", "e", "f", "g", "h", "i");
 		Plugin p = new Plugin();
 		p.setManifest(mf);
 		Assertions.assertEquals(mf, p.getManifest(), "Wrong manifest");
