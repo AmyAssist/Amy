@@ -156,7 +156,7 @@ public class Plugin implements IPlugin {
 	 * @param classes
 	 *            classes
 	 */
-	protected void setClasses(ArrayList<Class<?>> classes) {
+	protected void setClasses(List<Class<?>> classes) {
 		this.classes = classes;
 	}
 
