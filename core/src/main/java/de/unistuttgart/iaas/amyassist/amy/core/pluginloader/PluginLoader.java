@@ -121,17 +121,21 @@ public class PluginLoader {
 	}
 
 	private void addPlugin(Plugin plugin) {
-		if (plugin.getClasses().isEmpty()) {
-			this.logger.warn("Plugin contains no class: {}", plugin.getUniqueName());
-		}
-		if (plugin.getUniqueName().isEmpty()) {
-			this.logger.warn("Can't get name of plugin {}", plugin.getUniqueName());
-		}
-		if (plugin.getVersion().isEmpty()) {
-			this.logger.warn("Can't get version of plugin {}", plugin.getUniqueName());
+		String name = plugin.getDisplayName();
+		if (plugin.getDisplayName().isEmpty()) {
+			name = plugin.getUniqueName();
+			this.logger.warn("Can't get display name of plugin {}", name);
 		}
 
-		this.logger.info("loaded plugin {} with {} classes", plugin.getUniqueName(), plugin.getClasses().size());
+		if (plugin.getClasses().isEmpty()) {
+			this.logger.warn("Plugin contains no class: {}", name);
+		}
+
+		if (plugin.getVersion().isEmpty()) {
+			this.logger.warn("Can't get version of plugin {}", name);
+		}
+
+		this.logger.info("loaded plugin {} with {} classes", name, new Integer(plugin.getClasses().size()));
 		this.plugins.put(plugin.getUniqueName(), plugin);
 	}
 
