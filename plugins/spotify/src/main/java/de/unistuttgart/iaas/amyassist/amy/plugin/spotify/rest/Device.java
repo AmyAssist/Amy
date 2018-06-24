@@ -26,43 +26,52 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Music Entity for JSON
+ * Device Entity for JSON
  * 
- * @author Muhammed Kaya, Lars Buttgereit
+ * @author Muhammed Kaya
  */
 @XmlRootElement
-public class MusicEntity {
-
+public class Device {
+	
 	/**
-	 * constructor for a MusicEntity
+	 * constructor for a Device
 	 */
-	public MusicEntity() {
+	public Device() {
 		
 	}
 	
 	/**
-	 * constructor for a MusicEntity with set values
+	 * constructor for a Device with set values
 	 */
-	public MusicEntity(String title, String artist) {
-		this.title = title;
-		this.artist = artist;
+	public Device(String type, String name, String ID) {
+		this.type = type;
+		this.name = name;
+		this.ID = ID;
 	}
 	
 	/**
-	 * the artist of the music
+	 * the type of the device
 	 */
-	public String artist;
+	public String type;
 	
 	/**
-	 * the title of the music
+	 * the name of the device
 	 */
-	public String title;
+	public String name;
+	
+	/**
+	 * the ID of the device
+	 */
+	public String ID;
+	
+	
 	
 	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return this.title + " " + this.artist;
+		return this.name + " " + this.ID;
 	}
+
 }
