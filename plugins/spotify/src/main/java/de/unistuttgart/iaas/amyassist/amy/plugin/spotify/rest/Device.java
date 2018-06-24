@@ -32,46 +32,78 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class Device {
-	
+
 	/**
 	 * constructor for a Device
 	 */
 	public Device() {
-		
+
 	}
-	
+
 	/**
 	 * constructor for a Device with set values
 	 */
-	public Device(String type, String name, String ID) {
+	public Device(String type, String name, String id) {
 		this.type = type;
 		this.name = name;
-		this.ID = ID;
+		this.id = id;
 	}
-	
+
 	/**
 	 * the type of the device
 	 */
-	public String type;
-	
+	private String type;
+
 	/**
 	 * the name of the device
 	 */
-	public String name;
-	
+	private String name;
+
 	/**
 	 * the ID of the device
 	 */
-	public String ID;
-	
-	
-	
+	private String id;
+
 	/**
-	 * @see java.lang.Object#toString()
+	 * @return type
 	 */
-	@Override
-	public String toString() {
-		return this.name + " " + this.ID;
+	public String getType() {
+		return this.type;
+	}
+
+	/**
+	 * @param type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	/**
+	 * @return name
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * @param name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return id
+	 */
+	public String getID() {
+		return this.id;
+	}
+
+	/**
+	 * @param id to set
+	 */
+	public void setID(String id) {
+		this.id = id;
 	}
 
 }

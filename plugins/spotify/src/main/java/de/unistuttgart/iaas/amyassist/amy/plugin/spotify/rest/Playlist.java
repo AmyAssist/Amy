@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Playlist entity for JSON
+ * 
  * @author Christian Bräuner, Muhammed Kaya
  */
 @XmlRootElement
@@ -50,11 +51,39 @@ public class Playlist {
 	/**
 	 * the name of the playlist
 	 */
-	public String name = "";
+	private String name = "";
 	
 	/**
 	 * the songs in the playlist
 	 */
-	public MusicEntity[] songs;
+	private MusicEntity[] songs;
+
+	/**
+	 * @return name
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * @param name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return songs
+	 */
+	public MusicEntity[] getSongs() {
+		return this.songs;
+	}
+
+	/**
+	 * @param songs to set
+	 */
+	public void setSongs(MusicEntity[] songs) {
+		this.songs = songs;
+	}
 
 }

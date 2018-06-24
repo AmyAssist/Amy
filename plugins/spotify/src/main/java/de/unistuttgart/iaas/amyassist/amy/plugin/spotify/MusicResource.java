@@ -56,10 +56,10 @@ public class MusicResource {
 
 	@Reference
 	private PlayerLogic logic;
-	
+
 	private MusicEntity musicEntity;
 	private Playlist playlist;
-	
+
 	/**
 	 * returns a list with all given devices
 	 * 
@@ -68,34 +68,35 @@ public class MusicResource {
 	@GET
 	@Path("getDevices")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Device[] getDevices(){
+	public Device[] getDevices() {
 		List<Map<String, String>> deviceList = this.logic.getDevices();
 		Device[] devices = new Device[deviceList.size()];
-		for(int i = 0; i < deviceList.size(); i++) {
+		for (int i = 0; i < deviceList.size(); i++) {
 			devices[i] = new Device(deviceList.get(i).get(SpotifyConstants.DEVICE_NAME),
 					deviceList.get(i).get(SpotifyConstants.DEVICE_TYPE),
 					deviceList.get(i).get(SpotifyConstants.DEVICE_ID));
 		}
 		return devices;
 	}
-	
+
 	/**
 	 * sets which device to use
 	 * 
 	 * @param deviceNumber
-	 * 				the number of the device to use
+	 *            the number of the device to use
 	 * @return the selected device if there is one
-	 * 		
+	 * 
 	 */
 	@POST
 	@Path("setDevice/{deviceNumber}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setDevice(@PathParam("deviceNumber") int deviceNumber){
-		if(this.logic.setDevice(deviceNumber).equals("No device found")) {
+	public String setDevice(@PathParam("deviceNumber") int deviceNumber) {
+		String result = this.logic.setDevice(deviceNumber);
+		if (result.equals("No device found")) {
 			throw new WebApplicationException("No device found", Status.CONFLICT);
 		}
-		return this.logic.setDevice(deviceNumber);
+		return result;
 	}
 
 	/**
@@ -145,7 +146,6 @@ public class MusicResource {
 			return "resume";
 		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);
-
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class MusicResource {
 		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);
 	}
-	
+
 	/**
 	 * skips the actual playback
 	 * 
@@ -177,7 +177,7 @@ public class MusicResource {
 		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);
 	}
-	
+
 	/**
 	 * pauses the actual playback
 	 * 
@@ -209,8 +209,7 @@ public class MusicResource {
 	 * controls the volume of the player
 	 * 
 	 * @param volumeString
-	 *            allowed strings: mute, max, up, down, or a volume value between 0
-	 *            and 100
+	 *            allowed strings: mute, max, up, down, or a volume value between 0 and 100
 	 * @return a int from 0-100. This represent the Volume in percent.
 	 */
 	@POST
@@ -235,7 +234,6 @@ public class MusicResource {
 			}
 			throw new WebApplicationException("Check player state", Status.CONFLICT);
 		}
-
 	}
 
 }

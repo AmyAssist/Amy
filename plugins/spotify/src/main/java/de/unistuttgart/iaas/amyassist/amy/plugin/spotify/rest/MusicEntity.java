@@ -51,12 +51,12 @@ public class MusicEntity {
 	/**
 	 * the artist of the music
 	 */
-	public String artist;
+	private String artist;
 	
 	/**
 	 * the title of the music
 	 */
-	public String title;
+	private String title;
 	
 	/**
 	 * @see java.lang.Object#toString()
@@ -65,4 +65,33 @@ public class MusicEntity {
 	public String toString() {
 		return this.title + " " + this.artist;
 	}
+
+	/**
+	 * @return artist
+	 */
+	public String getArtist() {
+		return this.artist;
+	}
+
+	/**
+	 * @param artist to set
+	 */
+	public void setArtist(String artist) {
+		this.artist = artist;
+	}
+
+	/**
+	 * @return title
+	 */
+	public String getTitle() {
+		return this.title;
+	}
+
+	/**
+	 * @param title to set
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
 }

@@ -103,6 +103,8 @@ class MusicRestTest {
 
 	/**
 	 * creates List with device examples for testing
+	 * 
+	 * @return an example device list
 	 */
 	private List<Map<String, String>> createDeviceList() {
 		this.devices = new Device[2];
@@ -132,24 +134,28 @@ class MusicRestTest {
 
 		Response response = this.target.path("music").path("getDevices").request().get();
 
-		assertThat(response.readEntity(String.class), is("[{\"type\":\"Hello\",\"name\":\"Smartphone\",\"ID\":\"abc123\"},"
-				+ "{\"type\":\"Godbye\",\"name\":\"Computer\",\"ID\":\"123abc\"}]"));
+		assertThat(response.readEntity(String.class),
+				is("[{\"type\":\"Hello\",\"name\":\"Smartphone\",\"id\":\"abc123\"},"
+						+ "{\"type\":\"Godbye\",\"name\":\"Computer\",\"id\":\"123abc\"}]"));
 		assertThat(response.getStatus(), is(200));
 	}
-	
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#setDevice(int)}.
+	 */
 	@Test
 	void testSetDevice() {
 		Mockito.when(this.logic.setDevice(0)).thenReturn("Hello");
-		
+
 		Response response = this.target.path("music").path("setDevice/0").request().post(null);
-		
+
 		assertThat(response.readEntity(String.class), is("Hello"));
 		assertThat(response.getStatus(), is(200));
-		
+
 		Mockito.when(this.logic.setDevice(2)).thenReturn("No device found");
-		
+
 		response = this.target.path("music").path("setDevice/2").request().post(null);
-		
+
 		assertThat(response.readEntity(String.class), is("No device found"));
 		assertThat(response.getStatus(), is(409));
 	}
@@ -251,14 +257,14 @@ class MusicRestTest {
 	void testBack() {
 		Mockito.when(this.logic.back()).thenReturn(true);
 		Response response = this.target.path("music").path("back").request().post(null);
-		
+
 		assertThat(response.readEntity(String.class), is("back"));
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).back();
 
 		Mockito.when(this.logic.back()).thenReturn(false);
 		response = this.target.path("music").path("back").request().post(null);
-		
+
 		assertThat(response.getStatus(), is(409));
 		assertThat(response.readEntity(String.class), is("Check player state"));
 	}
@@ -302,5 +308,5 @@ class MusicRestTest {
 		assertThat(response.getStatus(), is(400));
 		assertThat(response.readEntity(String.class), is("Incorrect volume command"));
 	}
-	
+
 }
