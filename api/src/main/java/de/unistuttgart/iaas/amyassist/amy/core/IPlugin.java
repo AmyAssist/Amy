@@ -56,6 +56,13 @@ public interface IPlugin {
 	String getUniqueName();
 
 	/**
+	 * Get's the dispaly name of the plugin
+	 * 
+	 * @return displayName
+	 */
+	String getDisplayName();
+
+	/**
 	 * Get's the version of this plugin
 	 * 
 	 * @return mavenVersion
