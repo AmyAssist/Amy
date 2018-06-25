@@ -34,13 +34,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
-import de.unistuttgart.iaas.amyassist.amy.server.URI;
 
 /**
  * REST Resource for alarmclock
@@ -58,8 +58,8 @@ public class AlarmClockResource {
 	@Reference
 	private AlarmClockLogic logic;
 	
-	@Reference
-	private URI uri;
+	@Context
+	private UriInfo uri;
 
 	/**
 	 * returns all alarms
@@ -180,6 +180,7 @@ public class AlarmClockResource {
 	}
 
 	private String createAlarmPath(int id) {
-		return uri.getServerURI()+ "/" + PATH + "/alarms/" + id;
+		return this.uri.getBaseUriBuilder().path(AlarmClockResource.class).path(AlarmClockResource.class, "getAlarm")
+				.build(id).toString();
 	}
 }
