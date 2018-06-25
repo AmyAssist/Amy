@@ -21,25 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
 
-import java.io.IOException;
+/**
+ * The possible Http Methods
+ * 
+ * @author Christian Bräuner
+ */
+public enum MethodType {
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.MultivaluedMap;
-
-public class CORSFilter implements ContainerResponseFilter {
-	@Override
-	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
-			throws IOException {
-
-		MultivaluedMap<String, Object> headers = responseContext.getHeaders();
-
-		headers.add("Access-Control-Allow-Origin", "https://amyassist.github.io");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Methods", "GET, POST");
-	}
-
+	GET, POST, DELETE;
 }

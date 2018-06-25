@@ -23,15 +23,16 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static uk.org.lidalia.slf4jtest.LoggingEvent.warn;
+import static org.junit.jupiter.api.Assertions.*;
+import static uk.org.lidalia.slf4jtest.LoggingEvent.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
@@ -64,6 +65,7 @@ class DependencyInjectionTest {
 		assertThat(service2.checkServices(), is(true));
 	}
 
+	@Test
 	void testServiceRegistry() {
 		Service1 s1 = this.dependencyInjection.getService(Service1.class);
 		Service1 s2 = this.dependencyInjection.getService(Service1.class);
@@ -111,16 +113,16 @@ class DependencyInjectionTest {
 
 	@Test()
 	void testConstructorCheck() {
-		String message = assertThrows(RuntimeException.class,
+		String message = assertThrows(IllegalArgumentException.class,
 				() -> this.dependencyInjection.register(ServiceWithConstructor.class)).getMessage();
 
-		assertThat(message,
-				equalTo("There is no default public constructor on class " + ServiceWithConstructor.class.getName()));
+		assertThat(message, equalTo("There is a problem with the class " + ServiceWithConstructor.class.getName()
+				+ ". It can't be used as a Service"));
 	}
 
 	@Test()
 	void testServiceWithDuplicateDependency() {
-		TestLogger logger = TestLoggerFactory.getTestLogger(DependencyInjection.class);
+		TestLogger logger = TestLoggerFactory.getTestLogger(ServiceProvider.class);
 
 		this.dependencyInjection.register(ServiceWithDuplicateDependency.class);
 
@@ -137,30 +139,79 @@ class DependencyInjectionTest {
 	}
 
 	@Test()
-	void testCreateService() {
+	void testCreateAndInitializeService() {
 		Service2 s2_1 = this.dependencyInjection.getService(Service2.class);
-		Service2 s2_2 = this.dependencyInjection.create(Service2.class);
+		Service2 s2_2 = this.dependencyInjection.createAndInitialize(Service2.class);
 		assertThat(s2_1, not(theInstance(s2_2)));
 		assertThat(s2_1.getService3(), theInstance(s2_2.getService3()));
 	}
 
 	@Test()
+	void testCreateAndInitializeServicePostConstruct() {
+		Service18 service18 = this.dependencyInjection.createAndInitialize(Service18.class);
+		assertThat(service18.setup, is(true));
+	}
+
+	@Test()
+	void testCreateService() {
+		Service2 s2 = this.dependencyInjection.create(Service2.class);
+		assertThat(s2.getService3(), nullValue());
+
+		Service1 service1 = this.dependencyInjection.create(Service1.class);
+		assertThat(service1.init, is(0));
+	}
+
+	@Test()
 	void testCreateNotAService() {
-		NotAService2 nas = this.dependencyInjection.create(NotAService2.class);
+		NotAService2 nas = this.dependencyInjection.createAndInitialize(NotAService2.class);
 		assertThat(nas.getInit(), is(1));
 		Service1 s1 = this.dependencyInjection.getService(Service1.class);
 		this.dependencyInjection.postConstruct(s1);
 		assertThat(nas.getInit(), is(2));
-		NotAService2 nas2 = this.dependencyInjection.create(NotAService2.class);
+		NotAService2 nas2 = this.dependencyInjection.createAndInitialize(NotAService2.class);
 		assertThat(nas2, not(theInstance(nas)));
 	}
 
 	@Test()
 	void testCreateIllegalAccessException() {
-		Throwable cause = assertThrows(RuntimeException.class, () -> this.dependencyInjection.create(Service8.class))
-				.getCause();
+		String message = assertThrows(IllegalArgumentException.class,
+				() -> this.dependencyInjection.create(Service8.class)).getMessage();
 
-		assertThat(cause.getClass(), equalTo(InstantiationException.class));
+		assertThat(message, equalTo(
+				"There is a problem with the class " + Service8.class.getName() + ". It can't be used as a Service"));
+	}
+
+	@Test()
+	void testExternalService() {
+		Service7 service7 = new Service7();
+		this.dependencyInjection.addExternalService(Service7API.class, service7);
+		assertThat(this.dependencyInjection.getService(Service7API.class), is(theInstance(service7)));
+	}
+
+	@Test()
+	void testAbstractService() {
+		assertThrows(IllegalArgumentException.class, () -> this.dependencyInjection.register(AbstractService.class));
+	}
+
+	@Test()
+	void testInject() {
+		Service10 service10 = new Service10(10);
+		this.dependencyInjection.inject(service10);
+		assertThat(service10.isInit(), is(false));
+		assertThat(service10.getService1(), is(notNullValue()));
+		assertThat(service10.getService1(), is(instanceOf(Service1.class)));
+	}
+
+	@Test()
+	void testServiceType() {
+		assertThrows(IllegalArgumentException.class, () -> this.dependencyInjection.register(Service17.class));
+	}
+
+	@Test()
+	void testCreateAndInitialize() {
+		Service1 service1 = this.dependencyInjection.createAndInitialize(Service1.class);
+		assertThat(service1, notNullValue());
+		assertThat(service1.init, is(1));
 	}
 
 	@AfterEach

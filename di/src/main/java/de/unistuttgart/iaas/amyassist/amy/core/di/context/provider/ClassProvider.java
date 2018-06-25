@@ -21,12 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
 
 /**
- * TODO: Description
- * @author Tim Neumann
+ * A ContextProvider which provides the class of the consumer
+ * 
+ * @author Leon Kiefer
  */
-public enum ParameterType {
-	String, Integer, Float;
+public class ClassProvider implements StaticProvider<Class<?>> {
+
+	@Override
+	public Class<?> getContext(Class<?> consumer) {
+		return consumer;
+	}
+
 }

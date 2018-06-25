@@ -23,11 +23,23 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
-/**
- * The possible Http Methods
- * @author Tim Neumann
- */
-public enum MethodType {
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.server.URI;
 
-	GET, POST, DELETE;
+/**
+ * Class to get URI to Resources
+ * 
+ * @author Christian Bräuner
+ */
+@Service
+public class BaseUri implements URI {
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.server.URI#getServerURI()
+	 */
+	@Override
+	public String getServerURI() {
+		return Server.BASE_URI.toString();
+	}
+
 }

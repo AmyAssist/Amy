@@ -21,14 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
+
+import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.Configuration;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * POJO mapping of a parameter
- * @author Tim Neumann
+ * Command Line Interface for the PluginManager
+ * 
+ * @author Leon Kiefer
  */
-public class Parameter {
+public class PluginManagerCLI {
+	@Reference
+	private Configuration configuration;
 
-	private String name;
-	private ParameterType type;
+	@Command(name = "plugin:list", description = "a list of all installed plugins",
+			header = "Currently installed plugins are:")
+	public String plugins() {
+		return String.join("\n", this.configuration.getInstalledPlugins());
+	}
+
+	@Command(name = "plugin:version", description = "get the version of an installed plugin")
+	public String pluginVersion(String pluginName) {
+		return this.configuration.getPluginVersion(pluginName);
+	}
 }

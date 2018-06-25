@@ -55,7 +55,7 @@ public class HelloWorldSpeech {
 	public String say(String... params) {
 		return this.helloWorld.helloWorld();
 	}
-	
+
 	@Grammar("say hello # times")
 	public String sayXTimes(String... params) {
 		return this.helloWorld.helloWorldXTimes(Integer.parseInt(params[2]));

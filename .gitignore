@@ -16,8 +16,8 @@ dependency-reduced-pom.xml
 
 #Other -sinpat
 .idea
-.settings
+*.iml
 
 #Ignore config files
-apikeys/
 *.properties
+!/apikeys/plugin.config.properties

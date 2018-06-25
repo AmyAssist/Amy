@@ -21,10 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
 
 /**
  * POJO-mapping of JSON method object
+ * 
  * @author Christian Bräuner
  */
 public class Method {
@@ -32,4 +33,28 @@ public class Method {
 	private String link;
 	private String description;
 	private MethodType type;
+
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public MethodType getType() {
+		return type;
+	}
+
+	public void setType(MethodType type) {
+		this.type = type;
+	}
 }

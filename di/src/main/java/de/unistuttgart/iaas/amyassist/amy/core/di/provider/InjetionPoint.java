@@ -21,29 +21,36 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
+package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Properties;
+import java.lang.reflect.Field;
 
-public class ConfigLoader {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-    private Properties p;
+import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
-    public ConfigLoader() {
-        p = new Properties();
-        try {
-            p.load(new FileReader("apikeys/weather_config.properties"));
-        } catch (IOException e) {
-            System.err.println("Error loading config file for weather plugin");
-            e.printStackTrace();
-        }
-    }
+/**
+ * A InjectionPoint is an abstraction of where an object is injected into an instance.
+ * 
+ * @author Leon Kiefer
+ */
+class InjetionPoint {
+	private Field field;
 
-    public String get(String s) {
-        return p.getProperty(s);
-    }
+	public InjetionPoint(Field field) {
+		this.field = field;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Class<?> getType() {
+		return this.field.getType();
+	}
+
+	public void inject(@Nonnull Object instance, @Nullable Object object) {
+		Util.inject(instance, object, this.field);
+	}
 }

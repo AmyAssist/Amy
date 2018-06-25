@@ -24,61 +24,89 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+import java.util.NoSuchElementException;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNullableByDefault;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.ClassProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ClassServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ClassServiceProviderWithoutDependencies;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingeltonServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
- * Dependency Injection Used to manage dependencies and Service instantiation at
- * runtime. A Service that relies on DI is completely passive when it comes to
- * its runtime dependencies. There is no code in the Service that creates,
- * instantiates or gets the dependencies. The dependencies are injected into the
- * Service before the Service is executed. This reversal of responsibility to
- * instantiate (or ask for instantiate of) a dependency is called Inversion of
- * Control (IoC). This leads to loose coupling, because the Service doesn't need
- * to know about how the dependency is implemented.
+ * Dependency Injection Used to manage dependencies and Service instantiation at runtime. A Service that relies on DI is
+ * completely passive when it comes to its runtime dependencies. There is no code in the Service that creates,
+ * instantiates or gets the dependencies. The dependencies are injected into the Service before the Service is executed.
+ * This reversal of responsibility to instantiate (or ask for instantiate of) a dependency is called Inversion of
+ * Control (IoC). This leads to loose coupling, because the Service doesn't need to know about how the dependency is
+ * implemented.
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Tim Neumann
  */
+@ParametersAreNullableByDefault
 public class DependencyInjection implements ServiceLocator {
 
+	/**
+	 * The logger of the DI
+	 */
 	protected final Logger logger = LoggerFactory.getLogger(DependencyInjection.class);
 
-	protected Map<Class<?>, Class<?>> register;
+	/**
+	 * A register which maps a class to it's service provider.
+	 */
+	protected Map<Class<?>, ServiceFunction<?>> register;
 
-	protected Map<Class<?>, Set<Class<?>>> dependencyRegister;
-
-	protected Map<Class<?>, Object> instances;
-
-	protected Map<Class<?>, Object> externalServices;
+	protected Map<String, StaticProvider<?>> staticProvider;
 
 	/**
-	 * 
+	 * Creates a new Dependency Injection
 	 */
 	public DependencyInjection() {
 		this.register = new HashMap<>();
-		this.dependencyRegister = new HashMap<>();
-		this.instances = new HashMap<>();
-		this.externalServices = new HashMap<>();
+		this.staticProvider = new HashMap<>();
 
+		this.registerContextProvider("class", new ClassProvider());
 		this.addExternalService(ServiceLocator.class, this);
 	}
 
-	public synchronized void register(Class<?> cls) {
+	/**
+	 * Registers a service provider
+	 * 
+	 * @param serviceType
+	 *            The type of this service
+	 * @param serviceFunction
+	 *            The instance of the service provider
+	 */
+	public synchronized <T> void register(Class<T> serviceType, ServiceFunction<T> serviceFunction) {
+		if (this.hasServiceOfType(serviceType))
+			throw new DuplicateServiceException();
+		this.register.put(serviceType, serviceFunction);
+	}
+
+	/**
+	 * Registers a service
+	 * 
+	 * @param cls
+	 *            The service to register.
+	 */
+	public synchronized void register(@Nonnull Class<?> cls) {
 		Service annotation = cls.getAnnotation(Service.class);
 		if (annotation == null)
 			throw new ClassIsNotAServiceException(cls);
@@ -90,170 +118,173 @@ public class DependencyInjection implements ServiceLocator {
 			serviceTypes = new Class[1];
 			serviceTypes[0] = cls;
 		}
-		// TODO check if serviceType matches cls
+
 		for (Class<?> serviceType : serviceTypes) {
-			if (this.hasServiceOfType(serviceType))
+			if (this.hasServiceOfType(serviceType)) {
 				throw new DuplicateServiceException();
-		}
-
-		if (!this.constructorCheck(cls))
-			throw new RuntimeException("There is no default public constructor on class " + cls.getName());
-
-		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(cls, Reference.class);
-		Set<Class<?>> dependencies = new HashSet<>();
-		for (Field field : dependencyFields) {
-			Class<?> dependency = field.getType();
-			if (dependencies.contains(dependency)) {
-				this.logger.warn("The Service {} have a duplicate dependeny on {}", cls.getName(),
-						dependency.getName());
-			} else {
-				dependencies.add(dependency);
+			}
+			if (!serviceType.isAssignableFrom(cls)) {
+				throw new IllegalArgumentException();
 			}
 		}
+
 		for (Class<?> serviceType : serviceTypes) {
-			this.register.put(serviceType, cls);
+			ServiceFunction<?> p = new ClassServiceProvider<>(cls);
+			this.register.put(serviceType, p);
 		}
-		this.dependencyRegister.put(cls, dependencies);
+	}
+
+	public synchronized void registerContextProvider(String key, StaticProvider<?> staticProvider) {
+		this.staticProvider.put(key, staticProvider);
 	}
 
 	/**
-	 * Adds an external Service instance to the DI. The DI does not manage the
-	 * dependencies of the external Service, but the DI can inject the external
-	 * Service as dependency into other managed services.
+	 * Adds an external Service instance to the DI. The DI does not manage the dependencies of the external Service, but
+	 * the DI can inject the external Service as dependency into other managed services.
 	 * 
 	 * @param serviceType
-	 * @param service
+	 *            The type of this service
+	 * @param externalService
+	 *            The instance of this service
 	 */
-	public synchronized void addExternalService(Class<?> serviceType, Object externalService) {
-		if (this.hasServiceOfType(serviceType))
-			throw new DuplicateServiceException();
-		this.externalServices.put(serviceType, externalService);
+	public synchronized <T> void addExternalService(@Nonnull Class<T> serviceType, @Nonnull T externalService) {
+		this.register(serviceType, new SingeltonServiceProvider<>(externalService));
 	}
 
 	private boolean hasServiceOfType(Class<?> serviceType) {
-		if (this.register.containsKey(serviceType))
-			return true;
-		if (this.externalServices.containsKey(serviceType))
-			return true;
-		return false;
-	}
-
-	/**
-	 * check if default constructor exists and is accessible
-	 * 
-	 * @param cls
-	 * @return
-	 */
-	private boolean constructorCheck(Class<?> cls) {
-		try {
-			cls.getConstructor();
-			return true;
-		} catch (NoSuchMethodException | SecurityException e) {
-			return false;
-		}
+		return this.register.containsKey(serviceType);
 	}
 
 	@Override
 	public <T> T getService(Class<T> serviceType) {
-		return this.get(serviceType, new ArrayDeque<>(), this.instances);
-	}
-
-	private <T> T get(Class<T> serviceType, Deque<Class<?>> stack, Map<Class<?>, Object> resolved) {
-		if (this.externalServices.containsKey(serviceType))
-			return (T) this.externalServices.get(serviceType);
-
-		Class<?> required = this.getRequired(serviceType);
-		return (T) this.resolve(required, stack, resolved);
+		return this.getService(serviceType, null);
 	}
 
 	/**
-	 * Resolve the dependency of a Service implementation and create an instance
-	 * of the Service.
-	 * 
-	 * Does the same as {@link #create(Class)}.
-	 * 
-	 * @param serviceClass
-	 *            the implementation class of a Service
-	 * @return the instance of the Service implementation
+	 * @see ServiceLocator#getService(Class)
 	 */
-	public <T> T resolve(Class<T> serviceClass) {
-		Deque<Class<?>> stack = new ArrayDeque<>();
-		stack.push(serviceClass);
-		try {
-			T instance = serviceClass.newInstance();
-			this.inject(instance, stack, this.instances);
-			this.postConstruct(instance);
-
-			stack.pop();
-			return instance;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
+	public <T> T getService(Class<T> serviceType, @Nullable ServiceConsumer consumer) {
+		ServiceFunction<T> provider = this.getServiceProvider(serviceType);
+		ServiceFactory<T> factory = this.resolve(provider, consumer);
+		return factory.build();
 	}
 
-	private <T> T resolve(Class<T> serviceClass, Deque<Class<?>> stack, Map<Class<?>, Object> resolved) {
-		if (resolved.containsKey(serviceClass))
-			return (T) resolved.get(serviceClass);
-		if (stack.contains(serviceClass))
-			throw new RuntimeException("circular dependencies");
-		stack.push(serviceClass);
+	/**
+	 * Resolve the dependencies of the ServiceProvider and creates a factory for the Service.
+	 * 
+	 * @param <T>
+	 *            The type of the service
+	 * @param serviceProvider
+	 *            The Service Provider.
+	 * @return The factory for a Service of the ServiceProvider.
+	 */
+	private <T> ServiceFactory<T> resolve(@Nonnull ServiceFunction<T> serviceProvider) {
+		return this.resolve(serviceProvider, null);
+	}
 
-		try {
-			T instance = serviceClass.newInstance();
-			this.inject(instance, stack, resolved);
-			this.postConstruct(instance);
+	/**
+	 * Resolve the dependencies of the ServiceProvider and creates a factory for the Service.
+	 * 
+	 * @param <T>
+	 *            The type of the service
+	 * @param serviceProvider
+	 *            The Service Provider.
+	 * @param consumer
+	 *            the consumer of the resolved service
+	 * @return The factory for a Service of the ServiceProvider.
+	 */
+	private <T> ServiceFactory<T> resolve(@Nonnull ServiceFunction<T> serviceProvider,
+			@Nullable ServiceConsumer consumer) {
+		return this.resolve(serviceProvider, new ArrayDeque<>(), consumer);
+	}
 
-			resolved.put(serviceClass, instance);
-			stack.pop();
-			return instance;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException(e);
+	/**
+	 * Resolve the dependencies of the ServiceProvider and creates a factory for the Service. considering the stack of
+	 * dependencies, for which this ServiceProvider is needed.
+	 * 
+	 * @param <T>
+	 *            The type of the service
+	 * @param serviceProvider
+	 *            The Service Provider.
+	 * @param stack
+	 *            The stack of classes, for which this class is needed.
+	 * @param consumer
+	 *            the consumer of the resolved service
+	 * @return The factory for a Service of the ServiceProvider.
+	 */
+	private <T> ServiceFactory<T> resolve(@Nonnull ServiceFunction<T> serviceProvider,
+			@Nonnull Deque<ServiceProvider<?>> stack, @Nullable ServiceConsumer consumer) {
+		if (stack.contains(serviceProvider)) {
+			throw new IllegalStateException("circular dependencies");
+		} else {
+			stack.push(serviceProvider);
 		}
+		ServiceProviderServiceFactory<T> serviceProviderServiceFactory = new ServiceProviderServiceFactory<>(
+				serviceProvider);
+		for (Class<?> dependency : serviceProvider.getDependencies()) {
+			ServiceFunction<?> provider = this.getServiceProvider(dependency);
+			ServiceFactory<?> dependencyFactory = this.resolve(provider, stack, serviceProvider);
+			serviceProviderServiceFactory.resolved(dependency, dependencyFactory);
+		}
+
+		for (String requiredContextProviderType : serviceProvider.getRequiredContextIdentifiers()) {
+			StaticProvider<?> contextProvider = this.getContextProvider(requiredContextProviderType);
+			serviceProviderServiceFactory.setContextProvider(requiredContextProviderType, contextProvider);
+		}
+		serviceProviderServiceFactory.setConsumer(consumer);
+		stack.pop();
+		return serviceProviderServiceFactory;
+
 	}
 
 	@Override
-	public void inject(Object instance) {
-		this.inject(instance, new ArrayDeque<>(), this.instances);
-	}
-
-	private void inject(Object instance, Deque<Class<?>> stack, Map<Class<?>, Object> resolved) {
-		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(instance.getClass(), Reference.class);
+	public void inject(@Nonnull Object instance) {
+		Class<? extends Object> classOfInstance = instance.getClass();
+		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(classOfInstance, Reference.class);
 		for (Field field : dependencyFields) {
 			Class<?> dependency = field.getType();
-			Object object = this.get(dependency, stack, resolved);
-			try {
-				FieldUtils.writeField(field, instance, object, true);
-			} catch (IllegalAccessException e) {
-				this.logger.error("tryed to inject the dependency {} into {} but failed", object, instance, e);
-			}
+			Object object = this.getService(dependency, new ServiceConsumer() {
+				@Override
+				public Class<?> getConsumerClass() {
+					return classOfInstance;
+				}
+			});
+			Util.inject(instance, object, field);
 		}
 	}
 
 	@Override
-	public void postConstruct(Object instance) {
-		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(instance.getClass(), PostConstruct.class);
-		for (Method m : methodsWithAnnotation) {
-			try {
-				m.invoke(instance);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				this.logger.error("tryed to invoke method {} but got an error", m, e);
-			}
-		}
+	public void postConstruct(@Nonnull Object postConstructMe) {
+		Util.postConstruct(postConstructMe);
 	}
 
-	private Class<?> getRequired(Class<?> serviceType) {
+	@Nonnull
+	@SuppressWarnings("unchecked")
+	private <T> ServiceFunction<T> getServiceProvider(Class<T> serviceType) {
 		if (!this.register.containsKey(serviceType))
 			throw new ServiceNotFoundException(serviceType);
-		return this.register.get(serviceType);
+		return (ServiceFunction<T>) this.register.get(serviceType);
 	}
 
-	/**
-	 * Does the same as {@link #resolve(Class)}
-	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator#create(java.lang.Class)
-	 */
+	private StaticProvider<?> getContextProvider(@Nonnull String contextProviderType) {
+		if (!this.staticProvider.containsKey(contextProviderType))
+			throw new NoSuchElementException(contextProviderType);
+		return this.staticProvider.get(contextProviderType);
+	}
+
 	@Override
-	public <T> T create(Class<T> serviceClass) {
-		return this.resolve(serviceClass);
+	public <T> T create(@Nonnull Class<T> serviceClass) {
+		ServiceFunction<T> provider = new ClassServiceProviderWithoutDependencies<>(serviceClass);
+		ServiceFactory<T> serviceFactory = this.resolve(provider);
+
+		return serviceFactory.build();
+	}
+
+	@Override
+	public <T> T createAndInitialize(Class<T> serviceClass) {
+		T service = this.create(serviceClass);
+		this.inject(service);
+		this.postConstruct(service);
+		return service;
 	}
 }

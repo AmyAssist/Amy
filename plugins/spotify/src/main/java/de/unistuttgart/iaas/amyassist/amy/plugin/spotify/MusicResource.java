@@ -111,9 +111,39 @@ public class MusicResource {
 	@POST
 	@Path("pause")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String pausePlayback() {
-		if (this.logic.pausePlayback()) {
+	public String pause() {
+		if (this.logic.pause()) {
 			return "pause";
+		}
+		throw new WebApplicationException("Check player state", Status.CONFLICT);
+	}
+
+	/**
+	 * skips the actual playback
+	 * 
+	 * @return HTTP Response with player status
+	 */
+	@POST
+	@Path("skip")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String skip() {
+		if (this.logic.skip()) {
+			return "skip";
+		}
+		throw new WebApplicationException("Check player state", Status.CONFLICT);
+	}
+
+	/**
+	 * pauses the actual playback
+	 * 
+	 * @return HTTP Response with player status
+	 */
+	@POST
+	@Path("back")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String back() {
+		if (this.logic.back()) {
+			return "back";
 		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);
 	}
@@ -134,12 +164,12 @@ public class MusicResource {
 	 * controls the volume of the player
 	 * 
 	 * @param volumeString
-	 *            allowed strings: mute, max, up, down, or a volume value between 0
-	 *            and 100
+	 *            allowed strings: mute, max, up, down, or a volume value between 0 and 100
 	 * @return a int from 0-100. This represent the Volume in percent.
 	 */
 	@POST
 	@Path("volume/{volumeValue}")
+	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String setVolume(@PathParam("volumeValue") String volumeString) {
 		try {

@@ -32,12 +32,16 @@ import java.util.jar.Manifest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
+
 /**
- * A representation of loaded plugin
+ * A representation of loaded plugin.
  * 
  * @author Tim Neumann
  */
-public class Plugin {
+public class Plugin implements IPlugin {
+
+	private static final String UNIQUE_NAME_KEY = "PluginID";
 
 	private final Logger logger = LoggerFactory.getLogger(Plugin.class);
 
@@ -61,72 +65,67 @@ public class Plugin {
 	 */
 	private List<Class<?>> classes = new ArrayList<>();
 
-	private String fakeName = "";
-	private String fakeVersion = "";
-
 	/**
-	 * Get's {@link #file file}
-	 * 
-	 * @return file
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getFile()
 	 */
+	@Override
 	public File getFile() {
 		return this.file;
 	}
 
 	/**
-	 * Get's {@link #classLoader classLoader}
-	 * 
-	 * @return classLoader
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getClassLoader()
 	 */
+	@Override
 	public ClassLoader getClassLoader() {
 		return this.classLoader;
 	}
 
 	/**
-	 * Get's the unique name of the plugin
-	 * 
-	 * @return uniqueName
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getUniqueName()
 	 */
+	@Override
 	public String getUniqueName() {
 		if (this.manifest == null) {
-			if (this.fakeName != "") {
-				this.logger.warn("manifest is null, using fakeName: {}", this.fakeName);
-				return this.fakeName;
-			}
-			this.logger.error("manifest is null and fakeName empty. Falling back to file name!: {}",
+			this.logger.error("Plugin manifest is null. Falling back to file name for unique name!: {}",
 					this.file.getName());
 			return this.file.getName();
 		}
+		return this.manifest.getMainAttributes().getValue(UNIQUE_NAME_KEY);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getDisplayName()
+	 */
+	@Override
+	public String getDisplayName() {
 		return this.manifest.getMainAttributes().getValue(Name.IMPLEMENTATION_TITLE);
 	}
 
 	/**
-	 * Get's the version of this plugin
-	 * 
-	 * @return mavenVersion
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getVersion()
 	 */
+	@Override
 	public String getVersion() {
 		if (this.manifest == null) {
-			this.logger.warn("manifest is null, using fakeVersion: {}", this.fakeName);
-			return this.fakeVersion;
+			this.logger.error("Plugin manifest is null, using empty String for the version");
+			return ("");
 		}
 		return this.manifest.getMainAttributes().getValue(Name.IMPLEMENTATION_VERSION);
 	}
 
 	/**
-	 * Get's {@link #classes classes}
-	 * 
-	 * @return classes
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getClasses()
 	 */
+	@Override
 	public List<Class<?>> getClasses() {
 		return new ArrayList<>(this.classes);
 	}
 
 	/**
-	 * Get's {@link #manifest manifest}
-	 * 
-	 * @return manifest
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getManifest()
 	 */
+	@Override
 	public Manifest getManifest() {
 		return this.manifest;
 	}
@@ -157,7 +156,7 @@ public class Plugin {
 	 * @param classes
 	 *            classes
 	 */
-	protected void setClasses(ArrayList<Class<?>> classes) {
+	protected void setClasses(List<Class<?>> classes) {
 		this.classes = classes;
 	}
 
@@ -169,26 +168,6 @@ public class Plugin {
 	 */
 	protected void setManifest(Manifest manifest) {
 		this.manifest = manifest;
-	}
-
-	/**
-	 * Set's {@link #fakeName fakeName}
-	 * 
-	 * @param fakeName
-	 *            fakeName
-	 */
-	protected void setFakeName(String fakeName) {
-		this.fakeName = fakeName;
-	}
-
-	/**
-	 * Set's {@link #fakeVersion fakeVersion}
-	 * 
-	 * @param fakeVersion
-	 *            fakeVersion
-	 */
-	protected void setFakeVersion(String fakeVersion) {
-		this.fakeVersion = fakeVersion;
 	}
 
 }

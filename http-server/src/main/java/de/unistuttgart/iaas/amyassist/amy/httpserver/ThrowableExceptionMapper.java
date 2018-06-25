@@ -37,8 +37,7 @@ import org.slf4j.LoggerFactory;
 @Provider
 public class ThrowableExceptionMapper implements ExceptionMapper<Throwable> {
 
-	private final Logger logger = LoggerFactory
-			.getLogger(ThrowableExceptionMapper.class);
+	private final Logger logger = LoggerFactory.getLogger(ThrowableExceptionMapper.class);
 
 	@Override
 	public Response toResponse(Throwable t) {
@@ -46,7 +45,7 @@ public class ThrowableExceptionMapper implements ExceptionMapper<Throwable> {
 			WebApplicationException webEx = (WebApplicationException) t;
 			ResponseBuilder rb = Response.status(webEx.getResponse().getStatus());
 			String message = webEx.getLocalizedMessage();
-			if(webEx.getCause() != null) {
+			if (webEx.getCause() != null) {
 				message = message + " caused by " + webEx.getCause().toString();
 			}
 			return rb.entity(message).type(MediaType.TEXT_PLAIN).build();

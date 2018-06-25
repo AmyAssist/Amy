@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -39,7 +38,9 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
 @Service
 public class HelloWorldImpl implements HelloWorldService {
 	private static final String KEY = "hellocount";
-	private final Logger logger = LoggerFactory.getLogger(HelloWorldImpl.class);
+
+	@Reference
+	private Logger logger;
 
 	/**
 	 * A reference to the storage.

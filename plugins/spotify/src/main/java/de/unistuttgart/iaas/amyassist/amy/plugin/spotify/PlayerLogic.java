@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,64 +30,54 @@ import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonParser;
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
-import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
-import com.wrapper.spotify.requests.data.player.GetInformationAboutUsersCurrentPlaybackRequest;
-import com.wrapper.spotify.requests.data.player.GetUsersAvailableDevicesRequest;
-import com.wrapper.spotify.requests.data.player.PauseUsersPlaybackRequest;
-import com.wrapper.spotify.requests.data.player.SetVolumeForUsersPlaybackRequest;
-import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToNextTrackRequest;
-import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrackRequest;
-import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
+import com.wrapper.spotify.model_objects.specification.Paging;
+import com.wrapper.spotify.model_objects.specification.Track;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * This class have methods to control a spotify client from a user. For examlpe
- * play, pause playback or search for music tracks etc.
+ * This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music
+ * tracks etc.
  * 
  * @author Lars Buttgereit
  */
 @Service(PlayerLogic.class)
 public class PlayerLogic {
-	private Authorization auth;
-	private String deviceID = null;
+	@Reference
+	private SpotifyAPICalls spotifyAPICalls;
+	@Reference
 	private Search search;
-	private int volume = 50;
-	private String deviceName = null;
-	private List<Map<String, String>> actualSearchResult = null;
-	private StringGenerator stringGenerator = new StringGenerator();
+	@Reference
+	private StringGenerator stringGenerator;
+	@Reference
 	private Logger logger;
 
-	public PlayerLogic() {
-		init();
-	}
+	private List<Map<String, String>> actualSearchResult = null;
 
-	public void init() {
-		logger = LoggerFactory.getLogger(PlayerLogic.class);
-		this.auth = new Authorization();
-		this.auth.init();
-		setDevice(0);
-		this.search = new Search(this.auth);
-	}
+	private ArrayList<String> deviceNames = new ArrayList<>();
+	private ArrayList<String> deviceIDs = new ArrayList<>();
+
+	private static final int VOLUME_MUTE_VALUE = 0;
+	private static final int VOLUME_MAX_VALUE = 100;
+	private static final int VOLUME_UPDOWN_VALUE = 10;
 
 	/**
-	 * needed for the first init. need the clientID and the clientSecret form a
-	 * spotify devloper account
+	 * needed for the first init. need the clientID and the clientSecret form a spotify devloper account
 	 * 
 	 * @param clientID
+	 *            from spotify developer account
 	 * @param clientSecret
+	 *            spotify developer account
 	 * @return login link to a personal spotify account
 	 */
 	public URI firstTimeInit(String clientID, String clientSecret) {
-		this.auth.setClientID(clientID);
-		this.auth.setClientSecret(clientSecret);
-		return this.auth.authorizationCodeUri();
+		this.spotifyAPICalls.setClientID(clientID);
+		this.spotifyAPICalls.setClientSecret(clientSecret);
+		return this.spotifyAPICalls.authorizationCodeUri();
 	}
 
 	/**
@@ -98,8 +87,7 @@ public class PlayerLogic {
 	 *            Callback from the login link
 	 */
 	public void inputAuthCode(String authCode) {
-		this.auth.createRefreshToken(authCode);
-		this.auth.init();
+		this.spotifyAPICalls.createRefreshToken(authCode);
 	}
 
 	/**
@@ -109,59 +97,40 @@ public class PlayerLogic {
 	 */
 	public List<String> getDevices() {
 
-		ArrayList<String> deviceNames = new ArrayList<>();
-		if (this.auth.getSpotifyApi() != null) {
-			GetUsersAvailableDevicesRequest getUsersAvailableDevicesRequest = this.auth.getSpotifyApi()
-					.getUsersAvailableDevices().build();
-
-			try {
-				Device[] devices = getUsersAvailableDevicesRequest.execute();
-				for (Device device : devices) {
-					deviceNames.add(device.getName());
-				}
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
+		this.deviceNames = new ArrayList<>();
+		this.deviceIDs = new ArrayList<>();
+		Device[] devices = this.spotifyAPICalls.getDevices();
+		if (devices != null) {
+			for (Device device : devices) {
+				this.deviceNames.add(device.getName());
+				this.deviceIDs.add(device.getId());
 			}
-
-			return deviceNames;
 		}
-		this.logger.warn("please init the authorization object");
-		return deviceNames;
+		return this.deviceNames;
 	}
 
 	/**
 	 * set the given device as acutal active device for playing music
 	 * 
 	 * @param deviceNumber
-	 *            index of the device array. Order is the same as in the output in
-	 *            getDevices
+	 *            index of the device array. Order is the same as in the output in getDevices
 	 * @return selected device
 	 */
 	public String setDevice(int deviceNumber) {
-		if (this.auth.getSpotifyApi() != null) {
-			GetUsersAvailableDevicesRequest getUsersAvailableDevicesRequest = this.auth.getSpotifyApi()
-					.getUsersAvailableDevices().build();
-			try {
-				Device[] devices = getUsersAvailableDevicesRequest.execute();
-				if (deviceNumber < devices.length) {
-					this.deviceID = devices[deviceNumber].getId();
-					this.deviceName = devices[deviceNumber].getName();
-					return devices[deviceNumber].getName();
-				}
-				return "This device was not found";
-			} catch (SpotifyWebApiException | IOException e) {
-				logger.error(e.getMessage());
-				return "A problem has occurred";
-			}
-
+		getDevices();
+		if (this.deviceIDs.size() > deviceNumber && this.deviceNames.size() > deviceNumber) {
+			this.spotifyAPICalls.setCurrentDevice(this.deviceIDs.get(deviceNumber));
+			return this.deviceNames.get(deviceNumber);
 		}
-		return "Please init the spotify API";
+		this.logger.warn("No device with this number was found");
+		return "No device found";
 	}
 
 	/**
 	 * this call the searchAnaything method in the Search class
 	 * 
 	 * @param searchText
+	 *            the text you want ot search
 	 * @param type
 	 *            artist, track, playlist, album
 	 * @param limit
@@ -169,43 +138,31 @@ public class PlayerLogic {
 	 * @return one output String with all results
 	 */
 	public List<Map<String, String>> search(String searchText, String type, int limit) {
-		if (checkPlayerState()) {
-			try {
-				this.actualSearchResult = this.search.searchList(searchText, type, limit);
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
-			}
-			return this.actualSearchResult;
-		} else {
-			return new ArrayList<>();
-		}
+		this.actualSearchResult = this.search.searchList(searchText, type, limit);
+		return this.actualSearchResult;
 	}
 
 	/**
-	 * generate one String out of the search result map or other maps with track,
-	 * album or playlist attributes. Useful for example for console or speech output
+	 * generate one String out of the search result map or other maps with track, album or playlist attributes. Useful
+	 * for example for console or speech output
 	 * 
 	 * @param input
-	 *            the map from a search or a map with attributes from track, album,
-	 *            playlist
+	 *            the map from a search or a map with attributes from track, album, playlist
 	 * @return a single String with useful information for the user
 	 */
 	public String convertSearchOutputToSingleString(Map<String, String> input) {
-		return stringGenerator.generateSearchOutputString(input);
+		return this.stringGenerator.generateSearchOutputString(input);
 	}
 
 	/**
-	 * generate one String out of the search result list. Useful for example for
-	 * console or speech output
+	 * generate one String out of the search result list. Useful for example for console or speech output
 	 * 
 	 * @param input
-	 *            the list from a search or a list with maps with attributes from
-	 *            track, album, playlist
-	 * @return a single String with useful information for the user from all
-	 *         elements from the list
+	 *            the list from a search or a list with maps with attributes from track, album, playlist
+	 * @return a single String with useful information for the user from all elements from the list
 	 */
 	public String convertSearchOutputToSingleString(List<Map<String, String>> input) {
-		return stringGenerator.generateSearchOutputString(input);
+		return this.stringGenerator.generateSearchOutputString(input);
 	}
 
 	/**
@@ -214,21 +171,13 @@ public class PlayerLogic {
 	 * @return a string with the playlist name
 	 */
 	public Map<String, String> play() {
-		if (checkPlayerState()) {
-			List<Map<String, String>> playLists;
-			try {
-				playLists = this.search.getFeaturedPlaylists();
-				if (!playLists.isEmpty() && 1 < playLists.size()) {
-					playListFromUri(playLists.get(1).get(SpotifyConstants.ITEM_URI));
-					return playLists.get(1);
-				}
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
-			}
-
-			this.logger.warn("no featured playlist found");
-
+		List<Map<String, String>> playLists;
+		playLists = this.search.getFeaturedPlaylists();
+		if (!playLists.isEmpty() && 1 < playLists.size()
+				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).get(SpotifyConstants.ITEM_URI))) {
+			return playLists.get(1);
 		}
+		this.logger.warn("no featured playlist found");
 		return new HashMap<>();
 	}
 
@@ -237,107 +186,58 @@ public class PlayerLogic {
 	 * 
 	 * @param songNumber
 	 *            number of the item form the search before
-	 * @return
+	 * @return a map with the song data
 	 */
 	public Map<String, String> play(int songNumber) {
 		if (this.actualSearchResult != null && songNumber < this.actualSearchResult.size()) {
 			if (this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_TYPE)
 					.equals(SpotifyConstants.TYPE_TRACK)) {
-				playSongFromUri(this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_URI));
-				return this.actualSearchResult.get(songNumber);
-			} else {
-				playListFromUri(this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_URI));
+				if (this.spotifyAPICalls
+						.playSongFromUri(this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_URI))) {
+					return this.actualSearchResult.get(songNumber);
+				}
+			} else if (this.spotifyAPICalls
+					.playListFromUri(this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_URI))) {
 				return this.actualSearchResult.get(songNumber);
 			}
-		} else {
-			return new HashMap<>();
 		}
+		return new HashMap<>();
 	}
 
 	/**
 	 * resume the actual playback
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command
-	 *         failed
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean resume() {
-		if (checkPlayerState()) {
-			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = this.auth.getSpotifyApi()
-					.startResumeUsersPlayback().device_id(this.deviceID).build();
-			try {
-				startResumeUsersPlaybackRequest.execute();
-				return true;
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
-				return false;
-			}
-		}
-		return false;
-
+		return this.spotifyAPICalls.resume();
 	}
 
 	/**
 	 * pause the actual playback
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command
-	 *         failed
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
-	public boolean pausePlayback() {
-		if (checkPlayerState()) {
-			PauseUsersPlaybackRequest pauseUsersPlaybackRequest = this.auth.getSpotifyApi().pauseUsersPlayback()
-					.device_id(this.deviceID).build();
-			try {
-				pauseUsersPlaybackRequest.execute();
-				return true;
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
-				return false;
-			}
-		}
-		return false;
+	public boolean pause() {
+		return this.spotifyAPICalls.pause();
 	}
 
 	/**
 	 * goes one song forward in the playlist or album
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command
-	 *         failed
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean skip() {
-		if (checkPlayerState()) {
-			SkipUsersPlaybackToNextTrackRequest skipUsersPlaybackToNextTrackRequest = this.auth.getSpotifyApi()
-					.skipUsersPlaybackToNextTrack().device_id(this.deviceID).build();
-			try {
-				skipUsersPlaybackToNextTrackRequest.execute();
-				return true;
-			} catch (IOException | SpotifyWebApiException e) {
-				this.logger.error(e.getMessage());
-				return false;
-			}
-		}
-		return false;
+		return this.spotifyAPICalls.skip();
 	}
 
 	/**
 	 * goes one song back in the playlist or album
 	 * 
-	 * @return a boolean. true if the command was executed, else if the command
-	 *         failed
+	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean back() {
-		if (checkPlayerState()) {
-
-			SkipUsersPlaybackToPreviousTrackRequest skipUsersPlaybackToPreviousTrackRequest = this.auth.getSpotifyApi()
-					.skipUsersPlaybackToPreviousTrack().device_id(this.deviceID).build();
-			try {
-				skipUsersPlaybackToPreviousTrackRequest.execute();
-				return true;
-			} catch (IOException | SpotifyWebApiException e) {
-				this.logger.error(e.getMessage());
-				return false;
-			}
-		}
-		return false;
+		return this.spotifyAPICalls.back();
 	}
 
 	/**
@@ -346,27 +246,13 @@ public class PlayerLogic {
 	 * @return a hashMap with the keys name and artist
 	 */
 	public Map<String, String> getCurrentSong() {
-		HashMap<String, String> result = new HashMap<>();
-		if (checkPlayerState()) {
-			GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = this.auth
-					.getSpotifyApi().getInformationAboutUsersCurrentPlayback().build();
-			try {
-				CurrentlyPlayingContext currentlyPlayingContext = getInformationAboutUsersCurrentPlaybackRequest
-						.execute();
-				result.put("name", currentlyPlayingContext.getItem().getName());
-				String artists = "";
-				for (ArtistSimplified artist : currentlyPlayingContext.getItem().getArtists()) {
-					artists = artists.concat(artist.getName()).concat(" ");
-
-				}
-				result.put("artist", artists);
-				return result;
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
-				return new HashMap<>();
-			}
+		CurrentlyPlayingContext currentlyPlayingContext = this.spotifyAPICalls.getCurrentSong();
+		if (currentlyPlayingContext != null) {
+			Track[] track = { currentlyPlayingContext.getItem() };
+			return this.search.createTrackOutput(new Paging.Builder<Track>().setItems(track).build()).get(0);
 		}
 		return new HashMap<>();
+
 	}
 
 	/**
@@ -374,114 +260,46 @@ public class PlayerLogic {
 	 * 
 	 * @param volumeString
 	 *            allowed strings: mute, max, up, down
-	 * @return a int from 0-100. This represent the Volume in percent. if the
-	 *         Playerstate incorrect return -1
+	 * @return a int from 0-100. This represent the Volume in percent. if the volume is unknown the return value is -1
 	 */
 	public int setVolume(String volumeString) {
-		if (checkPlayerState()) {
+		int volume = this.spotifyAPICalls.getVolume();
+		if (volume != -1) {
 			switch (volumeString) {
 			case "mute":
-				setVolume(0);
-				this.volume = 0;
-				break;
+				this.spotifyAPICalls.setVolume(VOLUME_MUTE_VALUE);
+				return VOLUME_MUTE_VALUE;
 			case "max":
-				setVolume(100);
-				break;
+				this.spotifyAPICalls.setVolume(VOLUME_MAX_VALUE);
+				return VOLUME_MAX_VALUE;
 			case "up":
-				if (this.volume + 10 <= 100) {
-					this.volume += 10;
-					setVolume(this.volume);
-
-				}
-				break;
+				volume = Math.min(VOLUME_MAX_VALUE, volume + VOLUME_UPDOWN_VALUE);
+				this.spotifyAPICalls.setVolume(volume);
+				return volume;
 			case "down":
-				if (this.volume - 10 >= 0) {
-					this.volume -= 10;
-					setVolume(this.volume);
-
-				}
-				break;
+				volume = Math.max(VOLUME_MUTE_VALUE, volume - VOLUME_UPDOWN_VALUE);
+				this.spotifyAPICalls.setVolume(volume);
+				return volume;
 			default:
 				this.logger.warn("Incorrect volume command");
-				break;
+				return -1;
 			}
-			return this.volume;
+		}
+		return volume;
+	}
+
+	/**
+	 * set the volume direct with an integer
+	 * 
+	 * @param volume
+	 *            a interger between 0 and 100
+	 * @return the new volume. -1 the volume was not between 0 and 100
+	 */
+	public int setVolume(int volume) {
+		if (volume >= VOLUME_MUTE_VALUE && volume <= VOLUME_MAX_VALUE) {
+			this.spotifyAPICalls.setVolume(volume);
+			return volume;
 		}
 		return -1;
 	}
-
-	/**
-	 * set the volume from the remote spotify player
-	 * 
-	 * @param volume
-	 */
-	protected void setVolume(int volume) {
-		this.volume = volume;
-		SetVolumeForUsersPlaybackRequest setVolumeForUsersPlaybackRequest = this.auth.getSpotifyApi()
-				.setVolumeForUsersPlayback(volume).device_id(this.deviceID).build();
-
-		try {
-			setVolumeForUsersPlaybackRequest.execute();
-		} catch (SpotifyWebApiException | IOException e) {
-			this.logger.error(e.getMessage());
-		}
-
-	}
-
-	/**
-	 * this method play the Song from the uri on spotify
-	 * 
-	 * @param uri
-	 * @return true if no problem occur else false
-	 */
-	private boolean playSongFromUri(String uri) {
-		StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = this.auth.getSpotifyApi()
-				.startResumeUsersPlayback().device_id(this.deviceID)
-				.uris(new JsonParser().parse("[\"" + uri + "\"]").getAsJsonArray()).build();
-		try {
-			startResumeUsersPlaybackRequest.execute();
-			return true;
-		} catch (SpotifyWebApiException | IOException e) {
-			this.logger.error(e.getCause().getMessage());
-			return false;
-		}
-	}
-
-	/**
-	 * play a list of tracks for example a playlists and albums
-	 * 
-	 * @param uri
-	 * @return true if no problem occur else false
-	 */
-	private boolean playListFromUri(String uri) {
-		StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = this.auth.getSpotifyApi()
-				.startResumeUsersPlayback().context_uri(uri).device_id(this.deviceID).build();
-		try {
-			startResumeUsersPlaybackRequest.execute();
-			return true;
-		} catch (SpotifyWebApiException | IOException e) {
-			this.logger.error(e.getCause().getMessage());
-			return false;
-		}
-	}
-
-	/**
-	 * check all possible problems from the player
-	 * 
-	 * @return true if all checks passed else false
-	 */
-	private boolean checkPlayerState() {
-		if (this.auth == null) {
-			this.logger.warn("Please initialize the Authorization.");
-			return false;
-		} else if (this.auth.getSpotifyApi() == null) {
-			this.logger.warn("Please initialize the spotify api with the client id and client secret");
-			return false;
-		} else if (!getDevices().contains(this.deviceName)) {
-			this.logger.warn("the current device has been disconnected. Please select a new device.");
-			return false;
-		}
-		return true;
-	}
-
 }

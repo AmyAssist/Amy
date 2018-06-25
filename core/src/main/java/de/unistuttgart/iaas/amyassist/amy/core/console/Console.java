@@ -21,18 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.console;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import asg.cliche.Command;
+import asg.cliche.Shell;
 import asg.cliche.ShellFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.Core;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerCLI;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 
@@ -43,11 +47,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
  */
 @Service(Console.class)
 public class Console implements SpeechIO {
-
-	private Logger logger = LoggerFactory.getLogger(Console.class);
+	@Reference
+	private Logger logger;
 
 	@Reference
-	private Configuration configuration;
+	private ServiceLocator serviceLocator;
 
 	@Reference
 	private Core core;
@@ -66,25 +70,16 @@ public class Console implements SpeechIO {
 		return "";
 	}
 
-	@Command
-	public String plugin(String command) {
-		switch (command) {
-		case "list":
-			return String.join("\n", this.configuration.getInstalledPlugins());
-
-		default:
-			this.logger.warn("command {} doesn't exists", command);
-			return "command doesn't exists";
-		}
-	}
-
 	/**
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
 	public void run() {
 		try {
-			ShellFactory.createConsoleShell("amy", "", this).commandLoop();
+			Shell shell = ShellFactory.createConsoleShell("amy", "", this);
+			shell.addMainHandler(this.serviceLocator.createAndInitialize(PluginManagerCLI.class), "");
+			shell.addMainHandler(new CommandLineArgumentHandler(), "");
+			shell.commandLoop();
 		} catch (IOException e) {
 			this.logger.error("Error while running the console", e);
 		}

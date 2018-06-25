@@ -26,8 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 import javax.sound.sampled.AudioInputStream;
 
 /**
- * Class that translate Aduio-Input into Strings, powered by CMU Sphinx -
- * https://cmusphinx.github.io/ which is Licenced under BSD
+ * Class that translate Aduio-Input into Strings, powered by CMU Sphinx - https://cmusphinx.github.io/ which is Licenced
+ * under BSD
  * 
  * @author Kai Menzel
  */
@@ -49,9 +49,9 @@ public class MainSpeechRecognizer extends SpeechRecognizer {
 	 */
 	@Override
 	protected void predefinedInputHandling() {
-		if(this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
-			 this.tts.stopOutput();
-		 } else if (this.speechRecognitionResult.equals(this.audioUI.getWAKEUP())) {
+		if (this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
+			this.tts.stopOutput();
+		} else if (this.speechRecognitionResult.equals(this.audioUI.getWAKEUP())) {
 			this.listening = true;
 			say("waking up");
 		} else if (this.speechRecognitionResult.startsWith(this.audioUI.getWAKEUP() + " ")) {
@@ -66,7 +66,5 @@ public class MainSpeechRecognizer extends SpeechRecognizer {
 			}
 		}
 	}
-
-	
 
 }

@@ -56,17 +56,16 @@ public class SpotifySpeech {
 		List<String> devices = this.playerLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
-			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i));
+			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i).concat("\n"));
 		}
 		if (output.equals("")) {
-			return "no deivce found";
+			return "no device found";
 		}
 		return output;
 	}
 
 	/**
-	 * set the device in the player logic # is a number between 0 and theoretically
-	 * infinite
+	 * set the device in the player logic # is a number between 0 and theoretically infinite
 	 * 
 	 * @param params
 	 * 
@@ -104,7 +103,7 @@ public class SpotifySpeech {
 
 	@Grammar("pause")
 	public String pause(String... params) {
-		if (this.playerLogic.pausePlayback()) {
+		if (this.playerLogic.pause()) {
 			return "pause";
 		}
 		return ERROR_MESSAGE;

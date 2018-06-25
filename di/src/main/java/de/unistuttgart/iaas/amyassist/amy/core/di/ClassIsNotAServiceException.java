@@ -24,8 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 /**
- * A exception of the dependency injection, signaling, that a given class is
- * not a service.
+ * A exception of the dependency injection, signaling, that a given class is not a service.
  * 
  * @author Leon Kiefer
  */
