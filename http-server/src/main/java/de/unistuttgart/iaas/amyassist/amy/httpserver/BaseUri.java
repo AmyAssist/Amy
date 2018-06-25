@@ -21,19 +21,25 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.server;
+package de.unistuttgart.iaas.amyassist.amy.httpserver;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.server.URI;
 
 /**
- * API for the Server
+ * Class to get URI to Resources
  * 
  * @author Christian Bräuner
  */
-public interface ServerAPI {
+@Service
+public class BaseUri implements URI {
 
 	/**
-	 * returns the server-uri as string
-	 * 
-	 * @return the Uri of the server
+	 * @see de.unistuttgart.iaas.amyassist.amy.server.URI#getServerURI()
 	 */
-	public String getServerURI();
+	@Override
+	public String getServerURI() {
+		return Server.BASE_URI.toString();
+	}
+
 }

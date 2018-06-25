@@ -41,7 +41,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
-import de.unistuttgart.iaas.amyassist.amy.server.ServerAPI;
 
 /**
  * A class to create a http server
@@ -49,7 +48,7 @@ import de.unistuttgart.iaas.amyassist.amy.server.ServerAPI;
  * @author Christian Bräuner, Leon Kiefer
  */
 @Service
-public class Server implements ServerAPI{
+public class Server{
 	private final Logger logger = LoggerFactory.getLogger(Server.class);
 
 	@Reference
@@ -114,11 +113,4 @@ public class Server implements ServerAPI{
 		this.restResources.add(cls);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.server.ServerAPI#getServerURI()
-	 */
-	@Override
-	public String getServerURI() {
-		return BASE_URI.toString();
-	}
 }
