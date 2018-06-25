@@ -64,7 +64,7 @@ class SpeechCommandHandlerTest {
 		this.speechCammandHandler.completeSetup();
 
 		String result = this.speechCammandHandler.handleSpeechInput("testkeyword simple 10");
-		assertThat(result, equalTo("10"));
+		assertThat(result, equalTo("simple"));
 		// assertThat(result, equalTo("10"));
 	}
 

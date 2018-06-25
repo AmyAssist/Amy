@@ -37,12 +37,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
-import de.unistuttgart.iaas.amyassist.amy.core.GrammarParser;
-import de.unistuttgart.iaas.amyassist.amy.core.PluginGrammarInfo;
-import de.unistuttgart.iaas.amyassist.amy.core.TextToPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.naturallang.GrammarCommand;
+import de.unistuttgart.iaas.amyassist.amy.naturallang.GrammarParser;
+import de.unistuttgart.iaas.amyassist.amy.naturallang.PluginGrammarInfo;
+import de.unistuttgart.iaas.amyassist.amy.naturallang.TextToGrammarMapper;
 
 /**
  * Handles incoming SpeechCommand requests
@@ -54,7 +55,7 @@ public class SpeechCommandHandler {
 	private final Logger logger = LoggerFactory.getLogger(SpeechCommandHandler.class);
 
 	private AnnotationReader annotationReader = new AnnotationReader();
-	private TextToPlugin textToPlugin;
+	private TextToGrammarMapper textToPlugin;
 	private GrammarParser generator = new GrammarParser("grammar", AudioUserInteraction.getAudioUI().getWAKEUP(),
 			AudioUserInteraction.getAudioUI().getGOSLEEP(), AudioUserInteraction.getAudioUI().getSHUTDOWN());
 
@@ -93,16 +94,16 @@ public class SpeechCommandHandler {
 			this.logger.error("Can't write grammar file", e1);
 		}
 
-		this.textToPlugin = new TextToPlugin(this.grammarInfos.keySet());
+		this.textToPlugin = new TextToGrammarMapper(this.grammarInfos.keySet());
 	}
 
 	public String handleSpeechInput(String input) {
 		this.logger.debug("input {}", input);
-		List<String> pluginActionFromText = this.textToPlugin.pluginActionFromText(input);
-		if (pluginActionFromText == null)
+		GrammarCommand pluginActionFromText = this.textToPlugin.resolveText(input);
+		if (pluginActionFromText.getMatchingGrammar() == null || pluginActionFromText.getMatchingKeyword() == null)
 			throw new IllegalArgumentException(input);
-		String[] args = pluginActionFromText.subList(2, pluginActionFromText.size()).toArray(new String[0]);
-		return this.call(this.speechCommands.get(pluginActionFromText.get(1)), args);
+		String[] splitByWhitespaceCommand = pluginActionFromText.getWholeCommand().split(" ");
+		return this.call(this.speechCommands.get(pluginActionFromText.getMatchingGrammar()), splitByWhitespaceCommand);
 	}
 
 	private String call(SpeechCommand command, String[] input) {
