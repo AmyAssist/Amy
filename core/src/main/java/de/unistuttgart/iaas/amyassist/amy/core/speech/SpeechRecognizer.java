@@ -166,6 +166,7 @@ public abstract class SpeechRecognizer implements Runnable {
 			if (speechResult != null) {
 				// Get the hypothesis (Result as String)
 				this.speechRecognitionResult = speechResult.getHypothesis();
+				
 				if (!this.soundPlaying) {
 					predefinedInputHandling();
 				} else {
@@ -216,6 +217,9 @@ public abstract class SpeechRecognizer implements Runnable {
 				}
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
+			} catch (NullPointerException e) {
+				this.say("unknown command");
+				this.logger.error("no handle return");
 			}
 		}
 	}
@@ -312,18 +316,16 @@ public abstract class SpeechRecognizer implements Runnable {
 		configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
 		configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
 		configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
-		if(this.grammar.getFile() == null) {
-			configuration.setUseGrammar(false);
-		} else if(!this.grammar.getFile().toString().endsWith(".gram")) {
-			configuration.setUseGrammar(false);
-		}else {
+
+		configuration.setUseGrammar(false);
+		if(this.grammar != null && this.grammar.getFile() != null && this.grammar.getFile().toString().endsWith(".gram")) {
 			try {
 				configuration.setGrammarPath(this.grammar.getFile().getParentFile().toURI().toURL().toString());
+				configuration.setGrammarName(this.grammar.getFile().getName().replace(".gram", ""));
+				configuration.setUseGrammar(true);
 			} catch (MalformedURLException e) {
 				this.logger.error("", e);
 			}
-			configuration.setGrammarName(this.grammar.getFile().getName().replace(".gram", ""));
-			configuration.setUseGrammar(true);
 		}
 		return configuration;
 	}
