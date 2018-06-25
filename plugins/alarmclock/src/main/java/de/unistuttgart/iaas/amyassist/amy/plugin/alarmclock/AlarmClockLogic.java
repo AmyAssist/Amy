@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- *
+ * 
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
+ * You may obtain a copy of the License at 
+ * 
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,8 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 
 /**
- * This class implements the logic for all the functions that our alarm clock
- * and timer are capable of
+ * This class implements the logic for all the functions that our alarm clock and timer are capable of
  * 
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
@@ -63,8 +62,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
-	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel
-	 * Simion
+	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel Simion
 	 * 
 	 * @return runnable
 	 * 
@@ -89,8 +87,7 @@ public class AlarmClockLogic {
 
 	/**
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
-	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel
-	 * Simion
+	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel Simion
 	 * 
 	 * @param timerNumber
 	 *            the number of the timer in storage
@@ -118,8 +115,7 @@ public class AlarmClockLogic {
 	 * Set new alarm and schedule it
 	 * 
 	 * @param alarmTime
-	 *            String array with two integers. First entry is hour second is
-	 *            minute
+	 *            String array with two integers. First entry is hour second is minute
 	 * 
 	 * @return counter, alarmTime[0], alarmTime[1]
 	 */
