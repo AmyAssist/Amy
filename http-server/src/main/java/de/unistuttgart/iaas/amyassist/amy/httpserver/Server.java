@@ -83,7 +83,6 @@ public class Server{
 				});
 			}
 		});
-		// java.util.logging.Logger.getLogger("org.glassfish.grizzly").setLevel(Level.WARNING);
 		this.httpServer = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, resourceConfig);
 	}
 
