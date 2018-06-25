@@ -51,14 +51,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingeltonServiceProvi
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
- * Dependency Injection Used to manage dependencies and Service instantiation at
- * runtime. A Service that relies on DI is completely passive when it comes to
- * its runtime dependencies. There is no code in the Service that creates,
- * instantiates or gets the dependencies. The dependencies are injected into the
- * Service before the Service is executed. This reversal of responsibility to
- * instantiate (or ask for instantiate of) a dependency is called Inversion of
- * Control (IoC). This leads to loose coupling, because the Service doesn't need
- * to know about how the dependency is implemented.
+ * Dependency Injection Used to manage dependencies and Service instantiation at runtime. A Service that relies on DI is
+ * completely passive when it comes to its runtime dependencies. There is no code in the Service that creates,
+ * instantiates or gets the dependencies. The dependencies are injected into the Service before the Service is executed.
+ * This reversal of responsibility to instantiate (or ask for instantiate of) a dependency is called Inversion of
+ * Control (IoC). This leads to loose coupling, because the Service doesn't need to know about how the dependency is
+ * implemented.
  * 
  * @author Leon Kiefer, Tim Neumann
  */
@@ -96,7 +94,7 @@ public class DependencyInjection implements ServiceLocator {
 	 * @param serviceFunction
 	 *            The instance of the service provider
 	 */
-	public synchronized<T> void register(Class<T> serviceType, ServiceFunction<T> serviceFunction) {
+	public synchronized <T> void register(Class<T> serviceType, ServiceFunction<T> serviceFunction) {
 		if (this.hasServiceOfType(serviceType))
 			throw new DuplicateServiceException();
 		this.register.put(serviceType, serviceFunction);
@@ -141,9 +139,8 @@ public class DependencyInjection implements ServiceLocator {
 	}
 
 	/**
-	 * Adds an external Service instance to the DI. The DI does not manage the
-	 * dependencies of the external Service, but the DI can inject the external
-	 * Service as dependency into other managed services.
+	 * Adds an external Service instance to the DI. The DI does not manage the dependencies of the external Service, but
+	 * the DI can inject the external Service as dependency into other managed services.
 	 * 
 	 * @param serviceType
 	 *            The type of this service
@@ -173,8 +170,7 @@ public class DependencyInjection implements ServiceLocator {
 	}
 
 	/**
-	 * Resolve the dependencies of the ServiceProvider and creates a factory for
-	 * the Service.
+	 * Resolve the dependencies of the ServiceProvider and creates a factory for the Service.
 	 * 
 	 * @param <T>
 	 *            The type of the service
@@ -187,8 +183,7 @@ public class DependencyInjection implements ServiceLocator {
 	}
 
 	/**
-	 * Resolve the dependencies of the ServiceProvider and creates a factory for
-	 * the Service.
+	 * Resolve the dependencies of the ServiceProvider and creates a factory for the Service.
 	 * 
 	 * @param <T>
 	 *            The type of the service
@@ -204,9 +199,8 @@ public class DependencyInjection implements ServiceLocator {
 	}
 
 	/**
-	 * Resolve the dependencies of the ServiceProvider and creates a factory for
-	 * the Service. considering the stack of dependencies, for which this
-	 * ServiceProvider is needed.
+	 * Resolve the dependencies of the ServiceProvider and creates a factory for the Service. considering the stack of
+	 * dependencies, for which this ServiceProvider is needed.
 	 * 
 	 * @param <T>
 	 *            The type of the service

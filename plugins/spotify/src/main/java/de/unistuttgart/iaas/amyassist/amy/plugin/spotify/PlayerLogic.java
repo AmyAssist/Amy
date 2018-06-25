@@ -55,7 +55,7 @@ public class PlayerLogic {
 	private StringGenerator stringGenerator;
 	@Reference
 	private Logger logger;
-	
+
 	private List<Map<String, String>> actualSearchResult = null;
 
 	private ArrayList<String> deviceNames = new ArrayList<>();
@@ -64,8 +64,6 @@ public class PlayerLogic {
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
-
-
 
 	/**
 	 * needed for the first init. need the clientID and the clientSecret form a spotify devloper account

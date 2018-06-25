@@ -49,7 +49,7 @@ class SpotifyAPICallsTest {
 	private SpotifyApi spotifyApi;
 
 	private SpotifyAPICalls spotifyAPICalls;
-	
+
 	@Reference
 	private TestFramework testFramework;
 

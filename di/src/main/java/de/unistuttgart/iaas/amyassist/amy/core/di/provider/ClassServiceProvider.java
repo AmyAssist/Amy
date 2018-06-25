@@ -118,8 +118,7 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 	}
 
 	/**
-	 * Create a new Service instance with the given resolved dependencies and
-	 * context
+	 * Create a new Service instance with the given resolved dependencies and context
 	 * 
 	 * @param resolvedDependencies
 	 * @param contextTuple

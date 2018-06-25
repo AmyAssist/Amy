@@ -51,9 +51,8 @@ public class TextToPlugin {
 	/**
 	 * returns first matching grammar
 	 * 
-	 * this method will ignore things before and after the grammar which
-	 * means @Grammar(jhdawdap amy says wjapdjawp) will work this is great for
-	 * error prone speech to text
+	 * this method will ignore things before and after the grammar which means @Grammar(jhdawdap amy says wjapdjawp)
+	 * will work this is great for error prone speech to text
 	 * 
 	 * !the longest matching grammar will be returned!
 	 * 
@@ -61,14 +60,14 @@ public class TextToPlugin {
 	 * @return String[] 0 contains matching keyword, 1 contains matching grammar
 	 */
 	public List<String> pluginActionFromText(String text) {
-		Map<String,String> grammarResults = new HashMap<>();
-		//0 contains the keyword, 1 the matching grammar, everything after contains the keywords
+		Map<String, String> grammarResults = new HashMap<>();
+		// 0 contains the keyword, 1 the matching grammar, everything after contains the keywords
 		List<String> result = new ArrayList<>();
-		
+
 		String finalGrammarResult = null;
 
 		for (PluginGrammarInfo currentGrammar : this.infos) {
-			
+
 			for (String keyword : currentGrammar.keywords) {
 
 				int index = text.indexOf(keyword);
@@ -89,16 +88,17 @@ public class TextToPlugin {
 						if (m.find()) {
 							grammarResults.put(s, m.group());
 						}
-							
+
 					}
-					
+
 					// use the longest matching grammar
 					if (!grammarResults.isEmpty()) {
-						finalGrammarResult = Collections.max(grammarResults.keySet(), Comparator.comparing(s -> s.length()));
+						finalGrammarResult = Collections.max(grammarResults.keySet(),
+								Comparator.comparing(s -> s.length()));
 						result.add(1, finalGrammarResult);
-						
+
 						String[] paramsList = stringToNumber(grammarResults.get(finalGrammarResult)).split(" ");
-						for(String param : paramsList) {
+						for (String param : paramsList) {
 							result.add(result.size(), param);
 						}
 						return result;
@@ -113,11 +113,10 @@ public class TextToPlugin {
 	}
 
 	/**
-	 * some regex fun! because java string handling is weird i have to use alot
-	 * of \
+	 * some regex fun! because java string handling is weird i have to use alot of \
 	 * 
-	 * this method is prone to errors, i tested it as much as possible but if
-	 * there are any bugs tell me immediately -Felix B
+	 * this method is prone to errors, i tested it as much as possible but if there are any bugs tell me immediately
+	 * -Felix B
 	 * 
 	 * @param grammar
 	 * @return the generated regex for the specific grammar
@@ -193,11 +192,11 @@ public class TextToPlugin {
 				result += Integer.valueOf(stringToNmb.get(s));
 			}
 			results.add(result);
-			resultText = resultText.replaceAll(gr, String.valueOf(result)+" ");
+			resultText = resultText.replaceAll(gr, String.valueOf(result) + " ");
 
 		}
-		
-		//trim removes leading or trailing whitespaces
+
+		// trim removes leading or trailing whitespaces
 		return resultText.trim();
 	}
 

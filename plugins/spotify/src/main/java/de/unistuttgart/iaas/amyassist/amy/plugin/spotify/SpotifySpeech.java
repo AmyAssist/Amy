@@ -65,8 +65,7 @@ public class SpotifySpeech {
 	}
 
 	/**
-	 * set the device in the player logic # is a number between 0 and theoretically
-	 * infinite
+	 * set the device in the player logic # is a number between 0 and theoretically infinite
 	 * 
 	 * @param params
 	 * 

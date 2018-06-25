@@ -68,11 +68,9 @@ class PlayerLogicTest {
 
 	@Mock
 	private Search search;
-	
-	
 
 	@BeforeEach
-	public void init() {	
+	public void init() {
 		this.spotifyAPICalls = this.testFramework.mockService(SpotifyAPICalls.class);
 		this.search = this.testFramework.mockService(Search.class);
 		this.testFramework.mockService(StringGenerator.class);

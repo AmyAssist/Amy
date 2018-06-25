@@ -55,8 +55,6 @@ public class Search {
 	 */
 	public static final int SEARCH_LIMIT = 10;
 
-
-
 	/**
 	 * create a search query and output a list with search results
 	 * 
@@ -110,7 +108,8 @@ public class Search {
 	/**
 	 * create a List with all items in a Paging Object when the type is a track
 	 * 
-	 * @param searchResult the search result from a query
+	 * @param searchResult
+	 *            the search result from a query
 	 * @return a list with search result entries. every entry has a Map with different attributes. e.g. artist, ...
 	 *         every entry has a uri to the song an the type track
 	 */
@@ -142,7 +141,8 @@ public class Search {
 	/**
 	 * create a List with all SearchResults when the type is a album
 	 * 
-	 * @param searchResult the search result from a query
+	 * @param searchResult
+	 *            the search result from a query
 	 * @return a list with search result entries. every entry has a Map with different attributes. e.g. artist, ...
 	 *         every entry has a uri to the song an the type album
 	 */
@@ -174,7 +174,8 @@ public class Search {
 	/**
 	 * create a List with all SearchResults when the type is a artist
 	 * 
-	 * @param searchResult the search result from a query
+	 * @param searchResult
+	 *            the search result from a query
 	 * @return a list with search result entries. every entry has a Map with different attributes. e.g. artist, ...
 	 *         every entry has a uri to the song an the type artist
 	 */
@@ -206,7 +207,8 @@ public class Search {
 	/**
 	 * create a List with all SearchResults when the type is a playlist
 	 * 
-	 * @param searchResult the search result from a query
+	 * @param searchResult
+	 *            the search result from a query
 	 * @return a list with search result entries. every entry has a Map with different attributes. e.g. artist, ...
 	 *         every entry has a uri to the song an the type playlist
 	 */
@@ -249,7 +251,8 @@ public class Search {
 	/**
 	 * check a string if is in the ModelObjectType true, else false
 	 * 
-	 * @param type artist, album, track or playlist
+	 * @param type
+	 *            artist, album, track or playlist
 	 * @return if the param type one of the for types then return true, else false
 	 */
 	public boolean typeCheck(String type) {

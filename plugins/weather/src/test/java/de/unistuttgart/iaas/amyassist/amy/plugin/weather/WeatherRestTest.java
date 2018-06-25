@@ -56,7 +56,7 @@ public class WeatherRestTest {
 
 	@Reference
 	private TestFramework testFramework;
-	
+
 	private WeatherDarkSkyAPI logic;
 	private WeatherReportDay day;
 	private WeatherReportWeek week;
@@ -71,11 +71,11 @@ public class WeatherRestTest {
 
 		Client c = ClientBuilder.newClient();
 		this.target = c.target(Server.BASE_URI);
-		
+
 		this.createDay();
 		this.createWeek();
 	}
-	
+
 	private void createDay() {
 		FIODataPoint p = Mockito.mock(FIODataPoint.class);
 		Mockito.when(p.summary()).thenReturn("Clear throughout the day");
@@ -86,9 +86,9 @@ public class WeatherRestTest {
 		Mockito.when(p.sunriseTime()).thenReturn("05:00:00");
 		Mockito.when(p.sunsetTime()).thenReturn("21:00:00");
 		Mockito.when(p.timestamp()).thenReturn((long) 12345);
-		
+
 		this.day = new WeatherReportDay("This is the weather report for today.", p);
-		
+
 		this.obj = new JsonObject();
 		this.obj.add("summary", this.day.getSummary());
 		this.obj.add("precip", this.day.isPrecip());
@@ -101,20 +101,19 @@ public class WeatherRestTest {
 		this.obj.add("weekday", this.day.getWeekday());
 		this.obj.add("timestamp", this.day.getTimestamp());
 	}
-	
+
 	private void createWeek() {
 		this.week = Mockito.mock(WeatherReportWeek.class);
 		this.week.summary = "Clear throughout the day";
 	}
-	
+
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherToday()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherToday()}.
 	 */
 	@Test
 	void testGetWeatherToday() {
 		Mockito.when(this.logic.getReportToday()).thenReturn(this.day);
-		
+
 		Response response = this.target.path("weather").path("today").request().get();
 
 		assertThat(response.getStatus(), is(200));
@@ -122,13 +121,12 @@ public class WeatherRestTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherTomorrow()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherTomorrow()}.
 	 */
 	@Test
 	void testGetWeatherTomorrow() {
 		Mockito.when(this.logic.getReportTomorrow()).thenReturn(this.day);
-		
+
 		Response response = this.target.path("weather").path("tomorrow").request().get();
 
 		assertThat(response.getStatus(), is(200));
@@ -136,13 +134,12 @@ public class WeatherRestTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherWeek()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherWeek()}.
 	 */
 	@Test
 	void testGetWeatherWeek() {
 		Mockito.when(this.logic.getReportWeek()).thenReturn(this.week);
-		
+
 		Response response = this.target.path("weather").path("week").request().get();
 
 		assertThat(response.getStatus(), is(200));

@@ -100,9 +100,7 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setFile(File)}
-	 * and
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setFile(File)} and
 	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getFile()}.
 	 */
 	@Test
@@ -123,10 +121,8 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setClassLoader(ClassLoader)}
-	 * and
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getClassLoader()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setClassLoader(ClassLoader)}
+	 * and {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getClassLoader()}.
 	 */
 	@Test
 	void testClassLoader() {
@@ -137,8 +133,7 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getUniqueName()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getUniqueName()}.
 	 */
 	@Test
 	void testUniqueName() {
@@ -153,8 +148,7 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getVersion()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getVersion()}.
 	 */
 	@Test
 	void testVersion() {
@@ -170,8 +164,7 @@ class PluginTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setClasses(java.util.ArrayList)}
-	 * and
+	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setClasses(java.util.ArrayList)} and
 	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getClasses()}.
 	 */
 	@Test
@@ -185,8 +178,7 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getManifest()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getManifest()}.
 	 */
 	@Test
 	void testManifest() {

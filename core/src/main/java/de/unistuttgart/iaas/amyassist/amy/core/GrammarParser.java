@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * generates a valid *.gram file, keywords get replaced by pre defined rules
- * JSGF specification: https://www.w3.org/TR/jsgf/
+ * generates a valid *.gram file, keywords get replaced by pre defined rules JSGF specification:
+ * https://www.w3.org/TR/jsgf/
  *
  * @author Felix Burk
  */
@@ -47,9 +47,8 @@ public class GrammarParser {
 	/**
 	 * initializes the parser
 	 *
-	 * possible expansions: more custom keywords, weights may be supported,
-	 * <NULL> and <VOID> support, Unary Operators (kleene star, plus operator
-	 * and tags)
+	 * possible expansions: more custom keywords, weights may be supported, <NULL> and <VOID> support, Unary Operators
+	 * (kleene star, plus operator and tags)
 	 *
 	 * @param name
 	 *            The name of the grammar
@@ -120,10 +119,9 @@ public class GrammarParser {
 			}
 			rule = rule.substring(0, rule.length() - 1);
 			rule += ") " + this.parseKeyword(grammar) + "; \n";
-		}else {
+		} else {
 			rule += this.parseKeyword(keywords[0]) + " " + this.parseKeyword(grammar) + "; \n";
 		}
-
 
 		this.addedRules.add(rule);
 	}
