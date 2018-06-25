@@ -36,11 +36,10 @@ public class MusicEntity {
 	/**
 	 * constructor for a MusicEntity
 	 */
-	public MusicEntity()
-	{
-		
+	public MusicEntity() {
+
 	}
-	
+
 	/**
 	 * constructor for a MusicEntity with set values
 	 */
@@ -48,17 +47,17 @@ public class MusicEntity {
 		this.title = title;
 		this.artist = artist;
 	}
-	
+
 	/**
 	 * the artist of the music
 	 */
 	public String artist;
-	
+
 	/**
 	 * the title of the music
 	 */
 	public String title;
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */

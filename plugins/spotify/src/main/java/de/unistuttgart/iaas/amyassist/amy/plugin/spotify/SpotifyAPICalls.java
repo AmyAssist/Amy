@@ -103,12 +103,11 @@ public class SpotifyAPICalls {
 	private ConfigLoader configLoader;
 
 	private boolean firstTime = true;
-	
+
 	@Reference
 	private Logger logger;
 
 	private SpotifyApi spotifyApi = null;
-
 
 	/**
 	 * init the api calls

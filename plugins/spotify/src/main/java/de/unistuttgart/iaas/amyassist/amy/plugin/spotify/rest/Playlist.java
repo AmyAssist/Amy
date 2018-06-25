@@ -27,18 +27,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Playlist entity for JSON
+ * 
  * @author Christian Bräuner, Muhammed Kaya
  */
 @XmlRootElement
 public class Playlist {
-	
+
 	/**
-	 * constructor for a Playlist 
+	 * constructor for a Playlist
 	 */
 	public Playlist() {
-		
+
 	}
-	
+
 	/**
 	 * constructor for a Playlist with set values
 	 */
@@ -46,12 +47,12 @@ public class Playlist {
 		this.name = title;
 		this.songs = songs;
 	}
-	
+
 	/**
 	 * the name of the playlist
 	 */
 	public String name = "";
-	
+
 	/**
 	 * the songs in the playlist
 	 */

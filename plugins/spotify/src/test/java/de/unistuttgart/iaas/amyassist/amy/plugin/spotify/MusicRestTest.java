@@ -92,7 +92,7 @@ class MusicRestTest {
 		Mockito.when(this.logic.getCurrentSong()).thenReturn(currentSong);
 
 		this.musicEntity = new MusicEntity(currentSong.get("name"), currentSong.get("artist"));
-		
+
 		MusicEntity[] musics = new MusicEntity[1];
 		musics[0] = this.musicEntity;
 		this.playlist = new Playlist("myPlaylist", musics);

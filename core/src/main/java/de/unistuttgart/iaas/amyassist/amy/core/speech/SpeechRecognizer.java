@@ -42,8 +42,8 @@ import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;
 
 /**
- * Class that translate Aduio-Input into Strings, powered by CMU Sphinx -
- * https://cmusphinx.github.io/ which is Licenced under BSD
+ * Class that translate Aduio-Input into Strings, powered by CMU Sphinx - https://cmusphinx.github.io/ which is Licenced
+ * under BSD
  *
  * @author Kai Menzel
  */
@@ -103,11 +103,11 @@ public abstract class SpeechRecognizer implements Runnable {
 	 * The Recognizer which Handles the Recognition
 	 */
 	protected StreamSpeechRecognizer recognizer;
-	
-	private LineListener listener = new LineListener(){
+
+	private LineListener listener = new LineListener() {
 		@Override
 		public void update(LineEvent event) {
-			if(event.getType() == LineEvent.Type.STOP) {
+			if (event.getType() == LineEvent.Type.STOP) {
 				((Clip) event.getSource()).close();
 				SpeechRecognizer.this.soundPlaying = false;
 			}
@@ -149,8 +149,7 @@ public abstract class SpeechRecognizer implements Runnable {
 	// -----------------------------------------------------------------------------------------------
 
 	/**
-	 * @see java.lang.Runnable#run() Starts and runs the recognizer calls
-	 *      makeDecision() with the recognized String
+	 * @see java.lang.Runnable#run() Starts and runs the recognizer calls makeDecision() with the recognized String
 	 */
 	@Override
 	public void run() {
@@ -178,10 +177,10 @@ public abstract class SpeechRecognizer implements Runnable {
 
 			// Get the hypothesis (Result as String)
 			this.speechRecognitionResult = speechResult.getHypothesis();
-			if(!this.soundPlaying) {
+			if (!this.soundPlaying) {
 				predefinedInputHandling();
-			}else {
-				if(this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
+			} else {
+				if (this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
 					this.tts.stopOutput();
 				}
 			}

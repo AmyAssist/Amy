@@ -117,7 +117,7 @@ public class MusicResource {
 		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);
 	}
-	
+
 	/**
 	 * skips the actual playback
 	 * 
@@ -132,7 +132,7 @@ public class MusicResource {
 		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);
 	}
-	
+
 	/**
 	 * pauses the actual playback
 	 * 
@@ -164,8 +164,7 @@ public class MusicResource {
 	 * controls the volume of the player
 	 * 
 	 * @param volumeString
-	 *            allowed strings: mute, max, up, down, or a volume value between 0
-	 *            and 100
+	 *            allowed strings: mute, max, up, down, or a volume value between 0 and 100
 	 * @return a int from 0-100. This represent the Volume in percent.
 	 */
 	@POST

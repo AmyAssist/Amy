@@ -49,10 +49,10 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  */
 @ExtendWith(FrameworkExtension.class)
 class SystemTimeRestTest {
-	
+
 	@Reference
 	private TestFramework testFramework;
-	
+
 	private SystemTimeLogic logic;
 
 	private WebTarget target;
@@ -75,7 +75,7 @@ class SystemTimeRestTest {
 
 		Response response = this.target.path("systemtime").path("time").request().get();
 		String responseMsg = this.target.path("systemtime").path("time").request().get(String.class);
-		
+
 		assertEquals("12 34 56", responseMsg);
 		assertEquals(200, response.getStatus());
 		assertNotNull(response.getEntity());
@@ -90,7 +90,7 @@ class SystemTimeRestTest {
 
 		Response response = this.target.path("systemtime").path("date").request().get();
 		String responseMsg = this.target.path("systemtime").path("date").request().get(String.class);
-		
+
 		assertEquals("31 12 18", responseMsg);
 		assertEquals(200, response.getStatus());
 		assertNotNull(response.getEntity());

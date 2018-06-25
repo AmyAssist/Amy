@@ -33,25 +33,24 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @XmlRootElement
 public class Timestamp {
-	
+
 	/**
 	 * the hour of the timestamp
 	 */
 	public int hour = 0;
-	
+
 	/**
 	 * the minute of the timestamp
 	 */
 	public int minute = 0;
-	
-	
+
 	/**
 	 * constructor for a timestamp without set values
 	 */
 	public Timestamp() {
 		// needed for JSON
 	}
-	
+
 	public Timestamp(String time) throws IllegalArgumentException {
 		try {
 			String[] timeSplit = time.split(":");
@@ -61,8 +60,7 @@ public class Timestamp {
 			throw new IllegalArgumentException(time);
 		}
 	}
-	
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
@@ -70,17 +68,17 @@ public class Timestamp {
 	public String toString() {
 		String sh = String.valueOf(this.hour);
 		String sm = String.valueOf(this.minute);
-		if(this.hour < 10) {
+		if (this.hour < 10) {
 			sh = "0" + sh;
 		}
-		if(this.minute < 10) {
+		if (this.minute < 10) {
 			sm = "0" + sm;
 		}
 		return sh + ":" + sm;
 	}
-	
+
 	@XmlTransient
 	public boolean isValid() {
-		return ((this.hour>=0 && this.hour < 24) && (this.minute >= 0 && this.minute < 60));
+		return ((this.hour >= 0 && this.hour < 24) && (this.minute >= 0 && this.minute < 60));
 	}
 }

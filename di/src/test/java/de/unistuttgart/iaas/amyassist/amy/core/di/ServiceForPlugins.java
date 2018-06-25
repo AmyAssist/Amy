@@ -30,7 +30,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * A test service for DependencyInjectionScopeTest
  * 
  * @author Leon Kiefer
- */	
+ */
 @Service
 public class ServiceForPlugins {
 

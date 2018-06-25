@@ -48,8 +48,7 @@ public class ServiceNotFoundException extends RuntimeException {
 	 */
 	@Override
 	public String getMessage() {
-		return "The Service " + this.serviceType.getName()
-				+ " is not registered in the DI or do not exists.";
+		return "The Service " + this.serviceType.getName() + " is not registered in the DI or do not exists.";
 	}
 
 }
