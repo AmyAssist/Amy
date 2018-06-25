@@ -40,6 +40,7 @@ import javax.ws.rs.core.Response.Status;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
+import de.unistuttgart.iaas.amyassist.amy.server.URI;
 
 /**
  * REST Resource for alarmclock
@@ -56,6 +57,9 @@ public class AlarmClockResource {
 
 	@Reference
 	private AlarmClockLogic logic;
+	
+	@Reference
+	private URI uri;
 
 	/**
 	 * returns all alarms
@@ -176,6 +180,6 @@ public class AlarmClockResource {
 	}
 
 	private String createAlarmPath(int id) {
-		return Server.BASE_URI.toString() + "/" + PATH + "/alarms/" + id;
+		return uri.getServerURI()+ "/" + PATH + "/alarms/" + id;
 	}
 }
