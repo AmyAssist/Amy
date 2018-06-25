@@ -78,15 +78,12 @@ public class AlarmClockSpeech {
 						.toString();
 			} else if (params.length == 7) {
 				if (params[4].equals("hours") && params[6].equals("minutes")) {
-					return this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), 0)
-							.toString();
+					return this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), 0).toString();
 				} else if (params[4].equals("hours") && params[6].equals("seconds")) {
 
-					return this.logic.setTimer(Integer.parseInt(params[3]), 0, Integer.parseInt(params[5]))
-							.toString();
+					return this.logic.setTimer(Integer.parseInt(params[3]), 0, Integer.parseInt(params[5])).toString();
 				} else if (params[4].equals("minutes") && params[6].equals("seconds")) {
-					return this.logic.setTimer(0, Integer.parseInt(params[3]), Integer.parseInt(params[5]))
-							.toString();
+					return this.logic.setTimer(0, Integer.parseInt(params[3]), Integer.parseInt(params[5])).toString();
 
 				}
 			} else if (params.length == 5) {
@@ -213,5 +210,24 @@ public class AlarmClockSpeech {
 		} catch (NoSuchElementException e) {
 			return ELEMENTNOTFOUND;
 		}
+	}
+
+	/**
+	 * Gets remaining timer delay
+	 * 
+	 * @param params
+	 * @return
+	 */
+	@Grammar("when (does|is) timer # (ringing|ring)")
+	public String getRemainingTimerDelay(String params[]) {
+		int[] remDelay = this.logic.getRemainingTimerDelay(Integer.parseInt(params[3]));
+		if (remDelay[0] == 0) {
+			if (remDelay[1] == 0) {
+				return "Timer " + params[3] + " rings in " + remDelay[2] + " seconds";
+			}
+			return "Timer " + params[3] + " rings in " + remDelay[1] + " minutes and " + remDelay[2] + " seconds";
+		}
+		return "Timer " + params[3] + " rings in " + remDelay[0] + " hours and " + remDelay[1] + " minutes and "
+				+ remDelay[2] + " seconds";
 	}
 }

@@ -23,6 +23,8 @@ public class Alarm {
 	 *            hour of the alarm
 	 * @param minute
 	 *            minute of the alarm
+	 * @param active
+	 *            alarm active
 	 */
 	public Alarm(int id, int hour, int minute, boolean active) {
 		if (id < 0)
@@ -37,10 +39,12 @@ public class Alarm {
 
 	/**
 	 * Returns a string representation of this object
+	 * 
 	 * @see java.lang.Object#toString()
 	 * 
 	 * @return
 	 */
+	@Override
 	public String toString() {
 		return this.id + ":" + this.alarmDate.get(Calendar.HOUR_OF_DAY) + ":" + this.alarmDate.get(Calendar.MINUTE)
 				+ ":" + this.active;
@@ -58,10 +62,16 @@ public class Alarm {
 		String[] params = input.split(":");
 		if (params.length == 4)
 			return new Alarm(Integer.parseInt(params[0]), Integer.parseInt(params[1]), Integer.parseInt(params[2]),
-					Boolean.valueOf(params[3]));
+					Boolean.parseBoolean(params[3]));
 		throw new IllegalArgumentException();
 	}
 
+	/**
+	 * Give the alarm a new time
+	 * 
+	 * @param newTime
+	 *            new alarm time containing hour and minute
+	 */
 	public void setTime(int[] newTime) {
 		if (newTime.length == 2) {
 			Calendar date = Calendar.getInstance();
@@ -78,22 +88,37 @@ public class Alarm {
 
 	}
 
+	/**
+	 * @return id
+	 */
 	public int getId() {
 		return this.id;
 	}
 
+	/**
+	 * @param id
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
+	/**
+	 * @return alarmDate
+	 */
 	public Calendar getAlarmDate() {
 		return this.alarmDate;
 	}
 
+	/**
+	 * @return active
+	 */
 	public boolean isActive() {
 		return this.active;
 	}
 
+	/**
+	 * @param active
+	 */
 	public void setActive(boolean active) {
 		this.active = active;
 	}

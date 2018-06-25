@@ -1,6 +1,5 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import java.time.Duration;
 import java.util.Calendar;
 
 /**
@@ -15,6 +14,20 @@ public class Timer {
 	private Calendar timerDate;
 	private boolean active;
 
+	/**
+	 * Constructor for a timer object
+	 * 
+	 * @param id
+	 *            id of the timer
+	 * @param hours
+	 *            hour delay
+	 * @param minutes
+	 *            minute delay
+	 * @param seconds
+	 *            second delay
+	 * @param active
+	 *            timer active
+	 */
 	public Timer(int id, int hours, int minutes, int seconds, boolean active) {
 		if (id < 1)
 			throw new IllegalArgumentException();
@@ -29,15 +42,33 @@ public class Timer {
 	}
 
 	/**
+	 * Alternative constructor for a timer object
+	 * 
+	 * @param id
+	 *            id of the timer
+	 * @param timerDate
+	 *            date the timer rings
+	 * @param active
+	 *            timer active
+	 */
+	public Timer(int id, Calendar timerDate, boolean active) {
+		if (id < 1)
+			throw new IllegalArgumentException();
+		this.id = id;
+		this.timerDate = timerDate;
+		this.active = active;
+	}
+
+	/**
 	 * Returns a string representation of this object
+	 * 
 	 * @see java.lang.Object#toString()
 	 * 
 	 * @return
 	 */
 	@Override
 	public String toString() {
-		return this.id + ":" + this.timerDate.get(Calendar.HOUR_OF_DAY) + ":" + this.timerDate.get(Calendar.MINUTE)
-				+ ":" + this.timerDate.get(Calendar.SECOND) + ":" + this.active;
+		return this.id + ":" + this.timerDate.getTimeInMillis() + ":" + this.active;
 	}
 
 	/**
@@ -50,9 +81,11 @@ public class Timer {
 	 */
 	public static Timer reconstructObject(String input) {
 		String[] params = input.split(":");
-		if (params.length == 5)
-			return new Timer(Integer.parseInt(params[0]), Integer.parseInt(params[1]), Integer.parseInt(params[2]),
-					Integer.parseInt(params[3]), Boolean.valueOf(params[4]));
+		if (params.length == 3) {
+			Calendar timerDate = Calendar.getInstance();
+			timerDate.setTimeInMillis(Long.parseLong(params[1]));
+			return new Timer(Integer.parseInt(params[0]), timerDate, Boolean.parseBoolean(params[2]));
+		}
 		throw new IllegalArgumentException();
 	}
 
@@ -65,40 +98,58 @@ public class Timer {
 		Calendar current = Calendar.getInstance();
 		Calendar future = this.timerDate;
 
-		Duration duration = Duration.between(current.toInstant(), future.toInstant());
-		int diff = (int) duration.getSeconds();
+		long diff = future.getTimeInMillis() - current.getTimeInMillis();
+		diff /= 1000;
 
-		int hourDiff = diff / 3600;
+		long hourDiff = diff / 3600;
 		diff %= 3600;
 
-		int minuteDiff = diff / 60;
+		long minuteDiff = diff / 60;
 		diff %= 60;
 
-		int secondDiff = diff;
+		long secondDiff = diff;
 
-		return new int[] { hourDiff, minuteDiff, secondDiff };
+		return new int[] { (int) hourDiff, (int) minuteDiff, (int) secondDiff };
 	}
 
+	/**
+	 * @return id
+	 */
 	public int getId() {
-		return id;
+		return this.id;
 	}
 
+	/**
+	 * @param id
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
+	/**
+	 * @return timerDate
+	 */
 	public Calendar getTimerDate() {
-		return timerDate;
+		return this.timerDate;
 	}
 
+	/**
+	 * @param timerDate
+	 */
 	public void setTimerDate(Calendar timerDate) {
 		this.timerDate = timerDate;
 	}
 
+	/**
+	 * @return active
+	 */
 	public boolean isActive() {
-		return active;
+		return this.active;
 	}
 
+	/**
+	 * @param active
+	 */
 	public void setActive(boolean active) {
 		this.active = active;
 	}

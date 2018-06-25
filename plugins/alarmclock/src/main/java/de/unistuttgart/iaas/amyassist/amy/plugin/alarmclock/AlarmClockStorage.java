@@ -16,11 +16,20 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 @Service
 public class AlarmClockStorage implements IAlarmClockStorage {
 
+	/**
+	 * Core storage object that is instantiated via Dependency Injection
+	 */
 	@Reference
 	IStorage storage;
 
+	/**
+	 * Storage key for the alarm counter value
+	 */
 	protected static final String ALARMCOUNTER = "alarmCounter";
 
+	/**
+	 * Storage key for the timer counter value
+	 */
 	protected static final String TIMERCOUNTER = "timerCounter";
 
 	@Override

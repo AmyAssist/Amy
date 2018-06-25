@@ -390,11 +390,13 @@ public class AlarmClockLogic {
 		throw new NoSuchElementException();
 	}
 
-	/*
-	 * @PostConstruct public void init() { if
-	 * (!this.acStorage.hasKey("ALARMCOUNTER")) this.acStorage.put(ALARMCOUNTER,
-	 * "0"); if (!this.acStorage.has(TIMERCOUNTER)) this.acStorage.put(TIMERCOUNTER,
-	 * "0"); }
+	/**
+	 * Returns the remaining timer delay in hours, minutes and seconds
+	 * 
+	 * @param timerNumber
+	 * @return remaining timer delay
 	 */
-
+	protected int[] getRemainingTimerDelay(int timerNumber) {
+		return this.acStorage.getTimer(timerNumber).getRemainingTime();
+	}
 }
