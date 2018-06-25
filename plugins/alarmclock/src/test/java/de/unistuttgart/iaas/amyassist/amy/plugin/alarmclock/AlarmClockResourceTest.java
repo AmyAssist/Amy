@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -39,7 +40,7 @@ import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
+
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
@@ -78,7 +79,7 @@ class AlarmClockResourceTest {
 	@Test
 	void testGetAllAlarms() {
 		Alarm[] alarms = createAlarms(15);
-		Mockito.when(this.logic.getAllAlarms()).thenReturn(alarms);
+		when(this.logic.getAllAlarms()).thenReturn(alarms);
 
 		Response r = this.target.path("alarms").request().get();
 		assertEquals(200, r.getStatus());
@@ -109,12 +110,12 @@ class AlarmClockResourceTest {
 	@Test
 	void testGetAlarm() {
 		Alarm[] alarms = createAlarms(5);
-		Mockito.when(this.logic.getAlarm(0)).thenReturn(alarms[0]);
-		Mockito.when(this.logic.getAlarm(1)).thenReturn(alarms[1]);
-		Mockito.when(this.logic.getAlarm(2)).thenReturn(alarms[2]);
-		Mockito.when(this.logic.getAlarm(3)).thenReturn(alarms[3]);
-		Mockito.when(this.logic.getAlarm(4)).thenReturn(alarms[4]);
-		Mockito.when(this.logic.getAlarm(5)).thenThrow(new NoSuchElementException());
+		when(this.logic.getAlarm(0)).thenReturn(alarms[0]);
+		when(this.logic.getAlarm(1)).thenReturn(alarms[1]);
+		when(this.logic.getAlarm(2)).thenReturn(alarms[2]);
+		when(this.logic.getAlarm(3)).thenReturn(alarms[3]);
+		when(this.logic.getAlarm(4)).thenReturn(alarms[4]);
+		when(this.logic.getAlarm(5)).thenThrow(new NoSuchElementException());
 
 		Response r = this.target.path("alarms/0").request().get();
 		assertEquals(200, r.getStatus());
@@ -150,7 +151,7 @@ class AlarmClockResourceTest {
 	void testResetAlarms() {
 		Response r = this.target.path("alarms/reset").request().post(null);
 		assertEquals(204, r.getStatus());
-		Mockito.verify(this.logic).resetAlarms();
+		verify(this.logic).resetAlarms();
 	}
 
 	/**
@@ -160,7 +161,7 @@ class AlarmClockResourceTest {
 	@Test
 	void testNewAlarm() {
 		Alarm newAlarm = new Alarm(17, 20, 1, true);
-		Mockito.when(this.logic.setAlarm(new int[] { 20, 1 })).thenReturn(newAlarm);
+		when(this.logic.setAlarm(new int[] { 20, 1 })).thenReturn(newAlarm);
 		Timestamp ts = new Timestamp(newAlarm);
 		Entity<Timestamp> entity = Entity.entity(ts, MediaType.APPLICATION_JSON);
 
@@ -189,34 +190,34 @@ class AlarmClockResourceTest {
 		assertEquals("The given time wasn't a valid time", r.readEntity(String.class));
 
 		Timestamp ts = new Timestamp(alarms[1]);
-		Mockito.when(this.logic.editAlarm(1, new int[] { 10, 20 })).thenReturn(alarms[1]);
+		when(this.logic.editAlarm(1, new int[] { 10, 20 })).thenReturn(alarms[1]);
 		Entity<Timestamp> entity = Entity.entity(new Timestamp(10, 20), MediaType.APPLICATION_JSON);
 
 		r = this.target.path("alarms/1").request().post(entity);
 		assertEquals(200, r.getStatus());
 		assertEquals(new Timestamp(alarms[1]), r.readEntity(Timestamp.class));
 
-		Mockito.when(this.logic.editAlarm(20, new int[] { 10, 20 })).thenThrow(new NoSuchElementException());
+		when(this.logic.editAlarm(20, new int[] { 10, 20 })).thenThrow(new NoSuchElementException());
 		r = this.target.path("alarms/20").request().post(entity);
 		assertEquals(404, r.getStatus());
 		assertTrue(r.readEntity(String.class).startsWith("there is no alarm20"));
 
-		Mockito.when(this.logic.editAlarm(2, new int[] { 10, 20 })).thenReturn(alarms[2]);
+		when(this.logic.editAlarm(2, new int[] { 10, 20 })).thenReturn(alarms[2]);
 		r = this.target.path("alarms/2").queryParam("mode", "edit").request().post(entity);
 		assertEquals(200, r.getStatus());
 		assertEquals(new Timestamp(alarms[2]), r.readEntity(Timestamp.class));
 
 		r = this.target.path("alarms/3").queryParam("mode", "deactivate").request().post(null);
 		assertEquals(204, r.getStatus());
-		Mockito.verify(this.logic).deactivateAlarm(3);
+		verify(this.logic).deactivateAlarm(3);
 
 		r = this.target.path("alarms/4").queryParam("mode", "activate").request().post(null);
 		assertEquals(204, r.getStatus());
-		Mockito.verify(this.logic).activateAlarm(4);
+		verify(this.logic).activateAlarm(4);
 
 		r = this.target.path("alarms/5").queryParam("mode", "delete").request().post(null);
 		assertEquals(204, r.getStatus());
-		Mockito.verify(this.logic).deleteAlarm(5);
+		verify(this.logic).deleteAlarm(5);
 	}
 
 }

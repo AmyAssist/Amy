@@ -23,10 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.NoSuchElementException;
 
@@ -34,7 +34,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
@@ -68,7 +67,7 @@ public class AlarmClockStorageTest {
 	void setup() {
 		this.storage = this.framework.storage();
 		this.acs = this.framework.setServiceUnderTest(AlarmClockStorage.class);
-		Mockito.reset(this.storage);
+		reset(this.storage);
 	}
 
 	/**
@@ -79,7 +78,7 @@ public class AlarmClockStorageTest {
 		Alarm alarm = new Alarm(2, 15, 30, true);
 
 		this.acs.storeAlarm(alarm);
-		Mockito.verify(this.storage).put("alarm2", "2:15:30:true");
+		verify(this.storage).put("alarm2", "2:15:30:true");
 	}
 
 	/**
@@ -90,7 +89,7 @@ public class AlarmClockStorageTest {
 		Timer timer = new Timer(3, 1, 0, 1, false);
 
 		this.acs.storeTimer(timer);
-		Mockito.verify(this.storage).put("timer3", timer.toString());
+		verify(this.storage).put("timer3", timer.toString());
 	}
 
 	/**
@@ -99,10 +98,10 @@ public class AlarmClockStorageTest {
 	@Test
 	void testGetAlarmCounter() {
 		this.storage.put(ALARMCOUNTER, "1");
-		Mockito.reset(this.storage);
+		reset(this.storage);
 
 		assertEquals(this.acs.getAlarmCounter(), 1);
-		Mockito.verify(this.storage, Mockito.only()).get(ALARMCOUNTER);
+		verify(this.storage, only()).get(ALARMCOUNTER);
 	}
 
 	/**
@@ -111,10 +110,10 @@ public class AlarmClockStorageTest {
 	@Test
 	void testGetTimerCounter() {
 		this.storage.put(TIMERCOUNTER, "20");
-		Mockito.reset(this.storage);
+		reset(this.storage);
 
 		assertThat(this.acs.getTimerCounter(), is(20));
-		Mockito.verify(this.storage, Mockito.only()).get(TIMERCOUNTER);
+		verify(this.storage, only()).get(TIMERCOUNTER);
 	}
 
 	/**
@@ -123,10 +122,10 @@ public class AlarmClockStorageTest {
 	@Test
 	void testPutAlarmCounter() {
 		this.storage.put(ALARMCOUNTER, "10");
-		Mockito.reset(this.storage);
+		reset(this.storage);
 
 		this.acs.putAlarmCounter(20);
-		Mockito.verify(this.storage, Mockito.only()).put(ALARMCOUNTER, "20");
+		verify(this.storage, only()).put(ALARMCOUNTER, "20");
 		assertThat(this.storage.get(ALARMCOUNTER), is("20"));
 	}
 
@@ -136,10 +135,10 @@ public class AlarmClockStorageTest {
 	@Test
 	void testPutTimerCounter() {
 		this.storage.put(TIMERCOUNTER, "10");
-		Mockito.reset(this.storage);
+		reset(this.storage);
 
 		this.acs.putTimerCounter(20);
-		Mockito.verify(this.storage, Mockito.only()).put(TIMERCOUNTER, "20");
+		verify(this.storage, only()).put(TIMERCOUNTER, "20");
 		assertThat(this.storage.get(TIMERCOUNTER), is("20"));
 	}
 
@@ -149,11 +148,11 @@ public class AlarmClockStorageTest {
 	@Test
 	void testIncrementAlarmCounter() {
 		this.storage.put(ALARMCOUNTER, "9");
-		Mockito.reset(this.storage);
+		reset(this.storage);
 
 		assertThat(10, is(this.acs.incrementAlarmCounter()));
-		Mockito.verify(this.storage).get(ALARMCOUNTER);
-		Mockito.verify(this.storage).put(ALARMCOUNTER, "10");
+		verify(this.storage).get(ALARMCOUNTER);
+		verify(this.storage).put(ALARMCOUNTER, "10");
 		assertThat(this.storage.get(ALARMCOUNTER), is("10"));
 	}
 
@@ -163,11 +162,11 @@ public class AlarmClockStorageTest {
 	@Test
 	void testIncrementTimerCounter() {
 		this.storage.put(TIMERCOUNTER, "9");
-		Mockito.reset(this.storage);
+		reset(this.storage);
 
 		assertThat(10, is(this.acs.incrementTimerCounter()));
-		Mockito.verify(this.storage).get(TIMERCOUNTER);
-		Mockito.verify(this.storage).put(TIMERCOUNTER, "10");
+		verify(this.storage).get(TIMERCOUNTER);
+		verify(this.storage).put(TIMERCOUNTER, "10");
 		assertThat(this.storage.get(TIMERCOUNTER), is("10"));
 	}
 
@@ -180,7 +179,7 @@ public class AlarmClockStorageTest {
 
 		assertThat(this.acs.hasKey("foo"), is(true));
 		assertThat(this.acs.hasKey("oof"), is(false));
-		Mockito.verify(this.storage, Mockito.times(2)).has(ArgumentMatchers.anyString());
+		verify(this.storage, times(2)).has(ArgumentMatchers.anyString());
 	}
 
 	/**
@@ -191,7 +190,7 @@ public class AlarmClockStorageTest {
 		this.storage.put("foo", "foo");
 
 		this.acs.deleteKey("foo");
-		Mockito.verify(this.storage).delete("foo");
+		verify(this.storage).delete("foo");
 	}
 
 	/**
