@@ -30,7 +30,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * TODO: Description
+ * The Service implementation of the Environment
  * 
  * @author Leon Kiefer
  */

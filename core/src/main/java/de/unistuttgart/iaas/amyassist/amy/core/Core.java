@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
