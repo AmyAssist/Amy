@@ -37,34 +37,36 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.Alarm;
  */
 @XmlRootElement
 public class Timestamp {
-	
+
 	/**
 	 * the hour of the timestamp
 	 */
 	private int hour = 0;
-	
+
 	/**
 	 * the minute of the timestamp
 	 */
 	private int minute = 0;
-	
+
 	private String link = "";
-	
+
 	/**
 	 * constructor for a timestamp without set values
 	 */
 	public Timestamp() {
 		// needed for JSON
 	}
-	
+
 	/**
 	 * creates a timestamp from a string
 	 * 
-	 * @param time the time in format hh:mm
+	 * @param time
+	 *            the time in format hh:mm
 	 * 
-	 * @throws IllegalArgumentException parameter format wrong
+	 * @throws IllegalArgumentException
+	 *             parameter format wrong
 	 */
-	public Timestamp(String time) throws IllegalArgumentException {
+	public Timestamp(String time) {
 		try {
 			String[] timeSplit = time.split(":");
 			this.hour = Integer.parseInt(timeSplit[0]);
@@ -73,34 +75,35 @@ public class Timestamp {
 			throw new IllegalArgumentException(time);
 		}
 	}
-	
+
 	/**
 	 * creates an initiallized timestamp
 	 * 
-	 * @param hour the hour of the new timestamp
-	 * @param minute the minute of the new timestamp
+	 * @param hour
+	 *            the hour of the new timestamp
+	 * @param minute
+	 *            the minute of the new timestamp
 	 */
 	public Timestamp(int hour, int minute) {
 		this.hour = hour;
 		this.minute = minute;
 	}
-	
+
 	/**
 	 * sets an Timestamp based on an alarm
 	 * 
-	 * @param alarm the alarm this object is based on
+	 * @param alarm
+	 *            the alarm this object is based on
 	 */
 	public Timestamp(Alarm alarm) {
-		if(alarm == null) {
+		if (alarm == null) {
 			throw new IllegalArgumentException();
 		}
 		Calendar date = alarm.getAlarmDate();
 		this.hour = date.get(Calendar.HOUR_OF_DAY);
 		this.minute = date.get(Calendar.MINUTE);
 	}
-	
-	
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
@@ -108,23 +111,23 @@ public class Timestamp {
 	public String toString() {
 		String sh = String.valueOf(this.hour);
 		String sm = String.valueOf(this.minute);
-		if(this.hour < 10) {
+		if (this.hour < 10) {
 			sh = "0" + sh;
 		}
-		if(this.minute < 10) {
+		if (this.minute < 10) {
 			sm = "0" + sm;
 		}
 		return sh + ":" + sm;
 	}
-	
+
 	/**
 	 * checks if this Timestamp is a valid time
 	 * 
-	 * @return true if the time is valid, else false 
+	 * @return true if the time is valid, else false
 	 */
 	@XmlTransient
 	public boolean isValid() {
-		return ((this.hour>=0 && this.hour < 24) && (this.minute >= 0 && this.minute < 60));
+		return ((this.hour >= 0 && this.hour < 24) && (this.minute >= 0 && this.minute < 60));
 	}
 
 	/**
@@ -135,7 +138,8 @@ public class Timestamp {
 	}
 
 	/**
-	 * @param hour the hour to set
+	 * @param hour
+	 *            the hour to set
 	 */
 	public void setHour(int hour) {
 		this.hour = hour;
@@ -149,7 +153,8 @@ public class Timestamp {
 	}
 
 	/**
-	 * @param minute the minute to set
+	 * @param minute
+	 *            the minute to set
 	 */
 	public void setMinute(int minute) {
 		this.minute = minute;
@@ -161,31 +166,32 @@ public class Timestamp {
 	public String getLink() {
 		return this.link;
 	}
-	
+
 	/**
-	 * @param link the link to set
+	 * @param link
+	 *            the link to set
 	 */
 	public void setLink(String link) {
 		this.link = link;
 	}
-	
+
 	/**
 	 * @see java.lang.Object#equals
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof Timestamp) {
+		if (obj instanceof Timestamp) {
 			Timestamp ts = (Timestamp) obj;
 			return this.minute == ts.minute && this.hour == ts.hour;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * @see java.lang.Object#hashCode
 	 */
 	@Override
 	public int hashCode() {
-		return super.hashCode() + this.hour*60 + this.minute;
+		return super.hashCode() + this.hour * 60 + this.minute;
 	}
 }

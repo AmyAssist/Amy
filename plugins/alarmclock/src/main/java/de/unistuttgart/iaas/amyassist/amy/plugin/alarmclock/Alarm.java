@@ -93,7 +93,7 @@ public class Alarm {
 	 * @param newTime
 	 *            new alarm time containing hour and minute
 	 */
-	public void setTime(int[] newTime) {
+	public final void setTime(int[] newTime) {
 		if (newTime.length == 2) {
 			Calendar date = Calendar.getInstance();
 			date.set(Calendar.HOUR_OF_DAY, newTime[0]);
