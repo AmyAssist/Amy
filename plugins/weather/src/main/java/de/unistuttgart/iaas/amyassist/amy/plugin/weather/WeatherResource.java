@@ -37,10 +37,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  */
 @Path("weather")
 public class WeatherResource {
-	
+
 	@Reference
 	private WeatherDarkSkyAPI weatherLogic;
-	
+
 	/**
 	 * get the weather forecast for today
 	 * 
@@ -52,7 +52,7 @@ public class WeatherResource {
 	public WeatherReportDay getWeatherToday() {
 		return this.weatherLogic.getReportToday();
 	}
-	
+
 	/**
 	 * get the weather forecast for tomorrow
 	 * 
@@ -64,7 +64,7 @@ public class WeatherResource {
 	public WeatherReportDay getWeatherTomorrow() {
 		return this.weatherLogic.getReportTomorrow();
 	}
-	
+
 	/**
 	 * get the weather forecast for the week
 	 * 

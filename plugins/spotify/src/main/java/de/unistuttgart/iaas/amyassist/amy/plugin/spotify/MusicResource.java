@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
@@ -36,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
 
@@ -44,14 +46,56 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
  * 
  * @author Muhammed Kaya, Christian Bräuner
  */
-@Path("music")
+@Path(MusicResource.PATH)
 public class MusicResource {
+
+	/**
+	 * the resource path for this plugin
+	 */
+	public static final String PATH = "music";
+
+	@Reference
+	private PlayerLogic logic;
 
 	private MusicEntity musicEntity;
 	private Playlist playlist;
 
-	@Reference
-	private PlayerLogic logic;
+	/**
+	 * returns a list with all given devices
+	 * 
+	 * @return a list with all given devices
+	 */
+	@GET
+	@Path("getDevices")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Device[] getDevices() {
+		List<Device> deviceList = this.logic.getDevices();
+		Device[] devices = new Device[deviceList.size()];
+		for (int i = 0; i < deviceList.size(); i++) {
+			devices[i] = deviceList.get(i);
+		}
+		return devices;
+	}
+
+	/**
+	 * sets which device to use
+	 * 
+	 * @param deviceNumber
+	 *            the number of the device to use
+	 * @return the selected device if there is one
+	 * 
+	 */
+	@POST
+	@Path("setDevice/{deviceNumber}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String setDevice(@PathParam("deviceNumber") int deviceNumber) {
+		String result = this.logic.setDevice(deviceNumber);
+		if (result.equals("No device found")) {
+			throw new WebApplicationException("No device found", Status.CONFLICT);
+		}
+		return result;
+	}
 
 	/**
 	 * returns the currently played music
@@ -100,7 +144,6 @@ public class MusicResource {
 			return "resume";
 		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);
-
 	}
 
 	/**
@@ -117,7 +160,7 @@ public class MusicResource {
 		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);
 	}
-	
+
 	/**
 	 * skips the actual playback
 	 * 
@@ -132,7 +175,7 @@ public class MusicResource {
 		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);
 	}
-	
+
 	/**
 	 * pauses the actual playback
 	 * 
@@ -164,8 +207,7 @@ public class MusicResource {
 	 * controls the volume of the player
 	 * 
 	 * @param volumeString
-	 *            allowed strings: mute, max, up, down, or a volume value between 0
-	 *            and 100
+	 *            allowed strings: mute, max, up, down, or a volume value between 0 and 100
 	 * @return a int from 0-100. This represent the Volume in percent.
 	 */
 	@POST
@@ -183,17 +225,13 @@ public class MusicResource {
 		} catch (NumberFormatException e) {
 			if (volumeString != "mute" && volumeString != "max" && volumeString != "up" && volumeString != "down") {
 				throw new WebApplicationException("Incorrect volume command", Status.BAD_REQUEST);
-			} else {
-				int volume = this.logic.setVolume(volumeString);
-				if (volume != -1) {
-					return String.valueOf(volume);
-				}
-				throw new WebApplicationException("Check player state", Status.CONFLICT);
-
 			}
-
+			int volume = this.logic.setVolume(volumeString);
+			if (volume != -1) {
+				return String.valueOf(volume);
+			}
+			throw new WebApplicationException("Check player state", Status.CONFLICT);
 		}
-
 	}
 
 }

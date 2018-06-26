@@ -24,8 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
 
 /**
- * A Static Context Provider which provides context information from then
- * consumer class.
+ * A Static Context Provider which provides context information from then consumer class.
  * 
  * @author Leon Kiefer
  */

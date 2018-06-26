@@ -28,6 +28,8 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -37,6 +39,7 @@ import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -46,7 +49,6 @@ import org.junit.jupiter.params.provider.MethodSource;
  * 
  * @author Tim Neumann
  */
-
 class PluginTest {
 
 	/**

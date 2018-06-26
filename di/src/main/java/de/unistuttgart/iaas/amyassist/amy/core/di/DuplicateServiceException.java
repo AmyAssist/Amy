@@ -24,8 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 /**
- * A exception of the dependency injection, signaling, that a service is already
- * registered
+ * A exception of the dependency injection, signaling, that a service is already registered
  * 
  * @author Leon Kiefer
  */

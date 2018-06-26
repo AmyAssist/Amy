@@ -63,15 +63,14 @@ class AlarmClockRestTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#getAlarm()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#getAlarm()}.
 	 */
 	@Test
 	void testGetAlarm() {
-		//		when(this.logic.getAlarm()).thenReturn("16:05");
+		// when(this.logic.getAlarm()).thenReturn("16:05");
 		//
-		//		String responseMsg = this.target.path("alarmclock").request().get(String.class);
-		//		assertThat(responseMsg, equalTo("16:05"));
+		// String responseMsg = this.target.path("alarmclock").request().get(String.class);
+		// assertThat(responseMsg, equalTo("16:05"));
 	}
 
 	/**
@@ -80,13 +79,13 @@ class AlarmClockRestTest {
 	 */
 	@Test
 	void testSetAlarm() {
-		//		Timestamp ts = new Timestamp();
-		//		ts.hour = 15;
-		//		ts.minute = 20;
-		//		Entity<Timestamp> entity = Entity.entity(ts, MediaType.APPLICATION_JSON);
-		//		this.target.path("alarmclock").request().post(entity);
+		// Timestamp ts = new Timestamp();
+		// ts.hour = 15;
+		// ts.minute = 20;
+		// Entity<Timestamp> entity = Entity.entity(ts, MediaType.APPLICATION_JSON);
+		// this.target.path("alarmclock").request().post(entity);
 		//
-		//		verify(this.logic, atLeastOnce()).setAlarm("15:20");
+		// verify(this.logic, atLeastOnce()).setAlarm("15:20");
 	}
 
 	/**

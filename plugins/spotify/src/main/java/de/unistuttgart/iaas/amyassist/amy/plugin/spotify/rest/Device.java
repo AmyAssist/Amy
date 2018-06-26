@@ -26,72 +26,84 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Music Entity for JSON
+ * Device Entity for JSON
  * 
- * @author Muhammed Kaya, Lars Buttgereit
+ * @author Muhammed Kaya
  */
 @XmlRootElement
-public class MusicEntity {
+public class Device {
 
 	/**
-	 * constructor for a MusicEntity
+	 * constructor for a Device
 	 */
-	public MusicEntity() {
+	public Device() {
 
 	}
 
 	/**
-	 * constructor for a MusicEntity with set values
+	 * constructor for a Device with set values
 	 */
-	public MusicEntity(String title, String artist) {
-		this.title = title;
-		this.artist = artist;
+	public Device(String type, String name, String id) {
+		this.type = type;
+		this.name = name;
+		this.id = id;
 	}
 
 	/**
-	 * the artist of the music
+	 * the type of the device
 	 */
-	private String artist;
-	
+	private String type;
+
 	/**
-	 * the title of the music
+	 * the name of the device
 	 */
-	private String title;
-	
+	private String name;
+
 	/**
-	 * @see java.lang.Object#toString()
+	 * the ID of the device
 	 */
-	@Override
-	public String toString() {
-		return this.title + " " + this.artist;
+	private String id;
+
+	/**
+	 * @return type
+	 */
+	public String getType() {
+		return this.type;
 	}
 
 	/**
-	 * @return artist
+	 * @param type to set
 	 */
-	public String getArtist() {
-		return this.artist;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	/**
-	 * @param artist to set
+	 * @return name
 	 */
-	public void setArtist(String artist) {
-		this.artist = artist;
+	public String getName() {
+		return this.name;
 	}
 
 	/**
-	 * @return title
+	 * @param name to set
 	 */
-	public String getTitle() {
-		return this.title;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
-	 * @param title to set
+	 * @return id
 	 */
-	public void setTitle(String title) {
-		this.title = title;
+	public String getID() {
+		return this.id;
 	}
-	
+
+	/**
+	 * @param id to set
+	 */
+	public void setID(String id) {
+		this.id = id;
+	}
+
 }

@@ -60,8 +60,7 @@ public class SpeechCommand {
 	}
 
 	/**
-	 * Invoke the method of this SpeechCommand with an instance of the
-	 * speechCommandClass
+	 * Invoke the method of this SpeechCommand with an instance of the speechCommandClass
 	 * 
 	 * @param instance
 	 * @param input
