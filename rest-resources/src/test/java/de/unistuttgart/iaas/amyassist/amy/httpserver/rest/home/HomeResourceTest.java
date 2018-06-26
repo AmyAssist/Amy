@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver.rest.home;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.concurrent.CompletableFuture;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -35,9 +37,11 @@ import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
@@ -53,6 +57,8 @@ class HomeResourceTest {
 	private TestFramework testFramework;
 
 	private WebTarget target;
+
+	private SpeechInputHandler speechInputHandler;
 	
 	/**
 	 * setup for server and client
@@ -60,6 +66,7 @@ class HomeResourceTest {
 	@BeforeEach
 	void setUp() {
 		this.testFramework.mockService(PluginManager.class);
+		this.speechInputHandler = this.testFramework.mockService(SpeechInputHandler.class);
 		this.testFramework.setRESTResource(HomeResource.class);
 
 		Client c = ClientBuilder.newClient();
@@ -72,9 +79,11 @@ class HomeResourceTest {
 	@Test
 	void testUseAmy() {
 		String consoleInput = ""; //TODO write some posible inputs
+		String result = "test";
+		Mockito.when(speechInputHandler.handle(consoleInput)).thenReturn(CompletableFuture.completedFuture(result));
 		Entity<String> entity = Entity.entity(consoleInput, MediaType.TEXT_PLAIN);
 		Response r = this.target.path("console").request().post(entity);
-		assertEquals(204, r.getStatus());
+		assertEquals(200, r.getStatus());
 		//Mockito.verify(backendMock).someMethod(consoleInput);
 	}
 

@@ -26,9 +26,13 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver.rest.home;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+
 /**
  * The home resource of Amy
  * 
@@ -40,17 +44,21 @@ public class HomeResource {
 	public static final String PATH = "home";
 	@Reference
 	private PluginManager manager;
-	
+	@Reference
+	private SpeechInputHandler speechInputHandler;
+
 	/**
-	 * 
-	 * @param input the input from the client
+	 * @param response
+	 *            the that is completed when the handler have the result
+	 * @param input
+	 *            the input from the client
 	 */
 	@POST
 	@Path("console")
-	public void useAmy(String input) {
-		//TODO core.doSomething(input)
+	public void useAmy(@Suspended final AsyncResponse response, String input) {
+		this.speechInputHandler.handle(input).thenAcceptAsync(response::resume);
 	}
-	
+
 	/**
 	 * returns all installed plugins
 	 * 
@@ -59,11 +67,11 @@ public class HomeResource {
 	@GET
 	public SimplePluginEntity[] getPlugins() {
 		SimplePluginEntity[] plugins = new SimplePluginEntity[this.manager.getPlugins().size()];
-		for(int i = 0; i < plugins.length; i++) {
+		for (int i = 0; i < plugins.length; i++) {
 			plugins[i] = new SimplePluginEntity();
-			//plugins[i].setValues(values i got from somewhere);
+			// plugins[i].setValues(values i got from somewhere);
 		}
 		return plugins;
 	}
-	
+
 }

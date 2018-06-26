@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
@@ -43,8 +42,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
@@ -62,7 +61,7 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.rest.home.HomeResource;
  *
  * @author Tim Neumann, Leon Kiefer
  */
-public class Core implements SpeechInputHandler {
+public class Core {
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
@@ -109,7 +108,7 @@ public class Core implements SpeechInputHandler {
 		this.server.register(HomeResource.class);
 
 		Console console = this.di.getService(Console.class);
-		console.setSpeechInputHandler(this);
+		console.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
 		this.threads.add(new Thread(console));
 
 		Environment environment = this.di.getService(Environment.class);
@@ -123,7 +122,7 @@ public class Core implements SpeechInputHandler {
 
 		SpeechIO sr = aui;
 		this.di.inject(sr);
-		sr.setSpeechInputHandler(this);
+		sr.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
 		this.threads.add(new Thread(sr));
 
 		PluginManager pluginManager = this.di.getService(PluginManager.class);
@@ -152,16 +151,7 @@ public class Core implements SpeechInputHandler {
 		this.di.register(PluginLoader.class);
 		this.di.register(PluginManagerService.class);
 		this.di.register(EnvironmentService.class);
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler#handle(java.lang.String)
-	 */
-	@Override
-	public Future<String> handle(String speechInput) {
-		return this.singleThreadScheduledExecutor.submit(() -> {
-			return this.speechCommandHandler.handleSpeechInput(speechInput);
-		});
+		this.di.register(NaturalLanaguageInputHandlerService.class);
 	}
 
 	/**

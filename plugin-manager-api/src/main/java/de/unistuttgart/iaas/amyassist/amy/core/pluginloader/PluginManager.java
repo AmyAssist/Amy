@@ -26,7 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 import java.util.List;
 
 /**
- * TODO: Description
+ * The Plugin Manager provides a list of all Plugins
+ * 
  * @author Leon Kiefer
  */
 public interface PluginManager {
