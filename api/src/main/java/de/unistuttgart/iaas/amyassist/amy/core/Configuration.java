@@ -44,4 +44,13 @@ public interface Configuration {
 	 * @return the version of the plugin
 	 */
 	String getPluginVersion(String pluginName);
+
+	/**
+	 * Get the description of a installed plugin
+	 * 
+	 * @param pluginName
+	 *            the name of the plugin
+	 * @return the description of the plugin
+	 */
+	String getPluginDescription(String pluginName);
 }

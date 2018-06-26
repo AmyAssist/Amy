@@ -61,6 +61,7 @@
 								</manifest>
 								<manifestEntries>
 									<PluginID>${project.groupId}.${project.artifactId}</PluginID>
+									<PluginDescription>${project.description}</PluginDescription>
 								</manifestEntries>
 							</archive>
 						</configuration>
