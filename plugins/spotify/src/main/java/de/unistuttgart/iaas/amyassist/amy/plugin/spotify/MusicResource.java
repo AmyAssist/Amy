@@ -69,12 +69,10 @@ public class MusicResource {
 	@Path("getDevices")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Device[] getDevices() {
-		List<Map<String, String>> deviceList = this.logic.getDevices();
+		List<Device> deviceList = this.logic.getDevices();
 		Device[] devices = new Device[deviceList.size()];
 		for (int i = 0; i < deviceList.size(); i++) {
-			devices[i] = new Device(deviceList.get(i).get(SpotifyConstants.DEVICE_NAME),
-					deviceList.get(i).get(SpotifyConstants.DEVICE_TYPE),
-					deviceList.get(i).get(SpotifyConstants.DEVICE_ID));
+			devices[i] = deviceList.get(i);
 		}
 		return devices;
 	}

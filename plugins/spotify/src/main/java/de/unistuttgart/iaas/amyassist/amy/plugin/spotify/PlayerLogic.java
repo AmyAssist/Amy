@@ -92,17 +92,15 @@ public class PlayerLogic {
 	 * 
 	 * @return empty ArrayList if no device available else Maps with the name, id and type of the device
 	 */
-	public List<Map<String, String>> getDevices() {
-		List<Map<String, String>> devicesList = new ArrayList<>();
+	public List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> getDevices() {
+		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devicesList = new ArrayList<>();
 		Device[] devices = this.spotifyAPICalls.getDevices();
 		if (devices != null) {
 			Map<String, String> entry;
 			for (int i = 0; i < devices.length; i++) {
-				entry = new HashMap<>();
-				entry.put(SpotifyConstants.DEVICE_NAME, devices[i].getName());
-				entry.put(SpotifyConstants.DEVICE_ID, devices[i].getId());
-				entry.put(SpotifyConstants.DEVICE_TYPE, devices[i].getType());
-				devicesList.add(entry);
+				de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device deviceData;
+				deviceData = new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device(devices[i].getType(), devices[i].getName(), devices[i].getId());
+				devicesList.add(deviceData);
 			}
 		}
 		return devicesList;
@@ -116,10 +114,10 @@ public class PlayerLogic {
 	 * @return selected device
 	 */
 	public String setDevice(int deviceNumber) {
-		List<Map<String, String>> devices = getDevices();
+		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devices = getDevices();
 		if (devices.size() > deviceNumber) {
-			this.spotifyAPICalls.setCurrentDevice(devices.get(deviceNumber).get(SpotifyConstants.DEVICE_ID));
-			return devices.get(deviceNumber).get(SpotifyConstants.DEVICE_NAME);
+			this.spotifyAPICalls.setCurrentDevice(devices.get(deviceNumber).getID());
+			return devices.get(deviceNumber).getName();
 		}
 		this.logger.warn("No device with this number was found");
 		return "No device found";

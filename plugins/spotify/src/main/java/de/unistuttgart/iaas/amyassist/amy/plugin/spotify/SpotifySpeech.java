@@ -30,6 +30,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device;
 
 /**
  * this class handle the speech commands from the spotify plugin
@@ -54,11 +55,11 @@ public class SpotifySpeech {
 	 */
 	@Grammar("get devices")
 	public String getDevices(String... params) {
-		List<Map<String, String>> devices = this.playerLogic.getDevices();
+		List<Device> devices = this.playerLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
 			output = output.concat(String.valueOf(i)).concat(". ")
-					.concat(devices.get(i).get(SpotifyConstants.DEVICE_NAME).concat("\n"));
+					.concat(devices.get(i).getName().concat("\n"));
 		}
 		if (output.equals("")) {
 			return "no device found";

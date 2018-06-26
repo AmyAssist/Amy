@@ -106,22 +106,10 @@ class MusicRestTest {
 	 * 
 	 * @return an example device list
 	 */
-	private List<Map<String, String>> createDeviceList() {
-		this.devices = new Device[2];
-		this.devices[0] = new Device.Builder().setId("abc123").setIs_active(true).setName("Hello").setVolume_percent(50)
-				.setType("Smartphone").build();
-		this.devices[1] = new Device.Builder().setId("123abc").setIs_active(false).setName("Godbye").setType("Computer")
-				.build();
-
-		List<Map<String, String>> devicesList = new ArrayList<>();
-		Map<String, String> entry;
-		for (int i = 0; i < devices.length; i++) {
-			entry = new HashMap<>();
-			entry.put(SpotifyConstants.DEVICE_NAME, devices[i].getName());
-			entry.put(SpotifyConstants.DEVICE_ID, devices[i].getId());
-			entry.put(SpotifyConstants.DEVICE_TYPE, devices[i].getType());
-			devicesList.add(entry);
-		}
+	private List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> createDeviceList() {
+		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devicesList = new ArrayList<>();
+		devicesList.add(new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device("Smartphone", "Hello", "abc123"));
+		devicesList.add(new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device("Computer", "Goodbye", "123abc"));
 		return devicesList;
 	}
 
@@ -135,8 +123,8 @@ class MusicRestTest {
 		Response response = this.target.path("music").path("getDevices").request().get();
 
 		assertThat(response.readEntity(String.class),
-				is("[{\"type\":\"Hello\",\"name\":\"Smartphone\",\"id\":\"abc123\"},"
-						+ "{\"type\":\"Godbye\",\"name\":\"Computer\",\"id\":\"123abc\"}]"));
+				is("[{\"type\":\"Smartphone\",\"name\":\"Hello\",\"id\":\"abc123\"},"
+						+ "{\"type\":\"Computer\",\"name\":\"Goodbye\",\"id\":\"123abc\"}]"));
 		assertThat(response.getStatus(), is(200));
 	}
 
