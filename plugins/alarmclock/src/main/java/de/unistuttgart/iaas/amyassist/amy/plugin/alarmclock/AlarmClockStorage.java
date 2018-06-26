@@ -104,13 +104,29 @@ public class AlarmClockStorage implements IAlarmClockStorage {
 	}
 
 	@Override
-	public boolean hasKey(String key) {
-		return this.storage.has(key);
+	public boolean hasAlarm(int id) {
+		return this.storage.has("alarm" + id);
 	}
 
 	@Override
-	public void deleteKey(String key) {
-		this.storage.delete(key);
+	public boolean hasTimer(int id) {
+		return this.storage.has("timer" + id);
+	}
+
+	@Override
+	public void deleteAlarm(int id) {
+		if (this.storage.has("alarm" + id))
+			this.storage.delete("alarm" + id);
+		else
+			throw new NoSuchElementException();
+	}
+
+	@Override
+	public void deleteTimer(int id) {
+		if (this.storage.has("timer" + id))
+			this.storage.delete("timer" + id);
+		else
+			throw new NoSuchElementException();
 	}
 
 	@Override

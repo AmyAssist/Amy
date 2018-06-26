@@ -64,7 +64,7 @@ public class Alarm {
 	 * 
 	 * @see java.lang.Object#toString()
 	 * 
-	 * @return
+	 * @return String representation of this object
 	 */
 	@Override
 	public String toString() {
@@ -73,8 +73,7 @@ public class Alarm {
 	}
 
 	/**
-	 * Construct an alarm object from the String that was made by the
-	 * convertToString method
+	 * Construct an alarm object from the String that was made by the convertToString method
 	 * 
 	 * @param input
 	 *            the String made by convertToString method
@@ -119,6 +118,7 @@ public class Alarm {
 
 	/**
 	 * @param id
+	 *            alarm id
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -140,6 +140,7 @@ public class Alarm {
 
 	/**
 	 * @param active
+	 *            alarm active
 	 */
 	public void setActive(boolean active) {
 		this.active = active;

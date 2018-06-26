@@ -23,9 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.util.NoSuchElementException;
+
 /**
- * Interface that defines the methods the alarmclock logic needs to store the
- * alarms and timers
+ * Interface that defines the methods the alarmclock logic needs to store the alarms and timers
  * 
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  *
@@ -51,14 +52,14 @@ public interface IAlarmClockStorage {
 	/**
 	 * Returns the current value of the alarm counter in the storage
 	 * 
-	 * @return
+	 * @return alarm counter
 	 */
 	public int getAlarmCounter();
 
 	/**
 	 * Returns the current value of the timer counter in the storage
 	 * 
-	 * @return
+	 * @return timer counter
 	 */
 	public int getTimerCounter();
 
@@ -81,41 +82,63 @@ public interface IAlarmClockStorage {
 	/**
 	 * Increments and returns the incremented alarm counter
 	 * 
-	 * @return
+	 * @return incremented alarm counter
 	 */
 	public int incrementAlarmCounter();
 
 	/**
 	 * Increments and returns the incremented timer counter
 	 * 
-	 * @return
+	 * @return incremented timer counter
 	 */
 	public int incrementTimerCounter();
 
 	/**
-	 * Checks if the storage has the given key stored
+	 * Checks if storage has an alarm with given id
 	 * 
-	 * @param key
-	 *            key that should be checked
-	 * @return
+	 * @param id
+	 *            alarm id
+	 * @return true, if alarm with given id exists
 	 */
-	public boolean hasKey(String key);
+	public boolean hasAlarm(int id);
 
 	/**
-	 * Deletes the given key from the storage. Only use this method, if it's
-	 * guaranteed that the key is actually stored
+	 * Checks if storage has a timer with given id
 	 * 
-	 * @param key
-	 *            key that should be deleted
+	 * @param id
+	 *            timer id
+	 * @return true, if timer with given id exists
 	 */
-	public void deleteKey(String key);
+	public boolean hasTimer(int id);
+
+	/**
+	 * Deletes timer with given id
+	 * 
+	 * @param id
+	 *            alarm id
+	 * @throws NoSuchElementException
+	 *             if alarm with given id is non existent
+	 */
+	public void deleteAlarm(int id);
+
+	/**
+	 * Deletes timer with given id
+	 * 
+	 * @param id
+	 *            timer id
+	 * @throws NoSuchElementException
+	 *             if timer with given id is non existent
+	 */
+	public void deleteTimer(int id);
 
 	/**
 	 * Returns the alarm with the given id from the storage
 	 * 
 	 * @param id
 	 *            id of the alarm
-	 * @return
+	 * @return alarm with the given id
+	 * @throws NoSuchElementException
+	 *             if alarm with given id is non existent
 	 */
 	public Alarm getAlarm(int id);
 
@@ -124,7 +147,9 @@ public interface IAlarmClockStorage {
 	 * 
 	 * @param id
 	 *            id of the counter
-	 * @return
+	 * @return timer with the given id
+	 * @throws NoSuchElementException
+	 *             if timer with given id is non existent
 	 */
 	public Timer getTimer(int id);
 }

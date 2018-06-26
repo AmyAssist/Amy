@@ -87,7 +87,7 @@ public class Timer {
 	 * 
 	 * @see java.lang.Object#toString()
 	 * 
-	 * @return
+	 * @return String representation of this timer object
 	 */
 	@Override
 	public String toString() {
@@ -95,8 +95,7 @@ public class Timer {
 	}
 
 	/**
-	 * Construct an alarm object from the String that was made by the
-	 * convertToString method
+	 * Construct an alarm object from the String that was made by the convertToString method
 	 * 
 	 * @param input
 	 *            the String made by convertToString method
@@ -144,6 +143,7 @@ public class Timer {
 
 	/**
 	 * @param id
+	 *            timer id
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -158,6 +158,7 @@ public class Timer {
 
 	/**
 	 * @param timerDate
+	 *            date the timer rings
 	 */
 	public void setTimerDate(Calendar timerDate) {
 		this.timerDate = timerDate;
@@ -172,6 +173,7 @@ public class Timer {
 
 	/**
 	 * @param active
+	 *            timer active
 	 */
 	public void setActive(boolean active) {
 		this.active = active;

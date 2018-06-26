@@ -64,12 +64,15 @@ public class AlarmClockLogic {
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
 	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel Simion
 	 * 
+	 * @param alarmNumber
+	 *            alarm id of the corresponding alarm object
+	 * 
 	 * @return runnable
 	 * 
 	 */
 	private Runnable createAlarmRunnable(int alarmNumber) {
 		return () -> {
-			if (this.acStorage.hasKey("alarm" + alarmNumber) && this.acStorage.getAlarm(alarmNumber).isActive()) {
+			if (this.acStorage.hasAlarm(alarmNumber) && this.acStorage.getAlarm(alarmNumber).isActive()) {
 				try {
 					Clip clip = AudioSystem.getClip();
 					clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
@@ -95,7 +98,7 @@ public class AlarmClockLogic {
 	 */
 	private Runnable createTimerRunnable(int timerNumber) {
 		return () -> {
-			if (this.acStorage.hasKey("timer" + timerNumber) && this.acStorage.getTimer(timerNumber).isActive()) {
+			if (this.acStorage.hasTimer(timerNumber) && this.acStorage.getTimer(timerNumber).isActive()) {
 				try {
 					Clip clip = AudioSystem.getClip();
 					clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
@@ -120,6 +123,8 @@ public class AlarmClockLogic {
 	 * @return counter, alarmTime[0], alarmTime[1]
 	 */
 	protected Alarm setAlarm(int[] alarmTime) {
+		if (alarmTime[0] > 23 || alarmTime[1] > 59)
+			throw new IllegalArgumentException();
 		int counter = this.acStorage.incrementAlarmCounter();
 		Alarm alarm = new Alarm(counter, alarmTime[0], alarmTime[1], true);
 		this.acStorage.storeAlarm(alarm);
@@ -167,10 +172,9 @@ public class AlarmClockLogic {
 		this.acStorage.putAlarmCounter(0);
 		int counter = 0;
 		for (int i = 1; i <= amount; i++) {
-			String key = "alarm" + i;
-			if (this.acStorage.hasKey(key)) {
+			if (this.acStorage.hasAlarm(i)) {
 				counter++;
-				this.acStorage.deleteKey(key);
+				this.acStorage.deleteAlarm(i);
 			}
 		}
 		return counter + " alarms deleted";
@@ -189,10 +193,9 @@ public class AlarmClockLogic {
 		this.acStorage.putTimerCounter(0);
 		int counter = 0;
 		for (int i = 1; i <= amount; i++) {
-			String key = "timer" + i;
-			if (this.acStorage.hasKey(key)) {
+			if (this.acStorage.hasTimer(i)) {
 				counter++;
-				this.acStorage.deleteKey(key);
+				this.acStorage.deleteTimer(i);
 			}
 		}
 		return counter + " timers deleted";
@@ -206,8 +209,8 @@ public class AlarmClockLogic {
 	 * @return alarmNumber
 	 */
 	protected String deleteAlarm(int alarmNumber) {
-		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
-			this.acStorage.deleteKey("alarm" + alarmNumber);
+		if (this.acStorage.hasAlarm(alarmNumber)) {
+			this.acStorage.deleteAlarm(alarmNumber);
 			return "Alarm " + alarmNumber + " deleted";
 		}
 		throw new NoSuchElementException();
@@ -220,8 +223,8 @@ public class AlarmClockLogic {
 	 * @return timerNumber
 	 */
 	protected String deleteTimer(int timerNumber) {
-		if (this.acStorage.hasKey("timer" + timerNumber)) {
-			this.acStorage.deleteKey("timer" + timerNumber);
+		if (this.acStorage.hasTimer(timerNumber)) {
+			this.acStorage.deleteTimer(timerNumber);
 			return "Timer " + timerNumber + " deleted";
 		}
 		throw new NoSuchElementException();
@@ -236,7 +239,7 @@ public class AlarmClockLogic {
 	 * @return alarmNumber
 	 */
 	protected String deactivateAlarm(int alarmNumber) {
-		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
+		if (this.acStorage.hasAlarm(alarmNumber)) {
 			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
 			if (alarm.isActive()) {
 				alarm.setActive(false);
@@ -256,7 +259,7 @@ public class AlarmClockLogic {
 	 * @return timerNumber
 	 */
 	protected String deactivateTimer(int timerNumber) {
-		if (this.acStorage.hasKey("timer" + timerNumber)) {
+		if (this.acStorage.hasTimer(timerNumber)) {
 			Timer timer = this.acStorage.getTimer(timerNumber);
 			if (timer.isActive()) {
 				timer.setActive(false);
@@ -276,7 +279,7 @@ public class AlarmClockLogic {
 	 * @return alarmNumber
 	 */
 	protected String activateAlarm(int alarmNumber) {
-		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
+		if (this.acStorage.hasAlarm(alarmNumber)) {
 			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
 			if (!alarm.isActive()) {
 				alarm.setActive(true);
@@ -296,7 +299,7 @@ public class AlarmClockLogic {
 	 * @return timerNumber
 	 */
 	protected String activateTimer(int timerNumber) {
-		if (this.acStorage.hasKey("timer" + timerNumber)) {
+		if (this.acStorage.hasTimer(timerNumber)) {
 			Timer timer = this.acStorage.getTimer(timerNumber);
 			if (!timer.isActive()) {
 				timer.setActive(true);
@@ -317,7 +320,7 @@ public class AlarmClockLogic {
 	 * @return alarmNumber
 	 */
 	protected Alarm getAlarm(int alarmNumber) {
-		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
+		if (this.acStorage.hasAlarm(alarmNumber)) {
 			return this.acStorage.getAlarm(alarmNumber);
 		}
 		throw new NoSuchElementException();
@@ -329,7 +332,7 @@ public class AlarmClockLogic {
 	 * @return timerNumber
 	 */
 	protected Timer getTimer(int timerNumber) {
-		if (this.acStorage.hasKey("timer" + timerNumber)) {
+		if (this.acStorage.hasTimer(timerNumber)) {
 			return this.acStorage.getTimer(timerNumber);
 		}
 		throw new NoSuchElementException();
@@ -344,7 +347,7 @@ public class AlarmClockLogic {
 		List<Alarm> allAlarms = new ArrayList<>();
 		int alarms = this.acStorage.getAlarmCounter();
 		for (int i = 1; i <= alarms; i++) {
-			if (this.acStorage.hasKey("alarm" + i)) {
+			if (this.acStorage.hasAlarm(i)) {
 				allAlarms.add(this.acStorage.getAlarm(i));
 			}
 		}
@@ -360,7 +363,7 @@ public class AlarmClockLogic {
 		List<Timer> allTimers = new ArrayList<>();
 		int timers = this.acStorage.getTimerCounter();
 		for (int i = 1; i <= timers; i++) {
-			if (this.acStorage.hasKey("timer" + i)) {
+			if (this.acStorage.hasTimer(i)) {
 				allTimers.add(this.acStorage.getTimer(i));
 			}
 		}
@@ -377,7 +380,7 @@ public class AlarmClockLogic {
 	 * @return alarmNumber + alarmTime new Time of the edited Alarm
 	 */
 	protected Alarm editAlarm(int alarmNumber, int[] newAlarmTime) {
-		if (this.acStorage.hasKey("alarm" + alarmNumber)) {
+		if (this.acStorage.hasAlarm(alarmNumber)) {
 			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
 			alarm.setTime(newAlarmTime);
 			this.acStorage.storeAlarm(alarm);
@@ -390,6 +393,7 @@ public class AlarmClockLogic {
 	 * Returns the remaining timer delay in hours, minutes and seconds
 	 * 
 	 * @param timerNumber
+	 *            id of the timer
 	 * @return remaining timer delay
 	 */
 	protected int[] getRemainingTimerDelay(int timerNumber) {

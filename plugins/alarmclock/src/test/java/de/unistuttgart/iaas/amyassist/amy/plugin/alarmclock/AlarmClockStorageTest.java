@@ -23,10 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.NoSuchElementException;
 
@@ -171,26 +175,67 @@ public class AlarmClockStorageTest {
 	}
 
 	/**
-	 * Tests the hasKey method
+	 * Tests hasAlarm
 	 */
 	@Test
-	void testHasKey() {
-		this.storage.put("foo", "foo");
-
-		assertThat(this.acs.hasKey("foo"), is(true));
-		assertThat(this.acs.hasKey("oof"), is(false));
+	public void testHasAlarm() {
+		this.storage.put("alarm1", "foo");
+		assertThat(true, is(this.acs.hasAlarm(1)));
+		assertThat(false, is(this.acs.hasAlarm(2)));
 		verify(this.storage, times(2)).has(ArgumentMatchers.anyString());
 	}
 
 	/**
-	 * Tests the deleteKey method
+	 * Tests hasTimer
 	 */
 	@Test
-	void testDeleteKey() {
-		this.storage.put("foo", "foo");
+	public void testHasTimer() {
+		this.storage.put("timer1", "foo");
+		assertThat(true, is(this.acs.hasTimer(1)));
+		assertThat(false, is(this.acs.hasTimer(2)));
+		verify(this.storage, times(2)).has(ArgumentMatchers.anyString());
+	}
 
-		this.acs.deleteKey("foo");
-		verify(this.storage).delete("foo");
+	/**
+	 * Tests deleteAlarm with normal case
+	 */
+	@Test
+	public void testDeleteAlarm() {
+		this.storage.put("alarm1", "foo");
+		this.acs.deleteAlarm(1);
+		verify(this.storage).has("alarm1");
+		verify(this.storage).delete("alarm1");
+		assertThat(false, is(this.storage.has("alarm1")));
+	}
+
+	/**
+	 * Tests deleteAlarm with non existent alarm
+	 */
+	@Test
+	public void testDeleteAlarmNotFound() {
+		assertThrows(NoSuchElementException.class, () -> this.acs.deleteAlarm(1));
+		verify(this.storage, only()).has("alarm1");
+	}
+
+	/**
+	 * Tests deleteTimer with normal case
+	 */
+	@Test
+	public void testDeleteTimer() {
+		this.storage.put("timer1", "foo");
+		this.acs.deleteTimer(1);
+		verify(this.storage).has("timer1");
+		verify(this.storage).delete("timer1");
+		assertThat(false, is(this.storage.has("timer1")));
+	}
+
+	/**
+	 * Tests deleteTimer with non existent timer
+	 */
+	@Test
+	public void testDeleteTimerNotFound() {
+		assertThrows(NoSuchElementException.class, () -> this.acs.deleteTimer(1));
+		verify(this.storage, only()).has("timer1");
 	}
 
 	/**

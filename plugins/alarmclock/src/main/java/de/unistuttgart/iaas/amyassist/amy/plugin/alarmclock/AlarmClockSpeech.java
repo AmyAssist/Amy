@@ -50,23 +50,26 @@ public class AlarmClockSpeech {
 	 * Sets new alarm with this scheme: hh:mm
 	 * 
 	 * @param params
+	 *            words in the grammar annotation
 	 * @return params[3], params[5]
 	 */
 	@Grammar("set alarm (at|for) # oh #")
 	public String setAlarm(String[] params) {
-		if (Integer.parseInt(params[3]) > 23 || Integer.parseInt(params[5]) > 59)
+		try {
+			Alarm alarm = this.logic.setAlarm(new int[] { Integer.parseInt(params[3]), Integer.parseInt(params[5]) });
+			Calendar time = alarm.getAlarmDate();
+			return "Alarm " + alarm.getId() + " set for " + time.get(Calendar.HOUR_OF_DAY) + ":"
+					+ time.get(Calendar.MINUTE);
+		} catch (IllegalArgumentException e) {
 			return PARAMSNOTVALID;
-		Alarm alarm = this.logic.setAlarm(new int[] { Integer.parseInt(params[3]), Integer.parseInt(params[5]) });
-		Calendar time = alarm.getAlarmDate();
-		return "Alarm " + alarm.getId() + " set for " + time.get(Calendar.HOUR_OF_DAY) + ":"
-				+ time.get(Calendar.MINUTE);
+		}
 	}
 
 	/**
-	 * Sets a new timer. You can select between hours, minutes and seconds or
-	 * combinate them
+	 * Sets a new timer. You can select between hours, minutes and seconds or combinate them
 	 * 
 	 * @param params
+	 *            words in the grammar annotation
 	 * @return params for the timer
 	 */
 	@Grammar("set timer on [# hours] [# minutes] [# seconds]")
@@ -105,6 +108,7 @@ public class AlarmClockSpeech {
 	 * Resets all alarms or timers
 	 * 
 	 * @param params
+	 *            words in the grammar annotation
 	 * @return resetAlarms or resetTimers
 	 */
 	@Grammar("reset (alarms|timers)")
@@ -118,6 +122,7 @@ public class AlarmClockSpeech {
 	 * Deletes one specific alarm or timer
 	 * 
 	 * @param params
+	 *            words in the grammar annotation
 	 * @return deleteAlarm or deleteTimer
 	 */
 	@Grammar("delete (alarm|timer) #")
@@ -131,6 +136,7 @@ public class AlarmClockSpeech {
 	 * deactivates one specific alarm or timer
 	 * 
 	 * @param params
+	 *            words in the grammar annotation
 	 * @return deactivateAlarm or deactivateTimer
 	 */
 	@Grammar("deactivate (alarm|timer) #")
@@ -144,6 +150,7 @@ public class AlarmClockSpeech {
 	 * Activates one specific alarm or timer
 	 * 
 	 * @param params
+	 *            words in the grammar annotation
 	 * @return activateAlarm or activateTimer
 	 */
 	@Grammar("activate (alarm|timer) #")
@@ -157,6 +164,7 @@ public class AlarmClockSpeech {
 	 * gets one specific alarm or timer
 	 * 
 	 * @param params
+	 *            words in the grammar annotation
 	 * @return getAlarm or getTimer
 	 */
 	@Grammar("get (alarm|timer) #")
@@ -174,6 +182,7 @@ public class AlarmClockSpeech {
 	 * gets all alarms or timers
 	 * 
 	 * @param params
+	 *            words in the grammar annotation
 	 * @return getAllAlarms or getAllTimers
 	 */
 	@Grammar("get all (alarms|timers)")
@@ -198,6 +207,7 @@ public class AlarmClockSpeech {
 	 * edits a specific alarm
 	 * 
 	 * @param params
+	 *            words in the grammar annotation
 	 * @return edit Alarm
 	 */
 	@Grammar("edit alarm # to # oh #")
@@ -216,10 +226,11 @@ public class AlarmClockSpeech {
 	 * Gets remaining timer delay
 	 * 
 	 * @param params
-	 * @return
+	 *            words in the grammar annotation
+	 * @return remaining timer delay
 	 */
 	@Grammar("when (does|is) timer # (ringing|ring)")
-	public String getRemainingTimerDelay(String params[]) {
+	public String getRemainingTimerDelay(String[] params) {
 		int[] remDelay = this.logic.getRemainingTimerDelay(Integer.parseInt(params[3]));
 		if (remDelay[0] == 0) {
 			if (remDelay[1] == 0) {
