@@ -48,9 +48,14 @@ public class HomeResource {
 	@POST
 	@Path("console")
 	public void useAmy(String input) {
-		//core.doSomething(input)
+		//TODO core.doSomething(input)
 	}
 	
+	/**
+	 * returns all installed plugins
+	 * 
+	 * @return array of installed plugins
+	 */
 	@GET
 	public SimplePluginEntity[] getPlugins() {
 		SimplePluginEntity[] plugins = new SimplePluginEntity[this.manager.getPlugins().size()];
