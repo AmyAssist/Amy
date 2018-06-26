@@ -41,8 +41,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
@@ -124,7 +125,7 @@ public class Core implements SpeechInputHandler {
 		sr.setSpeechInputHandler(this);
 		this.threads.add(new Thread(sr));
 
-		PluginManager pluginManager = this.di.getService(PluginManager.class);
+		PluginManager pluginManager = this.di.getService(PluginManagerService.class);
 		pluginManager.loadPlugins();
 		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
 		this.speechCommandHandler.completeSetup();
@@ -148,7 +149,7 @@ public class Core implements SpeechInputHandler {
 		this.di.register(SpeechCommandHandler.class);
 		this.di.register(ConfigurationLoader.class);
 		this.di.register(PluginLoader.class);
-		this.di.register(PluginManager.class);
+		this.di.register(PluginManagerService.class);
 	}
 
 	/**
