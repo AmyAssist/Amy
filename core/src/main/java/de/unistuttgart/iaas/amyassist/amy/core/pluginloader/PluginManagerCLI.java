@@ -46,4 +46,9 @@ public class PluginManagerCLI {
 	public String pluginVersion(String pluginName) {
 		return this.configuration.getPluginVersion(pluginName);
 	}
+
+	@Command(name = "plugin:description", description = "get the description of an installed plugin")
+	public String pluginDescription(String pluginName) {
+		return this.configuration.getPluginDescription(pluginName);
+	}
 }
