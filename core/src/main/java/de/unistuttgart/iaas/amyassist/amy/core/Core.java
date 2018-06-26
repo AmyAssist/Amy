@@ -70,7 +70,6 @@ public class Core {
 	private DependencyInjection di = new DependencyInjection();
 
 	private Server server;
-	private SpeechCommandHandler speechCommandHandler;
 	private IStorage storage = new Storage("", new GlobalStorage());
 
 	/**
@@ -91,9 +90,11 @@ public class Core {
 	 * The main entry point for the real core logic.
 	 */
 	private void run() {
+		this.logger.info("run");
 		this.init();
 		this.threads.forEach(Thread::start);
 		this.server.start();
+		this.logger.info("running");
 	}
 
 	/**
@@ -101,7 +102,7 @@ public class Core {
 	 */
 	private void init() {
 		this.registerAllCoreServices();
-		this.speechCommandHandler = this.di.getService(SpeechCommandHandler.class);
+		SpeechCommandHandler speechCommandHandler = this.di.getService(SpeechCommandHandler.class);
 		this.threads = new ArrayList<>();
 
 		this.server = this.di.getService(Server.class);
@@ -113,9 +114,10 @@ public class Core {
 
 		Environment environment = this.di.getService(Environment.class);
 
-		Path grammarFile = environment.getWorkingDirectory().resolve("resources").resolve("sphinx-grammars/grammar.gram");
+		Path grammarFile = environment.getWorkingDirectory().resolve("resources")
+				.resolve("sphinx-grammars/grammar.gram");
 
-		this.speechCommandHandler.setFileToSaveGrammarTo(grammarFile.toFile());
+		speechCommandHandler.setFileToSaveGrammarTo(grammarFile.toFile());
 
 		AudioUserInteraction aui = AudioUserInteraction.getAudioUI();
 		aui.setGrammars(new Grammar("grammar", grammarFile.toFile()), null);
@@ -128,7 +130,7 @@ public class Core {
 		PluginManager pluginManager = this.di.getService(PluginManager.class);
 		pluginManager.loadPlugins();
 		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
-		this.speechCommandHandler.completeSetup();
+		speechCommandHandler.completeSetup();
 	}
 
 	/**
@@ -139,6 +141,8 @@ public class Core {
 		this.di.addExternalService(DependencyInjection.class, this.di);
 		this.di.addExternalService(Core.class, this);
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
+		this.di.addExternalService(SpeechInputHandler.class,
+				new NaturalLanaguageInputHandlerService(this.singleThreadScheduledExecutor));
 
 		this.di.register(Logger.class, new LoggerProvider());
 		this.di.register(Properties.class, new PropertiesProvider());
@@ -151,16 +155,17 @@ public class Core {
 		this.di.register(PluginLoader.class);
 		this.di.register(PluginManagerService.class);
 		this.di.register(EnvironmentService.class);
-		this.di.register(NaturalLanaguageInputHandlerService.class);
 	}
 
 	/**
 	 * stop all Threads and terminate the application. This is call form the {@link Console}
 	 */
 	public void stop() {
+		this.logger.info("stop");
 		this.server.shutdown();
 		this.threads.forEach(Thread::interrupt);
 		this.singleThreadScheduledExecutor.shutdownNow();
+		this.logger.info("stopped");
 	}
 
 }
