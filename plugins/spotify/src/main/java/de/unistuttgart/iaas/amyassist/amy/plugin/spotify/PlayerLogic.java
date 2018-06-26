@@ -96,10 +96,10 @@ public class PlayerLogic {
 		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devicesList = new ArrayList<>();
 		Device[] devices = this.spotifyAPICalls.getDevices();
 		if (devices != null) {
-			Map<String, String> entry;
 			for (int i = 0; i < devices.length; i++) {
 				de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device deviceData;
-				deviceData = new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device(devices[i].getType(), devices[i].getName(), devices[i].getId());
+				deviceData = new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device(devices[i].getType(),
+						devices[i].getName(), devices[i].getId());
 				devicesList.add(deviceData);
 			}
 		}
