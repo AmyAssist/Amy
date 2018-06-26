@@ -60,7 +60,7 @@
 									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 								</manifest>
 								<manifestEntries>
-									<PluginID>${groupId}.${artifactId}</PluginID>
+									<PluginID>${project.groupId}.${project.artifactId}</PluginID>
 								</manifestEntries>
 							</archive>
 						</configuration>
