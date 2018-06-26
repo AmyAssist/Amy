@@ -19,11 +19,6 @@
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-testing-framework</artifactId>
 			<version>${amy.testing-framework.version}</version>
 			<scope>test</scope>
@@ -34,14 +29,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-core</artifactId>
+			<artifactId>amy-plugin-manager-api</artifactId>
 			<version>0.3.0-Snapshot</version>
 		</dependency>
 	</dependencies>

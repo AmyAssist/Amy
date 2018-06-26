@@ -23,37 +23,22 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import java.util.Collection;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
+import java.util.List;
 
 /**
- * A ContextProvider for Plugin informations
- * 
+ * TODO: Description
  * @author Leon Kiefer
  */
-public class PluginProvider implements StaticProvider<IPlugin> {
+public interface PluginManager {
 
-	private final Logger logger = LoggerFactory.getLogger(PluginProvider.class);
+	/**
+	 * load the plugins
+	 */
+	void loadPlugins();
 
-	private Collection<IPlugin> plugins;
-
-	public PluginProvider(Collection<IPlugin> plugins) {
-		this.plugins = plugins;
-	}
-
-	@Override
-	public IPlugin getContext(Class<?> consumer) {
-		for (IPlugin p : this.plugins) {
-			if (p.getClasses().contains(consumer)) {
-				return p;
-			}
-		}
-		this.logger.error("The class {} does not seem to belong to any plugin.", consumer.getName());
-		return null;
-	}
+	/**
+	 * @see PluginLoader#getPlugins()
+	 */
+	List<IPlugin> getPlugins();
 
 }

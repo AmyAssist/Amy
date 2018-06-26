@@ -125,7 +125,7 @@ public class Core implements SpeechInputHandler {
 		sr.setSpeechInputHandler(this);
 		this.threads.add(new Thread(sr));
 
-		PluginManager pluginManager = this.di.getService(PluginManagerService.class);
+		PluginManager pluginManager = this.di.getService(PluginManager.class);
 		pluginManager.loadPlugins();
 		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
 		this.speechCommandHandler.completeSetup();

@@ -39,7 +39,7 @@ public class HomeResource {
 
 	public static final String PATH = "home";
 	@Reference
-	private PluginManager manager; // TODO or whatever
+	private PluginManager manager;
 	
 	/**
 	 * 

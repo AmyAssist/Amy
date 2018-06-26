@@ -23,24 +23,64 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
+import java.io.File;
 import java.util.List;
-
-import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
+import java.util.jar.Manifest;
 
 /**
- * TODO: Description
- * @author Leon Kiefer
+ * A representation of a plugin
+ * 
+ * @author Tim Neumann
  */
-public interface PluginManager {
+public interface IPlugin {
 
 	/**
-	 * load the plugins
+	 * Get's the file of this plugin
+	 * 
+	 * @return file
 	 */
-	void loadPlugins();
+	File getFile();
 
 	/**
-	 * @see PluginLoader#getPlugins()
+	 * Get's the classloader which was used to load this plugin
+	 * 
+	 * @return classLoader
 	 */
-	List<IPlugin> getPlugins();
+	ClassLoader getClassLoader();
+
+	/**
+	 * Get's the unique name of the plugin
+	 * 
+	 * @return uniqueName
+	 */
+	String getUniqueName();
+
+	/**
+	 * Get's the dispaly name of the plugin
+	 * 
+	 * @return displayName
+	 */
+	String getDisplayName();
+
+	/**
+	 * Get's the version of this plugin
+	 * 
+	 * @return mavenVersion
+	 */
+	String getVersion();
+
+	/**
+	 * Get's a list of all classes of this plugin
+	 * 
+	 * @return classes
+	 */
+	List<Class<?>> getClasses();
+
+	/**
+	 * Get's the manifest of this plugin
+	 * 
+	 * @return manifest
+	 */
+	Manifest getManifest();
 
 }

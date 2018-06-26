@@ -23,8 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver.rest.home;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -35,15 +34,19 @@ import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
  * TODO: Description
  * @author
  */
+@ExtendWith(FrameworkExtension.class)
 class HomeResourceTest {
 
 	@Reference
@@ -56,6 +59,7 @@ class HomeResourceTest {
 	 */
 	@BeforeEach
 	void setUp() {
+		this.testFramework.mockService(PluginManager.class);
 		this.testFramework.setRESTResource(HomeResource.class);
 
 		Client c = ClientBuilder.newClient();
@@ -69,7 +73,7 @@ class HomeResourceTest {
 	void testUseAmy() {
 		String consoleInput = ""; //TODO write some posible inputs
 		Entity<String> entity = Entity.entity(consoleInput, MediaType.TEXT_PLAIN);
-		Response r = target.path("console").request().post(entity);
+		Response r = this.target.path("console").request().post(entity);
 		assertEquals(204, r.getStatus());
 		//Mockito.verify(backendMock).someMethod(consoleInput);
 	}
@@ -81,7 +85,7 @@ class HomeResourceTest {
 	void testGetPlugins() {
 		//whatever the backend uses
 		//Plugin[] plugins = setupPlugins()
-		Response r = target.request().get();
+		Response r = this.target.request().get();
 		assertEquals(200, r.getStatus());
 		SimplePluginEntity[] spes = r.readEntity(SimplePluginEntity[].class);
 		//for(int i = 0; i < spes.lenght; i++) {

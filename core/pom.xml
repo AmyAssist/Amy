@@ -112,6 +112,11 @@
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-plugin-manager-api</artifactId>
+			<version>0.3.0-Snapshot</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
