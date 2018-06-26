@@ -40,9 +40,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.verify;
 
 import org.mockito.Mockito;
+
+import com.wrapper.spotify.model_objects.miscellaneous.Device;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
@@ -52,7 +54,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
- * Test for the rest resource of weather
+ * Test for the rest resource of music
  * 
  * @author Muhammed Kaya
  */
@@ -65,6 +67,7 @@ class MusicRestTest {
 	private PlayerLogic logic;
 	private MusicEntity musicEntity;
 	private Playlist playlist;
+	private Device[] devices;
 
 	private WebTarget target;
 
@@ -99,15 +102,62 @@ class MusicRestTest {
 	}
 
 	/**
+	 * creates List with device examples for testing
+	 * 
+	 * @return an example device list
+	 */
+	private List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> createDeviceList() {
+		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devicesList = new ArrayList<>();
+		devicesList.add(new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device("Smartphone", "Hello", "abc123"));
+		devicesList.add(new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device("Computer", "Goodbye", "123abc"));
+		return devicesList;
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#getDevices()}.
+	 */
+	@Test
+	void testGetDevices() {
+		Mockito.when(this.logic.getDevices()).thenReturn(createDeviceList());
+
+		Response response = this.target.path("music").path("getDevices").request().get();
+
+		assertThat(response.readEntity(String.class),
+				is("[{\"type\":\"Smartphone\",\"name\":\"Hello\",\"id\":\"abc123\"},"
+						+ "{\"type\":\"Computer\",\"name\":\"Goodbye\",\"id\":\"123abc\"}]"));
+		assertThat(response.getStatus(), is(200));
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#setDevice(int)}.
+	 */
+	@Test
+	void testSetDevice() {
+		Mockito.when(this.logic.setDevice(0)).thenReturn("Hello");
+
+		Response response = this.target.path("music").path("setDevice/0").request().post(null);
+
+		assertThat(response.readEntity(String.class), is("Hello"));
+		assertThat(response.getStatus(), is(200));
+
+		Mockito.when(this.logic.setDevice(2)).thenReturn("No device found");
+
+		response = this.target.path("music").path("setDevice/2").request().post(null);
+
+		assertThat(response.readEntity(String.class), is("No device found"));
+		assertThat(response.getStatus(), is(409));
+	}
+
+	/**
 	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#getCurrentSong()}.
 	 */
 	@Test
 	void testGetCurrentSong() {
 		Response response = this.target.path("music").path("currentSong").request().get();
 
-		assertNotNull(response.getEntity());
 		assertThat(response.readEntity(String.class), is("{\"artist\":\"ArtistName\",\"title\":\"MusicName\"}"));
 		assertThat(response.getStatus(), is(200));
+		verify(this.logic).getCurrentSong();
 	}
 
 	/**
@@ -121,16 +171,13 @@ class MusicRestTest {
 		Mockito.when(this.logic.search(this.musicEntity.toString(), SpotifyConstants.TYPE_TRACK, 5))
 				.thenReturn(playName);
 		Mockito.when(this.logic.convertSearchOutputToSingleString(this.logic.play(0))).thenReturn("playName");
-
 		Response response = this.target.path("music").path("play").request().post(entity);
 
-		assertNotNull(response.getEntity());
 		assertThat(response.readEntity(String.class), is("playName"));
 		assertThat(response.getStatus(), is(200));
 
 		response = this.target.path("music").path("play").request().post(null);
 
-		assertNotNull(response.getEntity());
 		assertThat(response.getStatus(), is(500));
 	}
 
@@ -142,9 +189,9 @@ class MusicRestTest {
 		Mockito.when(this.logic.resume()).thenReturn(true);
 		Response response = this.target.path("music").path("resume").request().post(null);
 
-		assertNotNull(response.getEntity());
 		assertThat(response.readEntity(String.class), is("resume"));
 		assertThat(response.getStatus(), is(200));
+		Mockito.verify(this.logic).resume();
 
 		Mockito.when(this.logic.resume()).thenReturn(false);
 		response = this.target.path("music").path("resume").request().post(null);
@@ -161,9 +208,9 @@ class MusicRestTest {
 		Mockito.when(this.logic.pause()).thenReturn(true);
 		Response response = this.target.path("music").path("pause").request().post(null);
 
-		assertNotNull(response.getEntity());
 		assertThat(response.readEntity(String.class), is("pause"));
 		assertThat(response.getStatus(), is(200));
+		Mockito.verify(this.logic).pause();
 
 		Mockito.when(this.logic.pause()).thenReturn(false);
 		response = this.target.path("music").path("pause").request().post(null);
@@ -180,9 +227,9 @@ class MusicRestTest {
 		Mockito.when(this.logic.skip()).thenReturn(true);
 		Response response = this.target.path("music").path("skip").request().post(null);
 
-		assertNotNull(response.getEntity());
 		assertThat(response.readEntity(String.class), is("skip"));
 		assertThat(response.getStatus(), is(200));
+		Mockito.verify(this.logic).skip();
 
 		Mockito.when(this.logic.skip()).thenReturn(false);
 		response = this.target.path("music").path("skip").request().post(null);
@@ -199,9 +246,9 @@ class MusicRestTest {
 		Mockito.when(this.logic.back()).thenReturn(true);
 		Response response = this.target.path("music").path("back").request().post(null);
 
-		assertNotNull(response.getEntity());
 		assertThat(response.readEntity(String.class), is("back"));
 		assertThat(response.getStatus(), is(200));
+		Mockito.verify(this.logic).back();
 
 		Mockito.when(this.logic.back()).thenReturn(false);
 		response = this.target.path("music").path("back").request().post(null);
@@ -225,30 +272,27 @@ class MusicRestTest {
 	 */
 	@Test
 	void testSetVolume() {
-		String volumeString = "mute";
-		Entity<String> entity = Entity.entity(volumeString, MediaType.TEXT_PLAIN);
-
-		Response response = this.target.path("music").path("volume/0").request().post(entity);
+		Response response = this.target.path("music").path("volume/0").request().post(null);
 		assertThat(response.getStatus(), is(200));
 		assertThat(response.readEntity(String.class), is("0"));
 
-		response = this.target.path("music").path("volume/50").request().post(entity);
+		response = this.target.path("music").path("volume/50").request().post(null);
 		assertThat(response.getStatus(), is(200));
 		assertThat(response.readEntity(String.class), is("50"));
 
-		response = this.target.path("music").path("volume/100").request().post(entity);
+		response = this.target.path("music").path("volume/100").request().post(null);
 		assertThat(response.getStatus(), is(200));
 		assertThat(response.readEntity(String.class), is("100"));
 
-		response = this.target.path("music").path("volume/-1").request().post(entity);
+		response = this.target.path("music").path("volume/-1").request().post(null);
 		assertThat(response.getStatus(), is(400));
 		assertThat(response.readEntity(String.class), is("Incorrect volume value"));
 
-		response = this.target.path("music").path("volume/101").request().post(entity);
+		response = this.target.path("music").path("volume/101").request().post(null);
 		assertThat(response.getStatus(), is(400));
 		assertThat(response.readEntity(String.class), is("Incorrect volume value"));
 
-		response = this.target.path("music").path("volume/xyz").request().post(entity);
+		response = this.target.path("music").path("volume/xyz").request().post(null);
 		assertThat(response.getStatus(), is(400));
 		assertThat(response.readEntity(String.class), is("Incorrect volume command"));
 	}

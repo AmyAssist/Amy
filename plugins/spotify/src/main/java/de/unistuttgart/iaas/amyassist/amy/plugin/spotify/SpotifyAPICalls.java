@@ -25,9 +25,11 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Calendar;
 
 import org.slf4j.Logger;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.neovisionaries.i18n.CountryCode;
 import com.wrapper.spotify.SpotifyApi;
@@ -50,11 +52,14 @@ import com.wrapper.spotify.requests.data.player.SetVolumeForUsersPlaybackRequest
 import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToNextTrackRequest;
 import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrackRequest;
 import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
+import com.wrapper.spotify.requests.data.player.TransferUsersPlaybackRequest;
 import com.wrapper.spotify.requests.data.search.SearchItemRequest;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 
 /**
  * 
@@ -66,21 +71,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class SpotifyAPICalls {
 
 	/**
-	 * clientID from a spotify developer account
-	 */
-	private String clientID = null;
-	/**
-	 * clientSecret from a spotify developer account
-	 */
-	private String clientSecret = null;
-	/**
 	 * URI to redirect callbacks from the login screen
 	 */
 	private final URI redirectURI = SpotifyHttpManager.makeUri("http://localhost:8888");
-	/**
-	 * refreshToken is needed to generate new access tokens
-	 */
-	private String refreshToken = null;
 	/**
 	 * id from the current device
 	 */
@@ -90,53 +83,104 @@ public class SpotifyAPICalls {
 	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state";
 	private String deviceID = null;
 
-	private AuthorizationCodeCredentials authorizationCodeCredentials;
-	private AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;
-
-	private static final String SPOTIFY_CLIENTSECRET_KEY = "spotify_clientSecret";
-	private static final String SPOTIFY_CLIENTID_KEY = "spotify_clientId";
-	private static final String SPOTIFY_REFRSHTOKEN_KEY = "spotify_refreshToken";
-	private static final String SPOTIFY_DEVICEID = "spotify_device_Id";
-	private static final int TOKEN_EXPIRE_TIME = 120;
+	public static final String SPOTIFY_CLIENTSECRET_KEY = "spotify_clientSecret";
+	public static final String SPOTIFY_CLIENTID_KEY = "spotify_clientId";
+	public static final String SPOTIFY_REFRSHTOKEN_KEY = "spotify_refreshToken";
+	public static final String SPOTIFY_DEVICEID = "spotify_device_Id";
+	public static final String SPOTIFY_ACCESSTOKEN = "spotify_Accsesstoken";
+	public static final int TOKEN_EXPIRE_TIME_OFFSET = 120;
 
 	@Reference
 	private ConfigLoader configLoader;
 
-	private boolean firstTime = true;
-
 	@Reference
 	private Logger logger;
 
-	private SpotifyApi spotifyApi = null;
+	@Reference
+	private IStorage storage;
 
+	@Reference
+	private TaskSchedulerAPI taskScheduler;
+	
 	/**
 	 * init the api calls
 	 */
 	@PostConstruct
 	private final void init() {
-		if (this.configLoader.get(SPOTIFY_CLIENTID_KEY) != null
-				&& this.configLoader.get(SPOTIFY_CLIENTSECRET_KEY) != null) {
-			this.clientID = this.configLoader.get(SPOTIFY_CLIENTID_KEY);
-			this.clientSecret = this.configLoader.get(SPOTIFY_CLIENTSECRET_KEY);
-			this.spotifyApi = new SpotifyApi.Builder().setClientId(this.clientID).setClientSecret(this.clientSecret)
-					.setRedirectUri(this.redirectURI).build();
-		} else {
-			this.logger.warn("Client Secret and ID missing. Please insert the config file");
-		}
-
-		if (this.configLoader.get(SPOTIFY_REFRSHTOKEN_KEY) != null) {
-			this.refreshToken = this.configLoader.get(SPOTIFY_REFRSHTOKEN_KEY);
-		} else {
-			this.logger.warn("Please exec the Authorization first");
-		}
-		if (this.configLoader.get(SPOTIFY_DEVICEID) != null
-				&& checkDeviceIsLoggedIn(this.configLoader.get(SPOTIFY_DEVICEID))) {
-			this.deviceID = this.configLoader.get(SPOTIFY_DEVICEID);
-		} else if (getDevices().length > 0) {
+		if (getDevices().length > 0) {
 			this.deviceID = getDevices()[0].getId();
 		} else {
 			this.logger.warn("no device is logged in");
 		}
+	}
+
+	/**
+	 * this method a spotifyApi object and get these back, the method checks if all tokens correct
+	 * 
+	 * @return a spotifyAPI object for queries to the Spotify Web API
+	 */
+	public SpotifyApi getSpotifyApi() {
+		SpotifyApi spotifyAPI = null;
+		if (this.configLoader.get(SPOTIFY_CLIENTID_KEY) != null
+				&& this.configLoader.get(SPOTIFY_CLIENTSECRET_KEY) != null) {
+			spotifyAPI = new SpotifyApi.Builder().setClientId(this.configLoader.get(SPOTIFY_CLIENTID_KEY))
+					.setClientSecret(this.configLoader.get(SPOTIFY_CLIENTSECRET_KEY)).setRedirectUri(this.redirectURI)
+					.build();
+		} else {
+			this.logger.warn("Client Secret and ID missing. Please insert the config file");
+			return null;
+		}
+		if (this.configLoader.get(SPOTIFY_REFRSHTOKEN_KEY) != null) {
+			spotifyAPI.setRefreshToken(this.configLoader.get(SPOTIFY_REFRSHTOKEN_KEY));
+		} else {
+			this.logger.warn("Please exec the Authorization first");
+			return spotifyAPI;
+		}
+		if (this.storage.get(SPOTIFY_ACCESSTOKEN) != null) {
+			spotifyAPI.setAccessToken(this.storage.get(SPOTIFY_ACCESSTOKEN));
+		} else {
+			String accessToken = createAccessToken(spotifyAPI);
+			if (accessToken != null) {
+				spotifyAPI.setAccessToken(accessToken);
+			} else {
+				this.logger.warn("Accsess Token can not generated");
+				return spotifyAPI;
+			}
+		}
+		return spotifyAPI;
+	}
+
+	/**
+	 * create a refresh Token and start a timer to refresh it
+	 * 
+	 * @param spotifyApi
+	 *            a instance of SpotifyApi
+	 * @return a String that is a access token
+	 */
+	private String createAccessToken(SpotifyApi spotifyApi) {
+		AuthorizationCodeRefreshRequest authCodeRefreshReq = spotifyApi.authorizationCodeRefresh().build();
+		AuthorizationCodeCredentials authCredentials = (AuthorizationCodeCredentials) exceptionHandlingWithResults(
+				authCodeRefreshReq);
+		if (authCredentials != null) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.SECOND, authCredentials.getExpiresIn().intValue() - TOKEN_EXPIRE_TIME_OFFSET);
+			this.taskScheduler.schedule(refreshAccessToken(), calendar.getTime());
+			this.storage.put(SPOTIFY_ACCESSTOKEN, authCredentials.getAccessToken());
+			return authCredentials.getAccessToken();
+		}
+		return null;
+	}
+
+	/**
+	 * refresh the access token when it expire
+	 * 
+	 * @return a runnable to start with the task scheduler
+	 */
+	public Runnable refreshAccessToken() {
+		return () -> {
+			this.storage.delete(SPOTIFY_ACCESSTOKEN);
+			getSpotifyApi();
+		};
 	}
 
 	/**
@@ -146,19 +190,9 @@ public class SpotifyAPICalls {
 	 * @return a URI to authorize a spotify account
 	 */
 	public URI authorizationCodeUri() {
-		AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri().state("TEST")
+		AuthorizationCodeUriRequest authorizationCodeUriRequest = getSpotifyApi().authorizationCodeUri().state("TEST")
 				.scope(SPOTIFY_RULES).show_dialog(true).build();
 		return authorizationCodeUriRequest.execute();
-	}
-
-	/**
-	 * create the refresh token in he authorization object with the authCode
-	 * 
-	 * @param authCode
-	 *            Callback from the login link
-	 */
-	public void inputAuthCode(String authCode) {
-		createRefreshToken(authCode);
 	}
 
 	/**
@@ -166,16 +200,17 @@ public class SpotifyAPICalls {
 	 * 
 	 * @param authCode
 	 *            from authorizationCodeUri()
+	 * @return true if succeed else false
 	 */
-	public void createRefreshToken(String authCode) {
-		AuthorizationCodeRequest authorizationCodeRequest = this.spotifyApi.authorizationCode(authCode).build();
-		try {
-			AuthorizationCodeCredentials authorizationCodeCredentials1 = authorizationCodeRequest.execute();
-			this.refreshToken = authorizationCodeCredentials1.getRefreshToken();
-			this.configLoader.set(SPOTIFY_REFRSHTOKEN_KEY, this.refreshToken);
-		} catch (SpotifyWebApiException | IOException e) {
-			this.logger.error(e.getMessage());
+	public boolean createRefreshToken(String authCode) {
+		AuthorizationCodeRequest authorizationCodeRequest = getSpotifyApi().authorizationCode(authCode).build();
+		AuthorizationCodeCredentials authCodeCredentials = (AuthorizationCodeCredentials) exceptionHandlingWithResults(
+				authorizationCodeRequest);
+		if (authCodeCredentials != null) {
+			this.configLoader.set(SPOTIFY_REFRSHTOKEN_KEY, authCodeCredentials.getRefreshToken());
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -186,7 +221,6 @@ public class SpotifyAPICalls {
 	 */
 	public void setClientID(String clientID) {
 		this.configLoader.set(SPOTIFY_CLIENTID_KEY, clientID);
-		this.clientID = clientID;
 	}
 
 	/**
@@ -197,7 +231,6 @@ public class SpotifyAPICalls {
 	 */
 	public void setClientSecret(String clientSecret) {
 		this.configLoader.set(SPOTIFY_CLIENTSECRET_KEY, clientSecret);
-		this.clientSecret = clientSecret;
 	}
 
 	/**
@@ -205,50 +238,15 @@ public class SpotifyAPICalls {
 	 * 
 	 * @param deviceID
 	 *            deviceID from actual active device
+	 * @return true if succeed else false
 	 */
-	public void setCurrentDevice(String deviceID) {
+	public boolean setCurrentDevice(String deviceID) {
+		JsonArray deviceIds = new JsonParser().parse("[\"".concat(deviceID).concat("\"]")).getAsJsonArray();
 		this.deviceID = deviceID;
-		this.configLoader.set(SPOTIFY_DEVICEID, deviceID);
-	}
-
-	/**
-	 * in the first execution create this method a spotifyApi object and get these back, after the first execution the
-	 * method checks the access token valid and refresh the access token if invalid
-	 * 
-	 * @return a spotifyAPI object for queries to the Spotify Web API
-	 */
-	public SpotifyApi getSpotifyApi() {
-		if (this.firstTime) {
-			try {
-				if (this.clientID != null && this.clientSecret != null && this.refreshToken != null) {
-					this.spotifyApi = new SpotifyApi.Builder().setClientId(this.clientID)
-							.setClientSecret(this.clientSecret).setRefreshToken(this.refreshToken).build();
-					this.authorizationCodeRefreshRequest = this.spotifyApi.authorizationCodeRefresh().build();
-					this.authorizationCodeCredentials = this.authorizationCodeRefreshRequest.execute();
-					this.spotifyApi.setAccessToken(this.authorizationCodeCredentials.getAccessToken());
-				} else {
-					return null;
-				}
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getCause().getMessage());
-				return null;
-			}
-			this.firstTime = false;
-			return this.spotifyApi;
-		} else if (this.authorizationCodeCredentials.getExpiresIn().intValue() > TOKEN_EXPIRE_TIME) {
-			return this.spotifyApi;
-		} else {
-			try {
-
-				this.authorizationCodeCredentials = this.authorizationCodeRefreshRequest.execute();
-				this.spotifyApi.setAccessToken(this.authorizationCodeCredentials.getAccessToken());
-
-			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getCause().getMessage());
-				return null;
-			}
-			return this.spotifyApi;
-		}
+		this.storage.put(SPOTIFY_DEVICEID, deviceID);
+		TransferUsersPlaybackRequest transferUsersPlaybackRequest = getSpotifyApi().transferUsersPlayback(deviceIds)
+				.build();
+		return exceptionHandlingWithBoolean(transferUsersPlaybackRequest);
 	}
 
 	/**
