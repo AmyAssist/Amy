@@ -53,6 +53,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.rest.home.HomeResource;
 
 /**
  * The central core of the application
@@ -107,6 +108,7 @@ public class Core implements SpeechInputHandler {
 		this.threads = new ArrayList<>();
 
 		this.server = this.di.getService(Server.class);
+		this.server.register(HomeResource.class);
 
 		Console console = this.di.getService(Console.class);
 		console.setSpeechInputHandler(this);
