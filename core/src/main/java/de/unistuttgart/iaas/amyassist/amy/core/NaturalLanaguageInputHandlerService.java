@@ -26,7 +26,9 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 
@@ -35,16 +37,19 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
  * 
  * @author Leon Kiefer
  */
+@Service
 public class NaturalLanaguageInputHandlerService implements SpeechInputHandler {
-	private ScheduledExecutorService singleThreadScheduledExecutor;
+	@Reference
+	private Core core;
+
 	@Reference
 	private SpeechCommandHandler speechCommandHandler;
 
-	/**
-	 * 
-	 */
-	NaturalLanaguageInputHandlerService(ScheduledExecutorService singleThreadScheduledExecutor) {
-		this.singleThreadScheduledExecutor = singleThreadScheduledExecutor;
+	private ScheduledExecutorService singleThreadScheduledExecutor;
+
+	@PostConstruct
+	private void setup() {
+		this.singleThreadScheduledExecutor = this.core.getScheduledExecutor();
 	}
 
 	/**

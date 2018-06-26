@@ -67,10 +67,20 @@ public class Core {
 
 	private List<Thread> threads;
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+
 	private DependencyInjection di = new DependencyInjection();
 
 	private Server server;
 	private IStorage storage = new Storage("", new GlobalStorage());
+
+	/**
+	 * Get's {@link #singleThreadScheduledExecutor singleThreadScheduledExecutor}
+	 * 
+	 * @return singleThreadScheduledExecutor
+	 */
+	public ScheduledExecutorService getScheduledExecutor() {
+		return this.singleThreadScheduledExecutor;
+	}
 
 	/**
 	 * The method executed by the main method
@@ -141,8 +151,6 @@ public class Core {
 		this.di.addExternalService(DependencyInjection.class, this.di);
 		this.di.addExternalService(Core.class, this);
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
-		this.di.addExternalService(SpeechInputHandler.class,
-				new NaturalLanaguageInputHandlerService(this.singleThreadScheduledExecutor));
 
 		this.di.register(Logger.class, new LoggerProvider());
 		this.di.register(Properties.class, new PropertiesProvider());
@@ -155,6 +163,7 @@ public class Core {
 		this.di.register(PluginLoader.class);
 		this.di.register(PluginManagerService.class);
 		this.di.register(EnvironmentService.class);
+		this.di.register(NaturalLanaguageInputHandlerService.class);
 	}
 
 	/**

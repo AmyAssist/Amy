@@ -65,7 +65,7 @@ public class Console implements SpeechIO {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
-			this.logger.error("Error while handling input {}", speechInput, e);
+			this.logger.error("Error while handling input {}", speechInput, e.getCause());
 		}
 		return "";
 	}
