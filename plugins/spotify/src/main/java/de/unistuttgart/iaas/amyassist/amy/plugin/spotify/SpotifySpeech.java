@@ -57,7 +57,8 @@ public class SpotifySpeech {
 		List<Map<String, String>> devices = this.playerLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
-			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i).get(SpotifyConstants.DEVICE_NAME).concat("\n"));
+			output = output.concat(String.valueOf(i)).concat(". ")
+					.concat(devices.get(i).get(SpotifyConstants.DEVICE_NAME).concat("\n"));
 		}
 		if (output.equals("")) {
 			return "no device found";
@@ -66,8 +67,7 @@ public class SpotifySpeech {
 	}
 
 	/**
-	 * set the device in the player logic # is a number between 0 and theoretically
-	 * infinite
+	 * set the device in the player logic # is a number between 0 and theoretically infinite
 	 * 
 	 * @param params
 	 * 

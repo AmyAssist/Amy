@@ -68,19 +68,19 @@ class PlayerLogicTest {
 
 	@Mock
 	private Search search;
-	
-	
+
+	@Mock
+	private StringGenerator stringGenerator;
 
 	@BeforeEach
-	public void init() {	
+	public void init() {
 		this.spotifyAPICalls = this.testFramework.mockService(SpotifyAPICalls.class);
 		this.search = this.testFramework.mockService(Search.class);
-		this.testFramework.mockService(StringGenerator.class);
+		this.stringGenerator = this.testFramework.mockService(StringGenerator.class);
 		this.playerLogic = this.testFramework.setServiceUnderTest(PlayerLogic.class);
 		initDevices();
 		initCurrentTrack();
 		initFeaturedPlaylist();
-		reset(this.spotifyAPICalls);
 
 	}
 
@@ -143,7 +143,6 @@ class PlayerLogicTest {
 		List<Map<String, String>> result = this.playerLogic.getDevices();
 		assertThat(result.isEmpty(), equalTo(true));
 		verify(this.spotifyAPICalls).getDevices();
-		reset(this.spotifyAPICalls);
 	}
 
 	@Test
@@ -153,7 +152,12 @@ class PlayerLogicTest {
 
 		when(this.spotifyAPICalls.getDevices()).thenReturn(devices);
 		assertThat(this.playerLogic.setDevice(0), equalTo("Hello"));
-		reset(this.spotifyAPICalls);
+	}
+
+	@Test
+	public void testSetDeviceWithId() {
+		assertThat(this.playerLogic.setDevice("1"), equalTo(false));
+		verify(this.spotifyAPICalls).setCurrentDevice("1");
 	}
 
 	@Test
@@ -164,7 +168,12 @@ class PlayerLogicTest {
 
 	@Test
 	public void testConvertSearchOutputString() {
-
+		List<Map<String, String>> list = new ArrayList<>();
+		Map<String, String> map = new HashMap<>();
+		this.playerLogic.convertSearchOutputToSingleString(list);
+		verify(this.stringGenerator).generateSearchOutputString(list);
+		this.playerLogic.convertSearchOutputToSingleString(map);
+		verify(this.stringGenerator).generateSearchOutputString(map);
 	}
 
 	@Test

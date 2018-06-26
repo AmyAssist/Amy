@@ -29,6 +29,7 @@ import java.util.Calendar;
 
 import org.slf4j.Logger;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.neovisionaries.i18n.CountryCode;
 import com.wrapper.spotify.SpotifyApi;
@@ -51,6 +52,7 @@ import com.wrapper.spotify.requests.data.player.SetVolumeForUsersPlaybackRequest
 import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToNextTrackRequest;
 import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrackRequest;
 import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
+import com.wrapper.spotify.requests.data.player.TransferUsersPlaybackRequest;
 import com.wrapper.spotify.requests.data.search.SearchItemRequest;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
@@ -86,7 +88,7 @@ public class SpotifyAPICalls {
 	public static final String SPOTIFY_REFRSHTOKEN_KEY = "spotify_refreshToken";
 	public static final String SPOTIFY_DEVICEID = "spotify_device_Id";
 	public static final String SPOTIFY_ACCESSTOKEN = "spotify_Accsesstoken";
-	public static final int TOKEN_EXPIRE_TIME = 120;
+	public static final int TOKEN_EXPIRE_TIME_OFFSET = 120;
 
 	@Reference
 	private ConfigLoader configLoader;
@@ -161,7 +163,7 @@ public class SpotifyAPICalls {
 				authCodeRefreshReq);
 		if (authCredentials != null) {
 			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.SECOND, authCredentials.getExpiresIn().intValue() - TOKEN_EXPIRE_TIME);
+			calendar.add(Calendar.SECOND, authCredentials.getExpiresIn().intValue() - TOKEN_EXPIRE_TIME_OFFSET);
 			this.taskScheduler.schedule(refreshAccessToken(), calendar.getTime());
 			this.storage.put(SPOTIFY_ACCESSTOKEN, authCredentials.getAccessToken());
 			return authCredentials.getAccessToken();
@@ -172,7 +174,7 @@ public class SpotifyAPICalls {
 	/**
 	 * refresh the access token when it expire
 	 * 
-	 * @return
+	 * @return a runnable to start with the task scheduler
 	 */
 	public Runnable refreshAccessToken() {
 		return () -> {
@@ -198,13 +200,14 @@ public class SpotifyAPICalls {
 	 * 
 	 * @param authCode
 	 *            from authorizationCodeUri()
+	 * @return true if succeed else false
 	 */
 	public boolean createRefreshToken(String authCode) {
 		AuthorizationCodeRequest authorizationCodeRequest = getSpotifyApi().authorizationCode(authCode).build();
-		AuthorizationCodeCredentials authorizationCodeCredentials = (AuthorizationCodeCredentials) exceptionHandlingWithResults(
+		AuthorizationCodeCredentials authCodeCredentials = (AuthorizationCodeCredentials) exceptionHandlingWithResults(
 				authorizationCodeRequest);
-		if (authorizationCodeCredentials != null) {
-			this.configLoader.set(SPOTIFY_REFRSHTOKEN_KEY, authorizationCodeCredentials.getRefreshToken());
+		if (authCodeCredentials != null) {
+			this.configLoader.set(SPOTIFY_REFRSHTOKEN_KEY, authCodeCredentials.getRefreshToken());
 			return true;
 		}
 		return false;
@@ -235,10 +238,15 @@ public class SpotifyAPICalls {
 	 * 
 	 * @param deviceID
 	 *            deviceID from actual active device
+	 * @return true if succeed else false
 	 */
-	public void setCurrentDevice(String deviceID) {
+	public boolean setCurrentDevice(String deviceID) {
+		JsonArray deviceIds = new JsonParser().parse("[\"".concat(deviceID).concat("\"]")).getAsJsonArray();
 		this.deviceID = deviceID;
 		this.storage.put(SPOTIFY_DEVICEID, deviceID);
+		TransferUsersPlaybackRequest transferUsersPlaybackRequest = getSpotifyApi().transferUsersPlayback(deviceIds)
+				.build();
+		return exceptionHandlingWithBoolean(transferUsersPlaybackRequest);
 	}
 
 	/**

@@ -126,6 +126,17 @@ public class PlayerLogic {
 	}
 
 	/**
+	 * set a device direct with the device id
+	 * 
+	 * @param deviceID
+	 *            from a spotify device
+	 * @return true if the device is available, else false
+	 */
+	public boolean setDevice(String deviceID) {
+		return this.spotifyAPICalls.setCurrentDevice(deviceID);
+	}
+
+	/**
 	 * this call the searchAnaything method in the Search class
 	 * 
 	 * @param searchText
