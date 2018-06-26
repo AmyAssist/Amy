@@ -28,6 +28,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 /**
  * The home resource of Amy
  * 
@@ -36,10 +37,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 @Path(HomeResource.PATH)
 public class HomeResource {
 
-	public static final String PATH = "hom";
+	public static final String PATH = "home";
 	@Reference
-	PluginManager manager; // TODO or whatever
+	private PluginManager manager; // TODO or whatever
 	
+	/**
+	 * 
+	 * @param input the input from the client
+	 */
 	@POST
 	@Path("console")
 	public void useAmy(String input) {
@@ -48,7 +53,7 @@ public class HomeResource {
 	
 	@GET
 	public SimplePluginEntity[] getPlugins() {
-		SimplePluginEntity[] plugins = new SimplePluginEntity[manager.getNumberOfInstalledPlugins()];
+		SimplePluginEntity[] plugins = new SimplePluginEntity[this.manager.getPlugins().size()];
 		for(int i = 0; i < plugins.length; i++) {
 			plugins[i] = new SimplePluginEntity();
 			//plugins[i].setValues(values i got from somewhere);

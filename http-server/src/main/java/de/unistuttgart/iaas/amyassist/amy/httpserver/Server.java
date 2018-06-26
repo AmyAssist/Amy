@@ -41,7 +41,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.rest.home.HomeResource;
 
 /**
  * A class to create a http server
@@ -70,7 +69,6 @@ public class Server {
 
 		ResourceConfig resourceConfig = new ResourceConfig(classes);
 		resourceConfig.registerClasses(this.restResources);
-		resourceConfig.register(HomeResource.class);
 		resourceConfig.register(ThrowableExceptionMapper.class);
 		resourceConfig.register(CORSFilter.class);
 		resourceConfig.register(new AbstractBinder() {
