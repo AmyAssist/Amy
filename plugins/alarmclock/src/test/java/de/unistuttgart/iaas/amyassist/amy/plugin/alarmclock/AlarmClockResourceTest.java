@@ -63,6 +63,9 @@ class AlarmClockResourceTest {
 
 	private WebTarget target;
 
+	/**
+	 * setup server and client for requests and responses
+	 */
 	@BeforeEach
 	public void setUp() {
 		this.logic = this.testFramework.mockService(AlarmClockLogic.class);
@@ -74,7 +77,7 @@ class AlarmClockResourceTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#getAllAlarm()}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#getAllAlarms()}.
 	 */
 	@Test
 	void testGetAllAlarms() {
@@ -104,7 +107,7 @@ class AlarmClockResourceTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#getAlarm()}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#getAlarm(int)}.
 	 * 
 	 */
 	@Test
@@ -156,7 +159,7 @@ class AlarmClockResourceTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#newAlarm()}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#newAlarm(de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp)}.
 	 */
 	@Test
 	void testNewAlarm() {
@@ -179,7 +182,7 @@ class AlarmClockResourceTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#editAlarm()}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#editAlarm(int, java.lang.String, de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp)}.
 	 */
 	@Test
 	void testEditAlarm() {
@@ -189,7 +192,6 @@ class AlarmClockResourceTest {
 		assertEquals(400, r.getStatus());
 		assertEquals("The given time wasn't a valid time", r.readEntity(String.class));
 
-		Timestamp ts = new Timestamp(alarms[1]);
 		when(this.logic.editAlarm(1, new int[] { 10, 20 })).thenReturn(alarms[1]);
 		Entity<Timestamp> entity = Entity.entity(new Timestamp(10, 20), MediaType.APPLICATION_JSON);
 

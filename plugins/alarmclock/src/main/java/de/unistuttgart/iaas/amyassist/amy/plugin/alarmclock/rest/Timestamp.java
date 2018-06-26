@@ -85,6 +85,11 @@ public class Timestamp {
 		this.minute = minute;
 	}
 	
+	/**
+	 * sets an Timestamp based on an alarm
+	 * 
+	 * @param alarm the alarm this object is based on
+	 */
 	public Timestamp(Alarm alarm) {
 		if(alarm == null) {
 			throw new IllegalArgumentException();
@@ -112,6 +117,11 @@ public class Timestamp {
 		return sh + ":" + sm;
 	}
 	
+	/**
+	 * checks if this Timestamp is a valid time
+	 * 
+	 * @return true if the time is valid, else false 
+	 */
 	@XmlTransient
 	public boolean isValid() {
 		return ((this.hour>=0 && this.hour < 24) && (this.minute >= 0 && this.minute < 60));
@@ -121,7 +131,7 @@ public class Timestamp {
 	 * @return the hour
 	 */
 	public int getHour() {
-		return hour;
+		return this.hour;
 	}
 
 	/**
@@ -135,7 +145,7 @@ public class Timestamp {
 	 * @return the minute
 	 */
 	public int getMinute() {
-		return minute;
+		return this.minute;
 	}
 
 	/**
@@ -145,16 +155,22 @@ public class Timestamp {
 		this.minute = minute;
 	}
 
+	/**
+	 * @return the link
+	 */
 	public String getLink() {
-		return link;
+		return this.link;
 	}
-
+	
+	/**
+	 * @param link the link to set
+	 */
 	public void setLink(String link) {
 		this.link = link;
 	}
 	
 	/**
-	 * @see java.lang.object#equals
+	 * @see java.lang.Object#equals
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -163,5 +179,13 @@ public class Timestamp {
 			return this.minute == ts.minute && this.hour == ts.hour;
 		}
 		return false;
+	}
+	
+	/**
+	 * @see java.lang.Object#hashCode
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode() + this.hour*60 + this.minute;
 	}
 }

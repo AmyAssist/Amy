@@ -138,6 +138,7 @@ public class AlarmClockResource {
 			return ts;
 		case "activate":
 			this.logic.activateAlarm(alarmNumber);
+			break;
 		case "delete":
 			this.logic.deleteAlarm(alarmNumber);
 			break;
@@ -181,6 +182,6 @@ public class AlarmClockResource {
 
 	private String createAlarmPath(int id) {
 		return this.uri.getBaseUriBuilder().path(AlarmClockResource.class).path(AlarmClockResource.class, "getAlarm")
-				.build(id).toString();
+				.build(Integer.valueOf(id)).toString();
 	}
 }
