@@ -54,7 +54,7 @@ public class Alarm {
 
 		this.id = id;
 
-		setTime(new int[] { hour, minute });
+		setTime(hour, minute);
 
 		this.active = active;
 	}
@@ -90,14 +90,16 @@ public class Alarm {
 	/**
 	 * Give the alarm a new time
 	 * 
-	 * @param newTime
-	 *            new alarm time containing hour and minute
+	 * @param hour
+	 *            hour of the alarm
+	 * @param minute
+	 *            minute of the alarm
 	 */
-	public final void setTime(int[] newTime) {
-		if (newTime.length == 2) {
+	public final void setTime(int hour, int minute) {
+		if (hour <= 23 && minute <= 59) {
 			Calendar date = Calendar.getInstance();
-			date.set(Calendar.HOUR_OF_DAY, newTime[0]);
-			date.set(Calendar.MINUTE, newTime[1]);
+			date.set(Calendar.HOUR_OF_DAY, hour);
+			date.set(Calendar.MINUTE, minute);
 			date.set(Calendar.SECOND, 0);
 			if (date.before(Calendar.getInstance()))
 				date.add(Calendar.DATE, 1);

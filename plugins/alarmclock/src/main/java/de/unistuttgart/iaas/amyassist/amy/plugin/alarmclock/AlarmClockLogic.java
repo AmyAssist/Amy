@@ -117,16 +117,18 @@ public class AlarmClockLogic {
 	/**
 	 * Set new alarm and schedule it
 	 * 
-	 * @param alarmTime
-	 *            String array with two integers. First entry is hour second is minute
+	 * @param hour
+	 *            hour of the alarm
+	 * @param minute
+	 *            minute of the alarm
 	 * 
 	 * @return counter, alarmTime[0], alarmTime[1]
 	 */
-	protected Alarm setAlarm(int[] alarmTime) {
-		if (alarmTime[0] > 23 || alarmTime[1] > 59)
+	protected Alarm setAlarm(int hour, int minute) {
+		if (hour > 23 || minute > 59)
 			throw new IllegalArgumentException();
 		int counter = this.acStorage.incrementAlarmCounter();
-		Alarm alarm = new Alarm(counter, alarmTime[0], alarmTime[1], true);
+		Alarm alarm = new Alarm(counter, hour, minute, true);
 		this.acStorage.storeAlarm(alarm);
 		Runnable alarmRunnable = createAlarmRunnable(counter);
 		this.taskScheduler.schedule(alarmRunnable, alarm.getAlarmDate().getTime());
@@ -147,7 +149,7 @@ public class AlarmClockLogic {
 	 */
 	protected Timer setTimer(int hours, int minutes, int seconds) {
 
-		if (hours + minutes + seconds > 0) {
+		if (hours >= 0 && minutes >= 0 && seconds >= 0 && hours + minutes + seconds > 0) {
 			int counter = this.acStorage.incrementTimerCounter();
 			Timer timer = new Timer(counter, hours, minutes, seconds, true);
 			this.acStorage.storeTimer(timer);
@@ -155,7 +157,6 @@ public class AlarmClockLogic {
 			this.taskScheduler.schedule(timerRunnable, timer.getTimerDate().getTime());
 			return timer;
 		}
-		this.acStorage.incrementAlarmCounter();
 		throw new IllegalArgumentException();
 	}
 
@@ -341,9 +342,9 @@ public class AlarmClockLogic {
 	/**
 	 * Get all alarms
 	 * 
-	 * @return Array of all alarms
+	 * @return List of all alarms
 	 */
-	protected Alarm[] getAllAlarms() {
+	protected List<Alarm> getAllAlarms() {
 		List<Alarm> allAlarms = new ArrayList<>();
 		int alarms = this.acStorage.getAlarmCounter();
 		for (int i = 1; i <= alarms; i++) {
@@ -351,15 +352,15 @@ public class AlarmClockLogic {
 				allAlarms.add(this.acStorage.getAlarm(i));
 			}
 		}
-		return allAlarms.toArray(new Alarm[allAlarms.size()]);
+		return allAlarms;
 	}
 
 	/**
 	 * Get all timers
 	 * 
-	 * @return Array of all timers
+	 * @return List of all timers
 	 */
-	protected Timer[] getAllTimers() {
+	protected List<Timer> getAllTimers() {
 		List<Timer> allTimers = new ArrayList<>();
 		int timers = this.acStorage.getTimerCounter();
 		for (int i = 1; i <= timers; i++) {
@@ -367,7 +368,7 @@ public class AlarmClockLogic {
 				allTimers.add(this.acStorage.getTimer(i));
 			}
 		}
-		return allTimers.toArray(new Timer[allTimers.size()]);
+		return allTimers;
 	}
 
 	/**
@@ -375,14 +376,16 @@ public class AlarmClockLogic {
 	 * 
 	 * @param alarmNumber
 	 *            name of the alarm
-	 * @param newAlarmTime
-	 *            new alarm time
+	 * @param hour
+	 *            new hour of the alarm
+	 * @param minute
+	 *            new minute of the alarm
 	 * @return alarmNumber + alarmTime new Time of the edited Alarm
 	 */
-	protected Alarm editAlarm(int alarmNumber, int[] newAlarmTime) {
+	protected Alarm editAlarm(int alarmNumber, int hour, int minute) {
 		if (this.acStorage.hasAlarm(alarmNumber)) {
 			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
-			alarm.setTime(newAlarmTime);
+			alarm.setTime(hour, minute);
 			this.acStorage.storeAlarm(alarm);
 			return alarm;
 		}

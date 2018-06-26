@@ -33,7 +33,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -79,7 +81,7 @@ public class AlarmClockLogicTest {
 	@Test
 	public void testSetAlarm() {
 		when(this.acStorage.incrementAlarmCounter()).thenReturn(1);
-		this.acl.setAlarm(new int[] { 4, 20 });
+		this.acl.setAlarm(4, 20);
 		verify(this.acStorage).incrementAlarmCounter();
 		verify(this.acStorage).storeAlarm(ArgumentMatchers.any(Alarm.class));
 		verify(this.scheduler).schedule(ArgumentMatchers.any(Runnable.class), ArgumentMatchers.any(Date.class));
@@ -90,8 +92,8 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	public void testSetAlarmInvalid() {
-		assertThrows(IllegalArgumentException.class, () -> this.acl.setAlarm(new int[] { 12, 60 }));
-		assertThrows(IllegalArgumentException.class, () -> this.acl.setAlarm(new int[] { 24, 40 }));
+		assertThrows(IllegalArgumentException.class, () -> this.acl.setAlarm(12, 60));
+		assertThrows(IllegalArgumentException.class, () -> this.acl.setAlarm(24, 40));
 	}
 
 	/**
@@ -431,7 +433,10 @@ public class AlarmClockLogicTest {
 		Alarm alarm1 = new Alarm(1, 20, 15, true);
 		Alarm alarm2 = new Alarm(2, 6, 30, false);
 		Alarm alarm5 = new Alarm(5, 10, 0, true);
-		Alarm[] alarms = new Alarm[] { alarm1, alarm2, alarm5 };
+		List<Alarm> alarms = new ArrayList<Alarm>();
+		alarms.add(alarm1);
+		alarms.add(alarm2);
+		alarms.add(alarm5);
 		when(this.acStorage.getAlarmCounter()).thenReturn(10);
 		when(this.acStorage.hasAlarm(1)).thenReturn(true);
 		when(this.acStorage.getAlarm(1)).thenReturn(alarm1);
@@ -450,7 +455,7 @@ public class AlarmClockLogicTest {
 	@Test
 	protected void testGetAllAlarmsNoAlarms() {
 		when(this.acStorage.getAlarmCounter()).thenReturn(10);
-		assertThat(this.acl.getAllAlarms(), is(new Alarm[] {}));
+		assertThat(this.acl.getAllAlarms(), is(new ArrayList<Alarm>()));
 	}
 
 	/**
@@ -461,7 +466,10 @@ public class AlarmClockLogicTest {
 		Timer timer1 = new Timer(1, 20, 5, 15, true);
 		Timer timer2 = new Timer(2, 0, 6, 30, false);
 		Timer timer5 = new Timer(5, 30, 10, 0, true);
-		Timer[] alarms = new Timer[] { timer1, timer2, timer5 };
+		List<Timer> timers = new ArrayList<Timer>();
+		timers.add(timer1);
+		timers.add(timer2);
+		timers.add(timer5);
 		when(this.acStorage.getTimerCounter()).thenReturn(10);
 		when(this.acStorage.hasTimer(1)).thenReturn(true);
 		when(this.acStorage.getTimer(1)).thenReturn(timer1);
@@ -470,7 +478,7 @@ public class AlarmClockLogicTest {
 		when(this.acStorage.hasTimer(5)).thenReturn(true);
 		when(this.acStorage.getTimer(5)).thenReturn(timer5);
 
-		assertThat(this.acl.getAllTimers(), is(alarms));
+		assertThat(this.acl.getAllTimers(), is(timers));
 		verify(this.acStorage, times(10)).hasTimer(ArgumentMatchers.anyInt());
 	}
 
@@ -480,7 +488,7 @@ public class AlarmClockLogicTest {
 	@Test
 	protected void testGetAllTimersNoTimers() {
 		when(this.acStorage.getTimerCounter()).thenReturn(10);
-		assertThat(this.acl.getAllTimers(), is(new Timer[] {}));
+		assertThat(this.acl.getAllTimers(), is(new ArrayList<Timer>()));
 	}
 
 	/**
@@ -492,8 +500,8 @@ public class AlarmClockLogicTest {
 		when(this.acStorage.hasAlarm(1)).thenReturn(true);
 		when(this.acStorage.getAlarm(1)).thenReturn(alarm1);
 
-		alarm1.setTime(new int[] { 4, 20 });
-		assertThat(this.acl.editAlarm(1, new int[] { 4, 20 }), is(alarm1));
+		alarm1.setTime(4, 20);
+		assertThat(this.acl.editAlarm(1, 4, 20), is(alarm1));
 		verify(this.acStorage).hasAlarm(1);
 		verify(this.acStorage).getAlarm(1);
 		verify(this.acStorage).storeAlarm(alarm1);
@@ -504,6 +512,6 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testEditAlarmNotFound() {
-		assertThrows(NoSuchElementException.class, () -> this.acl.editAlarm(1, new int[] { 15, 20 }));
+		assertThrows(NoSuchElementException.class, () -> this.acl.editAlarm(1, 15, 20));
 	}
 }

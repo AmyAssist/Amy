@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.ws.rs.Consumes;
@@ -57,7 +58,7 @@ public class AlarmClockResource {
 
 	@Reference
 	private AlarmClockLogic logic;
-	
+
 	@Context
 	private UriInfo uri;
 
@@ -70,12 +71,12 @@ public class AlarmClockResource {
 	@Path("alarms")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Timestamp[] getAllAlarms() {
-		Alarm[] alarms = this.logic.getAllAlarms();
-		Timestamp[] timestamps = new Timestamp[alarms.length];
-		for (int i = 0; i < alarms.length; i++) {
-			if (alarms[i] != null) {
-				timestamps[i] = new Timestamp(alarms[i]);
-				timestamps[i].setLink(createAlarmPath(alarms[i].getId()));
+		List<Alarm> alarms = this.logic.getAllAlarms();
+		Timestamp[] timestamps = new Timestamp[alarms.size()];
+		for (int i = 0; i < alarms.size(); i++) {
+			if (alarms.get(i) != null) {
+				timestamps[i] = new Timestamp(alarms.get(i));
+				timestamps[i].setLink(createAlarmPath(alarms.get(i).getId()));
 			}
 		}
 		return timestamps;
@@ -128,8 +129,7 @@ public class AlarmClockResource {
 			}
 			Alarm alarm;
 			try {
-				alarm = this.logic.editAlarm(alarmNumber,
-						new int[] { alarmTime.getHour(), alarmTime.getMinute() });
+				alarm = this.logic.editAlarm(alarmNumber, alarmTime.getHour(), alarmTime.getMinute());
 			} catch (NoSuchElementException e) {
 				throw new WebApplicationException("there is no alarm" + alarmNumber, e, Status.NOT_FOUND);
 			}
@@ -164,7 +164,7 @@ public class AlarmClockResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Timestamp newAlarm(Timestamp alarmTime) {
 		if (alarmTime.isValid()) {
-			Alarm result = this.logic.setAlarm(new int[] { alarmTime.getHour(), alarmTime.getMinute() });
+			Alarm result = this.logic.setAlarm(alarmTime.getHour(), alarmTime.getMinute());
 			alarmTime.setLink(createAlarmPath(result.getId()));
 			return alarmTime;
 		}
