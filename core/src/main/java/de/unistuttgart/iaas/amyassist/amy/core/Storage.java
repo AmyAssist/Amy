@@ -45,7 +45,7 @@ public class Storage implements IStorage {
 	 *            The global storage to use
 	 */
 	Storage(String prefix, GlobalStorage globalStorage) {
-		//TODO: : is used for debugging purposes
+		// TODO: : is used for debugging purposes
 		this.prefix = prefix + ":";
 		this.globStorage = globalStorage.getStore();
 	}
@@ -53,8 +53,7 @@ public class Storage implements IStorage {
 	/**
 	 * puts a new value with corresponding plugin key
 	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage#put(java.lang.String,
-	 *      java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage#put(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public void put(String key, String value) {

@@ -31,8 +31,7 @@ import javax.annotation.Nullable;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
- * A InjectionPoint is an abstraction of where an object is injected into an
- * instance.
+ * A InjectionPoint is an abstraction of where an object is injected into an instance.
  * 
  * @author Leon Kiefer
  */

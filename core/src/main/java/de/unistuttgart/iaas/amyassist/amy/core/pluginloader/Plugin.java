@@ -41,6 +41,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
  */
 public class Plugin implements IPlugin {
 
+	private static final String UNIQUE_NAME_KEY = "PluginID";
+
 	private final Logger logger = LoggerFactory.getLogger(Plugin.class);
 
 	/**
@@ -62,9 +64,6 @@ public class Plugin implements IPlugin {
 	 * The list of all classes of this plugin
 	 */
 	private List<Class<?>> classes = new ArrayList<>();
-
-	private String fakeName = "";
-	private String fakeVersion = "";
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getFile()
@@ -88,14 +87,18 @@ public class Plugin implements IPlugin {
 	@Override
 	public String getUniqueName() {
 		if (this.manifest == null) {
-			if (!this.fakeName.isEmpty()) {
-				this.logger.warn("manifest is null, using fakeName: {}", this.fakeName);
-				return this.fakeName;
-			}
-			this.logger.error("manifest is null and fakeName empty. Falling back to file name!: {}",
+			this.logger.error("Plugin manifest is null. Falling back to file name for unique name!: {}",
 					this.file.getName());
 			return this.file.getName();
 		}
+		return this.manifest.getMainAttributes().getValue(UNIQUE_NAME_KEY);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getDisplayName()
+	 */
+	@Override
+	public String getDisplayName() {
 		return this.manifest.getMainAttributes().getValue(Name.IMPLEMENTATION_TITLE);
 	}
 
@@ -105,8 +108,8 @@ public class Plugin implements IPlugin {
 	@Override
 	public String getVersion() {
 		if (this.manifest == null) {
-			this.logger.warn("manifest is null, using fakeVersion: {}", this.fakeName);
-			return this.fakeVersion;
+			this.logger.error("Plugin manifest is null, using empty String for the version");
+			return ("");
 		}
 		return this.manifest.getMainAttributes().getValue(Name.IMPLEMENTATION_VERSION);
 	}
@@ -153,7 +156,7 @@ public class Plugin implements IPlugin {
 	 * @param classes
 	 *            classes
 	 */
-	protected void setClasses(ArrayList<Class<?>> classes) {
+	protected void setClasses(List<Class<?>> classes) {
 		this.classes = classes;
 	}
 
@@ -165,26 +168,6 @@ public class Plugin implements IPlugin {
 	 */
 	protected void setManifest(Manifest manifest) {
 		this.manifest = manifest;
-	}
-
-	/**
-	 * Set's {@link #fakeName fakeName}
-	 * 
-	 * @param fakeName
-	 *            fakeName
-	 */
-	protected void setFakeName(String fakeName) {
-		this.fakeName = fakeName;
-	}
-
-	/**
-	 * Set's {@link #fakeVersion fakeVersion}
-	 * 
-	 * @param fakeVersion
-	 *            fakeVersion
-	 */
-	protected void setFakeVersion(String fakeVersion) {
-		this.fakeVersion = fakeVersion;
 	}
 
 }

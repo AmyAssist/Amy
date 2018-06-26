@@ -60,8 +60,8 @@ public class AlarmClockResource {
 	public Timestamp[] getAllAlarms() {
 		String[] alarms = this.logic.getAllAlarms();
 		Timestamp[] timestamps = new Timestamp[alarms.length];
-		for(int i = 0; i < alarms.length; i++) {
-			if(alarms[i] != null && alarms[i] != "") {
+		for (int i = 0; i < alarms.length; i++) {
+			if (alarms[i] != null && alarms[i] != "") {
 				String[] split = alarms[i].split(";");
 				timestamps[i] = new Timestamp(split[1] + ":" + split[2]);
 			}
@@ -71,8 +71,9 @@ public class AlarmClockResource {
 
 	/**
 	 * returns a specific alarm
-	 * 	
-	 * @param alarmnumber the requested alarm
+	 * 
+	 * @param alarmnumber
+	 *            the requested alarm
 	 * @return the specific alarm
 	 */
 	@GET
@@ -80,33 +81,38 @@ public class AlarmClockResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Timestamp getAlarm(@PathParam("pathid") int alarmnumber) {
 		String alarm = this.logic.getAlarmNoOutput(alarmnumber);
-		if(alarm == null) {
+		if (alarm == null) {
 			throw new WebApplicationException("there is no alarm" + alarmnumber, Status.NOT_FOUND);
 		}
 		String[] split = alarm.split(";");
 		Timestamp ts = new Timestamp(split[0] + ":" + split[1]);
-		return ts;	
+		return ts;
 	}
 
 	/**
 	 * changes the properties of an alarm
 	 * 
-	 * @param alarmNumber the number of the alarm
-	 * @param mode what to do: allowed paramters: edit, delete, deactivate
-	 * @param alarmTime the new time
+	 * @param alarmNumber
+	 *            the number of the alarm
+	 * @param mode
+	 *            what to do: allowed paramters: edit, delete, deactivate
+	 * @param alarmTime
+	 *            the new time
 	 * @return the new alarmtime or null
 	 */
 	@POST
 	@Path("alarms/{pathid}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Timestamp editAlarm(@PathParam("pathid") int alarmNumber, @QueryParam("mode")@DefaultValue("edit")String mode, Timestamp alarmTime) {
-		switch(mode) {
+	public Timestamp editAlarm(@PathParam("pathid") int alarmNumber,
+			@QueryParam("mode") @DefaultValue("edit") String mode, Timestamp alarmTime) {
+		switch (mode) {
 		case "edit":
 			if (!alarmTime.isValid()) {
 				throw new WebApplicationException("The given time wasn't a valid time", Status.BAD_REQUEST);
 			}
-			if (!this.logic.editAlarm(alarmNumber, new String[] { "" + alarmTime.hour, "" + alarmTime.minute }).equalsIgnoreCase("alarm not found")) {
+			if (!this.logic.editAlarm(alarmNumber, new String[] { "" + alarmTime.hour, "" + alarmTime.minute })
+					.equalsIgnoreCase("alarm not found")) {
 				return alarmTime;
 			}
 			throw new WebApplicationException("there is no alarm" + alarmNumber, Status.NOT_FOUND);

@@ -37,9 +37,9 @@ public class MusicEntity {
 	 * constructor for a MusicEntity
 	 */
 	public MusicEntity() {
-		
+
 	}
-	
+
 	/**
 	 * constructor for a MusicEntity with set values
 	 */
@@ -47,7 +47,7 @@ public class MusicEntity {
 		this.title = title;
 		this.artist = artist;
 	}
-	
+
 	/**
 	 * the artist of the music
 	 */

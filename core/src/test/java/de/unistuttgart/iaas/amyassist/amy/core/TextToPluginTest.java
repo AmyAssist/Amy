@@ -33,8 +33,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test class for TextToPlugin mainly used to test the regex expressions feel
- * free to test your plugin grammar here
+ * Test class for TextToPlugin mainly used to test the regex expressions feel free to test your plugin grammar here
  * 
  * @author Felix Burk
  */
@@ -89,9 +88,7 @@ public class TextToPluginTest {
 		assertThat(test.pluginActionFromText("testiGrammar play one two three").get(1), equalTo("play # [#] [#]"));
 		assertThat(test.pluginActionFromText("testiGrammar play one two three").get(3), equalTo("6"));
 
-		
 		assertThat(test.pluginActionFromText("testiGrammar play twenty two").get(3), equalTo("22"));
-
 
 		assertThat(test.pluginActionFromText("testGrammar play one two three").get(0), equalTo("testGrammar"));
 
@@ -109,8 +106,10 @@ public class TextToPluginTest {
 		assertThat(test.stringToNumber("fifty"), equalTo("50"));
 		assertThat(test.stringToNumber("one"), equalTo("1"));
 		assertThat(test.stringToNumber("ninety nine"), equalTo("99"));
-		assertThat(test.stringToNumber("hdaiohd dwhaiodh a  adwa twenty two  dad  dwa a wa"), equalTo("hdaiohd dwhaiodh a  adwa 22  dad  dwa a wa"));
-		assertThat(test.stringToNumber("nananananana zero jdiwapja jwpoa nanananan one"), equalTo("nananananana 0 jdiwapja jwpoa nanananan 1"));
+		assertThat(test.stringToNumber("hdaiohd dwhaiodh a  adwa twenty two  dad  dwa a wa"),
+				equalTo("hdaiohd dwhaiodh a  adwa 22  dad  dwa a wa"));
+		assertThat(test.stringToNumber("nananananana zero jdiwapja jwpoa nanananan one"),
+				equalTo("nananananana 0 jdiwapja jwpoa nanananan 1"));
 
 	}
 

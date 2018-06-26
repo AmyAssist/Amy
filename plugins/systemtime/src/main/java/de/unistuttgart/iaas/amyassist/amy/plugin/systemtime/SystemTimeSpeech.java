@@ -39,16 +39,17 @@ public class SystemTimeSpeech {
 
 	@Reference
 	private SystemTimeLogic logic;
-	
+
 	/**
 	 * A method to convert the integer day to an ordinal (from 1 to 31)
-	 * @param i 
-	 * 			the day as integer
+	 * 
+	 * @param i
+	 *            the day as integer
 	 * @return the day as ordinal, e.g. 1st
 	 */
-	public static String ordinal (int i) {
-		String[] ordinals = {"th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"};
-		if(10 < i && i < 14) {
+	public static String ordinal(int i) {
+		String[] ordinals = { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
+		if (10 < i && i < 14) {
 			return i + "th";
 		} else {
 			return i + ordinals[i % 10];
@@ -73,8 +74,8 @@ public class SystemTimeSpeech {
 	@Grammar("the date")
 	public String date(String[] s) {
 		return "it is the " + ordinal(Integer.parseInt(this.logic.getDay())) + " of " + this.logic.getMonth();
-	}	
-	
+	}
+
 	/**
 	 * A method which returns the current year
 	 * 

@@ -101,7 +101,7 @@ public class SpotifyAPICalls {
 
 	@Reference
 	private TaskSchedulerAPI taskScheduler;
-
+	
 	/**
 	 * init the api calls
 	 */

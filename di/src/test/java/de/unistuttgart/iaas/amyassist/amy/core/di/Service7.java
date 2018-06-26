@@ -28,7 +28,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
  * 
  * @author Leon Kiefer
  */
-public class Service7 implements Service7API{
+public class Service7 implements Service7API {
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.Service7API#foo()

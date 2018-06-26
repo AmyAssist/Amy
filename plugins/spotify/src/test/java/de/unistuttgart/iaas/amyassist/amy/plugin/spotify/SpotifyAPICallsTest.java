@@ -61,7 +61,7 @@ class SpotifyAPICallsTest {
 
 	@Reference
 	IStorage storage;
-
+	
 	@Reference
 	private TestFramework testFramework;
 
