@@ -21,21 +21,21 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
-
-import java.util.Iterator;
-import java.util.List;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
- * agf lexer interface
+ * describes the smallest meaningful unit in the AGF Syntax
+ * e.g. a word or a rule
+ * 
  * @author Felix Burk
  */
-public interface IAGFLexer {
-	
+public class MorphemeNode extends AGFNode {
+
 	/**
-	 * @param toTokenize string
-	 * @return list of agf token types
+	 * @param content the content 
 	 */
-	public List<AGFToken> tokenize(String toTokenize);
+	public MorphemeNode(String content) {
+		super(content);
+	}
 
 }

@@ -23,19 +23,29 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
-import java.util.Iterator;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode;
+
 /**
- * agf lexer interface
+ * TODO: Description
  * @author Felix Burk
  */
-public interface IAGFLexer {
+public class AGFParserTest {
 	
-	/**
-	 * @param toTokenize string
-	 * @return list of agf token types
-	 */
-	public List<AGFToken> tokenize(String toTokenize);
+	
+	@Test
+	public void test() {
+		AGFLexer lex = new AGFLexer();
+		List<AGFToken> list = lex.tokenize("hello (y|x) (a|b|b|c|weap|jwpai)");
+		AGFParser parser = new AGFParser(list.iterator());
+		
+	
+		IAGFNode node = parser.parseWholeExpression();
+		
+		System.out.println(node.printSelf());
+	}
 
 }

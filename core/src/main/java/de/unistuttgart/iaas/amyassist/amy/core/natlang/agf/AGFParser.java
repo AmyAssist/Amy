@@ -24,18 +24,29 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
 import java.util.Iterator;
-import java.util.List;
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets.MorphemeParselet;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets.ORGroupParselet;
+
 
 /**
- * agf lexer interface
+ * 
+ * the AGF Parser implementation
  * @author Felix Burk
  */
-public interface IAGFLexer {
-	
+public class AGFParser extends Parser {
+
 	/**
-	 * @param toTokenize string
-	 * @return list of agf token types
+	 * @param tokens the tokens
 	 */
-	public List<AGFToken> tokenize(String toTokenize);
+	public AGFParser(Iterator<AGFToken> tokens) {
+		super(tokens);
+		
+		super.register(AGFTokenType.RULE, new MorphemeParselet());
+		super.register(AGFTokenType.WORD, new MorphemeParselet());
+		super.register(AGFTokenType.OPENBR, new ORGroupParselet());
+
+	}
+	
 
 }

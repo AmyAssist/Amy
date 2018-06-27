@@ -21,12 +21,27 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
+
 
 /**
  * interface for a tree representation of an AGF expression
  * @author Felix Burk
  */
-public interface AGFNode {
-
+public interface IAGFNode {
+	
+	/**
+	 * adds a new child
+	 * @param node the child
+	 */
+	public void addChild(IAGFNode node);
+	
+	/**
+	 * print self convenience method
+	 * @return a string representing the node
+	 */
+	public String printSelf();
+	
+	public String printSelf(String name, int indent);
+	
 }

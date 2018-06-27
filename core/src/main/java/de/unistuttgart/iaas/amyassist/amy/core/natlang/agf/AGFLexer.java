@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -39,7 +40,8 @@ public class AGFLexer implements IAGFLexer {
 	public List<AGFToken> tokenize(String toTokenize) {
 		List<AGFToken> result = new ArrayList<>();
 		
-		for(int i=0; i < toTokenize.length(); i++) {
+		int i = 0;
+		while(i < toTokenize.length()) {
 			char c = toTokenize.charAt(i);
 			
 			switch(c) {
@@ -77,9 +79,11 @@ public class AGFLexer implements IAGFLexer {
     					throw new AGFLexerException("wrong character " + c);
     				}
     				break;
-							}
+			}
+			i++;
 		}
 		return result;
 	}
+
 
 }

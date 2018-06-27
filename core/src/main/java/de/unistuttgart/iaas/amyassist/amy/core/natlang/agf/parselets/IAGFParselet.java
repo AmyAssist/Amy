@@ -21,21 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets;
 
-import java.util.Iterator;
-import java.util.List;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFToken;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.Parser;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode;
 
 /**
- * agf lexer interface
+ * AGF Parselet interface
  * @author Felix Burk
  */
-public interface IAGFLexer {
-	
-	/**
-	 * @param toTokenize string
-	 * @return list of agf token types
-	 */
-	public List<AGFToken> tokenize(String toTokenize);
+public interface IAGFParselet {
 
+	/**
+	 * @param parser
+	 * @param token
+	 * @return
+	 */
+	public IAGFNode parse(Parser parser, AGFToken token);
 }

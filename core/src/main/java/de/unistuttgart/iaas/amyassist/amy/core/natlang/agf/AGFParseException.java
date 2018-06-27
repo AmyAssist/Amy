@@ -23,19 +23,18 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
-import java.util.Iterator;
-import java.util.List;
-
 /**
- * agf lexer interface
+ * custom parse exception
  * @author Felix Burk
  */
-public interface IAGFLexer {
+public class AGFParseException extends RuntimeException {
 	
 	/**
-	 * @param toTokenize string
-	 * @return list of agf token types
+	 * constructor
+	 * @param content of RuntimeException
 	 */
-	public List<AGFToken> tokenize(String toTokenize);
+	public AGFParseException(String content) {
+		super(content);
+	}
 
 }

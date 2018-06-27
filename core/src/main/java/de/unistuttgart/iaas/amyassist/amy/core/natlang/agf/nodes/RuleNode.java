@@ -21,21 +21,25 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
-
-import java.util.Iterator;
-import java.util.List;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
- * agf lexer interface
+ * A rule node implementation
  * @author Felix Burk
  */
-public interface IAGFLexer {
+public class RuleNode extends AGFNode {
 	
 	/**
-	 * @param toTokenize string
-	 * @return list of agf token types
+	 * constructor
+	 * @param content of node
 	 */
-	public List<AGFToken> tokenize(String toTokenize);
+	public RuleNode(String content) {
+		super(content);
+	}
+
+	@Override
+	public String printSelf() {
+		return "RuleNode " + " <" + this.content + "> ";
+	}
 
 }

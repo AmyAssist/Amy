@@ -21,21 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
-
-import java.util.Iterator;
-import java.util.List;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
- * agf lexer interface
+ * TODO: Description
  * @author Felix Burk
  */
-public interface IAGFLexer {
-	
+public class ORGroupNode extends AGFNode {
+
 	/**
-	 * @param toTokenize string
-	 * @return list of agf token types
+	 * @param content
 	 */
-	public List<AGFToken> tokenize(String toTokenize);
+	public ORGroupNode(String content) {
+		super(content);
+	}
+	
 
 }
