@@ -48,7 +48,7 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
  * @author Christian Bräuner, Leon Kiefer
  */
 @Service
-public class Server {
+public class Server{
 	private final Logger logger = LoggerFactory.getLogger(Server.class);
 
 	@Reference
@@ -56,10 +56,15 @@ public class Server {
 	private Set<Class<?>> restResources = new HashSet<>();
 	private HttpServer httpServer;
 
+	/**
+	 * the URI of the server
+	 */
 	public static final URI BASE_URI = URI.create("http://localhost:8080/rest");
 
 	/**
 	 * creates and starts the HttpServer
+	 * 
+	 * @param classes the resource classes
 	 */
 	public void start(Class<?>... classes) {
 		if (this.httpServer != null) {
@@ -78,7 +83,6 @@ public class Server {
 				});
 			}
 		});
-		// java.util.logging.Logger.getLogger("org.glassfish.grizzly").setLevel(Level.WARNING);
 		this.httpServer = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, resourceConfig);
 	}
 
@@ -95,7 +99,7 @@ public class Server {
 	}
 
 	/**
-	 * @param cls
+	 * @param cls a resource class
 	 */
 	public void register(Class<?> cls) {
 		if (!cls.isAnnotationPresent(Path.class)) {
