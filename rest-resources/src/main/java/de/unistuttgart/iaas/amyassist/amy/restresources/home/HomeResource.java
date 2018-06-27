@@ -21,15 +21,17 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.rest.home;
+package de.unistuttgart.iaas.amyassist.amy.restresources.home;
+
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
+import javax.ws.rs.core.UriInfo;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 
@@ -41,22 +43,27 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 @Path(HomeResource.PATH)
 public class HomeResource {
 
+	/**
+	 * the Path of this resource
+	 */
 	public static final String PATH = "home";
 	@Reference
 	private PluginManager manager;
 	@Reference
 	private SpeechInputHandler speechInputHandler;
+	@Reference
+	private UriInfo uriInfo;
 
 	/**
-	 * @param response
-	 *            the that is completed when the handler have the result
+	 * handles consoleInput from a client
+	 * 
 	 * @param input
 	 *            the input from the client
 	 */
 	@POST
 	@Path("console")
-	public void useAmy(@Suspended final AsyncResponse response, String input) {
-		this.speechInputHandler.handle(input).thenAcceptAsync(response::resume);
+	public void useAmy(String input) {
+		this.speechInputHandler.handle(input);
 	}
 
 	/**
@@ -66,12 +73,32 @@ public class HomeResource {
 	 */
 	@GET
 	public SimplePluginEntity[] getPlugins() {
-		SimplePluginEntity[] plugins = new SimplePluginEntity[this.manager.getPlugins().size()];
-		for (int i = 0; i < plugins.length; i++) {
-			plugins[i] = new SimplePluginEntity();
-			// plugins[i].setValues(values i got from somewhere);
+		List<IPlugin> pluginList = this.manager.getPlugins();
+		SimplePluginEntity[] plugins = new SimplePluginEntity[pluginList.size()+1];
+		for (int i = 0; i < pluginList.size(); i++) {
+			plugins[i] = new SimplePluginEntity(pluginList.get(i));
+			plugins[i].setLink(createPath(pluginList.get(i)));
 		}
+		plugins[pluginList.size()] = createConfig();
 		return plugins;
+	}
+
+	private SimplePluginEntity createConfig() {
+		SimplePluginEntity config = new SimplePluginEntity();
+		config.setName("Configuration");
+		config.setDescription("Configurations for this Amy instance and installed plugins");
+		config.setLink(this.uriInfo.getBaseUri().toString() + "/config");
+		return config;
+	}
+
+	private String createPath(IPlugin iPlugin) {
+		List<Class<?>> classes = iPlugin.getClasses();
+		for(Class<?> cls : classes) {
+			if (cls.isAnnotationPresent(Path.class)) { //TODO change to has parent class
+				return this.uriInfo.getBaseUriBuilder().path(cls).build().toString();
+			}
+		}
+		return null;
 	}
 
 }

@@ -21,9 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.rest.home;
+package de.unistuttgart.iaas.amyassist.amy.restresources.home;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 
 /**
  * A plugin, that contains some basic information about itself
@@ -42,6 +44,16 @@ public class SimplePluginEntity {
 	 */
 	public SimplePluginEntity() {
 		// needed for JSON
+	}
+	
+	/**
+	 * creates a new SimplePluginEntity from a Plugin
+	 * 
+	 * @param plugin the plugin this entity represents
+	 */
+	public SimplePluginEntity(IPlugin plugin) {
+		this.name = plugin.getDisplayName();
+		this.description = plugin.getDescription();
 	}
 	
 	/**

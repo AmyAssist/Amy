@@ -21,18 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.rest.home;
+package de.unistuttgart.iaas.amyassist.amy.restresources.home;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
+import javax.ws.rs.Path;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,15 +42,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource;
+import de.unistuttgart.iaas.amyassist.amy.restresources.home.SimplePluginEntity;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
- * TODO: Description
- * @author
+ * Test Class for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource}
+ * 
+ * @author Christian Bräuner
  */
 @ExtendWith(FrameworkExtension.class)
 class HomeResourceTest {
@@ -59,6 +65,7 @@ class HomeResourceTest {
 	private WebTarget target;
 
 	private SpeechInputHandler speechInputHandler;
+
 	
 	/**
 	 * setup for server and client
@@ -74,33 +81,45 @@ class HomeResourceTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.httpserver.rest.home.HomeResource#useAmy(java.lang.String)}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#useAmy(java.lang.String)}.
 	 */
 	@Test
 	void testUseAmy() {
-		String consoleInput = ""; //TODO write some posible inputs
-		String result = "test";
-		Mockito.when(speechInputHandler.handle(consoleInput)).thenReturn(CompletableFuture.completedFuture(result));
+		String consoleInput = "Amy do something";
 		Entity<String> entity = Entity.entity(consoleInput, MediaType.TEXT_PLAIN);
 		Response r = this.target.path("console").request().post(entity);
-		assertEquals(200, r.getStatus());
-		//Mockito.verify(backendMock).someMethod(consoleInput);
+		assertEquals(204, r.getStatus());
+		Mockito.verify(this.speechInputHandler).handle(consoleInput);
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.httpserver.rest.home.HomeResource#getPlugins()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#getPlugins()}.
 	 */
 	@Test
 	void testGetPlugins() {
-		//whatever the backend uses
-		//Plugin[] plugins = setupPlugins()
+		IPlugin[] plugins = setupPlugins();
 		Response r = this.target.request().get();
 		assertEquals(200, r.getStatus());
 		SimplePluginEntity[] spes = r.readEntity(SimplePluginEntity[].class);
-		//for(int i = 0; i < spes.lenght; i++) {
-		//	assertEquals(plugins[i], spes[i]);
-		//}
+		assertEquals(plugins.length+1, spes.length);
+		for(int i = 0; i < plugins.length; i++) {
+			assertEquals(plugins[i].getDisplayName(), spes[i].getName());
+			assertEquals(plugins[i].getDescription(), spes[i].getDescription());
+			assertEquals(expectedLink(plugins[i]), spes[i].getLink());
+		}
 		
+	}
+
+	private String expectedLink(IPlugin iPlugin) {
+		// it would be nice if the plugin could provide this
+		//TODO create Link somehow
+		return null;
+	}
+
+	private IPlugin[] setupPlugins() {
+		IPlugin[] plugins = null;
+		//TODO create some Plugins
+		return plugins;
 	}
 
 }
