@@ -24,8 +24,9 @@
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 /**
- * TODO: Description
- * @author
+ * The interface of our command line argument handler
+ * 
+ * @author Tim Neumann
  */
 public interface CommandLineArgumentHandler {
 
