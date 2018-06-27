@@ -1,7 +1,20 @@
 #!/bin/bash
-mkdir gh-pages
-cd dependency-export
-mvn project-info-reports:dependencies -DskipTests=true
-mv target/site ../gh-pages/dependencies
-cd ..
-mv gh-pages/dependencies/dependencies.html gh-pages/dependencies/index.html
+function doDependencies {
+    mkdir -p "gh-pages/dependencies/$1"
+    pushd "$1"
+    mvn project-info-reports:dependencies -DskipTests=true
+    popd
+    mv -T "$1/target/site" "gh-pages/dependencies/$1"
+    pushd "gh-pages/dependencies/$1"
+    mv dependencies.html index.html
+    popd
+}
+
+doDependencies "core"
+
+for D in plugins/*; do
+    if [ -d "${D}" ]; then
+        doDependencies "${D}"
+    fi
+done
+
