@@ -72,6 +72,8 @@ public class Core implements SpeechInputHandler {
 	private SpeechCommandHandler speechCommandHandler;
 	private IStorage storage = new Storage("", new GlobalStorage());
 
+	private CommandLineArgumentHandlerService cmaHandler;
+
 	/**
 	 * The method executed by the main method
 	 *
@@ -79,9 +81,9 @@ public class Core implements SpeechInputHandler {
 	 *            The arguments for the core.
 	 */
 	void start(String[] args) {
-		CommandLineArgumentHandler cmaHandler = new CommandLineArgumentHandler();
-		cmaHandler.init(args);
-		if (cmaHandler.shouldProgramContinue()) {
+		this.cmaHandler = new CommandLineArgumentHandlerService();
+		this.cmaHandler.init(args);
+		if (this.cmaHandler.shouldProgramContinue()) {
 			run();
 		}
 	}
@@ -111,7 +113,8 @@ public class Core implements SpeechInputHandler {
 
 		Environment environment = this.di.getService(Environment.class);
 
-		Path grammarFile = environment.getWorkingDirectory().resolve("resources").resolve("sphinx-grammars/grammar.gram");
+		Path grammarFile = environment.getWorkingDirectory().resolve("resources")
+				.resolve("sphinx-grammars/grammar.gram");
 
 		this.speechCommandHandler.setFileToSaveGrammarTo(grammarFile.toFile());
 
@@ -137,6 +140,7 @@ public class Core implements SpeechInputHandler {
 		this.di.addExternalService(DependencyInjection.class, this.di);
 		this.di.addExternalService(Core.class, this);
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
+		this.di.addExternalService(CommandLineArgumentHandler.class, this.cmaHandler);
 
 		this.di.register(Logger.class, new LoggerProvider());
 		this.di.register(Properties.class, new PropertiesProvider());

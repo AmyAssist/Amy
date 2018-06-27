@@ -31,6 +31,7 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 
+import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -49,12 +50,22 @@ public class ConfigurationLoader {
 	@Reference
 	private Environment environment;
 
-	private static final String CONFIG_DIR = "apikeys";
+	@Reference
+	private CommandLineArgumentHandler cmaHandler;
+
+	private static final String DEFAULT_CONFIG_DIR = "config";
 	private Path configDir;
 
 	@PostConstruct
 	private void setup() {
-		this.configDir = this.environment.getWorkingDirectory().resolve(CONFIG_DIR);
+		String configDirS = DEFAULT_CONFIG_DIR;
+
+		String cmaConfigPath = this.cmaHandler.getConfigPath();
+		if (cmaConfigPath != null) {
+			configDirS = cmaConfigPath;
+		}
+
+		this.configDir = this.environment.getWorkingDirectory().resolve(configDirS);
 		if (!this.configDir.toFile().isDirectory()) {
 			this.logger.error("the configuration directory {} does not exists", this.configDir.toAbsolutePath());
 		}
