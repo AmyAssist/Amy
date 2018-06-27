@@ -42,6 +42,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.persistence.DatabaseStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.persistence.PersistenceService;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
@@ -136,7 +138,7 @@ public class Core implements SpeechInputHandler {
 	 * register all instances and classes in the DI
 	 */
 	private void registerAllCoreServices() {
-		this.di.addExternalService(IStorage.class, this.storage);
+		//this.di.addExternalService(IStorage.class, this.storage);
 		this.di.addExternalService(DependencyInjection.class, this.di);
 		this.di.addExternalService(Core.class, this);
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
@@ -153,6 +155,8 @@ public class Core implements SpeechInputHandler {
 		this.di.register(PluginLoader.class);
 		this.di.register(PluginManager.class);
 		this.di.register(EnvironmentService.class);
+		this.di.register(DatabaseStorage.class);
+		this.di.register(PersistenceService.class);
 	}
 
 	/**
