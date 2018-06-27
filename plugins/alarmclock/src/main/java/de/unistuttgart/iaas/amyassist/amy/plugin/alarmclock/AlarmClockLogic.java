@@ -23,20 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -50,15 +39,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAP
 @Service
 public class AlarmClockLogic {
 
-	private final Logger logger = LoggerFactory.getLogger(AlarmClockLogic.class);
+	@Reference
+	private AlarmBeepService alarmbeep;
 
 	@Reference
 	private IAlarmClockStorage acStorage;
 
 	@Reference
 	private TaskSchedulerAPI taskScheduler;
-
-	private static final File ALARMSOUND = new File("resources/alarmsound.wav");
 
 	/**
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
@@ -73,16 +61,8 @@ public class AlarmClockLogic {
 	private Runnable createAlarmRunnable(int alarmNumber) {
 		return () -> {
 			if (this.acStorage.hasAlarm(alarmNumber) && this.acStorage.getAlarm(alarmNumber).isActive()) {
-				try {
-					Clip clip = AudioSystem.getClip();
-					clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
-					clip.start();
-					Calendar instance = Calendar.getInstance();
-					instance.add(Calendar.MILLISECOND, (int) (clip.getMicrosecondLength() / 1000));
-					this.taskScheduler.schedule(this.createAlarmRunnable(alarmNumber), instance.getTime());
-				} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
-					this.logger.error("Cant play alarm sound", e);
-				}
+				Alarm alarm = this.acStorage.getAlarm(alarmNumber);
+				this.alarmbeep.beep(alarm);
 			}
 		};
 
@@ -99,16 +79,8 @@ public class AlarmClockLogic {
 	private Runnable createTimerRunnable(int timerNumber) {
 		return () -> {
 			if (this.acStorage.hasTimer(timerNumber) && this.acStorage.getTimer(timerNumber).isActive()) {
-				try {
-					Clip clip = AudioSystem.getClip();
-					clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
-					clip.start();
-					Calendar instance = Calendar.getInstance();
-					instance.add(Calendar.MILLISECOND, (int) (clip.getMicrosecondLength() / 1000));
-					this.taskScheduler.schedule(this.createTimerRunnable(timerNumber), instance.getTime());
-				} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
-					this.logger.error("Cant play alarm sound", e);
-				}
+				Timer timer = this.acStorage.getTimer(timerNumber);
+				this.alarmbeep.beep(timer);
 			}
 		};
 
@@ -243,6 +215,7 @@ public class AlarmClockLogic {
 		if (this.acStorage.hasAlarm(alarmNumber)) {
 			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
 			if (alarm.isActive()) {
+				this.alarmbeep.stopBeeping();
 				alarm.setActive(false);
 				this.acStorage.storeAlarm(alarm);
 				return "Alarm " + alarmNumber + " deactivated";
@@ -263,6 +236,7 @@ public class AlarmClockLogic {
 		if (this.acStorage.hasTimer(timerNumber)) {
 			Timer timer = this.acStorage.getTimer(timerNumber);
 			if (timer.isActive()) {
+				this.alarmbeep.stopBeeping();
 				timer.setActive(false);
 				this.acStorage.storeTimer(timer);
 				return "Timer " + timerNumber + " deactivated";
