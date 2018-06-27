@@ -25,9 +25,14 @@ package de.unistuttgart.iaas.amyassist.amy.restresources.home;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -59,11 +64,18 @@ public class HomeResource {
 	 * 
 	 * @param input
 	 *            the input from the client
+	 * @return the response from Amy
 	 */
 	@POST
 	@Path("console")
-	public void useAmy(String input) {
-		this.speechInputHandler.handle(input);
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String useAmy(String input) {
+		try {
+			return this.speechInputHandler.handle(input).get();
+		} catch (Exception e) {
+			throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -72,6 +84,7 @@ public class HomeResource {
 	 * @return array of installed plugins
 	 */
 	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	public SimplePluginEntity[] getPlugins() {
 		List<IPlugin> pluginList = this.manager.getPlugins();
 		SimplePluginEntity[] plugins = new SimplePluginEntity[pluginList.size()+1];
