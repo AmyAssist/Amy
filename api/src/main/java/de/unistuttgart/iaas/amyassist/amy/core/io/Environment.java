@@ -21,25 +21,21 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package de.unistuttgart.iaas.amyassist.amy.core.io;
 
-public class SpotifyConstants {
+import java.nio.file.Path;
 
-	public static final String TYPE_ARTIST = "artist";
-	public static final String TYPE_TRACK = "track";
-	public static final String TYPE_PLAYLIST = "playlist";
-	public static final String TYPE_ALBUM = "album";
-	public static final String ITEM_NAME = "name";
-	public static final String GENRE = "genre";
-	public static final String ARTIST_NAME = "artisName";
-	public static final String ITEM_URI = "uri";
-	public static final String ITEM_TYPE = "type";
-	public static final String DEVICE_NAME = "deviceName";
-	public static final String DEVICE_ID = "deviceId";
-	public static final String DEVICE_TYPE = "deviceType";
-
-	private SpotifyConstants() {
-
-	}
-
+/**
+ * Information about the execution environment
+ * 
+ * @author Leon Kiefer
+ */
+public interface Environment {
+	/**
+	 * Get the current working directory. This does not change while running, but can differ after a restart of the
+	 * application.
+	 * 
+	 * @return the path of the current working directory
+	 */
+	Path getWorkingDirectory();
 }

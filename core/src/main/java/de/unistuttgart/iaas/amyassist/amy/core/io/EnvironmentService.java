@@ -21,25 +21,31 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package de.unistuttgart.iaas.amyassist.amy.core.io;
 
-public class SpotifyConstants {
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-	public static final String TYPE_ARTIST = "artist";
-	public static final String TYPE_TRACK = "track";
-	public static final String TYPE_PLAYLIST = "playlist";
-	public static final String TYPE_ALBUM = "album";
-	public static final String ITEM_NAME = "name";
-	public static final String GENRE = "genre";
-	public static final String ARTIST_NAME = "artisName";
-	public static final String ITEM_URI = "uri";
-	public static final String ITEM_TYPE = "type";
-	public static final String DEVICE_NAME = "deviceName";
-	public static final String DEVICE_ID = "deviceId";
-	public static final String DEVICE_TYPE = "deviceType";
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
-	private SpotifyConstants() {
+/**
+ * The Service implementation of the Environment
+ * 
+ * @author Leon Kiefer
+ */
+@Service
+public class EnvironmentService implements Environment {
 
+	private Path workingDirectory;
+
+	@PostConstruct
+	private void init() {
+		this.workingDirectory = Paths.get("");
 	}
 
+	@Override
+	public Path getWorkingDirectory() {
+		return this.workingDirectory;
+	}
 }

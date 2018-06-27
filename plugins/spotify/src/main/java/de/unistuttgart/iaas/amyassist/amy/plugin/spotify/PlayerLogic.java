@@ -58,9 +58,6 @@ public class PlayerLogic {
 
 	private List<Map<String, String>> actualSearchResult = null;
 
-	private ArrayList<String> deviceNames = new ArrayList<>();
-	private ArrayList<String> deviceIDs = new ArrayList<>();
-
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
@@ -93,20 +90,20 @@ public class PlayerLogic {
 	/**
 	 * get all devices that logged in at the moment
 	 * 
-	 * @return empty ArrayList if no device available else the name of the devices
+	 * @return empty ArrayList if no device available else Maps with the name, id and type of the device
 	 */
-	public List<String> getDevices() {
-
-		this.deviceNames = new ArrayList<>();
-		this.deviceIDs = new ArrayList<>();
+	public List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> getDevices() {
+		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devicesList = new ArrayList<>();
 		Device[] devices = this.spotifyAPICalls.getDevices();
 		if (devices != null) {
-			for (Device device : devices) {
-				this.deviceNames.add(device.getName());
-				this.deviceIDs.add(device.getId());
+			for (int i = 0; i < devices.length; i++) {
+				de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device deviceData;
+				deviceData = new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device(devices[i].getType(),
+						devices[i].getName(), devices[i].getId());
+				devicesList.add(deviceData);
 			}
 		}
-		return this.deviceNames;
+		return devicesList;
 	}
 
 	/**
@@ -117,13 +114,24 @@ public class PlayerLogic {
 	 * @return selected device
 	 */
 	public String setDevice(int deviceNumber) {
-		getDevices();
-		if (this.deviceIDs.size() > deviceNumber && this.deviceNames.size() > deviceNumber) {
-			this.spotifyAPICalls.setCurrentDevice(this.deviceIDs.get(deviceNumber));
-			return this.deviceNames.get(deviceNumber);
+		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devices = getDevices();
+		if (devices.size() > deviceNumber) {
+			this.spotifyAPICalls.setCurrentDevice(devices.get(deviceNumber).getID());
+			return devices.get(deviceNumber).getName();
 		}
 		this.logger.warn("No device with this number was found");
 		return "No device found";
+	}
+
+	/**
+	 * set a device direct with the device id
+	 * 
+	 * @param deviceID
+	 *            from a spotify device
+	 * @return true if the device is available, else false
+	 */
+	public boolean setDevice(String deviceID) {
+		return this.spotifyAPICalls.setCurrentDevice(deviceID);
 	}
 
 	/**
