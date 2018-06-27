@@ -21,36 +21,31 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.io;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Configuration of the application
+ * The Service implementation of the Environment
  * 
  * @author Leon Kiefer
  */
-public interface Configuration {
-	/**
-	 * Get all plugin names
-	 * 
-	 * @return array of all names
-	 */
-	String[] getInstalledPlugins();
+@Service
+public class EnvironmentService implements Environment {
 
-	/**
-	 * Get the version of a installed plugin
-	 * 
-	 * @param pluginName
-	 *            the name of the plugin
-	 * @return the version of the plugin
-	 */
-	String getPluginVersion(String pluginName);
+	private Path workingDirectory;
 
-	/**
-	 * Get the description of a installed plugin
-	 * 
-	 * @param pluginName
-	 *            the name of the plugin
-	 * @return the description of the plugin
-	 */
-	String getPluginDescription(String pluginName);
+	@PostConstruct
+	private void init() {
+		this.workingDirectory = Paths.get("");
+	}
+
+	@Override
+	public Path getWorkingDirectory() {
+		return this.workingDirectory;
+	}
 }

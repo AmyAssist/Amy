@@ -21,36 +21,21 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.io;
+
+import java.nio.file.Path;
 
 /**
- * Configuration of the application
+ * Information about the execution environment
  * 
  * @author Leon Kiefer
  */
-public interface Configuration {
+public interface Environment {
 	/**
-	 * Get all plugin names
+	 * Get the current working directory. This does not change while running, but can differ after a restart of the
+	 * application.
 	 * 
-	 * @return array of all names
+	 * @return the path of the current working directory
 	 */
-	String[] getInstalledPlugins();
-
-	/**
-	 * Get the version of a installed plugin
-	 * 
-	 * @param pluginName
-	 *            the name of the plugin
-	 * @return the version of the plugin
-	 */
-	String getPluginVersion(String pluginName);
-
-	/**
-	 * Get the description of a installed plugin
-	 * 
-	 * @param pluginName
-	 *            the name of the plugin
-	 * @return the description of the plugin
-	 */
-	String getPluginDescription(String pluginName);
+	Path getWorkingDirectory();
 }

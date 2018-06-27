@@ -60,4 +60,15 @@ public class ConfigurationImpl implements Configuration {
 		return null;
 	}
 
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.Configuration#getPluginDescription(java.lang.String)
+	 */
+	@Override
+	public String getPluginDescription(String pluginName) {
+		IPlugin plugin = this.loader.getPlugin(pluginName);
+		if (plugin != null)
+			return plugin.getDescription();
+		return null;
+	}
+
 }

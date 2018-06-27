@@ -32,10 +32,10 @@ import com.github.dvdme.ForecastIOLib.FIODaily;
 public class WeatherReportWeek {
 
 	@XmlTransient
-	public String preamble;
+	public final String preamble;
 
-	public WeatherReportDay[] days;
-	public String summary;
+	public final WeatherReportDay[] days;
+	public final String summary;
 
 	public WeatherReportWeek(String preamble, FIODaily d) {
 		this.preamble = preamble;
