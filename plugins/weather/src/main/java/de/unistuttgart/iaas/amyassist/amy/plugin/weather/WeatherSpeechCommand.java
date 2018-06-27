@@ -58,28 +58,29 @@ public class WeatherSpeechCommand {
 		Calendar c = Calendar.getInstance();
 
 		int weekday = c.get(Calendar.DAY_OF_WEEK);
-		if (weekday == Calendar.SATURDAY) {
-			if (report.days.length < 2) {
-				throw new RuntimeException("WeatherAPI not working as expected");
-			}
-			return "Today, " + report.days[0].shortDescription() + " and tomorrow, "
-					+ report.days[1].shortDescription();
-		} else if (weekday == Calendar.SUNDAY) {
-			return "Today, " + report.days[0].shortDescription();
-		} else {
-			// Get weekend days
-			String saturdayReport = null;
-			String sundayReport = null;
-			for (WeatherReportDay d : report.days) {
-				c.setTime(new Date(d.getTimestamp() * 1000));
-				weekday = c.get(Calendar.DAY_OF_WEEK);
-				if (weekday == Calendar.SATURDAY) {
-					saturdayReport = d.shortDescription();
-				} else if (weekday == Calendar.SUNDAY) {
-					sundayReport = d.shortDescription();
+		switch (weekday) {
+			case Calendar.SATURDAY:
+				if (report.days.length < 2) {
+					throw new RuntimeException("WeatherAPI not working as expected");
 				}
-			}
-			return "On Saturday, " + saturdayReport + " and on Sunday " + sundayReport;
+				return "Today, " + report.days[0].shortDescription() + " and tomorrow, "
+						+ report.days[1].shortDescription();
+			case Calendar.SUNDAY:
+				return "Today, " + report.days[0].shortDescription();
+			default:
+				// Get weekend days
+				String saturdayReport = null;
+				String sundayReport = null;
+				for (WeatherReportDay d : report.days) {
+					c.setTime(new Date(d.getTimestamp() * 1000));
+					weekday = c.get(Calendar.DAY_OF_WEEK);
+					if (weekday == Calendar.SATURDAY) {
+						saturdayReport = d.shortDescription();
+					} else if (weekday == Calendar.SUNDAY) {
+						sundayReport = d.shortDescription();
+					}
+				}
+				return "On Saturday, " + saturdayReport + " and on Sunday " + sundayReport;
 		}
 	}
 }
