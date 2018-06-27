@@ -50,8 +50,8 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	private static final String ACCESS_DENIED = "access.denied";
 
 	private static final String ALLOWED_ORIGIN = "https://amyassist.github.io";
-	private static final String ALLOWED_HEADERS = "Content-Type";
-	private static final String ALLOWED_METHODS = "GET, POST";
+	private static final String ALLOWED_HEADERS = "Content-Type, " + Headers.XOPTIONS;
+	private static final String ALLOWED_METHODS = "GET, POST, OPTIONS, DELETE";
 
 	@Override
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
@@ -70,7 +70,8 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		String origin = requestContext.getHeaderString(Headers.ORIGIN);
 		if (origin != null) {
-			if (requestContext.getMethod().equalsIgnoreCase(OPTIONS)) {
+			if (requestContext.getMethod().equalsIgnoreCase(OPTIONS)
+					&& requestContext.getHeaderString(Headers.XOPTIONS) == null) {
 				preflight(requestContext, origin);
 			} else {
 				checkOrigin(requestContext, origin);
@@ -92,7 +93,7 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 
 	private void checkOrigin(ContainerRequestContext requestContext, String origin) {
 		if (!origin.equals(ALLOWED_ORIGIN)) {
-			requestContext.setProperty(ACCESS_DENIED, true);
+			requestContext.setProperty(ACCESS_DENIED, Boolean.TRUE);
 			throw new WebApplicationException(origin + " not allowed", Status.FORBIDDEN);
 		}
 
