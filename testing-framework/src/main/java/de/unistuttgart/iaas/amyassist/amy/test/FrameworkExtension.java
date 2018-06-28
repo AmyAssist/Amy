@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.test;
 
 import java.io.PrintStream;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
