@@ -215,7 +215,7 @@ public class AlarmClockLogic {
 		if (this.acStorage.hasAlarm(alarmNumber)) {
 			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
 			if (alarm.isActive()) {
-				this.alarmbeep.stopBeeping();
+				this.alarmbeep.stopBeep(alarm);
 				alarm.setActive(false);
 				this.acStorage.storeAlarm(alarm);
 				return "Alarm " + alarmNumber + " deactivated";
@@ -236,7 +236,7 @@ public class AlarmClockLogic {
 		if (this.acStorage.hasTimer(timerNumber)) {
 			Timer timer = this.acStorage.getTimer(timerNumber);
 			if (timer.isActive()) {
-				this.alarmbeep.stopBeeping();
+				this.alarmbeep.stopBeep(timer);
 				timer.setActive(false);
 				this.acStorage.storeTimer(timer);
 				return "Timer " + timerNumber + " deactivated";

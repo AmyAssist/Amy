@@ -23,10 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
  * This class controls the alarm sound file, which is used for the alarm clock
@@ -47,24 +48,28 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 @Service
 public class AlarmBeepService {
 
+	private static final String ALARMSOUND = "resources/alarmsound.wav";
+
 	@Reference
 	private Logger logger;
+	@Reference
+	private Environment env;
 
 	private Clip clip;
 
 	private boolean isBeeping = false;
 
-	private static final File ALARMSOUND = new File("resources/alarmsound.wav");
+	private Set<Integer> alarmList = new HashSet<>();
 
-	private List<Alarm> alarmList = new ArrayList<>();
-
-	private List<Timer> timerList = new ArrayList<>();
+	private Set<Integer> timerList = new HashSet<>();
 
 	@PostConstruct
 	private void init() {
+		Path resolve = this.env.getWorkingDirectory().resolve(ALARMSOUND);
+
 		try {
 			this.clip = AudioSystem.getClip();
-			this.clip.open(AudioSystem.getAudioInputStream(ALARMSOUND));
+			this.clip.open(AudioSystem.getAudioInputStream(resolve.toFile()));
 		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
 			this.logger.error("Cant play alarm sound", e);
 		}
@@ -75,8 +80,8 @@ public class AlarmBeepService {
 	 *            alarm from the alarm class
 	 */
 	public void beep(Alarm alarm) {
-		this.alarmList.add(alarm);
-		startBeeping();
+		this.alarmList.add(alarm.getId());
+		this.update();
 	}
 
 	/**
@@ -84,8 +89,34 @@ public class AlarmBeepService {
 	 *            timer from the timer class
 	 */
 	public void beep(Timer timer) {
-		this.timerList.add(timer);
-		startBeeping();
+		this.timerList.add(timer.getId());
+		this.update();
+	}
+
+	/**
+	 * @param alarm
+	 *            alarm from the alarm class
+	 */
+	public void stopBeep(Alarm alarm) {
+		this.alarmList.remove(alarm.getId());
+		this.update();
+	}
+
+	/**
+	 * @param timer
+	 *            timer from the timer class
+	 */
+	public void stopBeep(Timer timer) {
+		this.timerList.remove(timer.getId());
+		this.update();
+	}
+
+	private void update() {
+		if (!this.alarmList.isEmpty() || !this.timerList.isEmpty()) {
+			this.startBeeping();
+		} else {
+			this.stopBeeping();
+		}
 	}
 
 	/**
@@ -101,11 +132,16 @@ public class AlarmBeepService {
 	/**
 	 * Stops the audio file, when the timer / alarm is deactivated and sets the beeping variable on false
 	 */
-	public void stopBeeping() {
+	private void stopBeeping() {
 		if (this.isBeeping) {
 			this.clip.stop();
+			this.clip.setFramePosition(0);
 			this.isBeeping = false;
 		}
+	}
+
+	private void preDestroy() {
+		this.clip.close();
 	}
 
 }
