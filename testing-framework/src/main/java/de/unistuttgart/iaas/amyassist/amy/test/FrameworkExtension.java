@@ -23,11 +23,16 @@
 
 package de.unistuttgart.iaas.amyassist.amy.test;
 
+import java.io.PrintStream;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 
+import uk.org.lidalia.slf4jtest.LoggingEvent;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 /**
@@ -35,8 +40,8 @@ import uk.org.lidalia.slf4jtest.TestLoggerFactory;
  * 
  * @author Leon Kiefer
  */
-public class FrameworkExtension
-		implements TestInstancePostProcessor, BeforeTestExecutionCallback, AfterTestExecutionCallback {
+public class FrameworkExtension implements TestInstancePostProcessor, BeforeTestExecutionCallback,
+		AfterTestExecutionCallback, TestExecutionExceptionHandler {
 
 	private TestFrameworkImpl testFramework;
 
@@ -65,5 +70,22 @@ public class FrameworkExtension
 	public void afterTestExecution(ExtensionContext arg0) throws Exception {
 		TestLoggerFactory.clear();
 		this.testFramework.after();
+	}
+
+	@Override
+	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+		PrintStream out = System.out;
+		for (LoggingEvent logged : TestLoggerFactory.getAllLoggingEvents()) {
+			out.print(logged.getLevel() + " - " + logged.getMessage() + " - ");
+			for (Object o : logged.getArguments()) {
+				out.print(o);
+			}
+			if (logged.getThrowable().isPresent()) {
+				logged.getThrowable().get().printStackTrace(out);
+			}
+			out.println();
+		}
+
+		throw throwable;
 	}
 }
