@@ -36,7 +36,7 @@ public class ClassServiceProviderWithoutDependencies<T> implements ServiceFuncti
 	protected Class<? extends T> cls;
 
 	public ClassServiceProviderWithoutDependencies(Class<? extends T> cls) {
-		if (!Util.classCheck(cls))
+		if (!Util.isValidServiceClass(cls))
 			throw new IllegalArgumentException(
 					"There is a problem with the class " + cls.getName() + ". It can't be used as a Service");
 		this.cls = cls;

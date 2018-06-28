@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
@@ -57,10 +59,12 @@ public class Util {
 	 * constructor.
 	 * 
 	 * @param cls
+	 *            the class to be checked
 	 * @return
 	 */
-	public static boolean classCheck(@Nonnull Class<?> cls) {
-		if (!constructorCheck(cls) || cls.isArray() || cls.isInterface() || Modifier.isAbstract(cls.getModifiers())) {
+	public static boolean isValidServiceClass(@Nonnull Class<?> cls) {
+		if (!hasValidConstructors(cls) || cls.isArray() || cls.isInterface()
+				|| Modifier.isAbstract(cls.getModifiers())) {
 			return false;
 		}
 
@@ -70,6 +74,21 @@ public class Util {
 				return false;
 			}
 		}
+
+		Method[] postConstructMethod = MethodUtils.getMethodsWithAnnotation(cls, PostConstruct.class, true, true);
+		for (Method m : postConstructMethod) {
+			if (!isValidAnnotatedMethod(m)) {
+				return false;
+			}
+		}
+
+		Method[] preDestroyMethod = MethodUtils.getMethodsWithAnnotation(cls, PreDestroy.class, true, true);
+		for (Method m : preDestroyMethod) {
+			if (!isValidAnnotatedMethod(m)) {
+				return false;
+			}
+		}
+
 		return true;
 	}
 
@@ -80,11 +99,15 @@ public class Util {
 	 *            The class to check
 	 * @return Whether the default constructor is present.
 	 */
-	public static boolean constructorCheck(@Nonnull Class<?> cls) {
+	public static boolean hasValidConstructors(@Nonnull Class<?> cls) {
+		if (cls.getConstructors().length != 1) {
+			return false;
+		}
+
 		try {
 			cls.getConstructor();
 			return true;
-		} catch (NoSuchMethodException | SecurityException e) {
+		} catch (NoSuchMethodException e) {
 			return false;
 		}
 	}
@@ -95,16 +118,66 @@ public class Util {
 	 * @param instance
 	 */
 	public static void postConstruct(@Nonnull Object instance) {
-		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(instance.getClass(), PostConstruct.class,
-				true, true);
+		callAnnotatedMethods(instance, PostConstruct.class);
+	}
+
+	/**
+	 * Call the Methods annotated with {@link PreDestroy} on the given instance
+	 * 
+	 * @param destroyMe
+	 */
+	public static void preDestroy(@Nonnull Object destroyMe) {
+		callAnnotatedMethods(destroyMe, PreDestroy.class);
+	}
+
+	/**
+	 * 
+	 * @param instance
+	 *            the instance of which to call the methods
+	 * @param annotationCls
+	 *            the class of the annotation
+	 */
+	public static void callAnnotatedMethods(@Nonnull Object instance,
+			@Nonnull Class<? extends Annotation> annotationCls) {
+		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(instance.getClass(), annotationCls, true,
+				true);
+		assertValidAnnotatedMethods(methodsWithAnnotation);
+
 		for (Method m : methodsWithAnnotation) {
 			try {
 				m.setAccessible(true);
 				m.invoke(instance);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			} catch (IllegalAccessException e) {
 				logger.error("tryed to invoke method {} but got an error", m, e);
+			} catch (InvocationTargetException e) {
+				if (e.getCause() instanceof RuntimeException) {
+					throw (RuntimeException) e.getCause();
+				}
+				logger.error("method {} thow an exception", m, e.getCause());
 			}
 		}
+	}
+
+	private static void assertValidAnnotatedMethods(@Nonnull Method[] methods) {
+		for (Method m : methods) {
+			if (!isValidAnnotatedMethod(m)) {
+				throw new IllegalArgumentException(
+						"The method " + m + " in class " + m.getDeclaringClass() + " is not a valid annotated method");
+			}
+		}
+	}
+
+	/**
+	 * Check if method is a valid annotated method. Annotated methods must not throw Exceptions, have return type void
+	 * and take no arguments.
+	 * 
+	 * @param method
+	 *            the method to check
+	 * @return true if the given method is a valid annotated method
+	 */
+	public static boolean isValidAnnotatedMethod(@Nonnull Method method) {
+		return method.getExceptionTypes().length == 0 && !method.isVarArgs() && method.getReturnType().equals(Void.TYPE)
+				&& method.getParameterTypes().length == 0;
 	}
 
 	/**
