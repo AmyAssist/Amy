@@ -131,7 +131,7 @@ public class TestFrameworkImpl implements TestFramework {
 		if (resource.isAnnotationPresent(Path.class)) {
 			this.restResources.add(resource);
 		} else {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("The Resource must have a @Path annotation");
 		}
 	}
 }

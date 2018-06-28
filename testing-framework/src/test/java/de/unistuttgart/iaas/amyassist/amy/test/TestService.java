@@ -21,33 +21,16 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
+package de.unistuttgart.iaas.amyassist.amy.test;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
-import com.github.dvdme.ForecastIOLib.FIODaily;
+/**
+ * Empty Test Service
+ * 
+ * @author Leon Kiefer
+ */
+@Service
+public class TestService {
 
-@XmlRootElement
-public class WeatherReportWeek {
-
-	@XmlTransient
-	public final String preamble;
-
-	public final WeatherReportDay[] days;
-	public final String summary;
-
-	public WeatherReportWeek(String preamble, FIODaily d) {
-		this.preamble = preamble;
-		this.days = new WeatherReportDay[d.days()];
-		for (int i = 0; i < d.days(); i++) {
-			this.days[i] = new WeatherReportDay(null, d.getDay(i));
-		}
-		this.summary = d.getSummary();
-	}
-
-	@Override
-	public String toString() {
-		return (this.preamble != null ? this.preamble + " " : "") + this.summary;
-	}
 }

@@ -21,33 +21,23 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
+package de.unistuttgart.iaas.amyassist.amy.core.di.annotation;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import com.github.dvdme.ForecastIOLib.FIODaily;
+/**
+ * Declare a cleanup method. Methods annotated are called before the Serivce is destroyed. So the cleanup can be done in
+ * the method(close resources, save data). After the Service is destroyed no method is called and no other Service holds
+ * a reference to this Service.
+ * 
+ * @author Leon Kiefer
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Target(java.lang.annotation.ElementType.METHOD)
+public @interface PreDestroy {
 
-@XmlRootElement
-public class WeatherReportWeek {
-
-	@XmlTransient
-	public final String preamble;
-
-	public final WeatherReportDay[] days;
-	public final String summary;
-
-	public WeatherReportWeek(String preamble, FIODaily d) {
-		this.preamble = preamble;
-		this.days = new WeatherReportDay[d.days()];
-		for (int i = 0; i < d.days(); i++) {
-			this.days[i] = new WeatherReportDay(null, d.getDay(i));
-		}
-		this.summary = d.getSummary();
-	}
-
-	@Override
-	public String toString() {
-		return (this.preamble != null ? this.preamble + " " : "") + this.summary;
-	}
 }

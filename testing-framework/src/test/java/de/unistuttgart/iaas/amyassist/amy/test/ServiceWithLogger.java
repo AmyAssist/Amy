@@ -21,33 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
+package de.unistuttgart.iaas.amyassist.amy.test;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import org.slf4j.Logger;
 
-import com.github.dvdme.ForecastIOLib.FIODaily;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
-@XmlRootElement
-public class WeatherReportWeek {
+/**
+ * Service with a logger
+ * 
+ * @author Leon Kiefer
+ */
+@Service
+public class ServiceWithLogger {
+	@Reference
+	private Logger logger;
 
-	@XmlTransient
-	public final String preamble;
-
-	public final WeatherReportDay[] days;
-	public final String summary;
-
-	public WeatherReportWeek(String preamble, FIODaily d) {
-		this.preamble = preamble;
-		this.days = new WeatherReportDay[d.days()];
-		for (int i = 0; i < d.days(); i++) {
-			this.days[i] = new WeatherReportDay(null, d.getDay(i));
-		}
-		this.summary = d.getSummary();
-	}
-
-	@Override
-	public String toString() {
-		return (this.preamble != null ? this.preamble + " " : "") + this.summary;
+	/**
+	 * Log the string
+	 * 
+	 * @param s
+	 */
+	public void log(String s) {
+		this.logger.info(s);
 	}
 }

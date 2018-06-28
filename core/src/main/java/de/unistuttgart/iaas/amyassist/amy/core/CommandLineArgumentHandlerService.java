@@ -27,13 +27,15 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
  * This class handles the command line arguments passed to the core.
  *
  * @author Tim Neumann
  */
-public class CommandLineArgumentHandler {
+@Service
+public class CommandLineArgumentHandlerService implements CommandLineArgumentHandler {
 
 	private Map<Flag, String> parameters;
 
@@ -52,6 +54,7 @@ public class CommandLineArgumentHandler {
 			if (flagExpectingPara != null) {
 				this.parameters.put(flagExpectingPara, s);
 				flagExpectingPara = null;
+				continue;
 			}
 			Flag f = Flag.getFlagFromString(s);
 			if (f == null) {
@@ -85,11 +88,9 @@ public class CommandLineArgumentHandler {
 	}
 
 	/**
-	 * @return whether the program should continue with normal execution considering these command line flags
-	 * @throws IllegalStateException
-	 *             When the CommandLineArgumentHandler is not initialized. (When {@link #init(String[]) init} was not
-	 *             called before.)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#shouldProgramContinue()
 	 */
+	@Override
 	public boolean shouldProgramContinue() {
 		if (this.parameters == null)
 			throw new IllegalStateException("Not initialiozed.");
@@ -100,6 +101,14 @@ public class CommandLineArgumentHandler {
 				return false;
 		}
 		return true;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#getConfigPath()
+	 */
+	@Override
+	public String getConfigPath() {
+		return this.parameters.get(Flag.CONFIG);
 	}
 
 	private void printHelp() {
@@ -173,14 +182,21 @@ public class CommandLineArgumentHandler {
 		 * The help flag.
 		 */
 		HELP("-h", "--help", "Prints a help message", true, false),
+
 		/**
 		 * The version flag
 		 */
 		VERSION("-v", "--version", "Prints out the version.", true, false),
+
 		/**
 		 * The license notice flag
 		 */
-		NOTICE("", "--notice", "Prints out the license notice.", true, false);
+		NOTICE("", "--notice", "Prints out the license notice.", true, false),
+
+		/**
+		 * The config dir flag
+		 */
+		CONFIG("-c", "--config <path>", "Set a alternate location for the config directory", false, true);
 
 		private String shortVariant;
 		private String longVariant;

@@ -21,33 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
+package de.unistuttgart.iaas.amyassist.amy.core;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+/**
+ * The interface of our command line argument handler
+ * 
+ * @author Tim Neumann
+ */
+public interface CommandLineArgumentHandler {
 
-import com.github.dvdme.ForecastIOLib.FIODaily;
+	/**
+	 * @return whether the program should continue with normal execution considering these command line flags
+	 * @throws IllegalStateException
+	 *             When the CommandLineArgumentHandler is not initialized. (When {@link #init(String[]) init} was not
+	 *             called before.)
+	 */
+	boolean shouldProgramContinue();
 
-@XmlRootElement
-public class WeatherReportWeek {
+	/**
+	 * Get the alternate config path set by the command line flags.
+	 * 
+	 * @return The alternate config path or null if none is set.
+	 */
+	String getConfigPath();
 
-	@XmlTransient
-	public final String preamble;
-
-	public final WeatherReportDay[] days;
-	public final String summary;
-
-	public WeatherReportWeek(String preamble, FIODaily d) {
-		this.preamble = preamble;
-		this.days = new WeatherReportDay[d.days()];
-		for (int i = 0; i < d.days(); i++) {
-			this.days[i] = new WeatherReportDay(null, d.getDay(i));
-		}
-		this.summary = d.getSummary();
-	}
-
-	@Override
-	public String toString() {
-		return (this.preamble != null ? this.preamble + " " : "") + this.summary;
-	}
 }
