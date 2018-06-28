@@ -30,6 +30,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
 
 /**
  * this class handle the speech commands from the spotify plugin
@@ -41,9 +42,10 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device;
 public class SpotifySpeech {
 
 	private static final String ERROR_MESSAGE = "An error occurred";
+	private static final int LIMIT_FOR_SEARCH = 5;
 
 	@Reference
-	PlayerLogic playerLogic;
+	private PlayerLogic playerLogic;
 
 	/**
 	 * get a String of all name of all devices
@@ -94,6 +96,11 @@ public class SpotifySpeech {
 	public String playFeaturedPlaylist(String... params) {
 		return this.playerLogic.convertSearchOutputToSingleString(this.playerLogic.play());
 	}
+	
+	@Grammar("play own playlist #")
+	public String play(String... params) {
+		return this.playerLogic.convertSearchOutputToSingleString(this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.USER_PLAYLISTS));
+	}
 
 	@Grammar("resume")
 	public String resume(String... params) {
@@ -140,4 +147,19 @@ public class SpotifySpeech {
 		return "track: " + playerLogic.getCurrentSong().get("name") + " by "
 				+ playerLogic.getCurrentSong().get("artist");
 	}
+	
+	@Grammar("get own playlists")
+	public String getUserplaylists(String... params) {
+		String output = "";
+		for(Playlist playlist : this.playerLogic.getOwnPlaylists(LIMIT_FOR_SEARCH)) {
+			output = output.concat(playlist.toString()).concat("\n");
+		}
+		return output;
+	}
+	
+	@Grammar("create login link")
+	public String createLoginLink(String... params) {
+		return this.playerLogic.firstTimeInit().toString();
+	}
+
 }

@@ -87,7 +87,7 @@ class SpotifyAPICallsTest {
 		try {
 			uri = new URI(
 					"https://accounts.spotify.com:443/authorize?client_id=A1B2cCD&response_type=code&redirect_uri=s&"
-							.concat("state=TEST&scope=user-modify-playback-state%2Cuser-read-playback-state&")
+							.concat("state=TEST&scope=user-modify-playback-state%2Cuser-read-playback-state%2Cplaylist-read-private&")
 							.concat("show_dialog=true"));
 		} catch (URISyntaxException e) {
 		}

@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,10 +35,13 @@ import org.slf4j.Logger;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.Paging;
+import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
 
 /**
  * This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music
@@ -55,12 +59,13 @@ public class PlayerLogic {
 	private StringGenerator stringGenerator;
 	@Reference
 	private Logger logger;
-
-	private List<Map<String, String>> actualSearchResult = null;
+	@Reference
+	private IStorage storage;
 
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
+	private static final String SPOTIFY_URI_STORAGE = "spotify_uri_";
 
 	/**
 	 * needed for the first init. need the clientID and the clientSecret form a spotify devloper account
@@ -74,6 +79,15 @@ public class PlayerLogic {
 	public URI firstTimeInit(String clientID, String clientSecret) {
 		this.spotifyAPICalls.setClientID(clientID);
 		this.spotifyAPICalls.setClientSecret(clientSecret);
+		return this.spotifyAPICalls.authorizationCodeUri();
+	}
+
+	/**
+	 * needed for the first init. this method need the properties file in apikeys
+	 * 
+	 * @return login link to a personal spotify account
+	 */
+	public URI firstTimeInit() {
 		return this.spotifyAPICalls.authorizationCodeUri();
 	}
 
@@ -138,7 +152,7 @@ public class PlayerLogic {
 	 * this call the searchAnaything method in the Search class
 	 * 
 	 * @param searchText
-	 *            the text you want ot search
+	 *            the text you want to search
 	 * @param type
 	 *            artist, track, playlist, album
 	 * @param limit
@@ -146,8 +160,9 @@ public class PlayerLogic {
 	 * @return one output String with all results
 	 */
 	public List<Map<String, String>> search(String searchText, String type, int limit) {
-		this.actualSearchResult = this.search.searchList(searchText, type, limit);
-		return this.actualSearchResult;
+		List<Map<String, String>> actualSearchResult = this.search.searchList(searchText, type, limit);
+		writeUrisToStorageMap(actualSearchResult, SearchTypes.NORMAL_SEARCH);
+		return actualSearchResult;
 	}
 
 	/**
@@ -196,18 +211,9 @@ public class PlayerLogic {
 	 *            number of the item form the search before
 	 * @return a map with the song data
 	 */
-	public Map<String, String> play(int songNumber) {
-		if (this.actualSearchResult != null && songNumber < this.actualSearchResult.size()) {
-			if (this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_TYPE)
-					.equals(SpotifyConstants.TYPE_TRACK)) {
-				if (this.spotifyAPICalls
-						.playSongFromUri(this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_URI))) {
-					return this.actualSearchResult.get(songNumber);
-				}
-			} else if (this.spotifyAPICalls
-					.playListFromUri(this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_URI))) {
-				return this.actualSearchResult.get(songNumber);
-			}
+	public Map<String, String> play(int songNumber, SearchTypes type) {
+		if (songNumber < restoreUris(type).size()) {
+			this.spotifyAPICalls.playListFromUri(restoreUris(type).get(songNumber));
 		}
 		return new HashMap<>();
 	}
@@ -264,6 +270,28 @@ public class PlayerLogic {
 	}
 
 	/**
+	 * get a list from user created or followed playlists
+	 * 
+	 * @param limit
+	 *            limit of returned playlists
+	 * @return a list from Playlists
+	 */
+	public List<Playlist> getOwnPlaylists(int limit) {
+		Paging<PlaylistSimplified> playlists = this.spotifyAPICalls.getUsersPlaylists(limit);
+		ArrayList<Playlist> result = new ArrayList<>();
+
+		for (PlaylistSimplified playlist : playlists.getItems()) {
+			if (playlist.getImages() != null && playlist.getImages().length > 0) {
+				result.add(new Playlist(playlist.getName(), null, playlist.getUri(), playlist.getImages()[0].getUrl()));
+			} else {
+				result.add(new Playlist(playlist.getName(), null, playlist.getUri(), null));
+			}
+			writeUrisToStorage(result, SearchTypes.USER_PLAYLISTS);
+		}
+		return result;
+	}
+
+	/**
 	 * this method controls the volume of the player
 	 * 
 	 * @param volumeString
@@ -309,5 +337,52 @@ public class PlayerLogic {
 			return volume;
 		}
 		return -1;
+	}
+
+	/**
+	 * write all Uris from a list of Playlists to the storage. type is needed to store different search queries. For example getOwnPlaylists() or getFeaturedPlaylists() 
+	 * @param playlists playlists to write uris
+	 * @param type to write to right position
+	 */
+	private void writeUrisToStorage(List<Playlist> playlists, SearchTypes type) {
+		deleteUrisFromStroage(type);
+		for (int i = 0; i < playlists.size(); i++) {
+			this.storage.put(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)), playlists.get(i).getUri());
+		}
+	}
+
+	private void writeUrisToStorageMap(List<Map<String, String>> playlists, SearchTypes type) {
+		deleteUrisFromStroage(type);
+		for (int i = 0; i < playlists.size(); i++) {
+			this.storage.put(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)),
+					playlists.get(i).get(SpotifyConstants.ITEM_URI));
+		}
+	}
+
+	/**
+	 * delete all saved uris from the storage of the given query
+	 * @param type of the query items to delete
+	 */
+	private void deleteUrisFromStroage(SearchTypes type) {
+		int i = 0;
+		while (this.storage.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))) != null) {
+			this.storage.delete(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)));
+			i++;
+		}
+	}
+
+	/**
+	 * restore all uris from a search 
+	 * @param type to restore
+	 * @return a list of uris
+	 */
+	private List<String> restoreUris(SearchTypes type) {
+		List<String> result = new ArrayList<>();
+		int i = 0;
+		while (this.storage.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))) != null) {
+			result.add(this.storage.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))));
+			i++;
+		}
+		return result;
 	}
 }

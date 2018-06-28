@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Playlist entity for JSON
  * 
- * @author Christian Bräuner, Muhammed Kaya
+ * @author Christian Bräuner, Muhammed Kaya, Lars Buttgereit
  */
 @XmlRootElement
 public class Playlist {
@@ -43,9 +43,12 @@ public class Playlist {
 	/**
 	 * constructor for a Playlist with set values
 	 */
-	public Playlist(String title, MusicEntity[] songs) {
+	public Playlist(String title, MusicEntity[] songs, String uri, String imageUrl) {
 		this.name = title;
 		this.songs = songs;
+		this.uri = uri;
+		this.imageUrl = imageUrl;
+		
 	}
 
 	/**
@@ -58,6 +61,16 @@ public class Playlist {
 	 */
 	private MusicEntity[] songs;
 
+	/**
+	 * uri of the playlist
+	 */
+	private String uri;
+	
+	/**
+	 * a Url to a image from the playlist
+	 */
+	private String imageUrl;
+	
 	/**
 	 * @return name
 	 */
@@ -86,4 +99,40 @@ public class Playlist {
 		this.songs = songs;
 	}
 
+	/**
+	 * get the uri from the playlist
+	 * @return the uri
+	 */
+	public String getUri() {
+		return this.uri;
+	}
+
+	/**
+	 * set the uri form the playlist
+	 * @param uri to set
+	 */
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+
+	/**
+	 * get the image URL from the playlist image
+	 * @return url to the image
+	 */
+	public String getImageUrl() {
+		return this.imageUrl;
+	}
+
+	/**
+	 * set the image url from the playlist image
+	 * @param imageUrl url to set
+	 */
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

@@ -40,6 +40,8 @@ import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.special.SearchResult;
+import com.wrapper.spotify.model_objects.specification.Paging;
+import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.requests.IRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
@@ -53,6 +55,7 @@ import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToNextTrackRequ
 import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrackRequest;
 import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
 import com.wrapper.spotify.requests.data.player.TransferUsersPlaybackRequest;
+import com.wrapper.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import com.wrapper.spotify.requests.data.search.SearchItemRequest;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
@@ -80,7 +83,7 @@ public class SpotifyAPICalls {
 	/**
 	 * Rules for the spotify user authentication e.g. access to the playcontrol
 	 */
-	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state";
+	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state,playlist-read-private";
 	private String deviceID = null;
 
 	public static final String SPOTIFY_CLIENTSECRET_KEY = "spotify_clientSecret";
@@ -101,7 +104,7 @@ public class SpotifyAPICalls {
 
 	@Reference
 	private TaskSchedulerAPI taskScheduler;
-	
+
 	/**
 	 * init the api calls
 	 */
@@ -479,6 +482,24 @@ public class SpotifyAPICalls {
 					.getListOfFeaturedPlaylists().country(CountryCode.DE).limit(Integer.valueOf(limit))
 					.offset(Integer.valueOf(0)).build();
 			return (FeaturedPlaylists) exceptionHandlingWithResults(getListOfFeaturedPlaylistsRequest);
+		}
+		return null;
+	}
+
+	/**
+	 * get a paging with playlists that the user follow or created
+	 * @param limit of returned playlists
+	 * @return a paging with playlists
+	 */
+	public Paging<PlaylistSimplified> getUsersPlaylists(int limit) {
+		if (checkPlayerState()) {
+			GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = getSpotifyApi()
+					.getListOfCurrentUsersPlaylists().limit(Integer.valueOf(limit)).offset(0).build();
+			try {
+				return getListOfCurrentUsersPlaylistsRequest.execute();
+			} catch (SpotifyWebApiException | IOException e) {
+				this.logger.error(e.getMessage());
+			}
 		}
 		return null;
 	}

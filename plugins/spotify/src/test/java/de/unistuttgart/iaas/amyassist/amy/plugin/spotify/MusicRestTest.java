@@ -98,7 +98,7 @@ class MusicRestTest {
 
 		MusicEntity[] musics = new MusicEntity[1];
 		musics[0] = this.musicEntity;
-		this.playlist = new Playlist("myPlaylist", musics);
+		this.playlist = new Playlist("myPlaylist", musics, "test123", "image.com");
 	}
 
 	/**
@@ -170,7 +170,7 @@ class MusicRestTest {
 
 		Mockito.when(this.logic.search(this.musicEntity.toString(), SpotifyConstants.TYPE_TRACK, 5))
 				.thenReturn(playName);
-		Mockito.when(this.logic.convertSearchOutputToSingleString(this.logic.play(0))).thenReturn("playName");
+		Mockito.when(this.logic.convertSearchOutputToSingleString(this.logic.play(0, SearchTypes.NORMAL_SEARCH))).thenReturn("playName");
 		Response response = this.target.path("music").path("play").request().post(entity);
 
 		assertThat(response.readEntity(String.class), is("playName"));
