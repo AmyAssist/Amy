@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
-import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +33,7 @@ import org.slf4j.Logger;
 
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
+import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
@@ -209,11 +209,15 @@ public class PlayerLogic {
 	 * 
 	 * @param songNumber
 	 *            number of the item form the search before
+	 * @param type
+	 *            to find the right search Results
 	 * @return a map with the song data
 	 */
 	public Map<String, String> play(int songNumber, SearchTypes type) {
 		if (songNumber < restoreUris(type).size()) {
 			this.spotifyAPICalls.playListFromUri(restoreUris(type).get(songNumber));
+		} else {
+			this.logger.warn("Item not found");
 		}
 		return new HashMap<>();
 	}
@@ -277,17 +281,33 @@ public class PlayerLogic {
 	 * @return a list from Playlists
 	 */
 	public List<Playlist> getOwnPlaylists(int limit) {
-		Paging<PlaylistSimplified> playlists = this.spotifyAPICalls.getUsersPlaylists(limit);
-		ArrayList<Playlist> result = new ArrayList<>();
+		Paging<PlaylistSimplified> playlists = this.spotifyAPICalls.getOwnPlaylists(limit);
+		return generatePlaylistsOutput(playlists.getItems(), SearchTypes.USER_PLAYLISTS);
+	}
 
-		for (PlaylistSimplified playlist : playlists.getItems()) {
+	/**
+	 * get a list from featured playlists
+	 * 
+	 * @param limit
+	 *            limit of returned playlists
+	 * @return a list from Playlists
+	 */
+	public List<Playlist> getFeaturedPlaylists(int limit) {
+		FeaturedPlaylists playlists = this.spotifyAPICalls.getFeaturedPlaylists(limit);
+		return generatePlaylistsOutput(playlists.getPlaylists().getItems(), SearchTypes.FEATURED_PLAYLISTS);
+	}
+
+	private List<Playlist> generatePlaylistsOutput(PlaylistSimplified[] playlists, SearchTypes type) {
+		ArrayList<Playlist> result = new ArrayList<>();
+		for (PlaylistSimplified playlist : playlists) {
 			if (playlist.getImages() != null && playlist.getImages().length > 0) {
 				result.add(new Playlist(playlist.getName(), null, playlist.getUri(), playlist.getImages()[0].getUrl()));
 			} else {
 				result.add(new Playlist(playlist.getName(), null, playlist.getUri(), null));
 			}
-			writeUrisToStorage(result, SearchTypes.USER_PLAYLISTS);
+
 		}
+		writeUrisToStorage(result, type);
 		return result;
 	}
 
@@ -340,14 +360,19 @@ public class PlayerLogic {
 	}
 
 	/**
-	 * write all Uris from a list of Playlists to the storage. type is needed to store different search queries. For example getOwnPlaylists() or getFeaturedPlaylists() 
-	 * @param playlists playlists to write uris
-	 * @param type to write to right position
+	 * write all Uris from a list of Playlists to the storage. type is needed to store different search queries. For
+	 * example getOwnPlaylists() or getFeaturedPlaylists()
+	 * 
+	 * @param playlists
+	 *            playlists to write uris
+	 * @param type
+	 *            to write to right position
 	 */
 	private void writeUrisToStorage(List<Playlist> playlists, SearchTypes type) {
 		deleteUrisFromStroage(type);
 		for (int i = 0; i < playlists.size(); i++) {
-			this.storage.put(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)), playlists.get(i).getUri());
+			this.storage.put(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)),
+					playlists.get(i).getUri());
 		}
 	}
 
@@ -361,26 +386,33 @@ public class PlayerLogic {
 
 	/**
 	 * delete all saved uris from the storage of the given query
-	 * @param type of the query items to delete
+	 * 
+	 * @param type
+	 *            of the query items to delete
 	 */
 	private void deleteUrisFromStroage(SearchTypes type) {
 		int i = 0;
-		while (this.storage.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))) != null) {
+		while (this.storage
+				.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))) != null) {
 			this.storage.delete(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)));
 			i++;
 		}
 	}
 
 	/**
-	 * restore all uris from a search 
-	 * @param type to restore
+	 * restore all uris from a search
+	 * 
+	 * @param type
+	 *            to restore
 	 * @return a list of uris
 	 */
 	private List<String> restoreUris(SearchTypes type) {
 		List<String> result = new ArrayList<>();
 		int i = 0;
-		while (this.storage.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))) != null) {
-			result.add(this.storage.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))));
+		while (this.storage
+				.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))) != null) {
+			result.add(this.storage
+					.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))));
 			i++;
 		}
 		return result;

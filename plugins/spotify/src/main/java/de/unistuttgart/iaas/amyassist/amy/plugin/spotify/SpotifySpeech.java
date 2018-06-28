@@ -93,15 +93,20 @@ public class SpotifySpeech {
 	 * @return
 	 */
 	@Grammar("play")
-	public String playFeaturedPlaylist(String... params) {
+	public String playASong(String... params) {
 		return this.playerLogic.convertSearchOutputToSingleString(this.playerLogic.play());
+	}
+	
+	@Grammar("play featured playlist #")
+	public String playFeaturedPlaylist(String... params) {
+		return this.playerLogic.convertSearchOutputToSingleString(this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.FEATURED_PLAYLISTS));
 	}
 	
 	@Grammar("play own playlist #")
 	public String play(String... params) {
 		return this.playerLogic.convertSearchOutputToSingleString(this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.USER_PLAYLISTS));
 	}
-
+	
 	@Grammar("resume")
 	public String resume(String... params) {
 		if (this.playerLogic.resume()) {
@@ -152,6 +157,15 @@ public class SpotifySpeech {
 	public String getUserplaylists(String... params) {
 		String output = "";
 		for(Playlist playlist : this.playerLogic.getOwnPlaylists(LIMIT_FOR_SEARCH)) {
+			output = output.concat(playlist.toString()).concat("\n");
+		}
+		return output;
+	}
+	
+	@Grammar("get featured playlists")
+	public String getFeaturedPlaylists(String... params) {
+		String output = "";
+		for(Playlist playlist : this.playerLogic.getFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
 			output = output.concat(playlist.toString()).concat("\n");
 		}
 		return output;

@@ -92,7 +92,8 @@ public class SpotifyAPICalls {
 	public static final String SPOTIFY_DEVICEID = "spotify_device_Id";
 	public static final String SPOTIFY_ACCESSTOKEN = "spotify_Accsesstoken";
 	public static final int TOKEN_EXPIRE_TIME_OFFSET = 120;
-
+	public static final String SPOTIFY_ERROR_TAG = "Spotify Exception:";
+	
 	@Reference
 	private ConfigLoader configLoader;
 
@@ -488,17 +489,19 @@ public class SpotifyAPICalls {
 
 	/**
 	 * get a paging with playlists that the user follow or created
-	 * @param limit of returned playlists
+	 * 
+	 * @param limit
+	 *            of returned playlists
 	 * @return a paging with playlists
 	 */
-	public Paging<PlaylistSimplified> getUsersPlaylists(int limit) {
+	public Paging<PlaylistSimplified> getOwnPlaylists(int limit) {
 		if (checkPlayerState()) {
 			GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = getSpotifyApi()
-					.getListOfCurrentUsersPlaylists().limit(Integer.valueOf(limit)).offset(0).build();
+					.getListOfCurrentUsersPlaylists().limit(Integer.valueOf(limit)).offset(Integer.valueOf(0)).build();
 			try {
 				return getListOfCurrentUsersPlaylistsRequest.execute();
 			} catch (SpotifyWebApiException | IOException e) {
-				this.logger.error(e.getMessage());
+				this.logger.warn(SPOTIFY_ERROR_TAG, e);
 			}
 		}
 		return null;
@@ -515,7 +518,7 @@ public class SpotifyAPICalls {
 		try {
 			return request.execute();
 		} catch (SpotifyWebApiException | IOException e) {
-			this.logger.error(e.getMessage());
+			this.logger.warn(SPOTIFY_ERROR_TAG, e);
 			return null;
 		}
 	}
@@ -532,7 +535,7 @@ public class SpotifyAPICalls {
 			request.execute();
 			return true;
 		} catch (SpotifyWebApiException | IOException e) {
-			this.logger.error(e.getMessage());
+			this.logger.warn(SPOTIFY_ERROR_TAG, e);
 			return false;
 		}
 	}

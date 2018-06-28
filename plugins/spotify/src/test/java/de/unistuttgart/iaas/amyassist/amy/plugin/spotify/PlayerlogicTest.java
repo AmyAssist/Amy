@@ -43,6 +43,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
+import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import com.wrapper.spotify.model_objects.specification.Image;
 import com.wrapper.spotify.model_objects.specification.Paging;
@@ -231,7 +232,7 @@ class PlayerLogicTest {
 	@Test
 	public void testPlaySongFromASearch() {
 		initPlaylists();
-		when(this.spotifyAPICalls.getUsersPlaylists(2)).thenReturn(this.playlistsSpotifyFormat);
+		when(this.spotifyAPICalls.getOwnPlaylists(2)).thenReturn(this.playlistsSpotifyFormat);
 		this.playerLogic.getOwnPlaylists(2);
 		when(this.spotifyAPICalls.playListFromUri(ID1)).thenReturn(false);
 		this.playerLogic.play(0, SearchTypes.USER_PLAYLISTS);
@@ -359,7 +360,7 @@ class PlayerLogicTest {
 	public void testGetUsersPlaylists() {
 		initPlaylists();
 		List<Playlist> pl;
-		when(this.spotifyAPICalls.getUsersPlaylists(2)).thenReturn(this.playlistsSpotifyFormat);
+		when(this.spotifyAPICalls.getOwnPlaylists(2)).thenReturn(this.playlistsSpotifyFormat);
 		pl = this.playerLogic.getOwnPlaylists(2);
 		assertThat(pl.get(0).getUri(), equalTo(ID1));
 		assertThat(pl.get(1).getUri(), equalTo(ID2));
@@ -367,7 +368,22 @@ class PlayerLogicTest {
 		assertThat(pl.get(1).getName(), equalTo(PLAYLIST_NAME2));
 		assertThat(pl.get(0).getImageUrl(), equalTo(null));
 		assertThat(pl.get(1).getImageUrl(), equalTo(ID1));
+	}
 
+	@Test
+	public void testGetFeturedPlaylists() {
+		initPlaylists();
+		FeaturedPlaylists featuredPls = new FeaturedPlaylists.Builder().setPlaylists(this.playlistsSpotifyFormat)
+				.build();
+		List<Playlist> pl;
+		when(this.spotifyAPICalls.getFeaturedPlaylists(2)).thenReturn(featuredPls);
+		pl = this.playerLogic.getFeaturedPlaylists(2);
+		assertThat(pl.get(0).getUri(), equalTo(ID1));
+		assertThat(pl.get(1).getUri(), equalTo(ID2));
+		assertThat(pl.get(0).getName(), equalTo(PLAYLIST_NAME1));
+		assertThat(pl.get(1).getName(), equalTo(PLAYLIST_NAME2));
+		assertThat(pl.get(0).getImageUrl(), equalTo(null));
+		assertThat(pl.get(1).getImageUrl(), equalTo(ID1));
 	}
 
 }

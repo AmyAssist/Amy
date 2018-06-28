@@ -40,11 +40,15 @@ public class Playlist {
 
 	}
 
-	/**
-	 * constructor for a Playlist with set values
-	 */
-	public Playlist(String title, MusicEntity[] songs, String uri, String imageUrl) {
-		this.name = title;
+/**
+ * constructor for a Playlist with set values
+ * @param name of the playlist
+ * @param songs 
+ * @param uri from a playlist to play it in spotify
+ * @param imageUrl a url to image from the playlist. can be null
+ */
+	public Playlist(String name, MusicEntity[] songs, String uri, String imageUrl) {
+		this.name = name;
 		this.songs = songs;
 		this.uri = uri;
 		this.imageUrl = imageUrl;

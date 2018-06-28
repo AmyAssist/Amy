@@ -61,7 +61,7 @@ class SpotifyAPICallsTest {
 
 	@Reference
 	IStorage storage;
-	
+
 	@Reference
 	private TestFramework testFramework;
 
@@ -316,5 +316,15 @@ class SpotifyAPICallsTest {
 	public void testSetClientId() {
 		this.spotifyAPICalls.setClientID(CLIENT_ID);
 		verify(this.configLoader).set(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY, CLIENT_ID);
+	}
+
+	@Test
+	public void testOwnPlaylists() {
+		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		this.spotifyAPICalls.setCurrentDevice("w");
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.getOwnPlaylists(1), equalTo(null));
+		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.getOwnPlaylists(1), equalTo(null));
 	}
 }
