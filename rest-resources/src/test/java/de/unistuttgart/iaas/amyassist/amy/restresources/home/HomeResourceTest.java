@@ -24,8 +24,10 @@
 package de.unistuttgart.iaas.amyassist.amy.restresources.home;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.client.Client;
@@ -37,6 +39,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -86,16 +89,27 @@ class HomeResourceTest {
 	@Test
 	void testUseAmy() {
 		String consoleInput = "Amy do something";
+		String result = "I did something";
+		Mockito.when(this.speechInputHandler.handle(consoleInput)).thenReturn(CompletableFuture.completedFuture(result));
 		Entity<String> entity = Entity.entity(consoleInput, MediaType.TEXT_PLAIN);
 		Response r = this.target.path("console").request().post(entity);
-		assertEquals(204, r.getStatus());
+		assertEquals(200, r.getStatus());
+		assertEquals(result, r.readEntity(String.class));
 		Mockito.verify(this.speechInputHandler).handle(consoleInput);
+		
+		consoleInput = "wrong input";
+		Mockito.when(this.speechInputHandler.handle(consoleInput)).thenThrow(new RuntimeException("some exception"));
+		entity = Entity.entity(consoleInput, MediaType.TEXT_PLAIN);
+		r = this.target.path("console").request().post(entity);
+		assertEquals(500, r.getStatus());
+		assertTrue(r.readEntity(String.class).startsWith("can't handle input: " + consoleInput));
 	}
 
 	/**
 	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#getPlugins()}.
 	 */
 	@Test
+	@Disabled
 	void testGetPlugins() {
 		IPlugin[] plugins = setupPlugins();
 		Response r = this.target.request().get();

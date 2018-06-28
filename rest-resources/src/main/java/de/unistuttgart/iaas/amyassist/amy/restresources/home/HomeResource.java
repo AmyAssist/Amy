@@ -75,7 +75,7 @@ public class HomeResource {
 		try {
 			return this.speechInputHandler.handle(input).get();
 		} catch (Exception e) {
-			throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
+			throw new WebApplicationException("can't handle input: "+ input, e, Status.INTERNAL_SERVER_ERROR);
 		}
 	}
 
