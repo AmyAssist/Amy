@@ -98,14 +98,18 @@ public class AudioUserInteraction implements SpeechIO {
 	 */
 	public void switchGrammar(Grammar grammar) {
 		if (grammar == null) {
-			// TODO do sth?
+			this.logger.info("all Recognition stopped");
 		} else if (grammar.getName().equals(this.mainGrammar.getName())) {
+			this.logger.info("Recognizer {} started", this.mainGrammar.getName());
 			this.currentRecognizer = new Thread(this.mainRecognizer);
+			this.recognitionThreadRunning = true;
+			this.currentRecognizer.start();
 		} else {
+			this.logger.info("Recognizer {} started", this.recognizerList.get(grammar.getName()));
 			this.currentRecognizer = new Thread(this.recognizerList.get(grammar.getName()));
+			this.recognitionThreadRunning = true;
+			this.currentRecognizer.start();
 		}
-		this.recognitionThreadRunning = true;
-		this.currentRecognizer.start();
 
 	}
 
@@ -226,7 +230,7 @@ public class AudioUserInteraction implements SpeechIO {
 	 * 
 	 * @return fitting AudioFormat
 	 */
-	public AudioFormat getFormat() {
+	private AudioFormat getFormat() {
 		final float sampleRate = 16000.0f;
 		final int sampleSizeInBits = 16;
 		final int channels = 1;

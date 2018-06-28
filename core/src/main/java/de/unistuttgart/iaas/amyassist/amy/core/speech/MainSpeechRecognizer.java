@@ -58,17 +58,17 @@ public class MainSpeechRecognizer extends SpeechRecognizer {
 	 */
 	@Override
 	protected void predefinedInputHandling() {
-		if (this.speechRecognitionResult.equals(Constants.SHUTDOWN)) {
+		if (this.speechRecognitionResult.equals(Constants.SHUT_UP)) {
 			this.tts.stopOutput();
-		} else if (this.speechRecognitionResult.equals(Constants.WAKEUP)) {
-			this.listening = true;
+		} else if (this.speechRecognitionResult.equals(Constants.WAKE_UP)) {
+			Constants.SRisListening = true;
 			say("waking up");
-		} else if (this.speechRecognitionResult.startsWith(Constants.WAKEUP + " ")) {
-			this.listening = true;
-			this.makeDecision(this.speechRecognitionResult.replaceFirst(Constants.WAKEUP + " ", ""));
-		} else if (this.listening) {
-			if (this.speechRecognitionResult.equals(Constants.GOSLEEP)) {
-				this.listening = false;
+		} else if (this.speechRecognitionResult.startsWith(Constants.WAKE_UP + " ")) {
+			Constants.SRisListening = true;
+			this.makeDecision(this.speechRecognitionResult.replaceFirst(Constants.WAKE_UP + " ", ""));
+		} else if (Constants.SRisListening) {
+			if (this.speechRecognitionResult.equals(Constants.GO_SLEEP)) {
+				Constants.SRisListening = false;
 				say("now sleeping");
 			} else {
 				this.makeDecision(this.speechRecognitionResult);

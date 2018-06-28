@@ -63,7 +63,7 @@ public abstract class SpeechRecognizer implements Runnable {
 
 	// True if there is Sound Output right now
 	private boolean soundPlaying = false;
-	
+
 	// Check if Answer shall be voiced throgh tts
 	private boolean voiceOutput;
 
@@ -82,11 +82,6 @@ public abstract class SpeechRecognizer implements Runnable {
 	 * The TextToSpeech Output Object
 	 */
 	protected TextToSpeech tts;
-
-	/**
-	 * Boolean to check if we are supposed to listen (sleeping)
-	 */
-	protected boolean listening = false;
 
 	/**
 	 * The result of the Recognition
@@ -119,7 +114,8 @@ public abstract class SpeechRecognizer implements Runnable {
 	 *            Handler which will handle the input
 	 * @param ais
 	 *            set custom AudioInputStream.
-	 * @param voiceOutput true if the TTS shall voice the Answer
+	 * @param voiceOutput
+	 *            true if the TTS shall voice the Answer
 	 */
 	public SpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler,
 			AudioInputStream ais, boolean voiceOutput) {
@@ -153,7 +149,7 @@ public abstract class SpeechRecognizer implements Runnable {
 		this.logger.info("[INFORMATION] :: Speech Recognition activated");
 
 		// Boolean to check if we are supposed to listen (sleeping)
-		this.listening = false;
+		Constants.SRisListening = false;
 
 		while (this.audioUI.isRecognitionThreadRunning() && !Thread.interrupted()) {
 
@@ -166,11 +162,11 @@ public abstract class SpeechRecognizer implements Runnable {
 			if (speechResult != null) {
 				// Get the hypothesis (Result as String)
 				this.speechRecognitionResult = speechResult.getHypothesis();
-				
+
 				if (!this.soundPlaying) {
 					predefinedInputHandling();
 				} else {
-					if (this.speechRecognitionResult.equals(Constants.SHUTDOWN)) {
+					if (this.speechRecognitionResult.equals(Constants.SHUT_UP)) {
 						this.tts.stopOutput();
 					}
 				}
@@ -274,10 +270,10 @@ public abstract class SpeechRecognizer implements Runnable {
 	 *            String that shall be said
 	 */
 	protected void say(String s) {
-		if(this.voiceOutput){
+		if (this.voiceOutput) {
 			this.soundPlaying = true;
 			this.tts.say(this.listener, s);
-		}else {
+		} else {
 			this.tts.log(s);
 		}
 	}
@@ -318,7 +314,8 @@ public abstract class SpeechRecognizer implements Runnable {
 		configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
 
 		configuration.setUseGrammar(false);
-		if(this.grammar != null && this.grammar.getFile() != null && this.grammar.getFile().toString().endsWith(".gram")) {
+		if (this.grammar != null && this.grammar.getFile() != null
+				&& this.grammar.getFile().toString().endsWith(".gram")) {
 			try {
 				configuration.setGrammarPath(this.grammar.getFile().getParentFile().toURI().toURL().toString());
 				configuration.setGrammarName(this.grammar.getFile().getName().replace(".gram", ""));

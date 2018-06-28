@@ -54,8 +54,8 @@ public class SpeechCommandHandler {
 	private Logger logger;
 
 	private TextToPlugin textToPlugin;
-	private GrammarParser generator = new GrammarParser("grammar", Constants.WAKEUP, Constants.GOSLEEP,
-			Constants.SHUTDOWN);
+	private GrammarParser generator = new GrammarParser("grammar", Constants.WAKE_UP, Constants.GO_SLEEP,
+			Constants.SHUT_UP);
 
 	private Map<PluginGrammarInfo, Class<?>> grammarInfos = new HashMap<>();
 	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> speechCommands = new HashMap<>();
