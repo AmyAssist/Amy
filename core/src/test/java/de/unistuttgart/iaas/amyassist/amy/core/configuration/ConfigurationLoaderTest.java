@@ -48,7 +48,7 @@ import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 /**
- * TODO: Description
+ * Test IO of ConfigurationLoader
  * 
  * @author Leon Kiefer
  */
