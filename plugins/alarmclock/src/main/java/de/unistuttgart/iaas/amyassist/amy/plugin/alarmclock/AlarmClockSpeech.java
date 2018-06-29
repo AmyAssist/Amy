@@ -61,7 +61,7 @@ public class AlarmClockSpeech {
 			Calendar time = alarm.getAlarmDate();
 			return "Alarm " + alarm.getId() + " set for " + time.get(Calendar.HOUR_OF_DAY) + ":"
 					+ time.get(Calendar.MINUTE);
-		} catch (IllegalArgumentException e) {
+		} catch (NumberFormatException e) {
 			return PARAMSNOTVALID;
 		}
 	}
@@ -99,7 +99,7 @@ public class AlarmClockSpeech {
 					return this.logic.setTimer(0, 0, Integer.parseInt(params[3])).toString();
 				}
 			}
-		} catch (IllegalArgumentException e) {
+		} catch (NumberFormatException e) {
 			return PARAMSNOTVALID;
 		}
 		return "Speech Command not valid.";

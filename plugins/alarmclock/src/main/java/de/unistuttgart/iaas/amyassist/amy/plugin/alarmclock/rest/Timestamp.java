@@ -71,8 +71,8 @@ public class Timestamp {
 			String[] timeSplit = time.split(":");
 			this.hour = Integer.parseInt(timeSplit[0]);
 			this.minute = Integer.parseInt(timeSplit[1]);
-		} catch (Exception e) {
-			throw new IllegalArgumentException(time);
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException(time, e);
 		}
 	}
 
