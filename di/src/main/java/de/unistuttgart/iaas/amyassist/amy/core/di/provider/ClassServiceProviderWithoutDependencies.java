@@ -49,7 +49,7 @@ public class ClassServiceProviderWithoutDependencies<T> implements ServiceFuncti
 
 	protected T createService() {
 		try {
-			return cls.newInstance();
+			return this.cls.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new IllegalStateException("The constructor of " + this.cls.getName() + " should have been checked",
 					e);
@@ -65,5 +65,4 @@ public class ClassServiceProviderWithoutDependencies<T> implements ServiceFuncti
 	public Collection<String> getRequiredContextIdentifiers() {
 		return Collections.emptyList();
 	}
-
 }

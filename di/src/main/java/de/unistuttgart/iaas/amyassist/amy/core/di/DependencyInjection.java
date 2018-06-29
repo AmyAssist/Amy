@@ -279,4 +279,14 @@ public class DependencyInjection implements ServiceLocator {
 		this.postConstruct(service);
 		return service;
 	}
+
+	@Override
+	public void preDestroy(@Nonnull Object destroyMe) {
+		Util.preDestroy(destroyMe);
+	}
+
+	@Override
+	public void shutdown() {
+		// TODO manage the lifecycle
+	}
 }
