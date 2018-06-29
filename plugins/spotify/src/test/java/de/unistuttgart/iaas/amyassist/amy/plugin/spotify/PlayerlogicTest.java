@@ -238,6 +238,12 @@ class PlayerLogicTest {
 		this.playerLogic.play(0, SearchTypes.USER_PLAYLISTS);
 		verify(spotifyAPICalls).playListFromUri(ID1);
 	}
+	
+	@Test
+	public void testPlaySongFromASearchEmptyResult() {
+		this.playerLogic.play(0, SearchTypes.USER_PLAYLISTS);
+		verifyNoMoreInteractions(this.spotifyAPICalls);
+	}
 
 	@Test
 	public void testResume() {
@@ -334,6 +340,13 @@ class PlayerLogicTest {
 	public void testSetVolumeStringWrongString() {
 		when(this.spotifyAPICalls.getVolume()).thenReturn(50);
 		assertThat(this.playerLogic.setVolume("downM"), equalTo(-1));
+		verifyNoMoreInteractions(this.spotifyAPICalls);
+	}
+	
+	@Test
+	public void testSetVolumeStringUnknownVolume() {
+		when(this.spotifyAPICalls.getVolume()).thenReturn(-1);
+		assertThat(this.playerLogic.setVolume("up"), equalTo(-1));
 		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
