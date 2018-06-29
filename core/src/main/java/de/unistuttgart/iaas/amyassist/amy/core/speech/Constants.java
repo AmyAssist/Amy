@@ -51,5 +51,23 @@ public class Constants {
 	 * STATIC VARIABEL
 	 * Information for The System to turn down sound true if the SR is currently listening
 	 */
-	public static boolean SRisListening = false;
+	private static boolean isSRListening = false;
+	
+
+	/**
+	 * Get's {@link #isSRListening sRisListening}
+	 * @return  sRisListening
+	 */
+	public static boolean isSRListening() {
+		return isSRListening;
+	}
+
+	/**
+	 * Set's {@link #isSRListening sRisListening}
+	 * @param sRisListening  sRisListening
+	 */
+	protected static void setSRListening(boolean sRisListening) {
+		isSRListening = sRisListening;
+	}
+	
 }

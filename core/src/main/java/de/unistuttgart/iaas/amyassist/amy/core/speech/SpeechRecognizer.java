@@ -50,13 +50,15 @@ import edu.cmu.sphinx.api.StreamSpeechRecognizer;
  */
 public abstract class SpeechRecognizer implements Runnable {
 
-	@SuppressWarnings("javadoc")
+	/**
+	 * logger for all the Speech Recognition classes
+	 */
 	protected final Logger logger = LoggerFactory.getLogger(SpeechRecognizer.class);
 
 	// Grammar of the Current running Recognizer
 	private Grammar grammar;
 
-	// The Grammar to switch to, null for Ending all Recognitio
+	// The Grammar to switch to, null for Ending all Recognition
 	private Grammar nextGrammar = null;
 
 	// The Input Stream Source
@@ -298,7 +300,7 @@ public abstract class SpeechRecognizer implements Runnable {
 		this.logger.info("stop the Recognition");
 		this.audioUI.setRecognitionThreadRunning(false);
 		this.nextGrammar = null;
-		Constants.SRisListening = false;
+		Constants.setSRListening(false);
 	}
 
 	// ===============================================================================================

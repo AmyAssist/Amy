@@ -148,25 +148,25 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	void mainSpecificPredefinedInputHandling() {
 		this.recognizer = new MainSpeechRecognizer(this.aui, this.mainGrammar, this.handler, this.ais, false);
 
-		assertThat(new Boolean(Constants.SRisListening), equalTo(new Boolean(false)));
+		assertThat(new Boolean(Constants.isSRListening()), equalTo(new Boolean(false)));
 		this.recognizer.speechRecognitionResult = Constants.WAKE_UP;
 		this.recognizer.predefinedInputHandling();
-		assertThat(new Boolean(Constants.SRisListening), equalTo(new Boolean(true)));
+		assertThat(new Boolean(Constants.isSRListening()), equalTo(new Boolean(true)));
 		// assertThat(this.ttsLogger.getLoggingEvents(), contains(info("waking up")));
 
 		this.recognizer.speechRecognitionResult = Constants.GO_SLEEP;
 		this.recognizer.predefinedInputHandling();
-		assertThat(new Boolean(Constants.SRisListening), equalTo(new Boolean(false)));
+		assertThat(new Boolean(Constants.isSRListening()), equalTo(new Boolean(false)));
 		// assertThat(this.ttsLogger.getLoggingEvents(), contains(info("now sleeping")));
 
 		this.recognizer.speechRecognitionResult = this.known;
 		this.recognizer.predefinedInputHandling();
 		// test no log?
 
-		assertThat(new Boolean(Constants.SRisListening), equalTo(new Boolean(false)));
+		assertThat(new Boolean(Constants.isSRListening()), equalTo(new Boolean(false)));
 		this.recognizer.speechRecognitionResult = Constants.WAKE_UP;
 		this.recognizer.predefinedInputHandling();
-		assertThat(new Boolean(Constants.SRisListening), equalTo(new Boolean(true)));
+		assertThat(new Boolean(Constants.isSRListening()), equalTo(new Boolean(true)));
 		// assertThat(this.ttsLogger.getLoggingEvents(), contains(info("waking up")));
 
 		this.recognizer.speechRecognitionResult = this.known;
@@ -181,7 +181,7 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	@Test
 	void additionalSpecificPredefinedInputHandling() {
 		this.recognizer = new AdditionalSpeechRecognizer(this.aui, this.mainGrammar, this.handler, this.ais, false);
-		Constants.SRisListening = true;
+		Constants.setSRListening(true);
 
 		this.recognizer.speechRecognitionResult = this.known;
 		this.recognizer.predefinedInputHandling();
@@ -189,7 +189,7 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 
 		this.recognizer.speechRecognitionResult = Constants.GO_SLEEP;
 		this.recognizer.predefinedInputHandling();
-		assertThat(new Boolean(Constants.SRisListening), equalTo(new Boolean(false)));
+		assertThat(new Boolean(Constants.isSRListening()), equalTo(new Boolean(false)));
 		// assertThat(this.ttsLogger.getLoggingEvents(), contains(info("now sleeping")));
 		// assertThat(logger.getLoggingEvents(), contains(info("stop current Recognizer to start the next")));
 	}

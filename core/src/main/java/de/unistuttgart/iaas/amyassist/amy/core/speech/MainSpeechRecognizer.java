@@ -61,14 +61,14 @@ public class MainSpeechRecognizer extends SpeechRecognizer {
 		if (this.speechRecognitionResult.equals(Constants.SHUT_UP)) {
 			this.tts.stopOutput();
 		} else if (this.speechRecognitionResult.equals(Constants.WAKE_UP)) {
-			Constants.SRisListening = true;
+			Constants.setSRListening(true);
 			say("waking up");
 		} else if (this.speechRecognitionResult.startsWith(Constants.WAKE_UP + " ")) {
-			Constants.SRisListening = true;
+			Constants.setSRListening(true);
 			this.makeDecision(this.speechRecognitionResult.replaceFirst(Constants.WAKE_UP + " ", ""));
-		} else if (Constants.SRisListening) {
+		} else if (Constants.isSRListening()) {
 			if (this.speechRecognitionResult.equals(Constants.GO_SLEEP)) {
-				Constants.SRisListening = false;
+				Constants.setSRListening(false);
 				say("now sleeping");
 			} else {
 				this.makeDecision(this.speechRecognitionResult);

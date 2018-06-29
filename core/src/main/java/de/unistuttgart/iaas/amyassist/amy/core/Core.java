@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +49,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
