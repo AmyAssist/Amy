@@ -47,6 +47,9 @@ public class SpotifySpeech {
 	@Reference
 	private PlayerLogic playerLogic;
 
+	@Reference
+	private StringGenerator stringGenerator;
+
 	/**
 	 * get a String of all name of all devices
 	 * 
@@ -59,8 +62,7 @@ public class SpotifySpeech {
 		List<Device> devices = this.playerLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
-			output = output.concat(String.valueOf(i)).concat(". ")
-					.concat(devices.get(i).getName().concat("\n"));
+			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i).getName().concat("\n"));
 		}
 		if (output.equals("")) {
 			return "no device found";
@@ -94,19 +96,21 @@ public class SpotifySpeech {
 	 */
 	@Grammar("play")
 	public String playASong(String... params) {
-		return this.playerLogic.convertSearchOutputToSingleString(this.playerLogic.play());
+		return this.stringGenerator.generateSearchOutputString(this.playerLogic.play());
 	}
-	
+
 	@Grammar("play featured playlist #")
 	public String playFeaturedPlaylist(String... params) {
-		return this.playerLogic.convertSearchOutputToSingleString(this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.FEATURED_PLAYLISTS));
+		return this.stringGenerator.generateSearchOutputString(
+				this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.FEATURED_PLAYLISTS));
 	}
-	
+
 	@Grammar("play own playlist #")
 	public String play(String... params) {
-		return this.playerLogic.convertSearchOutputToSingleString(this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.USER_PLAYLISTS));
+		return this.stringGenerator.generateSearchOutputString(
+				this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.USER_PLAYLISTS));
 	}
-	
+
 	@Grammar("resume")
 	public String resume(String... params) {
 		if (this.playerLogic.resume()) {
@@ -152,25 +156,25 @@ public class SpotifySpeech {
 		return "track: " + playerLogic.getCurrentSong().get("name") + " by "
 				+ playerLogic.getCurrentSong().get("artist");
 	}
-	
+
 	@Grammar("get own playlists")
 	public String getUserplaylists(String... params) {
 		String output = "";
-		for(Playlist playlist : this.playerLogic.getOwnPlaylists(LIMIT_FOR_SEARCH)) {
+		for (Playlist playlist : this.playerLogic.getOwnPlaylists(LIMIT_FOR_SEARCH)) {
 			output = output.concat(playlist.toString()).concat("\n");
 		}
 		return output;
 	}
-	
+
 	@Grammar("get featured playlists")
 	public String getFeaturedPlaylists(String... params) {
 		String output = "";
-		for(Playlist playlist : this.playerLogic.getFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
+		for (Playlist playlist : this.playerLogic.getFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
 			output = output.concat(playlist.toString()).concat("\n");
 		}
 		return output;
 	}
-	
+
 	@Grammar("create login link")
 	public String createLoginLink(String... params) {
 		return this.playerLogic.firstTimeInit().toString();

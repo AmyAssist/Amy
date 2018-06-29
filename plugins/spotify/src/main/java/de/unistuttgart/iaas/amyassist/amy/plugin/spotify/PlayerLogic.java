@@ -56,8 +56,6 @@ public class PlayerLogic {
 	@Reference
 	private Search search;
 	@Reference
-	private StringGenerator stringGenerator;
-	@Reference
 	private Logger logger;
 	@Reference
 	private IStorage storage;
@@ -163,29 +161,6 @@ public class PlayerLogic {
 		List<Map<String, String>> actualSearchResult = this.search.searchList(searchText, type, limit);
 		writeUrisToStorageMap(actualSearchResult, SearchTypes.NORMAL_SEARCH);
 		return actualSearchResult;
-	}
-
-	/**
-	 * generate one String out of the search result map or other maps with track, album or playlist attributes. Useful
-	 * for example for console or speech output
-	 * 
-	 * @param input
-	 *            the map from a search or a map with attributes from track, album, playlist
-	 * @return a single String with useful information for the user
-	 */
-	public String convertSearchOutputToSingleString(Map<String, String> input) {
-		return this.stringGenerator.generateSearchOutputString(input);
-	}
-
-	/**
-	 * generate one String out of the search result list. Useful for example for console or speech output
-	 * 
-	 * @param input
-	 *            the list from a search or a list with maps with attributes from track, album, playlist
-	 * @return a single String with useful information for the user from all elements from the list
-	 */
-	public String convertSearchOutputToSingleString(List<Map<String, String>> input) {
-		return this.stringGenerator.generateSearchOutputString(input);
 	}
 
 	/**

@@ -63,7 +63,8 @@ class MusicRestTest {
 
 	@Reference
 	private TestFramework testFramework;
-
+	
+	private StringGenerator stringGenerator;
 	private PlayerLogic logic;
 	private MusicEntity musicEntity;
 	private Playlist playlist;
@@ -77,6 +78,7 @@ class MusicRestTest {
 	@BeforeEach
 	public void setUp() {
 		this.testFramework.setRESTResource(MusicResource.class);
+		this.stringGenerator = this.testFramework.mockService(StringGenerator.class);
 		this.logic = this.testFramework.mockService(PlayerLogic.class);
 
 		Client c = ClientBuilder.newClient();
@@ -108,8 +110,10 @@ class MusicRestTest {
 	 */
 	private List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> createDeviceList() {
 		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devicesList = new ArrayList<>();
-		devicesList.add(new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device("Smartphone", "Hello", "abc123"));
-		devicesList.add(new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device("Computer", "Goodbye", "123abc"));
+		devicesList.add(
+				new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device("Smartphone", "Hello", "abc123"));
+		devicesList.add(
+				new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device("Computer", "Goodbye", "123abc"));
 		return devicesList;
 	}
 
@@ -170,7 +174,8 @@ class MusicRestTest {
 
 		Mockito.when(this.logic.search(this.musicEntity.toString(), SpotifyConstants.TYPE_TRACK, 5))
 				.thenReturn(playName);
-		Mockito.when(this.logic.convertSearchOutputToSingleString(this.logic.play(0, SearchTypes.NORMAL_SEARCH))).thenReturn("playName");
+		Mockito.when(this.stringGenerator.generateSearchOutputString(this.logic.play(0, SearchTypes.NORMAL_SEARCH)))
+				.thenReturn("playName");
 		Response response = this.target.path("music").path("play").request().post(entity);
 
 		assertThat(response.readEntity(String.class), is("playName"));

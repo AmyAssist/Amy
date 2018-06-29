@@ -85,14 +85,10 @@ class PlayerLogicTest {
 	@Mock
 	private Search search;
 
-	@Mock
-	private StringGenerator stringGenerator;
-
 	@BeforeEach
 	public void init() {
 		this.spotifyAPICalls = this.testFramework.mockService(SpotifyAPICalls.class);
 		this.search = this.testFramework.mockService(Search.class);
-		this.stringGenerator = this.testFramework.mockService(StringGenerator.class);
 		this.playerLogic = this.testFramework.setServiceUnderTest(PlayerLogic.class);
 		initDevices();
 		initCurrentTrack();
@@ -205,16 +201,6 @@ class PlayerLogicTest {
 	}
 
 	@Test
-	public void testConvertSearchOutputString() {
-		List<Map<String, String>> list = new ArrayList<>();
-		Map<String, String> map = new HashMap<>();
-		this.playerLogic.convertSearchOutputToSingleString(list);
-		verify(this.stringGenerator).generateSearchOutputString(list);
-		this.playerLogic.convertSearchOutputToSingleString(map);
-		verify(this.stringGenerator).generateSearchOutputString(map);
-	}
-
-	@Test
 	public void testPlayEmptyList() {
 		when(search.getFeaturedPlaylists()).thenReturn(new ArrayList<>());
 		assertThat(this.playerLogic.play().isEmpty(), equalTo(true));
@@ -238,7 +224,7 @@ class PlayerLogicTest {
 		this.playerLogic.play(0, SearchTypes.USER_PLAYLISTS);
 		verify(spotifyAPICalls).playListFromUri(ID1);
 	}
-	
+
 	@Test
 	public void testPlaySongFromASearchEmptyResult() {
 		this.playerLogic.play(0, SearchTypes.USER_PLAYLISTS);
@@ -342,7 +328,7 @@ class PlayerLogicTest {
 		assertThat(this.playerLogic.setVolume("downM"), equalTo(-1));
 		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
-	
+
 	@Test
 	public void testSetVolumeStringUnknownVolume() {
 		when(this.spotifyAPICalls.getVolume()).thenReturn(-1);

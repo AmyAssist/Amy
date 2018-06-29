@@ -56,6 +56,9 @@ public class MusicResource {
 
 	@Reference
 	private PlayerLogic logic;
+	
+	@Reference
+	private StringGenerator stringGenerator;
 
 	private MusicEntity musicEntity;
 	private Playlist playlist;
@@ -128,7 +131,7 @@ public class MusicResource {
 	public String play(MusicEntity music) {
 		this.musicEntity = music;
 		this.logic.search(this.musicEntity.toString(), SpotifyConstants.TYPE_TRACK, 5);
-		return this.logic.convertSearchOutputToSingleString(this.logic.play(0, SearchTypes.NORMAL_SEARCH));
+		return this.stringGenerator.generateSearchOutputString(this.logic.play(0, SearchTypes.NORMAL_SEARCH));
 	}
 
 	/**

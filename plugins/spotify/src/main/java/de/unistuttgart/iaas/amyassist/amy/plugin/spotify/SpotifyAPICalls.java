@@ -83,7 +83,8 @@ public class SpotifyAPICalls {
 	/**
 	 * Rules for the spotify user authentication e.g. access to the playcontrol
 	 */
-	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state,playlist-read-private";
+	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state,"
+			+ "playlist-read-private";
 	private String deviceID = null;
 
 	public static final String SPOTIFY_CLIENTSECRET_KEY = "spotify_clientSecret";
@@ -93,7 +94,7 @@ public class SpotifyAPICalls {
 	public static final String SPOTIFY_ACCESSTOKEN = "spotify_Accsesstoken";
 	public static final int TOKEN_EXPIRE_TIME_OFFSET = 120;
 	public static final String SPOTIFY_ERROR_TAG = "Spotify Exception:";
-	
+
 	@Reference
 	private ConfigLoader configLoader;
 
