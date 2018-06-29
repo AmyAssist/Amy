@@ -23,15 +23,17 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
-import java.io.File;
-import java.util.concurrent.CompletableFuture;
-
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import static uk.org.lidalia.slf4jtest.LoggingEvent.*;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.concurrent.CompletableFuture;
 
 import javax.sound.sampled.AudioInputStream;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -75,7 +77,7 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	 */
 	@BeforeEach
 	void setUp() {
-		this.logger = TestLoggerFactory.getTestLogger(MainSpeechRecognizer.class);
+		this.logger = TestLoggerFactory.getTestLogger(SpeechRecognizer.class);
 		this.ttsLogger = TestLoggerFactory.getTestLogger(TextToSpeech.class);
 
 		this.mainGrammar = new Grammar(this.mainGram,
@@ -111,7 +113,8 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	@Test
 	void testMakeDecision() {
 		this.recognizer = new MainSpeechRecognizer(this.aui, this.mainGrammar, this.handler, this.ais, false);
-		// assertThat(logger.getLoggingEvents(), contains(error("StreamRecognizer can't be instantiated")));
+		assertThat(this.logger,
+				hasLogged(error("StreamRecognizer can't be instantiated", instanceOf(FileNotFoundException.class))));
 
 		// empty input
 		this.recognizer.makeDecision(" ");
@@ -123,12 +126,12 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 
 		// known input
 		this.recognizer.makeDecision(this.known);
-		// assertThat(this.ttsLogger.getLoggingEvents(), contains(info("saying: {}", this.knownReturn)));
+		assertThat(this.ttsLogger, hasLogged(info("saying: {}", this.knownReturn)));
 
 		// change input
 		this.recognizer.makeDecision(this.change);
-		// assertThat(logger.getLoggingEvents(), contains(info("switching Recognizer...")));
-		// assertThat(logger.getLoggingEvents(), contains(info("stop current Recognizer to start the next")));
+		assertThat(this.logger, hasLogged(info("switching Recognizer...")));
+		assertThat(this.logger, hasLogged(info("stop current Recognizer to start the next")));
 
 	}
 
@@ -167,7 +170,7 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	@Test
 	void additionalSpecificPredefinedInputHandling() {
 		this.logger = TestLoggerFactory.getTestLogger(AdditionalSpeechRecognizer.class);
-		
+
 		this.recognizer = new AdditionalSpeechRecognizer(this.aui, this.mainGrammar, this.handler, this.ais, false);
 		Constants.setSRListening(SpeechRecognitionListening.AWAKE);
 
@@ -215,6 +218,11 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	 */
 	@Override
 	protected void predefinedInputHandling(String result) {
+	}
+
+	@AfterEach
+	void afterEach() {
+		TestLoggerFactory.clearAll();
 	}
 
 }
