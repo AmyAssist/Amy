@@ -23,30 +23,54 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
-import java.io.FileReader;
-
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 
+import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
- * Loads config files from config directoy
+ * Loads config files from config directory
  * 
  * @author Leon Kiefer
  */
-
 @Service
 public class ConfigurationLoader {
 
 	@Reference
 	private Logger logger;
+	@Reference
+	private Environment environment;
 
-	private static final String CONFIG_DIR = "apikeys";
+	@Reference
+	private CommandLineArgumentHandler cmaHandler;
+
+	private static final String DEFAULT_CONFIG_DIR = "config";
+	private Path configDir;
+
+	@PostConstruct
+	private void setup() {
+		String configDirS = DEFAULT_CONFIG_DIR;
+
+		String cmaConfigPath = this.cmaHandler.getConfigPath();
+		if (cmaConfigPath != null) {
+			configDirS = cmaConfigPath;
+		}
+
+		this.configDir = this.environment.getWorkingDirectory().resolve(configDirS);
+		if (!this.configDir.toFile().isDirectory()) {
+			this.logger.error("the configuration directory {} does not exists", this.configDir.toAbsolutePath());
+		}
+	}
 
 	/**
 	 * 
@@ -56,11 +80,30 @@ public class ConfigurationLoader {
 	 */
 	public Properties load(String configurationName) {
 		Properties properties = new Properties();
-		try (Reader reader = new FileReader(CONFIG_DIR + "/" + configurationName + ".properties")) {
+		Path path = this.configDir.resolve(configurationName + ".properties");
+
+		try (InputStream reader = Files.newInputStream(path)) {
 			properties.load(reader);
 		} catch (IOException e) {
 			this.logger.error("Error loading config file", e);
 		}
 		return properties;
+	}
+
+	/**
+	 * 
+	 * @param configurationName
+	 *            the name of the config file, without the .properties
+	 * @param properties
+	 *            the Properties to be saved
+	 */
+	public void store(String configurationName, Properties properties) {
+		Path path = this.configDir.resolve(configurationName + ".properties");
+
+		try (OutputStream outputStream = Files.newOutputStream(path)) {
+			properties.store(outputStream, null);
+		} catch (IOException e) {
+			this.logger.error("Error saving config file", e);
+		}
 	}
 }

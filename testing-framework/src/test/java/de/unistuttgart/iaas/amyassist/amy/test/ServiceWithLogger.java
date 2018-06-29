@@ -21,34 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
+package de.unistuttgart.iaas.amyassist.amy.test;
 
-import asg.cliche.Command;
-import de.unistuttgart.iaas.amyassist.amy.core.Configuration;
+import org.slf4j.Logger;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Command Line Interface for the PluginManager
+ * Service with a logger
  * 
  * @author Leon Kiefer
  */
-public class PluginManagerCLI {
+@Service
+public class ServiceWithLogger {
 	@Reference
-	private Configuration configuration;
+	private Logger logger;
 
-	@Command(name = "plugin:list", description = "a list of all installed plugins",
-			header = "Currently installed plugins are:")
-	public String plugins() {
-		return String.join("\n", this.configuration.getInstalledPlugins());
-	}
-
-	@Command(name = "plugin:version", description = "get the version of an installed plugin")
-	public String pluginVersion(String pluginName) {
-		return this.configuration.getPluginVersion(pluginName);
-	}
-
-	@Command(name = "plugin:description", description = "get the description of an installed plugin")
-	public String pluginDescription(String pluginName) {
-		return this.configuration.getPluginDescription(pluginName);
+	/**
+	 * Log the string
+	 * 
+	 * @param s
+	 */
+	public void log(String s) {
+		this.logger.info(s);
 	}
 }

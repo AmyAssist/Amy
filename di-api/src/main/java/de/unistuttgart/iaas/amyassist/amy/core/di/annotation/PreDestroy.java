@@ -21,36 +21,23 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.di.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Configuration of the application
+ * Declare a cleanup method. Methods annotated are called before the Serivce is destroyed. So the cleanup can be done in
+ * the method(close resources, save data). After the Service is destroyed no method is called and no other Service holds
+ * a reference to this Service.
  * 
  * @author Leon Kiefer
  */
-public interface Configuration {
-	/**
-	 * Get all plugin names
-	 * 
-	 * @return array of all names
-	 */
-	String[] getInstalledPlugins();
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Target(java.lang.annotation.ElementType.METHOD)
+public @interface PreDestroy {
 
-	/**
-	 * Get the version of a installed plugin
-	 * 
-	 * @param pluginName
-	 *            the name of the plugin
-	 * @return the version of the plugin
-	 */
-	String getPluginVersion(String pluginName);
-
-	/**
-	 * Get the description of a installed plugin
-	 * 
-	 * @param pluginName
-	 *            the name of the plugin
-	 * @return the description of the plugin
-	 */
-	String getPluginDescription(String pluginName);
 }

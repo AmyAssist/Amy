@@ -21,36 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.test;
 
 /**
- * Configuration of the application
+ * Empty interface
  * 
  * @author Leon Kiefer
  */
-public interface Configuration {
-	/**
-	 * Get all plugin names
-	 * 
-	 * @return array of all names
-	 */
-	String[] getInstalledPlugins();
+public interface ServiceAPI {
 
-	/**
-	 * Get the version of a installed plugin
-	 * 
-	 * @param pluginName
-	 *            the name of the plugin
-	 * @return the version of the plugin
-	 */
-	String getPluginVersion(String pluginName);
-
-	/**
-	 * Get the description of a installed plugin
-	 * 
-	 * @param pluginName
-	 *            the name of the plugin
-	 * @return the description of the plugin
-	 */
-	String getPluginDescription(String pluginName);
 }

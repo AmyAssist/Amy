@@ -24,33 +24,25 @@
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 /**
- * Configuration of the application
+ * The interface of our command line argument handler
  * 
- * @author Leon Kiefer
+ * @author Tim Neumann
  */
-public interface Configuration {
-	/**
-	 * Get all plugin names
-	 * 
-	 * @return array of all names
-	 */
-	String[] getInstalledPlugins();
+public interface CommandLineArgumentHandler {
 
 	/**
-	 * Get the version of a installed plugin
-	 * 
-	 * @param pluginName
-	 *            the name of the plugin
-	 * @return the version of the plugin
+	 * @return whether the program should continue with normal execution considering these command line flags
+	 * @throws IllegalStateException
+	 *             When the CommandLineArgumentHandler is not initialized. (When {@link #init(String[]) init} was not
+	 *             called before.)
 	 */
-	String getPluginVersion(String pluginName);
+	boolean shouldProgramContinue();
 
 	/**
-	 * Get the description of a installed plugin
+	 * Get the alternate config path set by the command line flags.
 	 * 
-	 * @param pluginName
-	 *            the name of the plugin
-	 * @return the description of the plugin
+	 * @return The alternate config path or null if none is set.
 	 */
-	String getPluginDescription(String pluginName);
+	String getConfigPath();
+
 }

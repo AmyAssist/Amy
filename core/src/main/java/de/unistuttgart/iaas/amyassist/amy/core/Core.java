@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -39,6 +39,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
@@ -59,10 +61,6 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
  * @author Tim Neumann, Leon Kiefer
  */
 public class Core implements SpeechInputHandler {
-	/**
-	 * The project directory.
-	 */
-	public static final File projectDir = new File(".").getAbsoluteFile().getParentFile();
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
@@ -74,6 +72,8 @@ public class Core implements SpeechInputHandler {
 	private SpeechCommandHandler speechCommandHandler;
 	private IStorage storage = new Storage("", new GlobalStorage());
 
+	private CommandLineArgumentHandlerService cmaHandler;
+
 	/**
 	 * The method executed by the main method
 	 *
@@ -81,9 +81,9 @@ public class Core implements SpeechInputHandler {
 	 *            The arguments for the core.
 	 */
 	void start(String[] args) {
-		CommandLineArgumentHandler cmaHandler = new CommandLineArgumentHandler();
-		cmaHandler.init(args);
-		if (cmaHandler.shouldProgramContinue()) {
+		this.cmaHandler = new CommandLineArgumentHandlerService();
+		this.cmaHandler.init(args);
+		if (this.cmaHandler.shouldProgramContinue()) {
 			run();
 		}
 	}
@@ -111,13 +111,15 @@ public class Core implements SpeechInputHandler {
 		console.setSpeechInputHandler(this);
 		this.threads.add(new Thread(console));
 
-		File resourceDir = new File(projectDir, "resources");
-		File grammarFile = new File(resourceDir, "/sphinx-grammars/grammar.gram");
+		Environment environment = this.di.getService(Environment.class);
 
-		this.speechCommandHandler.setFileToSaveGrammarTo(grammarFile);
+		Path grammarFile = environment.getWorkingDirectory().resolve("resources")
+				.resolve("sphinx-grammars/grammar.gram");
+
+		this.speechCommandHandler.setFileToSaveGrammarTo(grammarFile.toFile());
 
 		AudioUserInteraction aui = AudioUserInteraction.getAudioUI();
-		aui.setGrammars(new Grammar("grammar", grammarFile), null);
+		aui.setGrammars(new Grammar("grammar", grammarFile.toFile()), null);
 
 		SpeechIO sr = aui;
 		this.di.inject(sr);
@@ -138,6 +140,7 @@ public class Core implements SpeechInputHandler {
 		this.di.addExternalService(DependencyInjection.class, this.di);
 		this.di.addExternalService(Core.class, this);
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
+		this.di.addExternalService(CommandLineArgumentHandler.class, this.cmaHandler);
 
 		this.di.register(Logger.class, new LoggerProvider());
 		this.di.register(Properties.class, new PropertiesProvider());
@@ -149,6 +152,7 @@ public class Core implements SpeechInputHandler {
 		this.di.register(ConfigurationLoader.class);
 		this.di.register(PluginLoader.class);
 		this.di.register(PluginManager.class);
+		this.di.register(EnvironmentService.class);
 	}
 
 	/**

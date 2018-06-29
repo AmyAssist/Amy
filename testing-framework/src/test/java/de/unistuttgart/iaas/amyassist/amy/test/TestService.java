@@ -21,36 +21,16 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.test;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Configuration of the application
+ * Empty Test Service
  * 
  * @author Leon Kiefer
  */
-public interface Configuration {
-	/**
-	 * Get all plugin names
-	 * 
-	 * @return array of all names
-	 */
-	String[] getInstalledPlugins();
+@Service
+public class TestService {
 
-	/**
-	 * Get the version of a installed plugin
-	 * 
-	 * @param pluginName
-	 *            the name of the plugin
-	 * @return the version of the plugin
-	 */
-	String getPluginVersion(String pluginName);
-
-	/**
-	 * Get the description of a installed plugin
-	 * 
-	 * @param pluginName
-	 *            the name of the plugin
-	 * @return the description of the plugin
-	 */
-	String getPluginDescription(String pluginName);
 }

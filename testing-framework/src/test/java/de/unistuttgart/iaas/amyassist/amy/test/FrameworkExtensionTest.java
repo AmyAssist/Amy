@@ -21,34 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
+package de.unistuttgart.iaas.amyassist.amy.test;
 
-import asg.cliche.Command;
-import de.unistuttgart.iaas.amyassist.amy.core.Configuration;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * Command Line Interface for the PluginManager
+ * Test the Jupiter Extension
  * 
  * @author Leon Kiefer
  */
-public class PluginManagerCLI {
+@ExtendWith(FrameworkExtension.class)
+class FrameworkExtensionTest {
 	@Reference
-	private Configuration configuration;
+	private TestFramework framework;
 
-	@Command(name = "plugin:list", description = "a list of all installed plugins",
-			header = "Currently installed plugins are:")
-	public String plugins() {
-		return String.join("\n", this.configuration.getInstalledPlugins());
+	@Test
+	void test() {
+		assertThat(this.framework, is(notNullValue()));
 	}
 
-	@Command(name = "plugin:version", description = "get the version of an installed plugin")
-	public String pluginVersion(String pluginName) {
-		return this.configuration.getPluginVersion(pluginName);
-	}
-
-	@Command(name = "plugin:description", description = "get the description of an installed plugin")
-	public String pluginDescription(String pluginName) {
-		return this.configuration.getPluginDescription(pluginName);
-	}
 }
