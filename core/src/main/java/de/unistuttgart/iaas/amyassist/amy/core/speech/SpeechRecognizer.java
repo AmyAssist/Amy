@@ -200,19 +200,20 @@ public abstract class SpeechRecognizer implements Runnable {
 
 		if (!checkGrammarSwitch(result) && !Thread.interrupted() && this.inputHandler != null) {
 			Future<String> handle = this.inputHandler.handle(result);
+			String unknown = "unknown command";
 			try {
 				this.say(handle.get());
 			} catch (ExecutionException e) {
 				if (e.getCause() != null && e.getCause().getClass().equals(IllegalArgumentException.class)) {
-					this.say("unknown command");
-					this.logger.warn("unknown command");
+					this.say(unknown);
+					this.logger.warn(unknown);
 				} else {
 					this.logger.error("unknown error", e);
 				}
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			} catch (NullPointerException e) {
-				this.say("unknown command");
+				this.say(unknown);
 				this.logger.error("no handle return", e);
 			}
 		}
