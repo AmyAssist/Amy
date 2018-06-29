@@ -29,7 +29,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
  * The main entry point of the application
- * 
+ *
  * @author Tim Neumann, Leon Kiefer
  */
 public class Main {
@@ -44,12 +44,12 @@ public class Main {
 
 	/**
 	 * The main entry point of the program
-	 * 
+	 *
 	 * @param args
-	 *            [not used] The command line arguments
+	 *            The command line arguments. Will be passed to the core.
 	 */
 	public static void main(String[] args) {
 		Core core = new Core();
-		core.run();
+		core.start(args);
 	}
 }

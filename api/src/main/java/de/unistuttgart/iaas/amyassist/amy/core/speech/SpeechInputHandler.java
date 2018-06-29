@@ -34,8 +34,7 @@ public interface SpeechInputHandler {
 	 * 
 	 * @param speechInput
 	 *            the user input
-	 * @return a Future, that completes with the result of processing the user
-	 *         input
+	 * @return a Future, that completes with the result of processing the user input
 	 */
 	Future<String> handle(String speechInput);
 }

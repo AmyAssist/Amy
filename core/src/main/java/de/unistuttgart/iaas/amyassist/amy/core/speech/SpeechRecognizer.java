@@ -55,7 +55,7 @@ public abstract class SpeechRecognizer implements Runnable {
 	// Grammar of the Current running Recognizer
 	private Grammar grammar;
 
-	// The Grammar to switch to, null for Ending all Recognition
+	// The Grammar to switch to, null for Ending all Recognitio
 	private Grammar nextGrammar = null;
 
 	// The Input Stream Source

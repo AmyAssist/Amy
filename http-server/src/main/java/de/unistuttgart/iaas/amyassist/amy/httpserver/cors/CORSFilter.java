@@ -45,60 +45,57 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @PreMatching
 public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilter {
-	
+
 	private static final String OPTIONS = "OPTIONS";
 	private static final String ACCESS_DENIED = "access.denied";
-	
+
 	private static final String ALLOWED_ORIGIN = "https://amyassist.github.io";
-	private static final String ALLOWED_HEADERS = "Content-Type";
-	private static final String ALLOWED_METHODS = "GET, POST";
-	
-	
+	private static final String ALLOWED_HEADERS = "Content-Type, " + Headers.XOPTIONS;
+	private static final String ALLOWED_METHODS = "GET, POST, OPTIONS, DELETE";
+
 	@Override
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
 			throws IOException {
 		String origin = requestContext.getHeaderString(Headers.ORIGIN);
-		if(origin == null || requestContext.getMethod().equalsIgnoreCase(OPTIONS) 
+		if (origin == null || requestContext.getMethod().equalsIgnoreCase(OPTIONS)
 				|| requestContext.getProperty(ACCESS_DENIED) != null) {
-			//do nothing, either it isn't a cors request or an options call or already failed
+			// do nothing, either it isn't a cors request or an options call or already failed
 			return;
 		}
 		responseContext.getHeaders().putSingle(Headers.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
 		responseContext.getHeaders().putSingle(Headers.VARY, Headers.ORIGIN);
 	}
-	
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		String origin = requestContext.getHeaderString(Headers.ORIGIN);
-		if(origin != null) {
-			if(requestContext.getMethod().equalsIgnoreCase(OPTIONS)) {
-				preflight(requestContext,origin);
+		if (origin != null) {
+			if (requestContext.getMethod().equalsIgnoreCase(OPTIONS)
+					&& requestContext.getHeaderString(Headers.XOPTIONS) == null) {
+				preflight(requestContext, origin);
 			} else {
-				checkOrigin(requestContext,origin);
+				checkOrigin(requestContext, origin);
 			}
 		}
 	}
 
-
 	private void preflight(ContainerRequestContext requestContext, String origin) {
 		checkOrigin(requestContext, origin);
-		
+
 		ResponseBuilder builder = Response.ok();
 		builder.header(Headers.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
 		builder.header(Headers.ACCESS_CONTROL_ALLOW_HEADERS, ALLOWED_HEADERS);
 		builder.header(Headers.ACCESS_CONTROL_ALLOW_METHODS, ALLOWED_METHODS);
-		
+
 		requestContext.abortWith(builder.build());
-		
+
 	}
 
-
 	private void checkOrigin(ContainerRequestContext requestContext, String origin) {
-		if(!origin.equals(ALLOWED_ORIGIN)) {
-			requestContext.setProperty(ACCESS_DENIED, true);
+		if (!origin.equals(ALLOWED_ORIGIN)) {
+			requestContext.setProperty(ACCESS_DENIED, Boolean.TRUE);
 			throw new WebApplicationException(origin + " not allowed", Status.FORBIDDEN);
 		}
-		
+
 	}
 }

@@ -147,6 +147,12 @@ class DependencyInjectionTest {
 	}
 
 	@Test()
+	void testCreateAndInitializeServicePostConstruct() {
+		Service18 service18 = this.dependencyInjection.createAndInitialize(Service18.class);
+		assertThat(service18.setup, is(true));
+	}
+
+	@Test()
 	void testCreateService() {
 		Service2 s2 = this.dependencyInjection.create(Service2.class);
 		assertThat(s2.getService3(), nullValue());

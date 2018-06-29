@@ -32,5 +32,5 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  */
 @Service(Integer.class)
 public class Service17 {
-	
+
 }

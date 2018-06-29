@@ -23,40 +23,62 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+
+@Service(ConfigLoader.class)
 public class ConfigLoader {
 
+	@Reference
+	private Logger logger;
 	private Properties p;
+	private static final String FILE_PATH = "apikeys/spotify_config.properties";
 
-	public ConfigLoader() {
+	/**
+	 * this class save a config file with different keys
+	 */
+	@PostConstruct
+	public void init() {
 		p = new Properties();
 
 	}
 
+	/**
+	 * get a value with the given key
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public String get(String s) {
 		try {
-			p.load(new FileReader("apikeys/spotify_config.properties"));
+			p.load(new FileReader(FILE_PATH));
 			return p.getProperty(s);
 		} catch (IOException e) {
-			System.err.println("Error loading config file for spotify plugin");
-			e.printStackTrace();
+			logger.warn("Error loading config file for spotify plugin");
 			return null;
 		}
-
 	}
 
+	/**
+	 * set a value with the given key
+	 * 
+	 * @param key
+	 * @param value
+	 */
 	public void set(String key, String value) {
 		p.setProperty(key, value);
 		try {
-			p.store(new FileWriter("apikeys/spotify_config.properties"), "Spotify Plugin");
+			p.store(new FileWriter(FILE_PATH), "Spotify Plugin");
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.warn(e.getMessage());
 		}
 	}
-
 }

@@ -45,8 +45,7 @@ public interface IStorage {
 	 * 
 	 * @param key
 	 *            The key of the data to return
-	 * @return the value of the data
-	 *             when the given key is not set
+	 * @return the value of the data when the given key is not set
 	 */
 	String get(String key);
 

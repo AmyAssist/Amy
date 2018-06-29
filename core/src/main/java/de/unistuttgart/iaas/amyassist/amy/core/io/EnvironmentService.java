@@ -21,39 +21,31 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
+package de.unistuttgart.iaas.amyassist.amy.core.io;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import org.slf4j.Logger;
 
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Properties;
-
+/**
+ * The Service implementation of the Environment
+ * 
+ * @author Leon Kiefer
+ */
 @Service
-public class ConfigLoader {
+public class EnvironmentService implements Environment {
 
-    @Reference
-    private Logger logger;
+	private Path workingDirectory;
 
-    private Properties p;
+	@PostConstruct
+	private void init() {
+		this.workingDirectory = Paths.get("");
+	}
 
-    @PostConstruct
-    public void init() {
-        p = new Properties();
-        try {
-            p.load(new FileReader("apikeys/weather_config.properties"));
-        } catch (IOException e) {
-            logger.error("Error loading config file for weather plugin", e);
-            e.printStackTrace();
-        }
-    }
-
-    public String get(String s) {
-        return p.getProperty(s);
-    }
+	@Override
+	public Path getWorkingDirectory() {
+		return this.workingDirectory;
+	}
 }

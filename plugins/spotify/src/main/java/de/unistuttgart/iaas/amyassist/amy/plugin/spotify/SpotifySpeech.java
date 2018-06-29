@@ -29,6 +29,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device;
 
 /**
  * this class handle the speech commands from the spotify plugin
@@ -53,20 +54,20 @@ public class SpotifySpeech {
 	 */
 	@Grammar("get devices")
 	public String getDevices(String... params) {
-		List<String> devices = this.playerLogic.getDevices();
+		List<Device> devices = this.playerLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
-			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i));
+			output = output.concat(String.valueOf(i)).concat(". ")
+					.concat(devices.get(i).getName().concat("\n"));
 		}
 		if (output.equals("")) {
-			return "no deivce found";
+			return "no device found";
 		}
 		return output;
 	}
 
 	/**
-	 * set the device in the player logic # is a number between 0 and theoretically
-	 * infinite
+	 * set the device in the player logic # is a number between 0 and theoretically infinite
 	 * 
 	 * @param params
 	 * 
@@ -104,7 +105,7 @@ public class SpotifySpeech {
 
 	@Grammar("pause")
 	public String pause(String... params) {
-		if (this.playerLogic.pausePlayback()) {
+		if (this.playerLogic.pause()) {
 			return "pause";
 		}
 		return ERROR_MESSAGE;
