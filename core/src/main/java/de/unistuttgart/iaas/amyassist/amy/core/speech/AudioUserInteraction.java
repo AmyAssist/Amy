@@ -100,12 +100,12 @@ public class AudioUserInteraction implements SpeechIO {
 		if (grammar == null) {
 			this.logger.info("all Recognition stopped");
 		} else if (grammar.getName().equals(this.mainGrammar.getName())) {
-			this.logger.info("Recognizer {} started", this.mainGrammar.getName());
+			this.logger.info("Switching to Recognizer {}", this.mainGrammar.getName());
 			this.currentRecognizer = new Thread(this.mainRecognizer);
 			this.recognitionThreadRunning = true;
 			this.currentRecognizer.start();
 		} else {
-			this.logger.info("Recognizer {} started", this.recognizerList.get(grammar.getName()));
+			this.logger.info("Switching to Recognizer {}", this.recognizerList.get(grammar.getName()));
 			this.currentRecognizer = new Thread(this.recognizerList.get(grammar.getName()));
 			this.recognitionThreadRunning = true;
 			this.currentRecognizer.start();

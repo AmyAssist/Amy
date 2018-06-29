@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.org.lidalia.slf4jtest.LoggingEvent.*;
 
 import java.io.File;
@@ -62,6 +63,7 @@ class AudioUserInteractionTest {
 	 */
 	@BeforeEach
 	void setUp() {
+		
 		this.aui = new AudioUserInteraction();
 		this.aui.setVoiceOutput(false);
 		this.mainGrammar = new Grammar(this.mainGram,
@@ -107,6 +109,7 @@ class AudioUserInteractionTest {
 	@Test
 	void testRun() {
 		TestLogger logger = TestLoggerFactory.getTestLogger(AudioUserInteraction.class);
+		TestLogger srLogger = TestLoggerFactory.getTestLogger(SpeechRecognizer.class);
 		
 		//SetUp
 		this.aui.setGrammars(this.mainGrammar, this.switchGrammar);
@@ -128,7 +131,7 @@ class AudioUserInteractionTest {
 		this.aui.switchGrammar(this.mainGrammar);
 		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(true)));
 //		assertThat(logger.getLoggingEvents(),
-//				contains(info("Recognizer {} started", this.mainGrammar.getName())));
+//				contains(info("Switching to Recognizer {}", this.mainGrammar.getName())));
 		
 		//setup
 		this.aui.setRecognitionThreadRunning(false);
@@ -138,16 +141,26 @@ class AudioUserInteractionTest {
 		this.aui.switchGrammar(this.addGrammar);
 		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(true)));
 //		assertThat(logger.getLoggingEvents(),
-//				contains(info("Recognizer {} started", this.addGrammar.getName())));
+//				contains(info("Switching to Recognizer {}", this.addGrammar.getName())));
 		
 		/*
 		 * test run()
 		 */
+		//SetUp
+		this.aui = new AudioUserInteraction();
+		this.aui.setVoiceOutput(false);
+		this.aui.setGrammars(this.mainGrammar, this.switchGrammar);
+		this.aui.setRecognitionThreadRunning(false);
+		
 		//test trying to start without enough input
 		this.aui.run();
-		System.out.println(logger.getLoggingEvents().toString());
 //		assertThat(logger.getLoggingEvents(),
 //				contains(error("Not enough Data to start the Recognition - InputHandler not Set")));
+		assertNull(this.aui.getCurrentRecognizer());
+		this.aui.setSpeechInputHandler(this.handler);
+		this.aui.run();
+		assertThat(srLogger.getLoggingEvents(),
+				contains(info("[INFORMATION] :: Speech Recognition activated")));
 	}
 
 	private class TestInputHandler implements SpeechInputHandler {
