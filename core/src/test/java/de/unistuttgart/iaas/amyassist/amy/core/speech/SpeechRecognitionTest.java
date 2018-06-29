@@ -87,7 +87,7 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 		this.addGrammar = new Grammar(this.addGram,
 				new File(new File(this.folder, this.grammarDir), this.addGram + ".gram"));
 		this.mainGrammar.putChangeGrammar(this.change, this.addGrammar);
-		this.aui = Mockito.mock(AudioUserInteraction.class);
+		this.aui = new AudioUserInteraction();
 		this.handler = Mockito.mock(SpeechInputHandler.class);
 		this.ais = Mockito.mock(AudioInputStream.class);
 
