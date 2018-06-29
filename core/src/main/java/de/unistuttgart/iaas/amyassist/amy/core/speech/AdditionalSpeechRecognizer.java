@@ -54,18 +54,18 @@ public class AdditionalSpeechRecognizer extends SpeechRecognizer {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#predefinedInputHandling()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#predefinedInputHandling(String result)
 	 */
 	@Override
-	protected void predefinedInputHandling() {
-		if (this.speechRecognitionResult.equals(Constants.SHUT_UP)) {
+	protected void predefinedInputHandling(String result) {
+		if (result.equals(Constants.SHUT_UP)) {
 			this.tts.stopOutput();
-		} else if (this.speechRecognitionResult.equals(Constants.GO_SLEEP)) {
-			Constants.setSRListening(false);
+		} else if (result.equals(Constants.GO_SLEEP)) {
+			Constants.setSRListening(SpeechRecognitionListening.ASLEEP);
 			say("now sleeping");
 			this.stop(this.audioUI.mainGrammar);
 		} else {
-			makeDecision(this.speechRecognitionResult);
+			makeDecision(result);
 		}
 	}
 

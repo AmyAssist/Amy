@@ -23,36 +23,35 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
-import org.junit.jupiter.api.Test;
-
-import uk.org.lidalia.slf4jtest.TestLogger;
-import uk.org.lidalia.slf4jtest.TestLoggerFactory;
+import javax.sound.sampled.LineListener;
 
 /**
- * Test Class for the Text To Speech Output class
+ * Interface for the TextToSpeech
  * 
  * @author Kai Menzel
  */
-class TextToSpeechTest {
+public interface VoiceOutput {
 
 	/**
-	 * tts Object
+	 * Method to Voice and Log output the input String
+	 * 
+	 * @param listener
+	 *            Listener for the Voice Output Clip
+	 * @param s
+	 *            String that shall be said
 	 */
-	TextToSpeech tts;
+	void say(LineListener listener, String s);
 
 	/**
-	 * test Logging
+	 * Method to Log output the input String
+	 * 
+	 * @param s
+	 *            String that shall be logged
 	 */
-	@Test
-	void test() {
-		this.tts = TextToSpeech.getTTS();
-		TestLogger logger = TestLoggerFactory.getTestLogger(TextToSpeech.class);
-		assertThat(this.tts == null, equalTo(false));
-		this.tts.log("hello");
-		// assertThat(logger.getLoggingEvents(), contains(info("hello")));
-	}
+	void log(String s);
 
+	/**
+	 * stop the OutputClip
+	 */
+	void stopOutput();
 }

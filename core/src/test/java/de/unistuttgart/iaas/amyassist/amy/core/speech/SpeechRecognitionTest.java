@@ -40,10 +40,6 @@ import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 /**
- * TODO: Description
- * @author
- */
-/**
  * Test Class for the Speech Recognition Systems extending the to be tested Class to gain acces to protected Variabels
  * 
  * @author Kai Menzel
@@ -79,7 +75,7 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	 */
 	@BeforeEach
 	void setUp() {
-		this.logger = TestLoggerFactory.getTestLogger(SpeechRecognizer.class);
+		this.logger = TestLoggerFactory.getTestLogger(MainSpeechRecognizer.class);
 		this.ttsLogger = TestLoggerFactory.getTestLogger(TextToSpeech.class);
 
 		this.mainGrammar = new Grammar(this.mainGram,
@@ -134,11 +130,6 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 		// assertThat(logger.getLoggingEvents(), contains(info("switching Recognizer...")));
 		// assertThat(logger.getLoggingEvents(), contains(info("stop current Recognizer to start the next")));
 
-		// error output
-		this.recognizer.makeDecision(this.unknownError);
-		// assertThat(this.ttsLogger.getLoggingEvents(), contains(info("saying: {}", "unknown command")));
-		// assertThat(this.logger.getLoggingEvents(), contains(error("no handle return")));
-
 	}
 
 	/**
@@ -148,29 +139,24 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	void mainSpecificPredefinedInputHandling() {
 		this.recognizer = new MainSpeechRecognizer(this.aui, this.mainGrammar, this.handler, this.ais, false);
 
-		assertThat(new Boolean(Constants.isSRListening()), equalTo(new Boolean(false)));
-		this.recognizer.speechRecognitionResult = Constants.WAKE_UP;
-		this.recognizer.predefinedInputHandling();
-		assertThat(new Boolean(Constants.isSRListening()), equalTo(new Boolean(true)));
+		assertThat(Constants.isSRListening(), equalTo(SpeechRecognitionListening.ASLEEP));
+		this.recognizer.predefinedInputHandling(Constants.WAKE_UP);
+		assertThat(Constants.isSRListening(), equalTo(SpeechRecognitionListening.AWAKE));
 		// assertThat(this.ttsLogger.getLoggingEvents(), contains(info("waking up")));
 
-		this.recognizer.speechRecognitionResult = Constants.GO_SLEEP;
-		this.recognizer.predefinedInputHandling();
-		assertThat(new Boolean(Constants.isSRListening()), equalTo(new Boolean(false)));
+		this.recognizer.predefinedInputHandling(Constants.GO_SLEEP);
+		assertThat(Constants.isSRListening(), equalTo(SpeechRecognitionListening.ASLEEP));
 		// assertThat(this.ttsLogger.getLoggingEvents(), contains(info("now sleeping")));
 
-		this.recognizer.speechRecognitionResult = this.known;
-		this.recognizer.predefinedInputHandling();
+		this.recognizer.predefinedInputHandling(this.known);
 		// test no log?
 
-		assertThat(new Boolean(Constants.isSRListening()), equalTo(new Boolean(false)));
-		this.recognizer.speechRecognitionResult = Constants.WAKE_UP;
-		this.recognizer.predefinedInputHandling();
-		assertThat(new Boolean(Constants.isSRListening()), equalTo(new Boolean(true)));
+		assertThat(Constants.isSRListening(), equalTo(SpeechRecognitionListening.ASLEEP));
+		this.recognizer.predefinedInputHandling(Constants.WAKE_UP);
+		assertThat(Constants.isSRListening(), equalTo(SpeechRecognitionListening.AWAKE));
 		// assertThat(this.ttsLogger.getLoggingEvents(), contains(info("waking up")));
 
-		this.recognizer.speechRecognitionResult = this.known;
-		this.recognizer.predefinedInputHandling();
+		this.recognizer.predefinedInputHandling(this.known);
 		// assertThat(this.ttsLogger.getLoggingEvents(), contains(info("saying: {}", this.knownReturn)));
 
 	}
@@ -180,16 +166,16 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	 */
 	@Test
 	void additionalSpecificPredefinedInputHandling() {
+		this.logger = TestLoggerFactory.getTestLogger(AdditionalSpeechRecognizer.class);
+		
 		this.recognizer = new AdditionalSpeechRecognizer(this.aui, this.mainGrammar, this.handler, this.ais, false);
-		Constants.setSRListening(true);
+		Constants.setSRListening(SpeechRecognitionListening.AWAKE);
 
-		this.recognizer.speechRecognitionResult = this.known;
-		this.recognizer.predefinedInputHandling();
+		this.recognizer.predefinedInputHandling(this.known);
 		// assertThat(this.ttsLogger.getLoggingEvents(), contains(info("saying: {}", this.knownReturn)));
 
-		this.recognizer.speechRecognitionResult = Constants.GO_SLEEP;
-		this.recognizer.predefinedInputHandling();
-		assertThat(new Boolean(Constants.isSRListening()), equalTo(new Boolean(false)));
+		this.recognizer.predefinedInputHandling(Constants.GO_SLEEP);
+		assertThat(Constants.isSRListening(), equalTo(SpeechRecognitionListening.ASLEEP));
 		// assertThat(this.ttsLogger.getLoggingEvents(), contains(info("now sleeping")));
 		// assertThat(logger.getLoggingEvents(), contains(info("stop current Recognizer to start the next")));
 	}
@@ -202,9 +188,9 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	void testStopAllRecognition() {
 		this.recognizer = new MainSpeechRecognizer(this.aui, null, this.handler, this.ais, false);
 		this.aui.setRecognitionThreadRunning(true);
-		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(true)));
+		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(true));
 		this.recognizer.stop();
-		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(false)));
+		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(false));
 	}
 
 	/**
@@ -228,7 +214,7 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	 * @Override extending the to be tested Class to gain acces to protected Variabels
 	 */
 	@Override
-	protected void predefinedInputHandling() {
+	protected void predefinedInputHandling(String result) {
 	}
 
 }

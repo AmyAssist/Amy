@@ -23,8 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 import java.io.File;
 import java.util.HashMap;
@@ -34,39 +34,45 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Test Class for the Grammar Object
+ * 
  * @author Kai Menzel
  */
 class GrammarTest {
-	
-	File file1;
-	File file2;
-	
-	String mainGrammar;
-	String notMainGrammar;
-	
-	HashMap<String, Grammar> gramList;
-	
-	
+
+	private File file1;
+	private File file2;
+
+	private String mainGrammar;
+	private String notMainGrammar;
+
+	private HashMap<String, Grammar> gramList;
+
+	/**
+	 * Data setup for the tests
+	 */
 	@BeforeEach
 	void setup() {
-		file1 = new File("resources/one");
-		file2 = new File("resources/two");
-		
-		mainGrammar = "mainGrammar";
-		notMainGrammar = "notMainGrammar";
-		
-		gramList = new HashMap<>();
+		this.file1 = new File("resources/one");
+		this.file2 = new File("resources/two");
+
+		this.mainGrammar = "mainGrammar";
+		this.notMainGrammar = "notMainGrammar";
+
+		this.gramList = new HashMap<>();
 	}
-	
-	
-	
+
+	/**
+	 * test the gramlist funktion
+	 */
 	void setGramList() {
 		assertThat(this.gramList.isEmpty(), equalTo(true));
 		this.gramList.put(this.mainGrammar, new Grammar(this.mainGrammar, this.file1));
 		assertThat(this.gramList.isEmpty(), equalTo(false));
 	}
 
-	
+	/**
+	 * test the Constructor
+	 */
 	@Test
 	void testSimpleConstrucor() {
 		Grammar gram = new Grammar(this.mainGrammar, this.file1);
@@ -75,56 +81,62 @@ class GrammarTest {
 		assertThat(gram.getSwitchList(), equalTo(this.gramList));
 	}
 
-	
+	/**
+	 * Test Getter and Setter
+	 */
 	@Test
 	void testGetterAndSetter() {
 		Grammar gram = new Grammar(this.mainGrammar, this.file1);
 		assertThat(gram.getName(), equalTo(this.mainGrammar));
 		assertThat(gram.getFile(), equalTo(this.file1));
 		assertThat(gram.getSwitchList(), equalTo(this.gramList));
-		
+
 		setGramList();
-		
+
 		gram.setName(this.notMainGrammar);
 		gram.setFile(this.file2);
 		gram.setSwitchList(this.gramList);
-		
+
 		assertThat(gram.getName(), equalTo(this.notMainGrammar));
 		assertThat(gram.getFile(), equalTo(this.file2));
 		assertThat(gram.getSwitchList(), equalTo(this.gramList));
 	}
 
-
+	/**
+	 * Test Constructors
+	 */
 	@Test
 	void testComplexConstructor() {
 		Grammar gram = new Grammar(this.mainGrammar, this.file1, this.gramList);
 		assertThat(gram.getName(), equalTo(this.mainGrammar));
 		assertThat(gram.getFile(), equalTo(this.file1));
 		assertThat(gram.getSwitchList(), equalTo(this.gramList));
-		
+
 		gram = null;
 		setGramList();
-		
+
 		gram = new Grammar(this.mainGrammar, this.file1, this.gramList);
 		assertThat(gram.getName(), equalTo(this.mainGrammar));
 		assertThat(gram.getFile(), equalTo(this.file1));
 		assertThat(gram.getSwitchList(), equalTo(this.gramList));
 	}
-	
+
+	/**
+	 * test SwitchGrammars
+	 */
 	@Test
 	void testPutSwitchGrammar() {
 		Grammar gram = new Grammar(this.mainGrammar, this.file1, this.gramList);
 		assertThat(gram.getName(), equalTo(this.mainGrammar));
 		assertThat(gram.getFile(), equalTo(this.file1));
 		assertThat(gram.getSwitchList(), equalTo(this.gramList));
-		
+
 		gram.putChangeGrammar(this.mainGrammar, new Grammar(this.mainGrammar, this.file1));
 		this.gramList.put(this.mainGrammar, new Grammar(this.mainGrammar, this.file1));
-		
+
 		assertThat(gram.getName(), equalTo(this.mainGrammar));
 		assertThat(gram.getFile(), equalTo(this.file1));
 		assertThat(gram.getSwitchList(), equalTo(this.gramList));
 	}
-	
 
 }

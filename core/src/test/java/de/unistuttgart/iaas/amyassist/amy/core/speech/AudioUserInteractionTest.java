@@ -60,7 +60,7 @@ class AudioUserInteractionTest {
 	private Grammar addGrammar;
 	private List<Grammar> switchGrammar;
 	private SpeechInputHandler handler;
-	
+
 	private AudioInputStream ais;
 
 	/**
@@ -86,7 +86,7 @@ class AudioUserInteractionTest {
 	 */
 	@Test
 	void testGetterSetter() {
-		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(false)));
+		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(false));
 		assertThat(this.aui.getCurrentRecognizer(), equalTo(null));
 		assertThat(this.aui.getMainGrammar(), equalTo(null));
 		assertThat(this.aui.getSwitchableGrammars(), equalTo(null));
@@ -97,7 +97,7 @@ class AudioUserInteractionTest {
 		this.aui.setRecognitionThreadRunning(true);
 		this.aui.setGrammars(this.mainGrammar, null);
 
-		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(true)));
+		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(true));
 		assertThat(this.aui.getCurrentRecognizer(), equalTo(null));
 		assertThat(this.aui.getMainGrammar(), equalTo(this.mainGrammar));
 		assertThat(this.aui.getSwitchableGrammars(), equalTo(null));
@@ -109,47 +109,13 @@ class AudioUserInteractionTest {
 	}
 
 	/**
-	 * Tests the semantic Components of the AudioUserInteraction
+	 * Tests the run method of the AudioUserInteraction
 	 */
 	@Test
 	void testRun() {
 		TestLogger logger = TestLoggerFactory.getTestLogger(AudioUserInteraction.class);
 		TestLogger srLogger = TestLoggerFactory.getTestLogger(SpeechRecognizer.class);
 
-		// SetUp
-		this.aui.setGrammars(this.mainGrammar, this.switchGrammar);
-		this.aui.setRecognitionThreadRunning(false);
-
-		/*
-		 * test Grammar switch
-		 */
-		// check that no thread is running
-		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(false)));
-
-		// Test switching to no new grammar (ending recognition)
-		this.aui.switchGrammar(null);
-		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(false)));
-		// assertThat(logger.getLoggingEvents(), contains(info("all Recognition stopped")));
-
-		// Test switching to the mainGrammar
-		this.aui.switchGrammar(this.mainGrammar);
-		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(true)));
-		// assertThat(logger.getLoggingEvents(),
-		// contains(info("Switching to Recognizer {}", this.mainGrammar.getName())));
-
-		// setup
-		this.aui.setRecognitionThreadRunning(false);
-		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(false)));
-
-		// Test switching to an additional grammar
-		this.aui.switchGrammar(this.addGrammar);
-		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(true)));
-		// assertThat(logger.getLoggingEvents(),
-		// contains(info("Switching to Recognizer {}", this.addGrammar.getName())));
-
-		/*
-		 * test run()
-		 */
 		// SetUp
 		this.aui = new AudioUserInteraction();
 		this.aui.setAudioInputStream(this.ais);
@@ -162,13 +128,51 @@ class AudioUserInteractionTest {
 		// assertThat(logger.getLoggingEvents(),
 		// contains(error("Not enough Data to start the Recognition - InputHandler not Set")));
 		assertNull(this.aui.getCurrentRecognizer());
-		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(false)));
+		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(false));
 
 		this.aui.setSpeechInputHandler(this.handler);
 		this.aui.run();
 		// assertThat(srLogger.getLoggingEvents(), contains(error("StreamRecognizer can't be instantiated")));
 		assertNotNull(this.aui.getCurrentRecognizer());
-		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(true)));
+		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(true));
+	}
+
+	/**
+	 * Tests the grammar switch fuction
+	 */
+	@Test
+	void testGrammarSwitch() {
+
+		// SetUp
+		this.aui.setGrammars(this.mainGrammar, this.switchGrammar);
+		this.aui.setRecognitionThreadRunning(false);
+
+		/*
+		 * test Grammar switch
+		 */
+		// check that no thread is running
+		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(false));
+
+		// Test switching to no new grammar (ending recognition)
+		this.aui.switchGrammar(null);
+		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(false));
+		// assertThat(logger.getLoggingEvents(), contains(info("all Recognition stopped")));
+
+		// Test switching to the mainGrammar
+		this.aui.switchGrammar(this.mainGrammar);
+		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(true));
+		// assertThat(logger.getLoggingEvents(),
+		// contains(info("Switching to Recognizer {}", this.mainGrammar.getName())));
+
+		// setup
+		this.aui.setRecognitionThreadRunning(false);
+		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(false));
+
+		// Test switching to an additional grammar
+		this.aui.switchGrammar(this.addGrammar);
+		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(true));
+		// assertThat(logger.getLoggingEvents(),
+		// contains(info("Switching to Recognizer {}", this.addGrammar.getName())));
 	}
 
 }

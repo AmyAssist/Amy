@@ -52,14 +52,14 @@ public class Constants {
 	 * STATIC VARIABEL
 	 * Information for The System to turn down sound true if the SR is currently listening
 	 */
-	private static boolean isSRListening = false;
+	private static SpeechRecognitionListening isSRListening = SpeechRecognitionListening.ASLEEP;
 	
 
 	/**
 	 * Get's {@link #isSRListening sRisListening}
 	 * @return  sRisListening
 	 */
-	public static boolean isSRListening() {
+	public static SpeechRecognitionListening isSRListening() {
 		return isSRListening;
 	}
 
@@ -67,7 +67,7 @@ public class Constants {
 	 * Set's {@link #isSRListening sRisListening}
 	 * @param sRisListening  sRisListening
 	 */
-	protected static void setSRListening(boolean sRisListening) {
+	protected static void setSRListening(SpeechRecognitionListening sRisListening) {
 		isSRListening = sRisListening;
 	}
 	

@@ -54,24 +54,24 @@ public class MainSpeechRecognizer extends SpeechRecognizer {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#predefinedInputHandling()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#predefinedInputHandling(String result)
 	 */
 	@Override
-	protected void predefinedInputHandling() {
-		if (this.speechRecognitionResult.equals(Constants.SHUT_UP)) {
+	protected void predefinedInputHandling(String result) {
+		if (result.equals(Constants.SHUT_UP)) {
 			this.tts.stopOutput();
-		} else if (this.speechRecognitionResult.equals(Constants.WAKE_UP)) {
-			Constants.setSRListening(true);
+		} else if (result.equals(Constants.WAKE_UP)) {
+			Constants.setSRListening(SpeechRecognitionListening.AWAKE);
 			say("waking up");
-		} else if (this.speechRecognitionResult.startsWith(Constants.WAKE_UP + " ")) {
-			Constants.setSRListening(true);
-			this.makeDecision(this.speechRecognitionResult.replaceFirst(Constants.WAKE_UP + " ", ""));
-		} else if (Constants.isSRListening()) {
-			if (this.speechRecognitionResult.equals(Constants.GO_SLEEP)) {
-				Constants.setSRListening(false);
+		} else if (result.startsWith(Constants.WAKE_UP + " ")) {
+			Constants.setSRListening(SpeechRecognitionListening.AWAKE);
+			this.makeDecision(result.replaceFirst(Constants.WAKE_UP + " ", ""));
+		} else if (Constants.isSRListening() == SpeechRecognitionListening.AWAKE) {
+			if (result.equals(Constants.GO_SLEEP)) {
+				Constants.setSRListening(SpeechRecognitionListening.ASLEEP);
 				say("now sleeping");
 			} else {
-				this.makeDecision(this.speechRecognitionResult);
+				this.makeDecision(result);
 			}
 		}
 	}

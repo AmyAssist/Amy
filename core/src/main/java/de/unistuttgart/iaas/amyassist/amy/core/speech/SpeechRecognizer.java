@@ -53,7 +53,7 @@ public abstract class SpeechRecognizer implements Runnable {
 	/**
 	 * logger for all the Speech Recognition classes
 	 */
-	protected final Logger logger = LoggerFactory.getLogger(SpeechRecognizer.class);
+	private final Logger logger = LoggerFactory.getLogger(SpeechRecognizer.class);
 
 	// Grammar of the Current running Recognizer
 	private Grammar grammar;
@@ -85,11 +85,6 @@ public abstract class SpeechRecognizer implements Runnable {
 	 * The TextToSpeech Output Object
 	 */
 	protected TextToSpeech tts;
-
-	/**
-	 * The result of the Recognition
-	 */
-	protected String speechRecognitionResult = null;
 
 	// -----------------------------------------------------------------------------------------------
 
@@ -161,12 +156,12 @@ public abstract class SpeechRecognizer implements Runnable {
 			 */
 			if (speechResult != null) {
 				// Get the hypothesis (Result as String)
-				this.speechRecognitionResult = speechResult.getHypothesis();
+				String speechRecognitionResult = speechResult.getHypothesis();
 
 				if (!this.soundPlaying) {
-					predefinedInputHandling();
+					predefinedInputHandling(speechRecognitionResult);
 				} else {
-					if (this.speechRecognitionResult.equals(Constants.SHUT_UP)) {
+					if (speechRecognitionResult.equals(Constants.SHUT_UP)) {
 						this.tts.stopOutput();
 					}
 				}
@@ -182,8 +177,9 @@ public abstract class SpeechRecognizer implements Runnable {
 	/**
 	 * Handles the Recognizer Specific Actions that trigger before giving the input to the inputHandler. Mainly waking
 	 * up and going to Sleep
+	 * @param result Recognized String
 	 */
-	protected abstract void predefinedInputHandling();
+	protected abstract void predefinedInputHandling(String result);
 
 	// ===============================================================================================
 
@@ -212,10 +208,12 @@ public abstract class SpeechRecognizer implements Runnable {
 				}
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
-			} catch (NullPointerException e) {
+			} 
+			/*catch (NullPointerException e) {
 				this.say(unknown);
 				this.logger.error("no handle return", e);
 			}
+			*/
 		}
 	}
 
@@ -301,7 +299,7 @@ public abstract class SpeechRecognizer implements Runnable {
 		this.logger.info("stop the Recognition");
 		this.audioUI.setRecognitionThreadRunning(false);
 		this.nextGrammar = null;
-		Constants.setSRListening(false);
+		Constants.setSRListening(SpeechRecognitionListening.ASLEEP);
 	}
 
 	// ===============================================================================================

@@ -46,7 +46,7 @@ import marytts.exceptions.SynthesisException;
  * 
  * @author Tim Neumann, Kai Menzel
  */
-public class TextToSpeech {
+public class TextToSpeech implements VoiceOutput {
 
 	private final Logger logger = LoggerFactory.getLogger(TextToSpeech.class);
 
