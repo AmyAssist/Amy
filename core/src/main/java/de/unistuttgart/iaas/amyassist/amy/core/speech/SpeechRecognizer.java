@@ -149,10 +149,7 @@ public abstract class SpeechRecognizer implements Runnable {
 
 		this.logger.info("[INFORMATION] :: Speech Recognition activated");
 
-		// Boolean to check if we are supposed to listen (sleeping)
-		Constants.SRisListening = false;
-
-		while (this.audioUI.isRecognitionThreadRunning() && !Thread.interrupted()) {
+		while (this.audioUI.isRecognitionThreadRunning() && !Thread.interrupted() && this.ais != null) {
 
 			// wait for input from the recognizer
 			SpeechResult speechResult = getSpeechResult();
@@ -199,9 +196,7 @@ public abstract class SpeechRecognizer implements Runnable {
 			return;
 		}
 
-		checkGrammarSwitch(result);
-
-		if (!Thread.interrupted() && this.inputHandler != null) {
+		if (!checkGrammarSwitch(result) && !Thread.interrupted() && this.inputHandler != null) {
 			Future<String> handle = this.inputHandler.handle(result);
 			try {
 				this.say(handle.get());
@@ -228,16 +223,19 @@ public abstract class SpeechRecognizer implements Runnable {
 	 * 
 	 * @param result
 	 *            SpeechRecognitionResult
+	 * @return true if switch will be initialized
 	 */
-	private void checkGrammarSwitch(String result) {
+	private boolean checkGrammarSwitch(String result) {
 		if (!this.grammar.getSwitchList().isEmpty()) {
 			for (Map.Entry<String, Grammar> entry : this.grammar.getSwitchList().entrySet()) {
 				if (result.equalsIgnoreCase(entry.getKey())) {
+					this.logger.info("switching Recognizer...");
 					this.stop(entry.getValue());
-					break;
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 
 	// -----------------------------------------------------------------------------------------------
@@ -288,6 +286,7 @@ public abstract class SpeechRecognizer implements Runnable {
 	 *            Grammar to Switch to
 	 */
 	protected void stop(Grammar switchGrammar) {
+		this.logger.info("stop current Recognizer to start the next");
 		this.audioUI.setRecognitionThreadRunning(false);
 		this.nextGrammar = switchGrammar;
 	}
@@ -296,8 +295,10 @@ public abstract class SpeechRecognizer implements Runnable {
 	 * BE CAREFUL void to stop the Current Recognizer without starting a new one
 	 */
 	public void stop() {
+		this.logger.info("stop the Recognition");
 		this.audioUI.setRecognitionThreadRunning(false);
 		this.nextGrammar = null;
+		Constants.SRisListening = false;
 	}
 
 	// ===============================================================================================
@@ -306,7 +307,8 @@ public abstract class SpeechRecognizer implements Runnable {
 	 * creates Configuration for the recognizers
 	 *
 	 * @return the configuration
-	 * @throws FileNotFoundException throw if the given Grammar File does not exist
+	 * @throws FileNotFoundException
+	 *             throw if the given Grammar File does not exist
 	 */
 	private Configuration createConfiguration() throws FileNotFoundException {
 		Configuration configuration = new Configuration();

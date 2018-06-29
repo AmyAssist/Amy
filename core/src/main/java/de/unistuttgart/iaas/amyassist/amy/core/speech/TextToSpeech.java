@@ -116,10 +116,12 @@ public class TextToSpeech {
 	public void say(LineListener listener, String s) {
 		speak(listener, preProcessing(s));
 	}
-	
+
 	/**
 	 * Logs the Output String
-	 * @param s String to Log
+	 * 
+	 * @param s
+	 *            String to Log
 	 */
 	public void log(String s) {
 		this.logger.info("saying: {}", s);

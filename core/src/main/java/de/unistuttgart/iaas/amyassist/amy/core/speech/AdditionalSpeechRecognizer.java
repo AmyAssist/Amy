@@ -61,6 +61,7 @@ public class AdditionalSpeechRecognizer extends SpeechRecognizer {
 		if (this.speechRecognitionResult.equals(Constants.SHUT_UP)) {
 			this.tts.stopOutput();
 		} else if (this.speechRecognitionResult.equals(Constants.GO_SLEEP)) {
+			Constants.SRisListening = false;
 			say("now sleeping");
 			this.stop(this.audioUI.mainGrammar);
 		} else {

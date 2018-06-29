@@ -146,7 +146,7 @@ public class AudioUserInteraction implements SpeechIO {
 	public void setAudioInputStream(AudioInputStream ais) {
 		this.ais = ais;
 	}
-  
+
 	/**
 	 * Set's {@link #recognitionThreadRunning recognitionThreadRunning}
 	 * 

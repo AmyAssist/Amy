@@ -125,8 +125,7 @@ class AudioUserInteractionTest {
 		// Test switching to no new grammar (ending recognition)
 		this.aui.switchGrammar(null);
 		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(false)));
-		// assertThat(logger.getLoggingEvents(),
-		// contains(info("all Recognition stopped")));
+		// assertThat(logger.getLoggingEvents(), contains(info("all Recognition stopped")));
 
 		// Test switching to the mainGrammar
 		this.aui.switchGrammar(this.mainGrammar);
@@ -162,8 +161,7 @@ class AudioUserInteractionTest {
 
 		this.aui.setSpeechInputHandler(this.handler);
 		this.aui.run();
-		// assertThat(srLogger.getLoggingEvents(),
-		// contains(error("StreamRecognizer can't be instantiated")));
+		// assertThat(srLogger.getLoggingEvents(), contains(error("StreamRecognizer can't be instantiated")));
 		assertNotNull(this.aui.getCurrentRecognizer());
 		assertThat(new Boolean(this.aui.isRecognitionThreadRunning()), equalTo(new Boolean(true)));
 	}
