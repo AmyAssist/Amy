@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
@@ -305,8 +306,9 @@ public abstract class SpeechRecognizer implements Runnable {
 	 * creates Configuration for the recognizers
 	 *
 	 * @return the configuration
+	 * @throws FileNotFoundException throw if the given Grammar File does not exist
 	 */
-	private Configuration createConfiguration() {
+	private Configuration createConfiguration() throws FileNotFoundException {
 		Configuration configuration = new Configuration();
 
 		configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
@@ -317,9 +319,13 @@ public abstract class SpeechRecognizer implements Runnable {
 		if (this.grammar != null && this.grammar.getFile() != null
 				&& this.grammar.getFile().toString().endsWith(".gram")) {
 			try {
-				configuration.setGrammarPath(this.grammar.getFile().getParentFile().toURI().toURL().toString());
-				configuration.setGrammarName(this.grammar.getFile().getName().replace(".gram", ""));
-				configuration.setUseGrammar(true);
+				if (this.grammar.getFile().exists()) {
+					configuration.setGrammarPath(this.grammar.getFile().getParentFile().toURI().toURL().toString());
+					configuration.setGrammarName(this.grammar.getFile().getName().replace(".gram", ""));
+					configuration.setUseGrammar(true);
+				} else {
+					throw new FileNotFoundException();
+				}
 			} catch (MalformedURLException e) {
 				this.logger.error("", e);
 			}
