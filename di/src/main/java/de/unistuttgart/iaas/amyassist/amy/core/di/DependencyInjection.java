@@ -35,8 +35,6 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNullableByDefault;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -62,12 +60,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  */
 @ParametersAreNullableByDefault
 public class DependencyInjection implements ServiceLocator {
-
-	/**
-	 * The logger of the DI
-	 */
-	protected final Logger logger = LoggerFactory.getLogger(DependencyInjection.class);
-
 	/**
 	 * A register which maps a class to it's service provider.
 	 */
@@ -281,7 +273,7 @@ public class DependencyInjection implements ServiceLocator {
 	}
 
 	@Override
-	public <T> T createAndInitialize(Class<T> serviceClass) {
+	public <T> T createAndInitialize(@Nonnull Class<T> serviceClass) {
 		T service = this.create(serviceClass);
 		this.inject(service);
 		this.postConstruct(service);

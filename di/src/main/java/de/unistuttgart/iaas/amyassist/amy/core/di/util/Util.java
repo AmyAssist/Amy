@@ -34,8 +34,6 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
@@ -52,15 +50,13 @@ public class Util {
 		// hide constructor
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(Util.class);
-
 	/**
 	 * Checks if the given class can be used as a Service. There for it must be a not abstract class with a default
 	 * constructor.
 	 * 
 	 * @param cls
 	 *            the class to be checked
-	 * @return
+	 * @return true ig the given class is a valid service class
 	 */
 	public static boolean isValidServiceClass(@Nonnull Class<?> cls) {
 		if (!hasValidConstructors(cls) || cls.isArray() || cls.isInterface()
@@ -116,6 +112,7 @@ public class Util {
 	 * Call the Methods annotated with {@link PostConstruct} on the given instance
 	 * 
 	 * @param instance
+	 *            the instance to post construct
 	 */
 	public static void postConstruct(@Nonnull Object instance) {
 		callAnnotatedMethods(instance, PostConstruct.class);
@@ -125,6 +122,7 @@ public class Util {
 	 * Call the Methods annotated with {@link PreDestroy} on the given instance
 	 * 
 	 * @param destroyMe
+	 *            the instance to destroy
 	 */
 	public static void preDestroy(@Nonnull Object destroyMe) {
 		callAnnotatedMethods(destroyMe, PreDestroy.class);
@@ -136,6 +134,8 @@ public class Util {
 	 *            the instance of which to call the methods
 	 * @param annotationCls
 	 *            the class of the annotation
+	 * @throws IllegalArgumentException
+	 *             if the annotated methods not valid
 	 */
 	public static void callAnnotatedMethods(@Nonnull Object instance,
 			@Nonnull Class<? extends Annotation> annotationCls) {
@@ -148,12 +148,14 @@ public class Util {
 				m.setAccessible(true);
 				m.invoke(instance);
 			} catch (IllegalAccessException e) {
-				logger.error("tryed to invoke method {} but got an error", m, e);
+				throw new IllegalArgumentException("tryed to invoke method " + m + " but got an error", e);
 			} catch (InvocationTargetException e) {
-				if (e.getCause() instanceof RuntimeException) {
-					throw (RuntimeException) e.getCause();
+				Throwable cause = e.getCause();
+
+				if (cause instanceof RuntimeException) {
+					throw (RuntimeException) cause;
 				}
-				logger.error("method {} thow an exception", m, e.getCause());
+				throw new IllegalArgumentException("method " + m + " throw an exception", cause);
 			}
 		}
 	}
@@ -200,7 +202,7 @@ public class Util {
 		try {
 			FieldUtils.writeField(field, instance, object, true);
 		} catch (IllegalAccessException e) {
-			logger.error("tryed to inject the dependency {} into {} but failed", object, instance, e);
+			throw new InjectionException(object, instance, e);
 		}
 	}
 }

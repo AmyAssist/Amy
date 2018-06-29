@@ -29,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -86,6 +88,14 @@ class UtilTest {
 
 	static Stream<Object> postConstructMe() {
 		return Stream.of(new Service19());
+	}
+
+	@Test
+	void testInjectException() {
+		assertThrows(IllegalArgumentException.class,
+				() -> Util.inject(new Service2(), new Object(), FieldUtils.getField(Service2.class, "service1", true)));
+
+		Util.inject(new Service2(), null, FieldUtils.getField(Service2.class, "service1", true));
 	}
 
 }
