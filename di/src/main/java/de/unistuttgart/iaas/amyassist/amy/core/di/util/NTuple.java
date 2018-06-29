@@ -41,8 +41,7 @@ public class NTuple<T> {
 	public final int n;
 
 	/**
-	 * Create a new Tuple with the given size. The Components are initialized
-	 * with null
+	 * Create a new Tuple with the given size. The Components are initialized with null
 	 * 
 	 * @param size
 	 */
@@ -76,12 +75,10 @@ public class NTuple<T> {
 	}
 
 	/**
-	 * Map this NTuple to a new NTuple by applying the given function on every
-	 * component.
+	 * Map this NTuple to a new NTuple by applying the given function on every component.
 	 * 
 	 * @param function
-	 *            the mapping function which produces the new values from the
-	 *            actual values
+	 *            the mapping function which produces the new values from the actual values
 	 * @return the new NTuple with the new values
 	 * 
 	 * @param <R>

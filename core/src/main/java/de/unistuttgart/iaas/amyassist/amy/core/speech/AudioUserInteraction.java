@@ -110,7 +110,6 @@ public class AudioUserInteraction implements SpeechIO {
 			this.recognitionThreadRunning = true;
 			this.currentRecognizer.start();
 		}
-
 	}
 
 	// -----------------------------------------------------------------------------------------------
@@ -147,7 +146,7 @@ public class AudioUserInteraction implements SpeechIO {
 	public void setAudioInputStream(AudioInputStream ais) {
 		this.ais = ais;
 	}
-
+  
 	/**
 	 * Set's {@link #recognitionThreadRunning recognitionThreadRunning}
 	 * 
@@ -205,8 +204,6 @@ public class AudioUserInteraction implements SpeechIO {
 	public List<Grammar> getSwitchableGrammars() {
 		return this.switchableGrammars;
 	}
-
-	// ===============================================================================================
 
 	/**
 	 * starts the default AudioInputStream

@@ -25,25 +25,26 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
 
 /**
  * POJO mapping of a parameter
+ * 
  * @author Tim Neumann
  */
 public class Parameter {
 
 	private String name;
 	private ParameterType type;
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public ParameterType getType() {
 		return type;
 	}
-	
+
 	public void setType(ParameterType type) {
 		this.type = type;
 	}

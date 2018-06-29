@@ -37,7 +37,7 @@ import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtention;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -45,7 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Leon Kiefer
  */
-@ExtendWith(FrameworkExtention.class)
+@ExtendWith(FrameworkExtension.class)
 class ConfigurationImplTest {
 
 	@Reference

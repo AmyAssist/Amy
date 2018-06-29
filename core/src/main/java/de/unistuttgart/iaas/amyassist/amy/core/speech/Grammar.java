@@ -29,41 +29,50 @@ import java.util.Map;
 
 /**
  * Grammar Object, that contains all important Information of a Grammar
+ * 
  * @author Kai Menzel
  */
 public class Grammar {
-	
+
 	private String name;
 	private File file;
 	private HashMap<String, Grammar> switchList = new HashMap<>();
 
 	/**
-	 * @param name Name of the Grammar
-	 * @param file Path to the Grammar
+	 * @param name
+	 *            Name of the Grammar
+	 * @param file
+	 *            Path to the Grammar
 	 * 
 	 */
 	public Grammar(String name, File file) {
 		this.name = name;
 		this.file = file;
 	}
-	
+
 	/**
-	 * @param name Name of the Grammar
-	 * @param file Path to the Grammar
-	 * @param switchList List of all possible Grammar changes
+	 * @param name
+	 *            Name of the Grammar
+	 * @param file
+	 *            Path to the Grammar
+	 * @param switchList
+	 *            List of all possible Grammar changes
 	 */
 	public Grammar(String name, File file, HashMap<String, Grammar> switchList) {
 		this.name = name;
 		this.file = file;
 		this.switchList = switchList;
 	}
-	
+
 	/**
 	 * Add a new Grammar that can be switched to
-	 * @param switchCommand Command to say to switch to new Grammar
-	 * @param grammar Grammar to change to by said Grammarswitch
+	 * 
+	 * @param switchCommand
+	 *            Command to say to switch to new Grammar
+	 * @param gram
+	 *            Grammar to change to by said Grammarswitch
 	 */
-	public void putChangeGrammar(String switchCommand, Grammar grammar){
+	public void putChangeGrammar(String switchCommand, Grammar grammar) {
 		this.switchList.put(switchCommand, grammar);
 	}
 	
@@ -114,7 +123,5 @@ public class Grammar {
 	public void setSwitchList(HashMap<String, Grammar> switchList) {
 		this.switchList = switchList;
 	}
-
-	
 
 }

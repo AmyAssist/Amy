@@ -47,8 +47,7 @@ public class SingeltonServiceProvider<T> implements ServiceFunction<T> {
 	}
 
 	@Override
-	public T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies,
-			@Nullable Map<String, ?> context) {
+	public T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context) {
 		return this.instance;
 	}
 

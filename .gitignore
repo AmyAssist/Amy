@@ -19,5 +19,4 @@ dependency-reduced-pom.xml
 *.iml
 
 #Ignore config files
-apikeys/
 *.properties

@@ -21,38 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
-import java.util.concurrent.CompletableFuture;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * TODO: Description
+ * Test the Jupiter Extension
  * 
  * @author Leon Kiefer
  */
-class ConsoleTest {
+@ExtendWith(FrameworkExtension.class)
+class FrameworkExtensionTest {
+	@Reference
+	private TestFramework framework;
 
 	@Test
 	void test() {
-		final String[] testInput = { "Hello", "world", "say", "hello" };
-		final String expected = "hello1";
-
-		SpeechInputHandler handler = Mockito.mock(SpeechInputHandler.class);
-		CompletableFuture<String> completableFuture = new CompletableFuture<>();
-		completableFuture.complete(expected);
-		Mockito.when(handler.handle("Hello world say hello")).thenReturn(completableFuture);
-
-		Console console = new Console();
-		console.setSpeechInputHandler(handler);
-
-		assertThat(console.say(testInput), equalTo(expected));
+		assertThat(this.framework, is(notNullValue()));
 	}
+
 }

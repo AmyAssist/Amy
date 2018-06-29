@@ -4,10 +4,6 @@ jdk:
   - openjdk8
 jobs:
   include:
-    - install: skip
-      script:
-      - ./scripts/fixAllFileComments.sh
-      - git diff --exit-code
     - stage: deploy
       script: ./scripts/deployGH-Pages.sh
       deploy:

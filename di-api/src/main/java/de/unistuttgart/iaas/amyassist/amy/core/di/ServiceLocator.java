@@ -33,8 +33,7 @@ import javax.annotation.Nonnull;
 public interface ServiceLocator {
 
 	/**
-	 * Instantiate the given class if it can. The object created in this way
-	 * will not be managed by the DI.
+	 * Instantiate the given class if it can. The object created in this way will not be managed by the DI.
 	 * 
 	 * @param serviceClass
 	 * @return
@@ -42,9 +41,8 @@ public interface ServiceLocator {
 	<T> T create(Class<T> serviceClass);
 
 	/**
-	 * Instantiate the given class if it can, inject dependencies and
-	 * post-constructs the object. The object created in this way will not be
-	 * managed by the DI.
+	 * Instantiate the given class if it can, inject dependencies and post-constructs the object. The object created in
+	 * this way will not be managed by the DI.
 	 * 
 	 * @param serviceClass
 	 * @return
@@ -52,28 +50,25 @@ public interface ServiceLocator {
 	<T> T createAndInitialize(Class<T> serviceClass);
 
 	/**
-	 * Get the service of the given type. This method lookup the service
-	 * provider registered for the the given service type and use it to return a
-	 * object of the given type. type.
+	 * Get the service of the given type. This method lookup the service provider registered for the the given service
+	 * type and use it to return a object of the given type. type.
 	 * 
 	 * @param serviceType
-	 *            the type of the service, not the class which implements the
-	 *            service
+	 *            the type of the service, not the class which implements the service
 	 * @return an instance of the given type if a service provider is found
 	 */
 	<T> T getService(Class<T> serviceType);
 
 	/**
-	 * This will analyze the given object and inject into its fields. The object
-	 * given will not be managed by the DI.
+	 * This will analyze the given object and inject into its fields. The object given will not be managed by the DI.
 	 * 
 	 * @param injectMe
 	 */
 	void inject(@Nonnull Object injectMe);
 
 	/**
-	 * This will analyze the given object and call the postConstruct method. The
-	 * object given will not be managed by the DI.
+	 * This will analyze the given object and call the postConstruct method. The object given will not be managed by the
+	 * DI.
 	 * 
 	 * @param postConstructMe
 	 */

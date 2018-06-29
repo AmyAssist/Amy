@@ -28,8 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * Global storage placeholder until a database or similar mechanisms are
- * implemented
+ * Global storage placeholder until a database or similar mechanisms are implemented
  * 
  * @author Felix Burk
  */
@@ -40,8 +39,7 @@ public class GlobalStorage {
 	protected ConcurrentMap<String, String> store;
 
 	/**
-	 * Creates a new Global Storage.
-	 * This should only be called once.
+	 * Creates a new Global Storage. This should only be called once.
 	 */
 	public GlobalStorage() {
 		this.store = new ConcurrentHashMap<>();

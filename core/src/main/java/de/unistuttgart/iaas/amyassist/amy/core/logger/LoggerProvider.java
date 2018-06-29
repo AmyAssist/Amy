@@ -43,8 +43,7 @@ public class LoggerProvider implements ServiceFunction<Logger> {
 	private static final String CONTEXT_IDENTIFIER = "class";
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider#getService(java.util.Map,
-	 *      java.util.Map)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider#getService(java.util.Map, java.util.Map)
 	 */
 	@Override
 	public Logger getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {

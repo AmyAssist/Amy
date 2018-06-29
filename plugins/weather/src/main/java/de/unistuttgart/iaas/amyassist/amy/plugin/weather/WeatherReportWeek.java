@@ -30,24 +30,24 @@ import com.github.dvdme.ForecastIOLib.FIODaily;
 
 @XmlRootElement
 public class WeatherReportWeek {
-	
+
 	@XmlTransient
-    public String preamble;
-	
-    public WeatherReportDay[] days;
-    public String summary;
+	public final String preamble;
 
-    public WeatherReportWeek(String preamble, FIODaily d) {
-        this.preamble = preamble;
-        this.days = new WeatherReportDay[d.days()];
-        for (int i = 0; i < d.days(); i++) {
-            this.days[i] = new WeatherReportDay(null, d.getDay(i));
-        }
-        this.summary = d.getSummary();
-    }
+	public final WeatherReportDay[] days;
+	public final String summary;
 
-    @Override
+	public WeatherReportWeek(String preamble, FIODaily d) {
+		this.preamble = preamble;
+		this.days = new WeatherReportDay[d.days()];
+		for (int i = 0; i < d.days(); i++) {
+			this.days[i] = new WeatherReportDay(null, d.getDay(i));
+		}
+		this.summary = d.getSummary();
+	}
+
+	@Override
 	public String toString() {
-        return (this.preamble != null ? this.preamble + " " : "") + this.summary;
-    }
+		return (this.preamble != null ? this.preamble + " " : "") + this.summary;
+	}
 }
