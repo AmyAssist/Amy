@@ -27,11 +27,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -56,12 +58,12 @@ public class MusicResource {
 
 	@Reference
 	private PlayerLogic logic;
-	
+
 	@Reference
 	private StringGenerator stringGenerator;
 
 	private MusicEntity musicEntity;
-	private Playlist playlist;
+	private Playlist[] playlist;
 
 	/**
 	 * returns a list with all given devices
@@ -84,20 +86,27 @@ public class MusicResource {
 	 * sets which device to use
 	 * 
 	 * @param deviceNumber
-	 *            the number of the device to use
-	 * @return the selected device if there is one
-	 * 
+	 *            the number or ID of the device to use
+	 * @return the selected device if there is one and is available
 	 */
 	@POST
-	@Path("setDevice/{deviceNumber}")
+	@Path("setDevice/{deviceValue}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setDevice(@PathParam("deviceNumber") int deviceNumber) {
-		String result = this.logic.setDevice(deviceNumber);
-		if (result.equals("No device found")) {
-			throw new WebApplicationException("No device found", Status.CONFLICT);
+	public String setDevice(@PathParam("deviceValue") String deviceValue) {
+		try {
+			int deviceNumber = Integer.parseInt(deviceValue);
+			String result = this.logic.setDevice(deviceNumber);
+			if (result.equals("No device found")) {
+				throw new WebApplicationException("No device found", Status.NOT_FOUND);
+			}
+			return result;
+		} catch (NumberFormatException e) {
+			if (this.logic.setDevice(deviceValue)) {
+				return "Device: '" + deviceValue + "' is selected now";
+			}
+			throw new WebApplicationException("Device: '" + deviceValue + "' is not available", Status.CONFLICT);
 		}
-		return result;
 	}
 
 	/**
@@ -195,18 +204,6 @@ public class MusicResource {
 	}
 
 	/**
-	 * returns a playlist
-	 * 
-	 * @return the playlist
-	 */
-	@GET
-	@Path("playlist")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Playlist getPlaylist() {
-		return this.playlist;
-	}
-
-	/**
 	 * controls the volume of the player
 	 * 
 	 * @param volumeString
@@ -235,6 +232,42 @@ public class MusicResource {
 			}
 			throw new WebApplicationException("Check player state", Status.CONFLICT);
 		}
+	}
+
+	/**
+	 * get user or featured playlists
+	 * 
+	 * @param limit
+	 *            limit of returned playlists
+	 * @param type
+	 *            type of playlists: allowed parameters: user, featured
+	 * @return user or featured playlists
+	 */
+	@POST
+	@Path("playlists/{limit}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Playlist[] getPlaylists(@PathParam("limit") int limit,
+			@QueryParam("type") @DefaultValue("user") String type) {
+		List<Playlist> pl;
+		switch (type) {
+		case "user":
+		default:
+			pl = this.logic.getOwnPlaylists(limit);
+			break;
+		case "featured":
+			pl = this.logic.getFeaturedPlaylists((limit));
+			break;
+		}
+		this.playlist = new Playlist[pl.size()];
+		if (!pl.isEmpty()) {
+			for (int i = 0; i < pl.size(); i++) {
+				this.playlist[i] = new Playlist(pl.get(i).getName(), pl.get(i).getSongs(), pl.get(i).getUri(),
+						pl.get(i).getImageUrl());
+			}
+			return this.playlist;
+		}
+		throw new WebApplicationException("No Playlist is available", Status.NOT_FOUND);
 	}
 
 }

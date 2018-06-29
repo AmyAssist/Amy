@@ -42,6 +42,11 @@ public class MusicEntity {
 
 	/**
 	 * constructor for a MusicEntity with set values
+	 * 
+	 * @param title
+	 *            title of the music
+	 * @param artist
+	 *            artist of the music
 	 */
 	public MusicEntity(String title, String artist) {
 		this.title = title;
