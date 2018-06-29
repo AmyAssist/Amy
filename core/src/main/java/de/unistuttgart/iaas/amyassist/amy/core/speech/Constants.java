@@ -24,7 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 /**
- * TODO: Description
+ * Class for important Constants for the SpeechRecognition
+ * Holds variabel if Recognition System is currently active
  * 
  * @author Leon Kiefer
  */

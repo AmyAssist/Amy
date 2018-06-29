@@ -213,7 +213,7 @@ public abstract class SpeechRecognizer implements Runnable {
 				Thread.currentThread().interrupt();
 			} catch (NullPointerException e) {
 				this.say("unknown command");
-				this.logger.error("no handle return");
+				this.logger.error("no handle return", e);
 			}
 		}
 	}
