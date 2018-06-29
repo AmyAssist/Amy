@@ -33,6 +33,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sound.sampled.AudioInputStream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -58,13 +60,15 @@ class AudioUserInteractionTest {
 	private Grammar addGrammar;
 	private List<Grammar> switchGrammar;
 	private SpeechInputHandler handler;
+	
+	private AudioInputStream ais;
 
 	/**
 	 * creates data to insert into the test Cases
 	 */
 	@BeforeEach
 	void setUp() {
-
+		this.ais = Mockito.mock(AudioInputStream.class);
 		this.aui = new AudioUserInteraction();
 		this.aui.setVoiceOutput(false);
 		this.mainGrammar = new Grammar(this.mainGram,
@@ -148,6 +152,7 @@ class AudioUserInteractionTest {
 		 */
 		// SetUp
 		this.aui = new AudioUserInteraction();
+		this.aui.setAudioInputStream(this.ais);
 		this.aui.setVoiceOutput(false);
 		this.aui.setGrammars(this.mainGrammar, this.switchGrammar);
 		this.aui.setRecognitionThreadRunning(false);
