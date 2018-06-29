@@ -63,7 +63,6 @@ public class MusicResource {
 	private StringGenerator stringGenerator;
 
 	private MusicEntity musicEntity;
-	private Playlist[] playlist;
 
 	/**
 	 * returns a list with all given devices
@@ -249,23 +248,26 @@ public class MusicResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Playlist[] getPlaylists(@PathParam("limit") int limit,
 			@QueryParam("type") @DefaultValue("user") String type) {
+		Playlist[] playlist;
 		List<Playlist> pl;
 		switch (type) {
 		case "user":
-		default:
 			pl = this.logic.getOwnPlaylists(limit);
 			break;
 		case "featured":
 			pl = this.logic.getFeaturedPlaylists((limit));
 			break;
+		default:
+			pl = this.logic.getOwnPlaylists(limit);
+			break;
 		}
-		this.playlist = new Playlist[pl.size()];
+		playlist = new Playlist[pl.size()];
 		if (!pl.isEmpty()) {
 			for (int i = 0; i < pl.size(); i++) {
-				this.playlist[i] = new Playlist(pl.get(i).getName(), pl.get(i).getSongs(), pl.get(i).getUri(),
+				playlist[i] = new Playlist(pl.get(i).getName(), pl.get(i).getSongs(), pl.get(i).getUri(),
 						pl.get(i).getImageUrl());
 			}
-			return this.playlist;
+			return playlist;
 		}
 		throw new WebApplicationException("No Playlist is available", Status.NOT_FOUND);
 	}
