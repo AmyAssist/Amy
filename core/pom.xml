@@ -32,6 +32,11 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		<!-- used for hibernate sqlite dialect -->
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -121,6 +126,17 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.196</version>
+		</dependency>
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.23.1</version>
+		</dependency>
+		<!-- https://github.com/gwenn/sqlite-dialect -->
+		<dependency>
+			<groupId>com.github.gwenn</groupId>
+			<artifactId>sqlite-dialect</artifactId>
+			<version>-SNAPSHOT</version>
 		</dependency>
 		<!-- Tests -->
 		<dependency>

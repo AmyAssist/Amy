@@ -50,7 +50,9 @@ public class DatabaseStorage implements IStorage {
 	@Override
 	public void put(String key, String value) {
 		SimpleData simpleData = new SimpleData(key, value);
+		this.entityManager.getTransaction().begin();
 		this.entityManager.merge(simpleData);
+		this.entityManager.getTransaction().commit();
 	}
 
 	@Override
