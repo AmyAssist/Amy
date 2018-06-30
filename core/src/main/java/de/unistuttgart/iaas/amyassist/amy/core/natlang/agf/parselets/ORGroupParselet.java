@@ -31,9 +31,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.ORGroupNode;
 /**
  * Or Group Parselet
  * 
- * <ORGroupParselet> := "(" <MorphemeNode> ( "|" <MorphemeNode> )* ")";
+ * <ORGroupParselet> := "(" <AGFNode>+ ( "|" <AGFNode>+ )* ")";
  * 
- * @author
+ * @author Felix Burk
  */
 public class ORGroupParselet implements IAGFParselet {
 
@@ -54,17 +54,7 @@ public class ORGroupParselet implements IAGFParselet {
 			}
 			node.addChild(parser.parseExpression());
 		}
-
-		/*if (!parser.match(AGFTokenType.CLOSEBR)) {
-
-			while (parser.match(AGFTokenType.OR)) {
-				// consume OR
-				parser.consume();
-				// parse children
-				node.addChild(parser.parseExpression());
-			}
-		} */
-
+		
 		// consume last token
 		parser.consume(AGFTokenType.CLOSEBR);
 

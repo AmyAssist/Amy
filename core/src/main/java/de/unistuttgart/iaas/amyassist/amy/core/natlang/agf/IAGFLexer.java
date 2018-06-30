@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**

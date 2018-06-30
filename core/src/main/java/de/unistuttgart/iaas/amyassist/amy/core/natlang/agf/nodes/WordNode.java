@@ -33,13 +33,17 @@ public class WordNode extends AGFNode {
 	/**
 	 * constructor
 	 * 
-	 * @param content
-	 *            of node
+	 * @param content of node
 	 */
 	public WordNode(String content) {
 		super(content);
 	}
 
+	/**
+	 * special print self method, because this node my never have children
+	 * 
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode#printSelf(java.lang.String, int)
+	 */
 	@Override
 	public String printSelf(String name, int indent) {
 		StringBuilder b = new StringBuilder();
@@ -50,7 +54,7 @@ public class WordNode extends AGFNode {
 			b.append("|");
 			b.append("   ");
 		}
-		b.append("|---" + "<content> " + this.content );
+		b.append("|---" + "<content> " + this.getContent());
 		return b.toString();
 	}
 

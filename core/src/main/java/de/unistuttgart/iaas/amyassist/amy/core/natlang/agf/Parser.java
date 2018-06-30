@@ -47,7 +47,7 @@ public class Parser {
 	
 	/**
 	 * constructor
-	 * @param tokens
+	 * @param tokens to consume
 	 */
 	public Parser(Iterator<AGFToken> tokens) {
 		this.mTokens = tokens;
@@ -79,7 +79,7 @@ public class Parser {
 	
 	/**
 	 * 
-	 * @return
+	 * @return generated AGFNode
 	 */
 	public AGFNode parseWholeExpression() {
 		AGFNode n = new AGFNode("");
@@ -95,7 +95,6 @@ public class Parser {
 	 */
 	public AGFNode parseExpression() {
 		AGFToken token = consume();
-		System.out.println("consuming... " + token.getType());
 		
 		IAGFParselet toParse = this.mAGFParselets.get(token.type);
 		
@@ -108,12 +107,13 @@ public class Parser {
 	/**
 	 * consume the right token
 	 * @param expected token
-	 * @return
+	 * @return the AGFToken that was consumed
 	 */
 	public AGFToken consume(AGFTokenType expected) {
 	    AGFToken token = lookAhead(0);
+	    if(token == null) throw new AGFParseException("Token is null");
 	    if (token.type != expected) {
-	      throw new RuntimeException("Expected token " + expected +
+	      throw new AGFParseException("Expected token " + expected +
 	          " and found " + token.getType());
 	    }
 	    return consume();

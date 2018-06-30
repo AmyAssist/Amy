@@ -24,13 +24,14 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
- * TODO: Description
+ * Represents an OR Group in AGF Syntax
+ * 
  * @author Felix Burk
  */
 public class ORGroupNode extends AGFNode {
 
 	/**
-	 * @param content
+	 * @param content the content
 	 */
 	public ORGroupNode(String content) {
 		super(content);

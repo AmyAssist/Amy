@@ -30,6 +30,11 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 public class AGFParseException extends RuntimeException {
 	
 	/**
+	 * serial version uid
+	 */
+	private static final long serialVersionUID = 5163865852229119849L;
+
+	/**
 	 * constructor
 	 * @param content of RuntimeException
 	 */

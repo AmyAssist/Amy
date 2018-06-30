@@ -34,9 +34,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 public interface IAGFParselet {
 
 	/**
-	 * @param parser
-	 * @param token
-	 * @return
+	 * @param parser the parser
+	 * @param token the token
+	 * @return the generated node
 	 */
 	public AGFNode parse(Parser parser, AGFToken token);
 }

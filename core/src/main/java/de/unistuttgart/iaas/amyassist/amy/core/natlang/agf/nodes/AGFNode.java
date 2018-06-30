@@ -36,12 +36,12 @@ public class AGFNode  {
 	/**
 	 * all child nodes
 	 */
-	public List<AGFNode> childs;
+	private List<AGFNode> childs;
 
 	/**
 	 * content of node
 	 */
-	public final String content;
+	private final String content;
 
 	/**
 	 * constructor
@@ -55,10 +55,27 @@ public class AGFNode  {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode#addChild(de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode)
+	 * adds a new child
+	 * @param node the child
 	 */
 	public void addChild(AGFNode node) {
 		this.childs.add(node);
+	}
+	
+	/**
+	 * returns all child nodes
+	 * @return the child list
+	 */
+	public List<AGFNode> getChilds() {
+		return this.childs;
+	}
+	
+	/**
+	 * returns the content of this node
+	 * @return the content as String
+	 */
+	public String getContent() {
+		return this.content;
 	}
 
 	/**
@@ -87,7 +104,8 @@ public class AGFNode  {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode#printSelf()
+	 * method to print the content
+	 * @return String to print
 	 */
 	public String printSelf() {
 		return printSelf("AGFNode", 0);

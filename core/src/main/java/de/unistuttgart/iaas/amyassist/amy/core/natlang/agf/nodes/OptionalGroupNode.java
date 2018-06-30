@@ -24,7 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
- * optional group node 
+ * describes an optional group node
+ * it contains optional AGF Syntax 
  *
  * @author Felix Burk
  */

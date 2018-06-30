@@ -30,6 +30,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.OptionalGroupNo
 
 /**
  * optional group parselet 
+ * 
+ * <ORGroupParselet> := "[" <AGFNode>+ ( "|" <AGFNode>+ )* "]";
+ * 
  * @author Felix Burk
  */
 public class OptionalGroupParselet implements IAGFParselet{
