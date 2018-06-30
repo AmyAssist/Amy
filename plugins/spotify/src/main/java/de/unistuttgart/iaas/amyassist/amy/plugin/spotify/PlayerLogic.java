@@ -152,8 +152,7 @@ public class PlayerLogic {
 	 * @return one output String with all results
 	 */
 	public List<Map<String, String>> search(String searchText, String type, int limit) {
-		List<Map<String, String>> actualSearchResult = this.search.searchList(searchText, type, limit);
-		return actualSearchResult;
+		return this.search.searchList(searchText, type, limit);
 	}
 
 	/**
