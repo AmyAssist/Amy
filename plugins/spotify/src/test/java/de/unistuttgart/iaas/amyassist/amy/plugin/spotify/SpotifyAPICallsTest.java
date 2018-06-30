@@ -29,6 +29,7 @@ import static org.mockito.Mockito.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Properties;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,7 @@ class SpotifyAPICallsTest {
 	private static final String ACCESS_TOKEN = "K2K3M6";
 	private static final String REFRESH_TOKEN = "Q8V55";
 	@Mock
-	private ConfigLoader configLoader;
+	private Properties configLoader;
 
 	@Reference
 	private IStorage storage;
@@ -67,9 +68,9 @@ class SpotifyAPICallsTest {
 
 	@BeforeEach
 	public void init() {
-		this.configLoader = this.testFramework.mockService(ConfigLoader.class);
+		this.configLoader = this.testFramework.mockService(Properties.class);
 		this.testFramework.mockService(TaskSchedulerAPI.class);
-		this.spotifyAPICalls = testFramework.setServiceUnderTest(SpotifyAPICalls.class);
+		this.spotifyAPICalls = this.testFramework.setServiceUnderTest(SpotifyAPICalls.class);
 		this.spotifyAPICalls = spy(this.spotifyAPICalls);
 		try {
 			spotifyApi = new SpotifyApi.Builder().setAccessToken(ACCESS_TOKEN).setClientId(CLIENT_ID)
@@ -250,9 +251,9 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testGetSpotifyApiAllData() {
-		doReturn(CLIENT_ID).when(this.configLoader).get(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
-		doReturn(CLIENT_SECRET).when(this.configLoader).get(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
-		doReturn(REFRESH_TOKEN).when(this.configLoader).get(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY);
+		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
+		doReturn(CLIENT_SECRET).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
+		doReturn(REFRESH_TOKEN).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY);
 		this.storage.put(SpotifyAPICalls.SPOTIFY_ACCESSTOKEN, ACCESS_TOKEN);
 		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
 		assertThat(spotifyApi.getClientId(), equalTo(CLIENT_ID));
@@ -263,9 +264,9 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testGetSpotifyApiWithoutAccessToken() {
-		doReturn(CLIENT_ID).when(this.configLoader).get(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
-		doReturn(CLIENT_SECRET).when(this.configLoader).get(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
-		doReturn(REFRESH_TOKEN).when(this.configLoader).get(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY);
+		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
+		doReturn(CLIENT_SECRET).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
+		doReturn(REFRESH_TOKEN).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY);
 		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
 		assertThat(spotifyApi.getClientId(), equalTo(CLIENT_ID));
 		assertThat(spotifyApi.getClientSecret(), equalTo(CLIENT_SECRET));
@@ -275,9 +276,9 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testGetSpotifyApiWithoutAccessTokenAndRefreshToken() {
-		doReturn(CLIENT_ID).when(this.configLoader).get(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
-		doReturn(CLIENT_SECRET).when(this.configLoader).get(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
-		doReturn(null).when(this.configLoader).get(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY);
+		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
+		doReturn(CLIENT_SECRET).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
+		doReturn(null).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY);
 		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
 		assertThat(spotifyApi.getClientId(), equalTo(CLIENT_ID));
 		assertThat(spotifyApi.getClientSecret(), equalTo(CLIENT_SECRET));
@@ -287,15 +288,15 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testGetSpotifyApiWithoutAccessTokenAndRefreshTokenAndClientSecret() {
-		doReturn(CLIENT_ID).when(this.configLoader).get(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
-		doReturn(null).when(this.configLoader).get(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
+		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
+		doReturn(null).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
 		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
 		assertThat(spotifyApi, equalTo(null));
 	}
 
 	@Test
 	public void testGetSpotifyApiWithoutAllData() {
-		doReturn(null).when(this.configLoader).get(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
+		doReturn(null).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
 		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
 		assertThat(spotifyApi, equalTo(null));
 	}
@@ -309,13 +310,13 @@ class SpotifyAPICallsTest {
 	@Test
 	public void testSetClientSecret() {
 		this.spotifyAPICalls.setClientSecret(CLIENT_SECRET);
-		verify(this.configLoader).set(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY, CLIENT_SECRET);
+		verify(this.configLoader).setProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY, CLIENT_SECRET);
 	}
 
 	@Test
 	public void testSetClientId() {
 		this.spotifyAPICalls.setClientID(CLIENT_ID);
-		verify(this.configLoader).set(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY, CLIENT_ID);
+		verify(this.configLoader).setProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY, CLIENT_ID);
 	}
 
 	@Test

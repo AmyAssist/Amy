@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Calendar;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 
@@ -96,7 +97,7 @@ public class SpotifyAPICalls {
 	public static final String SPOTIFY_ERROR_TAG = "Spotify Exception:";
 
 	@Reference
-	private ConfigLoader configLoader;
+	private Properties configLoader;
 
 	@Reference
 	private Logger logger;
@@ -126,17 +127,17 @@ public class SpotifyAPICalls {
 	 */
 	public SpotifyApi getSpotifyApi() {
 		SpotifyApi spotifyAPI = null;
-		if (this.configLoader.get(SPOTIFY_CLIENTID_KEY) != null
-				&& this.configLoader.get(SPOTIFY_CLIENTSECRET_KEY) != null) {
-			spotifyAPI = new SpotifyApi.Builder().setClientId(this.configLoader.get(SPOTIFY_CLIENTID_KEY))
-					.setClientSecret(this.configLoader.get(SPOTIFY_CLIENTSECRET_KEY)).setRedirectUri(this.redirectURI)
+		if (this.configLoader.getProperty(SPOTIFY_CLIENTID_KEY) != null
+				&& this.configLoader.getProperty(SPOTIFY_CLIENTSECRET_KEY) != null) {
+			spotifyAPI = new SpotifyApi.Builder().setClientId(this.configLoader.getProperty(SPOTIFY_CLIENTID_KEY))
+					.setClientSecret(this.configLoader.getProperty(SPOTIFY_CLIENTSECRET_KEY)).setRedirectUri(this.redirectURI)
 					.build();
 		} else {
 			this.logger.warn("Client Secret and ID missing. Please insert the config file");
 			return null;
 		}
-		if (this.configLoader.get(SPOTIFY_REFRSHTOKEN_KEY) != null) {
-			spotifyAPI.setRefreshToken(this.configLoader.get(SPOTIFY_REFRSHTOKEN_KEY));
+		if (this.configLoader.getProperty(SPOTIFY_REFRSHTOKEN_KEY) != null) {
+			spotifyAPI.setRefreshToken(this.configLoader.getProperty(SPOTIFY_REFRSHTOKEN_KEY));
 		} else {
 			this.logger.warn("Please exec the Authorization first");
 			return spotifyAPI;
@@ -212,7 +213,7 @@ public class SpotifyAPICalls {
 		AuthorizationCodeCredentials authCodeCredentials = (AuthorizationCodeCredentials) exceptionHandlingWithResults(
 				authorizationCodeRequest);
 		if (authCodeCredentials != null) {
-			this.configLoader.set(SPOTIFY_REFRSHTOKEN_KEY, authCodeCredentials.getRefreshToken());
+			this.configLoader.setProperty(SPOTIFY_REFRSHTOKEN_KEY, authCodeCredentials.getRefreshToken());
 			return true;
 		}
 		return false;
@@ -225,7 +226,7 @@ public class SpotifyAPICalls {
 	 *            from spotify developer account
 	 */
 	public void setClientID(String clientID) {
-		this.configLoader.set(SPOTIFY_CLIENTID_KEY, clientID);
+		this.configLoader.setProperty(SPOTIFY_CLIENTID_KEY, clientID);
 	}
 
 	/**
@@ -235,7 +236,7 @@ public class SpotifyAPICalls {
 	 *            from the spotify developer account
 	 */
 	public void setClientSecret(String clientSecret) {
-		this.configLoader.set(SPOTIFY_CLIENTSECRET_KEY, clientSecret);
+		this.configLoader.setProperty(SPOTIFY_CLIENTSECRET_KEY, clientSecret);
 	}
 
 	/**
