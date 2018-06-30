@@ -25,7 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFToken;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.Parser;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
  * AGF Parselet interface
@@ -38,5 +38,5 @@ public interface IAGFParselet {
 	 * @param token
 	 * @return
 	 */
-	public IAGFNode parse(Parser parser, AGFToken token);
+	public AGFNode parse(Parser parser, AGFToken token);
 }

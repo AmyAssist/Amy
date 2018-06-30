@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets.IAGFParselet;
 
 /**
@@ -62,7 +61,11 @@ public class Parser {
 	 */
 	public boolean match(AGFTokenType expected) {
 		AGFToken token = lookAhead(0);
-		return token.type == expected;
+		if(token != null) {
+			return token.type == expected;
+		}
+		return false;
+		
 	}
 	
 	/**
@@ -74,7 +77,11 @@ public class Parser {
 		this.mAGFParselets.put(token, node);
 	}
 	
-	public IAGFNode parseWholeExpression() {
+	/**
+	 * 
+	 * @return
+	 */
+	public AGFNode parseWholeExpression() {
 		AGFNode n = new AGFNode("");
 		while(this.mTokens.hasNext()) {
 			n.addChild(this.parseExpression());
@@ -86,7 +93,7 @@ public class Parser {
 	 * parse the expression
 	 * @return the node
 	 */
-	public IAGFNode parseExpression() {
+	public AGFNode parseExpression() {
 		AGFToken token = consume();
 		System.out.println("consuming... " + token.getType());
 		
@@ -128,11 +135,15 @@ public class Parser {
 	 * @return token at distance
 	 */
 	private AGFToken lookAhead(int distance) {
-	    while (distance >= this.mRead.size()) {
+	    while (distance >= this.mRead.size() && this.mTokens.hasNext()) {
 	      this.mRead.add(this.mTokens.next());
 	    }
-
-	    // Get the queued token.
-	    return this.mRead.get(distance);
+	    
+	    
+	    if(this.mRead.size() > distance) {
+		    // Get the queued token.
+		    return this.mRead.get(distance);
+	    }
+	    return null;
 	}
 }

@@ -26,7 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFToken;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFTokenType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.Parser;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.MorphemeNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.RuleNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.WordNode;
@@ -47,7 +47,7 @@ public class MorphemeParselet implements IAGFParselet {
 	 * @return a MorpheneNode
 	 */
 	@Override
-	public IAGFNode parse(Parser parser, AGFToken token) {
+	public AGFNode parse(Parser parser, AGFToken token) {
 		MorphemeNode morph = new MorphemeNode("");
 		if(token.type == AGFTokenType.WORD) {
 			morph.addChild(new WordNode(token.content));
@@ -55,9 +55,6 @@ public class MorphemeParselet implements IAGFParselet {
 			morph.addChild(new RuleNode(token.content));
 		}
 		
-		if(parser.match(AGFTokenType.WORD) || parser.match(AGFTokenType.RULE)) {
-			parser.parseExpression();
-		}
 		return morph;
 	}
 	

@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
  * TODO: Description
@@ -39,13 +39,14 @@ public class AGFParserTest {
 	@Test
 	public void test() {
 		AGFLexer lex = new AGFLexer();
-		List<AGFToken> list = lex.tokenize("hello (y|x) (a|b|b|c|weap|jwpai)");
+		List<AGFToken> list = lex.tokenize("hello # (a(b|x|d)|#)");
 		AGFParser parser = new AGFParser(list.iterator());
 		
 	
-		IAGFNode node = parser.parseWholeExpression();
+		AGFNode node = parser.parseWholeExpression();
 		
 		System.out.println(node.printSelf());
+		
 	}
 
 }

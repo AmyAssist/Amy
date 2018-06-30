@@ -31,12 +31,12 @@ import java.util.List;
  * 
  * @author Felix Burk
  */
-public class AGFNode implements IAGFNode {
+public class AGFNode  {
 
 	/**
 	 * all child nodes
 	 */
-	List<IAGFNode> childs;
+	public List<AGFNode> childs;
 
 	/**
 	 * content of node
@@ -57,24 +57,22 @@ public class AGFNode implements IAGFNode {
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode#addChild(de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode)
 	 */
-	@Override
-	public void addChild(IAGFNode node) {
+	public void addChild(AGFNode node) {
 		this.childs.add(node);
 	}
 
 	/**
-	 * @param name
-	 *            of class
-	 * @return self string
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode#printSelf()
+	 * helper method to pretty print
+	 * @param name the name of the node
+	 * @param indent size
+	 * @return string
 	 */
-	@Override
 	public String printSelf(String name, int indent) {
 		StringBuilder b = new StringBuilder();
 		b.append("+" + name);
 		if (!this.childs.isEmpty()) {
 			b.append("\n");
-			for (IAGFNode n : this.childs) {
+			for (AGFNode n : this.childs) {
 				for (int i = 0; i < indent; i++) {
 					b.append("|");
 					b.append("   ");
@@ -91,7 +89,6 @@ public class AGFNode implements IAGFNode {
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.IAGFNode#printSelf()
 	 */
-	@Override
 	public String printSelf() {
 		return printSelf("AGFNode", 0);
 	}

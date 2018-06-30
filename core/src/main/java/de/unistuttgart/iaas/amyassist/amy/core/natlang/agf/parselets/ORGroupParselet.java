@@ -48,8 +48,14 @@ public class ORGroupParselet implements IAGFParselet {
 		// There may be no arguments at all.
 		node.addChild(parser.parseExpression());
 		
+		while(!parser.match(AGFTokenType.CLOSEBR)) {
+			if(parser.match(AGFTokenType.OR)) {
+				parser.consume();
+			}
+			node.addChild(parser.parseExpression());
+		}
 
-		if (!parser.match(AGFTokenType.CLOSEBR)) {
+		/*if (!parser.match(AGFTokenType.CLOSEBR)) {
 
 			while (parser.match(AGFTokenType.OR)) {
 				// consume OR
@@ -57,7 +63,7 @@ public class ORGroupParselet implements IAGFParselet {
 				// parse children
 				node.addChild(parser.parseExpression());
 			}
-		}
+		} */
 
 		// consume last token
 		parser.consume(AGFTokenType.CLOSEBR);

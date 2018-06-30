@@ -25,17 +25,33 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
  * a word node
+ * 
  * @author Felix Burk
  */
 public class WordNode extends AGFNode {
 
-	
 	/**
 	 * constructor
-	 * @param content of node
+	 * 
+	 * @param content
+	 *            of node
 	 */
 	public WordNode(String content) {
 		super(content);
+	}
+
+	@Override
+	public String printSelf(String name, int indent) {
+		StringBuilder b = new StringBuilder();
+		b.append("+" + name);
+		b.append("\n");
+
+		for (int i = 0; i < indent; i++) {
+			b.append("|");
+			b.append("   ");
+		}
+		b.append("|---" + "<content> " + this.content );
+		return b.toString();
 	}
 
 }

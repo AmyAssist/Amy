@@ -25,21 +25,33 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
  * A rule node implementation
+ * 
  * @author Felix Burk
  */
 public class RuleNode extends AGFNode {
-	
+
 	/**
 	 * constructor
-	 * @param content of node
+	 * 
+	 * @param content
+	 *            of node
 	 */
 	public RuleNode(String content) {
 		super(content);
 	}
 
 	@Override
-	public String printSelf() {
-		return "RuleNode " + " <" + this.content + "> ";
+	public String printSelf(String name, int indent) {
+		StringBuilder b = new StringBuilder();
+		b.append("+" + name);
+		b.append("\n");
+
+		for (int i = 0; i < indent; i++) {
+			b.append("|");
+			b.append("   ");
+		}
+		b.append("|---" + "<content> " + this.content );
+		return b.toString();
 	}
 
 }
