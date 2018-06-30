@@ -60,7 +60,7 @@ class SpotifyAPICallsTest {
 	private ConfigLoader configLoader;
 
 	@Reference
-	IStorage storage;
+	private IStorage storage;
 
 	@Reference
 	private TestFramework testFramework;

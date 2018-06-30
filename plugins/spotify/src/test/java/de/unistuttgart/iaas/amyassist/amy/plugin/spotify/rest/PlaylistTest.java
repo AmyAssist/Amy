@@ -89,7 +89,7 @@ class PlaylistTest {
 	
 	@Test
 	public void testToString() {
-		assertThat(this.playlist.toString(), equalTo("Hello"));
+		assertThat(this.playlist.toString(), equalTo("name of the playlist is: Hello"));
 	}
 
 }

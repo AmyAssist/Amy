@@ -33,14 +33,11 @@ import org.slf4j.Logger;
 
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
-import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.specification.Paging;
-import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
 
 /**
@@ -57,13 +54,10 @@ public class PlayerLogic {
 	private Search search;
 	@Reference
 	private Logger logger;
-	@Reference
-	private IStorage storage;
 
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
-	private static final String SPOTIFY_URI_STORAGE = "spotify_uri_";
 
 	/**
 	 * needed for the first init. need the clientID and the clientSecret form a spotify devloper account
@@ -159,24 +153,23 @@ public class PlayerLogic {
 	 */
 	public List<Map<String, String>> search(String searchText, String type, int limit) {
 		List<Map<String, String>> actualSearchResult = this.search.searchList(searchText, type, limit);
-		writeUrisToStorageMap(actualSearchResult, SearchTypes.NORMAL_SEARCH);
 		return actualSearchResult;
 	}
 
 	/**
 	 * this play method play a featured playlist from spotify
 	 * 
-	 * @return a string with the playlist name
+	 * @return a Playlist object. can be null
 	 */
-	public Map<String, String> play() {
-		List<Map<String, String>> playLists;
-		playLists = this.search.getFeaturedPlaylists();
+	public Playlist play() {
+		List<Playlist> playLists;
+		playLists = this.search.getFeaturedPlaylists(5);
 		if (!playLists.isEmpty() && 1 < playLists.size()
-				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).get(SpotifyConstants.ITEM_URI))) {
+				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).getUri())) {
 			return playLists.get(1);
 		}
 		this.logger.warn("no featured playlist found");
-		return new HashMap<>();
+		return null;
 	}
 
 	/**
@@ -189,8 +182,8 @@ public class PlayerLogic {
 	 * @return a map with the song data
 	 */
 	public Map<String, String> play(int songNumber, SearchTypes type) {
-		if (songNumber < restoreUris(type).size()) {
-			this.spotifyAPICalls.playListFromUri(restoreUris(type).get(songNumber));
+		if (songNumber < this.search.restoreUris(type).size()) {
+			this.spotifyAPICalls.playListFromUri(this.search.restoreUris(type).get(songNumber));
 		} else {
 			this.logger.warn("Item not found");
 		}
@@ -256,8 +249,7 @@ public class PlayerLogic {
 	 * @return a list from Playlists
 	 */
 	public List<Playlist> getOwnPlaylists(int limit) {
-		Paging<PlaylistSimplified> playlists = this.spotifyAPICalls.getOwnPlaylists(limit);
-		return generatePlaylistsOutput(playlists.getItems(), SearchTypes.USER_PLAYLISTS);
+		return this.search.getOwnPlaylists(limit);
 	}
 
 	/**
@@ -268,22 +260,7 @@ public class PlayerLogic {
 	 * @return a list from Playlists
 	 */
 	public List<Playlist> getFeaturedPlaylists(int limit) {
-		FeaturedPlaylists playlists = this.spotifyAPICalls.getFeaturedPlaylists(limit);
-		return generatePlaylistsOutput(playlists.getPlaylists().getItems(), SearchTypes.FEATURED_PLAYLISTS);
-	}
-
-	private List<Playlist> generatePlaylistsOutput(PlaylistSimplified[] playlists, SearchTypes type) {
-		ArrayList<Playlist> result = new ArrayList<>();
-		for (PlaylistSimplified playlist : playlists) {
-			if (playlist.getImages() != null && playlist.getImages().length > 0) {
-				result.add(new Playlist(playlist.getName(), null, playlist.getUri(), playlist.getImages()[0].getUrl()));
-			} else {
-				result.add(new Playlist(playlist.getName(), null, playlist.getUri(), null));
-			}
-
-		}
-		writeUrisToStorage(result, type);
-		return result;
+		return this.search.getFeaturedPlaylists(limit);
 	}
 
 	/**
@@ -334,62 +311,4 @@ public class PlayerLogic {
 		return -1;
 	}
 
-	/**
-	 * write all Uris from a list of Playlists to the storage. type is needed to store different search queries. For
-	 * example getOwnPlaylists() or getFeaturedPlaylists()
-	 * 
-	 * @param playlists
-	 *            playlists to write uris
-	 * @param type
-	 *            to write to right position
-	 */
-	private void writeUrisToStorage(List<Playlist> playlists, SearchTypes type) {
-		deleteUrisFromStroage(type);
-		for (int i = 0; i < playlists.size(); i++) {
-			this.storage.put(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)),
-					playlists.get(i).getUri());
-		}
-	}
-
-	private void writeUrisToStorageMap(List<Map<String, String>> playlists, SearchTypes type) {
-		deleteUrisFromStroage(type);
-		for (int i = 0; i < playlists.size(); i++) {
-			this.storage.put(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)),
-					playlists.get(i).get(SpotifyConstants.ITEM_URI));
-		}
-	}
-
-	/**
-	 * delete all saved uris from the storage of the given query
-	 * 
-	 * @param type
-	 *            of the query items to delete
-	 */
-	private void deleteUrisFromStroage(SearchTypes type) {
-		int i = 0;
-		while (this.storage
-				.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))) != null) {
-			this.storage.delete(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)));
-			i++;
-		}
-	}
-
-	/**
-	 * restore all uris from a search
-	 * 
-	 * @param type
-	 *            to restore
-	 * @return a list of uris
-	 */
-	private List<String> restoreUris(SearchTypes type) {
-		List<String> result = new ArrayList<>();
-		int i = 0;
-		while (this.storage
-				.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))) != null) {
-			result.add(this.storage
-					.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))));
-			i++;
-		}
-		return result;
-	}
 }

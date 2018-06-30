@@ -96,7 +96,7 @@ public class SpotifySpeech {
 	 */
 	@Grammar("play")
 	public String playASong(String... params) {
-		return this.stringGenerator.generateSearchOutputString(this.playerLogic.play());
+		return (this.playerLogic.play().toString());
 	}
 
 	@Grammar("play featured playlist #")

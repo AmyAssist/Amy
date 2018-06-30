@@ -137,6 +137,6 @@ public class Playlist {
 	
 	@Override
 	public String toString() {
-		return getName();
+		return "name of the playlist is: ".concat(getName());
 	}
 }

@@ -75,7 +75,6 @@ class PlayerLogicTest {
 
 	private Device[] devices;
 	private CurrentlyPlayingContext currentlyPlayingContext;
-	private List<Map<String, String>> featuredPlaylists;
 	private Paging<PlaylistSimplified> playlistsSpotifyFormat;
 	private List<Playlist> playlistsOwnFormat;
 
@@ -92,7 +91,6 @@ class PlayerLogicTest {
 		this.playerLogic = this.testFramework.setServiceUnderTest(PlayerLogic.class);
 		initDevices();
 		initCurrentTrack();
-		initFeaturedPlaylist();
 
 	}
 
@@ -126,17 +124,6 @@ class PlayerLogicTest {
 						new ArtistSimplified.Builder().setName("Hans Dieter").build())
 				.build();
 		currentlyPlayingContext = new CurrentlyPlayingContext.Builder().setItem(track1).build();
-	}
-
-	public void initFeaturedPlaylist() {
-		featuredPlaylists = new ArrayList<>();
-		Map<String, String> entry1 = new HashMap<>();
-		entry1.put(SpotifyConstants.ITEM_URI, ID2);
-		featuredPlaylists.add(entry1);
-		Map<String, String> entry2 = new HashMap<>();
-		entry2.put(SpotifyConstants.ITEM_URI, ID1);
-		featuredPlaylists.add(entry2);
-
 	}
 
 	@Test
@@ -202,24 +189,27 @@ class PlayerLogicTest {
 
 	@Test
 	public void testPlayEmptyList() {
-		when(search.getFeaturedPlaylists()).thenReturn(new ArrayList<>());
-		assertThat(this.playerLogic.play().isEmpty(), equalTo(true));
+		when(search.getFeaturedPlaylists(5)).thenReturn(new ArrayList<>());
+		assertThat(this.playerLogic.play(), equalTo(null));
 
 	}
 
 	@Test
 	public void testPlayNotEmptyList() {
-		when(search.getFeaturedPlaylists()).thenReturn(featuredPlaylists);
+		initPlaylists();
+		when(this.search.getFeaturedPlaylists(5)).thenReturn(playlistsOwnFormat);
 		when(this.spotifyAPICalls.playListFromUri(any())).thenReturn(true);
-		assertThat(this.playerLogic.play().get(SpotifyConstants.ITEM_URI), equalTo(ID1));
-		verify(this.spotifyAPICalls).playListFromUri(ID1);
+		assertThat(this.playerLogic.play().getUri(), equalTo(ID2));
+		verify(this.spotifyAPICalls).playListFromUri(ID2);
 	}
 
 	@Test
 	public void testPlaySongFromASearch() {
 		initPlaylists();
-		when(this.spotifyAPICalls.getOwnPlaylists(2)).thenReturn(this.playlistsSpotifyFormat);
-		this.playerLogic.getOwnPlaylists(2);
+		ArrayList<String> uri = new ArrayList<>();
+		uri.add(ID1);
+		uri.add(ID2);
+		when(this.search.restoreUris(SearchTypes.USER_PLAYLISTS)).thenReturn(uri);
 		when(this.spotifyAPICalls.playListFromUri(ID1)).thenReturn(false);
 		this.playerLogic.play(0, SearchTypes.USER_PLAYLISTS);
 		verify(spotifyAPICalls).playListFromUri(ID1);
@@ -354,35 +344,4 @@ class PlayerLogicTest {
 		verify(this.spotifyAPICalls).setVolume(1);
 		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
-
-	@Test
-	public void testGetUsersPlaylists() {
-		initPlaylists();
-		List<Playlist> pl;
-		when(this.spotifyAPICalls.getOwnPlaylists(2)).thenReturn(this.playlistsSpotifyFormat);
-		pl = this.playerLogic.getOwnPlaylists(2);
-		assertThat(pl.get(0).getUri(), equalTo(ID1));
-		assertThat(pl.get(1).getUri(), equalTo(ID2));
-		assertThat(pl.get(0).getName(), equalTo(PLAYLIST_NAME1));
-		assertThat(pl.get(1).getName(), equalTo(PLAYLIST_NAME2));
-		assertThat(pl.get(0).getImageUrl(), equalTo(null));
-		assertThat(pl.get(1).getImageUrl(), equalTo(ID1));
-	}
-
-	@Test
-	public void testGetFeturedPlaylists() {
-		initPlaylists();
-		FeaturedPlaylists featuredPls = new FeaturedPlaylists.Builder().setPlaylists(this.playlistsSpotifyFormat)
-				.build();
-		List<Playlist> pl;
-		when(this.spotifyAPICalls.getFeaturedPlaylists(2)).thenReturn(featuredPls);
-		pl = this.playerLogic.getFeaturedPlaylists(2);
-		assertThat(pl.get(0).getUri(), equalTo(ID1));
-		assertThat(pl.get(1).getUri(), equalTo(ID2));
-		assertThat(pl.get(0).getName(), equalTo(PLAYLIST_NAME1));
-		assertThat(pl.get(1).getName(), equalTo(PLAYLIST_NAME2));
-		assertThat(pl.get(0).getImageUrl(), equalTo(null));
-		assertThat(pl.get(1).getImageUrl(), equalTo(ID1));
-	}
-
 }
