@@ -39,6 +39,28 @@ import org.junit.jupiter.api.Test;
 public class AlarmTest {
 
 	/**
+	 * Tests alarm constructor
+	 */
+	@Test
+	public void alarmTest() {
+		assertThrows(IllegalArgumentException.class, () -> new Alarm(-1, 15, 20, true));
+
+		Alarm a1 = new Alarm(5, 4, 20, false);
+		assertEquals(5, a1.getId());
+
+		Calendar c = Calendar.getInstance();
+		if (c.get(Calendar.HOUR_OF_DAY) > 4) {
+			c.add(Calendar.DAY_OF_MONTH, 1);
+		}
+		c.set(Calendar.HOUR_OF_DAY, 4);
+		c.set(Calendar.MINUTE, 20);
+		c.set(Calendar.SECOND, 0);
+
+		assertEquals(c.getTimeInMillis(), a1.getAlarmDate().getTimeInMillis(), 1000);
+		assertEquals(false, a1.isActive());
+	}
+
+	/**
 	 * Tests toString
 	 */
 	@Test
