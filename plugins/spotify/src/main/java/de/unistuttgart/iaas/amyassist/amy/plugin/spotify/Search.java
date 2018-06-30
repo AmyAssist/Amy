@@ -39,6 +39,8 @@ import com.wrapper.spotify.model_objects.specification.Track;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
 
 /**
  * This class create search query to the spotify web api and parse the results in a String or in a Hashmap with
@@ -50,6 +52,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class Search {
 	@Reference
 	private SpotifyAPICalls spotifyAPICalls;
+	@Reference
+	private IStorage storage;
+
+	private static final String SPOTIFY_URI_STORAGE = "spotify_uri_";
 	/**
 	 * search limit for a few search queries
 	 */
@@ -68,13 +74,15 @@ public class Search {
 	 *         every entry has a uri to the song an the type (track, artist, album, palylist)
 	 */
 	public List<Map<String, String>> searchList(String searchItem, String type, int limit) {
+		List<Map<String, String>> result = new ArrayList<>();
 		if (typeCheck(type)) {
 			SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, type, limit);
 			if (searchResult != null) {
-				return createMap(searchResult, type);
+				result = createMap(searchResult, type);
 			}
 		}
-		return new ArrayList<>();
+		writeUrisToStorageMap(result, SearchTypes.NORMAL_SEARCH);
+		return result;
 	}
 
 	/**
@@ -234,18 +242,47 @@ public class Search {
 	}
 
 	/**
-	 * this method get a list from 10 featured playlist back
+	 * get a list from user created or followed playlists
 	 * 
-	 * @return a list with search result entries. every entry has a Map with different attributes. e.g. artist, ...
-	 *         every entry has a uri to the song an the type playlist
-	 * 
+	 * @param limit
+	 *            limit of returned playlists
+	 * @return a list from Playlists
 	 */
-	public List<Map<String, String>> getFeaturedPlaylists() {
-		FeaturedPlaylists featuredPlaylists = this.spotifyAPICalls.getFeaturedPlaylists(SEARCH_LIMIT);
-		if (featuredPlaylists != null) {
-			return createPlaylistOutput(featuredPlaylists.getPlaylists());
+	public List<Playlist> getOwnPlaylists(int limit) {
+		Paging<PlaylistSimplified> playlists = this.spotifyAPICalls.getOwnPlaylists(limit);
+		return generatePlaylistsOutput(playlists.getItems(), SearchTypes.USER_PLAYLISTS);
+	}
+
+	/**
+	 * get a list from featured playlists
+	 * 
+	 * @param limit
+	 *            limit of returned playlists
+	 * @return a list from Playlists
+	 */
+	public List<Playlist> getFeaturedPlaylists(int limit) {
+		FeaturedPlaylists playlists = this.spotifyAPICalls.getFeaturedPlaylists(limit);
+		if (playlists != null) {
+			return generatePlaylistsOutput(playlists.getPlaylists().getItems(), SearchTypes.FEATURED_PLAYLISTS);
 		}
 		return new ArrayList<>();
+	}
+
+	private List<Playlist> generatePlaylistsOutput(PlaylistSimplified[] playlists, SearchTypes type) {
+		ArrayList<Playlist> result = new ArrayList<>();
+		if (playlists != null) {
+			for (PlaylistSimplified playlist : playlists) {
+				if (playlist.getImages() != null && playlist.getImages().length > 0) {
+					result.add(new Playlist(playlist.getName(), null, playlist.getUri(),
+							playlist.getImages()[0].getUrl()));
+				} else {
+					result.add(new Playlist(playlist.getName(), null, playlist.getUri(), null));
+				}
+
+			}
+		}
+		writeUrisToStorage(result, type);
+		return result;
 	}
 
 	/**
@@ -262,6 +299,64 @@ public class Search {
 			}
 		}
 		return false;
+	}
 
+	/**
+	 * write all Uris from a list of Playlists to the storage. type is needed to store different search queries. For
+	 * example getOwnPlaylists() or getFeaturedPlaylists()
+	 * 
+	 * @param playlists
+	 *            playlists to write uris
+	 * @param type
+	 *            to write to right position
+	 */
+	private void writeUrisToStorage(List<Playlist> playlists, SearchTypes type) {
+		deleteUrisFromStroage(type);
+		for (int i = 0; i < playlists.size(); i++) {
+			this.storage.put(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)),
+					playlists.get(i).getUri());
+		}
+	}
+
+	private void writeUrisToStorageMap(List<Map<String, String>> playlists, SearchTypes type) {
+		deleteUrisFromStroage(type);
+		for (int i = 0; i < playlists.size(); i++) {
+			this.storage.put(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)),
+					playlists.get(i).get(SpotifyConstants.ITEM_URI));
+		}
+	}
+
+	/**
+	 * delete all saved uris from the storage of the given query
+	 * 
+	 * @param type
+	 *            of the query items to delete
+	 */
+	private void deleteUrisFromStroage(SearchTypes type) {
+		int i = 0;
+		while (this.storage
+				.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))) != null) {
+			this.storage.delete(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)));
+			i++;
+		}
+	}
+
+	/**
+	 * restore all uris from a search
+	 * 
+	 * @param type
+	 *            to restore
+	 * @return a list of uris
+	 */
+	public List<String> restoreUris(SearchTypes type) {
+		List<String> result = new ArrayList<>();
+		int i = 0;
+		while (this.storage
+				.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))) != null) {
+			result.add(this.storage
+					.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))));
+			i++;
+		}
+		return result;
 	}
 }
