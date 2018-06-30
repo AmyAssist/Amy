@@ -172,6 +172,7 @@ public class Core implements SpeechInputHandler {
 		this.server.shutdown();
 		this.threads.forEach(Thread::interrupt);
 		this.singleThreadScheduledExecutor.shutdownNow();
+		this.di.shutdown();
 	}
 
 }
