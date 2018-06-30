@@ -60,8 +60,8 @@ class SpotifyAPICallsTest {
 	private ConfigLoader configLoader;
 
 	@Reference
-	IStorage storage;
-	
+	private IStorage storage;
+
 	@Reference
 	private TestFramework testFramework;
 
@@ -87,7 +87,7 @@ class SpotifyAPICallsTest {
 		try {
 			uri = new URI(
 					"https://accounts.spotify.com:443/authorize?client_id=A1B2cCD&response_type=code&redirect_uri=s&"
-							.concat("state=TEST&scope=user-modify-playback-state%2Cuser-read-playback-state&")
+							.concat("state=TEST&scope=user-modify-playback-state%2Cuser-read-playback-state%2Cplaylist-read-private&")
 							.concat("show_dialog=true"));
 		} catch (URISyntaxException e) {
 		}
@@ -316,5 +316,15 @@ class SpotifyAPICallsTest {
 	public void testSetClientId() {
 		this.spotifyAPICalls.setClientID(CLIENT_ID);
 		verify(this.configLoader).set(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY, CLIENT_ID);
+	}
+
+	@Test
+	public void testOwnPlaylists() {
+		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		this.spotifyAPICalls.setCurrentDevice("w");
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.getOwnPlaylists(1), equalTo(null));
+		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+		assertThat(this.spotifyAPICalls.getOwnPlaylists(1), equalTo(null));
 	}
 }

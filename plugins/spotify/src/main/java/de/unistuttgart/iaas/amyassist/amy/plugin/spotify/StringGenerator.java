@@ -65,18 +65,21 @@ public class StringGenerator {
 	 * @return a single String with useful information for the user
 	 */
 	public String generateSearchOutputString(Map<String, String> input) {
-		switch (input.get(SpotifyConstants.ITEM_TYPE)) {
-		case SpotifyConstants.TYPE_ALBUM:
-			return albumOutputString(input);
-		case SpotifyConstants.TYPE_ARTIST:
-			return artistOutputString(input);
-		case SpotifyConstants.TYPE_PLAYLIST:
-			return playlistOutputString(input);
-		case SpotifyConstants.TYPE_TRACK:
-			return trackOutputString(input);
-		default:
-			return "";
+		if (!input.isEmpty()) {
+			switch (input.get(SpotifyConstants.ITEM_TYPE)) {
+			case SpotifyConstants.TYPE_ALBUM:
+				return albumOutputString(input);
+			case SpotifyConstants.TYPE_ARTIST:
+				return artistOutputString(input);
+			case SpotifyConstants.TYPE_PLAYLIST:
+				return playlistOutputString(input);
+			case SpotifyConstants.TYPE_TRACK:
+				return trackOutputString(input);
+			default:
+				return "";
+			}
 		}
+		return "";
 	}
 
 	/**
