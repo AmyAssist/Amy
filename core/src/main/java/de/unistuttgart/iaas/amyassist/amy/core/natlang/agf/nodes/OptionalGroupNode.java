@@ -21,33 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
-
-import java.util.Iterator;
-
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets.MorphemeParselet;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets.ORGroupParselet;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets.OptionalGroupParselet;
-
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
- * 
- * the AGF Parser implementation
+ * optional group node 
+ *
  * @author Felix Burk
  */
-public class AGFParser extends Parser {
+public class OptionalGroupNode extends AGFNode {
 
 	/**
-	 * @param tokens the tokens
+	 * @param content the content
 	 */
-	public AGFParser(Iterator<AGFToken> tokens) {
-		super(tokens);
-		
-		super.register(AGFTokenType.RULE, new MorphemeParselet());
-		super.register(AGFTokenType.WORD, new MorphemeParselet());
-		super.register(AGFTokenType.OPENBR, new ORGroupParselet());
-		super.register(AGFTokenType.OPENSBR, new OptionalGroupParselet());
-
+	public OptionalGroupNode(String content) {
+		super(content);
 	}
 
 }

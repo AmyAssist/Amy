@@ -39,7 +39,7 @@ public class AGFParserTest {
 	@Test
 	public void test() {
 		AGFLexer lex = new AGFLexer();
-		List<AGFToken> list = lex.tokenize("hello # (a(b|x|d)|#)");
+		List<AGFToken> list = lex.tokenize("set timer on [# hours] [# minutes] [# seconds]");
 		AGFParser parser = new AGFParser(list.iterator());
 		
 	

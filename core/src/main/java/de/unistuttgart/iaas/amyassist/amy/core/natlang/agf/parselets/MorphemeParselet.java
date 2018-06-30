@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParseException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFToken;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFTokenType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.Parser;
@@ -34,7 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.WordNode;
 /**
  * parses the smallest meaningful unit in the AGF Syntax
  * 
- * <Morphene> := 
+ * <Morphene> := <Word> | <Rule>;
  *  
  * @author Felix Burk
  */
@@ -52,7 +53,13 @@ public class MorphemeParselet implements IAGFParselet {
 		if(token.type == AGFTokenType.WORD) {
 			morph.addChild(new WordNode(token.content));
 		}else if(token.type == AGFTokenType.RULE) {
-			morph.addChild(new RuleNode(token.content));
+			//is the next token a rule too? 
+			//this is not allowed!
+			if(!parser.match(AGFTokenType.RULE)) {
+				morph.addChild(new RuleNode(token.content));
+			}else {
+				throw new AGFParseException("numbers cannot be followed by another number");
+			}
 		}
 		
 		return morph;
