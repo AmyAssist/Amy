@@ -41,6 +41,10 @@ import uk.org.lidalia.slf4jtest.TestLogger;
  */
 public class LoggerMatchers {
 
+	private LoggerMatchers() {
+		// hide constructor
+	}
+
 	/**
 	 * Creates a matcher that matches if the given LoggingEvent was logged in the logger
 	 * 
@@ -99,54 +103,172 @@ public class LoggerMatchers {
 	}
 
 	/**
+	 * Create a matcher that matches a message logged at ERROR level
 	 * 
 	 * @param message
+	 *            the message that should be matched
 	 */
 	public static Matcher<LoggingEvent> error(String message) {
 		return new LoggingEventMatcher(Level.ERROR, message);
 	}
 
 	/**
+	 * Create a matcher that matches the message and arguments at ERROR level
 	 * 
 	 * @param message
+	 *            the message that should be matched
 	 * @param arguments
+	 *            the arguments that was logged to the message
 	 */
 	public static Matcher<LoggingEvent> error(String message, Object... arguments) {
 		return new LoggingEventMatcher(Level.ERROR, message, arguments);
 	}
 
 	/**
-	 * @param string
+	 * Create a matcher that matches the throwable and the accompanying message at ERROR level
+	 * 
+	 * @param message
+	 *            the message that should be matched
 	 * @param runtimeException
+	 *            the throwable matcher used to match the logged throwable
 	 */
 	public static Matcher<LoggingEvent> error(String message, Matcher<Throwable> runtimeException) {
 		return new LoggingEventMatcher(Level.ERROR, message, runtimeException);
 	}
 
 	/**
+	 * Create a matcher that matches a message logged at WARN level
 	 * 
 	 * @param message
+	 *            the message that should be matched
+	 */
+	public static Matcher<LoggingEvent> warn(String message) {
+		return new LoggingEventMatcher(Level.WARN, message);
+	}
+
+	/**
+	 * Create a matcher that matches the message and arguments at WARN level
+	 * 
+	 * @param message
+	 *            the message that should be matched
+	 * @param arguments
+	 *            the arguments that was logged to the message
+	 */
+	public static Matcher<LoggingEvent> warn(String message, Object... arguments) {
+		return new LoggingEventMatcher(Level.WARN, message, arguments);
+	}
+
+	/**
+	 * Create a matcher that matches the throwable and the accompanying message at WARN level
+	 * 
+	 * @param message
+	 *            the message that should be matched
+	 * @param runtimeException
+	 *            the throwable matcher used to match the logged throwable
+	 */
+	public static Matcher<LoggingEvent> warn(String message, Matcher<Throwable> runtimeException) {
+		return new LoggingEventMatcher(Level.WARN, message, runtimeException);
+	}
+
+	/**
+	 * Create a matcher that matches a message logged at INFO level
+	 * 
+	 * @param message
+	 *            the message that should be matched
 	 */
 	public static Matcher<LoggingEvent> info(String message) {
 		return new LoggingEventMatcher(Level.INFO, message);
 	}
 
 	/**
+	 * Create a matcher that matches the message and arguments at INFO level
 	 * 
 	 * @param message
+	 *            the message that should be matched
 	 * @param arguments
+	 *            the arguments that was logged to the message
 	 */
 	public static Matcher<LoggingEvent> info(String message, Object... arguments) {
 		return new LoggingEventMatcher(Level.INFO, message, arguments);
 	}
 
 	/**
-	 * @param string
+	 * Create a matcher that matches the throwable and the accompanying message at INFO level
+	 * 
+	 * @param message
+	 *            the message that should be matched
 	 * @param runtimeException
+	 *            the throwable matcher used to match the logged throwable
 	 */
 	public static Matcher<LoggingEvent> info(String message, Matcher<Throwable> runtimeException) {
 		return new LoggingEventMatcher(Level.INFO, message, runtimeException);
 	}
 
-	// TODO other log levels
+	/**
+	 * Create a matcher that matches a message logged at DEBUG level
+	 * 
+	 * @param message
+	 *            the message that should be matched
+	 */
+	public static Matcher<LoggingEvent> debug(String message) {
+		return new LoggingEventMatcher(Level.DEBUG, message);
+	}
+
+	/**
+	 * Create a matcher that matches the message and arguments at DEBUG level
+	 * 
+	 * @param message
+	 *            the message that should be matched
+	 * @param arguments
+	 *            the arguments that was logged to the message
+	 */
+	public static Matcher<LoggingEvent> debug(String message, Object... arguments) {
+		return new LoggingEventMatcher(Level.DEBUG, message, arguments);
+	}
+
+	/**
+	 * Create a matcher that matches the throwable and the accompanying message at DEBUG level
+	 * 
+	 * @param message
+	 *            the message that should be matched
+	 * @param runtimeException
+	 *            the throwable matcher used to match the logged throwable
+	 */
+	public static Matcher<LoggingEvent> debug(String message, Matcher<Throwable> runtimeException) {
+		return new LoggingEventMatcher(Level.DEBUG, message, runtimeException);
+	}
+
+	/**
+	 * Create a matcher that matches a message logged at TRACE level
+	 * 
+	 * @param message
+	 *            the message that should be matched
+	 */
+	public static Matcher<LoggingEvent> trace(String message) {
+		return new LoggingEventMatcher(Level.TRACE, message);
+	}
+
+	/**
+	 * Create a matcher that matches the message and arguments at TRACE level
+	 * 
+	 * @param message
+	 *            the message that should be matched
+	 * @param arguments
+	 *            the arguments that was logged to the message
+	 */
+	public static Matcher<LoggingEvent> trace(String message, Object... arguments) {
+		return new LoggingEventMatcher(Level.TRACE, message, arguments);
+	}
+
+	/**
+	 * Create a matcher that matches the throwable and the accompanying message at TRACE level
+	 * 
+	 * @param message
+	 *            the message that should be matched
+	 * @param runtimeException
+	 *            the throwable matcher used to match the logged throwable
+	 */
+	public static Matcher<LoggingEvent> trace(String message, Matcher<Throwable> runtimeException) {
+		return new LoggingEventMatcher(Level.TRACE, message, runtimeException);
+	}
 }
