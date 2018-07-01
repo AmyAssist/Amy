@@ -29,6 +29,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.ServiceLoader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,45 +60,43 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  * @author Leon Kiefer, Tim Neumann
  */
 @ParametersAreNullableByDefault
-public class DependencyInjection implements ServiceLocator {
+public class DependencyInjection implements ServiceLocator, Configuration {
 	/**
 	 * A register which maps a service description to it's service provider.
 	 */
 	protected Map<ServiceDescription<?>, ServiceFunction<?>> register;
 
-	protected Map<String, StaticProvider<?>> staticProvider;
+	protected Map<String, StaticProvider<?>> staticProviders;
 
 	/**
 	 * Creates a new Dependency Injection
 	 */
 	public DependencyInjection() {
 		this.register = new HashMap<>();
-		this.staticProvider = new HashMap<>();
+		this.staticProviders = new HashMap<>();
 
 		this.registerContextProvider("class", new ClassProvider());
 		this.addExternalService(ServiceLocator.class, this);
+		this.addExternalService(Configuration.class, this);
 	}
 
 	/**
-	 * Registers a service provider
+	 * Loads Services using the provider configuration file
+	 * META-INF/services/de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader and the
+	 * {@link ServiceProviderLoader}
 	 * 
-	 * @param serviceType
-	 *            The type of this service
-	 * @param serviceFunction
-	 *            The instance of the service provider
+	 * @see java.util.ServiceLoader
 	 */
+	public void loadServices() {
+		ServiceLoader.load(ServiceProviderLoader.class).forEach(s -> s.load(this));
+	}
+
+	@Override
 	public synchronized <T> void register(Class<T> serviceType, ServiceFunction<T> serviceFunction) {
 		this.register(Util.serviceDescriptionFor(serviceType), serviceFunction);
 	}
 
-	/**
-	 * Registers a service provider
-	 * 
-	 * @param serviceDescription
-	 *            The description of service
-	 * @param serviceFunction
-	 *            The instance of the service provider
-	 */
+	@Override
 	public synchronized <T> void register(ServiceDescription<T> serviceDescription,
 			ServiceFunction<T> serviceFunction) {
 		if (this.hasServiceOfType(serviceDescription))
@@ -105,12 +104,7 @@ public class DependencyInjection implements ServiceLocator {
 		this.register.put(serviceDescription, serviceFunction);
 	}
 
-	/**
-	 * Registers a service
-	 * 
-	 * @param cls
-	 *            The service to register.
-	 */
+	@Override
 	public synchronized void register(@Nonnull Class<?> cls) {
 		Service annotation = cls.getAnnotation(Service.class);
 		if (annotation == null)
@@ -139,19 +133,12 @@ public class DependencyInjection implements ServiceLocator {
 		}
 	}
 
+	@Override
 	public synchronized void registerContextProvider(String key, StaticProvider<?> staticProvider) {
-		this.staticProvider.put(key, staticProvider);
+		this.staticProviders.put(key, staticProvider);
 	}
 
-	/**
-	 * Adds an external Service instance to the DI. The DI does not manage the dependencies of the external Service, but
-	 * the DI can inject the external Service as dependency into other managed services.
-	 * 
-	 * @param serviceType
-	 *            The type of this service
-	 * @param externalService
-	 *            The instance of this service
-	 */
+	@Override
 	public synchronized <T> void addExternalService(@Nonnull Class<T> serviceType, @Nonnull T externalService) {
 		this.register(serviceType, new SingeltonServiceProvider<>(externalService));
 	}
@@ -284,9 +271,9 @@ public class DependencyInjection implements ServiceLocator {
 	}
 
 	private StaticProvider<?> getContextProvider(@Nonnull String contextProviderType) {
-		if (!this.staticProvider.containsKey(contextProviderType))
+		if (!this.staticProviders.containsKey(contextProviderType))
 			throw new NoSuchElementException(contextProviderType);
-		return this.staticProvider.get(contextProviderType);
+		return this.staticProviders.get(contextProviderType);
 	}
 
 	@Override

@@ -26,7 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,16 +33,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
-import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
@@ -142,17 +136,7 @@ public class Core implements SpeechInputHandler {
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
 		this.di.addExternalService(CommandLineArgumentHandler.class, this.cmaHandler);
 
-		this.di.register(Logger.class, new LoggerProvider());
-		this.di.register(Properties.class, new PropertiesProvider());
-
-		this.di.register(Server.class);
-		this.di.register(ConfigurationImpl.class);
-		this.di.register(Console.class);
-		this.di.register(SpeechCommandHandler.class);
-		this.di.register(ConfigurationLoader.class);
-		this.di.register(PluginLoader.class);
-		this.di.register(PluginManager.class);
-		this.di.register(EnvironmentService.class);
+		this.di.loadServices();
 	}
 
 	/**
