@@ -31,6 +31,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
+
 /**
  * Test the equals method of ServiceDescriptionImpl
  * 
@@ -41,11 +43,11 @@ class ServiceDescriptionImplTest {
 	@ParameterizedTest
 	@MethodSource("values")
 	void testNotEquals(Object obj) {
-		assertThat(new ServiceDescriptionImpl<>(Service7API.class), is(not(equalTo(obj))));
+		assertThat(Util.serviceDescriptionFor(Service7API.class), is(not(equalTo(obj))));
 	}
 
 	static Stream<Object> values() {
-		return Stream.of(null, new Object(), new ServiceDescriptionImpl<>(Service1.class));
+		return Stream.of(null, new Object(), Util.serviceDescriptionFor(Service1.class));
 	}
 
 }

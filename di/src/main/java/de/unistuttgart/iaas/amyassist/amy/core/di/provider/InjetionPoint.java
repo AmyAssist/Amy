@@ -45,18 +45,10 @@ class InjetionPoint {
 
 	/**
 	 * 
-	 * @return
-	 */
-	public Class<?> getType() {
-		return this.field.getType();
-	}
-
-	/**
-	 * 
 	 * @return the Description of the Service required by this InjetionPoint
 	 */
 	public ServiceDescription<?> getServiceDescription() {
-		return Util.serviceDescriptionFor(this.getType());
+		return Util.serviceDescriptionFor(this.field);
 	}
 
 	public void inject(@Nonnull Object instance, @Nullable Object object) {

@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import java.lang.annotation.Annotation;
+
 /**
  * Implementation of ServiceDescription interface
  * 
@@ -38,7 +40,7 @@ public class ServiceDescriptionImpl<T> implements ServiceDescription<T> {
 	 * @param serviceType
 	 * 
 	 */
-	public ServiceDescriptionImpl(Class<T> serviceType) {
+	public ServiceDescriptionImpl(Class<T> serviceType, Annotation[] annotations) {
 		this.serviceType = serviceType;
 	}
 

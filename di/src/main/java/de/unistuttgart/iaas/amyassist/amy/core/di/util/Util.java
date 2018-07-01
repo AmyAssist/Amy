@@ -209,7 +209,17 @@ public class Util {
 	}
 
 	public static <T> ServiceDescription<T> serviceDescriptionFor(Class<T> serviceType) {
-		return new ServiceDescriptionImpl<>(serviceType);
+		return new ServiceDescriptionImpl<>(serviceType, serviceType.getAnnotations());
+	}
+
+	/**
+	 * @param field
+	 * @return
+	 */
+	public static ServiceDescription<?> serviceDescriptionFor(Field field) {
+		Class<?> serviceType = field.getType();
+		Annotation[] annotations = field.getAnnotations();
+		return new ServiceDescriptionImpl<>(serviceType, annotations);
 	}
 
 }
