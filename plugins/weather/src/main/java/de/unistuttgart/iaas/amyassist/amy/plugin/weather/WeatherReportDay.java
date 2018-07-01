@@ -34,18 +34,17 @@ import static java.lang.Math.round;
 
 @XmlRootElement
 public class WeatherReportDay {
-
-	private String preamble;
-	private String summary;
-	private boolean precip;
-	private String precipProbability;
-	private String precipType;
-	private long temperatureMin;
-	private long temperatureMax;
-	private String sunriseTime;
-	private String sunsetTime;
-	private String weekday;
-	private long timestamp;
+	private final String preamble;
+	private final String summary;
+	private final boolean precip;
+	private final String precipProbability;
+	private final String precipType;
+	private final long temperatureMin;
+	private final long temperatureMax;
+	private final String sunriseTime;
+	private final String sunsetTime;
+	private final String weekday;
+	private final long timestamp;
 
 	private static final String TRIM_QUOTES_REGEX = "^\"|\"$";
 	private static final int FRACTION_TO_PERCENT_FACTOR = 100;

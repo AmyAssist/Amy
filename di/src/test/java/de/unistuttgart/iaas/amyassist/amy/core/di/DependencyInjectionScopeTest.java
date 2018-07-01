@@ -139,7 +139,6 @@ public class DependencyInjectionScopeTest {
 	/**
 	 * Clear loggers
 	 */
-	@SuppressWarnings("static-method")
 	@AfterEach
 	public void clearLoggers() {
 		TestLoggerFactory.clear();

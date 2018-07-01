@@ -73,6 +73,8 @@ public class Core {
 	private Server server;
 	private IStorage storage = new Storage("", new GlobalStorage());
 
+	private CommandLineArgumentHandlerService cmaHandler;
+
 	/**
 	 * Get's {@link #singleThreadScheduledExecutor singleThreadScheduledExecutor}
 	 * 
@@ -89,9 +91,9 @@ public class Core {
 	 *            The arguments for the core.
 	 */
 	void start(String[] args) {
-		CommandLineArgumentHandler cmaHandler = new CommandLineArgumentHandler();
-		cmaHandler.init(args);
-		if (cmaHandler.shouldProgramContinue()) {
+		this.cmaHandler = new CommandLineArgumentHandlerService();
+		this.cmaHandler.init(args);
+		if (this.cmaHandler.shouldProgramContinue()) {
 			run();
 		}
 	}
@@ -151,6 +153,7 @@ public class Core {
 		this.di.addExternalService(DependencyInjection.class, this.di);
 		this.di.addExternalService(Core.class, this);
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
+		this.di.addExternalService(CommandLineArgumentHandler.class, this.cmaHandler);
 
 		this.di.register(Logger.class, new LoggerProvider());
 		this.di.register(Properties.class, new PropertiesProvider());
@@ -174,6 +177,7 @@ public class Core {
 		this.server.shutdown();
 		this.threads.forEach(Thread::interrupt);
 		this.singleThreadScheduledExecutor.shutdownNow();
+		this.di.shutdown();
 		this.logger.info("stopped");
 	}
 
