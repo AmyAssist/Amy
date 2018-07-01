@@ -61,9 +61,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 @ParametersAreNullableByDefault
 public class DependencyInjection implements ServiceLocator {
 	/**
-	 * A register which maps a class to it's service provider.
+	 * A register which maps a service description to it's service provider.
 	 */
-	protected Map<Class<?>, ServiceFunction<?>> register;
+	protected Map<ServiceDescription<?>, ServiceFunction<?>> register;
 
 	protected Map<String, StaticProvider<?>> staticProvider;
 
@@ -87,9 +87,22 @@ public class DependencyInjection implements ServiceLocator {
 	 *            The instance of the service provider
 	 */
 	public synchronized <T> void register(Class<T> serviceType, ServiceFunction<T> serviceFunction) {
-		if (this.hasServiceOfType(serviceType))
+		this.register(Util.serviceDescriptionFor(serviceType), serviceFunction);
+	}
+
+	/**
+	 * Registers a service provider
+	 * 
+	 * @param serviceDescription
+	 *            The description of service
+	 * @param serviceFunction
+	 *            The instance of the service provider
+	 */
+	public synchronized <T> void register(ServiceDescription<T> serviceDescription,
+			ServiceFunction<T> serviceFunction) {
+		if (this.hasServiceOfType(serviceDescription))
 			throw new DuplicateServiceException();
-		this.register.put(serviceType, serviceFunction);
+		this.register.put(serviceDescription, serviceFunction);
 	}
 
 	/**
@@ -112,7 +125,7 @@ public class DependencyInjection implements ServiceLocator {
 		}
 
 		for (Class<?> serviceType : serviceTypes) {
-			if (this.hasServiceOfType(serviceType)) {
+			if (this.hasServiceOfType(Util.serviceDescriptionFor(serviceType))) {
 				throw new DuplicateServiceException();
 			}
 			if (!serviceType.isAssignableFrom(cls)) {
@@ -122,7 +135,7 @@ public class DependencyInjection implements ServiceLocator {
 
 		for (Class<?> serviceType : serviceTypes) {
 			ServiceFunction<?> p = new ClassServiceProvider<>(cls);
-			this.register.put(serviceType, p);
+			this.register.put(Util.serviceDescriptionFor(serviceType), p);
 		}
 	}
 
@@ -143,22 +156,34 @@ public class DependencyInjection implements ServiceLocator {
 		this.register(serviceType, new SingeltonServiceProvider<>(externalService));
 	}
 
-	private boolean hasServiceOfType(Class<?> serviceType) {
-		return this.register.containsKey(serviceType);
+	private boolean hasServiceOfType(ServiceDescription<?> serviceDescription) {
+		return this.register.containsKey(serviceDescription);
 	}
 
 	@Override
 	public <T> T getService(Class<T> serviceType) {
-		return this.getService(serviceType, null);
+		return this.getService(Util.serviceDescriptionFor(serviceType));
 	}
 
 	/**
 	 * @see ServiceLocator#getService(Class)
 	 */
 	public <T> T getService(Class<T> serviceType, @Nullable ServiceConsumer consumer) {
-		ServiceFunction<T> provider = this.getServiceProvider(serviceType);
+		return this.getService(Util.serviceDescriptionFor(serviceType), consumer);
+	}
+
+	/**
+	 * @see ServiceLocator#getService(ServiceDescription)
+	 */
+	public <T> T getService(ServiceDescription<T> serviceDescription, @Nullable ServiceConsumer consumer) {
+		ServiceFunction<T> provider = this.getServiceProvider(serviceDescription);
 		ServiceFactory<T> factory = this.resolve(provider, consumer);
 		return factory.build();
+	}
+
+	@Override
+	public <T> T getService(ServiceDescription<T> serviceDescription) {
+		return this.getService(serviceDescription, null);
 	}
 
 	/**
@@ -213,7 +238,7 @@ public class DependencyInjection implements ServiceLocator {
 		}
 		ServiceProviderServiceFactory<T> serviceProviderServiceFactory = new ServiceProviderServiceFactory<>(
 				serviceProvider);
-		for (Class<?> dependency : serviceProvider.getDependencies()) {
+		for (ServiceDescription<?> dependency : serviceProvider.getDependencies()) {
 			ServiceFunction<?> provider = this.getServiceProvider(dependency);
 			ServiceFactory<?> dependencyFactory = this.resolve(provider, stack, serviceProvider);
 			serviceProviderServiceFactory.resolved(dependency, dependencyFactory);
@@ -252,10 +277,10 @@ public class DependencyInjection implements ServiceLocator {
 
 	@Nonnull
 	@SuppressWarnings("unchecked")
-	private <T> ServiceFunction<T> getServiceProvider(Class<T> serviceType) {
-		if (!this.register.containsKey(serviceType))
-			throw new ServiceNotFoundException(serviceType);
-		return (ServiceFunction<T>) this.register.get(serviceType);
+	private <T> ServiceFunction<T> getServiceProvider(ServiceDescription<T> serviceDescription) {
+		if (!this.register.containsKey(serviceDescription))
+			throw new ServiceNotFoundException(serviceDescription);
+		return (ServiceFunction<T>) this.register.get(serviceDescription);
 	}
 
 	private StaticProvider<?> getContextProvider(@Nonnull String contextProviderType) {

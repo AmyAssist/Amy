@@ -24,31 +24,15 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 /**
- * A exception of the dependency injection
+ * Abstract description of a Service
  * 
  * @author Leon Kiefer
+ * @param <T>
+ *            the type of the service
  */
-public class ServiceNotFoundException extends RuntimeException {
-
+public interface ServiceDescription<T> {
 	/**
-	 * 
+	 * @return the type of the Service described by this Service Description
 	 */
-	private static final long serialVersionUID = 2441944380474159637L;
-	private final Class<?> serviceType;
-
-	/**
-	 * @param serviceDescription
-	 */
-	public ServiceNotFoundException(ServiceDescription<?> serviceDescription) {
-		this.serviceType = serviceDescription.getServiceType();
-	}
-
-	/**
-	 * @see java.lang.Throwable#getMessage()
-	 */
-	@Override
-	public String getMessage() {
-		return "The Service " + this.serviceType.getName() + " is not registered in the DI or do not exists.";
-	}
-
+	Class<T> getServiceType();
 }

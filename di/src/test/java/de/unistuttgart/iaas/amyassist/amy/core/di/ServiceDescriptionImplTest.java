@@ -23,32 +23,29 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 /**
- * A exception of the dependency injection
+ * Test the equals method of ServiceDescriptionImpl
  * 
  * @author Leon Kiefer
  */
-public class ServiceNotFoundException extends RuntimeException {
+class ServiceDescriptionImplTest {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2441944380474159637L;
-	private final Class<?> serviceType;
-
-	/**
-	 * @param serviceDescription
-	 */
-	public ServiceNotFoundException(ServiceDescription<?> serviceDescription) {
-		this.serviceType = serviceDescription.getServiceType();
+	@ParameterizedTest
+	@MethodSource("values")
+	void testNotEquals(Object obj) {
+		assertThat(new ServiceDescriptionImpl<>(Service7API.class), is(not(equalTo(obj))));
 	}
 
-	/**
-	 * @see java.lang.Throwable#getMessage()
-	 */
-	@Override
-	public String getMessage() {
-		return "The Service " + this.serviceType.getName() + " is not registered in the DI or do not exists.";
+	static Stream<Object> values() {
+		return Stream.of(null, new Object(), new ServiceDescriptionImpl<>(Service1.class));
 	}
 
 }

@@ -21,45 +21,47 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
-
-import java.lang.reflect.Field;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 /**
- * A InjectionPoint is an abstraction of where an object is injected into an instance.
+ * Implementation of ServiceDescription interface
  * 
  * @author Leon Kiefer
+ * @param <T>
+ *            the type of the service
  */
-class InjetionPoint {
-	private Field field;
+public class ServiceDescriptionImpl<T> implements ServiceDescription<T> {
 
-	public InjetionPoint(Field field) {
-		this.field = field;
-	}
+	private Class<T> serviceType;
 
 	/**
+	 * @param serviceType
 	 * 
-	 * @return
 	 */
-	public Class<?> getType() {
-		return this.field.getType();
+	public ServiceDescriptionImpl(Class<T> serviceType) {
+		this.serviceType = serviceType;
 	}
 
-	/**
-	 * 
-	 * @return the Description of the Service required by this InjetionPoint
-	 */
-	public ServiceDescription<?> getServiceDescription() {
-		return Util.serviceDescriptionFor(this.getType());
+	@Override
+	public Class<T> getServiceType() {
+		return this.serviceType;
 	}
 
-	public void inject(@Nonnull Object instance, @Nullable Object object) {
-		Util.inject(instance, object, this.field);
+	@Override
+	public int hashCode() {
+		return this.serviceType.hashCode();
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof ServiceDescription<?>) {
+			return this.getServiceType().equals(((ServiceDescription<?>) obj).getServiceType());
+		}
+		return false;
+	}
+
 }

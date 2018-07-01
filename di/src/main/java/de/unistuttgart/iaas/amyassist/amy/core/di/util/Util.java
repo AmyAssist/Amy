@@ -35,6 +35,8 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
@@ -205,4 +207,9 @@ public class Util {
 			throw new InjectionException(object, instance, e);
 		}
 	}
+
+	public static <T> ServiceDescription<T> serviceDescriptionFor(Class<T> serviceType) {
+		return new ServiceDescriptionImpl<>(serviceType);
+	}
+
 }

@@ -36,6 +36,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -55,7 +56,7 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 	/**
 	 * A register which contains all dependencies
 	 */
-	private Collection<Class<?>> dependencies = new HashSet<>();
+	private Collection<ServiceDescription<?>> dependencies = new HashSet<>();
 	private Collection<InjetionPoint> injetionPoints = new HashSet<>();
 	private Collection<String> requiredContextIdentifiers = new HashSet<>();
 	private final NTuple<String> contextType;
@@ -68,7 +69,7 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 	}
 
 	@Override
-	public Collection<Class<?>> getDependencies() {
+	public Collection<ServiceDescription<?>> getDependencies() {
 		return Collections.unmodifiableCollection(this.dependencies);
 	}
 
@@ -83,10 +84,10 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 		for (Field field : dependencyFields) {
 			InjetionPoint injetionPoint = new InjetionPoint(field);
 			this.injetionPoints.add(injetionPoint);
-			Class<?> dependency = injetionPoint.getType();
+			ServiceDescription<?> dependency = injetionPoint.getServiceDescription();
 			if (this.dependencies.contains(dependency)) {
 				this.logger.warn("The Service {} have a duplicate dependeny on {}", cls.getName(),
-						dependency.getName());
+						dependency.getServiceType().getName());
 			} else {
 				this.dependencies.add(dependency);
 			}
@@ -113,7 +114,7 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 	}
 
 	@Override
-	public T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
+	public T getService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
 		NTuple<?> contextTuple = this.getContextTuple(context);
 		if (this.serviceInstances.containsKey(contextTuple)) {
 			return this.serviceInstances.get(contextTuple);
@@ -130,12 +131,13 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 	 * @param resolvedDependencies
 	 * @param contextTuple
 	 *            the context
-	 * @return
+	 * @return a newly created service instance
 	 */
-	private T createService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, NTuple<?> contextTuple) {
+	private T createService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies,
+			NTuple<?> contextTuple) {
 		T serviceInstance = this.createService();
-		for (InjetionPoint injetionPoint : injetionPoints) {
-			ServiceFactory<?> serviceFactory = resolvedDependencies.get(injetionPoint.getType());
+		for (InjetionPoint injetionPoint : this.injetionPoints) {
+			ServiceFactory<?> serviceFactory = resolvedDependencies.get(injetionPoint.getServiceDescription());
 			injetionPoint.inject(serviceInstance, serviceFactory.build());
 		}
 		for (int i = 0; i < this.contextInjectionPoints.n; i++) {
