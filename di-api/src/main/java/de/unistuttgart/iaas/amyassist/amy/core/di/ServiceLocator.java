@@ -36,7 +36,10 @@ public interface ServiceLocator {
 	 * Instantiate the given class if it can. The object created in this way will not be managed by the DI.
 	 * 
 	 * @param serviceClass
-	 * @return
+	 *            the implementation of a service
+	 * @return the created instance of the given class
+	 * @param <T>
+	 *            the type of the implementation class
 	 */
 	<T> T create(Class<T> serviceClass);
 
@@ -45,7 +48,10 @@ public interface ServiceLocator {
 	 * this way will not be managed by the DI.
 	 * 
 	 * @param serviceClass
-	 * @return
+	 *            the implementation of a service
+	 * @return the created instance of the given class
+	 * @param <T>
+	 *            the type of the implementation class
 	 */
 	<T> T createAndInitialize(Class<T> serviceClass);
 
@@ -56,6 +62,8 @@ public interface ServiceLocator {
 	 * @param serviceType
 	 *            the type of the service, not the class which implements the service
 	 * @return an instance of the given type if a service provider is found
+	 * @param <T>
+	 *            the type of the service
 	 */
 	<T> T getService(Class<T> serviceType);
 
@@ -73,4 +81,18 @@ public interface ServiceLocator {
 	 * @param postConstructMe
 	 */
 	void postConstruct(@Nonnull Object postConstructMe);
+
+	/**
+	 * This will analyze the given object and call the preDestroy method. The object given will not be managed by the
+	 * DI.
+	 * 
+	 * @param destroyMe
+	 */
+	void preDestroy(@Nonnull Object destroyMe);
+
+	/**
+	 * This method will shutdown every service associated with this ServiceLocator. Those services that have a
+	 * preDestroy shall have their preDestroy called.
+	 */
+	void shutdown();
 }
