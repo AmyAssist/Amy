@@ -21,20 +21,25 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
 /**
+ * The Plugin Manager provides a list of all Plugins
  * 
  * @author Leon Kiefer
  */
-public interface SpeechInputHandler {
+public interface PluginManager {
+
 	/**
-	 * 
-	 * @param speechInput
-	 *            the user input
-	 * @return a Future, that completes with the result of processing the user input
+	 * load the plugins
 	 */
-	CompletableFuture<String> handle(String speechInput);
+	void loadPlugins();
+
+	/**
+	 * @see PluginLoader#getPlugins()
+	 */
+	List<IPlugin> getPlugins();
+
 }

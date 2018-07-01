@@ -28,12 +28,12 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 
 /**
  * Provide the plugin configuration properties as service

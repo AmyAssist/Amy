@@ -33,7 +33,6 @@ import javax.ws.rs.Path;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
@@ -49,7 +48,7 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
  * @author Leon Kiefer
  */
 @Service
-public class PluginManager {
+public class PluginManagerService implements PluginManager {
 	private static final String CONFIG_NAME = "plugin.config";
 	private static final String CONFIG_PLUGINS = "plugins";
 	private static final String PROPERTY_PLUGINS_DIR = "pluginDir";
@@ -89,8 +88,9 @@ public class PluginManager {
 	private boolean loaded = false;
 
 	/**
-	 * load the plugins
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager#loadPlugins()
 	 */
+	@Override
 	public synchronized void loadPlugins() {
 		if (this.loaded) {
 			throw new IllegalStateException("the plugins are loaded");
@@ -168,8 +168,9 @@ public class PluginManager {
 	}
 
 	/**
-	 * @see PluginLoader#getPlugins()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager#getPlugins()
 	 */
+	@Override
 	public List<IPlugin> getPlugins() {
 		return Collections.unmodifiableList(this.pluginLoader.getPlugins());
 	}
