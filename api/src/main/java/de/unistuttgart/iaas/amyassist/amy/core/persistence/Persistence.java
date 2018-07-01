@@ -21,37 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.persistence;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import javax.persistence.EntityManager;
 
 /**
- * Global storage placeholder until a database or similar mechanisms are implemented
+ * The Persistence Service api
  * 
- * @author Felix Burk
+ * @author Leon Kiefer
  */
-public class GlobalStorage {
+public interface Persistence {
 	/**
-	 * The map in which everything is stored.
-	 */
-	protected ConcurrentMap<String, String> store;
-
-	/**
-	 * Creates a new Global Storage. This should only be called once.
-	 */
-	public GlobalStorage() {
-		this.store = new ConcurrentHashMap<>();
-	}
-
-	/**
-	 * returns global storage HashMap
 	 * 
-	 * @return store
+	 * @param name
+	 *            the name of the Persistence Unit
+	 * @return the entity manager of the Persistence Unit
 	 */
-	public Map<String, String> getStore() {
-		return this.store;
-	}
+	EntityManager getEntityManager(String name);
 
+	/**
+	 * 
+	 * @param entity
+	 *            the entity class to register in the Persistence manager
+	 */
+	void register(Class<?> entity);
 }

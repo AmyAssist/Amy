@@ -24,20 +24,28 @@
 package de.unistuttgart.iaas.amyassist.amy.core.persistence;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceProviderResolverHolder;
 import javax.persistence.spi.PersistenceUnitInfo;
 
-import org.hibernate.jpa.HibernatePersistenceProvider;
+import com.google.common.collect.Lists;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
  * TODO: Description
@@ -48,26 +56,62 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class PersistenceService implements Persistence {
 	private static final String PERSISTENCE_CONFIG = "persistence";
 
+	private Map<String, List<Class<?>>> persistenceUnits = new HashMap<>();
+
+	@Reference
+	private Environment environment;
+
 	@Reference
 	private ConfigurationLoader configurationLoader;
 
-	private EntityManager entityManager;
+	private Properties gloablProperties;
+	private PersistenceProvider persistenceProvider;
 
 	@PostConstruct
 	private void init() {
-		Properties properties = this.configurationLoader.load(PERSISTENCE_CONFIG);
+		this.gloablProperties = this.configurationLoader.load(PERSISTENCE_CONFIG);
+		String string = this.environment.getWorkingDirectory().resolve("persistence").toAbsolutePath().toString();
+		this.gloablProperties.setProperty("javax.persistence.jdbc.url", "jdbc:h2:" + string);
 
-		List<String> classes = new ArrayList<>();
-		classes.add(SimpleData.class.getName());
-		PersistenceUnitInfo persistenceUnitInfo = new PersistenceUnitInfoImpl("test", classes, properties);
-		PersistenceProvider persistenceProvider = new HibernatePersistenceProvider();
-		EntityManagerFactory entityManagerFactory = persistenceProvider
-				.createContainerEntityManagerFactory(persistenceUnitInfo, null);
-		this.entityManager = entityManagerFactory.createEntityManager();
+		this.persistenceProvider = PersistenceProviderResolverHolder.getPersistenceProviderResolver()
+				.getPersistenceProviders().get(0);
 	}
 
 	@Override
-	public EntityManager getEntityManager(String name) {
-		return this.entityManager;
+	public @Nonnull EntityManager getEntityManager(String name) {
+		if (!this.persistenceUnits.containsKey(name)) {
+			throw new NoSuchElementException();
+		}
+		List<Class<?>> entities = this.persistenceUnits.get(name);
+		List<String> entitiesNames = Lists.transform(entities, Class::getName);
+
+		PersistenceUnitInfo persistenceUnitInfo = new PersistenceUnitInfoImpl(name, entitiesNames,
+				this.gloablProperties);
+
+		EntityManagerFactory entityManagerFactory = this.persistenceProvider
+				.createContainerEntityManagerFactory(persistenceUnitInfo, null);
+		return entityManagerFactory.createEntityManager();
+	}
+
+	@Override
+	public void register(@Nonnull Class<?> entity) {
+		if (!entity.isAnnotationPresent(Entity.class)) {
+			throw new IllegalArgumentException("@Entity annotation missing!");
+		}
+		if (!entity.isAnnotationPresent(PersistenceUnit.class)) {
+			throw new IllegalArgumentException("Persistede Unit must be specifiyed");
+		}
+
+		PersistenceUnit annotation = entity.getAnnotation(PersistenceUnit.class);
+		String unitName = annotation.unitName();
+
+		List<Class<?>> set;
+		if (this.persistenceUnits.containsKey(unitName)) {
+			set = this.persistenceUnits.get(unitName);
+		} else {
+			set = new ArrayList<>();
+			this.persistenceUnits.put(unitName, set);
+		}
+		set.add(entity);
 	}
 }

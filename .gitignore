@@ -21,4 +21,4 @@ dependency-reduced-pom.xml
 #Ignore config files
 *.properties
 
-persistence.db
+*.db

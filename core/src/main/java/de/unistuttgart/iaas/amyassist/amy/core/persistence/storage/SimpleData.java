@@ -21,16 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.persistence;
+package de.unistuttgart.iaas.amyassist.amy.core.persistence.storage;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.PersistenceUnit;
 
 /**
  * Data Object for DatabaseStorage
  * 
  * @author Leon Kiefer
  */
+@PersistenceUnit(unitName="DatabaseStorage")
 @Entity
 public class SimpleData {
 

@@ -21,17 +21,21 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.persistence;
+package de.unistuttgart.iaas.amyassist.amy.core.persistence.storage;
 
+import javax.annotation.PreDestroy;
 import javax.persistence.EntityManager;
 
+import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
 /**
- * Implementation of IStorage using JPA
+ * Implementation of IStorage for Plugins using JPA
  * 
  * @author Leon Kiefer
  */
@@ -40,16 +44,23 @@ public class DatabaseStorage implements IStorage {
 	@Reference
 	private Persistence persistence;
 
+	@Context(de.unistuttgart.iaas.amyassist.amy.core.di.Context.PLUGIN)
+	private IPlugin plugin;
+
 	private EntityManager entityManager;
+
+	private String prefix;
 
 	@PostConstruct
 	private void setup() {
-		this.entityManager = this.persistence.getEntityManager("");
+		this.prefix = this.plugin.getUniqueName() + ":";
+		this.persistence.register(SimpleData.class);
+		this.entityManager = this.persistence.getEntityManager("DatabaseStorage");
 	}
 
 	@Override
 	public void put(String key, String value) {
-		SimpleData simpleData = new SimpleData(key, value);
+		SimpleData simpleData = new SimpleData(this.prefix + key, value);
 		this.entityManager.getTransaction().begin();
 		this.entityManager.merge(simpleData);
 		this.entityManager.getTransaction().commit();
@@ -57,19 +68,24 @@ public class DatabaseStorage implements IStorage {
 
 	@Override
 	public String get(String key) {
-		return this.entityManager.find(SimpleData.class, key).getValue();
+		return this.entityManager.find(SimpleData.class, this.prefix + key).getValue();
 	}
 
 	@Override
 	public boolean has(String key) {
-		SimpleData find = this.entityManager.find(SimpleData.class, key);
+		SimpleData find = this.entityManager.find(SimpleData.class, this.prefix + key);
 		return find != null;
 	}
 
 	@Override
 	public void delete(String key) {
-		SimpleData find = this.entityManager.find(SimpleData.class, key);
+		SimpleData find = this.entityManager.find(SimpleData.class, this.prefix + key);
 		this.entityManager.remove(find);
+	}
+
+	@PreDestroy
+	private void destroy() {
+		this.entityManager.close();
 	}
 
 }
