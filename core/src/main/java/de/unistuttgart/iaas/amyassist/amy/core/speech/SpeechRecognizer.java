@@ -131,7 +131,7 @@ public abstract class SpeechRecognizer implements Runnable {
 		try {
 			SpeechRecognizer.this.recognizer = new StreamSpeechRecognizer(this.createConfiguration());
 		} catch (IOException e) {
-			throw new RuntimeException("StreamRecognizer can't be instantiated", e);
+			throw new RuntimeExceptionRecognizerCantBeCreated("StreamRecognizer can't be instantiated", e);
 		}
 	}
 
@@ -331,5 +331,26 @@ public abstract class SpeechRecognizer implements Runnable {
 	}
 
 	// ===============================================================================================
+
+	/**
+	 * non-Generic RuntimeException
+	 * 
+	 * @author Kai Menzel
+	 */
+	public class RuntimeExceptionRecognizerCantBeCreated extends RuntimeException {
+
+		private static final long serialVersionUID = 1L;
+
+		/**
+		 * @param string
+		 *            Message of the Exception
+		 * @param e
+		 *            Error Message
+		 */
+		public RuntimeExceptionRecognizerCantBeCreated(String string, IOException e) {
+			super(string, e);
+		}
+
+	}
 
 }

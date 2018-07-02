@@ -23,13 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.hasLogged;
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.info;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
@@ -51,11 +51,10 @@ import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 public class SpeechRecognitionTest extends SpeechRecognizer {
 
 	private String wrongGram = "wrongGrammar";
-	private String mainGram = "mainGrammar";
 	private String addGram = "addGrammar";
 
 	private String change = "change true";
-	private String unknown = "unknown String";
+//	private String unknown = "unknown String";
 	private String unknownError = "unknown Error";
 	private String known = "known String";
 	private String knownReturn = "return String";
@@ -103,8 +102,8 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 
 		// unknown return of SpeechInputHandler
 		/*
-		 * completableFuture = new CompletableFuture<>(); completableFuture.complete(this.unknown);
-		 * Mockito.when(this.handler.handle(???)).thenReturn(completableFuture);
+		 * completableFuture = new CompletableFuture<>(); completableFuture.complete(???);
+		 * Mockito.when(this.handler.handle(this.unknown)).thenReturn(completableFuture);
 		 */
 
 		// no return of SpeechInputHandler
@@ -117,8 +116,9 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	 */
 	@Test
 	void testMakeDecision() {
-		assertThrows(RuntimeException.class, () -> this.recognizer = new MainSpeechRecognizer(this.aui,
-				this.wrongGrammar, this.handler, this.ais, false));
+		assertThrows(RuntimeExceptionRecognizerCantBeCreated.class,
+				() -> this.recognizer = new MainSpeechRecognizer(this.aui, this.wrongGrammar, this.handler, this.ais,
+						false));
 		this.recognizer = new MainSpeechRecognizer(this.aui, this.mainGrammar, this.handler, this.ais, false);
 
 		// empty input
@@ -145,8 +145,9 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	 */
 	@Test
 	void mainSpecificPredefinedInputHandling() {
-		assertThrows(RuntimeException.class, () -> this.recognizer = new MainSpeechRecognizer(this.aui,
-				this.wrongGrammar, this.handler, this.ais, false));
+		assertThrows(RuntimeExceptionRecognizerCantBeCreated.class,
+				() -> this.recognizer = new MainSpeechRecognizer(this.aui, this.wrongGrammar, this.handler, this.ais,
+						false));
 		this.recognizer = new MainSpeechRecognizer(this.aui, this.mainGrammar, this.handler, this.ais, false);
 
 		assertThat(Constants.isSRListening(), equalTo(SpeechRecognitionListening.ASLEEP));
@@ -178,8 +179,9 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	void additionalSpecificPredefinedInputHandling() {
 		this.logger = TestLoggerFactory.getTestLogger(AdditionalSpeechRecognizer.class);
 
-		assertThrows(RuntimeException.class, () -> this.recognizer = new AdditionalSpeechRecognizer(this.aui,
-				this.wrongGrammar, this.handler, this.ais, false));
+		assertThrows(RuntimeExceptionRecognizerCantBeCreated.class,
+				() -> this.recognizer = new AdditionalSpeechRecognizer(this.aui, this.wrongGrammar, this.handler,
+						this.ais, false));
 		this.recognizer = new AdditionalSpeechRecognizer(this.aui, this.mainGrammar, this.handler, this.ais, false);
 
 		Constants.setSRListening(SpeechRecognitionListening.AWAKE);
@@ -230,6 +232,9 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	protected void predefinedInputHandling(String result) {
 	}
 
+	/**
+	 * clear the Logger after each Test
+	 */
 	@AfterEach
 	void afterEach() {
 		TestLoggerFactory.clearAll();
