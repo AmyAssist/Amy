@@ -35,13 +35,13 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
 import de.unistuttgart.iaas.amyassist.amy.core.GrammarParser;
 import de.unistuttgart.iaas.amyassist.amy.core.PluginGrammarInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.TextToPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.util.NaturalLanguageInterpreterAnnotationReader;
 
 /**
  * Handles incoming SpeechCommand requests
@@ -53,10 +53,9 @@ public class SpeechCommandHandler {
 	@Reference
 	private Logger logger;
 
-	private AnnotationReader annotationReader = new AnnotationReader();
 	private TextToPlugin textToPlugin;
-	private GrammarParser generator = new GrammarParser("grammar", AudioUserInteraction.getAudioUI().getWAKEUP(),
-			AudioUserInteraction.getAudioUI().getGOSLEEP(), AudioUserInteraction.getAudioUI().getSHUTDOWN());
+	private GrammarParser generator = new GrammarParser("grammar", Constants.WAKE_UP, Constants.GO_SLEEP,
+			Constants.SHUT_UP);
 
 	private Map<PluginGrammarInfo, Class<?>> grammarInfos = new HashMap<>();
 	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> speechCommands = new HashMap<>();
@@ -69,8 +68,8 @@ public class SpeechCommandHandler {
 	public void registerSpeechCommand(Class<?> class1) {
 		if (!class1.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand.class))
 			throw new IllegalArgumentException();
-		String[] speechKeyword = this.annotationReader.getSpeechKeyword(class1);
-		Map<String, SpeechCommand> grammars = this.annotationReader.getGrammars(class1);
+		String[] speechKeyword = NaturalLanguageInterpreterAnnotationReader.getSpeechKeyword(class1);
+		Map<String, SpeechCommand> grammars = NaturalLanguageInterpreterAnnotationReader.getGrammars(class1);
 		PluginGrammarInfo pluginGrammarInfo = new PluginGrammarInfo(Arrays.asList(speechKeyword), grammars.keySet());
 		this.grammarInfos.put(pluginGrammarInfo, class1);
 		this.speechCommands.putAll(grammars);

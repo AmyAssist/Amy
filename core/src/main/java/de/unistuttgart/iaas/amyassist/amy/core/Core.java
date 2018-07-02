@@ -49,7 +49,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
@@ -131,13 +130,10 @@ public class Core {
 
 		speechCommandHandler.setFileToSaveGrammarTo(grammarFile.toFile());
 
-		AudioUserInteraction aui = AudioUserInteraction.getAudioUI();
+		AudioUserInteraction aui = this.di.createAndInitialize(AudioUserInteraction.class);
 		aui.setGrammars(new Grammar("grammar", grammarFile.toFile()), null);
-
-		SpeechIO sr = aui;
-		this.di.inject(sr);
-		sr.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
-		this.threads.add(new Thread(sr));
+		aui.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
+		this.threads.add(new Thread(aui));
 
 		PluginManager pluginManager = this.di.getService(PluginManager.class);
 		pluginManager.loadPlugins();
