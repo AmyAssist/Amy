@@ -87,7 +87,7 @@ public class PersistenceService implements Persistence {
 		List<String> entitiesNames = Lists.transform(entities, Class::getName);
 
 		PersistenceUnitInfo persistenceUnitInfo = new PersistenceUnitInfoImpl(name, entitiesNames,
-				this.gloablProperties);
+				entities.get(0).getClassLoader(), this.gloablProperties);
 
 		Map<String, String> properites = new HashMap<>();
 		String string = this.environment.getWorkingDirectory().resolve(name).toAbsolutePath().toString();
@@ -113,10 +113,16 @@ public class PersistenceService implements Persistence {
 		List<Class<?>> set;
 		if (this.persistenceUnits.containsKey(unitName)) {
 			set = this.persistenceUnits.get(unitName);
+			ClassLoader persistenceUnitClassLoader = set.get(0).getClassLoader();
+			if (!persistenceUnitClassLoader.equals(entity.getClassLoader())) {
+				throw new IllegalArgumentException(
+						"The classLoader of Entities in a Persistence Unit must be the same");
+			}
 		} else {
 			set = new ArrayList<>();
 			this.persistenceUnits.put(unitName, set);
 		}
+
 		set.add(entity);
 	}
 }

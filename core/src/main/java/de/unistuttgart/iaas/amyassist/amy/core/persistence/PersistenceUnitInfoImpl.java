@@ -55,18 +55,24 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
 	private DataSource nonJtaDataSource = null;
 
+	private final ClassLoader classLoader;
+
 	/**
 	 * 
 	 * @param persistenceUnitName
 	 *            the name of the Persistence Unit
 	 * @param managedClassNames
 	 *            Entity classes
+	 * @param classLoader
+	 *            The class loader used to load the Entity classes from name
 	 * @param properties
 	 *            the configuration properties
 	 */
-	public PersistenceUnitInfoImpl(String persistenceUnitName, List<String> managedClassNames, Properties properties) {
+	public PersistenceUnitInfoImpl(String persistenceUnitName, List<String> managedClassNames, ClassLoader classLoader,
+			Properties properties) {
 		this.persistenceUnitName = persistenceUnitName;
 		this.managedClassNames = managedClassNames;
+		this.classLoader = classLoader;
 		this.properties = properties;
 	}
 
@@ -142,7 +148,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
 	@Override
 	public ClassLoader getClassLoader() {
-		return Thread.currentThread().getContextClassLoader();
+		return this.classLoader;
 	}
 
 	@Override
