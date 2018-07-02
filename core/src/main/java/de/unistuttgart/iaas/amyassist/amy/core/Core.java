@@ -128,8 +128,6 @@ public class Core {
 		Path grammarFile = environment.getWorkingDirectory().resolve("resources")
 				.resolve("sphinx-grammars/grammar.gram");
 
-		speechCommandHandler.setFileToSaveGrammarTo(grammarFile.toFile());
-
 		AudioUserInteraction aui = this.di.createAndInitialize(AudioUserInteraction.class);
 		aui.setGrammars(new Grammar("grammar", grammarFile.toFile()), null);
 		aui.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
