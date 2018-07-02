@@ -94,7 +94,7 @@ public class TextToPlugin {
 					// use the longest matching grammar
 					if (!grammarResults.isEmpty()) {
 						finalGrammarResult = Collections.max(grammarResults.keySet(),
-								Comparator.comparing(s -> s.length()));
+								Comparator.comparing(String::length));
 						result.add(1, finalGrammarResult);
 
 						String[] paramsList = stringToNumber(grammarResults.get(finalGrammarResult)).split(" ");
@@ -189,7 +189,7 @@ public class TextToPlugin {
 
 			for (String s : nmbs) {
 				s = s.replace(" ", "");
-				result += Integer.valueOf(stringToNmb.get(s));
+				result += this.stringToNmb.get(s);
 			}
 			results.add(result);
 			resultText = resultText.replaceAll(gr, String.valueOf(result) + " ");
