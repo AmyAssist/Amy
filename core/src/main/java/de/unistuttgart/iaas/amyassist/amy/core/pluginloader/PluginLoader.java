@@ -41,7 +41,6 @@ import java.util.jar.Manifest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 

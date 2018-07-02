@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
 import de.unistuttgart.iaas.amyassist.amy.core.GrammarParser;
@@ -51,7 +50,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  */
 @Service
 public class SpeechCommandHandler {
-	private final Logger logger = LoggerFactory.getLogger(SpeechCommandHandler.class);
+	@Reference
+	private Logger logger;
 
 	private AnnotationReader annotationReader = new AnnotationReader();
 	private TextToPlugin textToPlugin;

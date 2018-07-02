@@ -28,7 +28,6 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 
 /**

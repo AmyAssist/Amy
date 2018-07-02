@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Calendar;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 
@@ -40,6 +41,8 @@ import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.special.SearchResult;
+import com.wrapper.spotify.model_objects.specification.Paging;
+import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.requests.IRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
@@ -53,6 +56,7 @@ import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToNextTrackRequ
 import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrackRequest;
 import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
 import com.wrapper.spotify.requests.data.player.TransferUsersPlaybackRequest;
+import com.wrapper.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import com.wrapper.spotify.requests.data.search.SearchItemRequest;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
@@ -80,7 +84,8 @@ public class SpotifyAPICalls {
 	/**
 	 * Rules for the spotify user authentication e.g. access to the playcontrol
 	 */
-	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state";
+	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state,"
+			+ "playlist-read-private";
 	private String deviceID = null;
 
 	public static final String SPOTIFY_CLIENTSECRET_KEY = "spotify_clientSecret";
@@ -89,9 +94,10 @@ public class SpotifyAPICalls {
 	public static final String SPOTIFY_DEVICEID = "spotify_device_Id";
 	public static final String SPOTIFY_ACCESSTOKEN = "spotify_Accsesstoken";
 	public static final int TOKEN_EXPIRE_TIME_OFFSET = 120;
+	public static final String SPOTIFY_ERROR_TAG = "Spotify Exception:";
 
 	@Reference
-	private ConfigLoader configLoader;
+	private Properties configLoader;
 
 	@Reference
 	private Logger logger;
@@ -101,7 +107,7 @@ public class SpotifyAPICalls {
 
 	@Reference
 	private TaskSchedulerAPI taskScheduler;
-	
+
 	/**
 	 * init the api calls
 	 */
@@ -121,17 +127,17 @@ public class SpotifyAPICalls {
 	 */
 	public SpotifyApi getSpotifyApi() {
 		SpotifyApi spotifyAPI = null;
-		if (this.configLoader.get(SPOTIFY_CLIENTID_KEY) != null
-				&& this.configLoader.get(SPOTIFY_CLIENTSECRET_KEY) != null) {
-			spotifyAPI = new SpotifyApi.Builder().setClientId(this.configLoader.get(SPOTIFY_CLIENTID_KEY))
-					.setClientSecret(this.configLoader.get(SPOTIFY_CLIENTSECRET_KEY)).setRedirectUri(this.redirectURI)
+		if (this.configLoader.getProperty(SPOTIFY_CLIENTID_KEY) != null
+				&& this.configLoader.getProperty(SPOTIFY_CLIENTSECRET_KEY) != null) {
+			spotifyAPI = new SpotifyApi.Builder().setClientId(this.configLoader.getProperty(SPOTIFY_CLIENTID_KEY))
+					.setClientSecret(this.configLoader.getProperty(SPOTIFY_CLIENTSECRET_KEY)).setRedirectUri(this.redirectURI)
 					.build();
 		} else {
 			this.logger.warn("Client Secret and ID missing. Please insert the config file");
 			return null;
 		}
-		if (this.configLoader.get(SPOTIFY_REFRSHTOKEN_KEY) != null) {
-			spotifyAPI.setRefreshToken(this.configLoader.get(SPOTIFY_REFRSHTOKEN_KEY));
+		if (this.configLoader.getProperty(SPOTIFY_REFRSHTOKEN_KEY) != null) {
+			spotifyAPI.setRefreshToken(this.configLoader.getProperty(SPOTIFY_REFRSHTOKEN_KEY));
 		} else {
 			this.logger.warn("Please exec the Authorization first");
 			return spotifyAPI;
@@ -207,7 +213,7 @@ public class SpotifyAPICalls {
 		AuthorizationCodeCredentials authCodeCredentials = (AuthorizationCodeCredentials) exceptionHandlingWithResults(
 				authorizationCodeRequest);
 		if (authCodeCredentials != null) {
-			this.configLoader.set(SPOTIFY_REFRSHTOKEN_KEY, authCodeCredentials.getRefreshToken());
+			this.configLoader.setProperty(SPOTIFY_REFRSHTOKEN_KEY, authCodeCredentials.getRefreshToken());
 			return true;
 		}
 		return false;
@@ -220,7 +226,7 @@ public class SpotifyAPICalls {
 	 *            from spotify developer account
 	 */
 	public void setClientID(String clientID) {
-		this.configLoader.set(SPOTIFY_CLIENTID_KEY, clientID);
+		this.configLoader.setProperty(SPOTIFY_CLIENTID_KEY, clientID);
 	}
 
 	/**
@@ -230,7 +236,7 @@ public class SpotifyAPICalls {
 	 *            from the spotify developer account
 	 */
 	public void setClientSecret(String clientSecret) {
-		this.configLoader.set(SPOTIFY_CLIENTSECRET_KEY, clientSecret);
+		this.configLoader.setProperty(SPOTIFY_CLIENTSECRET_KEY, clientSecret);
 	}
 
 	/**
@@ -484,6 +490,26 @@ public class SpotifyAPICalls {
 	}
 
 	/**
+	 * get a paging with playlists that the user follow or created
+	 * 
+	 * @param limit
+	 *            of returned playlists
+	 * @return a paging with playlists
+	 */
+	public Paging<PlaylistSimplified> getOwnPlaylists(int limit) {
+		if (checkPlayerState()) {
+			GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = getSpotifyApi()
+					.getListOfCurrentUsersPlaylists().limit(Integer.valueOf(limit)).offset(Integer.valueOf(0)).build();
+			try {
+				return getListOfCurrentUsersPlaylistsRequest.execute();
+			} catch (SpotifyWebApiException | IOException e) {
+				this.logger.warn(SPOTIFY_ERROR_TAG, e);
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * handle the exception from the request created by the .execute() method
 	 * 
 	 * @param request
@@ -494,7 +520,7 @@ public class SpotifyAPICalls {
 		try {
 			return request.execute();
 		} catch (SpotifyWebApiException | IOException e) {
-			this.logger.error(e.getMessage());
+			this.logger.warn(SPOTIFY_ERROR_TAG, e);
 			return null;
 		}
 	}
@@ -511,7 +537,7 @@ public class SpotifyAPICalls {
 			request.execute();
 			return true;
 		} catch (SpotifyWebApiException | IOException e) {
-			this.logger.error(e.getMessage());
+			this.logger.warn(SPOTIFY_ERROR_TAG, e);
 			return false;
 		}
 	}
