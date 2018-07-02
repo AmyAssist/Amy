@@ -23,11 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -55,32 +58,66 @@ public class ConfigurationLoader {
 	private CommandLineArgumentHandler cmaHandler;
 
 	private static final String DEFAULT_CONFIG_DIR = "config";
-	private Path configDir;
+	private List<Path> configDirs;
 
 	@PostConstruct
 	private void setup() {
-		String configDirS = DEFAULT_CONFIG_DIR;
+		this.configDirs = new ArrayList<>();
+		this.configDirs.add(this.environment.getWorkingDirectory().resolve(DEFAULT_CONFIG_DIR));
 
-		String cmaConfigPath = this.cmaHandler.getConfigPath();
-		if (cmaConfigPath != null) {
-			configDirS = cmaConfigPath;
+		List<String> cmaConfigPaths = this.cmaHandler.getConfigPaths();
+		if (cmaConfigPaths != null) {
+			for (String path : cmaConfigPaths) {
+				this.configDirs.add(this.environment.getWorkingDirectory().resolve(path));
+			}
 		}
 
-		this.configDir = this.environment.getWorkingDirectory().resolve(configDirS);
-		if (!this.configDir.toFile().isDirectory()) {
-			this.logger.error("the configuration directory {} does not exists", this.configDir.toAbsolutePath());
+		boolean found = false;
+		for (Path p : this.configDirs) {
+			if (p.toFile().isDirectory()) {
+				found = true;
+			} else {
+				this.logger.warn("Configuration directory {} does not exist", p.toString());
+			}
 		}
+		if (!found) {
+			this.logger.error("No valid configuration directory found.");
+		}
+	}
+
+	/**
+	 * Finds the configuration file for the given name in all config directorys. The config dirs are checked from last
+	 * to first.
+	 * 
+	 * @param configurationName
+	 *            the name of the configuration to search
+	 * @return The first path that matches the name or null if no such file was found.
+	 */
+	private Path findPropertiesFile(String configurationName) {
+		for (int i = this.configDirs.size() - 1; i >= 0; i--) {
+			Path p = this.configDirs.get(i).resolve(configurationName + ".properties");
+			File f = p.toFile();
+			if (f.exists())
+				return p;
+		}
+		return null;
 	}
 
 	/**
 	 * 
 	 * @param configurationName
 	 *            the name of the config file, without the .properties
-	 * @return the loaded Properties
+	 * @return the loaded Properties or null if no such file was found
 	 */
 	public Properties load(String configurationName) {
 		Properties properties = new Properties();
-		Path path = this.configDir.resolve(configurationName + ".properties");
+		Path path = findPropertiesFile(configurationName);
+
+		if (path == null) {
+			this.logger.error("Could not load the configuration {}, because it was not found in any config dir.",
+					configurationName);
+			return null;
+		}
 
 		try (InputStream reader = Files.newInputStream(path)) {
 			properties.load(reader);
@@ -98,7 +135,11 @@ public class ConfigurationLoader {
 	 *            the Properties to be saved
 	 */
 	public void store(String configurationName, Properties properties) {
-		Path path = this.configDir.resolve(configurationName + ".properties");
+		Path path = findPropertiesFile(configurationName);
+
+		if (path == null) {
+			path = this.configDirs.get(this.configDirs.size() - 1).resolve(configurationName + ".properties");
+		}
 
 		try (OutputStream outputStream = Files.newOutputStream(path)) {
 			properties.store(outputStream, null);

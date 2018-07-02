@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -60,15 +59,14 @@ public class PluginLoader {
 	/**
 	 * Loads the plugin found at the uri
 	 * 
-	 * @param uri
+	 * @param file
 	 *            The location of the plugin
 	 * @return Whether loading was successful
 	 * @throws IllegalArgumentException
 	 *             When the given location is not a valid plugin file
 	 */
-	public boolean loadPlugin(URI uri) {
-		this.logger.debug("try to load plugin from {}", uri);
-		File file = new File(uri);
+	public boolean loadPlugin(File file) {
+		this.logger.debug("try to load plugin from {}", file.getAbsolutePath());
 
 		if (!file.exists() || file.isDirectory())
 			throw new IllegalArgumentException("Invalid file");
@@ -87,7 +85,7 @@ public class PluginLoader {
 
 			Manifest mf = jar.getManifest();
 			if (mf == null) {
-				this.logger.error("Can't find manifest for plugin {}", uri);
+				this.logger.error("Can't find manifest for plugin {}", file.getAbsolutePath());
 			}
 
 			ArrayList<Class<?>> classes = new ArrayList<>();
@@ -113,7 +111,7 @@ public class PluginLoader {
 			plugin.setClasses(classes);
 
 		} catch (IOException | ClassNotFoundException e) {
-			this.logger.error("Exception while loading plugin {}", uri, e);
+			this.logger.error("Exception while loading plugin {}", file.getAbsolutePath(), e);
 			return false;
 		}
 		this.addPlugin(plugin);

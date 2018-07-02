@@ -23,7 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 import asg.cliche.Command;
@@ -37,7 +39,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 @Service
 public class CommandLineArgumentHandlerService implements CommandLineArgumentHandler {
 
-	private Map<Flag, String> parameters;
+	private Map<Flag, List<String>> flags;
 
 	private boolean flagsValid = true;
 
@@ -48,12 +50,19 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 	 *            The command line arguments.
 	 */
 	public void init(String[] args) {
-		this.parameters = new EnumMap<>(Flag.class);
+		this.flags = new EnumMap<>(Flag.class);
 		Flag flagExpectingPara = null;
+		int paraCount = 0;
+		List<String> paras = null;
 		for (String s : args) {
-			if (flagExpectingPara != null) {
-				this.parameters.put(flagExpectingPara, s);
-				flagExpectingPara = null;
+			if (flagExpectingPara != null && paras != null) {
+				paras.add(s);
+				paraCount--;
+				if (paraCount == 0) {
+					this.flags.put(flagExpectingPara, paras);
+					paras = null;
+					flagExpectingPara = null;
+				}
 				continue;
 			}
 			Flag f = Flag.getFlagFromString(s);
@@ -63,10 +72,22 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 				return;
 			}
 
-			if (f.hasParameter()) {
+			if (this.flags.containsKey(f) && !f.canRepeat()) {
+				output("Duplicate command line flag: " + s + ". Run with -h for help.");
+				this.flagsValid = false;
+				return;
+			}
+
+			if (f.getParameterCount() > 0) {
 				flagExpectingPara = f;
+				paraCount = f.getParameterCount();
+				if (this.flags.containsKey(f)) {
+					paras = this.flags.get(f);
+				} else {
+					paras = new ArrayList<>();
+				}
 			} else {
-				this.parameters.put(f, "");
+				this.flags.put(f, null);
 			}
 
 			switch (f) {
@@ -84,7 +105,15 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 				break;
 			}
 		}
+
+		if (paraCount > 0) {
+			output("Missing parameter for last flag.");
+			this.flagsValid = false;
+			return;
+		}
+
 		output("This is Amy. Copyright (c) 2018 the Amy project authors. For help run with flag -h.");
+
 	}
 
 	/**
@@ -92,23 +121,35 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 	 */
 	@Override
 	public boolean shouldProgramContinue() {
-		if (this.parameters == null)
-			throw new IllegalStateException("Not initialiozed.");
+		if (this.flags == null)
+			throw new IllegalStateException("Not initialized.");
 		if (!this.flagsValid)
 			return false;
-		for (Flag f : this.parameters.keySet()) {
-			if (f.isStopExecutaion())
+		for (Flag f : this.flags.keySet()) {
+			if (f.isStopExecution())
 				return false;
 		}
 		return true;
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#getConfigPath()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#getConfigPaths()
 	 */
 	@Override
-	public String getConfigPath() {
-		return this.parameters.get(Flag.CONFIG);
+	public List<String> getConfigPaths() {
+		if (this.flags == null)
+			throw new IllegalStateException("Not initialized.");
+		return this.flags.get(Flag.CONFIG);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#getPluginPaths()
+	 */
+	@Override
+	public List<String> getPluginPaths() {
+		if (this.flags == null)
+			throw new IllegalStateException("Not initialized.");
+		return this.flags.get(Flag.PLUGIN);
 	}
 
 	private void printHelp() {
@@ -181,36 +222,47 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 		/**
 		 * The help flag.
 		 */
-		HELP("-h", "--help", "Prints a help message", true, false),
+		HELP("-h", "--help", "Prints a help message", true, 0, false),
 
 		/**
 		 * The version flag
 		 */
-		VERSION("-v", "--version", "Prints out the version.", true, false),
+		VERSION("-v", "--version", "Prints out the version.", true, 0, false),
 
 		/**
 		 * The license notice flag
 		 */
-		NOTICE("", "--notice", "Prints out the license notice.", true, false),
+		NOTICE("", "--notice", "Prints out the license notice.", true, 0, false),
 
 		/**
 		 * The config dir flag
 		 */
-		CONFIG("-c", "--config <path>", "Set a alternate location for the config directory", false, true);
+		CONFIG("-c", "--config <path>", "Add a alternate location for the config directory."
+				+ "Can be used multiple times to add multiple config directorys.", false, 1, true),
+
+		/**
+		 * The plugin url flag
+		 */
+		PLUGIN("-p", "--plugin <path>",
+				"Load the plugin found at the following path. "
+						+ "Ignore the plugin conf. Can be used multiple times to load more then one plugin.",
+				false, 1, true);
 
 		private String shortVariant;
 		private String longVariant;
 		private String description;
-		private boolean hasParameter;
-		private boolean stopExecutaion;
+		private int parameterCount;
+		private boolean stopExecution;
+		private boolean canRepeat;
 
-		Flag(String pShortVariant, String pLongVariant, String pDescription, boolean pStopExecution,
-				boolean pHasParameter) {
+		Flag(String pShortVariant, String pLongVariant, String pDescription, boolean pStopExecution, int parameterCount,
+				boolean pCanRepeat) {
 			this.shortVariant = pShortVariant;
 			this.longVariant = pLongVariant;
 			this.description = pDescription;
-			this.hasParameter = pHasParameter;
-			this.stopExecutaion = pStopExecution;
+			this.parameterCount = parameterCount;
+			this.stopExecution = pStopExecution;
+			this.canRepeat = pCanRepeat;
 		}
 
 		/**
@@ -256,22 +308,30 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 		}
 
 		/**
-		 * Get's {@link #hasParameter hasParameter}
+		 * Get's {@link #parameterCount hasParameter}
 		 *
 		 * @return hasParameter
 		 */
-		public boolean hasParameter() {
-			return this.hasParameter;
+		public int getParameterCount() {
+			return this.parameterCount;
 		}
 
 		/**
-		 * Get's {@link #stopExecutaion stopExecutaion}
+		 * Get's {@link #stopExecution stopExecution}
 		 *
-		 * @return stopExecutaion
+		 * @return stopExecution
 		 */
-		public boolean isStopExecutaion() {
-			return this.stopExecutaion;
+		public boolean isStopExecution() {
+			return this.stopExecution;
 		}
 
+		/**
+		 * Get's {@link #canRepeat canRepeat}
+		 * 
+		 * @return canRepeat
+		 */
+		public boolean canRepeat() {
+			return this.canRepeat;
+		}
 	}
 }
