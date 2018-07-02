@@ -38,6 +38,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
@@ -79,8 +81,7 @@ public class PluginLoader {
 			Enumeration<JarEntry> jarEntries = jar.entries();
 			URL[] urls = { file.toURI().toURL() };
 
-			// We need that classLoader to stay open. TODO:Make sure it get's
-			// closed eventually.
+			// We need that classLoader to stay open.
 			@SuppressWarnings("resource")
 			URLClassLoader childLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
 
@@ -103,9 +104,6 @@ public class PluginLoader {
 					}
 				}
 			}
-			// Don't close the loader, so the references of the loaded classes
-			// can find there references
-			// childLoader.close();
 
 			plugin.setClassLoader(childLoader);
 			plugin.setManifest(mf);
@@ -163,5 +161,16 @@ public class PluginLoader {
 	 */
 	public List<IPlugin> getPlugins() {
 		return new ArrayList<>(this.plugins.values());
+	}
+
+	@PreDestroy
+	private void close() {
+		for (IPlugin p : this.getPlugins()) {
+			try {
+				((URLClassLoader) p.getClassLoader()).close();
+			} catch (IOException e) {
+				this.logger.error("Can not close URLClassLoader of plugin " + p.getUniqueName(), e);
+			}
+		}
 	}
 }
