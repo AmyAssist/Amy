@@ -125,8 +125,11 @@ public class Parser {
 	 */
 	public AGFToken consume() {
 		//make sure we read the token
-		lookAhead(0);
-		return this.mRead.remove(0);
+		AGFToken token = lookAhead(0);
+		if(token != null) {
+			return this.mRead.remove(0);
+		}
+		throw new AGFParseException("could not consume token, end of input");
 	}
 	
 	/**
@@ -143,6 +146,7 @@ public class Parser {
 		    // Get the queued token.
 		    return this.mRead.get(distance);
 	    }
+	    
 	    return null;
 	}
 }

@@ -47,7 +47,6 @@ public class ORGroupParselet implements IAGFParselet {
 		// Parse the |-separated arguments until we hit, ")".
 		ORGroupNode node = new ORGroupNode("");
 		
-		
 		AGFNode agfNode = new AGFNode("");
 		
 		while(!parser.match(AGFTokenType.CLOSEBR)) {
