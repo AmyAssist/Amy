@@ -26,13 +26,13 @@ package de.unistuttgart.iaas.amyassist.amy.core.persistence.storage;
 import javax.annotation.PreDestroy;
 import javax.persistence.EntityManager;
 
-import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 
 /**
  * Implementation of IStorage for Plugins using JPA

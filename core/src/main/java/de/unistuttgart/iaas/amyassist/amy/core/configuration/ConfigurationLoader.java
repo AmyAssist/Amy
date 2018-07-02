@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -87,5 +88,22 @@ public class ConfigurationLoader {
 			this.logger.error("Error loading config file", e);
 		}
 		return properties;
+	}
+
+	/**
+	 * 
+	 * @param configurationName
+	 *            the name of the config file, without the .properties
+	 * @param properties
+	 *            the Properties to be saved
+	 */
+	public void store(String configurationName, Properties properties) {
+		Path path = this.configDir.resolve(configurationName + ".properties");
+
+		try (OutputStream outputStream = Files.newOutputStream(path)) {
+			properties.store(outputStream, null);
+		} catch (IOException e) {
+			this.logger.error("Error saving config file", e);
+		}
 	}
 }

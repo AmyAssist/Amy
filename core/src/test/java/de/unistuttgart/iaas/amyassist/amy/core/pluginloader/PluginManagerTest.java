@@ -64,7 +64,7 @@ class PluginManagerTest {
 
 		this.testFramework.mockService(SpeechCommandHandler.class);
 
-		this.serviceUnderTest = this.testFramework.setServiceUnderTest(PluginManager.class);
+		this.serviceUnderTest = this.testFramework.setServiceUnderTest(PluginManagerService.class);
 	}
 
 	@Test

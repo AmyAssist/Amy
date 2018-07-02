@@ -26,6 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 import java.util.Calendar;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -44,6 +46,8 @@ public class AlarmClockSpeech {
 	@Reference
 	private AlarmClockLogic logic;
 
+	private Logger logger = Logger.getAnonymousLogger();
+
 	private static final String ELEMENTNOTFOUND = "Element not found";
 	private static final String PARAMSNOTVALID = "Parameters not valid.";
 
@@ -54,7 +58,7 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation
 	 * @return params[3], params[5]
 	 */
-	@Grammar("set alarm (at|for) # oh #")
+	@Grammar("(set|create) alarm (at|for) # oh #")
 	public String setAlarm(String[] params) {
 		try {
 			Alarm alarm = this.logic.setAlarm(Integer.parseInt(params[3]), Integer.parseInt(params[5]));
@@ -62,6 +66,7 @@ public class AlarmClockSpeech {
 			return "Alarm " + alarm.getId() + " set for " + time.get(Calendar.HOUR_OF_DAY) + ":"
 					+ time.get(Calendar.MINUTE);
 		} catch (IllegalArgumentException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
 			return PARAMSNOTVALID;
 		}
 	}
@@ -73,7 +78,7 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation
 	 * @return params for the timer
 	 */
-	@Grammar("set timer on [# hours] [# minutes] [# seconds]")
+	@Grammar("(set|create) timer (for|on) [# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")
 	public String setTimer(String[] params) {
 		try {
 			if (params.length == 9) {
@@ -81,25 +86,26 @@ public class AlarmClockSpeech {
 						.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), Integer.parseInt(params[7]))
 						.toString();
 			} else if (params.length == 7) {
-				if (params[4].equals("hours") && params[6].equals("minutes")) {
+				if (params[4].contains("hour") && params[6].contains("minute")) {
 					return this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), 0).toString();
-				} else if (params[4].equals("hours") && params[6].equals("seconds")) {
+				} else if (params[4].contains("hour") && params[6].contains("second")) {
 
 					return this.logic.setTimer(Integer.parseInt(params[3]), 0, Integer.parseInt(params[5])).toString();
-				} else if (params[4].equals("minutes") && params[6].equals("seconds")) {
+				} else if (params[4].contains("minute") && params[6].contains("second")) {
 					return this.logic.setTimer(0, Integer.parseInt(params[3]), Integer.parseInt(params[5])).toString();
 
 				}
 			} else if (params.length == 5) {
-				if (params[4].equals("hours")) {
+				if (params[4].contains("hour")) {
 					return this.logic.setTimer(Integer.parseInt(params[3]), 0, 0).toString();
-				} else if (params[4].equals("minutes")) {
+				} else if (params[4].contains("minute")) {
 					return this.logic.setTimer(0, Integer.parseInt(params[3]), 0).toString();
-				} else if (params[4].equals("seconds")) {
+				} else if (params[4].contains("second")) {
 					return this.logic.setTimer(0, 0, Integer.parseInt(params[3])).toString();
 				}
 			}
 		} catch (IllegalArgumentException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
 			return PARAMSNOTVALID;
 		}
 		return "Speech Command not valid.";
@@ -128,9 +134,14 @@ public class AlarmClockSpeech {
 	 */
 	@Grammar("delete (alarm|timer) #")
 	public String deleteAlarm(String[] params) {
-		if (params[1].equals("alarm"))
-			return this.logic.deleteAlarm(Integer.parseInt(params[2]));
-		return this.logic.deleteTimer(Integer.parseInt(params[2]));
+		try {
+			if (params[1].equals("alarm"))
+				return this.logic.deleteAlarm(Integer.parseInt(params[2]));
+			return this.logic.deleteTimer(Integer.parseInt(params[2]));
+		} catch (NoSuchElementException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
+			return ELEMENTNOTFOUND;
+		}
 	}
 
 	/**
@@ -142,9 +153,14 @@ public class AlarmClockSpeech {
 	 */
 	@Grammar("deactivate (alarm|timer) #")
 	public String deactivateAlarm(String[] params) {
-		if (params[1].equals("alarm"))
-			return this.logic.deactivateAlarm(Integer.parseInt(params[2]));
-		return this.logic.deactivateTimer(Integer.parseInt(params[2]));
+		try {
+			if (params[1].equals("alarm"))
+				return this.logic.deactivateAlarm(Integer.parseInt(params[2]));
+			return this.logic.deactivateTimer(Integer.parseInt(params[2]));
+		} catch (NoSuchElementException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
+			return ELEMENTNOTFOUND;
+		}
 	}
 
 	/**
@@ -156,9 +172,14 @@ public class AlarmClockSpeech {
 	 */
 	@Grammar("activate (alarm|timer) #")
 	public String activateAlarm(String[] params) {
-		if (params[1].equals("alarm"))
-			return this.logic.activateAlarm(Integer.parseInt(params[2]));
-		return this.logic.activateTimer(Integer.parseInt(params[2]));
+		try {
+			if (params[1].equals("alarm"))
+				return this.logic.activateAlarm(Integer.parseInt(params[2]));
+			return this.logic.activateTimer(Integer.parseInt(params[2]));
+		} catch (NoSuchElementException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
+			return ELEMENTNOTFOUND;
+		}
 	}
 
 	/**
@@ -175,6 +196,7 @@ public class AlarmClockSpeech {
 				return this.logic.getAlarm(Integer.parseInt(params[2])).toString();
 			return this.logic.getTimer(Integer.parseInt(params[2])).toString();
 		} catch (NoSuchElementException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
 			return ELEMENTNOTFOUND;
 		}
 	}
@@ -220,6 +242,7 @@ public class AlarmClockSpeech {
 					.editAlarm(Integer.parseInt(params[2]), Integer.parseInt(params[4]), Integer.parseInt(params[6]))
 					.toString();
 		} catch (NoSuchElementException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
 			return ELEMENTNOTFOUND;
 		}
 	}
@@ -233,14 +256,22 @@ public class AlarmClockSpeech {
 	 */
 	@Grammar("when (does|is) timer # (ringing|ring)")
 	public String getRemainingTimerDelay(String[] params) {
-		int[] remDelay = this.logic.getRemainingTimerDelay(Integer.parseInt(params[3]));
-		if (remDelay[0] == 0) {
-			if (remDelay[1] == 0) {
-				return "Timer " + params[3] + " rings in " + remDelay[2] + " seconds";
+		try {
+			int[] remDelay = this.logic.getRemainingTimerDelay(Integer.parseInt(params[3]));
+			if (remDelay[0] < 0 || remDelay[1] < 0 || remDelay[2] < 0) {
+				return "Timer will not ring!";
 			}
-			return "Timer " + params[3] + " rings in " + remDelay[1] + " minutes and " + remDelay[2] + " seconds";
+			if (remDelay[0] == 0) {
+				if (remDelay[1] == 0) {
+					return "Timer " + params[3] + " rings in " + remDelay[2] + " seconds";
+				}
+				return "Timer " + params[3] + " rings in " + remDelay[1] + " minutes and " + remDelay[2] + " seconds";
+			}
+			return "Timer " + params[3] + " rings in " + remDelay[0] + " hours and " + remDelay[1] + " minutes and "
+					+ remDelay[2] + " seconds";
+		} catch (NoSuchElementException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
+			return ELEMENTNOTFOUND;
 		}
-		return "Timer " + params[3] + " rings in " + remDelay[0] + " hours and " + remDelay[1] + " minutes and "
-				+ remDelay[2] + " seconds";
 	}
 }
