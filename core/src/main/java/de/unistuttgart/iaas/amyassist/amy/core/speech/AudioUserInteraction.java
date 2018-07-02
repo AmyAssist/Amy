@@ -36,11 +36,14 @@ import javax.sound.sampled.TargetDataLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+
 /**
  * Class to handle the Speech Input and Output
  * 
  * @author Kai Menzel
  */
+@Service(AudioUserInteraction.class)
 public class AudioUserInteraction implements SpeechIO {
 
 	private final Logger logger = LoggerFactory.getLogger(AudioUserInteraction.class);

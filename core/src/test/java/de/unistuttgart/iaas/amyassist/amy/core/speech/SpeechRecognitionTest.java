@@ -26,9 +26,11 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 import javax.sound.sampled.AudioInputStream;
@@ -48,9 +50,7 @@ import uk.org.lidalia.slf4jtest.TestLoggerFactory;
  */
 public class SpeechRecognitionTest extends SpeechRecognizer {
 
-	private String folder = "src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/speech";
-
-	private String grammarDir = "grammars";
+	private String wrongGram = "wrongGrammar";
 	private String mainGram = "mainGrammar";
 	private String addGram = "addGrammar";
 
@@ -60,8 +60,11 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	private String known = "known String";
 	private String knownReturn = "return String";
 
+	private Grammar wrongGrammar;
 	private Grammar mainGrammar;
 	private Grammar addGrammar;
+
+	private HashMap<String, Grammar> changeList = new HashMap<>();
 
 	private SpeechRecognizer recognizer;
 
@@ -80,11 +83,13 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 		this.logger = TestLoggerFactory.getTestLogger(SpeechRecognizer.class);
 		this.ttsLogger = TestLoggerFactory.getTestLogger(TextToSpeech.class);
 
-		this.mainGrammar = new Grammar(this.mainGram,
-				new File(new File(this.folder, this.grammarDir), this.mainGram + ".gram"));
-		this.addGrammar = new Grammar(this.addGram,
-				new File(new File(this.folder, this.grammarDir), this.addGram + ".gram"));
-		this.mainGrammar.putChangeGrammar(this.change, this.addGrammar);
+		this.wrongGrammar = new Grammar(this.wrongGram, new File(this.wrongGram, ".gram"));
+		this.mainGrammar = Mockito.mock(Grammar.class);
+		this.addGrammar = new Grammar(this.addGram, new File(this.addGram, ".gram"));
+
+		this.changeList.put(this.change, this.addGrammar);
+		Mockito.when(this.mainGrammar.getSwitchList()).thenReturn(this.changeList);
+
 		this.aui = new AudioUserInteraction();
 		this.handler = Mockito.mock(SpeechInputHandler.class);
 		this.ais = Mockito.mock(AudioInputStream.class);
@@ -112,9 +117,9 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	 */
 	@Test
 	void testMakeDecision() {
+		assertThrows(RuntimeException.class, () -> this.recognizer = new MainSpeechRecognizer(this.aui,
+				this.wrongGrammar, this.handler, this.ais, false));
 		this.recognizer = new MainSpeechRecognizer(this.aui, this.mainGrammar, this.handler, this.ais, false);
-		assertThat(this.logger,
-				hasLogged(error("StreamRecognizer can't be instantiated", instanceOf(FileNotFoundException.class))));
 
 		// empty input
 		this.recognizer.makeDecision(" ");
@@ -140,6 +145,8 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	 */
 	@Test
 	void mainSpecificPredefinedInputHandling() {
+		assertThrows(RuntimeException.class, () -> this.recognizer = new MainSpeechRecognizer(this.aui,
+				this.wrongGrammar, this.handler, this.ais, false));
 		this.recognizer = new MainSpeechRecognizer(this.aui, this.mainGrammar, this.handler, this.ais, false);
 
 		assertThat(Constants.isSRListening(), equalTo(SpeechRecognitionListening.ASLEEP));
@@ -171,7 +178,10 @@ public class SpeechRecognitionTest extends SpeechRecognizer {
 	void additionalSpecificPredefinedInputHandling() {
 		this.logger = TestLoggerFactory.getTestLogger(AdditionalSpeechRecognizer.class);
 
+		assertThrows(RuntimeException.class, () -> this.recognizer = new AdditionalSpeechRecognizer(this.aui,
+				this.wrongGrammar, this.handler, this.ais, false));
 		this.recognizer = new AdditionalSpeechRecognizer(this.aui, this.mainGrammar, this.handler, this.ais, false);
+
 		Constants.setSRListening(SpeechRecognitionListening.AWAKE);
 
 		this.recognizer.predefinedInputHandling(this.known);

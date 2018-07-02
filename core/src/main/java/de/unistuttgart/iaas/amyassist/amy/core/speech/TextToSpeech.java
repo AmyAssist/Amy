@@ -36,6 +36,7 @@ import javax.sound.sampled.LineUnavailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import marytts.LocalMaryInterface;
 import marytts.exceptions.MaryConfigurationException;
 import marytts.exceptions.SynthesisException;
@@ -46,7 +47,8 @@ import marytts.exceptions.SynthesisException;
  * 
  * @author Tim Neumann, Kai Menzel
  */
-public class TextToSpeech implements VoiceOutput {
+@Service(TextToSpeech.class)
+public class TextToSpeech implements Output {
 
 	private final Logger logger = LoggerFactory.getLogger(TextToSpeech.class);
 
@@ -89,7 +91,6 @@ public class TextToSpeech implements VoiceOutput {
 	 *            String that shall be said
 	 */
 	private void speak(LineListener listener, String s) {
-		log(s);
 		stopOutput();
 		try {
 			this.audio = this.mary.generateAudio(s);
@@ -106,25 +107,21 @@ public class TextToSpeech implements VoiceOutput {
 	}
 
 	/**
-	 * Voice Output
+	 * Method to Voice and Log output the input String
 	 * 
 	 * @param listener
-	 *            Listener for the Output-Clip
+	 *            Listener for the Voice Output Clip
+	 * @param voiceOutput
+	 *            true if Amy shall voice the Output
 	 * @param s
-	 *            String to say
+	 *            String that shall be said
 	 */
-	public void say(LineListener listener, String s) {
-		speak(listener, preProcessing(s));
-	}
-
-	/**
-	 * Logs the Output String
-	 * 
-	 * @param s
-	 *            String to Log
-	 */
-	public void log(String s) {
+	@Override
+	public void output(LineListener listener, boolean voiceOutput, String s) {
 		this.logger.info("saying: {}", s);
+		if (voiceOutput) {
+			speak(listener, preProcessing(s));
+		}
 	}
 
 	// -----------------------------------------------------------------------------------------------
@@ -146,6 +143,7 @@ public class TextToSpeech implements VoiceOutput {
 	/**
 	 * Method to close the outputClip
 	 */
+	@Override
 	public void stopOutput() {
 		if (this.outputClip != null) {
 			this.outputClip.stop();

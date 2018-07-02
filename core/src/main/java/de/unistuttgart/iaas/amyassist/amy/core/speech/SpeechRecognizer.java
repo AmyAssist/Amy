@@ -38,6 +38,7 @@ import javax.sound.sampled.LineListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;
@@ -84,7 +85,8 @@ public abstract class SpeechRecognizer implements Runnable {
 	/**
 	 * The TextToSpeech Output Object
 	 */
-	protected TextToSpeech tts;
+	@Reference
+	protected Output tts;
 
 	// -----------------------------------------------------------------------------------------------
 
@@ -129,7 +131,7 @@ public abstract class SpeechRecognizer implements Runnable {
 		try {
 			SpeechRecognizer.this.recognizer = new StreamSpeechRecognizer(this.createConfiguration());
 		} catch (IOException e) {
-			this.logger.error("StreamRecognizer can't be instantiated", e);
+			throw new RuntimeException("StreamRecognizer can't be instantiated", e);
 		}
 	}
 
@@ -177,7 +179,9 @@ public abstract class SpeechRecognizer implements Runnable {
 	/**
 	 * Handles the Recognizer Specific Actions that trigger before giving the input to the inputHandler. Mainly waking
 	 * up and going to Sleep
-	 * @param result Recognized String
+	 * 
+	 * @param result
+	 *            Recognized String
 	 */
 	protected abstract void predefinedInputHandling(String result);
 
@@ -265,12 +269,7 @@ public abstract class SpeechRecognizer implements Runnable {
 	 *            String that shall be said
 	 */
 	protected void say(String s) {
-		if (this.voiceOutput) {
-			this.soundPlaying = true;
-			this.tts.say(this.listener, s);
-		} else {
-			this.tts.log(s);
-		}
+		this.tts.output(this.listener, this.voiceOutput, s);
 	}
 
 	// -----------------------------------------------------------------------------------------------
@@ -325,7 +324,7 @@ public abstract class SpeechRecognizer implements Runnable {
 					throw new FileNotFoundException();
 				}
 			} catch (MalformedURLException e) {
-				this.logger.error("", e);
+				this.logger.error("Wrong URL Format", e);
 			}
 		}
 		return configuration;

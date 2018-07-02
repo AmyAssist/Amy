@@ -129,12 +129,6 @@ class AudioUserInteractionTest {
 		// contains(error("Not enough Data to start the Recognition - InputHandler not Set")));
 		assertNull(this.aui.getCurrentRecognizer());
 		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(false));
-
-		this.aui.setSpeechInputHandler(this.handler);
-		this.aui.run();
-		// assertThat(srLogger.getLoggingEvents(), contains(error("StreamRecognizer can't be instantiated")));
-		assertNotNull(this.aui.getCurrentRecognizer());
-		assertThat(this.aui.isRecognitionThreadRunning(), equalTo(true));
 	}
 
 	/**

@@ -30,25 +30,19 @@ import javax.sound.sampled.LineListener;
  * 
  * @author Kai Menzel
  */
-public interface VoiceOutput {
+public interface Output {
 
 	/**
 	 * Method to Voice and Log output the input String
 	 * 
 	 * @param listener
 	 *            Listener for the Voice Output Clip
+	 * @param voiceOutput
+	 *            true if Amy shall voice the Output
 	 * @param s
 	 *            String that shall be said
 	 */
-	void say(LineListener listener, String s);
-
-	/**
-	 * Method to Log output the input String
-	 * 
-	 * @param s
-	 *            String that shall be logged
-	 */
-	void log(String s);
+	void output(LineListener listener, boolean voiceOutput, String s);
 
 	/**
 	 * stop the OutputClip

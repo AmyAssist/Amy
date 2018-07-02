@@ -41,7 +41,9 @@ class TextToSpeechTest {
 	/**
 	 * tts Object
 	 */
-	TextToSpeech tts;
+	Output tts;
+
+	private static final String TEST = "hello world";
 
 	/**
 	 * test Logging
@@ -51,8 +53,8 @@ class TextToSpeechTest {
 		this.tts = TextToSpeech.getTTS();
 		TestLogger logger = TestLoggerFactory.getTestLogger(TextToSpeech.class);
 		assertThat(this.tts == null, equalTo(false));
-		this.tts.log("hello");
-		// assertThat(logger.getLoggingEvents(), contains(info("hello")));
+		this.tts.output(null, false, TEST);
+		// assertThat(logger.getLoggingEvents(), contains(info(TEST)));
 	}
 
 }
