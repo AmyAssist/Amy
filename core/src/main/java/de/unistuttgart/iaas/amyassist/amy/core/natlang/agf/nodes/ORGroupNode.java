@@ -37,5 +37,13 @@ public class ORGroupNode extends AGFNode {
 		super(content);
 	}
 	
+	/**
+	 * returns the node type
+	 * @return the type
+	 */
+	@Override
+	public AGFNodeType getType() {
+		return AGFNodeType.ORG;
+	}
 
 }

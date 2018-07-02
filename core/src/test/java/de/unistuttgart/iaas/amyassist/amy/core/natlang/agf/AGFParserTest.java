@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.JSGFRuleGenerator;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
@@ -39,13 +40,15 @@ public class AGFParserTest {
 	@Test
 	public void test() {
 		AGFLexer lex = new AGFLexer();
-		List<AGFToken> list = lex.tokenize("set timer on [# hours] [# minutes] [# seconds]");
+		List<AGFToken> list = lex.tokenize("set timer on (x|(wa|d)) [# [x] hours] [# minutes] [# seconds]");
 		AGFParser parser = new AGFParser(list.iterator());
 		
 	
 		AGFNode node = parser.parseWholeExpression();
 		
 		System.out.println(node.printSelf());
+		JSGFRuleGenerator gen = new JSGFRuleGenerator();
+		System.out.println(gen.generateRule(node, "test"));
 		
 	}
 

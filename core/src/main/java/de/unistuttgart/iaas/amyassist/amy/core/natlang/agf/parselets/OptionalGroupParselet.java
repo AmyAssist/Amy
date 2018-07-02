@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFToken;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFTokenType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.Parser;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.OptionalGroupNode;
 
 /**
@@ -44,17 +45,19 @@ public class OptionalGroupParselet implements IAGFParselet{
 	@Override
 	public OptionalGroupNode parse(Parser parser, AGFToken token) {
 		// Parse the |-separated arguments until we hit, ")".
-		OptionalGroupNode node = new OptionalGroupNode("");
-		// There may be no arguments at all.
-		node.addChild(parser.parseExpression());
+		OptionalGroupNode node = new OptionalGroupNode("");		
+
+		AGFNode agfNode = new AGFNode("");
 		
 		while(!parser.match(AGFTokenType.CLOSESBR)) {
 			if(parser.match(AGFTokenType.OR)) {
 				parser.consume();
+				node.addChild(agfNode);
+				agfNode = new AGFNode("");
 			}
-			node.addChild(parser.parseExpression());
+			agfNode.addChild(parser.parseExpression());
 		}
-
+		node.addChild(agfNode);
 		// consume last token
 		parser.consume(AGFTokenType.CLOSESBR);
 

@@ -37,5 +37,14 @@ public class MorphemeNode extends AGFNode {
 	public MorphemeNode(String content) {
 		super(content);
 	}
+	
+	/**
+	 * returns the node type
+	 * @return the type
+	 */
+	@Override
+	public AGFNodeType getType() {
+		return AGFNodeType.MORPH;
+	}
 
 }

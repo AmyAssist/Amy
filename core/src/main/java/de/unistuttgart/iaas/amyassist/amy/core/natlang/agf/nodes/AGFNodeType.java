@@ -21,13 +21,35 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
- * Placeholder class, if this placeholder does not exist
- * eclipse likes to delete this package
- * @author
+ * List of Node Types
+ * @author Felix Burk
  */
-public class Placeholder {
-
+public enum AGFNodeType {
+	/**
+	 * root node
+	 */
+	R,
+	/**
+	 * OR group
+	 */
+	ORG,
+	/**
+	 * optional group
+	 */
+	OPG, 
+	/**
+	 * morphene node
+	 */
+	MORPH,
+	/**
+	 * rule
+	 */
+	RULE,
+	/**
+	 * word
+	 */
+	WORD
 }

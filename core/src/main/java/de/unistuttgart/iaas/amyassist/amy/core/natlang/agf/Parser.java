@@ -139,7 +139,6 @@ public class Parser {
 	      this.mRead.add(this.mTokens.next());
 	    }
 	    
-	    
 	    if(this.mRead.size() > distance) {
 		    // Get the queued token.
 		    return this.mRead.get(distance);

@@ -35,7 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.WordNode;
 /**
  * parses the smallest meaningful unit in the AGF Syntax
  * 
- * <Morphene> := <Word> | <Rule>;
+ * <Morphene> := (<Word> | <Rule>)+;
  *  
  * @author Felix Burk
  */
@@ -50,6 +50,26 @@ public class MorphemeParselet implements IAGFParselet {
 	@Override
 	public AGFNode parse(Parser parser, AGFToken token) {
 		MorphemeNode morph = new MorphemeNode("");
+		
+		parseMorph(morph,token, parser);
+		
+		//first one was already consumed by the parser
+		//the following ones have to be consumed "by hand"
+		while(parser.match(AGFTokenType.RULE) || parser.match(AGFTokenType.WORD)) {
+			AGFToken t = parser.consume();
+			parseMorph(morph, t, parser);
+		}
+
+		
+		return morph;
+	}
+
+	/**
+	 * @param morph 
+	 * @param token
+	 * @param parser 
+	 */
+	private void parseMorph(MorphemeNode morph, AGFToken token, Parser parser) {
 		if(token.type == AGFTokenType.WORD) {
 			morph.addChild(new WordNode(token.content));
 		}else if(token.type == AGFTokenType.RULE) {
@@ -62,7 +82,6 @@ public class MorphemeParselet implements IAGFParselet {
 			}
 		}
 		
-		return morph;
 	}
 	
 	

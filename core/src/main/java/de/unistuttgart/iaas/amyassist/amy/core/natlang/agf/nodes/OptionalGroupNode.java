@@ -37,5 +37,14 @@ public class OptionalGroupNode extends AGFNode {
 	public OptionalGroupNode(String content) {
 		super(content);
 	}
+	
+	/**
+	 * returns the node type
+	 * @return the type
+	 */
+	@Override
+	public AGFNodeType getType() {
+		return AGFNodeType.OPG;
+	}
 
 }

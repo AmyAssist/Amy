@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * normal AGF node
+ * normal AGF node, every other node has to extend this class
  * 
  * @author Felix Burk
  */
@@ -77,6 +77,14 @@ public class AGFNode  {
 	public String getContent() {
 		return this.content;
 	}
+	
+	/**
+	 * returns the node type
+	 * @return the type
+	 */
+	public AGFNodeType getType() {
+		return AGFNodeType.R;
+	}
 
 	/**
 	 * helper method to pretty print
@@ -97,7 +105,6 @@ public class AGFNode  {
 				String[] s = n.getClass().getName().split("\\.");
 				b.append("|---" + n.printSelf(s[s.length - 1], indent + 1));
 			}
-			b.append("\n");
 		}
 
 		return b.toString();

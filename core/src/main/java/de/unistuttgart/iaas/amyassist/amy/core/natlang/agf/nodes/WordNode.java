@@ -38,6 +38,15 @@ public class WordNode extends AGFNode {
 	public WordNode(String content) {
 		super(content);
 	}
+	
+	/**
+	 * returns the node type
+	 * @return the type
+	 */
+	@Override
+	public AGFNodeType getType() {
+		return AGFNodeType.WORD;
+	}
 
 	/**
 	 * special print self method, because this node my never have children
@@ -55,6 +64,7 @@ public class WordNode extends AGFNode {
 			b.append("   ");
 		}
 		b.append("|---" + "<content> " + this.getContent());
+		b.append("\n");
 		return b.toString();
 	}
 
