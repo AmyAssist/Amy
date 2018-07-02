@@ -32,11 +32,6 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		<!-- used for hibernate sqlite dialect -->
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -71,6 +66,16 @@
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-plugin-manager-api</artifactId>
+			<version>0.3.0-Snapshot</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-rest-resources</artifactId>
+			<version>0.3.0-Snapshot</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-testing-framework</artifactId>
 			<version>${amy.testing-framework.version}</version>
 			<scope>test</scope>
@@ -92,6 +97,7 @@
 			<artifactId>cliche</artifactId>
 			<version>${cliche.version}</version>
 		</dependency>
+		<!-- Marry TTS -->
 		<dependency>
 			<groupId>de.dfki.mary</groupId>
 			<artifactId>voice-cmu-slt-hsmm</artifactId>
@@ -117,6 +123,7 @@
 			<groupId>javax.persistence</groupId>
 			<artifactId>javax.persistence-api</artifactId>
 		</dependency>
+		<!-- Database implementations -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
@@ -127,31 +134,10 @@
 			<artifactId>h2</artifactId>
 			<version>1.4.196</version>
 		</dependency>
-		<dependency>
-			<groupId>org.xerial</groupId>
-			<artifactId>sqlite-jdbc</artifactId>
-			<version>3.23.1</version>
-		</dependency>
-		<!-- https://github.com/gwenn/sqlite-dialect -->
-		<dependency>
-			<groupId>com.github.gwenn</groupId>
-			<artifactId>sqlite-dialect</artifactId>
-			<version>-SNAPSHOT</version>
-		</dependency>
 		<!-- Tests -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-plugin-manager-api</artifactId>
-			<version>0.3.0-Snapshot</version>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-rest-resources</artifactId>
-			<version>0.3.0-Snapshot</version>
 		</dependency>
 	</dependencies>
 	<build>
