@@ -26,6 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 import java.util.Calendar;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -43,6 +45,8 @@ public class AlarmClockSpeech {
 
 	@Reference
 	private AlarmClockLogic logic;
+
+	private Logger logger = Logger.getAnonymousLogger();
 
 	private static final String ELEMENTNOTFOUND = "Element not found";
 	private static final String PARAMSNOTVALID = "Parameters not valid.";
@@ -62,6 +66,7 @@ public class AlarmClockSpeech {
 			return "Alarm " + alarm.getId() + " set for " + time.get(Calendar.HOUR_OF_DAY) + ":"
 					+ time.get(Calendar.MINUTE);
 		} catch (IllegalArgumentException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
 			return PARAMSNOTVALID;
 		}
 	}
@@ -100,6 +105,7 @@ public class AlarmClockSpeech {
 				}
 			}
 		} catch (IllegalArgumentException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
 			return PARAMSNOTVALID;
 		}
 		return "Speech Command not valid.";
@@ -133,6 +139,7 @@ public class AlarmClockSpeech {
 				return this.logic.deleteAlarm(Integer.parseInt(params[2]));
 			return this.logic.deleteTimer(Integer.parseInt(params[2]));
 		} catch (NoSuchElementException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
 			return ELEMENTNOTFOUND;
 		}
 	}
@@ -151,6 +158,7 @@ public class AlarmClockSpeech {
 				return this.logic.deactivateAlarm(Integer.parseInt(params[2]));
 			return this.logic.deactivateTimer(Integer.parseInt(params[2]));
 		} catch (NoSuchElementException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
 			return ELEMENTNOTFOUND;
 		}
 	}
@@ -169,6 +177,7 @@ public class AlarmClockSpeech {
 				return this.logic.activateAlarm(Integer.parseInt(params[2]));
 			return this.logic.activateTimer(Integer.parseInt(params[2]));
 		} catch (NoSuchElementException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
 			return ELEMENTNOTFOUND;
 		}
 	}
@@ -187,6 +196,7 @@ public class AlarmClockSpeech {
 				return this.logic.getAlarm(Integer.parseInt(params[2])).toString();
 			return this.logic.getTimer(Integer.parseInt(params[2])).toString();
 		} catch (NoSuchElementException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
 			return ELEMENTNOTFOUND;
 		}
 	}
@@ -232,6 +242,7 @@ public class AlarmClockSpeech {
 					.editAlarm(Integer.parseInt(params[2]), Integer.parseInt(params[4]), Integer.parseInt(params[6]))
 					.toString();
 		} catch (NoSuchElementException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
 			return ELEMENTNOTFOUND;
 		}
 	}
@@ -259,6 +270,7 @@ public class AlarmClockSpeech {
 			return "Timer " + params[3] + " rings in " + remDelay[0] + " hours and " + remDelay[1] + " minutes and "
 					+ remDelay[2] + " seconds";
 		} catch (NoSuchElementException e) {
+			this.logger.log(Level.SEVERE, "Exception was thrown:", e);
 			return ELEMENTNOTFOUND;
 		}
 	}
