@@ -48,7 +48,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
- * TODO: Description
+ * The Persistence Service implementation
  * 
  * @author Leon Kiefer
  */
@@ -70,8 +70,6 @@ public class PersistenceService implements Persistence {
 	@PostConstruct
 	private void init() {
 		this.gloablProperties = this.configurationLoader.load(PERSISTENCE_CONFIG);
-		String string = this.environment.getWorkingDirectory().resolve("persistence").toAbsolutePath().toString();
-		this.gloablProperties.setProperty("javax.persistence.jdbc.url", "jdbc:h2:" + string);
 
 		this.persistenceProvider = PersistenceProviderResolverHolder.getPersistenceProviderResolver()
 				.getPersistenceProviders().get(0);
@@ -79,6 +77,9 @@ public class PersistenceService implements Persistence {
 
 	@Override
 	public @Nonnull EntityManager getEntityManager(String name) {
+		if (name.isEmpty()) {
+			throw new IllegalArgumentException("The persistence unit name should not be empty");
+		}
 		if (!this.persistenceUnits.containsKey(name)) {
 			throw new NoSuchElementException();
 		}
@@ -88,8 +89,12 @@ public class PersistenceService implements Persistence {
 		PersistenceUnitInfo persistenceUnitInfo = new PersistenceUnitInfoImpl(name, entitiesNames,
 				this.gloablProperties);
 
+		Map<String, String> properites = new HashMap<>();
+		String string = this.environment.getWorkingDirectory().resolve(name).toAbsolutePath().toString();
+		properites.put("javax.persistence.jdbc.url", "jdbc:h2:" + string);
+
 		EntityManagerFactory entityManagerFactory = this.persistenceProvider
-				.createContainerEntityManagerFactory(persistenceUnitInfo, null);
+				.createContainerEntityManagerFactory(persistenceUnitInfo, properites);
 		return entityManagerFactory.createEntityManager();
 	}
 

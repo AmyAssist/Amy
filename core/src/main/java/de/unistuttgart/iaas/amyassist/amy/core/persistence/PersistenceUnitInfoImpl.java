@@ -97,7 +97,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
 	@Override
 	public List<String> getMappingFileNames() {
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
 	@Override
 	public void addTransformer(ClassTransformer transformer) {
-
+		// no transformer needed
 	}
 
 	@Override
