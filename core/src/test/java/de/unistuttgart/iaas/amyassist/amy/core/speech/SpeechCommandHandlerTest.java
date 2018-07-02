@@ -58,12 +58,13 @@ class SpeechCommandHandlerTest {
 
 	@BeforeEach
 	public void setup() throws IOException {
-		this.speechCammandHandler = this.framework.setServiceUnderTest(SpeechCommandHandler.class);
-		Environment environment = this.framework.setServiceUnderTest(Environment.class);
+		Environment environment = this.framework.mockService(Environment.class);
 
 		this.tempDir = Files.createTempDirectory(SpeechCommandHandlerTest.class.getName());
 		this.tempDir.toFile().deleteOnExit();
 		Mockito.when(environment.getWorkingDirectory()).thenReturn(this.tempDir);
+
+		this.speechCammandHandler = this.framework.setServiceUnderTest(SpeechCommandHandler.class);
 	}
 
 	@Test
