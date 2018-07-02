@@ -277,6 +277,6 @@ public class AlarmClockSpeech {
 	}
 	
 	private void logException(Exception e) {
-		this.logger.error("An " + e.toString() + " was thrown!");
+		this.logger.error("Exception Thrown!", e);
 	}
 }
