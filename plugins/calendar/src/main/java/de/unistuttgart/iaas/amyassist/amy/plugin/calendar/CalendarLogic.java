@@ -146,9 +146,10 @@ public class CalendarLogic {
 					String yearpart1 = year.substring(0, 2);
 					String yearpart2 = year.substring(2, 4);
 					String startTime = parts[1];
+					DateTime endtime = event.getEnd().getDateTime();
 					this.eventData = event.getSummary() + " on the " + ordinal(Integer.parseInt(day)) + " of "
 							+ getMonth(month) + " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2) + " at "
-							+ startTime.substring(0, 5) + "\n";
+							+ startTime.substring(0, 5) + " until " + endtime.toString().substring(11, 16) + "\n";
 					this.eventList.add(this.eventData);
 				}
 				if (start == null) {
@@ -161,7 +162,8 @@ public class CalendarLogic {
 					String yearpart1 = year.substring(0, 2);
 					String yearpart2 = year.substring(2, 4);
 					this.eventData = event.getSummary() + " on the " + ordinal(Integer.parseInt(day)) + " of "
-							+ getMonth(month) + " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2) + "\n";
+							+ getMonth(month) + " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2)
+							+ " all day long." + "\n";
 					this.eventList.add(this.eventData);
 				}
 			}
