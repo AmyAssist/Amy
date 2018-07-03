@@ -64,19 +64,19 @@ public class PersistenceService implements Persistence {
 	@Reference
 	private ConfigurationLoader configurationLoader;
 
-	private Properties gloablProperties;
+	private Properties globalProperties;
 	private PersistenceProvider persistenceProvider;
 
 	@PostConstruct
 	private void init() {
-		this.gloablProperties = this.configurationLoader.load(PERSISTENCE_CONFIG);
+		this.globalProperties = this.configurationLoader.load(PERSISTENCE_CONFIG);
 
 		this.persistenceProvider = PersistenceProviderResolverHolder.getPersistenceProviderResolver()
 				.getPersistenceProviders().get(0);
 	}
 
 	@Override
-	public @Nonnull EntityManager getEntityManager(String name) {
+	public @Nonnull EntityManager getEntityManager(@Nonnull String name) {
 		if (name.isEmpty()) {
 			throw new IllegalArgumentException("The persistence unit name should not be empty");
 		}
@@ -87,7 +87,7 @@ public class PersistenceService implements Persistence {
 		List<String> entitiesNames = Lists.transform(entities, Class::getName);
 
 		PersistenceUnitInfo persistenceUnitInfo = new PersistenceUnitInfoImpl(name, entitiesNames,
-				entities.get(0).getClassLoader(), this.gloablProperties);
+				entities.get(0).getClassLoader(), this.globalProperties);
 
 		Map<String, String> properites = new HashMap<>();
 		String string = this.environment.getWorkingDirectory().resolve(name).toAbsolutePath().toString();
