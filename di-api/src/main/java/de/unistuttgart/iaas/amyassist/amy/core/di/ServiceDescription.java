@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import java.lang.annotation.Annotation;
+
 /**
  * Abstract description of a Service
  * 
@@ -35,4 +37,11 @@ public interface ServiceDescription<T> {
 	 * @return the type of the Service described by this Service Description
 	 */
 	Class<T> getServiceType();
+
+	/**
+	 * The attributes of the Service
+	 * 
+	 * @return the annotations that qualify and distinguish the Service
+	 */
+	Annotation[] getAnnotations();
 }

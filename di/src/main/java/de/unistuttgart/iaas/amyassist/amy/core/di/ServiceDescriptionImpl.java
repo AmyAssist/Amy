@@ -35,18 +35,26 @@ import java.lang.annotation.Annotation;
 public class ServiceDescriptionImpl<T> implements ServiceDescription<T> {
 
 	private Class<T> serviceType;
+	private Annotation[] annotations;
 
 	/**
 	 * @param serviceType
+	 * @param annotations
 	 * 
 	 */
 	public ServiceDescriptionImpl(Class<T> serviceType, Annotation[] annotations) {
 		this.serviceType = serviceType;
+		this.annotations = annotations;
 	}
 
 	@Override
 	public Class<T> getServiceType() {
 		return this.serviceType;
+	}
+
+	@Override
+	public Annotation[] getAnnotations() {
+		return this.annotations;
 	}
 
 	@Override
@@ -65,5 +73,4 @@ public class ServiceDescriptionImpl<T> implements ServiceDescription<T> {
 		}
 		return false;
 	}
-
 }

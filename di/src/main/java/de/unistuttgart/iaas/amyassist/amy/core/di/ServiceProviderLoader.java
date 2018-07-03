@@ -24,10 +24,19 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 /**
- * TODO: Description
+ * A Interface for use with {@link java.util.ServiceLoader} to register Service classes, Service provider and Context
+ * Providers in the DI via the Configuration.
+ * 
+ * Implementations of this interface MUST have a default public constructor.
  * 
  * @author Leon Kiefer
  */
 public interface ServiceProviderLoader {
-	void load(Configuration di);
+	/**
+	 * Called form the DI when loading services
+	 * 
+	 * @param configuration
+	 *            the Configuration used to register Service classes, Service provider and context provider
+	 */
+	void load(Configuration configuration);
 }
