@@ -46,6 +46,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  * A ClassServiceProvider which provides service instances for a class
  * 
  * @author Leon Kiefer
+ * @param <T>
+ *            type of the provided service
  */
 public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependencies<T> {
 	private final Logger logger = LoggerFactory.getLogger(ServiceProvider.class);
@@ -70,6 +72,11 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 		return Collections.unmodifiableCollection(this.dependencies);
 	}
 
+	/**
+	 * 
+	 * @param cls
+	 *            the service implementation class
+	 */
 	public ClassServiceProvider(@Nonnull Class<? extends T> cls) {
 		super(cls);
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(cls, Reference.class);
@@ -77,7 +84,7 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 			InjetionPoint injetionPoint = new InjetionPoint(field);
 			this.injetionPoints.add(injetionPoint);
 			Class<?> dependency = injetionPoint.getType();
-			if (dependencies.contains(dependency)) {
+			if (this.dependencies.contains(dependency)) {
 				this.logger.warn("The Service {} have a duplicate dependeny on {}", cls.getName(),
 						dependency.getName());
 			} else {

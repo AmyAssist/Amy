@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import asg.cliche.Command;
 import asg.cliche.Shell;
 import asg.cliche.ShellFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandlerService;
 import de.unistuttgart.iaas.amyassist.amy.core.Core;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -65,7 +65,7 @@ public class Console implements SpeechIO {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
-			this.logger.error("Error while handling input {}", speechInput, e);
+			this.logger.error("Error while handling input {}", speechInput, e.getCause());
 		}
 		return "";
 	}
@@ -78,7 +78,7 @@ public class Console implements SpeechIO {
 		try {
 			Shell shell = ShellFactory.createConsoleShell("amy", "", this);
 			shell.addMainHandler(this.serviceLocator.createAndInitialize(PluginManagerCLI.class), "");
-			shell.addMainHandler(new CommandLineArgumentHandler(), "");
+			shell.addMainHandler(new CommandLineArgumentHandlerService(), "");
 			shell.commandLoop();
 		} catch (IOException e) {
 			this.logger.error("Error while running the console", e);

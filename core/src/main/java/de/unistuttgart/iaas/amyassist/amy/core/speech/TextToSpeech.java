@@ -36,6 +36,7 @@ import javax.sound.sampled.LineUnavailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import marytts.LocalMaryInterface;
 import marytts.exceptions.MaryConfigurationException;
 import marytts.exceptions.SynthesisException;
@@ -46,7 +47,8 @@ import marytts.exceptions.SynthesisException;
  * 
  * @author Tim Neumann, Kai Menzel
  */
-public class TextToSpeech {
+@Service(TextToSpeech.class)
+public class TextToSpeech implements Output {
 
 	private final Logger logger = LoggerFactory.getLogger(TextToSpeech.class);
 
@@ -69,7 +71,7 @@ public class TextToSpeech {
 	}
 
 	/**
-	 * @return TODO
+	 * @return Returns the static tts Object
 	 */
 	public static TextToSpeech getTTS() {
 		if (tts == null) {
@@ -84,12 +86,12 @@ public class TextToSpeech {
 	 * outputs Speech translated from given String
 	 * 
 	 * @param listener
-	 *            TODO
+	 *            Listener for the Output-Clip
 	 * @param s
 	 *            String that shall be said
 	 */
 	private void speak(LineListener listener, String s) {
-		this.logger.info("saying: {}", s);
+		stopOutput();
 		try {
 			this.audio = this.mary.generateAudio(s);
 			AudioFormat format = this.audio.getFormat();
@@ -105,15 +107,21 @@ public class TextToSpeech {
 	}
 
 	/**
-	 * Voice Output
+	 * Method to Voice and Log output the input String
 	 * 
 	 * @param listener
-	 *            TODO
+	 *            Listener for the Voice Output Clip
+	 * @param voiceOutput
+	 *            true if Amy shall voice the Output
 	 * @param s
-	 *            String to say
+	 *            String that shall be said
 	 */
-	public void say(LineListener listener, String s) {
-		speak(listener, preProcessing(s));
+	@Override
+	public void output(LineListener listener, boolean voiceOutput, String s) {
+		this.logger.info("saying: {}", s);
+		if (voiceOutput) {
+			speak(listener, preProcessing(s));
+		}
 	}
 
 	// -----------------------------------------------------------------------------------------------
@@ -135,6 +143,7 @@ public class TextToSpeech {
 	/**
 	 * Method to close the outputClip
 	 */
+	@Override
 	public void stopOutput() {
 		if (this.outputClip != null) {
 			this.outputClip.stop();

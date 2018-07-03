@@ -24,9 +24,10 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -34,15 +35,15 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
 import de.unistuttgart.iaas.amyassist.amy.core.PluginGrammarInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.TextToPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.JSGFGenerator;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.util.NaturalLanguageInterpreterAnnotationReader;
 
 /**
  * Handles incoming SpeechCommand requests
@@ -51,26 +52,32 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.JSGFGenerator;
  */
 @Service
 public class SpeechCommandHandler {
-	private final Logger logger = LoggerFactory.getLogger(SpeechCommandHandler.class);
+	@Reference
+	private Logger logger;
+	@Reference
+	private Environment environment;
 
-	private AnnotationReader annotationReader = new AnnotationReader();
 	private TextToPlugin textToPlugin;
-	private JSGFGenerator generator = new JSGFGenerator("grammar", AudioUserInteraction.getAudioUI().getWAKEUP(),
-			AudioUserInteraction.getAudioUI().getGOSLEEP(), AudioUserInteraction.getAudioUI().getSHUTDOWN());
+
+	private JSGFGenerator generator = new JSGFGenerator("grammar", Constants.WAKE_UP, Constants.GO_SLEEP,
+			Constants.SHUT_UP);
 
 	private Map<PluginGrammarInfo, Class<?>> grammarInfos = new HashMap<>();
 	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> speechCommands = new HashMap<>();
 	@Reference
 	private ServiceLocator serviceLocator;
 
-	/** The file to save the grammer to */
-	private File fileToSaveGrammarTo;
-
+	/**
+	 * Use this to register all SpeechCommand classes
+	 * 
+	 * @param class1
+	 *            the class that should be registered
+	 */
 	public void registerSpeechCommand(Class<?> class1) {
 		if (!class1.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand.class))
 			throw new IllegalArgumentException();
-		String[] speechKeyword = this.annotationReader.getSpeechKeyword(class1);
-		Map<String, SpeechCommand> grammars = this.annotationReader.getGrammars(class1);
+		String[] speechKeyword = NaturalLanguageInterpreterAnnotationReader.getSpeechKeyword(class1);
+		Map<String, SpeechCommand> grammars = NaturalLanguageInterpreterAnnotationReader.getGrammars(class1);
 		PluginGrammarInfo pluginGrammarInfo = new PluginGrammarInfo(Arrays.asList(speechKeyword), grammars.keySet());
 		this.grammarInfos.put(pluginGrammarInfo, class1);
 		this.speechCommands.putAll(grammars);
@@ -85,12 +92,15 @@ public class SpeechCommandHandler {
 	 */
 	public void completeSetup() {
 		String grammar = this.generator.generateGrammarFileString();
-		this.getFileToSaveGrammarTo().getParentFile().mkdirs();
-
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.getFileToSaveGrammarTo()))) {
+		try {
+			Files.createDirectories(this.getFileToSaveGrammarTo().getParent());
+		} catch (IOException e) {
+			throw new IllegalStateException("Can't create parent directories of the grammar file", e);
+		}
+		try (BufferedWriter bw = Files.newBufferedWriter(this.getFileToSaveGrammarTo(), StandardOpenOption.CREATE)) {
 			bw.write(grammar);
-		} catch (IOException e1) {
-			this.logger.error("Can't write grammar file", e1);
+		} catch (IOException e) {
+			throw new IllegalStateException("Can't write grammar file", e);
 		}
 
 		this.textToPlugin = new TextToPlugin(this.grammarInfos.keySet());
@@ -112,21 +122,11 @@ public class SpeechCommandHandler {
 	}
 
 	/**
-	 * Get's {@link #fileToSaveGrammarTo fileToSaveToGrammar}
+	 * Get's the path where the grammar file should be saved
 	 * 
 	 * @return fileToSaveToGrammar
 	 */
-	public File getFileToSaveGrammarTo() {
-		return this.fileToSaveGrammarTo;
-	}
-
-	/**
-	 * Set's {@link #fileToSaveGrammarTo fileToSaveToGrammar}
-	 * 
-	 * @param fileToSaveToGrammar
-	 *            fileToSaveToGrammar
-	 */
-	public void setFileToSaveGrammarTo(File fileToSaveToGrammar) {
-		this.fileToSaveGrammarTo = fileToSaveToGrammar;
+	private Path getFileToSaveGrammarTo() {
+		return this.environment.getWorkingDirectory().resolve("resources").resolve("sphinx-grammars/grammar.gram");
 	}
 }

@@ -34,6 +34,9 @@ public class SpotifyConstants {
 	public static final String ARTIST_NAME = "artisName";
 	public static final String ITEM_URI = "uri";
 	public static final String ITEM_TYPE = "type";
+	public static final String DEVICE_NAME = "deviceName";
+	public static final String DEVICE_ID = "deviceId";
+	public static final String DEVICE_TYPE = "deviceType";
 
 	private SpotifyConstants() {
 

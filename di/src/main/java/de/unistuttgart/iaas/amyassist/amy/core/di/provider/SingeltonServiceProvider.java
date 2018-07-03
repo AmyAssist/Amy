@@ -37,11 +37,18 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
  * A ServiceProvider which provides only a single existing instance
  * 
  * @author Leon Kiefer
+ * @param <T>
+ *            the type of the singleton
  */
 public class SingeltonServiceProvider<T> implements ServiceFunction<T> {
 
 	private final T instance;
 
+	/**
+	 * 
+	 * @param instance
+	 *            the singleton
+	 */
 	public SingeltonServiceProvider(@Nonnull T instance) {
 		this.instance = instance;
 	}
@@ -60,5 +67,4 @@ public class SingeltonServiceProvider<T> implements ServiceFunction<T> {
 	public Collection<String> getRequiredContextIdentifiers() {
 		return Collections.emptySet();
 	}
-
 }

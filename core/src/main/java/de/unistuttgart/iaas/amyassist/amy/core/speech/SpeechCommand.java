@@ -70,8 +70,8 @@ public class SpeechCommand {
 		try {
 			Object[] params = { input };
 			return (String) this.method.invoke(instance, params);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			throw new RuntimeException(e);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			throw new RuntimeException("Tryed to invoke " + this.method.getName(), e);
 		}
 	}
 }

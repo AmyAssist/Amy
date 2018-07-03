@@ -33,6 +33,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
+import com.github.dvdme.ForecastIOLib.FIODaily;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -103,8 +104,9 @@ public class WeatherRestTest {
 	}
 
 	private void createWeek() {
-		this.week = Mockito.mock(WeatherReportWeek.class);
-		this.week.summary = "Clear throughout the day";
+		FIODaily d = Mockito.mock(FIODaily.class);
+		Mockito.when(d.getSummary()).thenReturn("Clear throughout the day");
+		this.week = new WeatherReportWeek("Preamble", d);
 	}
 
 	/**

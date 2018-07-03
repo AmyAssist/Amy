@@ -23,12 +23,11 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
@@ -39,40 +38,50 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource;
 
 /**
  * The central core of the application
  *
  * @author Tim Neumann, Leon Kiefer
  */
-public class Core implements SpeechInputHandler {
-	/**
-	 * The project directory.
-	 */
-	public static final File projectDir = new File(".").getAbsoluteFile().getParentFile();
+public class Core {
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
 	private List<Thread> threads;
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+
 	private DependencyInjection di = new DependencyInjection();
 
 	private Server server;
-	private SpeechCommandHandler speechCommandHandler;
 	private IStorage storage = new Storage("", new GlobalStorage());
+
+	private CommandLineArgumentHandlerService cmaHandler;
+
+	/**
+	 * Get's {@link #singleThreadScheduledExecutor singleThreadScheduledExecutor}
+	 * 
+	 * @return singleThreadScheduledExecutor
+	 */
+	public ScheduledExecutorService getScheduledExecutor() {
+		return this.singleThreadScheduledExecutor;
+	}
 
 	/**
 	 * The method executed by the main method
@@ -81,9 +90,9 @@ public class Core implements SpeechInputHandler {
 	 *            The arguments for the core.
 	 */
 	void start(String[] args) {
-		CommandLineArgumentHandler cmaHandler = new CommandLineArgumentHandler();
-		cmaHandler.init(args);
-		if (cmaHandler.shouldProgramContinue()) {
+		this.cmaHandler = new CommandLineArgumentHandlerService();
+		this.cmaHandler.init(args);
+		if (this.cmaHandler.shouldProgramContinue()) {
 			run();
 		}
 	}
@@ -92,9 +101,11 @@ public class Core implements SpeechInputHandler {
 	 * The main entry point for the real core logic.
 	 */
 	private void run() {
+		this.logger.info("run");
 		this.init();
 		this.threads.forEach(Thread::start);
 		this.server.start();
+		this.logger.info("running");
 	}
 
 	/**
@@ -102,32 +113,30 @@ public class Core implements SpeechInputHandler {
 	 */
 	private void init() {
 		this.registerAllCoreServices();
-		this.speechCommandHandler = this.di.getService(SpeechCommandHandler.class);
+		SpeechCommandHandler speechCommandHandler = this.di.getService(SpeechCommandHandler.class);
 		this.threads = new ArrayList<>();
 
 		this.server = this.di.getService(Server.class);
+		this.server.register(HomeResource.class);
 
 		Console console = this.di.getService(Console.class);
-		console.setSpeechInputHandler(this);
+		console.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
 		this.threads.add(new Thread(console));
 
-		File resourceDir = new File(projectDir, "resources");
-		File grammarFile = new File(resourceDir, "/sphinx-grammars/grammar.gram");
+		Environment environment = this.di.getService(Environment.class);
 
-		this.speechCommandHandler.setFileToSaveGrammarTo(grammarFile);
+		Path grammarFile = environment.getWorkingDirectory().resolve("resources")
+				.resolve("sphinx-grammars/grammar.gram");
 
-		AudioUserInteraction aui = AudioUserInteraction.getAudioUI();
-		aui.setGrammars(new Grammar("grammar", grammarFile), null);
-
-		SpeechIO sr = aui;
-		this.di.inject(sr);
-		sr.setSpeechInputHandler(this);
-		this.threads.add(new Thread(sr));
+		AudioUserInteraction aui = this.di.createAndInitialize(AudioUserInteraction.class);
+		aui.setGrammars(new Grammar("grammar", grammarFile.toFile()), null);
+		aui.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
+		this.threads.add(new Thread(aui));
 
 		PluginManager pluginManager = this.di.getService(PluginManager.class);
 		pluginManager.loadPlugins();
 		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
-		this.speechCommandHandler.completeSetup();
+		speechCommandHandler.completeSetup();
 	}
 
 	/**
@@ -138,6 +147,7 @@ public class Core implements SpeechInputHandler {
 		this.di.addExternalService(DependencyInjection.class, this.di);
 		this.di.addExternalService(Core.class, this);
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
+		this.di.addExternalService(CommandLineArgumentHandler.class, this.cmaHandler);
 
 		this.di.register(Logger.class, new LoggerProvider());
 		this.di.register(Properties.class, new PropertiesProvider());
@@ -148,26 +158,21 @@ public class Core implements SpeechInputHandler {
 		this.di.register(SpeechCommandHandler.class);
 		this.di.register(ConfigurationLoader.class);
 		this.di.register(PluginLoader.class);
-		this.di.register(PluginManager.class);
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler#handle(java.lang.String)
-	 */
-	@Override
-	public Future<String> handle(String speechInput) {
-		return this.singleThreadScheduledExecutor.submit(() -> {
-			return this.speechCommandHandler.handleSpeechInput(speechInput);
-		});
+		this.di.register(PluginManagerService.class);
+		this.di.register(EnvironmentService.class);
+		this.di.register(NaturalLanaguageInputHandlerService.class);
 	}
 
 	/**
 	 * stop all Threads and terminate the application. This is call form the {@link Console}
 	 */
 	public void stop() {
+		this.logger.info("stop");
 		this.server.shutdown();
 		this.threads.forEach(Thread::interrupt);
 		this.singleThreadScheduledExecutor.shutdownNow();
+		this.di.shutdown();
+		this.logger.info("stopped");
 	}
 
 }

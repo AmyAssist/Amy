@@ -32,8 +32,6 @@ import java.util.jar.Manifest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
-
 /**
  * A representation of loaded plugin.
  * 
@@ -42,6 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
 public class Plugin implements IPlugin {
 
 	private static final String UNIQUE_NAME_KEY = "PluginID";
+	private static final String DESCRIPTION_KEY = "PluginDescription";
 
 	private final Logger logger = LoggerFactory.getLogger(Plugin.class);
 
@@ -112,6 +111,18 @@ public class Plugin implements IPlugin {
 			return ("");
 		}
 		return this.manifest.getMainAttributes().getValue(Name.IMPLEMENTATION_VERSION);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getDescription()
+	 */
+	@Override
+	public String getDescription() {
+		if (this.manifest == null) {
+			this.logger.warn("Plugin manifest is null, using empty String for the description");
+			return ("");
+		}
+		return this.manifest.getMainAttributes().getValue(DESCRIPTION_KEY);
 	}
 
 	/**
