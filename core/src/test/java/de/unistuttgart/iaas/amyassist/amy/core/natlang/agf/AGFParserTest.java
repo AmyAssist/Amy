@@ -30,7 +30,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.JSGFRuleGenerator;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 
