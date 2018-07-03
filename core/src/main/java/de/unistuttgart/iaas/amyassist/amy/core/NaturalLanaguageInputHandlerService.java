@@ -29,8 +29,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.SpeechCommandHandler;
 
 /**
  * Implementation of SpeechInputHandler

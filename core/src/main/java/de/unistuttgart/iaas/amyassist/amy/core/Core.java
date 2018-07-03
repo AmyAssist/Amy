@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -38,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.grammar.GrammarObjectCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
@@ -46,10 +45,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.api.LocalSpeechRecognition;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.SpeechCommandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
@@ -123,17 +122,23 @@ public class Core {
 		console.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
 		this.threads.add(new Thread(console));
 
-		Environment environment = this.di.getService(Environment.class);
+		GrammarObjectCreator grammarData = this.di.getService(GrammarObjectCreator.class);
+		speechCommandHandler.setFileToSaveGrammarTo(grammarData.getMainGrammar().getFile());
 
-		Path grammarFile = environment.getWorkingDirectory().resolve("resources")
-				.resolve("sphinx-grammars/grammar.gram");
+		// Environment environment = this.di.getService(Environment.class);
+		//
+		// Path grammarFile = environment.getWorkingDirectory().resolve("resources")
+		// .resolve("sphinx-grammars/grammar.gram");
+		//
+		// speechCommandHandler.setFileToSaveGrammarTo(grammarFile.toFile());
+		//
+		// AudioUserInteraction aui = this.di.createAndInitialize(AudioUserInteraction.class);
+		// aui.setGrammars(new Grammar("grammar", grammarFile.toFile()), null);
+		// aui.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
+		// this.threads.add(new Thread(aui));
 
-		speechCommandHandler.setFileToSaveGrammarTo(grammarFile.toFile());
-
-		AudioUserInteraction aui = this.di.createAndInitialize(AudioUserInteraction.class);
-		aui.setGrammars(new Grammar("grammar", grammarFile.toFile()), null);
-		aui.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
-		this.threads.add(new Thread(aui));
+		LocalSpeechRecognition recognizer = this.di.getService(LocalSpeechRecognition.class);
+		recognizer.start();
 
 		PluginManager pluginManager = this.di.getService(PluginManager.class);
 		pluginManager.loadPlugins();
@@ -163,6 +168,10 @@ public class Core {
 		this.di.register(PluginManagerService.class);
 		this.di.register(EnvironmentService.class);
 		this.di.register(NaturalLanaguageInputHandlerService.class);
+
+		this.di.register(GrammarObjectCreator.class);
+		this.di.register(TextToSpeech.class);
+		this.di.register(LocalSpeechRecognition.class);
 	}
 
 	/**
@@ -171,6 +180,8 @@ public class Core {
 	public void stop() {
 		this.logger.info("stop");
 		this.server.shutdown();
+		LocalSpeechRecognition recognizer = this.di.getService(LocalSpeechRecognition.class);
+		recognizer.stop();
 		this.threads.forEach(Thread::interrupt);
 		this.singleThreadScheduledExecutor.shutdownNow();
 		this.di.shutdown();

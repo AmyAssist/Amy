@@ -21,32 +21,34 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling;
+
+import de.unistuttgart.iaas.amyassist.amy.core.grammar.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.api.SpeechRecognizerManager;
 
 /**
- * Class for important Constants for the SpeechRecognition
- * Holds variabel if Recognition System is currently active
+ * TODO: Description
  * 
- * @author Leon Kiefer
+ * @author Kai Menzel
  */
-public class Constants {
+public class RemoteResultHandler extends RecognitionResultHandler {
 
-	private Constants() {
-		// hide constructor
+	/**
+	 * @param srManager
+	 * @param grammar
+	 */
+	public RemoteResultHandler(SpeechRecognizerManager srManager, Grammar grammar) {
+		super(srManager, grammar);
+		// TODO Auto-generated constructor stub
 	}
 
 	/**
-	 * Command String to wake up amy's SpeechRecogniton System
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.RecognitionResultHandler#predefinedInputHandling(java.lang.String)
 	 */
-	public static final String WAKE_UP = "amy wake up";
-	/**
-	 * Command String to set the SpeechRecognition inactive, to stop listening to input until waked again
-	 */
-	public static final String GO_SLEEP = "go to sleep";
-	/**
-	 * Command String to stop current Voice Output of Amy
-	 */
-	public static final String SHUT_UP = "amy shut up";
+	@Override
+	protected boolean predefinedInputHandling(String result) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-	
 }

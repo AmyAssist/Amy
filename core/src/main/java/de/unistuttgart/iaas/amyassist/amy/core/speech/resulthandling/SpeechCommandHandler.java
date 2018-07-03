@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -41,6 +41,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.TextToPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.Constants;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.util.NaturalLanguageInterpreterAnnotationReader;
 
 /**
@@ -58,7 +59,7 @@ public class SpeechCommandHandler {
 			Constants.SHUT_UP);
 
 	private Map<PluginGrammarInfo, Class<?>> grammarInfos = new HashMap<>();
-	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> speechCommands = new HashMap<>();
+	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.SpeechCommand> speechCommands = new HashMap<>();
 	@Reference
 	private ServiceLocator serviceLocator;
 

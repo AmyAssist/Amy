@@ -21,32 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+
+import javax.sound.sampled.LineListener;
 
 /**
- * Class for important Constants for the SpeechRecognition
- * Holds variabel if Recognition System is currently active
+ * Interface for the TextToSpeech
  * 
- * @author Leon Kiefer
+ * @author Kai Menzel
  */
-public class Constants {
-
-	private Constants() {
-		// hide constructor
-	}
+public interface Output {
 
 	/**
-	 * Command String to wake up amy's SpeechRecogniton System
+	 * Method to Voice and Log output the input String
+	 * 
+	 * @param listener
+	 *            Listener for the Voice Output Clip
+	 * @param s
+	 *            String that shall be said
 	 */
-	public static final String WAKE_UP = "amy wake up";
-	/**
-	 * Command String to set the SpeechRecognition inactive, to stop listening to input until waked again
-	 */
-	public static final String GO_SLEEP = "go to sleep";
-	/**
-	 * Command String to stop current Voice Output of Amy
-	 */
-	public static final String SHUT_UP = "amy shut up";
+	void output(LineListener listener, String s);
 
-	
+	/**
+	 * stop the OutputClip
+	 */
+	void stopOutput();
 }

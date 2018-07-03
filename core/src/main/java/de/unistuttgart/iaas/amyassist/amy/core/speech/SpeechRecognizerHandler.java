@@ -23,29 +23,20 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
-import javax.sound.sampled.LineListener;
-
 /**
- * Interface for the TextToSpeech
+ * Interface between the SpeechRecognition System and the rest og the System
  * 
  * @author Kai Menzel
  */
-public interface Output {
+public interface SpeechRecognizerHandler {
+	/**
+	 * Start the Recognition System
+	 */
+	void start();
 
 	/**
-	 * Method to Voice and Log output the input String
-	 * 
-	 * @param listener
-	 *            Listener for the Voice Output Clip
-	 * @param voiceOutput
-	 *            true if Amy shall voice the Output
-	 * @param s
-	 *            String that shall be said
+	 * Stop the Recognition System
 	 */
-	void output(LineListener listener, boolean voiceOutput, String s);
+	void stop();
 
-	/**
-	 * stop the OutputClip
-	 */
-	void stopOutput();
 }

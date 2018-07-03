@@ -39,6 +39,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import de.unistuttgart.iaas.amyassist.amy.core.grammar.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.api.AudioUserInteraction;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 

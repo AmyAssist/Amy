@@ -32,6 +32,8 @@ import java.util.HashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.unistuttgart.iaas.amyassist.amy.core.grammar.Grammar;
+
 /**
  * Test Class for the Grammar Object
  * 

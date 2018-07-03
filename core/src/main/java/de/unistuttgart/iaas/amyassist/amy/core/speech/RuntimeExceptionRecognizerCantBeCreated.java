@@ -23,40 +23,25 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
-import org.junit.jupiter.api.Test;
-
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
-import uk.org.lidalia.slf4jtest.TestLogger;
-import uk.org.lidalia.slf4jtest.TestLoggerFactory;
+import java.io.IOException;
 
 /**
- * Test Class for the Text To Speech Output class
+ * non-Generic RuntimeException
  * 
  * @author Kai Menzel
  */
-class TextToSpeechTest {
+public class RuntimeExceptionRecognizerCantBeCreated extends RuntimeException {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
-	 * tts Object
+	 * @param string
+	 *            Message of the Exception
+	 * @param e
+	 *            Error Message
 	 */
-	Output tts;
-
-	private static final String TEST = "hello world";
-
-	/**
-	 * test Logging
-	 */
-	@Test
-	void test() {
-		this.tts = TextToSpeech.getTTS();
-		TestLogger logger = TestLoggerFactory.getTestLogger(TextToSpeech.class);
-		assertThat(this.tts == null, equalTo(false));
-		this.tts.output(null, false, TEST);
-		// assertThat(logger.getLoggingEvents(), contains(info(TEST)));
+	public RuntimeExceptionRecognizerCantBeCreated(String string, Exception e) {
+		super(string, e);
 	}
 
 }

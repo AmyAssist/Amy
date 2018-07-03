@@ -21,19 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.grammar;
+
+import java.util.Map;
 
 /**
- * Enum that Describes if the SR is currently active and listening
+ * TODO: Description
  * @author Kai Menzel
  */
-public enum SpeechRecognitionListening {
-	/**
-	 * SR is currently Listening
-	 */
-	AWAKE,
-	/**
-	 * SR is currently sleeping and inactive
-	 */
-	ASLEEP
+public interface GrammarObjectCreatorInterface {
+	Grammar getMainGrammar();
+	Map<String, Grammar> getSwitchableGrammars();
 }

@@ -40,6 +40,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import de.unistuttgart.iaas.amyassist.amy.core.grammar.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.api.AudioUserInteraction;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.AdditionalSpeechRecognizer;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.MainSpeechRecognizer;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
