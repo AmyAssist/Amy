@@ -135,41 +135,87 @@ public class CalendarLogic {
 			}
 			for (Event event : items) {
 				DateTime start = event.getStart().getDateTime();
-				if (start != null) {
-					String startData = start.toString();
-					String[] parts = startData.split("T");
-					String startDate = parts[0];
-					String[] dayParts = startDate.split("-");
-					String day = dayParts[2];
-					String month = dayParts[1];
-					String year = dayParts[0];
-					String yearpart1 = year.substring(0, 2);
-					String yearpart2 = year.substring(2, 4);
-					String startTime = parts[1];
-					DateTime endtime = event.getEnd().getDateTime();
-					this.eventData = event.getSummary() + " on the " + ordinal(Integer.parseInt(day)) + " of "
-							+ getMonth(month) + " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2) + " at "
-							+ startTime.substring(0, 5) + " until " + endtime.toString().substring(11, 16) + "\n";
-					this.eventList.add(this.eventData);
-				}
-				if (start == null) {
-					start = event.getStart().getDate();
-					String startData = start.toString();
-					String[] dayParts = startData.split("-");
-					String day = dayParts[2];
-					String month = dayParts[1];
-					String year = dayParts[0];
-					String yearpart1 = year.substring(0, 2);
-					String yearpart2 = year.substring(2, 4);
-					this.eventData = event.getSummary() + " on the " + ordinal(Integer.parseInt(day)) + " of "
-							+ getMonth(month) + " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2)
-							+ " all day long." + "\n";
-					this.eventList.add(this.eventData);
-				}
+				eventCalc(start, event);
 			}
 			return "Upcoming events\n" + String.join("\n", this.eventList);
 		} catch (Exception e) {
 			return "Sorry, I am not able to get your events.";
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	public String getEventsToday() {
+		try {
+			this.eventList.clear();
+			DateTime now = new DateTime(System.currentTimeMillis());
+			Events events = this.service.events().list("primary").setTimeMin(now).setOrderBy("startTime")
+					.setSingleEvents(true).execute();
+			List<Event> items = events.getItems();
+			if (items.isEmpty()) {
+				return "No upcoming events found.";
+			}
+			for (Event event : items) {
+				System.out.println(items.size());
+				System.out.println("0" + now.toString().substring(0, 10));
+				System.out.println(event.getStart().getDateTime().toString().substring(0, 10));
+				if (event.getStart().getDateTime().toString().substring(0, 10)
+						.equals(now.toString().substring(0, 10))) {
+					System.out.println("1" + now.toString().substring(0, 10));
+					System.out.println(event.getStart().getDateTime().toString().substring(0, 10));
+					eventCalc(now, event);
+
+				} else if (event.getStart().getDate().toString().substring(0, 10)
+						.equals(now.toString().substring(0, 10))) {
+					System.out.println("2" + now.toString().substring(0, 10));
+					System.out.println(event.getStart().getDate().toString().substring(0, 10));
+					eventCalc(now, event);
+				}
+			}
+
+			return "Upcoming events\n" + String.join("\n", this.eventList);
+		} catch (Exception e) {
+			return "Sorry, I am not able to get your events.";
+		}
+	}
+
+	/**
+	 * This method formats the date and time of the events and adds them into the list
+	 * 
+	 * @param start
+	 * @param event
+	 */
+	public void eventCalc(DateTime start, Event event) {
+		if (start != null) {
+			String startData = start.toString();
+			String[] parts = startData.split("T");
+			String startDate = parts[0];
+			String[] dayParts = startDate.split("-");
+			String day = dayParts[2];
+			String month = dayParts[1];
+			String year = dayParts[0];
+			String yearpart1 = year.substring(0, 2);
+			String yearpart2 = year.substring(2, 4);
+			String startTime = parts[1];
+			DateTime endtime = event.getEnd().getDateTime();
+			this.eventData = event.getSummary() + " on the " + ordinal(Integer.parseInt(day)) + " of " + getMonth(month)
+					+ " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2) + " at "
+					+ startTime.substring(0, 5) + " until " + endtime.toString().substring(11, 16) + "\n";
+			this.eventList.add(this.eventData);
+		}
+		if (start == null) {
+			start = event.getStart().getDate();
+			String startData = start.toString();
+			String[] dayParts = startData.split("-");
+			String day = dayParts[2];
+			String month = dayParts[1];
+			String year = dayParts[0];
+			String yearpart1 = year.substring(0, 2);
+			String yearpart2 = year.substring(2, 4);
+			this.eventData = event.getSummary() + " on the " + ordinal(Integer.parseInt(day)) + " of " + getMonth(month)
+					+ " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2) + " all day long." + "\n";
+			this.eventList.add(this.eventData);
 		}
 	}
 

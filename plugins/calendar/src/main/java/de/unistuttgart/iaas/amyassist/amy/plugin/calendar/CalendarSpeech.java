@@ -53,4 +53,10 @@ public class CalendarSpeech {
 		return this.calendar.getEvents(number);
 	}
 
+	@Grammar("events today")
+	public String getEventsToday(String[] params) {
+		return this.calendar.getEventsToday();
+
+	}
+
 }
