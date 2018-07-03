@@ -27,7 +27,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
+//TODO move the class in a package in the natlang package
+//TODO rename the annotation
 /**
  * The definition of a speech command annotation
  * 

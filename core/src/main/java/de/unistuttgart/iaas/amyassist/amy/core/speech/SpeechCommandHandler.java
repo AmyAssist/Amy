@@ -51,6 +51,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.util.NaturalLanguageInterp
  * @author Leon Kiefer
  */
 @Service
+@Deprecated
 public class SpeechCommandHandler {
 	@Reference
 	private Logger logger;

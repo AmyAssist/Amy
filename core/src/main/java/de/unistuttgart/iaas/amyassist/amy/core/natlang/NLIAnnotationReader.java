@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.util;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
 
@@ -37,39 +37,46 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
  * 
  * @author Leon Kiefer
  */
-@Deprecated
-public class NaturalLanguageInterpreterAnnotationReader {
+public class NLIAnnotationReader {
 
-	private NaturalLanguageInterpreterAnnotationReader() {
+	private NLIAnnotationReader() {
 		// hide constructor
 	}
 
 	/**
-	 * Get's the annotated grammars of this class
+	 * Get's the methods annotated with {@link Grammar}
 	 * 
 	 * @param cls
 	 *            The class of which to get the grammars
 	 * @return a List of grammars
+	 * @throws IllegalArgumentException
+	 *             if a method annotated with {@link Grammar} is not a valid NLIMethod
 	 */
-	public static Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> getGrammars(Class<?> cls) {
-		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> map = new HashMap<>();
+	public static Set<Method> getValidNLIMethods(Class<?> cls) {
+		Set<Method> validMethods = new HashSet<>();
 		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Grammar.class);
 		for (Method method : methodsWithAnnotation) {
-			Class<?>[] parameterTypes = method.getParameterTypes();
-			if (parameterTypes.length != 1 || !parameterTypes[0].isArray()
-					|| !parameterTypes[0].getComponentType().equals(String.class)) {
-				throw new IllegalArgumentException("The method " + method.toString()
-						+ " does not have the correct parameter type. It should be String[].");
-			}
-			if (!method.getReturnType().equals(String.class)) {
-				throw new IllegalArgumentException(
-						"The returntype of a method annotated with @Grammar should be String.");
-			}
-			String grammar = method.getAnnotation(Grammar.class).value();
-			map.put(grammar, new de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand(method, grammar, cls));
-
+			assertValid(method);
+			validMethods.add(method);
 		}
-		return map;
+		return validMethods;
+	}
+
+	/**
+	 * 
+	 * @param method
+	 *            the method that should be a NLIMethod
+	 */
+	public static void assertValid(Method method) {
+		Class<?>[] parameterTypes = method.getParameterTypes();
+		if (parameterTypes.length != 1 || !parameterTypes[0].isArray()
+				|| !parameterTypes[0].getComponentType().equals(String.class)) {
+			throw new IllegalArgumentException("The method " + method.toString()
+					+ " does not have the correct parameter type. It should be String[].");
+		}
+		if (!method.getReturnType().equals(String.class)) {
+			throw new IllegalArgumentException("The returntype of a method annotated with @Grammar should be String.");
+		}
 	}
 
 	/**
@@ -79,7 +86,7 @@ public class NaturalLanguageInterpreterAnnotationReader {
 	 *            The class of which to get the keyword
 	 * @return the keywords
 	 */
-	public static String[] getSpeechKeyword(Class<?> cls) {
+	public static String[] getSpeechKeywords(Class<?> cls) {
 		SpeechCommand speechCommand = cls.getAnnotation(SpeechCommand.class);
 		if (speechCommand == null)
 			throw new IllegalArgumentException("The class " + cls.getName() + " have no SpeechCommand Annotation.");

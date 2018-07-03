@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
  * 
  * @author Felix Burk
  */
+@Deprecated
 public class TextToPlugin {
 
 	Set<PluginGrammarInfo> infos;

@@ -21,13 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.util;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,11 +40,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
  * 
  * @author Leon Kiefer
  */
-class TestNaturalLanguageInterpreterAnnotationReader {
+class TestNLIAnnotationReader {
 
 	@Test
 	void testSpeechKeyword() {
-		String[] speechKeyword = NaturalLanguageInterpreterAnnotationReader.getSpeechKeyword(Plugin.class);
+		String[] speechKeyword = NLIAnnotationReader.getSpeechKeywords(Plugin.class);
 
 		assertThat(speechKeyword, is(arrayWithSize(2)));
 		assertThat(speechKeyword, is(arrayContainingInAnyOrder("test", "unittest")));
@@ -51,16 +52,16 @@ class TestNaturalLanguageInterpreterAnnotationReader {
 
 	@Test
 	public void testGrammar() {
-		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> grammars = NaturalLanguageInterpreterAnnotationReader
-				.getGrammars(Plugin.class);
+		Set<Method> grammars = NLIAnnotationReader
+				.getValidNLIMethods(Plugin.class);
 
-		assertThat(grammars.keySet(), containsInAnyOrder("count", "say (hello|test)"));
+		assertThat(grammars, hasSize(2));
 	}
 
 	@Test
 	public void testNoSpeechKeyword() {
 		assertThrows(RuntimeException.class,
-				() -> NaturalLanguageInterpreterAnnotationReader.getSpeechKeyword(TestNaturalLanguageInterpreterAnnotationReader.class));
+				() -> NLIAnnotationReader.getSpeechKeywords(TestNLIAnnotationReader.class));
 	}
 
 	@SpeechCommand({ "test", "unittest" })
@@ -79,7 +80,7 @@ class TestNaturalLanguageInterpreterAnnotationReader {
 	@Test
 	public void testIllegalTypes() {
 		assertThrows(IllegalArgumentException.class,
-				() -> NaturalLanguageInterpreterAnnotationReader.getGrammars(Brocken.class));
+				() -> NLIAnnotationReader.getValidNLIMethods(Brocken.class));
 	}
 
 	@SpeechCommand({})
@@ -93,7 +94,7 @@ class TestNaturalLanguageInterpreterAnnotationReader {
 	@Test
 	public void testIllegalReturnType() {
 		String message = assertThrows(IllegalArgumentException.class,
-				() -> NaturalLanguageInterpreterAnnotationReader.getGrammars(BrockenReturnType.class)).getMessage();
+				() -> NLIAnnotationReader.getValidNLIMethods(BrockenReturnType.class)).getMessage();
 		assertThat(message, equalTo("The returntype of a method annotated with @Grammar should be String."));
 	}
 

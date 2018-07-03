@@ -21,27 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-// TODO move the class in a package in the natlang package
 /**
- * The definition of a grammar annotation.
+ * Manages all natural language interpreter of the plugins and can process the input of natural language
  * 
  * @author Leon Kiefer
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Target(java.lang.annotation.ElementType.METHOD)
-public @interface Grammar {
+public interface NLProcessingManager {
 	/**
-	 * TODO description
 	 * 
-	 * @return the grammar in AGF - Amy Grammar Format
+	 * @param natuaralLanguageInterpreter
+	 *            a class annotated with {@link de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand}
 	 */
-	String value();
+	void register(Class<?> natuaralLanguageInterpreter);
+
+	/**
+	 * Process the input by searching and calling a responsible interpreter for that natural language text
+	 * 
+	 * @param naturalLanguageText
+	 *            a natural language text string that only contains alphanumeric character and white space character
+	 * @return a answer as natural language text
+	 * @throws IllegalArgumentException
+	 *             if the string illegal character
+	 */
+	String process(String naturalLanguageText);
 }

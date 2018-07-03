@@ -31,6 +31,7 @@ import java.util.Set;
  * 
  * @author Felix Burk
  */
+@Deprecated
 public class PluginGrammarInfo {
 
 	List<String> keywords;
