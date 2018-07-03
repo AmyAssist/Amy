@@ -24,11 +24,20 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
 /**
- * TODO: Description
+ * types of word tokens
+ * 
  * @author Felix Burk
  */
 public enum WordTokenType {
 	
-	WORD, NUMBER;
+	/**
+	 * just some word
+	 */
+	WORD, 
+	
+	/**
+	 * some number, written or as digit 
+	 */
+	NUMBER;
 
 }

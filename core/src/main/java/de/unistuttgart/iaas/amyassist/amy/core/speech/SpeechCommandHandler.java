@@ -37,12 +37,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.AnnotationReader;
-import de.unistuttgart.iaas.amyassist.amy.core.GrammarParser;
 import de.unistuttgart.iaas.amyassist.amy.core.PluginGrammarInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.TextToPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.JSGFGenerator;
 
 /**
  * Handles incoming SpeechCommand requests
@@ -55,7 +55,7 @@ public class SpeechCommandHandler {
 
 	private AnnotationReader annotationReader = new AnnotationReader();
 	private TextToPlugin textToPlugin;
-	private GrammarParser generator = new GrammarParser("grammar", AudioUserInteraction.getAudioUI().getWAKEUP(),
+	private JSGFGenerator generator = new JSGFGenerator("grammar", AudioUserInteraction.getAudioUI().getWAKEUP(),
 			AudioUserInteraction.getAudioUI().getGOSLEEP(), AudioUserInteraction.getAudioUI().getSHUTDOWN());
 
 	private Map<PluginGrammarInfo, Class<?>> grammarInfos = new HashMap<>();
@@ -84,7 +84,7 @@ public class SpeechCommandHandler {
 	 * Call this after all registerSpeechCommand and before handleSpeechInput
 	 */
 	public void completeSetup() {
-		String grammar = this.generator.getGrammar();
+		String grammar = this.generator.generateGrammarFileString();
 		this.getFileToSaveGrammarTo().getParentFile().mkdirs();
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.getFileToSaveGrammarTo()))) {

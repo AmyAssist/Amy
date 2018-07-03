@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
@@ -34,6 +35,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
  */
 public class JSGFGenerator {
 	
+	/**
+	 * a list of all rules
+	 */
 	List<String> rules;
 	
 	private String name;
@@ -53,6 +57,8 @@ public class JSGFGenerator {
 		this.wakeup = wakeup;
 		this.sleep = sleep;
 		this.shutdown = shutdown;
+		
+		this.rules = new ArrayList<>();
 	}
 	
 	/**
@@ -158,5 +164,43 @@ public class JSGFGenerator {
 		}
 		return b.toString();
 	}
+	
+	/**
+	 * Adds a rule to the grammar
+	 *
+	 * @param ruleName
+	 *            The name of the rule
+	 * @param keyword
+	 *            The keyword
+	 */
+	@Deprecated
+	public void addRule(String ruleName, String[] keywords, String grammar) {
+		String rule = "public <" + ruleName + ">" + " = ";
+
+		if (keywords.length > 1) {
+			rule += "(";
+			for (String keyword : keywords) {
+				rule += this.parseKeyword(keyword) + "|";
+			}
+			rule = rule.substring(0, rule.length() - 1);
+			rule += ") " + this.parseKeyword(grammar) + "; \n";
+		} else {
+			rule += this.parseKeyword(keywords[0]) + " " + this.parseKeyword(grammar) + "; \n";
+		}
+
+		this.rules.add(rule);
+	}
+
+	/**
+	 * replace keywords with corresponding pre defined rule
+	 *
+	 * @param keyword
+	 *            The keyword
+	 * @return the corresponding rule
+	 */
+	@Deprecated
+	private String parseKeyword(String keyword) {
+		return keyword.replace("#", "<digit>");
+}
 
 }
