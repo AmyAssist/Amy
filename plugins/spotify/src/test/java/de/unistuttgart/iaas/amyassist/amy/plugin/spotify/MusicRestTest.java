@@ -47,8 +47,9 @@ import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -67,8 +68,8 @@ class MusicRestTest {
 	private PlayerLogic logic;
 	private MusicEntity[] userMusics;
 	private MusicEntity[] featuredMusics;
-	private List<Playlist> userPlaylists;
-	private List<Playlist> featuredPlaylists;
+	private List<PlaylistEntity> userPlaylists;
+	private List<PlaylistEntity> featuredPlaylists;
 
 	private WebTarget target;
 
@@ -108,9 +109,9 @@ class MusicRestTest {
 		this.featuredMusics[0] = musicEntity2;
 		this.featuredMusics[1] = musicEntity3;
 
-		Playlist myFirstPlaylist = new Playlist("myFirstPlaylist", this.userMusics, "test123", "image.com");
-		Playlist mySecondPlaylist = new Playlist("mySecondPlaylist", this.featuredMusics, "test456", "picture.com");
-		Playlist featuredPlaylist1 = new Playlist("featuredPlaylist", this.featuredMusics, "test789", "cover.com");
+		PlaylistEntity myFirstPlaylist = new PlaylistEntity("myFirstPlaylist", this.userMusics, "test123", "image.com");
+		PlaylistEntity mySecondPlaylist = new PlaylistEntity("mySecondPlaylist", this.featuredMusics, "test456", "picture.com");
+		PlaylistEntity featuredPlaylist1 = new PlaylistEntity("featuredPlaylist", this.featuredMusics, "test789", "cover.com");
 
 		this.userPlaylists = new ArrayList<>();
 		this.userPlaylists.add(myFirstPlaylist);
@@ -125,12 +126,10 @@ class MusicRestTest {
 	 * 
 	 * @return an example device list
 	 */
-	private List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> createDeviceList() {
-		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devicesList = new ArrayList<>();
-		devicesList.add(
-				new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device("Smartphone", "Hello", "abc123"));
-		devicesList.add(
-				new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device("Computer", "Goodbye", "123abc"));
+	private List<DeviceEntity> createDeviceList() {
+		List<DeviceEntity> devicesList = new ArrayList<>();
+		devicesList.add(new DeviceEntity("Smartphone", "Hello", "abc123"));
+		devicesList.add(new DeviceEntity("Computer", "Goodbye", "123abc"));
 		return devicesList;
 	}
 
@@ -449,7 +448,7 @@ class MusicRestTest {
 	void testGetPlaylist() {
 		Mockito.when(this.logic.getOwnPlaylists(5)).thenReturn(this.userPlaylists);
 		Response response = this.target.path("music").path("playlists/user").request().post(null);
-		Playlist[] actual = response.readEntity(Playlist[].class);
+		PlaylistEntity[] actual = response.readEntity(PlaylistEntity[].class);
 		assertThat(actual[0].getUri(), is(this.userPlaylists.get(0).getUri()));
 		assertThat(actual[0].getName(), is(this.userPlaylists.get(0).getName()));
 		assertThat(actual[0].getImageUrl(), is(this.userPlaylists.get(0).getImageUrl()));
@@ -458,7 +457,7 @@ class MusicRestTest {
 
 		Mockito.when(this.logic.getOwnPlaylists(2)).thenReturn(this.userPlaylists);
 		response = this.target.path("music").path("playlists/user").queryParam("limit", 2).request().post(null);
-		actual = response.readEntity(Playlist[].class);
+		actual = response.readEntity(PlaylistEntity[].class);
 		assertThat(actual[1].getUri(), is(this.userPlaylists.get(1).getUri()));
 		assertThat(actual[1].getName(), is(this.userPlaylists.get(1).getName()));
 		assertThat(actual[1].getImageUrl(), is(this.userPlaylists.get(1).getImageUrl()));
@@ -467,13 +466,13 @@ class MusicRestTest {
 
 		Mockito.when(this.logic.getFeaturedPlaylists(1)).thenReturn(this.featuredPlaylists);
 		response = this.target.path("music").path("playlists/featured").queryParam("limit", 1).request().post(null);
-		actual = response.readEntity(Playlist[].class);
+		actual = response.readEntity(PlaylistEntity[].class);
 		assertThat(actual[0].getUri(), is(this.featuredPlaylists.get(0).getUri()));
 		assertThat(actual[0].getName(), is(this.featuredPlaylists.get(0).getName()));
 		assertThat(actual[0].getImageUrl(), is(this.featuredPlaylists.get(0).getImageUrl()));
 		assertThat(response.getStatus(), is(200));
 
-		Mockito.when(this.logic.getFeaturedPlaylists(1)).thenReturn(new ArrayList<Playlist>());
+		Mockito.when(this.logic.getFeaturedPlaylists(1)).thenReturn(new ArrayList<PlaylistEntity>());
 		response = this.target.path("music").path("playlists/featured").queryParam("limit", 1).request().post(null);
 		assertThat(response.readEntity(String.class), is("No Playlist is available"));
 		assertThat(response.getStatus(), is(404));

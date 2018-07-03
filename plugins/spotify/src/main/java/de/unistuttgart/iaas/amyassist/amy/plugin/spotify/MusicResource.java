@@ -40,9 +40,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 
 /**
  * Rest Resource for music
@@ -64,7 +64,6 @@ public class MusicResource {
 	private StringGenerator stringGenerator;
 
 	private MusicEntity musicEntity;
-	private Playlist[] playlists;
 
 	/**
 	 * needed for the first init. Use the clientID and the clientSecret form a spotify devloper account or load the
@@ -119,9 +118,9 @@ public class MusicResource {
 	@GET
 	@Path("getDevices")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Device[] getDevices() {
-		List<Device> deviceList = this.logic.getDevices();
-		Device[] devices = new Device[deviceList.size()];
+	public DeviceEntity[] getDevices() {
+		List<DeviceEntity> deviceList = this.logic.getDevices();
+		DeviceEntity[] devices = new DeviceEntity[deviceList.size()];
 		for (int i = 0; i < deviceList.size(); i++) {
 			devices[i] = deviceList.get(i);
 		}
@@ -206,7 +205,7 @@ public class MusicResource {
 			actualSearchResult = this.logic.search(searchText, "track", limit);
 			break;
 		}
-		if (!(actualSearchResult == null)) {
+		if (actualSearchResult != null) {
 			return actualSearchResult;
 		}
 		throw new WebApplicationException("No results found", Status.NO_CONTENT);
@@ -356,8 +355,9 @@ public class MusicResource {
 	@Path("playlists/{type}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Playlist[] getPlaylists(@PathParam("type") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
-		List<Playlist> pl;
+	public PlaylistEntity[] getPlaylists(@PathParam("type") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
+		List<PlaylistEntity> pl;
+		PlaylistEntity[] playlists;
 		switch (type) {
 		case "user":
 			pl = this.logic.getOwnPlaylists(limit);
@@ -369,13 +369,13 @@ public class MusicResource {
 			pl = this.logic.getFeaturedPlaylists(limit);
 			break;
 		}
-		this.playlists = new Playlist[pl.size()];
+		playlists = new PlaylistEntity[pl.size()];
 		if (!pl.isEmpty()) {
 			for (int i = 0; i < pl.size(); i++) {
-				this.playlists[i] = new Playlist(pl.get(i).getName(), pl.get(i).getSongs(), pl.get(i).getUri(),
+				playlists[i] = new PlaylistEntity(pl.get(i).getName(), pl.get(i).getSongs(), pl.get(i).getUri(),
 						pl.get(i).getImageUrl());
 			}
-			return this.playlists;
+			return playlists;
 		}
 		throw new WebApplicationException("No Playlist is available", Status.NOT_FOUND);
 	}

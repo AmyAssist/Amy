@@ -52,7 +52,8 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.User;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -76,7 +77,7 @@ class PlayerLogicTest {
 	private Device[] devices;
 	private CurrentlyPlayingContext currentlyPlayingContext;
 	private Paging<PlaylistSimplified> playlistsSpotifyFormat;
-	private List<Playlist> playlistsOwnFormat;
+	private List<PlaylistEntity> playlistsOwnFormat;
 
 	@Mock
 	private SpotifyAPICalls spotifyAPICalls;
@@ -105,8 +106,8 @@ class PlayerLogicTest {
 		playlistList[1] = playlist2;
 		this.playlistsSpotifyFormat = new Paging.Builder<PlaylistSimplified>().setItems(playlistList).build();
 		this.playlistsOwnFormat = new ArrayList<>();
-		this.playlistsOwnFormat.add(new Playlist(PLAYLIST_NAME1, null, ID1, null));
-		this.playlistsOwnFormat.add(new Playlist(PLAYLIST_NAME2, null, ID2, ID1));
+		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME1, null, ID1, null));
+		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME2, null, ID2, ID1));
 	}
 
 	public void initDevices() {
@@ -152,7 +153,7 @@ class PlayerLogicTest {
 	@Test
 	public void testGetDevices() {
 		when(this.spotifyAPICalls.getDevices()).thenReturn(devices);
-		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> result = this.playerLogic.getDevices();
+		List<DeviceEntity> result = this.playerLogic.getDevices();
 		assertThat(result.get(0).getName(), equalTo(DEVICE_NAME1));
 		assertThat(result.get(1).getName(), equalTo(DEVICE_NAME2));
 		verify(this.spotifyAPICalls).getDevices();
@@ -161,7 +162,7 @@ class PlayerLogicTest {
 	@Test
 	public void testGetDevicesWithNoDevices() {
 		when(this.spotifyAPICalls.getDevices()).thenReturn(null);
-		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> result = this.playerLogic.getDevices();
+		List<DeviceEntity> result = this.playerLogic.getDevices();
 		assertThat(result.isEmpty(), equalTo(true));
 		verify(this.spotifyAPICalls).getDevices();
 	}

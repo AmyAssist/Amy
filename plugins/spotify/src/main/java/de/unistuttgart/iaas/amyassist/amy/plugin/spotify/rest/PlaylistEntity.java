@@ -31,12 +31,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Bräuner, Muhammed Kaya, Lars Buttgereit
  */
 @XmlRootElement
-public class Playlist {
+public class PlaylistEntity {
 
 	/**
 	 * constructor for a Playlist
 	 */
-	public Playlist() {
+	public PlaylistEntity() {
 
 	}
 
@@ -51,7 +51,7 @@ public class Playlist {
 	* @param imageUrl
 	*            a url to image from the playlist. can be null
 	*/
-	public Playlist(String name, MusicEntity[] songs, String uri, String imageUrl) {
+	public PlaylistEntity(String name, MusicEntity[] songs, String uri, String imageUrl) {
 		this.name = name;
 		this.songs = songs;
 		this.uri = uri;
