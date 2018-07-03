@@ -30,16 +30,27 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 /**
  * TODO: Description
  * 
- * @author
+ * @author Patrick Gebhardt, Florian Bauer
  */
 @SpeechCommand("calendar")
 public class CalendarSpeech {
+
 	@Reference
-	private CalendarQuickstart calendar;
+	private CalendarLogic calendar;
 
-	@Grammar("get")
-	public String resetAlarms(String[] params) {
-		return null;
-
+	/**
+	 * @param params
+	 * @return the method in the logic class is called
+	 */
+	@Grammar("get next [#] event[s]")
+	public String getEvents(String[] params) {
+		String number;
+		if (params[2].contains("event")) {
+			number = "1";
+		} else {
+			number = params[2];
+		}
+		return this.calendar.getEvents(number);
 	}
+
 }
