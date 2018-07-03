@@ -34,6 +34,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.persistence.PersistenceService;
+import de.unistuttgart.iaas.amyassist.amy.core.persistence.storage.DatabaseStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
@@ -59,6 +61,8 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 		di.register(PluginLoader.class);
 		di.register(PluginManagerService.class);
 		di.register(EnvironmentService.class);
+		di.register(DatabaseStorage.class);
+		di.register(PersistenceService.class);
 		di.register(NaturalLanaguageInputHandlerService.class);
 	}
 

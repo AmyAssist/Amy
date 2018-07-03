@@ -36,7 +36,7 @@ public class Grammar {
 
 	private String name;
 	private File file;
-	private HashMap<String, Grammar> switchList = new HashMap<>();
+	private Map<String, Grammar> switchList = new HashMap<>();
 
 	/**
 	 * @param name
@@ -58,7 +58,7 @@ public class Grammar {
 	 * @param switchList
 	 *            List of all possible Grammar changes
 	 */
-	public Grammar(String name, File file, HashMap<String, Grammar> switchList) {
+	public Grammar(String name, File file, Map<String, Grammar> switchList) {
 		this.name = name;
 		this.file = file;
 		this.switchList = switchList;
@@ -76,27 +76,60 @@ public class Grammar {
 		this.switchList.put(switchCommand, grammar);
 	}
 
+	/**
+	 * Getter
+	 * 
+	 * @return name
+	 */
 	public String getName() {
 		return this.name;
 	}
 
+	/**
+	 * Getter
+	 * 
+	 * @return file
+	 */
 	public File getFile() {
 		return this.file;
 	}
 
+	/**
+	 * Getter
+	 * 
+	 * @return switchList
+	 */
 	public Map<String, Grammar> getSwitchList() {
 		return this.switchList;
 	}
 
+	/**
+	 * Setter
+	 * 
+	 * @param name
+	 *            name of Grammar, should be unique
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Setter
+	 * 
+	 * @param file
+	 *            path to the Grammar file
+	 */
 	public void setFile(File file) {
 		this.file = file;
 	}
 
-	public void setSwitchList(HashMap<String, Grammar> switchList) {
+	/**
+	 * Setter
+	 * 
+	 * @param switchList
+	 *            List of Possible Grammar Switches
+	 */
+	public void setSwitchList(Map<String, Grammar> switchList) {
 		this.switchList = switchList;
 	}
 

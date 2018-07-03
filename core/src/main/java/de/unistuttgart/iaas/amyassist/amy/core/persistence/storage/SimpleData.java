@@ -21,37 +21,56 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.persistence.storage;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PersistenceUnit;
 
 /**
- * Global storage placeholder until a database or similar mechanisms are implemented
+ * Data Object for DatabaseStorage
  * 
- * @author Felix Burk
+ * @author Leon Kiefer
  */
-public class GlobalStorage {
-	/**
-	 * The map in which everything is stored.
-	 */
-	protected ConcurrentMap<String, String> store;
+@PersistenceUnit(unitName="DatabaseStorage")
+@Entity
+public class SimpleData {
 
-	/**
-	 * Creates a new Global Storage. This should only be called once.
-	 */
-	public GlobalStorage() {
-		this.store = new ConcurrentHashMap<>();
+	@Id
+	private String key;
+
+	private String value;
+
+	private SimpleData() {
+
 	}
 
 	/**
-	 * returns global storage HashMap
+	 * @param key
+	 *            the primary key
+	 * @param value
+	 *            the value of the data
+	 */
+	public SimpleData(String key, String value) {
+		this.key = key;
+		this.value = value;
+	}
+
+	/**
+	 * Get's {@link #key key}
 	 * 
-	 * @return store
+	 * @return key
 	 */
-	public Map<String, String> getStore() {
-		return this.store;
+	public String getKey() {
+		return this.key;
 	}
 
+	/**
+	 * Get's {@link #value value}
+	 * 
+	 * @return value
+	 */
+	public String getValue() {
+		return this.value;
+	}
 }

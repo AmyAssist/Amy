@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.util;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -37,7 +37,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
  * 
  * @author Leon Kiefer
  */
-public class AnnotationReader {
+public class NaturalLanguageInterpreterAnnotationReader {
+
+	private NaturalLanguageInterpreterAnnotationReader() {
+		// hide constructor
+	}
 
 	/**
 	 * Get's the annotated grammars of this class
@@ -46,7 +50,7 @@ public class AnnotationReader {
 	 *            The class of which to get the grammars
 	 * @return a List of grammars
 	 */
-	public Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> getGrammars(Class<?> cls) {
+	public static Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> getGrammars(Class<?> cls) {
 		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> map = new HashMap<>();
 		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Grammar.class);
 		for (Method method : methodsWithAnnotation) {
@@ -74,10 +78,10 @@ public class AnnotationReader {
 	 *            The class of which to get the keyword
 	 * @return the keywords
 	 */
-	public String[] getSpeechKeyword(Class<?> cls) {
+	public static String[] getSpeechKeyword(Class<?> cls) {
 		SpeechCommand speechCommand = cls.getAnnotation(SpeechCommand.class);
 		if (speechCommand == null)
-			throw new RuntimeException("The class " + cls.getName() + " have no SpeechCommand Annotation.");
+			throw new IllegalArgumentException("The class " + cls.getName() + " have no SpeechCommand Annotation.");
 
 		return speechCommand.value();
 	}

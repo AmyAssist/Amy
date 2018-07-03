@@ -36,13 +36,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
@@ -64,7 +62,6 @@ public class Core {
 	private DependencyInjection di = new DependencyInjection();
 
 	private Server server;
-	private IStorage storage = new Storage("", new GlobalStorage());
 
 	private CommandLineArgumentHandlerService cmaHandler;
 
@@ -122,15 +119,10 @@ public class Core {
 		Path grammarFile = environment.getWorkingDirectory().resolve("resources")
 				.resolve("sphinx-grammars/grammar.gram");
 
-		speechCommandHandler.setFileToSaveGrammarTo(grammarFile.toFile());
-
-		AudioUserInteraction aui = AudioUserInteraction.getAudioUI();
+		AudioUserInteraction aui = this.di.createAndInitialize(AudioUserInteraction.class);
 		aui.setGrammars(new Grammar("grammar", grammarFile.toFile()), null);
-
-		SpeechIO sr = aui;
-		this.di.inject(sr);
-		sr.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
-		this.threads.add(new Thread(sr));
+		aui.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
+		this.threads.add(new Thread(aui));
 
 		PluginManager pluginManager = this.di.getService(PluginManager.class);
 		pluginManager.loadPlugins();
@@ -142,7 +134,6 @@ public class Core {
 	 * register all instances and classes in the DI
 	 */
 	private void registerAllCoreServices() {
-		this.di.addExternalService(IStorage.class, this.storage);
 		this.di.addExternalService(DependencyInjection.class, this.di);
 		this.di.addExternalService(Core.class, this);
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));

@@ -34,28 +34,38 @@ import javax.sound.sampled.AudioInputStream;
 public class AdditionalSpeechRecognizer extends SpeechRecognizer {
 
 	/**
+	 * Creates the Recognizers and Configures them
+	 * 
 	 * @param audioUI
+	 *            Handler of all recognizers and the TTS
+	 *
 	 * @param grammar
+	 *            Grammar to use in this Recognizer
 	 * @param inputHandler
+	 *            Handler which will handle the input
 	 * @param ais
+	 *            set custom AudioInputStream.
+	 * @param voiceOutput
+	 *            true if the TTS shall voice the Answer
 	 */
 	public AdditionalSpeechRecognizer(AudioUserInteraction audioUI, Grammar grammar, SpeechInputHandler inputHandler,
-			AudioInputStream ais) {
-		super(audioUI, grammar, inputHandler, ais);
+			AudioInputStream ais, boolean voiceOutput) {
+		super(audioUI, grammar, inputHandler, ais, voiceOutput);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#predefinedInputHandling()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#predefinedInputHandling(String result)
 	 */
 	@Override
-	protected void predefinedInputHandling() {
-		if (this.speechRecognitionResult.equals(this.audioUI.getSHUTDOWN())) {
+	protected void predefinedInputHandling(String result) {
+		if (result.equals(Constants.SHUT_UP)) {
 			this.tts.stopOutput();
-		} else if (this.speechRecognitionResult.equals(this.audioUI.getGOSLEEP())) {
+		} else if (result.equals(Constants.GO_SLEEP)) {
+			Constants.setSRListening(SpeechRecognitionListening.ASLEEP);
 			say("now sleeping");
-			this.stop(null);
+			this.stop(this.audioUI.mainGrammar);
 		} else {
-			makeDecision(this.speechRecognitionResult);
+			makeDecision(result);
 		}
 	}
 
