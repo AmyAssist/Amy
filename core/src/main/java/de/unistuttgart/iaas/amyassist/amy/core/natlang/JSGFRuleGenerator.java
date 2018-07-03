@@ -41,17 +41,17 @@ public class JSGFRuleGenerator {
 	public String generateRule(AGFNode node, String ruleName) {
 		StringBuilder b = new StringBuilder();
 		b.append("public <" + ruleName + "> = ");
-		return handleNodePreorder(b, node) + ";";
+		return handleNode(b, node) + ";";
 	}
 
 	/**
-	 * traverses the three preorder style 
+	 * traverses the tree
 	 * 
 	 * @param b the string builder
 	 * @param node the current root node
 	 * @return the current string representation of the rule
 	 */
-	private String handleNodePreorder(StringBuilder b, AGFNode node) {
+	private String handleNode(StringBuilder b, AGFNode node) {
 		if(node != null) {
 			switch(node.getType()) {
 			case WORD:
@@ -63,7 +63,7 @@ public class JSGFRuleGenerator {
 			case ORG:
 				b.append(" (");
 				for(int i = 0; i < node.getChilds().size(); i++) {
-					handleNodePreorder(b, node.getChilds().get(i));
+					handleNode(b, node.getChilds().get(i));
 					if(i!=node.getChilds().size()-1) {
 						b.append("|");
 					}
@@ -73,7 +73,7 @@ public class JSGFRuleGenerator {
 			case OPG:
 				b.append(" [");
 				for(int i = 0; i < node.getChilds().size(); i++) {
-					handleNodePreorder(b, node.getChilds().get(i));
+					handleNode(b, node.getChilds().get(i));
 					if(i!=node.getChilds().size()-1) {
 						b.append("|");
 					}
@@ -82,12 +82,12 @@ public class JSGFRuleGenerator {
 				break;
 			case MORPH:
 				for(AGFNode child : node.getChilds()) {
-					handleNodePreorder(b, child);
+					handleNode(b, child);
 				}
 				break;
 			default:
 				for(AGFNode child : node.getChilds()) {
-					handleNodePreorder(b, child);
+					handleNode(b, child);
 				}
 				break;
 			}

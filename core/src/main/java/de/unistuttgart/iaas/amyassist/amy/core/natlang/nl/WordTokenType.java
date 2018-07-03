@@ -24,45 +24,11 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
 /**
- * Word Token class used in the Lexer and parser
+ * TODO: Description
  * @author Felix Burk
  */
-public class WordToken {
+public enum WordTokenType {
 	
-	private final String content;
-	
-	private WordTokenType type;
-	
-	/**
-	 * constructor for word token
-	 * @param content the content
-	 */
-	public WordToken(String content) {
-		this.content = content;
-	}
-	
-	/**
-	 * getter for string content
-	 * @return the content
-	 */
-	public String getContent() {
-		return this.content;
-	}
-	
-	/**
-	 * setter for type
-	 * @param type the type to set
-	 */
-	public void setType(WordTokenType type) {
-		this.type = type;
-	}
-	
-	/**
-	 * returns the type
-	 * @return the type
-	 */
-	public WordTokenType getType() {
-		return this.type;
-	}
+	WORD, NUMBER;
 
 }

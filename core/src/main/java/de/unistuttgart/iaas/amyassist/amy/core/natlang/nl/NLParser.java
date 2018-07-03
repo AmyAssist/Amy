@@ -23,46 +23,25 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
+import java.util.List;
+
 /**
- * Word Token class used in the Lexer and parser
+ * Parses natural language input from NLLexer
+ * e.g. turns written numbers into decimal numbers
  * @author Felix Burk
  */
-public class WordToken {
+public class NLParser {
 	
-	private final String content;
-	
-	private WordTokenType type;
 	
 	/**
-	 * constructor for word token
-	 * @param content the content
+	 * sets word token types in the WordToken list
+	 * @param list
+	 * @return
 	 */
-	public WordToken(String content) {
-		this.content = content;
-	}
-	
-	/**
-	 * getter for string content
-	 * @return the content
-	 */
-	public String getContent() {
-		return this.content;
-	}
-	
-	/**
-	 * setter for type
-	 * @param type the type to set
-	 */
-	public void setType(WordTokenType type) {
-		this.type = type;
-	}
-	
-	/**
-	 * returns the type
-	 * @return the type
-	 */
-	public WordTokenType getType() {
-		return this.type;
+	public List<WordToken> parse(List<WordToken> list) {
+		
+		return null;
+		
 	}
 
 }

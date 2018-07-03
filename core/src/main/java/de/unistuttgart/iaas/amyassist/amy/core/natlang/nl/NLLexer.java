@@ -23,51 +23,75 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Lexer for language input from speech
  * 
- * finds patterns in the language 
- * e.g. Rules (numbers, strings from the registry etc) and normal words
+ * filters bad characters and splits input in words
  * 
  * @author Felix Burk
  */
-public class NLLexer {
+public class NLLexer implements Iterator<WordToken>{
 	
+	private final String mToLex;
+	private int mIndex = 0;
 	
 	/**
-	 * lexes
-	 * @param toLex string to lex
-	 * @return list of word tokens
+	 * lexer implemented as Iterator
+	 * @param toLex the stirng to lex
 	 */
-	public List<WordToken> lex(String toLex){
-		toLex = toLex.toLowerCase();
-		System.out.println(toLex);
-		List<WordToken> result = new ArrayList<>();
-		
-		StringBuilder currentWord = new StringBuilder();
-		for(char c : toLex.toCharArray()) {
-			switch(Character.getType(c)) {
-			case Character.LOWERCASE_LETTER:
-			case Character.DECIMAL_DIGIT_NUMBER:
-				currentWord.append(c);
-				break;
-			//whitespace characters but not newline, tab or carriage return
-			case Character.SPACE_SEPARATOR:
-				result.add(new WordToken(currentWord.toString()));
-				currentWord = new StringBuilder();
-				break;
-			default:
-				throw new NLLexerException("character not recognized " + c + " stopping");
-			}
-			
-			
+	public NLLexer(String toLex) {
+		this.mIndex = 0;
+		this.mToLex = toLex.toLowerCase();
+	}
+
+	/**
+	 * @see java.util.Iterator#hasNext()
+	 */
+	@Override
+	public boolean hasNext() {
+		return this.mIndex < this.mToLex.length();
+	}
+
+	/**
+	 * @see java.util.Iterator#next()
+	 */
+	@Override
+	public WordToken next() {
+		if(hasNext()) {
+    		StringBuilder currentWord = new StringBuilder();
+    		while(this.mIndex < this.mToLex.length()) {
+    			char c = this.mToLex.charAt(this.mIndex++);
+    			
+    			switch(Character.getType(c)) {
+    			case Character.LOWERCASE_LETTER:
+					//$FALL-THROUGH$
+    			case Character.DECIMAL_DIGIT_NUMBER:
+    				currentWord.append(c);
+    				break;
+    				
+    			//handles single whitespace characters but not newline, tab or carriage return
+    			case Character.SPACE_SEPARATOR:
+    				if(currentWord.length() != 0) {
+        				return new WordToken(currentWord.toString());
+    				}
+    				throw new NLLexerException("more than one whitespace found");
+				default:
+    				throw new NLLexerException("character not recognized " + c + " stopping");
+    			}
+    			
+    			
+    		}
+    		return new WordToken(currentWord.toString());
 		}
-		result.add(new WordToken(currentWord.toString()));
-		
-		return result;
+		throw new NoSuchElementException("thrown by NLLexer");
+	}
+	
+	 @Override
+	 public void remove() {
+	    throw new UnsupportedOperationException();
 	}
 
 }

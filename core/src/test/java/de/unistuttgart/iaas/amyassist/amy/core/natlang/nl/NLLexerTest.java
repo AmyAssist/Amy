@@ -52,7 +52,6 @@ public class NLLexerTest {
 	/**
 	 * tests bad chars
 	 */
-	@Test
 	public void testBadChars() {
 		List<Character> badChars = new ArrayList<>(128);
 		
@@ -63,23 +62,23 @@ public class NLLexerTest {
 			}
 		}
 
-		NLLexer lexer = new NLLexer();
-		for(Character c : badChars) {			
-			assertThrows(NLLexerException.class, () -> lexer.lex(c.toString()));
+		for(Character c : badChars) {	
+			NLLexer lexer = new NLLexer(c.toString());
+			assertThrows(NLLexerException.class, () -> lexer.next());
 		}
 	}
 
 	
 	/**
 	 * standard test for the simple NL Lexer class
+	 * @param input 
 	 */
 	public void checkInput(String[] input) {
-		NLLexer lexer = new NLLexer();
-		List<WordToken> tokens = lexer.lex(String.join(" ", input));
+		NLLexer lexer = new NLLexer(String.join(" ", input));
 		
 		int i=0;
-		for(WordToken token : tokens) {
-			assertEquals(token.getContent(), input[i]);
+		while(lexer.hasNext()) {
+			assertEquals(lexer.next().getContent(), input[i]);
 			i++;
 		}
 	}
