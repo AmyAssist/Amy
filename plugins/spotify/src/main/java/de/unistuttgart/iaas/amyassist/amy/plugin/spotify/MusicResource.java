@@ -165,8 +165,10 @@ public class MusicResource {
 	public MusicEntity getCurrentSong() {
 		Map<String, String> currentSong = this.logic.getCurrentSong();
 		this.musicEntity = new MusicEntity();
-		if (currentSong != null && currentSong.containsKey("title") && currentSong.containsKey("artist")) {
-			this.musicEntity = new MusicEntity(currentSong.get("title"), currentSong.get("artist"));
+		if (currentSong != null && currentSong.containsKey(SpotifyConstants.ITEM_NAME)
+				&& currentSong.containsKey(SpotifyConstants.TYPE_ARTIST)) {
+			this.musicEntity = new MusicEntity(currentSong.get(SpotifyConstants.ITEM_NAME),
+					currentSong.get(SpotifyConstants.TYPE_ARTIST));
 			return this.musicEntity;
 		}
 		throw new WebApplicationException("No song is currently playing", Status.CONFLICT);
@@ -191,18 +193,18 @@ public class MusicResource {
 			@QueryParam("type") @DefaultValue("track") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
 		List<Map<String, String>> actualSearchResult;
 		switch (type) {
-		case "artist":
-			actualSearchResult = this.logic.search(searchText, "artist", limit);
+		case SpotifyConstants.TYPE_ARTIST:
+			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_ARTIST, limit);
 			break;
-		case "playlist":
-			actualSearchResult = this.logic.search(searchText, "playlist", limit);
+		case SpotifyConstants.TYPE_PLAYLIST:
+			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_PLAYLIST, limit);
 			break;
-		case "album":
-			actualSearchResult = this.logic.search(searchText, "album", limit);
+		case SpotifyConstants.TYPE_ALBUM:
+			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_ALBUM, limit);
 			break;
-		case "track":
+		case SpotifyConstants.TYPE_TRACK:
 		default:
-			actualSearchResult = this.logic.search(searchText, "track", limit);
+			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_TRACK, limit);
 			break;
 		}
 		if (actualSearchResult != null) {
@@ -229,26 +231,29 @@ public class MusicResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String play(MusicEntity music, @QueryParam("songNumber") @DefaultValue("0") int songNumber,
-			@QueryParam("type") @DefaultValue("track") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
+			@QueryParam("type") @DefaultValue("") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
 		switch (type) {
 		case "user":
-			getPlaylists("user", limit);
 			return this.stringGenerator
 					.generateSearchOutputString(this.logic.play(songNumber, SearchTypes.USER_PLAYLISTS));
 		case "featured":
-			getPlaylists("featured", limit);
 			return this.stringGenerator
 					.generateSearchOutputString(this.logic.play(songNumber, SearchTypes.FEATURED_PLAYLISTS));
-		case "track":
-		default:
+		case SpotifyConstants.TYPE_TRACK:
 			if (music != null) {
 				this.logic.search(music.toString(), SpotifyConstants.TYPE_TRACK, limit);
 				this.musicEntity = new MusicEntity(music.getTitle(), music.getArtist());
 				return this.stringGenerator
 						.generateSearchOutputString(this.logic.play(songNumber, SearchTypes.NORMAL_SEARCH));
 			}
-			throw new WebApplicationException("Found nothing to play.", Status.CONFLICT);
+			throw new WebApplicationException("Enter valid music information.", Status.CONFLICT);
+		default:
+			PlaylistEntity playlist = this.logic.play();
+			if (playlist != null) {
+				return playlist.toString();
+			}
 		}
+		throw new WebApplicationException("Found nothing to play.", Status.CONFLICT);
 	}
 
 	/**
@@ -314,7 +319,7 @@ public class MusicResource {
 	/**
 	 * controls the volume of the player
 	 * 
-	 * @param volumeString
+	 * @param volumeValue
 	 *            allowed strings: mute, max, up, down, or a volume value between 0 and 100
 	 * @return a int from 0-100. This represent the Volume in percent.
 	 */
@@ -322,24 +327,25 @@ public class MusicResource {
 	@Path("volume/{volumeValue}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setVolume(@PathParam("volumeValue") String volumeString) {
+	public String setVolume(@PathParam("volumeValue") String volumeValue) {
 		try {
-			int volume = Integer.parseInt(volumeString);
+			int volume = Integer.parseInt(volumeValue);
 			if (volume < 0 || volume > 100) {
 				throw new WebApplicationException("Incorrect volume value", Status.BAD_REQUEST);
 			}
 			this.logic.setVolume(volume);
 			return String.valueOf(volume);
 		} catch (NumberFormatException e) {
-			if (volumeString != "mute" && volumeString != "max" && volumeString != "up" && volumeString != "down") {
+			if (!volumeValue.equals("mute") && !volumeValue.equals("max") && !volumeValue.equals("up")
+					&& !volumeValue.equals("down")) {
 				throw new WebApplicationException("Incorrect volume command", Status.BAD_REQUEST);
 			}
-			int volume = this.logic.setVolume(volumeString);
+			int volume = this.logic.setVolume(volumeValue);
 			if (volume != -1) {
 				return String.valueOf(volume);
 			}
-			throw new WebApplicationException("Check player state", Status.CONFLICT);
 		}
+		throw new WebApplicationException("Check player state", Status.CONFLICT);
 	}
 
 	/**
@@ -355,7 +361,8 @@ public class MusicResource {
 	@Path("playlists/{type}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public PlaylistEntity[] getPlaylists(@PathParam("type") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
+	public PlaylistEntity[] getPlaylists(@PathParam("type") String type,
+			@QueryParam("limit") @DefaultValue("5") int limit) {
 		List<PlaylistEntity> pl;
 		PlaylistEntity[] playlists;
 		switch (type) {
@@ -369,15 +376,15 @@ public class MusicResource {
 			pl = this.logic.getFeaturedPlaylists(limit);
 			break;
 		}
-		playlists = new PlaylistEntity[pl.size()];
 		if (!pl.isEmpty()) {
+			playlists = new PlaylistEntity[pl.size()];
 			for (int i = 0; i < pl.size(); i++) {
 				playlists[i] = new PlaylistEntity(pl.get(i).getName(), pl.get(i).getSongs(), pl.get(i).getUri(),
 						pl.get(i).getImageUrl());
 			}
 			return playlists;
 		}
-		throw new WebApplicationException("No Playlist is available", Status.NOT_FOUND);
+		throw new WebApplicationException("No Playlists are available", Status.NOT_FOUND);
 	}
 
 }
