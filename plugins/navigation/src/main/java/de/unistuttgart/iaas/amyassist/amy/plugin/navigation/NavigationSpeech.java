@@ -21,21 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.Navigation;
+package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 /**
- * TODO: Description
- * @author
+ * This class handle the speech input for the navigation plugin
+ * @author Lars Buttgereit
  */
 @Service
 @SpeechCommand("navigation")
 public class NavigationSpeech {
-	@Grammar("test")
-	public String test(String... params) {
-		return "bla";
-	}
+	
+	@Reference
+	private DirectionApiLogic logic;
+	
 }

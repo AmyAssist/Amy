@@ -11,4 +11,12 @@
 		<version>0.3.0-Snapshot</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
+	<dependencies>
+		<!-- Google Places Library -->
+		<dependency>
+			<groupId>com.google.maps</groupId>
+			<artifactId>google-maps-services</artifactId>
+			<version>0.2.8</version>
+		</dependency>
+	</dependencies>
 </project>
