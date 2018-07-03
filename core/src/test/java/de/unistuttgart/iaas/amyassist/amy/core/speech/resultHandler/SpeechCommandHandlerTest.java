@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.resultHandler;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -47,35 +47,35 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 class SpeechCommandHandlerTest {
 	@Reference
 	private TestFramework framework;
-	private SpeechCommandHandler speechCammandHandler;
+	private SpeechCommandHandler speechCommandHandler;
 
 	@BeforeEach
 	public void setup() {
-		this.speechCammandHandler = this.framework.setServiceUnderTest(SpeechCommandHandler.class);
+		this.speechCommandHandler = this.framework.setServiceUnderTest(SpeechCommandHandler.class);
 		File resourceDir = new File(new File("."), "resources");
 		File grammarFile = new File(resourceDir, "/sphinx-grammars/grammar.gram");
 
-		this.speechCammandHandler.setFileToSaveGrammarTo(grammarFile);
+		this.speechCommandHandler.setFileToSaveGrammarTo(grammarFile);
 
 	}
 
 	@Test
 	void test() {
-		this.speechCammandHandler.registerSpeechCommand(TestSpeechCommand.class);
-		this.speechCammandHandler.completeSetup();
+		this.speechCommandHandler.registerSpeechCommand(TestSpeechCommand.class);
+		this.speechCommandHandler.completeSetup();
 
-		String result = this.speechCammandHandler.handleSpeechInput("testkeyword simple 10");
+		String result = this.speechCommandHandler.handleSpeechInput("testkeyword simple 10");
 		assertThat(result, equalTo("10"));
 		// assertThat(result, equalTo("10"));
 	}
 
 	@Test
 	void testUnknownKeyword() {
-		this.speechCammandHandler.registerSpeechCommand(TestSpeechCommand.class);
-		this.speechCammandHandler.completeSetup();
+		this.speechCommandHandler.registerSpeechCommand(TestSpeechCommand.class);
+		this.speechCommandHandler.completeSetup();
 
 		assertThrows(IllegalArgumentException.class,
-				() -> this.speechCammandHandler.handleSpeechInput("unknownKeyword simple 10"));
+				() -> this.speechCommandHandler.handleSpeechInput("unknownKeyword simple 10"));
 	}
 
 }

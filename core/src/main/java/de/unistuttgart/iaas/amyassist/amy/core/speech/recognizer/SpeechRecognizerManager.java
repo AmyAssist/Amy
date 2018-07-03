@@ -39,8 +39,7 @@ import org.slf4j.LoggerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.LocalMainGrammarResultHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.LocalSwitchableGrammarResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandlerInterface;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
 
 /**
@@ -48,14 +47,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
  * 
  * @author Kai Menzel
  */
-public class SpeechRecognizerManager implements SpeechRecognitionManagerInterface {
+public abstract class SpeechRecognizerManager implements SpeechRecognitionManagerInterface {
 
 	private final Logger logger = LoggerFactory.getLogger(SpeechRecognizerManager.class);
 
-	private AudioInputStream ais;
 	private SpeechInputHandler inputHandler;
 	private Output output;
-	private GrammarObjectsCreator grammarData;
+	private String mainGrammarName;
 
 	private SpeechRecognizer mainRecognizer;
 	private Map<String, SpeechRecognizer> recognizerList = new HashMap<>();
@@ -82,24 +80,46 @@ public class SpeechRecognizerManager implements SpeechRecognitionManagerInterfac
 	 */
 	public SpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
 			GrammarObjectsCreator grammarData) {
-		this.ais = ais;
 		this.inputHandler = inputHandler;
 		this.output = output;
-		this.grammarData = grammarData;
+		this.mainGrammarName = grammarData.getMainGrammar().getName();
 
-		this.mainRecognizer = new SpeechRecognizer(this.grammarData.getMainGrammar(),
-				new LocalMainGrammarResultHandler(this, this.grammarData.getMainGrammar()), this.ais);
+		createRecognizers(grammarData, ais);
 
-		if (this.grammarData.getSwitchableGrammars() != null && !this.grammarData.getSwitchableGrammars().isEmpty()) {
-			for (Grammar grammar : this.grammarData.getSwitchableGrammars()) {
+		this.currentRecognizer = new Thread(this.mainRecognizer);
+	}
+
+	private void createRecognizers(GrammarObjectsCreator grammarData, AudioInputStream ais) {
+		this.mainRecognizer = new SpeechRecognizer(grammarData.getMainGrammar(),
+				getMainResultHandler(grammarData.getMainGrammar()), ais);
+
+		if (grammarData.getSwitchableGrammars() != null && !grammarData.getSwitchableGrammars().isEmpty()) {
+			for (Grammar grammar : grammarData.getSwitchableGrammars()) {
 				if (!this.recognizerList.containsKey(grammar.getName())) {
-					this.recognizerList.put(grammar.getName(), new SpeechRecognizer(grammar,
-							new LocalSwitchableGrammarResultHandler(this, grammar), this.ais));
+					this.recognizerList.put(grammar.getName(),
+							new SpeechRecognizer(grammar, getResultHandler(grammar), ais));
 				}
 			}
 		}
-		this.currentRecognizer = new Thread(this.mainRecognizer);
 	}
+
+	/**
+	 * Get the correct ResultHandler for the environment
+	 * 
+	 * @param grammar
+	 *            Grammar of the Recognizer the Handler is created for
+	 * @return ResultHandler for the Recognizer
+	 */
+	protected abstract RecognitionResultHandlerInterface getMainResultHandler(Grammar grammar);
+
+	/**
+	 * Get the correct ResultHandler for the environment
+	 * 
+	 * @param grammar
+	 *            Grammar of the Recognizer the Handler is created for
+	 * @return ResultHandler for the Recognizer
+	 */
+	protected abstract RecognitionResultHandlerInterface getResultHandler(Grammar grammar);
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.SpeechRecognizerHandler#start()
@@ -145,7 +165,7 @@ public class SpeechRecognizerManager implements SpeechRecognitionManagerInterfac
 	 */
 	@Override
 	public void handleGrammarSwitch(Grammar grammar) {
-		if (grammar == null || grammar.getName().equals(this.grammarData.getMainGrammar().getName())) {
+		if (grammar == null || grammar.getName().equals(this.mainGrammarName)) {
 			switchGrammar(this.mainRecognizer);
 		} else {
 			switchGrammar(this.recognizerList.get(grammar.getName()));

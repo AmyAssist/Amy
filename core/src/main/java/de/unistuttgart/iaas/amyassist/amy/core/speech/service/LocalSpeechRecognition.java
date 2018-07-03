@@ -37,6 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.RuntimeExceptionRecognizerCantBeCreated;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.LocalSpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
@@ -65,7 +66,7 @@ public class LocalSpeechRecognition implements SpeechRecognizerHandler {
 
 	@PostConstruct
 	private void init() {
-		this.localManager = new SpeechRecognizerManager(createNewAudioInputStream(), this.inputHandler, this.tts,
+		this.localManager = new LocalSpeechRecognizerManager(createNewAudioInputStream(), this.inputHandler, this.tts,
 				this.grammarData);
 	}
 

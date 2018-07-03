@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.RuntimeExceptionRecognizerCantBeCreated;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandlerInterface;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.SpeechResult;
@@ -77,7 +76,7 @@ public class SpeechRecognizer implements Runnable {
 	 * @param ais
 	 *            set custom AudioInputStream.
 	 */
-	public SpeechRecognizer(Grammar grammar, RecognitionResultHandler resultHandler, AudioInputStream ais) {
+	public SpeechRecognizer(Grammar grammar, RecognitionResultHandlerInterface resultHandler, AudioInputStream ais) {
 		this.grammar = grammar;
 		this.resultHandler = resultHandler;
 		this.ais = ais;

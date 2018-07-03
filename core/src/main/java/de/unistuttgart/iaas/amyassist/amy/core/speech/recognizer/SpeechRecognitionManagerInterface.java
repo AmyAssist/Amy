@@ -101,6 +101,12 @@ public interface SpeechRecognitionManagerInterface {
 	 */
 	boolean isSoundPlaying();
 
+	/**
+	 * Method to set if the Current RecognitionThread should be running
+	 * 
+	 * @param recognitionRunning
+	 *            false if the current recognizer shall be stopped
+	 */
 	void setRecognitionThreadRunning(boolean recognitionRunning);
 
 	/**

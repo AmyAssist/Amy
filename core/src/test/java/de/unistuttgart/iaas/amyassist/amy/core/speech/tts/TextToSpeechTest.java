@@ -21,42 +21,38 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
-import uk.org.lidalia.slf4jtest.TestLogger;
-import uk.org.lidalia.slf4jtest.TestLoggerFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
  * Test Class for the Text To Speech Output class
  * 
  * @author Kai Menzel
  */
+@ExtendWith(FrameworkExtension.class)
 class TextToSpeechTest {
 
-	/**
-	 * tts Object
-	 */
-	Output tts;
+	@Reference
+	private TestFramework framework;
 
-	private static final String TEST = "hello world";
+	private Output tts;
 
 	/**
 	 * test Logging
 	 */
 	@Test
 	void test() {
-		this.tts = TextToSpeech.getTTS();
-		TestLogger logger = TestLoggerFactory.getTestLogger(TextToSpeech.class);
+		this.tts = this.framework.setServiceUnderTest(TextToSpeech.class);
 		assertThat(this.tts == null, equalTo(false));
-		this.tts.output(null, false, TEST);
-		// assertThat(logger.getLoggingEvents(), contains(info(TEST)));
 	}
 
 }
