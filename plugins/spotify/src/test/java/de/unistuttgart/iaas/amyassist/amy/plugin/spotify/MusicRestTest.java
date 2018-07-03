@@ -136,7 +136,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#firstTimeInit(String, String, String)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#firstTimeInit(String, String)}.
 	 */
 	@Test
 	void testFirstTimeInit() {
