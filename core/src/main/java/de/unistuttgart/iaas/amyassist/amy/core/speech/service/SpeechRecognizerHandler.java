@@ -21,15 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.grammar;
-
-import java.util.Map;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.service;
 
 /**
- * TODO: Description
+ * Interface between the SpeechRecognition System and the rest og the System
+ * 
  * @author Kai Menzel
  */
-public interface GrammarObjectCreatorInterface {
-	Grammar getMainGrammar();
-	Map<String, Grammar> getSwitchableGrammars();
+public interface SpeechRecognizerHandler {
+	/**
+	 * Start the Recognition System
+	 */
+	void start();
+
+	/**
+	 * Stop the Recognition System
+	 */
+	void stop();
+
 }

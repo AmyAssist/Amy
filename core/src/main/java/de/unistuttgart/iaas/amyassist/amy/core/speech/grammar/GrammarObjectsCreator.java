@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.grammar;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.grammar;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -33,32 +33,30 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
- * TODO: Description
+ * Class that Creates all Grammar Objects sets the MainGrammar and the List of all other Grammars
  * 
  * @author Kai Menzel
  */
-@Service(GrammarObjectCreator.class)
-public class GrammarObjectCreator implements GrammarObjectCreatorInterface {
+@Service(GrammarObjectsCreator.class)
+public class GrammarObjectsCreator implements GrammarObjectsCreatorInterface {
 
 	@Reference
 	private Environment environment;
 
-	private Path grammarFile;
-
 	private Grammar mainGrammar;
-	private Map<String, Grammar> switchables;
+	private List<Grammar> switchables;
 
 	@PostConstruct
 	private void init() {
-		this.switchables = new HashMap<>();
-		this.grammarFile = this.environment.getWorkingDirectory().resolve("resources")
+		this.switchables = new ArrayList<>();
+		Path grammarFile = this.environment.getWorkingDirectory().resolve("resources")
 				.resolve("sphinx-grammars/grammar.gram");
-		this.mainGrammar = new Grammar("grammar", this.grammarFile.toFile());
+		this.mainGrammar = new Grammar("grammar", grammarFile.toFile());
 
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.grammar.GrammarObjectCreatorInterface#getMainGrammar()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreatorInterface#getMainGrammar()
 	 */
 	@Override
 	public Grammar getMainGrammar() {
@@ -66,10 +64,10 @@ public class GrammarObjectCreator implements GrammarObjectCreatorInterface {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.grammar.GrammarObjectCreatorInterface#getSwitchableGrammars()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreatorInterface#getSwitchableGrammars()
 	 */
 	@Override
-	public Map<String, Grammar> getSwitchableGrammars() {
+	public List<Grammar> getSwitchableGrammars() {
 		return this.switchables;
 	}
 

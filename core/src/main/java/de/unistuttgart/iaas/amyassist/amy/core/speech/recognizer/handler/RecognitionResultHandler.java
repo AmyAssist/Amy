@@ -21,34 +21,41 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler;
 
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.core.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.api.SpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager;
 
 /**
- * TODO: Description
+ * Handler that handles SpeechRecognition System intern commands
  * 
  * @author Kai Menzel
  */
 public abstract class RecognitionResultHandler implements RecognitionResultHandlerInterface {
 
+	/**
+	 * Manager Object which handles this ResultHandler
+	 */
 	protected SpeechRecognizerManager srManager;
 	private Grammar grammar;
 	private Grammar nextGrammar;
 
-
+	/**
+	 * @param srManager
+	 *            Manager Object which handles this ResultHandler
+	 * @param grammar
+	 *            Grammar this ResultHandler handles
+	 */
 	public RecognitionResultHandler(SpeechRecognizerManager srManager, Grammar grammar) {
 		this.srManager = srManager;
 		this.grammar = grammar;
 	}
 
 	/**
-	 * Method to check if Recognition Thread is Running
 	 * 
-	 * @return if the Recognition Thread should be running
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandlerInterface#isRecognitionThreadRunning()
 	 */
 	@Override
 	public boolean isRecognitionThreadRunning() {
@@ -56,15 +63,13 @@ public abstract class RecognitionResultHandler implements RecognitionResultHandl
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.RecognitionResultHandlerInterface#handle(String
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandlerInterface#handle(String
 	 *      result)
 	 */
 	@Override
 	public void handle(String result) {
-		if (!predefinedInputHandling(result)) {
-			if (!checkGrammarSwitch(result)) {
-				this.srManager.handleCommand(result);
-			}
+		if (!predefinedInputHandling(result) && !checkGrammarSwitch(result)) {
+			this.srManager.handleCommand(result);
 		}
 
 	}
@@ -100,7 +105,7 @@ public abstract class RecognitionResultHandler implements RecognitionResultHandl
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.RecognitionResultHandlerInterface#initiateChange()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandlerInterface#initiateChange()
 	 */
 	@Override
 	public void initiateChange() {

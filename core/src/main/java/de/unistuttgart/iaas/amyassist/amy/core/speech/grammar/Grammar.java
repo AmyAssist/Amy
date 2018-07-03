@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.grammar;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.grammar;
 
 import java.io.File;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ public class Grammar {
 
 	private String name;
 	private File file;
-	private HashMap<String, Grammar> switchList = new HashMap<>();
+	private Map<String, Grammar> switchList = new HashMap<>();
 
 	/**
 	 * @param name
@@ -56,9 +56,9 @@ public class Grammar {
 	 * @param file
 	 *            Path to the Grammar
 	 * @param switchList
-	 *            List of all possible Grammar changes
+	 *            List of all possible Grammars with their call String
 	 */
-	public Grammar(String name, File file, HashMap<String, Grammar> switchList) {
+	public Grammar(String name, File file, Map<String, Grammar> switchList) {
 		this.name = name;
 		this.file = file;
 		this.switchList = switchList;
@@ -69,8 +69,8 @@ public class Grammar {
 	 * 
 	 * @param switchCommand
 	 *            Command to say to switch to new Grammar
-	 * @param gram
-	 *            Grammar to change to by said Grammarswitch
+	 * @param grammar
+	 *            Grammar to change to
 	 */
 	public void putChangeGrammar(String switchCommand, Grammar grammar) {
 		this.switchList.put(switchCommand, grammar);
@@ -129,7 +129,7 @@ public class Grammar {
 	 * @param switchList
 	 *            List of Possible Grammar Switches
 	 */
-	public void setSwitchList(HashMap<String, Grammar> switchList) {
+	public void setSwitchList(Map<String, Grammar> switchList) {
 		this.switchList = switchList;
 	}
 

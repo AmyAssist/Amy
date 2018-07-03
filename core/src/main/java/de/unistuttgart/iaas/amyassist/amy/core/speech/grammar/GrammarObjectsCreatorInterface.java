@@ -21,22 +21,24 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.grammar;
+
+import java.util.List;
 
 /**
- * Interface between the SpeechRecognition System and the rest og the System
+ * Interface for the grammarObjectsCreator
  * 
  * @author Kai Menzel
  */
-public interface SpeechRecognizerHandler {
-	/**
-	 * Start the Recognition System
-	 */
-	void start();
+public interface GrammarObjectsCreatorInterface {
 
 	/**
-	 * Stop the Recognition System
+	 * @return the MainGrammar of the Recognition System
 	 */
-	void stop();
+	Grammar getMainGrammar();
 
+	/**
+	 * @return List of the Switchable Grammars
+	 */
+	List<Grammar> getSwitchableGrammars();
 }

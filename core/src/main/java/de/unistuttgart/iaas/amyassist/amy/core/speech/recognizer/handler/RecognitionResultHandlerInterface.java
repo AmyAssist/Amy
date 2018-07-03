@@ -21,32 +21,32 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler;
 
 /**
- * Class for important Constants for the SpeechRecognition
- * Holds variabel if Recognition System is currently active
+ * Interface for the Handler that handles SpeechRecognition System intern commands
  * 
- * @author Leon Kiefer
+ * @author Kai Menzel
  */
-public class Constants {
-
-	private Constants() {
-		// hide constructor
-	}
+public interface RecognitionResultHandlerInterface {
 
 	/**
-	 * Command String to wake up amy's SpeechRecogniton System
+	 * Method to check if Recognition Thread is Running
+	 * 
+	 * @return if the Recognition Thread should be running
 	 */
-	public static final String WAKE_UP = "amy wake up";
-	/**
-	 * Command String to set the SpeechRecognition inactive, to stop listening to input until waked again
-	 */
-	public static final String GO_SLEEP = "go to sleep";
-	/**
-	 * Command String to stop current Voice Output of Amy
-	 */
-	public static final String SHUT_UP = "amy shut up";
+	boolean isRecognitionThreadRunning();
 
-	
+	/**
+	 * handle the SR output
+	 * 
+	 * @param result
+	 *            SR output String
+	 */
+	void handle(String result);
+
+	/**
+	 * called when SR thread is closing, start new if needed
+	 */
+	void initiateChange();
 }

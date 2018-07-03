@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.resultHandler;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

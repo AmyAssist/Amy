@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.api;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,13 +36,11 @@ import javax.sound.sampled.LineListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.grammar.GrammarObjectCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizerHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.LocalMainGrammarResultHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.LocalSwitchableGrammarResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.LocalMainGrammarResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.LocalSwitchableGrammarResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
 
 /**
@@ -50,24 +48,24 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
  * 
  * @author Kai Menzel
  */
-public class SpeechRecognizerManager implements SpeechRecognizerHandler {
+public class SpeechRecognizerManager implements SpeechRecognitionManagerInterface {
 
 	private final Logger logger = LoggerFactory.getLogger(SpeechRecognizerManager.class);
 
 	private AudioInputStream ais;
 	private SpeechInputHandler inputHandler;
 	private Output output;
-	private GrammarObjectCreator grammarData;
+	private GrammarObjectsCreator grammarData;
 
 	private SpeechRecognizer mainRecognizer;
 	private Map<String, SpeechRecognizer> recognizerList = new HashMap<>();
 
 	private boolean soundPlaying = false;
-	private boolean listening = false;
+	private boolean srListening = false;
 
 	private Thread currentRecognizer;
 
-	private boolean RecognitionThreadRunning;
+	private boolean recognitionThreadRunning;
 
 	/**
 	 * Object that handles All Recognizers with the given AudioInputStream
@@ -76,10 +74,14 @@ public class SpeechRecognizerManager implements SpeechRecognizerHandler {
 	 *            AudioInputStream for the SpeechRecognition
 	 * @param inputHandler
 	 *            Handler that will handle the SpeechRecognitionResult
+	 * @param output
+	 *            Output Object where to Output the result of the Recognizer
+	 * @param grammarData
+	 *            DataSet of all GrammarObjects
 	 * 
 	 */
 	public SpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
-			GrammarObjectCreator grammarData) {
+			GrammarObjectsCreator grammarData) {
 		this.ais = ais;
 		this.inputHandler = inputHandler;
 		this.output = output;
@@ -89,7 +91,7 @@ public class SpeechRecognizerManager implements SpeechRecognizerHandler {
 				new LocalMainGrammarResultHandler(this, this.grammarData.getMainGrammar()), this.ais);
 
 		if (this.grammarData.getSwitchableGrammars() != null && !this.grammarData.getSwitchableGrammars().isEmpty()) {
-			for (Grammar grammar : this.grammarData.getSwitchableGrammars().values()) {
+			for (Grammar grammar : this.grammarData.getSwitchableGrammars()) {
 				if (!this.recognizerList.containsKey(grammar.getName())) {
 					this.recognizerList.put(grammar.getName(), new SpeechRecognizer(grammar,
 							new LocalSwitchableGrammarResultHandler(this, grammar), this.ais));
@@ -99,17 +101,50 @@ public class SpeechRecognizerManager implements SpeechRecognizerHandler {
 		this.currentRecognizer = new Thread(this.mainRecognizer);
 	}
 
-	public void handleListeningState(boolean listening) {
-		this.listening = listening;
-		notify(listening);
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.SpeechRecognizerHandler#start()
+	 */
+	@Override
+	public void start() {
+		this.recognitionThreadRunning = true;
+		this.currentRecognizer.start();
 	}
 
-	public boolean isListening() {
-		return this.listening;
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.SpeechRecognizerHandler#stop()
+	 */
+	@Override
+	public void stop() {
+		this.recognitionThreadRunning = false;
 	}
 
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#handleCommand(java.lang.String)
+	 */
+	@Override
+	public void handleCommand(String result) {
+		Future<String> handle = this.inputHandler.handle(result);
+		try {
+			voiceOutput(handle.get());
+		} catch (ExecutionException e) {
+			if (e.getCause() != null && e.getCause().getClass().equals(IllegalArgumentException.class)) {
+				voiceOutput("unknown command");
+			} else {
+				this.logger.error("unknown error", e);
+			}
+		} catch (InterruptedException e) {
+			this.logger.error("[Recognition Stopped] Error with SpeechInputhandler Return", e);
+			stop();
+			Thread.currentThread().interrupt();
+		}
+
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#handleGrammarSwitch(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
+	 */
+	@Override
 	public void handleGrammarSwitch(Grammar grammar) {
-
 		if (grammar == null || grammar.getName().equals(this.grammarData.getMainGrammar().getName())) {
 			switchGrammar(this.mainRecognizer);
 		} else {
@@ -123,80 +158,75 @@ public class SpeechRecognizerManager implements SpeechRecognizerHandler {
 		this.currentRecognizer.start();
 	}
 
-	public void handleCommand(String result) {
-		Future<String> handle = this.inputHandler.handle(result);
-		try {
-			voiceOutput(handle.get());
-		} catch (ExecutionException e) {
-			if (e.getCause() != null && e.getCause().getClass().equals(IllegalArgumentException.class)) {
-				voiceOutput("unknown command");
-			} else {
-				this.logger.error("unknown error", e);
-			}
-		} catch (InterruptedException e) {
-			logger.error("[Recognition Stopped] Error with SpeechInputhandler Return", e);
-			stop();
-		}
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#handleListeningState(boolean)
+	 */
+	@Override
+	public void handleListeningState(boolean listening) {
+		this.srListening = listening;
+		notify(listening);
+	}
+
+	@SuppressWarnings("unused")
+	private void notify(boolean listening) {
+		// TODO notify all plugins about the listening change
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizerHandler#start()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#isListening()
 	 */
 	@Override
-	public void start() {
-		this.RecognitionThreadRunning = true;
-		this.currentRecognizer.start();
+	public boolean isListening() {
+		return this.srListening;
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizerHandler#stop()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#voiceOutput(java.lang.String)
 	 */
 	@Override
-	public void stop() {
-		this.RecognitionThreadRunning = false;
-	}
-
 	public void voiceOutput(String outputString) {
 		this.output.output(this.listener, outputString);
+
 	}
 
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#stopOutput()
+	 */
+	@Override
 	public void stopOutput() {
 		this.output.stopOutput();
 	}
 
-	private void notify(boolean listening) {
-	}
-
 	/**
-	 * Set boolean if the output is Currently Active
-	 * 
-	 * @param outputActive
-	 *            true if sound Playing
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#setSoundPlaying(boolean)
 	 */
+	@Override
 	public void setSoundPlaying(boolean outputActive) {
 		this.soundPlaying = outputActive;
 	}
 
 	/**
-	 * Method to check if output is currently active
-	 * 
-	 * @return true if sound Playing
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#isSoundPlaying()
 	 */
+	@Override
 	public boolean isSoundPlaying() {
 		return this.soundPlaying;
 	}
 
 	/**
-	 * Method to check if Recognitionthread is Running
-	 * 
-	 * @return if the Recognitionthread should be running
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#setRecognitionThreadRunning(boolean)
 	 */
-	public boolean isRecognitionThreadRunning() {
-		return this.RecognitionThreadRunning;
+	@Override
+	public void setRecognitionThreadRunning(boolean recognitionRunning) {
+		this.recognitionThreadRunning = recognitionRunning;
 	}
 
-	public void setRecognitionThreadRunning(boolean RecognitionRunning) {
-
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#isRecognitionThreadRunning()
+	 */
+	@Override
+	public boolean isRecognitionThreadRunning() {
+		return this.recognitionThreadRunning;
 	}
 
 	/**

@@ -32,10 +32,10 @@ import javax.sound.sampled.AudioInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.RuntimeExceptionRecognizerCantBeCreated;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.RecognitionResultHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.RecognitionResultHandlerInterface;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.RuntimeExceptionRecognizerCantBeCreated;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandlerInterface;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;

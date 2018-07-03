@@ -26,7 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 import java.io.IOException;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
@@ -34,7 +33,6 @@ import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -83,12 +81,11 @@ public class TextToSpeech implements Output {
 	private void speak(LineListener listener, String s) {
 		stopOutput();
 		try {
-			AudioInputStream audio = this.mary.generateAudio(s);
-			AudioFormat format = audio.getFormat();
+			AudioFormat format = this.mary.generateAudio(s).getFormat();
 			DataLine.Info info = new DataLine.Info(Clip.class, format);
 			this.outputClip = (Clip) AudioSystem.getLine(info);
 			this.outputClip.addLineListener(listener);
-			this.outputClip.open(audio);
+			this.outputClip.open(this.mary.generateAudio(s));
 			this.outputClip.start();
 		} catch (SynthesisException | LineUnavailableException | IOException e) {
 			this.logger.error("output error", e);

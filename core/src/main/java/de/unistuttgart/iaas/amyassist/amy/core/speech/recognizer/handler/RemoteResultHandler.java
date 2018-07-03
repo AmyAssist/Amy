@@ -21,44 +21,39 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler;
 
-import de.unistuttgart.iaas.amyassist.amy.core.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.Constants;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.api.SpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager;
 
 /**
- * TODO: Description
+ * Handler that handles the remote SpeechRecognition System intern commands
  * 
  * @author Kai Menzel
  */
-public class LocalMainGrammarResultHandler extends RecognitionResultHandler {
+public class RemoteResultHandler extends RecognitionResultHandler {
 
-	public LocalMainGrammarResultHandler(SpeechRecognizerManager srManager, Grammar grammar) {
+	/**
+	 * @param srManager
+	 *            Manager Object which handles this ResultHandler
+	 * @param grammar
+	 *            Grammar this ResultHandler handles
+	 */
+	public RemoteResultHandler(SpeechRecognizerManager srManager, Grammar grammar) {
 		super(srManager, grammar);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.RecognitionResultHandler#predefinedInputHandling(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler#predefinedInputHandling(java.lang.String)
 	 */
 	@Override
 	protected boolean predefinedInputHandling(String result) {
 		if (result.equals(Constants.SHUT_UP)) {
 			this.srManager.stopOutput();
 			return true;
-		} else if (result.equals(Constants.WAKE_UP)) {
-			this.srManager.handleListeningState(true);
-			this.srManager.voiceOutput("waking up");
-			return true;
-		} else if (this.srManager.isListening()) {
-			if (result.equals(Constants.GO_SLEEP)) {
-				this.srManager.handleListeningState(false);
-				this.srManager.voiceOutput("now sleeping");
-				return true;
-			}
-			return false;
 		}
-		return true;
+		return false;
 	}
 
 }

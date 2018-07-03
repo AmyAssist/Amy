@@ -37,7 +37,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.grammar.GrammarObjectCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
@@ -46,8 +45,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.api.LocalSpeechRecognition;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.SpeechCommandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.resultHandler.SpeechCommandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.service.LocalSpeechRecognition;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
@@ -70,6 +70,7 @@ public class Core {
 
 	private Server server;
 	private IStorage storage = new Storage("", new GlobalStorage());
+	private LocalSpeechRecognition recognizer;
 
 	private CommandLineArgumentHandlerService cmaHandler;
 
@@ -103,6 +104,7 @@ public class Core {
 		this.logger.info("run");
 		this.init();
 		this.threads.forEach(Thread::start);
+		this.recognizer.start();
 		this.server.start();
 		this.logger.info("running");
 	}
@@ -122,23 +124,10 @@ public class Core {
 		console.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
 		this.threads.add(new Thread(console));
 
-		GrammarObjectCreator grammarData = this.di.getService(GrammarObjectCreator.class);
+		GrammarObjectsCreator grammarData = this.di.getService(GrammarObjectsCreator.class);
 		speechCommandHandler.setFileToSaveGrammarTo(grammarData.getMainGrammar().getFile());
 
-		// Environment environment = this.di.getService(Environment.class);
-		//
-		// Path grammarFile = environment.getWorkingDirectory().resolve("resources")
-		// .resolve("sphinx-grammars/grammar.gram");
-		//
-		// speechCommandHandler.setFileToSaveGrammarTo(grammarFile.toFile());
-		//
-		// AudioUserInteraction aui = this.di.createAndInitialize(AudioUserInteraction.class);
-		// aui.setGrammars(new Grammar("grammar", grammarFile.toFile()), null);
-		// aui.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
-		// this.threads.add(new Thread(aui));
-
-		LocalSpeechRecognition recognizer = this.di.getService(LocalSpeechRecognition.class);
-		recognizer.start();
+		this.recognizer = this.di.getService(LocalSpeechRecognition.class);
 
 		PluginManager pluginManager = this.di.getService(PluginManager.class);
 		pluginManager.loadPlugins();
@@ -169,7 +158,7 @@ public class Core {
 		this.di.register(EnvironmentService.class);
 		this.di.register(NaturalLanaguageInputHandlerService.class);
 
-		this.di.register(GrammarObjectCreator.class);
+		this.di.register(GrammarObjectsCreator.class);
 		this.di.register(TextToSpeech.class);
 		this.di.register(LocalSpeechRecognition.class);
 	}
@@ -180,8 +169,7 @@ public class Core {
 	public void stop() {
 		this.logger.info("stop");
 		this.server.shutdown();
-		LocalSpeechRecognition recognizer = this.di.getService(LocalSpeechRecognition.class);
-		recognizer.stop();
+		this.recognizer.stop();
 		this.threads.forEach(Thread::interrupt);
 		this.singleThreadScheduledExecutor.shutdownNow();
 		this.di.shutdown();

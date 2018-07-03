@@ -21,17 +21,25 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.data;
 
 /**
- * TODO: Description
+ * non-Generic RuntimeException
  * 
  * @author Kai Menzel
  */
-public interface RecognitionResultHandlerInterface {
-	boolean isRecognitionThreadRunning();
+public class RuntimeExceptionRecognizerCantBeCreated extends RuntimeException {
 
-	void handle(String result);
+	private static final long serialVersionUID = 1L;
 
-	void initiateChange();
+	/**
+	 * @param string
+	 *            Message of the Exception
+	 * @param e
+	 *            Error Message
+	 */
+	public RuntimeExceptionRecognizerCantBeCreated(String string, Exception e) {
+		super(string, e);
+	}
+
 }

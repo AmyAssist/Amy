@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.api;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.service;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -34,10 +34,11 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.grammar.GrammarObjectCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.RuntimeExceptionRecognizerCantBeCreated;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizerHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.RuntimeExceptionRecognizerCantBeCreated;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 
 /**
@@ -58,9 +59,9 @@ public class LocalSpeechRecognition implements SpeechRecognizerHandler {
 	private TextToSpeech tts;
 
 	@Reference
-	private GrammarObjectCreator grammarData;
+	private GrammarObjectsCreator grammarData;
 
-	private SpeechRecognizerHandler localManager;
+	private SpeechRecognitionManagerInterface localManager;
 
 	@PostConstruct
 	private void init() {
@@ -69,7 +70,7 @@ public class LocalSpeechRecognition implements SpeechRecognizerHandler {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizerHandler#start()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.SpeechRecognizerHandler#start()
 	 */
 	@Override
 	public void start() {
@@ -77,11 +78,12 @@ public class LocalSpeechRecognition implements SpeechRecognizerHandler {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizerHandler#stop()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.SpeechRecognizerHandler#stop()
 	 */
 	@Override
 	public void stop() {
 		this.localManager.stop();
+		this.logger.info("Closing Local Speech Recognizer");
 	}
 
 	/**
