@@ -23,17 +23,24 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -47,15 +54,17 @@ class SpeechCommandHandlerTest {
 	@Reference
 	private TestFramework framework;
 	private SpeechCommandHandler speechCammandHandler;
+	private Path tempDir;
 
 	@BeforeEach
-	public void setup() {
+	public void setup() throws IOException {
+		Environment environment = this.framework.mockService(Environment.class);
+
+		this.tempDir = Files.createTempDirectory(SpeechCommandHandlerTest.class.getName());
+		this.tempDir.toFile().deleteOnExit();
+		Mockito.when(environment.getWorkingDirectory()).thenReturn(this.tempDir);
+
 		this.speechCammandHandler = this.framework.setServiceUnderTest(SpeechCommandHandler.class);
-		File resourceDir = new File(new File("."), "resources");
-		File grammarFile = new File(resourceDir, "/sphinx-grammars/grammar.gram");
-
-		this.speechCammandHandler.setFileToSaveGrammarTo(grammarFile);
-
 	}
 
 	@Test
@@ -75,6 +84,11 @@ class SpeechCommandHandlerTest {
 
 		assertThrows(IllegalArgumentException.class,
 				() -> this.speechCammandHandler.handleSpeechInput("unknownKeyword simple 10"));
+	}
+
+	@AfterEach
+	void cleanUp() throws IOException {
+		Files.walk(this.tempDir).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
 	}
 
 }
