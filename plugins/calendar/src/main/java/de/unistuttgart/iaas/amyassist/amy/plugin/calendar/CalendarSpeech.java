@@ -39,8 +39,8 @@ public class CalendarSpeech {
 	private CalendarLogic calendar;
 
 	/**
-	 * @param params
-	 * @return the method in the logic class is called
+	 * 
+	 * @return the upcoming X events from the calendar
 	 */
 	@Grammar("get next [#] event[s]")
 	public String getEvents(String[] params) {
@@ -53,6 +53,10 @@ public class CalendarSpeech {
 		return this.calendar.getEvents(number);
 	}
 
+	/**
+	 * 
+	 * @return upcoming events on the current day
+	 */
 	@Grammar("events today")
 	public String getEventsToday(String[] params) {
 		return this.calendar.getEventsToday();

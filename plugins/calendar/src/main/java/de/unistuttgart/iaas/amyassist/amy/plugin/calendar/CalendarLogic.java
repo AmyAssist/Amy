@@ -137,7 +137,7 @@ public class CalendarLogic {
 				DateTime start = event.getStart().getDateTime();
 				eventCalc(start, event);
 			}
-			return "Upcoming events\n" + String.join("\n", this.eventList);
+			return "You have following upcoming events:\n" + String.join("\n", this.eventList);
 		} catch (Exception e) {
 			return "Sorry, I am not able to get your events.";
 		}
