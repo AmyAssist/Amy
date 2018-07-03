@@ -25,8 +25,13 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling;
 
 /**
  * TODO: Description
+ * 
  * @author Kai Menzel
  */
 public interface RecognitionResultHandlerInterface {
+	boolean isRecognitionThreadRunning();
+
 	void handle(String result);
+
+	void initiateChange();
 }

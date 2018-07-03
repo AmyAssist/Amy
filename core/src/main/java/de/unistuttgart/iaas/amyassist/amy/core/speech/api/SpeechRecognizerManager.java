@@ -67,6 +67,8 @@ public class SpeechRecognizerManager implements SpeechRecognizerHandler {
 
 	private Thread currentRecognizer;
 
+	private boolean RecognitionThreadRunning;
+
 	/**
 	 * Object that handles All Recognizers with the given AudioInputStream
 	 * 
@@ -142,6 +144,7 @@ public class SpeechRecognizerManager implements SpeechRecognizerHandler {
 	 */
 	@Override
 	public void start() {
+		this.RecognitionThreadRunning = true;
 		this.currentRecognizer.start();
 	}
 
@@ -150,7 +153,7 @@ public class SpeechRecognizerManager implements SpeechRecognizerHandler {
 	 */
 	@Override
 	public void stop() {
-		System.out.println(this.currentRecognizer.isInterrupted());
+		this.RecognitionThreadRunning = false;
 	}
 
 	public void voiceOutput(String outputString) {
@@ -181,6 +184,19 @@ public class SpeechRecognizerManager implements SpeechRecognizerHandler {
 	 */
 	public boolean isSoundPlaying() {
 		return this.soundPlaying;
+	}
+
+	/**
+	 * Method to check if Recognitionthread is Running
+	 * 
+	 * @return if the Recognitionthread should be running
+	 */
+	public boolean isRecognitionThreadRunning() {
+		return this.RecognitionThreadRunning;
+	}
+
+	public void setRecognitionThreadRunning(boolean RecognitionRunning) {
+
 	}
 
 	/**

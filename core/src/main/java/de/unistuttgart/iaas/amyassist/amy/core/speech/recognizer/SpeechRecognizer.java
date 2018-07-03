@@ -103,9 +103,7 @@ public class SpeechRecognizer implements Runnable {
 
 		this.logger.info("[INFORMATION] :: Speech Recognition activated");
 
-		while (!Thread.interrupted()) {
-			System.out.println("test");
-			System.out.println(Thread.interrupted());
+		while (this.resultHandler.isRecognitionThreadRunning()) {
 
 			// wait for input from the recognizer
 			SpeechResult speechResult = getSpeechResult();
@@ -119,6 +117,7 @@ public class SpeechRecognizer implements Runnable {
 		}
 
 		this.recognizer.stopRecognition();
+		this.resultHandler.initiateChange();
 	}
 
 	// ===============================================================================================
@@ -134,11 +133,11 @@ public class SpeechRecognizer implements Runnable {
 			return;
 		}
 
-		if (!Thread.interrupted()) {
+		if (this.resultHandler.isRecognitionThreadRunning()) {
 			this.resultHandler.handle(result);
 		}
 	}
-	
+
 	// -----------------------------------------------------------------------------------------------
 
 	/**
@@ -148,7 +147,7 @@ public class SpeechRecognizer implements Runnable {
 	 */
 	private SpeechResult getSpeechResult() {
 		SpeechResult speechResult = null;
-		while (speechResult == null && !Thread.interrupted()) {
+		while (speechResult == null && this.resultHandler.isRecognitionThreadRunning()) {
 			speechResult = this.recognizer.getResult();
 		}
 		return speechResult;

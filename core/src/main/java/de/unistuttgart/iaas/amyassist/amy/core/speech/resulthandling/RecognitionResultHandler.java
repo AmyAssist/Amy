@@ -30,45 +30,55 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.api.SpeechRecognizerManage
 
 /**
  * TODO: Description
+ * 
  * @author Kai Menzel
  */
 public abstract class RecognitionResultHandler implements RecognitionResultHandlerInterface {
-	
+
 	protected SpeechRecognizerManager srManager;
-	protected Grammar grammar;
-	
-	/**
-	 * 
-	 */
+	private Grammar grammar;
+	private Grammar nextGrammar;
+
+
 	public RecognitionResultHandler(SpeechRecognizerManager srManager, Grammar grammar) {
 		this.srManager = srManager;
 		this.grammar = grammar;
 	}
 
 	/**
-	 * @throws InterruptedException 
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.RecognitionResultHandlerInterface#handle(String result)
+	 * Method to check if Recognition Thread is Running
+	 * 
+	 * @return if the Recognition Thread should be running
 	 */
 	@Override
-	public void handle(String result){
-		if(!predefinedInputHandling(result)) {
-			if(!checkGrammarSwitch(result)) {
+	public boolean isRecognitionThreadRunning() {
+		return this.srManager.isRecognitionThreadRunning();
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.RecognitionResultHandlerInterface#handle(String
+	 *      result)
+	 */
+	@Override
+	public void handle(String result) {
+		if (!predefinedInputHandling(result)) {
+			if (!checkGrammarSwitch(result)) {
 				this.srManager.handleCommand(result);
 			}
 		}
 
 	}
-	
+
 	/**
 	 * Handles the Recognizer Specific Actions that trigger before giving the input to the inputHandler. Mainly waking
 	 * up and going to Sleep
 	 * 
 	 * @param result
 	 *            Recognized String
-	 * @return 
+	 * @return true if the result is an predefined one
 	 */
 	protected abstract boolean predefinedInputHandling(String result);
-	
+
 	/**
 	 * check if the Result is a keyword for a specific GrammarSwitch
 	 * 
@@ -80,12 +90,25 @@ public abstract class RecognitionResultHandler implements RecognitionResultHandl
 		if (!this.grammar.getSwitchList().isEmpty()) {
 			for (Map.Entry<String, Grammar> entry : this.grammar.getSwitchList().entrySet()) {
 				if (result.equalsIgnoreCase(entry.getKey())) {
-					this.srManager.handleGrammarSwitch(entry.getValue());
+					this.nextGrammar = entry.getValue();
+					this.srManager.setRecognitionThreadRunning(false);
 					return true;
 				}
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandling.RecognitionResultHandlerInterface#initiateChange()
+	 */
+	@Override
+	public void initiateChange() {
+		if (this.nextGrammar != null) {
+			this.srManager.handleGrammarSwitch(this.nextGrammar);
+			this.nextGrammar = null;
+		}
+
 	}
 
 }
