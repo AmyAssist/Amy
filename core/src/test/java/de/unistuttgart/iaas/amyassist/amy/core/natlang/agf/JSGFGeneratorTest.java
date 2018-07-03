@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.JSGFRuleGenerator;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.JSGFFileGenerator;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
@@ -48,7 +48,7 @@ public class JSGFGeneratorTest {
 		AGFParser parser = new AGFParser(list.iterator());
 		AGFNode node = parser.parseWholeExpression();
 		
-		JSGFRuleGenerator gen = new JSGFRuleGenerator();
+		JSGFFileGenerator gen = new JSGFFileGenerator();
 		String s = gen.generateRule(node, "testi");
 		assertEquals(s.trim().replaceAll("\\s{2,}", " "), "public <testi> = set timer on <digit> minutes;");
 		
@@ -68,7 +68,7 @@ public class JSGFGeneratorTest {
 		
 		System.out.println(node.printSelf());
 		
-		JSGFRuleGenerator gen = new JSGFRuleGenerator();
+		JSGFFileGenerator gen = new JSGFFileGenerator();
 		System.out.println(gen.generateRule(node, "test"));
 		String s = gen.generateRule(node, "test");
 		assertEquals(s.replaceAll("\\s*", "").trim(), "public <test> = set timer on (x|(wa|d)) [<digit> [x] hours] [<digit> minutes] [<digit> seconds] test;".replaceAll("\\s*", ""));

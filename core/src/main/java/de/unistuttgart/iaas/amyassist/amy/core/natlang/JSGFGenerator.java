@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
+import java.util.List;
+
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
@@ -30,18 +32,80 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
  * 
  * @author Felix Burk
  */
-public class JSGFRuleGenerator {
+public class JSGFGenerator {
+	
+	List<String> rules;
+	
+	private String name;
+	private String wakeup;
+	private String sleep;
+	private String shutdown;
+	
+	/**
+	 * constructor, generates a JSGF file
+	 * @param name the name of the grammar file
+	 * @param wakeup the wakeup command
+	 * @param sleep the sleep command
+	 * @param shutdown the shutdown command
+	 */
+	public JSGFGenerator(String name, String wakeup, String sleep, String shutdown) {
+		this.name = name;
+		this.wakeup = wakeup;
+		this.sleep = sleep;
+		this.shutdown = shutdown;
+	}
+	
+	/**
+	 * generates a whole JSGF grammar file content
+	 * including previously added rules via addRule(..)
+	 * 
+	 * just put the returning string in a new file
+	 * 
+	 * @return the JSGF grammar string, including headers
+	 */
+	public String generateGrammarFileString() {
+		StringBuilder grammar = new StringBuilder();
+		
+		grammar.append("#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n" + " */\n" + "\n");
+
+		grammar.append("grammar " + this.name + ";\n");
+		grammar.append("public <wakeup> = ( " + this.wakeup + " );\n");
+		grammar.append("public <sleep> = ( " + this.sleep + " );\n");
+		grammar.append("public <shutdown> = ( " + this.shutdown + " );\n");
+
+		grammar.append("\n//pre defined rules \n");
+
+		// pre defined rules
+		grammar.append("<digit> = (one | two | three | four | five | six | seven |"
+				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
+				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
+				+ "fifty | sixty  | seventy | eighty | ninety | and )+; \n");
+
+		grammar.append("\n//custom rules \n");
+		
+		
+		for(String rule : this.rules) {
+			grammar.append(rule);
+		}
+		
+		return grammar.toString();
+	}
 	
 	/**
 	 * generates a valid public JSGF Rule from an AGFNode
+	 * the generated rule is added to an internal list of rules, if 
+	 * generateGrammarFileString() is called added rules are included
 	 * @param node root node
 	 * @param ruleName the name of the rule
 	 * @return the rule as String
 	 */
-	public String generateRule(AGFNode node, String ruleName) {
+	public String addRule(AGFNode node, String ruleName) {
 		StringBuilder b = new StringBuilder();
 		b.append("public <" + ruleName + "> = ");
-		return handleNode(b, node) + ";";
+		String rule = handleNode(b, node) + ";";
+		
+		this.rules.add(rule);
+		return rule;
 	}
 
 	/**
