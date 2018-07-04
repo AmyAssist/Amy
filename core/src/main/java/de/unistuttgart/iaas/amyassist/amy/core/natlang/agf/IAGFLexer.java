@@ -27,11 +27,17 @@ import java.util.List;
 
 /**
  * agf lexer interface
+ * 
+ * classes implementing this interface tokenizes the content of @Grammar annotations
+ * this means it categorizes the content in different kinds of AGF tokens
+ * 
  * @author Felix Burk
  */
 public interface IAGFLexer {
 	
 	/**
+	 * the main tokenize method
+	 * 
 	 * @param toTokenize string
 	 * @return list of agf token types
 	 */

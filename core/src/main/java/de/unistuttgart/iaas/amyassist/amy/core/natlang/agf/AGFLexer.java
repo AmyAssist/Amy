@@ -28,6 +28,9 @@ import java.util.List;
 
 /**
  * AGF lexer implementation
+ * 
+ * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.IAGFLexer
+ * 
  * @author Felix Burk
  */
 public class AGFLexer implements IAGFLexer {

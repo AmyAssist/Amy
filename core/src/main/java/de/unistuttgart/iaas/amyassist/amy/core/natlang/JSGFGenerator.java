@@ -132,22 +132,12 @@ public class JSGFGenerator {
 				break;
 			case ORG:
 				b.append(" (");
-				for(int i = 0; i < node.getChilds().size(); i++) {
-					handleNode(b, node.getChilds().get(i));
-					if(i!=node.getChilds().size()-1) {
-						b.append("|");
-					}
-				}
+				handleBraceContent(node, b);
 				b.append(") ");
 				break;
 			case OPG:
 				b.append(" [");
-				for(int i = 0; i < node.getChilds().size(); i++) {
-					handleNode(b, node.getChilds().get(i));
-					if(i!=node.getChilds().size()-1) {
-						b.append("|");
-					}
-				}
+				handleBraceContent(node, b);
 				b.append("] ");
 				break;
 			case MORPH:
@@ -163,6 +153,21 @@ public class JSGFGenerator {
 			}
 		}
 		return b.toString();
+	}
+	
+	/**
+	 * convenience method to handle brace content
+	 * 
+	 * @param node the AGFNode
+	 * @param b the StringBuilder
+	 */
+	private void handleBraceContent(AGFNode node, StringBuilder b) {
+		for(int i = 0; i < node.getChilds().size(); i++) {
+			handleNode(b, node.getChilds().get(i));
+			if(i!=node.getChilds().size()-1) {
+				b.append("|");
+			}
+		}
 	}
 	
 	/**

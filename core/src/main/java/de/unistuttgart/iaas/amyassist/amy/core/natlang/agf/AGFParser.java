@@ -31,13 +31,19 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets.OptionalGro
 
 
 /**
- * 
  * the AGF Parser implementation
+ * 
+ * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.Parser
+ * 
  * @author Felix Burk
  */
 public class AGFParser extends Parser {
 
 	/**
+	 * 
+	 * tells the parser which parslets to call on which token 
+	 * occurence
+	 * 
 	 * @param tokens the tokens
 	 */
 	public AGFParser(Iterator<AGFToken> tokens) {

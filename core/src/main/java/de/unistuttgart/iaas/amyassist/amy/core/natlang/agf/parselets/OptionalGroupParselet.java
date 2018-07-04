@@ -44,7 +44,7 @@ public class OptionalGroupParselet implements IAGFParselet{
 	 */
 	@Override
 	public OptionalGroupNode parse(Parser parser, AGFToken token) {
-		// Parse the |-separated arguments until we hit, ")".
+		// Parse the |-separated arguments until we hit, "]".
 		OptionalGroupNode node = new OptionalGroupNode("");		
 
 		AGFNode agfNode = new AGFNode("");

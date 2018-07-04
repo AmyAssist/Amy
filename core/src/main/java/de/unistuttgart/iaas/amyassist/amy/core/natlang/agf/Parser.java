@@ -33,7 +33,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets.IAGFParselet;
 
 /**
- * interface for an AGF parser
+ * this class contains all necessary methods a standard 
+ * top down recursive descent parser needs, with single token lookahead
+ * (it's LL(1))
+ * 
+ * it owns the AGFToken stream (the iterator) and handles lookahead
+ * 
  * @author Felix Burk
  */
 public class Parser {
