@@ -295,49 +295,79 @@ class MusicRestTest {
 	@Test
 	void testPlay() {
 		Entity<MusicEntity> entity = Entity.entity(this.userMusics[0], MediaType.APPLICATION_JSON);
-		List<Map<String, String>> playName = new ArrayList<>();
+		List<Map<String, String>> emptySearchList = new ArrayList<>();
+		List<Map<String, String>> searchList = new ArrayList<>();
+		Map<String, String> emptyList = new HashMap<>();
+		Map<String, String> foundEntries = new HashMap<>();
+		foundEntries.put("name", "Playlist");
+		searchList.add(foundEntries);
 
 		Mockito.when(this.logic.search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK, 5))
-				.thenReturn(playName);
+				.thenReturn(searchList);
 		Mockito.when(this.stringGenerator.generateSearchOutputString(this.logic.play(0, SearchTypes.NORMAL_SEARCH)))
 				.thenReturn("songName");
-
 		Response response = this.target.path("music").path("play").queryParam("type", "track").request().post(entity);
 		String actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("songName"));
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK, 5);
 		Mockito.verify(this.stringGenerator).generateSearchOutputString(this.logic.play(0, SearchTypes.NORMAL_SEARCH));
+		
+		Mockito.when(this.logic.search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK, 5))
+				.thenReturn(emptySearchList);
+		response = this.target.path("music").path("play").queryParam("type", "track").request().post(entity);
+		actualMsg = response.readEntity(String.class);
+		assertThat(actualMsg, is("No matching results found."));
+		assertThat(response.getStatus(), is(409));
+		Mockito.verify(this.logic, Mockito.times(2)).search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK, 5);
 
 		response = this.target.path("music").path("play").queryParam("type", "track").request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Enter valid music information."));
 		assertThat(response.getStatus(), is(409));
 
-		Mockito.when(this.stringGenerator.generateSearchOutputString(this.logic.play(1, SearchTypes.USER_PLAYLISTS)))
+		Mockito.when(this.logic.play(1, SearchTypes.USER_PLAYLISTS)).thenReturn(foundEntries);
+		Mockito.when(this.stringGenerator.generateSearchOutputString(foundEntries))
 				.thenReturn("myPlaylist");
-		Mockito.when(this.logic.getOwnPlaylists(3)).thenReturn(this.userPlaylists);
 		response = this.target.path("music").path("play").queryParam("type", "user").queryParam("songNumber", "1")
 				.request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("myPlaylist"));
 		assertThat(response.getStatus(), is(200));
+		
+		Mockito.when(this.logic.play(1, SearchTypes.USER_PLAYLISTS)).thenReturn(emptyList);
+		response = this.target.path("music").path("play").queryParam("type", "user").queryParam("songNumber", "1")
+				.request().post(null);
+		actualMsg = response.readEntity(String.class);
+		assertThat(actualMsg, is("There is no user playlist available."));
+		assertThat(response.getStatus(), is(409));
+		Mockito.verify(this.logic, Mockito.times(2)).play(1, SearchTypes.USER_PLAYLISTS);
 
+		Mockito.when(this.logic.play(0, SearchTypes.FEATURED_PLAYLISTS)).thenReturn(foundEntries);
 		Mockito.when(
-				this.stringGenerator.generateSearchOutputString(this.logic.play(0, SearchTypes.FEATURED_PLAYLISTS)))
+				this.stringGenerator.generateSearchOutputString(foundEntries))
 				.thenReturn("featuredPlaylist");
-		Mockito.when(this.logic.getFeaturedPlaylists(4)).thenReturn(this.featuredPlaylists);
 		response = this.target.path("music").path("play").queryParam("type", "featured").queryParam("limit", "4")
 				.request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("featuredPlaylist"));
 		assertThat(response.getStatus(), is(200));
+		Mockito.verify(this.logic).play(0, SearchTypes.FEATURED_PLAYLISTS);
 
 		Mockito.when(this.logic.play()).thenReturn(this.featuredPlaylists.get(0));
 		response = this.target.path("music").path("play").request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("name of the playlist is: featuredPlaylist"));
 		assertThat(response.getStatus(), is(200));
+		Mockito.verify(this.logic).play();
+		
+		Mockito.when(this.logic.play(1, SearchTypes.FEATURED_PLAYLISTS)).thenReturn(emptyList);
+		response = this.target.path("music").path("play").queryParam("type", "featured").queryParam("songNumber", "1")
+				.request().post(null);
+		actualMsg = response.readEntity(String.class);
+		assertThat(actualMsg, is("There is no featured playlist available."));
+		assertThat(response.getStatus(), is(409));
+		Mockito.verify(this.logic).play(1, SearchTypes.FEATURED_PLAYLISTS);
 
 		Mockito.when(this.logic.play()).thenReturn(null);
 		response = this.target.path("music").path("play").request().post(null);

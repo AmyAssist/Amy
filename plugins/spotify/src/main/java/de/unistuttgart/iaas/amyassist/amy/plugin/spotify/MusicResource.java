@@ -218,14 +218,24 @@ public class MusicResource {
 			@QueryParam("type") @DefaultValue("") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
 		switch (type) {
 		case "user":
-			return this.stringGenerator
-					.generateSearchOutputString(this.logic.play(songNumber, SearchTypes.USER_PLAYLISTS));
+			Map<String, String> userPlaylist = this.logic.play(songNumber, SearchTypes.USER_PLAYLISTS);
+			if (userPlaylist.isEmpty()) {
+				throw new WebApplicationException("There is no user playlist available.", Status.CONFLICT);
+			}
+			return this.stringGenerator.generateSearchOutputString(userPlaylist);
 		case "featured":
-			return this.stringGenerator
-					.generateSearchOutputString(this.logic.play(songNumber, SearchTypes.FEATURED_PLAYLISTS));
+			Map<String, String> featuredPlaylist = this.logic.play(songNumber, SearchTypes.FEATURED_PLAYLISTS);
+			if (featuredPlaylist.isEmpty()) {
+				throw new WebApplicationException("There is no featured playlist available.", Status.CONFLICT);
+			}
+			return this.stringGenerator.generateSearchOutputString(featuredPlaylist);
 		case SpotifyConstants.TYPE_TRACK:
 			if (music != null) {
-				this.logic.search(music.toString(), SpotifyConstants.TYPE_TRACK, limit);
+				List<Map<String, String>> searchList = this.logic.search(music.toString(), SpotifyConstants.TYPE_TRACK,
+						limit);
+				if (searchList.isEmpty()) {
+					throw new WebApplicationException("No matching results found.", Status.CONFLICT);
+				}
 				this.musicEntity = new MusicEntity(music.getTitle(), music.getArtist());
 				return this.stringGenerator
 						.generateSearchOutputString(this.logic.play(songNumber, SearchTypes.NORMAL_SEARCH));
