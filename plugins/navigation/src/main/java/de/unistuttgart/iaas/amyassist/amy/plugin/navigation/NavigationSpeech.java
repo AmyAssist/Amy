@@ -33,7 +33,7 @@ import org.joda.time.ReadableInstant;
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotatiFon.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
