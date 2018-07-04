@@ -57,7 +57,7 @@ public interface ServiceLocator {
 
 	/**
 	 * Get the service of the given type. This method lookup the service provider registered for the the given service
-	 * type and use it to return a object of the given type. type.
+	 * type and use it to return a object of the given type.
 	 * 
 	 * @param serviceType
 	 *            the type of the service, not the class which implements the service
@@ -66,6 +66,18 @@ public interface ServiceLocator {
 	 *            the type of the service
 	 */
 	<T> T getService(Class<T> serviceType);
+
+	/**
+	 * Get the service with the given description. This method lookup the service provider registered for the the given
+	 * service description and use it to return a object of the given type.
+	 * 
+	 * @param serviceDescription
+	 *            the Description of the service
+	 * @return an instance of the described service if a service provider is found
+	 * @param <T>
+	 *            the type of the service
+	 */
+	<T> T getService(ServiceDescription<T> serviceDescription);
 
 	/**
 	 * This will analyze the given object and inject into its fields. The object given will not be managed by the DI.

@@ -23,34 +23,44 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
-import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 
 /**
- * A InjectionPoint is an abstraction of where an object is injected into an instance.
  * 
  * @author Leon Kiefer
+ *
+ * @param <T>
+ *            service type
  */
-class InjetionPoint {
-	private Field field;
-
-	public InjetionPoint(Field field) {
-		this.field = field;
-	}
+public interface ServiceProvider<T> {
+	/**
+	 * @param resolvedDependencies
+	 *            a map of ServiceFactories for each dependency
+	 * @param context
+	 *            a map of the static context information
+	 * @return the service of this ServiceProvider for the given context
+	 */
+	@Nonnull
+	T getService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context);
 
 	/**
 	 * 
-	 * @return
+	 * @return the dependencies
 	 */
-	public Class<?> getType() {
-		return this.field.getType();
-	}
+	@Nonnull
+	Collection<ServiceDescription<?>> getDependencies();
 
-	public void inject(@Nonnull Object instance, @Nullable Object object) {
-		Util.inject(instance, object, this.field);
-	}
+	/**
+	 * @return the requiredContextProviderTypes
+	 */
+	@Nonnull
+	Collection<String> getRequiredContextIdentifiers();
+
 }
