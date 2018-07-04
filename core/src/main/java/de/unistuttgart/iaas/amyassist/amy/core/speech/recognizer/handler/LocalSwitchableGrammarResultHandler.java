@@ -25,14 +25,14 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.AbstractSpeechRecognizerManager;
 
 /**
  * Handler that handles the local SpeechRecognition System intern commands for additional Grammars
  * 
  * @author Kai Menzel
  */
-public class LocalSwitchableGrammarResultHandler extends RecognitionResultHandler {
+public class LocalSwitchableGrammarResultHandler extends AbstractRecognitionResultHandler {
 
 	/**
 	 * @param srManager
@@ -40,12 +40,12 @@ public class LocalSwitchableGrammarResultHandler extends RecognitionResultHandle
 	 * @param grammar
 	 *            Grammar this ResultHandler handles
 	 */
-	public LocalSwitchableGrammarResultHandler(SpeechRecognizerManager srManager, Grammar grammar) {
+	public LocalSwitchableGrammarResultHandler(AbstractSpeechRecognizerManager srManager, Grammar grammar) {
 		super(srManager, grammar);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler#predefinedInputHandling(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.AbstractRecognitionResultHandler#predefinedInputHandling(java.lang.String)
 	 */
 	@Override
 	protected boolean predefinedInputHandling(String result) {

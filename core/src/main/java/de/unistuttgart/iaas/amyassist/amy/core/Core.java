@@ -47,7 +47,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.resultHandler.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.service.LocalSpeechRecognition;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.service.LocalAudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
@@ -70,7 +70,7 @@ public class Core {
 
 	private Server server;
 	private IStorage storage = new Storage("", new GlobalStorage());
-	private LocalSpeechRecognition recognizer;
+	private LocalAudioUserInteraction recognizer;
 
 	private CommandLineArgumentHandlerService cmaHandler;
 
@@ -127,7 +127,7 @@ public class Core {
 		GrammarObjectsCreator grammarData = this.di.getService(GrammarObjectsCreator.class);
 		speechCommandHandler.setFileToSaveGrammarTo(grammarData.getMainGrammar().getFile());
 
-		this.recognizer = this.di.getService(LocalSpeechRecognition.class);
+		this.recognizer = this.di.getService(LocalAudioUserInteraction.class);
 
 		PluginManager pluginManager = this.di.getService(PluginManager.class);
 		pluginManager.loadPlugins();
@@ -160,7 +160,7 @@ public class Core {
 
 		this.di.register(GrammarObjectsCreator.class);
 		this.di.register(TextToSpeech.class);
-		this.di.register(LocalSpeechRecognition.class);
+		this.di.register(LocalAudioUserInteraction.class);
 	}
 
 	/**

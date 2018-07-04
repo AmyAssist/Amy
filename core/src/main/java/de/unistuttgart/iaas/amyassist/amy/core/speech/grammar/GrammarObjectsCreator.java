@@ -38,7 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
  * @author Kai Menzel
  */
 @Service(GrammarObjectsCreator.class)
-public class GrammarObjectsCreator implements GrammarObjectsCreatorInterface {
+public class GrammarObjectsCreator {
 
 	@Reference
 	private Environment environment;
@@ -56,17 +56,15 @@ public class GrammarObjectsCreator implements GrammarObjectsCreatorInterface {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreatorInterface#getMainGrammar()
+	 * @return the MainGrammar of the Recognition System
 	 */
-	@Override
 	public Grammar getMainGrammar() {
 		return this.mainGrammar;
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreatorInterface#getSwitchableGrammars()
+	 * @return List of the Switchable Grammars
 	 */
-	@Override
 	public List<Grammar> getSwitchableGrammars() {
 		return this.switchables;
 	}

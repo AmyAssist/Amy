@@ -26,21 +26,11 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 
 /**
- * Interface for the SpeechRecognizerManager
+ * Interface between the Result of the Recognition and the System
  * 
  * @author Kai Menzel
  */
-public interface SpeechRecognitionManagerInterface {
-
-	/**
-	 * start the Recognition System
-	 */
-	void start();
-
-	/**
-	 * stop the Recognition System
-	 */
-	void stop();
+public interface SpeechRecognitionResultManager {
 
 	/**
 	 * Method called when listening State of the SpeechRecognition is changed

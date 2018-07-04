@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandlerInterface;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
 
 /**
@@ -47,9 +47,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
  * 
  * @author Kai Menzel
  */
-public abstract class SpeechRecognizerManager implements SpeechRecognitionManagerInterface {
+public abstract class AbstractSpeechRecognizerManager
+		implements SpeechRecognitionResultManager, SpeechRecognizerManager {
 
-	private final Logger logger = LoggerFactory.getLogger(SpeechRecognizerManager.class);
+	private final Logger logger = LoggerFactory.getLogger(AbstractSpeechRecognizerManager.class);
 
 	private SpeechInputHandler inputHandler;
 	private Output output;
@@ -78,7 +79,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	 *            DataSet of all GrammarObjects
 	 * 
 	 */
-	public SpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
+	public AbstractSpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
 			GrammarObjectsCreator grammarData) {
 		this.inputHandler = inputHandler;
 		this.output = output;
@@ -110,7 +111,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	 *            Grammar of the Recognizer the Handler is created for
 	 * @return ResultHandler for the Recognizer
 	 */
-	protected abstract RecognitionResultHandlerInterface getMainResultHandler(Grammar grammar);
+	protected abstract RecognitionResultHandler getMainResultHandler(Grammar grammar);
 
 	/**
 	 * Get the correct ResultHandler for the environment
@@ -119,10 +120,10 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	 *            Grammar of the Recognizer the Handler is created for
 	 * @return ResultHandler for the Recognizer
 	 */
-	protected abstract RecognitionResultHandlerInterface getResultHandler(Grammar grammar);
+	protected abstract RecognitionResultHandler getResultHandler(Grammar grammar);
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.SpeechRecognizerHandler#start()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.AudioUserInteraction#start()
 	 */
 	@Override
 	public void start() {
@@ -131,7 +132,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.SpeechRecognizerHandler#stop()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.AudioUserInteraction#stop()
 	 */
 	@Override
 	public void stop() {
@@ -139,7 +140,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#handleCommand(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager#handleCommand(java.lang.String)
 	 */
 	@Override
 	public void handleCommand(String result) {
@@ -161,7 +162,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#handleGrammarSwitch(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager#handleGrammarSwitch(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
 	 */
 	@Override
 	public void handleGrammarSwitch(Grammar grammar) {
@@ -179,7 +180,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#handleListeningState(boolean)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager#handleListeningState(boolean)
 	 */
 	@Override
 	public void handleListeningState(boolean listening) {
@@ -193,7 +194,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#isListening()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager#isListening()
 	 */
 	@Override
 	public boolean isListening() {
@@ -201,7 +202,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#voiceOutput(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager#voiceOutput(java.lang.String)
 	 */
 	@Override
 	public void voiceOutput(String outputString) {
@@ -210,7 +211,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#stopOutput()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager#stopOutput()
 	 */
 	@Override
 	public void stopOutput() {
@@ -218,7 +219,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#setSoundPlaying(boolean)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager#setSoundPlaying(boolean)
 	 */
 	@Override
 	public void setSoundPlaying(boolean outputActive) {
@@ -226,7 +227,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#isSoundPlaying()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager#isSoundPlaying()
 	 */
 	@Override
 	public boolean isSoundPlaying() {
@@ -234,7 +235,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#setRecognitionThreadRunning(boolean)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager#setRecognitionThreadRunning(boolean)
 	 */
 	@Override
 	public void setRecognitionThreadRunning(boolean recognitionRunning) {
@@ -242,7 +243,7 @@ public abstract class SpeechRecognizerManager implements SpeechRecognitionManage
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface#isRecognitionThreadRunning()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager#isRecognitionThreadRunning()
 	 */
 	@Override
 	public boolean isRecognitionThreadRunning() {

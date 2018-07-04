@@ -30,7 +30,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.LocalMainGrammarResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.LocalSwitchableGrammarResultHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandlerInterface;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
 
 /**
@@ -38,7 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
  * 
  * @author Kai Menzel
  */
-public class LocalSpeechRecognizerManager extends SpeechRecognizerManager {
+public class LocalSpeechRecognizerManager extends AbstractSpeechRecognizerManager {
 
 	/**
 	 * Object that handles All Recognizers with the given AudioInputStream
@@ -59,18 +59,18 @@ public class LocalSpeechRecognizerManager extends SpeechRecognizerManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager#getMainResultHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.AbstractSpeechRecognizerManager#getMainResultHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
 	 */
 	@Override
-	protected RecognitionResultHandlerInterface getMainResultHandler(Grammar grammar) {
+	protected RecognitionResultHandler getMainResultHandler(Grammar grammar) {
 		return new LocalMainGrammarResultHandler(this, grammar);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager#getResultHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.AbstractSpeechRecognizerManager#getResultHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
 	 */
 	@Override
-	protected RecognitionResultHandlerInterface getResultHandler(Grammar grammar) {
+	protected RecognitionResultHandler getResultHandler(Grammar grammar) {
 		return new LocalSwitchableGrammarResultHandler(this, grammar);
 	}
 

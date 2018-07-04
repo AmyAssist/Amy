@@ -23,97 +23,30 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler;
 
-import java.util.Map;
-
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager;
-
 /**
- * Handler that handles SpeechRecognition System intern commands
+ * Interface for the Handler that handles SpeechRecognition System intern commands
  * 
  * @author Kai Menzel
  */
-public abstract class RecognitionResultHandler implements RecognitionResultHandlerInterface {
+public interface RecognitionResultHandler {
 
 	/**
-	 * Manager Object which handles this ResultHandler
-	 */
-	protected SpeechRecognizerManager srManager;
-	private Grammar grammar;
-	private Grammar nextGrammar;
-
-	/**
-	 * @param srManager
-	 *            Manager Object which handles this ResultHandler
-	 * @param grammar
-	 *            Grammar this ResultHandler handles
-	 */
-	public RecognitionResultHandler(SpeechRecognizerManager srManager, Grammar grammar) {
-		this.srManager = srManager;
-		this.grammar = grammar;
-	}
-
-	/**
+	 * Method to check if Recognition Thread is Running
 	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandlerInterface#isRecognitionThreadRunning()
+	 * @return if the Recognition Thread should be running
 	 */
-	@Override
-	public boolean isRecognitionThreadRunning() {
-		return this.srManager.isRecognitionThreadRunning();
-	}
+	boolean isRecognitionThreadRunning();
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandlerInterface#handle(String
-	 *      result)
-	 */
-	@Override
-	public void handle(String result) {
-		if (!predefinedInputHandling(result) && !checkGrammarSwitch(result)) {
-			this.srManager.handleCommand(result);
-		}
-
-	}
-
-	/**
-	 * Handles the Recognizer Specific Actions that trigger before giving the input to the inputHandler. Mainly waking
-	 * up and going to Sleep
+	 * handle the SR output
 	 * 
 	 * @param result
-	 *            Recognized String
-	 * @return true if the result is an predefined one
+	 *            SR output String
 	 */
-	protected abstract boolean predefinedInputHandling(String result);
+	void handle(String result);
 
 	/**
-	 * check if the Result is a keyword for a specific GrammarSwitch
-	 * 
-	 * @param result
-	 *            SpeechRecognitionResult
-	 * @return true if switch will be initialized
+	 * called when SR thread is closing, start new if needed
 	 */
-	private boolean checkGrammarSwitch(String result) {
-		if (!this.grammar.getSwitchList().isEmpty()) {
-			for (Map.Entry<String, Grammar> entry : this.grammar.getSwitchList().entrySet()) {
-				if (result.equalsIgnoreCase(entry.getKey())) {
-					this.nextGrammar = entry.getValue();
-					this.srManager.setRecognitionThreadRunning(false);
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandlerInterface#initiateChange()
-	 */
-	@Override
-	public void initiateChange() {
-		if (this.nextGrammar != null) {
-			this.srManager.handleGrammarSwitch(this.nextGrammar);
-			this.nextGrammar = null;
-		}
-
-	}
-
+	void initiateChange();
 }

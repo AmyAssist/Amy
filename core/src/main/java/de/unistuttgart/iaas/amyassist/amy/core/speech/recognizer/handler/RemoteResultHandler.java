@@ -25,14 +25,14 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.AbstractSpeechRecognizerManager;
 
 /**
  * Handler that handles the remote SpeechRecognition System intern commands
  * 
  * @author Kai Menzel
  */
-public class RemoteResultHandler extends RecognitionResultHandler {
+public class RemoteResultHandler extends AbstractRecognitionResultHandler {
 
 	/**
 	 * @param srManager
@@ -40,12 +40,12 @@ public class RemoteResultHandler extends RecognitionResultHandler {
 	 * @param grammar
 	 *            Grammar this ResultHandler handles
 	 */
-	public RemoteResultHandler(SpeechRecognizerManager srManager, Grammar grammar) {
+	public RemoteResultHandler(AbstractSpeechRecognizerManager srManager, Grammar grammar) {
 		super(srManager, grammar);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler#predefinedInputHandling(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.AbstractRecognitionResultHandler#predefinedInputHandling(java.lang.String)
 	 */
 	@Override
 	protected boolean predefinedInputHandling(String result) {

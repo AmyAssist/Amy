@@ -38,7 +38,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.RuntimeExceptionRecognizerCantBeCreated;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.LocalSpeechRecognizerManager;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionManagerInterface;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 
@@ -47,8 +46,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
  * 
  * @author Kai Menzel
  */
-@Service(LocalSpeechRecognition.class)
-public class LocalSpeechRecognition implements SpeechRecognizerHandler {
+@Service(LocalAudioUserInteraction.class)
+public class LocalAudioUserInteraction implements AudioUserInteraction {
 
 	@Reference
 	private Logger logger;
@@ -62,28 +61,28 @@ public class LocalSpeechRecognition implements SpeechRecognizerHandler {
 	@Reference
 	private GrammarObjectsCreator grammarData;
 
-	private SpeechRecognitionManagerInterface localManager;
+	private SpeechRecognizerManager localRecognition;
 
 	@PostConstruct
 	private void init() {
-		this.localManager = new LocalSpeechRecognizerManager(createNewAudioInputStream(), this.inputHandler, this.tts,
-				this.grammarData);
+		this.localRecognition = new LocalSpeechRecognizerManager(createNewAudioInputStream(), this.inputHandler,
+				this.tts, this.grammarData);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.SpeechRecognizerHandler#start()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.AudioUserInteraction#start()
 	 */
 	@Override
 	public void start() {
-		this.localManager.start();
+		this.localRecognition.start();
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.SpeechRecognizerHandler#stop()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.AudioUserInteraction#stop()
 	 */
 	@Override
 	public void stop() {
-		this.localManager.stop();
+		this.localRecognition.stop();
 		this.logger.info("Closing Local Speech Recognizer");
 	}
 
