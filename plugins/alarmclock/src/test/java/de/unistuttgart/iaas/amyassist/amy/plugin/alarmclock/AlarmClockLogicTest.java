@@ -61,6 +61,8 @@ public class AlarmClockLogicTest {
 
 	private AlarmClockLogic acl;
 
+	private AlarmBeepService abs;
+
 	private TaskSchedulerAPI scheduler;
 
 	private IAlarmClockStorage acStorage;
@@ -72,6 +74,7 @@ public class AlarmClockLogicTest {
 	public void setup() {
 		this.scheduler = this.framework.mockService(TaskSchedulerAPI.class);
 		this.acStorage = this.framework.mockService(IAlarmClockStorage.class);
+		this.abs = this.framework.mockService(AlarmBeepService.class);
 		this.acl = this.framework.setServiceUnderTest(AlarmClockLogic.class);
 	}
 

@@ -114,7 +114,7 @@ public class TestFrameworkImpl implements TestFramework {
 
 	@Override
 	public <T> T setServiceUnderTest(Class<T> serviceClass) {
-		if (Util.classCheck(serviceClass) && serviceClass.isAnnotationPresent(Service.class)) {
+		if (Util.isValidServiceClass(serviceClass) && serviceClass.isAnnotationPresent(Service.class)) {
 			this.dependencyInjection.register(serviceClass);
 			try {
 				return this.dependencyInjection.createAndInitialize(serviceClass);

@@ -32,8 +32,6 @@ import java.util.jar.Manifest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.IPlugin;
-
 /**
  * A representation of loaded plugin.
  * 

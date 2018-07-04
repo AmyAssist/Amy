@@ -42,6 +42,8 @@
 		<module>http-server</module>
 		<module>testing-framework</module>
 		<module>core</module>
+		<module>plugin-manager-api</module>
+		<module>rest-resources</module>
 		<module>plugins/alarmclock</module>
 		<module>plugins/example</module>
 		<module>plugins/spotify</module>
@@ -204,6 +206,11 @@
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>25.1-jre</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.persistence</groupId>
+				<artifactId>javax.persistence-api</artifactId>
+				<version>2.2</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

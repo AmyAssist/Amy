@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,12 +42,14 @@ import com.wrapper.spotify.model_objects.special.SearchResult;
 import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
 import com.wrapper.spotify.model_objects.specification.Artist;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.model_objects.specification.Image;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.User;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -68,7 +71,16 @@ public class SearchTest {
 	private SearchResult artists2;
 	private SearchResult tracks2;
 	private FeaturedPlaylists featuredPlaylists;
+	private Paging<PlaylistSimplified> playlistsSpotifyFormat;
+	private List<PlaylistEntity> playlistsOwnFormat;
 	private Search search;
+
+	private static final String ID1 = "abc123";
+	private static final String ID2 = "123abc";
+	private static final String PLAYLIST_NAME1 = "New Hits";
+	private static final String PLAYLIST_NAME2 = "must popular hits";
+	private static final String ARTIST_NAME1 = "David Guetta";
+	private static final String ARTIST_NAME2 = "Justin Timberlake";
 
 	@Mock
 	private SpotifyAPICalls spotifyAPICalls;
@@ -92,6 +104,21 @@ public class SearchTest {
 		playlistList[1] = playlist2;
 		featuredPlaylists = new FeaturedPlaylists.Builder()
 				.setPlaylists(new Paging.Builder<PlaylistSimplified>().setItems(playlistList).build()).build();
+	}
+
+	public void initPlaylists() {
+		PlaylistSimplified playlist1 = new PlaylistSimplified.Builder().setName(PLAYLIST_NAME1).setUri(ID1)
+				.setOwner(new User.Builder().setDisplayName(ARTIST_NAME1).build()).build();
+		PlaylistSimplified playlist2 = new PlaylistSimplified.Builder().setName(PLAYLIST_NAME2).setUri(ID2)
+				.setImages(new Image.Builder().setUrl(ID1).build())
+				.setOwner(new User.Builder().setDisplayName(ARTIST_NAME2).build()).build();
+		PlaylistSimplified[] playlistList = new PlaylistSimplified[2];
+		playlistList[0] = playlist1;
+		playlistList[1] = playlist2;
+		this.playlistsSpotifyFormat = new Paging.Builder<PlaylistSimplified>().setItems(playlistList).build();
+		this.playlistsOwnFormat = new ArrayList<>();
+		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME1, null, ID1, null));
+		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME2, null, ID2, ID1));
 	}
 
 	public void createSearchResults() {
@@ -250,21 +277,19 @@ public class SearchTest {
 	@Test
 	public void testFeaturedPlaylists() {
 		when(spotifyAPICalls.getFeaturedPlaylists(Search.SEARCH_LIMIT)).thenReturn(featuredPlaylists);
-		List<Map<String, String>> result = this.search.getFeaturedPlaylists();
-		assertThat(result.get(0).get(SpotifyConstants.ITEM_NAME), equalTo("Flames"));
-		assertThat(result.get(0).get(SpotifyConstants.ARTIST_NAME), equalTo("David Guetta"));
-		assertThat(result.get(1).get(SpotifyConstants.ITEM_NAME), equalTo("Say Something"));
-		assertThat(result.get(1).get(SpotifyConstants.ARTIST_NAME), equalTo("Justin Timberlake"));
-		assertThat(result.get(0).get(SpotifyConstants.ITEM_URI), equalTo("123"));
-		assertThat(result.get(1).get(SpotifyConstants.ITEM_URI), equalTo("abc"));
-		assertThat(result.get(0).get(SpotifyConstants.ITEM_TYPE), equalTo("playlist"));
+		List<PlaylistEntity> result = this.search.getFeaturedPlaylists(Search.SEARCH_LIMIT);
+		assertThat(result.get(0).getName(), equalTo("Flames"));
+		// assertThat(result.get(0).get(SpotifyConstants.ARTIST_NAME), equalTo("David Guetta"));
+		assertThat(result.get(1).getName(), equalTo("Say Something"));
+		// assertThat(result.get(1).get(SpotifyConstants.ARTIST_NAME), equalTo("Justin Timberlake"));
+		assertThat(result.get(0).getUri(), equalTo("123"));
+		assertThat(result.get(1).getUri(), equalTo("abc"));
 	}
 
 	@Test
 	public void testEmptyFeaturedPlaylists() {
 		when(spotifyAPICalls.getFeaturedPlaylists(Search.SEARCH_LIMIT)).thenReturn(null);
-		List<Map<String, String>> result = this.search.getFeaturedPlaylists();
-		assertThat(result.isEmpty(), equalTo(true));
+		assertThat(search.getFeaturedPlaylists(Search.SEARCH_LIMIT), equalTo(new ArrayList<>()));
 	}
 
 	@Test
@@ -281,5 +306,35 @@ public class SearchTest {
 		when(spotifyAPICalls.searchInSpotify("", "playlist", Search.SEARCH_LIMIT)).thenReturn(null);
 		List<Map<String, String>> result2 = this.search.searchList("", "playlist", Search.SEARCH_LIMIT);
 		assertThat(result2.isEmpty(), equalTo(true));
+	}
+
+	@Test
+	public void testGetUsersPlaylists() {
+		initPlaylists();
+		List<PlaylistEntity> pl;
+		when(this.spotifyAPICalls.getOwnPlaylists(2)).thenReturn(this.playlistsSpotifyFormat);
+		pl = this.search.getOwnPlaylists(2);
+		assertThat(pl.get(0).getUri(), equalTo(ID1));
+		assertThat(pl.get(1).getUri(), equalTo(ID2));
+		assertThat(pl.get(0).getName(), equalTo(PLAYLIST_NAME1));
+		assertThat(pl.get(1).getName(), equalTo(PLAYLIST_NAME2));
+		assertThat(pl.get(0).getImageUrl(), equalTo(null));
+		assertThat(pl.get(1).getImageUrl(), equalTo(ID1));
+	}
+
+	@Test
+	public void testGetFeturedPlaylists() {
+		initPlaylists();
+		FeaturedPlaylists featuredPls = new FeaturedPlaylists.Builder().setPlaylists(this.playlistsSpotifyFormat)
+				.build();
+		List<PlaylistEntity> pl;
+		when(this.spotifyAPICalls.getFeaturedPlaylists(2)).thenReturn(featuredPls);
+		pl = this.search.getFeaturedPlaylists(2);
+		assertThat(pl.get(0).getUri(), equalTo(ID1));
+		assertThat(pl.get(1).getUri(), equalTo(ID2));
+		assertThat(pl.get(0).getName(), equalTo(PLAYLIST_NAME1));
+		assertThat(pl.get(1).getName(), equalTo(PLAYLIST_NAME2));
+		assertThat(pl.get(0).getImageUrl(), equalTo(null));
+		assertThat(pl.get(1).getImageUrl(), equalTo(ID1));
 	}
 }

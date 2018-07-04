@@ -56,10 +56,14 @@ public class Timer {
 			throw new IllegalArgumentException();
 		this.id = id;
 
-		this.timerDate = Calendar.getInstance();
-		this.timerDate.add(Calendar.HOUR, hours);
-		this.timerDate.add(Calendar.MINUTE, minutes);
-		this.timerDate.add(Calendar.SECOND, seconds);
+		if (delayValid(hours, minutes, seconds)) {
+			this.timerDate = Calendar.getInstance();
+			this.timerDate.add(Calendar.HOUR, hours);
+			this.timerDate.add(Calendar.MINUTE, minutes);
+			this.timerDate.add(Calendar.SECOND, seconds);
+		} else {
+			throw new IllegalArgumentException();
+		}
 
 		this.active = active;
 	}
@@ -132,6 +136,21 @@ public class Timer {
 		long secondDiff = diff;
 
 		return new int[] { (int) hourDiff, (int) minuteDiff, (int) secondDiff };
+	}
+
+	/**
+	 * Checks if the given hours, minutes and seconds are valid for a timer
+	 * 
+	 * @param hours
+	 *            hour delay of timer
+	 * @param minutes
+	 *            minute delay of timer
+	 * @param seconds
+	 *            second delay of timer
+	 * @return true, if delay is valid, else false
+	 */
+	public static boolean delayValid(int hours, int minutes, int seconds) {
+		return hours >= 0 && minutes >= 0 && seconds >= 0 && hours + minutes + seconds > 0;
 	}
 
 	/**

@@ -36,7 +36,10 @@ public interface ServiceLocator {
 	 * Instantiate the given class if it can. The object created in this way will not be managed by the DI.
 	 * 
 	 * @param serviceClass
-	 * @return
+	 *            the implementation of a service
+	 * @return the created instance of the given class
+	 * @param <T>
+	 *            the type of the implementation class
 	 */
 	<T> T create(Class<T> serviceClass);
 
@@ -45,19 +48,36 @@ public interface ServiceLocator {
 	 * this way will not be managed by the DI.
 	 * 
 	 * @param serviceClass
-	 * @return
+	 *            the implementation of a service
+	 * @return the created instance of the given class
+	 * @param <T>
+	 *            the type of the implementation class
 	 */
 	<T> T createAndInitialize(Class<T> serviceClass);
 
 	/**
 	 * Get the service of the given type. This method lookup the service provider registered for the the given service
-	 * type and use it to return a object of the given type. type.
+	 * type and use it to return a object of the given type.
 	 * 
 	 * @param serviceType
 	 *            the type of the service, not the class which implements the service
 	 * @return an instance of the given type if a service provider is found
+	 * @param <T>
+	 *            the type of the service
 	 */
 	<T> T getService(Class<T> serviceType);
+
+	/**
+	 * Get the service with the given description. This method lookup the service provider registered for the the given
+	 * service description and use it to return a object of the given type.
+	 * 
+	 * @param serviceDescription
+	 *            the Description of the service
+	 * @return an instance of the described service if a service provider is found
+	 * @param <T>
+	 *            the type of the service
+	 */
+	<T> T getService(ServiceDescription<T> serviceDescription);
 
 	/**
 	 * This will analyze the given object and inject into its fields. The object given will not be managed by the DI.
@@ -73,4 +93,18 @@ public interface ServiceLocator {
 	 * @param postConstructMe
 	 */
 	void postConstruct(@Nonnull Object postConstructMe);
+
+	/**
+	 * This will analyze the given object and call the preDestroy method. The object given will not be managed by the
+	 * DI.
+	 * 
+	 * @param destroyMe
+	 */
+	void preDestroy(@Nonnull Object destroyMe);
+
+	/**
+	 * This method will shutdown every service associated with this ServiceLocator. Those services that have a
+	 * preDestroy shall have their preDestroy called.
+	 */
+	void shutdown();
 }

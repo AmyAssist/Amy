@@ -38,6 +38,8 @@ import com.wrapper.spotify.model_objects.specification.Track;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 
 /**
  * This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music
@@ -52,11 +54,7 @@ public class PlayerLogic {
 	@Reference
 	private Search search;
 	@Reference
-	private StringGenerator stringGenerator;
-	@Reference
 	private Logger logger;
-
-	private List<Map<String, String>> actualSearchResult = null;
 
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
@@ -78,6 +76,15 @@ public class PlayerLogic {
 	}
 
 	/**
+	 * needed for the first init. this method need the properties file in apikeys
+	 * 
+	 * @return login link to a personal spotify account
+	 */
+	public URI firstTimeInit() {
+		return this.spotifyAPICalls.authorizationCodeUri();
+	}
+
+	/**
 	 * create the refresh token in he authorization object with the authCode
 	 * 
 	 * @param authCode
@@ -92,13 +99,13 @@ public class PlayerLogic {
 	 * 
 	 * @return empty ArrayList if no device available else Maps with the name, id and type of the device
 	 */
-	public List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> getDevices() {
-		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devicesList = new ArrayList<>();
+	public List<DeviceEntity> getDevices() {
+		List<DeviceEntity> devicesList = new ArrayList<>();
 		Device[] devices = this.spotifyAPICalls.getDevices();
 		if (devices != null) {
 			for (int i = 0; i < devices.length; i++) {
-				de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device deviceData;
-				deviceData = new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device(devices[i].getType(),
+				DeviceEntity deviceData;
+				deviceData = new DeviceEntity(devices[i].getType(),
 						devices[i].getName(), devices[i].getId());
 				devicesList.add(deviceData);
 			}
@@ -114,7 +121,7 @@ public class PlayerLogic {
 	 * @return selected device
 	 */
 	public String setDevice(int deviceNumber) {
-		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devices = getDevices();
+		List<DeviceEntity> devices = getDevices();
 		if (devices.size() > deviceNumber) {
 			this.spotifyAPICalls.setCurrentDevice(devices.get(deviceNumber).getID());
 			return devices.get(deviceNumber).getName();
@@ -138,7 +145,7 @@ public class PlayerLogic {
 	 * this call the searchAnaything method in the Search class
 	 * 
 	 * @param searchText
-	 *            the text you want ot search
+	 *            the text you want to search
 	 * @param type
 	 *            artist, track, playlist, album
 	 * @param limit
@@ -146,47 +153,23 @@ public class PlayerLogic {
 	 * @return one output String with all results
 	 */
 	public List<Map<String, String>> search(String searchText, String type, int limit) {
-		this.actualSearchResult = this.search.searchList(searchText, type, limit);
-		return this.actualSearchResult;
-	}
-
-	/**
-	 * generate one String out of the search result map or other maps with track, album or playlist attributes. Useful
-	 * for example for console or speech output
-	 * 
-	 * @param input
-	 *            the map from a search or a map with attributes from track, album, playlist
-	 * @return a single String with useful information for the user
-	 */
-	public String convertSearchOutputToSingleString(Map<String, String> input) {
-		return this.stringGenerator.generateSearchOutputString(input);
-	}
-
-	/**
-	 * generate one String out of the search result list. Useful for example for console or speech output
-	 * 
-	 * @param input
-	 *            the list from a search or a list with maps with attributes from track, album, playlist
-	 * @return a single String with useful information for the user from all elements from the list
-	 */
-	public String convertSearchOutputToSingleString(List<Map<String, String>> input) {
-		return this.stringGenerator.generateSearchOutputString(input);
+		return this.search.searchList(searchText, type, limit);
 	}
 
 	/**
 	 * this play method play a featured playlist from spotify
 	 * 
-	 * @return a string with the playlist name
+	 * @return a Playlist object. can be null
 	 */
-	public Map<String, String> play() {
-		List<Map<String, String>> playLists;
-		playLists = this.search.getFeaturedPlaylists();
+	public PlaylistEntity play() {
+		List<PlaylistEntity> playLists;
+		playLists = this.search.getFeaturedPlaylists(5);
 		if (!playLists.isEmpty() && 1 < playLists.size()
-				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).get(SpotifyConstants.ITEM_URI))) {
+				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).getUri())) {
 			return playLists.get(1);
 		}
 		this.logger.warn("no featured playlist found");
-		return new HashMap<>();
+		return null;
 	}
 
 	/**
@@ -194,20 +177,15 @@ public class PlayerLogic {
 	 * 
 	 * @param songNumber
 	 *            number of the item form the search before
+	 * @param type
+	 *            to find the right search Results
 	 * @return a map with the song data
 	 */
-	public Map<String, String> play(int songNumber) {
-		if (this.actualSearchResult != null && songNumber < this.actualSearchResult.size()) {
-			if (this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_TYPE)
-					.equals(SpotifyConstants.TYPE_TRACK)) {
-				if (this.spotifyAPICalls
-						.playSongFromUri(this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_URI))) {
-					return this.actualSearchResult.get(songNumber);
-				}
-			} else if (this.spotifyAPICalls
-					.playListFromUri(this.actualSearchResult.get(songNumber).get(SpotifyConstants.ITEM_URI))) {
-				return this.actualSearchResult.get(songNumber);
-			}
+	public Map<String, String> play(int songNumber, SearchTypes type) {
+		if (songNumber < this.search.restoreUris(type).size()) {
+			this.spotifyAPICalls.playListFromUri(this.search.restoreUris(type).get(songNumber));
+		} else {
+			this.logger.warn("Item not found");
 		}
 		return new HashMap<>();
 	}
@@ -264,6 +242,28 @@ public class PlayerLogic {
 	}
 
 	/**
+	 * get a list from user created or followed playlists
+	 * 
+	 * @param limit
+	 *            limit of returned playlists
+	 * @return a list from Playlists
+	 */
+	public List<PlaylistEntity> getOwnPlaylists(int limit) {
+		return this.search.getOwnPlaylists(limit);
+	}
+
+	/**
+	 * get a list from featured playlists
+	 * 
+	 * @param limit
+	 *            limit of returned playlists
+	 * @return a list from Playlists
+	 */
+	public List<PlaylistEntity> getFeaturedPlaylists(int limit) {
+		return this.search.getFeaturedPlaylists(limit);
+	}
+
+	/**
 	 * this method controls the volume of the player
 	 * 
 	 * @param volumeString
@@ -310,4 +310,5 @@ public class PlayerLogic {
 		}
 		return -1;
 	}
+
 }

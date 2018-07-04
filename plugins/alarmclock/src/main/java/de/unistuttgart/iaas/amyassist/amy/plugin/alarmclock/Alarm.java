@@ -96,7 +96,7 @@ public class Alarm {
 	 *            minute of the alarm
 	 */
 	public final void setTime(int hour, int minute) {
-		if (hour <= 23 && minute <= 59) {
+		if (timeValid(hour, minute)) {
 			Calendar date = Calendar.getInstance();
 			date.set(Calendar.HOUR_OF_DAY, hour);
 			date.set(Calendar.MINUTE, minute);
@@ -108,6 +108,20 @@ public class Alarm {
 		} else {
 			throw new IllegalArgumentException();
 		}
+
+	}
+
+	/**
+	 * Checks if the given hour and minute are valid for an alarm
+	 * 
+	 * @param hour
+	 *            hour of the alarm
+	 * @param minute
+	 *            minute of the alarm
+	 * @return true, if hour and minute are valid, else false
+	 */
+	public static boolean timeValid(int hour, int minute) {
+		return hour <= 23 && hour >= 0 && minute <= 59 && minute >= 0;
 
 	}
 

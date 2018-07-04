@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 
@@ -36,5 +36,5 @@ public interface SpeechInputHandler {
 	 *            the user input
 	 * @return a Future, that completes with the result of processing the user input
 	 */
-	Future<String> handle(String speechInput);
+	CompletableFuture<String> handle(String speechInput);
 }

@@ -23,26 +23,29 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 
 /**
- * Rest Resource for music TODO extend functionality
+ * Rest Resource for music
  * 
  * @author Muhammed Kaya, Christian Bräuner
  */
@@ -57,78 +60,194 @@ public class MusicResource {
 	@Reference
 	private PlayerLogic logic;
 
+	@Reference
+	private StringGenerator stringGenerator;
+
 	private MusicEntity musicEntity;
-	private Playlist playlist;
 
 	/**
-	 * returns a list with all given devices
+	 * needed for the first init. Use the clientID and the clientSecret as query parameter form a spotify devloper
+	 * account or load the properties file in apikeys if there is one in the property location
 	 * 
-	 * @return a list with all given devices
+	 * @param clientID
+	 *            from spotify developer account
+	 * @param clientSecret
+	 *            from spotify developer account
+	 * @return login link to a personal spotify account
+	 */
+	@POST
+	@Path("init")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public URI firstTimeInit(@QueryParam("clientID") String clientID, @QueryParam("clientSecret") String clientSecret) {
+		if (clientID != null && clientSecret != null) {
+			URI uri = this.logic.firstTimeInit(clientID, clientSecret);
+			if (uri != null) {
+				return uri;
+			}
+			throw new WebApplicationException("Enter valid client information", Status.CONFLICT);
+		}
+		URI uri = this.logic.firstTimeInit();
+		if (uri != null) {
+			return uri;
+		}
+		throw new WebApplicationException("Check your property location", Status.CONFLICT);
+	}
+
+	/**
+	 * create the refresh token in the authorization object with the authCode
+	 * 
+	 * @param authCode
+	 *            Callback from the login link
+	 * @return response that token is created
+	 */
+	@POST
+	@Path("token/{authCode}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String inputAuthCode(@PathParam("authCode") String authCode) {
+		this.logic.inputAuthCode(authCode);
+		return "Token created.";
+	}
+
+	/**
+	 * get all devices that logged in at the moment
+	 * 
+	 * @return empty json object if there are no devices available else a json object with all given devices
 	 */
 	@GET
 	@Path("getDevices")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Device[] getDevices() {
-		List<Device> deviceList = this.logic.getDevices();
-		Device[] devices = new Device[deviceList.size()];
+	public DeviceEntity[] getDevices() {
+		List<DeviceEntity> deviceList = this.logic.getDevices();
+		if (deviceList.isEmpty()) {
+			throw new WebApplicationException("Currently there are no devices available or connected", Status.CONFLICT);
+		}
+		DeviceEntity[] devices = new DeviceEntity[deviceList.size()];
 		for (int i = 0; i < deviceList.size(); i++) {
 			devices[i] = deviceList.get(i);
 		}
 		return devices;
+
 	}
 
 	/**
-	 * sets which device to use
+	 * sets which of the connected devices to use
 	 * 
-	 * @param deviceNumber
-	 *            the number of the device to use
-	 * @return the selected device if there is one
-	 * 
+	 * @param deviceValue
+	 *            the number or ID of the device to use
+	 * @return the selected device if there is one and is available
 	 */
 	@POST
-	@Path("setDevice/{deviceNumber}")
+	@Path("setDevice/{deviceValue}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setDevice(@PathParam("deviceNumber") int deviceNumber) {
-		String result = this.logic.setDevice(deviceNumber);
-		if (result.equals("No device found")) {
-			throw new WebApplicationException("No device found", Status.CONFLICT);
+	public String setDevice(@PathParam("deviceValue") String deviceValue) {
+		try {
+			int deviceNumber = Integer.parseInt(deviceValue);
+			String result = this.logic.setDevice(deviceNumber);
+			if (result.equals("No device found")) {
+				throw new WebApplicationException("No device found", Status.NOT_FOUND);
+			}
+			return result;
+		} catch (NumberFormatException e) {
+			if (this.logic.setDevice(deviceValue)) {
+				return "Device: '" + deviceValue + "' is selected now";
+			}
+			throw new WebApplicationException("Device: '" + deviceValue + "' is not available", Status.CONFLICT);
 		}
-		return result;
 	}
 
 	/**
-	 * returns the currently played music
+	 * this method allows to search artist, track, playlist and album names
 	 * 
-	 * @return the currently played music
+	 * @param searchText
+	 *            the text you want to search
+	 * @param type
+	 *            artist, track, playlist, album
+	 * @param limit
+	 *            how many results maximal searched for
+	 * @return one output String with all results
 	 */
-	@GET
-	@Path("currentSong")
+	@POST
+	@Path("search/{searchText}")
+	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public MusicEntity getCurrentSong() {
-		Map<String, String> currentSong = this.logic.getCurrentSong();
-		this.musicEntity = new MusicEntity();
-		if (currentSong != null && currentSong.containsKey("name") && currentSong.containsKey("artist")) {
-			this.musicEntity = new MusicEntity(currentSong.get("name"), currentSong.get("artist"));
+	public List<Map<String, String>> search(@PathParam("searchText") String searchText,
+			@QueryParam("type") @DefaultValue("track") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
+		List<Map<String, String>> actualSearchResult;
+		switch (type) {
+		case SpotifyConstants.TYPE_ARTIST:
+			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_ARTIST, limit);
+			break;
+		case SpotifyConstants.TYPE_PLAYLIST:
+			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_PLAYLIST, limit);
+			break;
+		case SpotifyConstants.TYPE_ALBUM:
+			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_ALBUM, limit);
+			break;
+		case SpotifyConstants.TYPE_TRACK:
+		default:
+			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_TRACK, limit);
+			break;
 		}
-		return this.musicEntity;
+		if (actualSearchResult != null) {
+			return actualSearchResult;
+		}
+		throw new WebApplicationException("No results found", Status.NO_CONTENT);
 	}
 
 	/**
 	 * plays the given music
 	 * 
+	 * @param songNumber
+	 *            which song or playlist number should be played
+	 * @param type
+	 *            where to play: allowed parameters: user (playlist), featured (playlist), track
+	 * @param limit
+	 *            limit of returned tracks or playlists
 	 * @param music
 	 *            the music to be played
-	 * @return the answer from the player
+	 * @return the playing music if there is one
 	 */
 	@POST
 	@Path("play")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String play(MusicEntity music) {
-		this.musicEntity = music;
-		this.logic.search(this.musicEntity.toString(), SpotifyConstants.TYPE_TRACK, 5);
-		return this.logic.convertSearchOutputToSingleString(this.logic.play(0));
+	public String play(MusicEntity music, @QueryParam("songNumber") @DefaultValue("0") int songNumber,
+			@QueryParam("type") @DefaultValue("") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
+		switch (type) {
+		case "user":
+			Map<String, String> userPlaylist = this.logic.play(songNumber, SearchTypes.USER_PLAYLISTS);
+			if (userPlaylist.isEmpty()) {
+				throw new WebApplicationException("There is no user playlist available.", Status.CONFLICT);
+			}
+			return this.stringGenerator.generateSearchOutputString(userPlaylist);
+		case "featured":
+			Map<String, String> featuredPlaylist = this.logic.play(songNumber, SearchTypes.FEATURED_PLAYLISTS);
+			if (featuredPlaylist.isEmpty()) {
+				throw new WebApplicationException("There is no featured playlist available.", Status.CONFLICT);
+			}
+			return this.stringGenerator.generateSearchOutputString(featuredPlaylist);
+		case SpotifyConstants.TYPE_TRACK:
+			if (music != null) {
+				List<Map<String, String>> searchList = this.logic.search(music.toString(), SpotifyConstants.TYPE_TRACK,
+						limit);
+				if (searchList.isEmpty()) {
+					throw new WebApplicationException("No matching results found.", Status.CONFLICT);
+				}
+				this.musicEntity = new MusicEntity(music.getTitle(), music.getArtist());
+				return this.stringGenerator
+						.generateSearchOutputString(this.logic.play(songNumber, SearchTypes.NORMAL_SEARCH));
+			}
+			throw new WebApplicationException("Enter valid music information.", Status.CONFLICT);
+		default:
+			PlaylistEntity playlist = this.logic.play();
+			if (playlist != null) {
+				return playlist.toString();
+			}
+		}
+		throw new WebApplicationException("Found nothing to play.", Status.CONFLICT);
 	}
 
 	/**
@@ -192,21 +311,68 @@ public class MusicResource {
 	}
 
 	/**
-	 * returns a playlist
+	 * returns the currently played music
 	 * 
-	 * @return the playlist
+	 * @return the currently played music
 	 */
 	@GET
-	@Path("playlist")
+	@Path("currentSong")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Playlist getPlaylist() {
-		return this.playlist;
+	public MusicEntity getCurrentSong() {
+		Map<String, String> currentSong = this.logic.getCurrentSong();
+		this.musicEntity = new MusicEntity();
+		if (currentSong != null && currentSong.containsKey(SpotifyConstants.ITEM_NAME)
+				&& currentSong.containsKey(SpotifyConstants.TYPE_ARTIST)) {
+			this.musicEntity = new MusicEntity(currentSong.get(SpotifyConstants.ITEM_NAME),
+					currentSong.get(SpotifyConstants.TYPE_ARTIST));
+			return this.musicEntity;
+		}
+		throw new WebApplicationException("No song is currently playing", Status.CONFLICT);
+	}
+
+	/**
+	 * get user or featured playlists
+	 * 
+	 * @param limit
+	 *            limit of returned playlists
+	 * @param type
+	 *            type of playlists: allowed parameters: user, featured
+	 * @return user or featured playlists
+	 */
+	@POST
+	@Path("playlists/{type}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PlaylistEntity[] getPlaylists(@PathParam("type") String type,
+			@QueryParam("limit") @DefaultValue("5") int limit) {
+		List<PlaylistEntity> pl;
+		PlaylistEntity[] playlists;
+		switch (type) {
+		case "user":
+			pl = this.logic.getOwnPlaylists(limit);
+			break;
+		case "featured":
+			pl = this.logic.getFeaturedPlaylists(limit);
+			break;
+		default:
+			pl = this.logic.getFeaturedPlaylists(limit);
+			break;
+		}
+		if (!pl.isEmpty()) {
+			playlists = new PlaylistEntity[pl.size()];
+			for (int i = 0; i < pl.size(); i++) {
+				playlists[i] = new PlaylistEntity(pl.get(i).getName(), pl.get(i).getSongs(), pl.get(i).getUri(),
+						pl.get(i).getImageUrl());
+			}
+			return playlists;
+		}
+		throw new WebApplicationException("No Playlists are available", Status.NOT_FOUND);
 	}
 
 	/**
 	 * controls the volume of the player
 	 * 
-	 * @param volumeString
+	 * @param volumeValue
 	 *            allowed strings: mute, max, up, down, or a volume value between 0 and 100
 	 * @return a int from 0-100. This represent the Volume in percent.
 	 */
@@ -214,24 +380,25 @@ public class MusicResource {
 	@Path("volume/{volumeValue}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setVolume(@PathParam("volumeValue") String volumeString) {
+	public String setVolume(@PathParam("volumeValue") String volumeValue) {
 		try {
-			int volume = Integer.parseInt(volumeString);
+			int volume = Integer.parseInt(volumeValue);
 			if (volume < 0 || volume > 100) {
 				throw new WebApplicationException("Incorrect volume value", Status.BAD_REQUEST);
 			}
 			this.logic.setVolume(volume);
 			return String.valueOf(volume);
 		} catch (NumberFormatException e) {
-			if (volumeString != "mute" && volumeString != "max" && volumeString != "up" && volumeString != "down") {
+			if (!volumeValue.equals("mute") && !volumeValue.equals("max") && !volumeValue.equals("up")
+					&& !volumeValue.equals("down")) {
 				throw new WebApplicationException("Incorrect volume command", Status.BAD_REQUEST);
 			}
-			int volume = this.logic.setVolume(volumeString);
+			int volume = this.logic.setVolume(volumeValue);
 			if (volume != -1) {
 				return String.valueOf(volume);
 			}
-			throw new WebApplicationException("Check player state", Status.CONFLICT);
 		}
+		throw new WebApplicationException("Check player state", Status.CONFLICT);
 	}
 
 }

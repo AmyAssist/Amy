@@ -29,7 +29,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 
 /**
  * this class handle the speech commands from the spotify plugin
@@ -41,9 +42,13 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device;
 public class SpotifySpeech {
 
 	private static final String ERROR_MESSAGE = "An error occurred";
+	private static final int LIMIT_FOR_SEARCH = 5;
 
 	@Reference
-	PlayerLogic playerLogic;
+	private PlayerLogic playerLogic;
+
+	@Reference
+	private StringGenerator stringGenerator;
 
 	/**
 	 * get a String of all name of all devices
@@ -54,11 +59,10 @@ public class SpotifySpeech {
 	 */
 	@Grammar("get devices")
 	public String getDevices(String... params) {
-		List<Device> devices = this.playerLogic.getDevices();
+		List<DeviceEntity> devices = this.playerLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
-			output = output.concat(String.valueOf(i)).concat(". ")
-					.concat(devices.get(i).getName().concat("\n"));
+			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i).getName().concat("\n"));
 		}
 		if (output.equals("")) {
 			return "no device found";
@@ -91,8 +95,20 @@ public class SpotifySpeech {
 	 * @return
 	 */
 	@Grammar("play")
+	public String playASong(String... params) {
+		return (this.playerLogic.play().toString());
+	}
+
+	@Grammar("play featured playlist #")
 	public String playFeaturedPlaylist(String... params) {
-		return this.playerLogic.convertSearchOutputToSingleString(this.playerLogic.play());
+		return this.stringGenerator.generateSearchOutputString(
+				this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.FEATURED_PLAYLISTS));
+	}
+
+	@Grammar("play own playlist #")
+	public String play(String... params) {
+		return this.stringGenerator.generateSearchOutputString(
+				this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.USER_PLAYLISTS));
 	}
 
 	@Grammar("resume")
@@ -140,4 +156,28 @@ public class SpotifySpeech {
 		return "track: " + playerLogic.getCurrentSong().get("name") + " by "
 				+ playerLogic.getCurrentSong().get("artist");
 	}
+
+	@Grammar("get own playlists")
+	public String getUserplaylists(String... params) {
+		String output = "";
+		for (PlaylistEntity playlist : this.playerLogic.getOwnPlaylists(LIMIT_FOR_SEARCH)) {
+			output = output.concat(playlist.toString()).concat("\n");
+		}
+		return output;
+	}
+
+	@Grammar("get featured playlists")
+	public String getFeaturedPlaylists(String... params) {
+		String output = "";
+		for (PlaylistEntity playlist : this.playerLogic.getFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
+			output = output.concat(playlist.toString()).concat("\n");
+		}
+		return output;
+	}
+
+	@Grammar("create login link")
+	public String createLoginLink(String... params) {
+		return this.playerLogic.firstTimeInit().toString();
+	}
+
 }
