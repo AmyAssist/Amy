@@ -21,32 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package de.unistuttgart.iaas.amyassist.amy.core.persistence;
 
-import java.lang.reflect.Field;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
+import javax.persistence.EntityManager;
 
 /**
- * A ContextInjectionPoint is an InjectionPoint where the context is injected.
+ * The Persistence Service api
  * 
  * @author Leon Kiefer
  */
-public class ContextInjectionPoint extends InjectionPoint {
-
-	private String contextIdentifier;
+public interface Persistence {
+	/**
+	 * 
+	 * @param name
+	 *            the name of the Persistence Unit
+	 * @return the entity manager of the Persistence Unit
+	 */
+	EntityManager getEntityManager(String name);
 
 	/**
-	 * @return the contextProviderType
+	 * 
+	 * @param entity
+	 *            the entity class to register in the Persistence manager
 	 */
-	public String getContextIdentifier() {
-		return this.contextIdentifier;
-	}
-
-	public ContextInjectionPoint(Field field) {
-		super(field);
-		Context context = field.getAnnotation(Context.class);
-		this.contextIdentifier = context.value();
-	}
-
+	void register(Class<?> entity);
 }

@@ -27,10 +27,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
+/**
+ * 
+ * A Service Provider without dependencies
+ * 
+ * @author Leon Kiefer
+ * @param <T>
+ *            the service type
+ */
 public class ClassServiceProviderWithoutDependencies<T> implements ServiceFunction<T> {
 
 	protected Class<? extends T> cls;
@@ -43,7 +52,7 @@ public class ClassServiceProviderWithoutDependencies<T> implements ServiceFuncti
 	}
 
 	@Override
-	public T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
+	public T getService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
 		return this.createService();
 	}
 
@@ -57,7 +66,7 @@ public class ClassServiceProviderWithoutDependencies<T> implements ServiceFuncti
 	}
 
 	@Override
-	public Collection<Class<?>> getDependencies() {
+	public Collection<ServiceDescription<?>> getDependencies() {
 		return Collections.emptyList();
 	}
 

@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 
 /**
@@ -39,15 +40,22 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
  *            service type
  */
 public interface ServiceProvider<T> {
+	/**
+	 * @param resolvedDependencies
+	 *            a map of ServiceFactories for each dependency
+	 * @param context
+	 *            a map of the static context information
+	 * @return the service of this ServiceProvider for the given context
+	 */
 	@Nonnull
-	T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context);
+	T getService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context);
 
 	/**
 	 * 
 	 * @return the dependencies
 	 */
 	@Nonnull
-	Collection<Class<?>> getDependencies();
+	Collection<ServiceDescription<?>> getDependencies();
 
 	/**
 	 * @return the requiredContextProviderTypes

@@ -21,32 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
-
-import java.lang.reflect.Field;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 /**
- * A ContextInjectionPoint is an InjectionPoint where the context is injected.
+ * A Interface for use with {@link java.util.ServiceLoader} to register Service classes, Service provider and Context
+ * Providers in the DI via the Configuration.
+ * 
+ * Implementations of this interface MUST have a default public constructor.
  * 
  * @author Leon Kiefer
  */
-public class ContextInjectionPoint extends InjectionPoint {
-
-	private String contextIdentifier;
-
+public interface ServiceProviderLoader {
 	/**
-	 * @return the contextProviderType
+	 * Called form the DI when loading services
+	 * 
+	 * @param configuration
+	 *            the Configuration used to register Service classes, Service provider and context provider
 	 */
-	public String getContextIdentifier() {
-		return this.contextIdentifier;
-	}
-
-	public ContextInjectionPoint(Field field) {
-		super(field);
-		Context context = field.getAnnotation(Context.class);
-		this.contextIdentifier = context.value();
-	}
-
+	void load(Configuration configuration);
 }

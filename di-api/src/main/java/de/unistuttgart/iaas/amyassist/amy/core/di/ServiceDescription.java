@@ -21,37 +21,27 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.lang.annotation.Annotation;
 
 /**
- * Global storage placeholder until a database or similar mechanisms are implemented
+ * Abstract description of a Service
  * 
- * @author Felix Burk
+ * @author Leon Kiefer
+ * @param <T>
+ *            the type of the service
  */
-public class GlobalStorage {
+public interface ServiceDescription<T> {
 	/**
-	 * The map in which everything is stored.
+	 * @return the type of the Service described by this Service Description
 	 */
-	protected ConcurrentMap<String, String> store;
+	Class<T> getServiceType();
 
 	/**
-	 * Creates a new Global Storage. This should only be called once.
-	 */
-	public GlobalStorage() {
-		this.store = new ConcurrentHashMap<>();
-	}
-
-	/**
-	 * returns global storage HashMap
+	 * The attributes of the Service
 	 * 
-	 * @return store
+	 * @return the annotations that qualify and distinguish the Service
 	 */
-	public Map<String, String> getStore() {
-		return this.store;
-	}
-
+	Annotation[] getAnnotations();
 }
