@@ -21,37 +21,31 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import javax.sound.sampled.LineListener;
 
 /**
- * Global storage placeholder until a database or similar mechanisms are implemented
+ * Interface for the TextToSpeech
  * 
- * @author Felix Burk
+ * @author Kai Menzel
  */
-public class GlobalStorage {
-	/**
-	 * The map in which everything is stored.
-	 */
-	protected ConcurrentMap<String, String> store;
+public interface Output {
 
 	/**
-	 * Creates a new Global Storage. This should only be called once.
-	 */
-	public GlobalStorage() {
-		this.store = new ConcurrentHashMap<>();
-	}
-
-	/**
-	 * returns global storage HashMap
+	 * Method to Voice and Log output the input String
 	 * 
-	 * @return store
+	 * @param listener
+	 *            Listener for the Voice Output Clip
+	 * @param voiceOutput
+	 *            true if Amy shall voice the Output
+	 * @param s
+	 *            String that shall be said
 	 */
-	public Map<String, String> getStore() {
-		return this.store;
-	}
+	void output(LineListener listener, boolean voiceOutput, String s);
 
+	/**
+	 * stop the OutputClip
+	 */
+	void stopOutput();
 }

@@ -29,8 +29,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
+import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 
 /**
@@ -41,17 +43,18 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 public class PropertiesProvider implements ServiceFunction<Properties> {
 
 	@Override
-	public Properties getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
+	public Properties getService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies,
+			Map<String, ?> context) {
 		ConfigurationLoader configurationLoader = (ConfigurationLoader) resolvedDependencies
-				.get(ConfigurationLoader.class).build();
+				.get(Util.serviceDescriptionFor(ConfigurationLoader.class)).build();
 		IPlugin plugin = (IPlugin) context.get(Context.PLUGIN);
 		String uniqueName = plugin.getUniqueName();
 		return configurationLoader.load(uniqueName);
 	}
 
 	@Override
-	public Collection<Class<?>> getDependencies() {
-		return Collections.singleton(ConfigurationLoader.class);
+	public Collection<ServiceDescription<?>> getDependencies() {
+		return Collections.singleton(Util.serviceDescriptionFor(ConfigurationLoader.class));
 	}
 
 	@Override
