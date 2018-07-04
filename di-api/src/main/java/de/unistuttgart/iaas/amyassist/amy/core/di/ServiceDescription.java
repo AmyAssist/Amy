@@ -21,38 +21,27 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.util.Collection;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
+import java.lang.annotation.Annotation;
 
 /**
+ * Abstract description of a Service
  * 
  * @author Leon Kiefer
- *
  * @param <T>
- *            service type
+ *            the type of the service
  */
-public interface ServiceProvider<T> {
-	@Nonnull
-	T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context);
+public interface ServiceDescription<T> {
+	/**
+	 * @return the type of the Service described by this Service Description
+	 */
+	Class<T> getServiceType();
 
 	/**
+	 * The attributes of the Service
 	 * 
-	 * @return the dependencies
+	 * @return the annotations that qualify and distinguish the Service
 	 */
-	@Nonnull
-	Collection<Class<?>> getDependencies();
-
-	/**
-	 * @return the requiredContextProviderTypes
-	 */
-	@Nonnull
-	Collection<String> getRequiredContextIdentifiers();
-
+	Annotation[] getAnnotations();
 }

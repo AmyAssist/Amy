@@ -37,10 +37,10 @@ public class ServiceNotFoundException extends RuntimeException {
 	private final Class<?> serviceType;
 
 	/**
-	 * @param serviceType
+	 * @param serviceDescription
 	 */
-	public ServiceNotFoundException(Class<?> serviceType) {
-		this.serviceType = serviceType;
+	public ServiceNotFoundException(ServiceDescription<?> serviceDescription) {
+		this.serviceType = serviceDescription.getServiceType();
 	}
 
 	/**

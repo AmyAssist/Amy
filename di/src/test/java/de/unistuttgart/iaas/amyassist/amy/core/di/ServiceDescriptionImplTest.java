@@ -21,32 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.lang.reflect.Field;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
- * A ContextInjectionPoint is an InjectionPoint where the context is injected.
+ * Test the equals method of ServiceDescriptionImpl
  * 
  * @author Leon Kiefer
  */
-public class ContextInjectionPoint extends InjectionPoint {
+class ServiceDescriptionImplTest {
 
-	private String contextIdentifier;
-
-	/**
-	 * @return the contextProviderType
-	 */
-	public String getContextIdentifier() {
-		return this.contextIdentifier;
+	@ParameterizedTest
+	@MethodSource("values")
+	void testNotEquals(Object obj) {
+		assertThat(Util.serviceDescriptionFor(Service7API.class), is(not(equalTo(obj))));
 	}
 
-	public ContextInjectionPoint(Field field) {
-		super(field);
-		Context context = field.getAnnotation(Context.class);
-		this.contextIdentifier = context.value();
+	static Stream<Object> values() {
+		return Stream.of(null, new Object(), Util.serviceDescriptionFor(Service1.class));
 	}
 
 }

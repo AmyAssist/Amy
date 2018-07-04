@@ -49,7 +49,7 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.User;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -72,7 +72,7 @@ public class SearchTest {
 	private SearchResult tracks2;
 	private FeaturedPlaylists featuredPlaylists;
 	private Paging<PlaylistSimplified> playlistsSpotifyFormat;
-	private List<Playlist> playlistsOwnFormat;
+	private List<PlaylistEntity> playlistsOwnFormat;
 	private Search search;
 
 	private static final String ID1 = "abc123";
@@ -117,8 +117,8 @@ public class SearchTest {
 		playlistList[1] = playlist2;
 		this.playlistsSpotifyFormat = new Paging.Builder<PlaylistSimplified>().setItems(playlistList).build();
 		this.playlistsOwnFormat = new ArrayList<>();
-		this.playlistsOwnFormat.add(new Playlist(PLAYLIST_NAME1, null, ID1, null));
-		this.playlistsOwnFormat.add(new Playlist(PLAYLIST_NAME2, null, ID2, ID1));
+		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME1, null, ID1, null));
+		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME2, null, ID2, ID1));
 	}
 
 	public void createSearchResults() {
@@ -277,7 +277,7 @@ public class SearchTest {
 	@Test
 	public void testFeaturedPlaylists() {
 		when(spotifyAPICalls.getFeaturedPlaylists(Search.SEARCH_LIMIT)).thenReturn(featuredPlaylists);
-		List<Playlist> result = this.search.getFeaturedPlaylists(Search.SEARCH_LIMIT);
+		List<PlaylistEntity> result = this.search.getFeaturedPlaylists(Search.SEARCH_LIMIT);
 		assertThat(result.get(0).getName(), equalTo("Flames"));
 		// assertThat(result.get(0).get(SpotifyConstants.ARTIST_NAME), equalTo("David Guetta"));
 		assertThat(result.get(1).getName(), equalTo("Say Something"));
@@ -311,7 +311,7 @@ public class SearchTest {
 	@Test
 	public void testGetUsersPlaylists() {
 		initPlaylists();
-		List<Playlist> pl;
+		List<PlaylistEntity> pl;
 		when(this.spotifyAPICalls.getOwnPlaylists(2)).thenReturn(this.playlistsSpotifyFormat);
 		pl = this.search.getOwnPlaylists(2);
 		assertThat(pl.get(0).getUri(), equalTo(ID1));
@@ -327,7 +327,7 @@ public class SearchTest {
 		initPlaylists();
 		FeaturedPlaylists featuredPls = new FeaturedPlaylists.Builder().setPlaylists(this.playlistsSpotifyFormat)
 				.build();
-		List<Playlist> pl;
+		List<PlaylistEntity> pl;
 		when(this.spotifyAPICalls.getFeaturedPlaylists(2)).thenReturn(featuredPls);
 		pl = this.search.getFeaturedPlaylists(2);
 		assertThat(pl.get(0).getUri(), equalTo(ID1));

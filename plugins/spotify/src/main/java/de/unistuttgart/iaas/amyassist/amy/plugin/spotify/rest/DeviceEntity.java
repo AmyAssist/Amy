@@ -31,19 +31,19 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Muhammed Kaya
  */
 @XmlRootElement
-public class Device {
+public class DeviceEntity {
 
 	/**
 	 * constructor for a Device
 	 */
-	public Device() {
+	public DeviceEntity() {
 
 	}
 
 	/**
 	 * constructor for a Device with set values
 	 */
-	public Device(String type, String name, String id) {
+	public DeviceEntity(String type, String name, String id) {
 		this.type = type;
 		this.name = name;
 		this.id = id;

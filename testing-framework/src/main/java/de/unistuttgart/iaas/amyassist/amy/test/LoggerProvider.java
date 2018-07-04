@@ -30,6 +30,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
 
@@ -43,13 +44,13 @@ public class LoggerProvider implements ServiceFunction<Logger> {
 	private static final String CONTEXT_IDENTIFIER = "class";
 
 	@Override
-	public Logger getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
+	public Logger getService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
 		Class<?> cls = (Class<?>) context.get(CONTEXT_IDENTIFIER);
 		return LoggerFactory.getLogger(cls);
 	}
 
 	@Override
-	public Collection<Class<?>> getDependencies() {
+	public Collection<ServiceDescription<?>> getDependencies() {
 		return Collections.emptyList();
 	}
 
