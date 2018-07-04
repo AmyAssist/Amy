@@ -123,7 +123,7 @@ public abstract class AbstractSpeechRecognizerManager
 	protected abstract RecognitionResultHandler getResultHandler(Grammar grammar);
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.AudioUserInteraction#start()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager#stop()
 	 */
 	@Override
 	public void start() {
@@ -132,7 +132,7 @@ public abstract class AbstractSpeechRecognizerManager
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.AudioUserInteraction#stop()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager#stop()
 	 */
 	@Override
 	public void stop() {
