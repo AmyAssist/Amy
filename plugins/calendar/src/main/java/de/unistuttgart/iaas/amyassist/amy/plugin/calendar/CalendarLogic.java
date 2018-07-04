@@ -27,10 +27,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+
+import org.slf4j.Logger;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -74,29 +77,28 @@ public class CalendarLogic {
 	private Properties configuration;
 	@Reference
 	private Environment environment;
+	@Reference
+	private Logger logger;
 
 	private Calendar service;
 
 	private List<String> eventList = new ArrayList<>();
-	private String eventData;
 
 	/**
 	 * Creates an authorized Credential object.
 	 * 
-	 * @param HTTP_TRANSPORT
+	 * @param xHTTPTRANSPORT
 	 *            The network HTTP Transport.
 	 * @return An authorized Credential object.
 	 * @throws IOException
 	 *             If there is no client_secret.
 	 */
-	private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+	private Credential getCredentials(final NetHttpTransport xHTTPTRANSPORT) throws IOException {
 		// Load client secrets.
 		InputStream test = new ByteArrayInputStream(this.configuration.getProperty("JSON").getBytes());
-
 		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(test));
-
 		// Build flow and trigger user authorization request.
-		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
+		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(xHTTPTRANSPORT, JSON_FACTORY,
 				clientSecrets, SCOPES)
 						.setDataStoreFactory(new FileDataStoreFactory(this.environment.getWorkingDirectory()
 								.resolve("temp/calendarauth").toAbsolutePath().toFile()))
@@ -111,12 +113,11 @@ public class CalendarLogic {
 	public void authorize() {
 		try {
 			// Build a new authorized API client service.
-			final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-			this.service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+			final NetHttpTransport yHTTPTRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+			this.service = new Calendar.Builder(yHTTPTRANSPORT, JSON_FACTORY, getCredentials(yHTTPTRANSPORT))
 					.setApplicationName(APPLICATION_NAME).build();
-
-		} catch (Exception e) {
-
+		} catch (IOException | GeneralSecurityException e) {
+			this.logger.error("Sorry, an error occured during the authorization", e);
 		}
 	}
 
@@ -142,13 +143,17 @@ public class CalendarLogic {
 				eventCalc(start, event);
 			}
 			return "You have following upcoming events:\n" + String.join("\n", this.eventList);
-		} catch (Exception e) {
-			return "Sorry, I am not able to get your events.";
+		} catch (IOException e) {
+			this.logger.error("Sorry, I am not able to get your events.", e);
+			return "An error occured.";
 		}
+
 	}
 
 	/**
-	 * @return
+	 * This method contains the logic to show the calendar events today
+	 * 
+	 * @return the events of the actual day
 	 */
 	public String getEventsToday() {
 		try {
@@ -178,9 +183,10 @@ public class CalendarLogic {
 			if (this.eventList.isEmpty()) {
 				return "There are no events today.";
 			}
-			return "Upcoming events\n" + String.join("\n", this.eventList);
+			return "You have following upcoming events:\n" + String.join("\n", this.eventList);
 		} catch (IOException e) {
-			return "Sorry, I am not able to get your events.";
+			this.logger.error("Sorry, I am not able to get your events.", e);
+			return "An error occured.";
 		}
 	}
 
@@ -188,9 +194,12 @@ public class CalendarLogic {
 	 * This method formats the date and time of the events and adds them into the list
 	 * 
 	 * @param start
+	 *            start time of the event
 	 * @param event
+	 *            data of the event
 	 */
 	public void eventCalc(DateTime start, Event event) {
+		String eventData;
 		if (start != null) {
 			String startData = start.toString();
 			String[] parts = startData.split("T");
@@ -203,10 +212,10 @@ public class CalendarLogic {
 			String yearpart2 = year.substring(2, 4);
 			String startTime = parts[1];
 			DateTime endtime = event.getEnd().getDateTime();
-			this.eventData = event.getSummary() + " on the " + ordinal(Integer.parseInt(day)) + " of " + getMonth(month)
+			eventData = event.getSummary() + " on the " + ordinal(Integer.parseInt(day)) + " of " + getMonth(month)
 					+ " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2) + " at "
 					+ startTime.substring(0, 5) + " until " + endtime.toString().substring(11, 16) + "\n";
-			this.eventList.add(this.eventData);
+			this.eventList.add(eventData);
 		}
 		if (start == null) {
 			start = event.getStart().getDate();
@@ -217,15 +226,17 @@ public class CalendarLogic {
 			String year = dayParts[0];
 			String yearpart1 = year.substring(0, 2);
 			String yearpart2 = year.substring(2, 4);
-			this.eventData = event.getSummary() + " on the " + ordinal(Integer.parseInt(day)) + " of " + getMonth(month)
+			eventData = event.getSummary() + " on the " + ordinal(Integer.parseInt(day)) + " of " + getMonth(month)
 					+ " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2) + " all day long." + "\n";
-			this.eventList.add(this.eventData);
+			this.eventList.add(eventData);
 		}
 	}
 
 	/**
+	 * This method decides in which month the event is
 	 * 
 	 * @param month
+	 *            month of the event as a number in a String
 	 * @return current month of year as String (MMMM), e.g. May
 	 */
 	public String getMonth(String month) {

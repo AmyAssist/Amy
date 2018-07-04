@@ -40,6 +40,9 @@ public class CalendarSpeech {
 
 	/**
 	 * 
+	 * @param params
+	 *            params from the speech
+	 * 
 	 * @return the upcoming X events from the calendar
 	 */
 	@Grammar("get next [#] event[s]")
@@ -54,7 +57,8 @@ public class CalendarSpeech {
 	}
 
 	/**
-	 * 
+	 * @param params
+	 *            params from the speech
 	 * @return upcoming events on the current day
 	 */
 	@Grammar("events today")
