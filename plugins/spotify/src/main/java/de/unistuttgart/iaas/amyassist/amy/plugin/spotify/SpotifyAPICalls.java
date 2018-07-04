@@ -142,7 +142,7 @@ public class SpotifyAPICalls {
 			this.logger.warn("Please exec the Authorization first");
 			return spotifyAPI;
 		}
-		if (this.storage.get(SPOTIFY_ACCESSTOKEN) != null) {
+		if (this.storage.has(SPOTIFY_ACCESSTOKEN) && this.storage.get(SPOTIFY_ACCESSTOKEN) != null) {
 			spotifyAPI.setAccessToken(this.storage.get(SPOTIFY_ACCESSTOKEN));
 		} else {
 			String accessToken = createAccessToken(spotifyAPI);
@@ -184,6 +184,7 @@ public class SpotifyAPICalls {
 	 */
 	public Runnable refreshAccessToken() {
 		return () -> {
+			if(this.storage.has(SPOTIFY_ACCESSTOKEN))
 			this.storage.delete(SPOTIFY_ACCESSTOKEN);
 			getSpotifyApi();
 		};
