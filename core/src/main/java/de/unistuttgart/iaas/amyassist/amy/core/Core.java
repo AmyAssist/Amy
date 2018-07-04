@@ -30,6 +30,7 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import de.unistuttgart.iaas.amyassist.amy.core.registry.contact.ContactRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,6 +163,8 @@ public class Core {
 		this.di.register(DatabaseStorage.class);
 		this.di.register(PersistenceService.class);
 		this.di.register(NaturalLanaguageInputHandlerService.class);
+		this.di.register(ContactRegistry.class);
+
 	}
 
 	/**

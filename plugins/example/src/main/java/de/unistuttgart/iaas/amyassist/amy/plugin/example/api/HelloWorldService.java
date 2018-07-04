@@ -39,4 +39,8 @@ public interface HelloWorldService {
 
 	String helloWorldXTimes(int times);
 
+	String demonstrateContactRegistry();
+
+	String testContactRegistry();
+
 }

@@ -23,12 +23,16 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.IContactRegistry;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
+
+import java.util.List;
 
 /**
  * Does the logic of the Hello World plugin
@@ -47,6 +51,9 @@ public class HelloWorldImpl implements HelloWorldService {
 	 */
 	@Reference
 	protected IStorage storage;
+
+	@Reference
+	private IContactRegistry contacts;
 
 	@Override
 	public String helloWorld() {
@@ -75,5 +82,26 @@ public class HelloWorldImpl implements HelloWorldService {
 		}
 
 		return hellos.toString().trim();
+	}
+
+	@Override
+	public String demonstrateContactRegistry() {
+		List<Contact> contactsList = contacts.getAll();
+		StringBuilder b = new StringBuilder("All contacts:\n");
+		for (Contact c: contactsList) {
+			b.append(c.getFirstName()).append(" ").append(c.getLastName()).append(" ")
+					.append(c.isImportant() ? "important" : "unimporant").append(" person").append("\n");
+		}
+		return b.toString();
+	}
+
+	@Override
+	public String testContactRegistry() {
+		try {
+			contacts.testMyself();
+			return "Tests successful";
+		} catch (RuntimeException e) {
+			return "Tests failed: " + e.getLocalizedMessage();
+		}
 	}
 }
