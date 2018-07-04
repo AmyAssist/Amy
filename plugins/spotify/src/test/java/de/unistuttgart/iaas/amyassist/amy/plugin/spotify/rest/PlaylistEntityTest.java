@@ -37,15 +37,15 @@ import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
  * @author Lars Buttgereut
  */
 @ExtendWith(FrameworkExtension.class )
-class PlaylistTest {
+class PlaylistEntityTest {
 
-	private Playlist playlist;
+	private PlaylistEntity playlist;
 	private MusicEntity[] musicEntity;
 	
 	@BeforeEach
 	public void init() {
 		this.musicEntity = new MusicEntity[0];
-		this.playlist = new Playlist("Hello", musicEntity, "abc123", "image.de");
+		this.playlist = new PlaylistEntity("Hello", musicEntity, "abc123", "image.de");
 	}
 	
 	@Test
