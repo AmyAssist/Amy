@@ -57,7 +57,7 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 	 * A register which contains all dependencies
 	 */
 	private Collection<ServiceDescription<?>> dependencies = new HashSet<>();
-	private Collection<InjetionPoint> injetionPoints = new HashSet<>();
+	private Collection<InjectionPoint> injetionPoints = new HashSet<>();
 	private Collection<String> requiredContextIdentifiers = new HashSet<>();
 	private final NTuple<String> contextType;
 	private final NTuple<ContextInjectionPoint> contextInjectionPoints;
@@ -82,7 +82,7 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 		super(cls);
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(cls, Reference.class);
 		for (Field field : dependencyFields) {
-			InjetionPoint injetionPoint = new InjetionPoint(field);
+			InjectionPoint injetionPoint = new InjectionPoint(field);
 			this.injetionPoints.add(injetionPoint);
 			ServiceDescription<?> dependency = injetionPoint.getServiceDescription();
 			if (this.dependencies.contains(dependency)) {
@@ -136,7 +136,7 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 	private T createService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies,
 			NTuple<?> contextTuple) {
 		T serviceInstance = this.createService();
-		for (InjetionPoint injetionPoint : this.injetionPoints) {
+		for (InjectionPoint injetionPoint : this.injetionPoints) {
 			ServiceFactory<?> serviceFactory = resolvedDependencies.get(injetionPoint.getServiceDescription());
 			injetionPoint.inject(serviceInstance, serviceFactory.build());
 		}

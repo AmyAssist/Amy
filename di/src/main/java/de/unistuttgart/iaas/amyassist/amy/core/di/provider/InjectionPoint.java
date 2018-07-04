@@ -36,10 +36,15 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  * 
  * @author Leon Kiefer
  */
-class InjetionPoint {
+class InjectionPoint {
 	private Field field;
 
-	public InjetionPoint(Field field) {
+	/**
+	 * 
+	 * @param field
+	 *            the field of the class
+	 */
+	public InjectionPoint(Field field) {
 		this.field = field;
 	}
 
