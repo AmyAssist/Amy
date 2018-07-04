@@ -184,9 +184,10 @@ public class SpotifyAPICalls {
 	 */
 	public Runnable refreshAccessToken() {
 		return () -> {
-			if(this.storage.has(SPOTIFY_ACCESSTOKEN))
+			if(this.storage.has(SPOTIFY_ACCESSTOKEN)) {
 			this.storage.delete(SPOTIFY_ACCESSTOKEN);
 			getSpotifyApi();
+			}
 		};
 	}
 
