@@ -66,8 +66,8 @@ public class MusicResource {
 	private MusicEntity musicEntity;
 
 	/**
-	 * needed for the first init. Use the clientID and the clientSecret form a spotify devloper account or load the
-	 * properties file in apikeys
+	 * needed for the first init. Use the clientID and the clientSecret as query parameter form a spotify devloper
+	 * account or load the properties file in apikeys if there is one in the property location
 	 * 
 	 * @param clientID
 	 *            from spotify developer account
@@ -95,7 +95,7 @@ public class MusicResource {
 	}
 
 	/**
-	 * create the refresh token in he authorization object with the authCode
+	 * create the refresh token in the authorization object with the authCode
 	 * 
 	 * @param authCode
 	 *            Callback from the login link
@@ -111,24 +111,28 @@ public class MusicResource {
 	}
 
 	/**
-	 * returns a list with all given devices
+	 * get all devices that logged in at the moment
 	 * 
-	 * @return a list with all given devices
+	 * @return empty json object if there are no devices available else a json object with all given devices
 	 */
 	@GET
 	@Path("getDevices")
 	@Produces(MediaType.APPLICATION_JSON)
 	public DeviceEntity[] getDevices() {
 		List<DeviceEntity> deviceList = this.logic.getDevices();
+		if (deviceList.isEmpty()) {
+			throw new WebApplicationException("Currently there are no devices available or connected", Status.CONFLICT);
+		}
 		DeviceEntity[] devices = new DeviceEntity[deviceList.size()];
 		for (int i = 0; i < deviceList.size(); i++) {
 			devices[i] = deviceList.get(i);
 		}
 		return devices;
+
 	}
 
 	/**
-	 * sets which device to use
+	 * sets which of the connected devices to use
 	 * 
 	 * @param deviceValue
 	 *            the number or ID of the device to use
@@ -152,26 +156,6 @@ public class MusicResource {
 			}
 			throw new WebApplicationException("Device: '" + deviceValue + "' is not available", Status.CONFLICT);
 		}
-	}
-
-	/**
-	 * returns the currently played music
-	 * 
-	 * @return the currently played music
-	 */
-	@GET
-	@Path("currentSong")
-	@Produces(MediaType.APPLICATION_JSON)
-	public MusicEntity getCurrentSong() {
-		Map<String, String> currentSong = this.logic.getCurrentSong();
-		this.musicEntity = new MusicEntity();
-		if (currentSong != null && currentSong.containsKey(SpotifyConstants.ITEM_NAME)
-				&& currentSong.containsKey(SpotifyConstants.TYPE_ARTIST)) {
-			this.musicEntity = new MusicEntity(currentSong.get(SpotifyConstants.ITEM_NAME),
-					currentSong.get(SpotifyConstants.TYPE_ARTIST));
-			return this.musicEntity;
-		}
-		throw new WebApplicationException("No song is currently playing", Status.CONFLICT);
 	}
 
 	/**
@@ -317,35 +301,23 @@ public class MusicResource {
 	}
 
 	/**
-	 * controls the volume of the player
+	 * returns the currently played music
 	 * 
-	 * @param volumeValue
-	 *            allowed strings: mute, max, up, down, or a volume value between 0 and 100
-	 * @return a int from 0-100. This represent the Volume in percent.
+	 * @return the currently played music
 	 */
-	@POST
-	@Path("volume/{volumeValue}")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String setVolume(@PathParam("volumeValue") String volumeValue) {
-		try {
-			int volume = Integer.parseInt(volumeValue);
-			if (volume < 0 || volume > 100) {
-				throw new WebApplicationException("Incorrect volume value", Status.BAD_REQUEST);
-			}
-			this.logic.setVolume(volume);
-			return String.valueOf(volume);
-		} catch (NumberFormatException e) {
-			if (!volumeValue.equals("mute") && !volumeValue.equals("max") && !volumeValue.equals("up")
-					&& !volumeValue.equals("down")) {
-				throw new WebApplicationException("Incorrect volume command", Status.BAD_REQUEST);
-			}
-			int volume = this.logic.setVolume(volumeValue);
-			if (volume != -1) {
-				return String.valueOf(volume);
-			}
+	@GET
+	@Path("currentSong")
+	@Produces(MediaType.APPLICATION_JSON)
+	public MusicEntity getCurrentSong() {
+		Map<String, String> currentSong = this.logic.getCurrentSong();
+		this.musicEntity = new MusicEntity();
+		if (currentSong != null && currentSong.containsKey(SpotifyConstants.ITEM_NAME)
+				&& currentSong.containsKey(SpotifyConstants.TYPE_ARTIST)) {
+			this.musicEntity = new MusicEntity(currentSong.get(SpotifyConstants.ITEM_NAME),
+					currentSong.get(SpotifyConstants.TYPE_ARTIST));
+			return this.musicEntity;
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException("No song is currently playing", Status.CONFLICT);
 	}
 
 	/**
@@ -385,6 +357,38 @@ public class MusicResource {
 			return playlists;
 		}
 		throw new WebApplicationException("No Playlists are available", Status.NOT_FOUND);
+	}
+
+	/**
+	 * controls the volume of the player
+	 * 
+	 * @param volumeValue
+	 *            allowed strings: mute, max, up, down, or a volume value between 0 and 100
+	 * @return a int from 0-100. This represent the Volume in percent.
+	 */
+	@POST
+	@Path("volume/{volumeValue}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String setVolume(@PathParam("volumeValue") String volumeValue) {
+		try {
+			int volume = Integer.parseInt(volumeValue);
+			if (volume < 0 || volume > 100) {
+				throw new WebApplicationException("Incorrect volume value", Status.BAD_REQUEST);
+			}
+			this.logic.setVolume(volume);
+			return String.valueOf(volume);
+		} catch (NumberFormatException e) {
+			if (!volumeValue.equals("mute") && !volumeValue.equals("max") && !volumeValue.equals("up")
+					&& !volumeValue.equals("down")) {
+				throw new WebApplicationException("Incorrect volume command", Status.BAD_REQUEST);
+			}
+			int volume = this.logic.setVolume(volumeValue);
+			if (volume != -1) {
+				return String.valueOf(volume);
+			}
+		}
+		throw new WebApplicationException("Check player state", Status.CONFLICT);
 	}
 
 }
