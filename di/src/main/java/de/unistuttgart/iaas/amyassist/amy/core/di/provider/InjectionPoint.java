@@ -50,7 +50,7 @@ class InjectionPoint {
 
 	/**
 	 * 
-	 * @return the Description of the Service required by this InjetionPoint
+	 * @return the Description of the Service required by this InjectionPoint
 	 */
 	public ServiceDescription<?> getServiceDescription() {
 		return Util.serviceDescriptionFor(this.field);
