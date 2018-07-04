@@ -57,22 +57,18 @@ public class AGFParserTest {
 	 * @param type the node type
 	 */
 	public void bracketGroup(char brO, char brC, AGFNodeType type) {
-		AGFLexer lex = new AGFLexer();
 		//testinvalid group with missing ) bracket
-		List<AGFToken> list = lex.tokenize("set timer on " + brO + "x");
-		AGFParser parser = new AGFParser(list.iterator());
+		AGFParser parser = new AGFParser(new AGFLexer("set timer on " + brO + "x"));
 		
 		assertThrows(AGFParseException.class, () -> parser.parseWholeExpression());
 		
 		//test invalid or group with missing ) bracket
-		list = lex.tokenize("set timer on " + brO +  "wa|d");
-		AGFParser parser2 = new AGFParser(list.iterator());
+		AGFParser parser2 = new AGFParser(new AGFLexer("set timer on " + brO +  "wa|d"));
 		
 		assertThrows(AGFParseException.class, () -> parser2.parseWholeExpression());
 		
 		//test normal group without suffix 
-		list = lex.tokenize(brO + "wa|d" + brC + " bla");
-		AGFParser parser4 = new AGFParser(list.iterator());
+		AGFParser parser4 = new AGFParser(new AGFLexer(brO + "wa|d" + brC + " bla"));
 		AGFNode node = parser4.parseWholeExpression();
 		AGFNode orgroup = node.getChilds().get(0);
 		assertEquals(orgroup.getType(), type); 
@@ -80,8 +76,7 @@ public class AGFParserTest {
 		assertEquals(orgroup.getChilds().get(1).getType(), AGFNodeType.R);
 		
 		//test normal group with suffix
-		list = lex.tokenize(brO + "wa|d" + brC + " bla");
-		AGFParser parser5 = new AGFParser(list.iterator());
+		AGFParser parser5 = new AGFParser(new AGFLexer(brO + "wa|d" + brC + " bla"));
 		AGFNode node2 = parser5.parseWholeExpression();
 		AGFNode orgroup2 = node2.getChilds().get(0);
 		assertEquals(orgroup2.getType(), type); 
@@ -89,8 +84,7 @@ public class AGFParserTest {
 		assertEquals(orgroup2.getChilds().get(1).getType(), AGFNodeType.R);
 		
 		//test nested groups
-		list = lex.tokenize(brO + "wa"+brO+"a|b" + brC + "|d" + brC);
-		AGFParser parser6 = new AGFParser(list.iterator());
+		AGFParser parser6 = new AGFParser(new AGFLexer(brO + "wa"+brO+"a|b" + brC + "|d" + brC));
 		AGFNode nestedNode = parser6.parseWholeExpression();
 		AGFNode secndOr = nestedNode.getChilds().get(0).getChilds().get(0).getChilds().get(1);
 		assertEquals(secndOr.getType(), type);

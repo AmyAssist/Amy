@@ -40,29 +40,24 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class AGFLexerTest {
 	
-	/**
-	 * single lexer object
-	 */
-	AGFLexer lex;
-
-	/**
-	 * setup 
-	 */
-	@BeforeEach
-	public void setup() {
-		this.lex = new AGFLexer();
-	}
 	
+	private List<AGFToken> getListFromLexer(String toLex) {
+		AGFLexer lex = new AGFLexer(toLex);
+		List<AGFToken> result = new ArrayList<>();
+		lex.forEachRemaining(result::add);
+		return result;
+	}
+
 	/**
 	 * tests a single word and its content
 	 */
 	@Test
 	public void singleWord() {
-		List<AGFToken> toCheck = this.lex.tokenize("x");
+		List<AGFToken> toCheck = getListFromLexer("x");
 		assertThat(toCheck.get(0).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(0).content, equalTo("x"));
 		
-		toCheck = lex.tokenize("test");
+		toCheck = getListFromLexer("test");
 		assertThat(toCheck.get(0).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(0).content, equalTo("test"));
 
@@ -73,7 +68,7 @@ public class AGFLexerTest {
 	 */
 	@Test
 	public void words() {
-		List<AGFToken> toCheck = this.lex.tokenize("hello x y a b");
+		List<AGFToken> toCheck = getListFromLexer("hello x y a b");
 		assertThat(toCheck.get(0).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(1).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(2).type, equalTo(AGFTokenType.WORD));
@@ -92,7 +87,7 @@ public class AGFLexerTest {
 	 */
 	@Test
 	public void optionalOr() {
-		List<AGFToken> toCheck = this.lex.tokenize("hello [x|y]");
+		List<AGFToken> toCheck = getListFromLexer("hello [x|y]");
 		assertThat(toCheck.get(0).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(1).type, equalTo(AGFTokenType.OPENSBR));
 		assertThat(toCheck.get(2).type, equalTo(AGFTokenType.WORD));
@@ -101,7 +96,7 @@ public class AGFLexerTest {
 		assertThat(toCheck.get(5).type, equalTo(AGFTokenType.CLOSESBR));
 		
 		
-		toCheck = this.lex.tokenize("hello [x|y] [z]");
+		toCheck = getListFromLexer("hello [x|y] [z]");
 		assertThat(toCheck.get(6).type, equalTo(AGFTokenType.OPENSBR));
 		assertThat(toCheck.get(7).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(8).type, equalTo(AGFTokenType.CLOSESBR));
@@ -113,7 +108,7 @@ public class AGFLexerTest {
 	 */
 	@Test
 	public void orGroups() {
-		List<AGFToken> toCheck = this.lex.tokenize("hello (x|y)");
+		List<AGFToken> toCheck = getListFromLexer("hello (x|y)");
 		assertThat(toCheck.get(0).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(1).type, equalTo(AGFTokenType.OPENBR));
 		assertThat(toCheck.get(2).type, equalTo(AGFTokenType.WORD));
@@ -122,7 +117,7 @@ public class AGFLexerTest {
 		assertThat(toCheck.get(5).type, equalTo(AGFTokenType.CLOSEBR));
 		
 		
-		toCheck = this.lex.tokenize("hello [x|y] (z)");
+		toCheck = getListFromLexer("hello [x|y] (z)");
 		assertThat(toCheck.get(6).type, equalTo(AGFTokenType.OPENBR));
 		assertThat(toCheck.get(7).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(8).type, equalTo(AGFTokenType.CLOSEBR));
@@ -134,7 +129,7 @@ public class AGFLexerTest {
 	 */
 	@Test
 	public void rules() {
-		List<AGFToken> toCheck = this.lex.tokenize("#");
+		List<AGFToken> toCheck = getListFromLexer("#");
 		assertThat(toCheck.get(0).type, equalTo(AGFTokenType.RULE));
 		assertThat(toCheck.get(0).content, equalTo("#"));
 
@@ -168,7 +163,7 @@ public class AGFLexerTest {
 		ascii.remove(32);
 		
 		for(String s : ascii) {
-			assertThrows(AGFLexerException.class, () -> this.lex.tokenize(s));
+			assertThrows(AGFLexerException.class, () -> getListFromLexer(s));
 		}
 	}
 	

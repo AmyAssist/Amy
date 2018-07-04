@@ -23,68 +23,83 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
- * AGF lexer implementation
+ * agf lexer class
  * 
- * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.IAGFLexer
+ * this class tokenizes the content of @Grammar annotations
+ * this means it categorizes the content in different kinds of AGF tokens
  * 
  * @author Felix Burk
  */
-public class AGFLexer implements IAGFLexer {
+public class AGFLexer implements Iterator<AGFToken> {
+	
+	private final String mToLex;
+	private int mIndex = 0;
+	
+	/**
+	 * constructor 
+	 * 
+	 * @param toLex the string to lex
+	 */
+	public AGFLexer(String toLex) {
+		this.mIndex = 0;
+		this.mToLex = toLex.toLowerCase();
+	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.IAGFLexer#tokenize(java.lang.String)
+	 * @see java.util.Iterator#hasNext()
 	 */
 	@Override
-	public List<AGFToken> tokenize(String toTokenize) {
-		List<AGFToken> result = new ArrayList<>();
-		
-		int i = 0;
-		while(i < toTokenize.length()) {
-			char c = toTokenize.charAt(i);
+	public boolean hasNext() {
+		return this.mIndex < this.mToLex.length();
+	}
+
+	/**
+	 * @see java.util.Iterator#next()
+	 */
+	@Override
+	public AGFToken next() {
+		if(hasNext()) {
+    		StringBuilder currentWord = new StringBuilder();
+    		
+			char c = this.mToLex.charAt(this.mIndex++);
 			
 			switch(c) {
     			case '(':
-    				result.add(new AGFToken(AGFTokenType.OPENBR, "("));
-    				break;
+    				return new AGFToken(AGFTokenType.OPENBR, "(");
     			case ')':
-    				result.add(new AGFToken(AGFTokenType.CLOSEBR, ")"));
-    				break;
+    				return new AGFToken(AGFTokenType.CLOSEBR, ")");
     			case '|':
-    				result.add(new AGFToken(AGFTokenType.OR, "|"));
-    				break;
+    				return new AGFToken(AGFTokenType.OR, "|");
     			case '[':
-    				result.add(new AGFToken(AGFTokenType.OPENSBR, "["));
-    				break;
+    				return new AGFToken(AGFTokenType.OPENSBR, "[");
     			case ']':
-    				result.add(new AGFToken(AGFTokenType.CLOSESBR, "]"));
-    				break;
+    				return new AGFToken(AGFTokenType.CLOSESBR, "]");
     			case '#':
-    				result.add(new AGFToken(AGFTokenType.RULE, "#"));
-    				break;
-    			default: 
-    				//only allow normal SPACE codepoint 32, U+0020
-    				if(c == 32) {
-    					break;
-    				}else if(Character.isLetter(c)) {
-    					StringBuilder builder = new StringBuilder();
-    					while(i < toTokenize.length() && Character.isLetter(toTokenize.charAt(i))) {
-    						builder.append(toTokenize.charAt(i));
-    						i++;
-    					}
-    					result.add(new AGFToken(AGFTokenType.WORD, builder.toString()));
-    					i--;
-    				}else {
-    					throw new AGFLexerException("wrong character " + c);
+    				return new AGFToken(AGFTokenType.RULE, "#");
+    			//only allow normal SPACE codepoint 32, U+0020
+    			case 32: 
+    				return this.next();
+				default:
+					if(Character.isLetter(c)) {
+						currentWord.append(c);
+						while(hasNext() && Character.isLetter(this.mToLex.charAt(this.mIndex))) {
+							currentWord.append(this.mToLex.charAt(this.mIndex));
+							this.mIndex++;
+						}
+					}
+					if(!currentWord.toString().isEmpty()) {
+						return new AGFToken(AGFTokenType.WORD, currentWord.toString());
     				}
-    				break;
-			}
-			i++;
+    				throw new AGFLexerException("wrong character " + c);
+    				
+			} 		
 		}
-		return result;
+		throw new NoSuchElementException("thrown by AGFLexer");
+
 	}
 
 
