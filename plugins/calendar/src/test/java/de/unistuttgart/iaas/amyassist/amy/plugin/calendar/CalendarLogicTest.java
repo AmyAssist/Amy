@@ -23,10 +23,49 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import com.google.api.client.util.DateTime;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+
 /**
- * TODO: Description
- * @author
+ * Tests for the CalendarLogic class
+ * 
+ * @author Patrick Gebhardt, Florian Bauer
  */
+@ExtendWith(FrameworkExtension.class)
 public class CalendarLogicTest {
+
+	@Reference
+	private TestFramework framework;
+
+	private CalendarLogic callog;
+
+	/**
+	 * Initializes the class variables before each test
+	 */
+	@BeforeEach
+	public void setup() {
+		this.callog = this.framework.mockService(CalendarLogic.class);
+	}
+
+	/**
+	 * Testing the eventCalc method
+	 */
+	@Test
+	public void testEventCalc() {
+		Event event = new Event();
+		event.setSummary("Testevent");
+		DateTime startDateTime = new DateTime("2015-05-28T09:00:00+02:00");
+		EventDateTime start = new EventDateTime().setDateTime(startDateTime).setTimeZone("Germany/Berlin");
+		event.setStart(start);
+	}
 
 }

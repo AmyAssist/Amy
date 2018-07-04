@@ -283,5 +283,4 @@ public class CalendarLogic {
 		}
 		return i + ordinals[i % 10];
 	}
-
 }
