@@ -161,25 +161,25 @@ public class CalendarLogic {
 				return "No upcoming events found.";
 			}
 			for (Event event : items) {
-				System.out.println(items.size());
-				System.out.println("0" + now.toString().substring(0, 10));
-				System.out.println(event.getStart().getDateTime().toString().substring(0, 10));
-				if (event.getStart().getDateTime().toString().substring(0, 10)
-						.equals(now.toString().substring(0, 10))) {
-					System.out.println("1" + now.toString().substring(0, 10));
-					System.out.println(event.getStart().getDateTime().toString().substring(0, 10));
-					eventCalc(now, event);
-
-				} else if (event.getStart().getDate().toString().substring(0, 10)
-						.equals(now.toString().substring(0, 10))) {
-					System.out.println("2" + now.toString().substring(0, 10));
-					System.out.println(event.getStart().getDate().toString().substring(0, 10));
-					eventCalc(now, event);
+				String eventdatetime = "";
+				String eventdate = "";
+				if (event.getStart().getDateTime() != null) {
+					eventdatetime = event.getStart().getDateTime().toString().substring(0, 10);
+				} else if (event.getStart().getDate() != null) {
+					eventdate = event.getStart().getDate().toString().substring(0, 10);
+				}
+				if (eventdatetime.equals(now.toString().substring(0, 10))) {
+					DateTime start = event.getStart().getDateTime();
+					eventCalc(start, event);
+				} else if (eventdate.equals(now.toString().substring(0, 10))) {
+					eventCalc(null, event);
 				}
 			}
-
+			if (this.eventList.isEmpty()) {
+				return "There are no events today.";
+			}
 			return "Upcoming events\n" + String.join("\n", this.eventList);
-		} catch (Exception e) {
+		} catch (IOException e) {
 			return "Sorry, I am not able to get your events.";
 		}
 	}
