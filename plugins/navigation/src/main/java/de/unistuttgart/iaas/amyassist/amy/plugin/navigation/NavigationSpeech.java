@@ -23,6 +23,15 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.ReadableInstant;
+
+import com.google.maps.model.TravelMode;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
@@ -30,13 +39,39 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 /**
  * This class handle the speech input for the navigation plugin
+ * 
  * @author Lars Buttgereit
  */
 @Service
-@SpeechCommand("navigation")
+@SpeechCommand("navigate")
 public class NavigationSpeech {
-	
+
 	@Reference
 	private DirectionApiLogic logic;
+
+	// TODO replace work with registry entries
+	@Grammar("be at work at # oh #")
+	public String goToAt(String... strings) {
+		ReadableInstant time = this.logic.whenIHaveToGo("Friolzheim", "Universität Stuttgart", TravelMode.DRIVING, formatTimes(Integer.parseInt(strings[6]), Integer.parseInt(strings[4])));
+		if (time != null) {
+			return String.valueOf(time.get(DateTimeFieldType.hourOfDay())).concat(":").concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
+		}
+		return "You are to late";
+	}
 	
+	@Grammar("be at work at # oh # by ( bus | train | transit )")
+	public String GoToAtBy(String... strings) {
+		ReadableInstant time = this.logic.whenIHaveToGo("Friolzheim", "Universität Stuttgart", TravelMode.TRANSIT, formatTimes(Integer.parseInt(strings[6]), Integer.parseInt(strings[4])));
+		if (time != null) {
+			return String.valueOf(time.get(DateTimeFieldType.hourOfDay())).concat(":").concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
+		}
+		return "You are to late";
+	}
+	
+	private DateTime formatTimes(int min, int hour) {
+		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+		calendar.set(Calendar.MINUTE, min);
+		calendar.set(Calendar.HOUR_OF_DAY, hour);
+		return new DateTime(calendar.getTime());
+	}
 }

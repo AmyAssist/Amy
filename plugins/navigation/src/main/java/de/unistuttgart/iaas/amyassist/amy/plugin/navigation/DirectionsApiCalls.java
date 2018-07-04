@@ -33,6 +33,8 @@ import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.TrafficModel;
+import com.google.maps.model.TransitMode;
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
@@ -111,7 +113,7 @@ public class DirectionsApiCalls {
 	public DirectionsRoute[] fromToWithDepartureTime(String origin, String destination, TravelMode mode,
 			ReadableInstant departureTime) {
 		return errorHandling(new DirectionsApiRequest(this.context).origin(origin).destination(destination).mode(mode)
-				.departureTime(departureTime).alternatives(true));
+				.departureTime(departureTime).alternatives(true).trafficModel(TrafficModel.BEST_GUESS));
 	}
 
 	/**
