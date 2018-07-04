@@ -34,7 +34,6 @@ import com.google.maps.GeoApiContext;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TrafficModel;
-import com.google.maps.model.TransitMode;
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
@@ -118,7 +117,9 @@ public class DirectionsApiCalls {
 
 	/**
 	 * handle the thrown exception from the request
-	 * @param request to check for exceptions
+	 * 
+	 * @param request
+	 *            to check for exceptions
 	 * @return the result from the call or a empty array
 	 */
 	private DirectionsRoute[] errorHandling(DirectionsApiRequest request) {

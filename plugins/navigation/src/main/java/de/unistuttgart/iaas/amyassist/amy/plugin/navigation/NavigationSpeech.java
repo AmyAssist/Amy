@@ -33,7 +33,7 @@ import org.joda.time.ReadableInstant;
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotatiFon.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
@@ -52,22 +52,33 @@ public class NavigationSpeech {
 	// TODO replace work with registry entries
 	@Grammar("be at work at # oh #")
 	public String goToAt(String... strings) {
-		ReadableInstant time = this.logic.whenIHaveToGo("Friolzheim", "Universität Stuttgart", TravelMode.DRIVING, formatTimes(Integer.parseInt(strings[6]), Integer.parseInt(strings[4])));
+		ReadableInstant time = this.logic.whenIHaveToGo("Friolzheim", "Universität Stuttgart", TravelMode.DRIVING,
+				formatTimes(Integer.parseInt(strings[6]), Integer.parseInt(strings[4])));
 		if (time != null) {
-			return String.valueOf(time.get(DateTimeFieldType.hourOfDay())).concat(":").concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
+			return String.valueOf(time.get(DateTimeFieldType.hourOfDay())).concat(":")
+					.concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
 		}
 		return "You are to late";
 	}
-	
+
 	@Grammar("be at work at # oh # by ( bus | train | transit )")
 	public String GoToAtBy(String... strings) {
-		ReadableInstant time = this.logic.whenIHaveToGo("Friolzheim", "Universität Stuttgart", TravelMode.TRANSIT, formatTimes(Integer.parseInt(strings[6]), Integer.parseInt(strings[4])));
+		ReadableInstant time = this.logic.whenIHaveToGo("Friolzheim", "Universität Stuttgart", TravelMode.TRANSIT,
+				formatTimes(Integer.parseInt(strings[6]), Integer.parseInt(strings[4])));
 		if (time != null) {
-			return String.valueOf(time.get(DateTimeFieldType.hourOfDay())).concat(":").concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
+			return String.valueOf(time.get(DateTimeFieldType.hourOfDay())).concat(":")
+					.concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
 		}
 		return "You are to late";
 	}
-	
+
+	@Grammar("best route from")
+	public String bestRouteSM(String... strings) {
+		BestTransportResult result = this.logic.getBestTransportInTime("Stuttgart", "Muinch",
+				DateTime.now().plusMinutes(10));
+		return result.getMode().toString() + result.getRoute().arrivalTime;
+	}
+
 	private DateTime formatTimes(int min, int hour) {
 		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
 		calendar.set(Calendar.MINUTE, min);

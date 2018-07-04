@@ -23,11 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
-import java.util.Calendar;
+import java.util.EnumMap;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.DateTimeZone;
 import org.joda.time.ReadableInstant;
 
 import com.google.maps.model.DirectionsLeg;
@@ -67,7 +65,7 @@ public class DirectionApiLogic {
 	 *            driving, transit, etc
 	 * @param arrivalTime
 	 *            time you plan to arrive at the destination
-	 * @return a ReadableInstnat with the latest start time
+	 * @return a ReadableInstnat with the latest start time, can be null
 	 */
 	public ReadableInstant whenIHaveToGo(String origin, String destination, TravelMode mode, DateTime arrivalTime) {
 		DirectionsRoute[] routes = this.calls.fromToWithDepartureTime(origin, destination, mode, DateTime.now());
@@ -95,11 +93,49 @@ public class DirectionApiLogic {
 		return null;
 	}
 
+	public BestTransportResult getBestTransportInTime(String origin, String destination,
+			ReadableInstant departureTime) {
+		EnumMap<TravelMode, DirectionsLeg> routesOfTravelModes = new EnumMap<>(TravelMode.class);
+		routesOfTravelModes.put(TravelMode.DRIVING, findBestRoute(
+				this.calls.fromToWithDepartureTime(origin, destination, TravelMode.DRIVING, departureTime), true));
+		routesOfTravelModes.put(TravelMode.TRANSIT, findBestArrivalTime(
+				this.calls.fromToWithDepartureTime(origin, destination, TravelMode.TRANSIT, departureTime)));
+		routesOfTravelModes.put(TravelMode.BICYCLING, findBestRoute(
+				this.calls.fromToWithDepartureTime(origin, destination, TravelMode.BICYCLING, departureTime), false));
+		long bestTime = Long.MAX_VALUE;
+		TravelMode bestTravelMode = null;
+		long time = new DateTime(departureTime)
+				.plusSeconds(Math.toIntExact(routesOfTravelModes.get(TravelMode.DRIVING).durationInTraffic.inSeconds))
+				.getMillis();
+		if (routesOfTravelModes.get(TravelMode.DRIVING) != null && bestTime > time) {
+			bestTravelMode = TravelMode.DRIVING;
+			bestTime = time;
+		}
+		time = routesOfTravelModes.get(TravelMode.TRANSIT).arrivalTime.getMillis();
+		if (routesOfTravelModes.get(TravelMode.TRANSIT) != null && bestTime > time) {
+			bestTravelMode = TravelMode.TRANSIT;
+			bestTime = time;
+		}
+		time = new DateTime(departureTime)
+				.plusSeconds(Math.toIntExact(routesOfTravelModes.get(TravelMode.BICYCLING).duration.inSeconds))
+				.getMillis();
+		if (routesOfTravelModes.get(TravelMode.BICYCLING) != null && bestTime > time) {
+			bestTravelMode = TravelMode.BICYCLING;
+		}
+		if (bestTravelMode != null) {
+			return new BestTransportResult(bestTravelMode, routesOfTravelModes.get(bestTravelMode));
+		}
+		return null;
+	}
+
 	/**
 	 * find the route with the shortest time
-	 * @param routes result from the call
-	 * @param withTraffic true if driving by car, else false
-	 * @return the shortest route
+	 * 
+	 * @param routes
+	 *            result from the call
+	 * @param withTraffic
+	 *            true if driving by car, else false
+	 * @return the shortest route, can be null
 	 */
 	private DirectionsLeg findBestRoute(DirectionsRoute[] routes, boolean withTraffic) {
 		long shortestTime = Long.MAX_VALUE;
@@ -112,6 +148,28 @@ public class DirectionApiLogic {
 						shortestRoute = leg;
 					} else if (leg.duration.inSeconds < shortestTime) {
 						shortestTime = leg.duration.inSeconds;
+						shortestRoute = leg;
+					}
+				}
+			}
+		}
+		return shortestRoute;
+	}
+
+	/**
+	 * find the best arrival time. Use only for results from TransportMode.TRANSIT
+	 * 
+	 * @param routes
+	 * @return
+	 */
+	private DirectionsLeg findBestArrivalTime(DirectionsRoute[] routes) {
+		long shortestTime = Long.MAX_VALUE;
+		DirectionsLeg shortestRoute = null;
+		if (routes != null) {
+			for (DirectionsRoute route : routes) {
+				for (DirectionsLeg leg : route.legs) {
+					if (leg.arrivalTime != null && leg.arrivalTime.getMillis() < shortestTime) {
+						shortestTime = leg.arrivalTime.getMillis();
 						shortestRoute = leg;
 					}
 				}
