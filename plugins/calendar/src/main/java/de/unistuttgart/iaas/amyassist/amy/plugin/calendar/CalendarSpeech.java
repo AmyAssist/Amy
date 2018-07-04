@@ -28,7 +28,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 /**
- * TODO: Description
+ * This is the speech class, which contains the commands for the calendar
  * 
  * @author Patrick Gebhardt, Florian Bauer
  */

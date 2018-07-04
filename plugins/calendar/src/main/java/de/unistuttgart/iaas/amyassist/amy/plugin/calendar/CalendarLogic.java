@@ -42,7 +42,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.store.MemoryDataStoreFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
@@ -51,6 +51,7 @@ import com.google.api.services.calendar.model.Events;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
  * This class is for the Calendar Authetification and Logic, parts of the Code are from
@@ -71,6 +72,8 @@ public class CalendarLogic {
 
 	@Reference
 	private Properties configuration;
+	@Reference
+	private Environment environment;
 
 	private Calendar service;
 
@@ -88,15 +91,16 @@ public class CalendarLogic {
 	 */
 	private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
 		// Load client secrets.
-		// InputStream in = CalendarQuickstart.class.getResourceAsStream(CLIENT_SECRET_DIR);
 		InputStream test = new ByteArrayInputStream(this.configuration.getProperty("JSON").getBytes());
 
 		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(test));
 
 		// Build flow and trigger user authorization request.
 		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
-				clientSecrets, SCOPES).setDataStoreFactory(new MemoryDataStoreFactory()).setAccessType("offline")
-						.build();
+				clientSecrets, SCOPES)
+						.setDataStoreFactory(new FileDataStoreFactory(this.environment.getWorkingDirectory()
+								.resolve("temp/calendarauth").toAbsolutePath().toFile()))
+						.setAccessType("offline").build();
 		return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
 	}
 
