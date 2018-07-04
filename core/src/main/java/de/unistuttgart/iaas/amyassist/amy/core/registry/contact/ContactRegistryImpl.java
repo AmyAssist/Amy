@@ -2,16 +2,16 @@ package de.unistuttgart.iaas.amyassist.amy.core.registry.contact;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.IContactRegistry;
-import de.unistuttgart.iaas.amyassist.amy.core.registry.Registry;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
+import de.unistuttgart.iaas.amyassist.amy.core.registry.AbstractRegistry;
 
 /**
  * A contact registry
  *
  * @author Benno Krauß
  */
-@Service(IContactRegistry.class)
-public class ContactRegistry extends Registry<Contact> implements IContactRegistry {
+@Service(ContactRegistry.class)
+public class ContactRegistryImpl extends AbstractRegistry<Contact> implements ContactRegistry {
 
     @Override
     protected String getPersistenceUnitName() {

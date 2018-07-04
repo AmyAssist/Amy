@@ -25,7 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.util.Properties;
 
-import de.unistuttgart.iaas.amyassist.amy.core.registry.contact.ContactRegistry;
+import de.unistuttgart.iaas.amyassist.amy.core.registry.contact.ContactRegistryImpl;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
@@ -65,7 +65,7 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 		di.register(DatabaseStorage.class);
 		di.register(PersistenceService.class);
 		di.register(NaturalLanaguageInputHandlerService.class);
-		di.register(ContactRegistry.class);
+		di.register(ContactRegistryImpl.class);
 	}
 
 }

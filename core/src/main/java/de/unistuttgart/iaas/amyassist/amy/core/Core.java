@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import de.unistuttgart.iaas.amyassist.amy.core.registry.contact.ContactRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

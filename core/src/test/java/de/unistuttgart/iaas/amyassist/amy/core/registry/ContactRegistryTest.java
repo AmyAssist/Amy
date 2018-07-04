@@ -1,15 +1,14 @@
 package de.unistuttgart.iaas.amyassist.amy.core.registry;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
-import de.unistuttgart.iaas.amyassist.amy.core.registry.contact.ContactRegistry;
-import org.junit.jupiter.api.Test;
+import de.unistuttgart.iaas.amyassist.amy.core.registry.contact.ContactRegistryImpl;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 public class ContactRegistryTest {
 
-    ContactRegistry cr = new ContactRegistry();
+    ContactRegistryImpl cr = new ContactRegistryImpl();
 
     //@Test
     public void testSingleContact() {

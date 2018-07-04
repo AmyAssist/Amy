@@ -24,7 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.IContactRegistry;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -53,7 +53,7 @@ public class HelloWorldImpl implements HelloWorldService {
 	protected IStorage storage;
 
 	@Reference
-	private IContactRegistry contacts;
+	private ContactRegistry contacts;
 
 	@Override
 	public String helloWorld() {

@@ -20,10 +20,10 @@ import java.util.function.Function;
  *
  * @author Benno Krauß
  */
-public abstract class Registry<T> implements IRegistry<T> {
+public abstract class AbstractRegistry<T> implements IRegistry<T> {
 
     @Reference
-    Logger log;
+    private Logger log;
 
     @Reference
     protected Persistence persistence;
@@ -44,7 +44,7 @@ public abstract class Registry<T> implements IRegistry<T> {
             Type tType = ((ParameterizedType)superClass).getActualTypeArguments()[0];
             return (Class<T>)Class.forName(tType.getTypeName());
         } catch (ClassNotFoundException | ClassCastException e) {
-            log.error("Fatal error in Registry. Unable to determine the generic class", e);
+            log.error("Fatal error in AbstractRegistry. Unable to determine the generic class", e);
             return null;
         }
     }
