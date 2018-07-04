@@ -4,9 +4,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.IRegistry;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -18,7 +20,7 @@ import java.util.function.Function;
  *
  * @author Benno Krauß
  */
-public abstract class Registry<T> {
+public abstract class Registry<T> implements IRegistry<T> {
 
     @Reference
     Logger log;
@@ -52,7 +54,7 @@ public abstract class Registry<T> {
      */
     @PostConstruct
     private void init() {
-        Class tClass = getGenericType();
+        Class<T> tClass = getGenericType();
 
         this.persistence.register(tClass);
         this.entityManager = persistence.getEntityManager(getPersistenceUnitName());
@@ -82,24 +84,33 @@ public abstract class Registry<T> {
     }
 
     private void transaction(TransactionBlock block) {
-        this.entityManager.getTransaction().begin();
+        entityManager.getTransaction().begin();
         block.perform();
-        this.entityManager.getTransaction().commit();
+        entityManager.getTransaction().commit();
     }
 
     /**
-     * Persist an entity
+     * Persist an entity. The primary key will be set after invoking this method
      * @param t
      */
     public void save(T t) {
-        transaction(() -> entityManager.merge(t));
+        transaction(() -> entityManager.persist(t));
+        transaction(() -> entityManager.detach(t));
     }
 
     /**
      * Delete an entity
-     * @param t
+     * @param key the primary key of the entity to be removed
      */
-    public void delete(T t) {
-        transaction(() -> this.entityManager.remove(t));
+    public void deleteById(@Nonnull Object key) {
+
+        if (key.getClass().isAnnotationPresent(Entity.class)) {
+            throw new RuntimeException("The deleteById method takes the primary key as a parameter, not the entity itself");
+        }
+
+        transaction(() -> {
+            T entity = getById(key);
+            entityManager.remove(entity);
+        });
     }
 }

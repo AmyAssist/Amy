@@ -29,7 +29,7 @@ public class ContactRegistryTest {
         Contact c2 = cr.getById(c.getId());
         assertThat(c2, equalTo(c));
 
-        cr.delete(c);
+        cr.deleteById(c.getId());
 
         Contact c3 = cr.getById(id);
         assertThat(c3, is(nullValue()));

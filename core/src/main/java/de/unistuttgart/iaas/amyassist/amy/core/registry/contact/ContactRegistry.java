@@ -42,8 +42,8 @@ public class ContactRegistry extends Registry<Contact> implements IContactRegist
         Contact personA2 = this.getById(personA.getId());
         assertTrue(personA.equals(personA2));
 
-        this.delete(personA);
-        this.delete(personB);
+        this.deleteById(personA.getId());
+        this.deleteById(personB.getId());
 
         Contact c3 = this.getById(personAId);
         assertTrue(c3 == null);
