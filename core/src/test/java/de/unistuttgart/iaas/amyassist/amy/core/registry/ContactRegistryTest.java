@@ -1,6 +1,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.registry;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
+import de.unistuttgart.iaas.amyassist.amy.core.registry.contact.ContactImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.registry.contact.ContactRegistryImpl;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -12,7 +13,7 @@ public class ContactRegistryTest {
 
     //@Test
     public void testSingleContact() {
-        Contact c = new Contact();
+        Contact c = new ContactImpl();
         c.setEmail("a@b.c");
         c.setFirstName("Max");
         c.setLastName("Mustermann");

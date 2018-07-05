@@ -5,6 +5,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
 import de.unistuttgart.iaas.amyassist.amy.core.registry.AbstractRegistry;
 
+import javax.annotation.Nonnull;
+
 /**
  * A contact registry
  *
@@ -18,14 +20,20 @@ public class ContactRegistryImpl extends AbstractRegistry<Contact> implements Co
         return "ContactRegistry";
     }
 
+    @Nonnull
+    @Override
+    protected Class<? extends Contact> getEntityClass() {
+        return ContactImpl.class;
+    }
+
     public void testMyself() {
-        Contact personA = new Contact();
+        Contact personA = new ContactImpl();
         personA.setEmail("a@b.c");
         personA.setFirstName("Max");
         personA.setLastName("Mustermann");
         personA.setImportant(true);
 
-        Contact personB = new Contact();
+        Contact personB = new ContactImpl();
         personB.setEmail("b@b.com");
         personB.setFirstName("Alice");
         personB.setLastName("Musterfrau");

@@ -86,7 +86,7 @@ public class HelloWorldImpl implements HelloWorldService {
 
 	@Override
 	public String demonstrateContactRegistry() {
-		List<Contact> contactsList = contacts.getAll();
+		List<? extends Contact> contactsList = contacts.getAll();
 		StringBuilder b = new StringBuilder("All contacts:\n");
 		for (Contact c: contactsList) {
 			b.append(c.getFirstName()).append(" ").append(c.getLastName()).append(" ")

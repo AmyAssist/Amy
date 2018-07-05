@@ -2,7 +2,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.registry;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.IRegistry;
 import org.slf4j.Logger;
@@ -10,10 +9,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nonnull;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Abstract persistent registry
@@ -33,28 +29,18 @@ public abstract class AbstractRegistry<T> implements IRegistry<T> {
     protected abstract String getPersistenceUnitName();
 
     /**
-     * Get generic Type T at runtime.
-     * This is a safe operation because this class is abstract and only subclasses can be instantiated
-     * @return The type T of this class
+     * Get entity class at runtime
+     * Can be a subclass of T
+     * @return The type of the concrete entity class
      */
-    @SuppressWarnings("unchecked")
-    private @Nonnull Class<T> getGenericType() {
-        try {
-            Type superClass = this.getClass().getGenericSuperclass();
-            Type tType = ((ParameterizedType)superClass).getActualTypeArguments()[0];
-            return (Class<T>)Class.forName(tType.getTypeName());
-        } catch (ClassNotFoundException | ClassCastException e) {
-            log.error("Fatal error in AbstractRegistry. Unable to determine the generic class", e);
-            return null;
-        }
-    }
+    protected abstract @Nonnull Class<? extends T> getEntityClass();
 
     /**
      * Basically a constructor. But the DI-way
      */
     @PostConstruct
     private void init() {
-        Class<T> tClass = getGenericType();
+        Class<? extends T> tClass = getEntityClass();
 
         this.persistence.register(tClass);
         this.entityManager = persistence.getEntityManager(getPersistenceUnitName());
@@ -64,8 +50,8 @@ public abstract class AbstractRegistry<T> implements IRegistry<T> {
      * Get all entities of this registry
      * @return all entities
      */
-    public List<T> getAll() {
-        Class<T> type = getGenericType();
+    public List<? extends T> getAll() {
+        Class<? extends T> type = getEntityClass();
         return this.entityManager.createQuery("SELECT x FROM " + type.getName() + " x", type).getResultList();
     }
 
@@ -75,7 +61,7 @@ public abstract class AbstractRegistry<T> implements IRegistry<T> {
      * @return the entity instance with this id
      */
     public T getById(Object id) {
-        return this.entityManager.find(getGenericType(), id);
+        return this.entityManager.find(getEntityClass(), id);
     }
 
     @FunctionalInterface
