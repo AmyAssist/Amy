@@ -1,0 +1,22 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>amy-plugin-email</artifactId>
+	<name>Amy plugin email</name>
+	<description>The Amy email plugin</description>
+	<parent>
+		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<artifactId>amy-plugin</artifactId>
+		<version>0.3.0-Snapshot</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+		<dependency>
+    		<groupId>javax.mail</groupId>
+    		<artifactId>mail</artifactId>
+    		<version>1.4</version>
+		</dependency>
+	</dependencies>
+</project>
