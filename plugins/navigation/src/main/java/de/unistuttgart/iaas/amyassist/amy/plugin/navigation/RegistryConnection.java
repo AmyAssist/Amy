@@ -23,41 +23,28 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
-import com.google.maps.model.DirectionsRoute;
-import com.google.maps.model.TravelMode;
+import java.util.HashMap;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * This class is needed to store the best route and the transport type
+ * get and set the data to the registry. At the moment with hardcoded data while registry is not avaiable
  * @author Lars Buttgereit
  */
-public class BestTransportResult {
-	private TravelMode mode;
-	private DirectionsRoute route;
+@Service
+public class RegistryConnection {
 	
-	/**
-	 * constructor
-	 * @param mode
-	 * @param route
-	 */
-	public BestTransportResult(TravelMode mode, DirectionsRoute route) {
-		this.mode = mode;
-		this.route = route;
-	}
-
-	/**
-	 * Get's {@link #mode mode}
-	 * @return  mode
-	 */
-	public TravelMode getMode() {
-		return this.mode;
-	}
-
-	/**
-	 * Get's {@link #route route}
-	 * @return  route
-	 */
-	public DirectionsRoute getRoute() {
-		return this.route;
+	HashMap<String, String> data = new HashMap<>();
+	
+	@PostConstruct
+	public void init() {
+		this.data.put("home", "Pforzheim");
+		this.data.put("work", "Stuttgart Universitätstraße 38");
+		this.data.put("mother", "München");
 	}
 	
+	public String getAdresse(String thing) {
+		return this.data.get(thing);
+	}
 }

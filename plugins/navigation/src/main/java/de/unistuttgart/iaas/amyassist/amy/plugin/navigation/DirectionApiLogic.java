@@ -46,15 +46,10 @@ public class DirectionApiLogic {
 	@Reference
 	private DirectionsApiCalls calls;
 
-	/*
-	 * public DirectionsRoute fromTo() { DirectionsRoute[] routes = this.calls.fromToWithDepartureTime("Friolzheim",
-	 * "Universität Stuttgart", getTravelMode("Car"), DateTime.now()); ReadableInstant minTime = null;
-	 * for(DirectionsRoute route : routes) { for(DirectionsLeg leg : route.legs) { if(minTime == null) { minTime =
-	 * leg.arrivalTime; } else if(minTime.) } }
-	 * 
-	 * }
-	 */
-	// public
+	public DirectionsRoute fromTo(String origin, String destination, TravelMode mode) {
+		DirectionsRoute[] routes = this.calls.fromTo(origin, destination, mode);
+		return findBestRoute(routes, false);
+	}
 
 	/**
 	 * this method says when you have to go from one place to another place with the planned time
@@ -69,21 +64,22 @@ public class DirectionApiLogic {
 	 */
 	public ReadableInstant whenIHaveToGo(String origin, String destination, TravelMode mode, DateTime arrivalTime) {
 		DirectionsRoute[] routes = this.calls.fromToWithDepartureTime(origin, destination, mode, DateTime.now());
-		DirectionsLeg leg;
+		DirectionsRoute route;
 		switch (mode) {
 		case DRIVING:
-			leg = findBestRoute(routes, true);
-			if (leg != null && arrivalTime.getMillis() > DateTime.now()
-					.plusSeconds(Math.toIntExact(leg.durationInTraffic.inSeconds)).getMillis()) {
-				return new DateTime(
-						arrivalTime.minusSeconds(Math.toIntExact(leg.durationInTraffic.inSeconds)).getMillis());
+			route = findBestRoute(routes, true);
+			if (route != null && arrivalTime.getMillis() > DateTime.now()
+					.plusSeconds(Math.toIntExact(route.legs[0].durationInTraffic.inSeconds)).getMillis()) {
+				return new DateTime(arrivalTime.minusSeconds(Math.toIntExact(route.legs[0].durationInTraffic.inSeconds))
+						.getMillis());
 			}
 			break;
 		case TRANSIT:
-			leg = findBestRoute(routes, false);
-			if (leg != null && arrivalTime.getMillis() > DateTime.now()
-					.plusSeconds(Math.toIntExact(leg.duration.inSeconds)).getMillis()) {
-				return new DateTime(arrivalTime.minusSeconds(Math.toIntExact(leg.duration.inSeconds)).getMillis());
+			route = findBestRoute(routes, false);
+			if (route != null && arrivalTime.getMillis() > DateTime.now()
+					.plusSeconds(Math.toIntExact(route.legs[0].duration.inSeconds)).getMillis()) {
+				return new DateTime(
+						arrivalTime.minusSeconds(Math.toIntExact(route.legs[0].duration.inSeconds)).getMillis());
 			}
 			break;
 		default:
@@ -95,7 +91,7 @@ public class DirectionApiLogic {
 
 	public BestTransportResult getBestTransportInTime(String origin, String destination,
 			ReadableInstant departureTime) {
-		EnumMap<TravelMode, DirectionsLeg> routesOfTravelModes = new EnumMap<>(TravelMode.class);
+		EnumMap<TravelMode, DirectionsRoute> routesOfTravelModes = new EnumMap<>(TravelMode.class);
 		routesOfTravelModes.put(TravelMode.DRIVING, findBestRoute(
 				this.calls.fromToWithDepartureTime(origin, destination, TravelMode.DRIVING, departureTime), true));
 		routesOfTravelModes.put(TravelMode.TRANSIT, findBestArrivalTime(
@@ -104,23 +100,32 @@ public class DirectionApiLogic {
 				this.calls.fromToWithDepartureTime(origin, destination, TravelMode.BICYCLING, departureTime), false));
 		long bestTime = Long.MAX_VALUE;
 		TravelMode bestTravelMode = null;
-		long time = new DateTime(departureTime)
-				.plusSeconds(Math.toIntExact(routesOfTravelModes.get(TravelMode.DRIVING).durationInTraffic.inSeconds))
-				.getMillis();
-		if (routesOfTravelModes.get(TravelMode.DRIVING) != null && bestTime > time) {
-			bestTravelMode = TravelMode.DRIVING;
-			bestTime = time;
+		long time = Long.MAX_VALUE;
+		if (routesOfTravelModes.get(TravelMode.DRIVING) != null) {
+			time = new DateTime(departureTime)
+					.plusSeconds(Math.toIntExact(
+							routesOfTravelModes.get(TravelMode.DRIVING).legs[0].durationInTraffic.inSeconds))
+					.getMillis();
+			if (bestTime > time) {
+				bestTravelMode = TravelMode.DRIVING;
+				bestTime = time;
+			}
 		}
-		time = routesOfTravelModes.get(TravelMode.TRANSIT).arrivalTime.getMillis();
-		if (routesOfTravelModes.get(TravelMode.TRANSIT) != null && bestTime > time) {
-			bestTravelMode = TravelMode.TRANSIT;
-			bestTime = time;
+		if (routesOfTravelModes.get(TravelMode.TRANSIT) != null) {
+			time = routesOfTravelModes.get(TravelMode.TRANSIT).legs[0].arrivalTime.getMillis();
+			if (bestTime > time) {
+				bestTravelMode = TravelMode.TRANSIT;
+				bestTime = time;
+			}
 		}
-		time = new DateTime(departureTime)
-				.plusSeconds(Math.toIntExact(routesOfTravelModes.get(TravelMode.BICYCLING).duration.inSeconds))
-				.getMillis();
-		if (routesOfTravelModes.get(TravelMode.BICYCLING) != null && bestTime > time) {
-			bestTravelMode = TravelMode.BICYCLING;
+		if (routesOfTravelModes.get(TravelMode.BICYCLING) != null) {
+			time = new DateTime(departureTime)
+					.plusSeconds(
+							Math.toIntExact(routesOfTravelModes.get(TravelMode.BICYCLING).legs[0].duration.inSeconds))
+					.getMillis();
+			if (bestTime > time) {
+				bestTravelMode = TravelMode.BICYCLING;
+			}
 		}
 		if (bestTravelMode != null) {
 			return new BestTransportResult(bestTravelMode, routesOfTravelModes.get(bestTravelMode));
@@ -137,18 +142,18 @@ public class DirectionApiLogic {
 	 *            true if driving by car, else false
 	 * @return the shortest route, can be null
 	 */
-	private DirectionsLeg findBestRoute(DirectionsRoute[] routes, boolean withTraffic) {
+	private DirectionsRoute findBestRoute(DirectionsRoute[] routes, boolean withTraffic) {
 		long shortestTime = Long.MAX_VALUE;
-		DirectionsLeg shortestRoute = null;
+		DirectionsRoute shortestRoute = null;
 		if (routes != null) {
 			for (DirectionsRoute route : routes) {
-				for (DirectionsLeg leg : route.legs) {
-					if (withTraffic && leg.durationInTraffic.inSeconds < shortestTime) {
-						shortestTime = leg.durationInTraffic.inSeconds;
-						shortestRoute = leg;
-					} else if (leg.duration.inSeconds < shortestTime) {
-						shortestTime = leg.duration.inSeconds;
-						shortestRoute = leg;
+				if (route.legs[0] != null) {
+					if (withTraffic && route.legs[0].durationInTraffic.inSeconds < shortestTime) {
+						shortestTime = route.legs[0].durationInTraffic.inSeconds;
+						shortestRoute = route;
+					} else if (route.legs[0].duration.inSeconds < shortestTime) {
+						shortestTime = route.legs[0].duration.inSeconds;
+						shortestRoute = route;
 					}
 				}
 			}
@@ -162,23 +167,22 @@ public class DirectionApiLogic {
 	 * @param routes
 	 * @return
 	 */
-	private DirectionsLeg findBestArrivalTime(DirectionsRoute[] routes) {
+	private DirectionsRoute findBestArrivalTime(DirectionsRoute[] routes) {
 		long shortestTime = Long.MAX_VALUE;
-		DirectionsLeg shortestRoute = null;
+		DirectionsRoute shortestRoute = null;
 		if (routes != null) {
 			for (DirectionsRoute route : routes) {
-				for (DirectionsLeg leg : route.legs) {
-					if (leg.arrivalTime != null && leg.arrivalTime.getMillis() < shortestTime) {
-						shortestTime = leg.arrivalTime.getMillis();
-						shortestRoute = leg;
-					}
+				if (route.legs[0] != null && route.legs[0].arrivalTime != null
+						&& route.legs[0].arrivalTime.getMillis() < shortestTime) {
+					shortestTime = route.legs[0].arrivalTime.getMillis();
+					shortestRoute = route;
 				}
 			}
 		}
 		return shortestRoute;
 	}
 
-	private TravelMode getTravelMode(String mode) {
+	public TravelMode getTravelMode(String mode) {
 		switch (mode.toLowerCase()) {
 		case "driving":
 		case "car":
@@ -188,6 +192,7 @@ public class DirectionApiLogic {
 			return TravelMode.BICYCLING;
 		case "transit":
 		case "public transport":
+		case "transport":
 			return TravelMode.TRANSIT;
 		case "walking":
 		case "walk":

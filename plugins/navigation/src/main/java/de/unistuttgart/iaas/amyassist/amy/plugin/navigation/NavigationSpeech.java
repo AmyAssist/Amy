@@ -30,6 +30,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.ReadableInstant;
 
+import com.google.maps.model.DirectionsLeg;
+import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -46,13 +48,18 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 @SpeechCommand("navigate")
 public class NavigationSpeech {
 
+	private static final String LOCATIONS = "(home|work|mother)";
+
 	@Reference
 	private DirectionApiLogic logic;
 
-	// TODO replace work with registry entries
-	@Grammar("be at work at # oh #")
+	@Reference
+	private RegistryConnection registry;
+
+	@Grammar("be at " + LOCATIONS + " at # oh # from " + LOCATIONS)
 	public String goToAt(String... strings) {
-		ReadableInstant time = this.logic.whenIHaveToGo("Friolzheim", "Universität Stuttgart", TravelMode.DRIVING,
+		ReadableInstant time = this.logic.whenIHaveToGo(this.registry.getAdresse(strings[8]),
+				this.registry.getAdresse(strings[2]), TravelMode.DRIVING,
 				formatTimes(Integer.parseInt(strings[6]), Integer.parseInt(strings[4])));
 		if (time != null) {
 			return String.valueOf(time.get(DateTimeFieldType.hourOfDay())).concat(":")
@@ -61,9 +68,10 @@ public class NavigationSpeech {
 		return "You are to late";
 	}
 
-	@Grammar("be at work at # oh # by ( bus | train | transit )")
-	public String GoToAtBy(String... strings) {
-		ReadableInstant time = this.logic.whenIHaveToGo("Friolzheim", "Universität Stuttgart", TravelMode.TRANSIT,
+	@Grammar("be at " + LOCATIONS + " at # oh # from " + LOCATIONS + " by ( bus | train | transit )")
+	public String goToAtBy(String... strings) {
+		ReadableInstant time = this.logic.whenIHaveToGo(this.registry.getAdresse(strings[8]),
+				this.registry.getAdresse(strings[2]), TravelMode.TRANSIT,
 				formatTimes(Integer.parseInt(strings[6]), Integer.parseInt(strings[4])));
 		if (time != null) {
 			return String.valueOf(time.get(DateTimeFieldType.hourOfDay())).concat(":")
@@ -72,13 +80,19 @@ public class NavigationSpeech {
 		return "You are to late";
 	}
 
-	@Grammar("best route from")
+	@Grammar("best transport from " + LOCATIONS + " to " + LOCATIONS + " now")
 	public String bestRouteSM(String... strings) {
 		BestTransportResult result = this.logic.getBestTransportInTime("Stuttgart", "Muinch",
 				DateTime.now().plusMinutes(10));
-		return result.getMode().toString() + result.getRoute().arrivalTime;
+		return result.getMode().toString() + result.getRoute().summary;
 	}
-
+	
+	@Grammar("from " + LOCATIONS + " to " + LOCATIONS + " by (car | transport | bike)")
+	public String routeFromTo(String...strings) {
+		DirectionsLeg route = this.logic.fromTo(strings[1], strings[3], this.logic.getTravelMode(strings[5])).legs[0];
+		return route.distance.humanReadable + " in " + route.duration.humanReadable;
+	}
+	
 	private DateTime formatTimes(int min, int hour) {
 		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
 		calendar.set(Calendar.MINUTE, min);
