@@ -114,7 +114,7 @@ public abstract class AbstractRegistry<T> implements IRegistry<T> {
     public void deleteById(@Nonnull Object key) {
 
         if (key.getClass().isAnnotationPresent(Entity.class)) {
-            throw new RuntimeException("The deleteById method takes the primary key as a parameter, not the entity itself");
+            throw new RegistryException("The deleteById method takes the primary key as a parameter, not the entity");
         }
 
         transaction(() -> {

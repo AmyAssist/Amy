@@ -30,5 +30,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
  */
 
 public interface ContactRegistry extends IRegistry<Contact> {
+    /**
+     * May the sonar of the clouds please shut up
+     */
     void testMyself();
 }

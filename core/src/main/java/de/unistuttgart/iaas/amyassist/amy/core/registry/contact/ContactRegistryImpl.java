@@ -81,7 +81,7 @@ public class ContactRegistryImpl extends AbstractRegistry<Contact> implements Co
     }
 
     private void assertTrue(boolean b) {
-        if (b != true) {
+        if (!b) {
             throw new RuntimeException("Error in test");
         }
     }

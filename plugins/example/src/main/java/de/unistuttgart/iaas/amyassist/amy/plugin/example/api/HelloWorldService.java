@@ -39,8 +39,16 @@ public interface HelloWorldService {
 
 	String helloWorldXTimes(int times);
 
+	/**
+	 * Demonstrate the registry's functionality
+	 * @return human-readable text
+	 */
 	String demonstrateContactRegistry();
 
+	/**
+	 * Test the registry for correctness
+	 * @return human-readable text
+	 */
 	String testContactRegistry();
 
 }

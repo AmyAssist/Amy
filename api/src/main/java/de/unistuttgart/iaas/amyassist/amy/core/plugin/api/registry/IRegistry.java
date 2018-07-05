@@ -41,14 +41,14 @@ public interface IRegistry<T> {
 
     /**
      * Get the entity with this exact id
-     * @param id
+     * @param id the primary key of the requested entity
      * @return the entity instance with this id
      */
     T getById(Object id);
 
     /**
      * Persist an entity
-     * @param t
+     * @param t the entity to be saved
      */
     void save(T t);
 

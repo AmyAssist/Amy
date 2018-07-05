@@ -101,6 +101,7 @@ public class HelloWorldImpl implements HelloWorldService {
 			contacts.testMyself();
 			return "Tests successful";
 		} catch (RuntimeException e) {
+			logger.warn("Registry test failed: ", e);
 			return "Tests failed: " + e.getLocalizedMessage();
 		}
 	}
