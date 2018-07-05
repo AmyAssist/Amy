@@ -31,7 +31,6 @@ import javax.sound.sampled.TargetDataLine;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
@@ -63,8 +62,11 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 
 	private SpeechRecognizerManager localRecognition;
 
-	@PostConstruct
-	private void init() {
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.AudioUserInteraction#init()
+	 */
+	@Override
+	public void init() {
 		this.localRecognition = new LocalSpeechRecognizerManager(createNewAudioInputStream(), this.inputHandler,
 				this.tts, this.grammarData);
 	}

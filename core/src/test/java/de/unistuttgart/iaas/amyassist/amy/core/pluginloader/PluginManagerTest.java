@@ -23,22 +23,20 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
+import java.util.Properties;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
 
-import java.util.Properties;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.resultHandler.SpeechCommandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.handler.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -63,6 +61,7 @@ class PluginManagerTest {
 		when(configurationLoader.load("plugin.config")).thenReturn(this.properties);
 
 		this.testFramework.mockService(SpeechCommandHandler.class);
+		this.testFramework.mockService(Persistence.class);
 
 		this.serviceUnderTest = this.testFramework.setServiceUnderTest(PluginManagerService.class);
 	}

@@ -28,13 +28,21 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.resultHandler.SpeechCommandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.handler.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -48,15 +56,19 @@ class SpeechCommandHandlerTest {
 	@Reference
 	private TestFramework framework;
 	private SpeechCommandHandler speechCommandHandler;
+	private Path tempDir;
 
 	@BeforeEach
-	public void setup() {
+	public void setup() throws IOException {
+		GrammarObjectsCreator grammarObjectsCreator = this.framework.mockService(GrammarObjectsCreator.class);
+
+		// this.tempDir = Files.createTempDirectory(SpeechCommandHandlerTest.class.getName());
+		this.tempDir = (new File(new File(new File("src/test/resources", "de/unistuttgart/iaas/amyassist/amy/core"),
+				getClass().getName()), "testFile")).toPath();
+		this.tempDir.toFile().deleteOnExit();
+		Mockito.when(grammarObjectsCreator.getMainGrammar()).thenReturn(new Grammar("grammar", this.tempDir.toFile()));
+
 		this.speechCommandHandler = this.framework.setServiceUnderTest(SpeechCommandHandler.class);
-		File resourceDir = new File(new File("."), "resources");
-		File grammarFile = new File(resourceDir, "/sphinx-grammars/grammar.gram");
-
-		this.speechCommandHandler.setFileToSaveGrammarTo(grammarFile);
-
 	}
 
 	@Test
@@ -76,6 +88,11 @@ class SpeechCommandHandlerTest {
 
 		assertThrows(IllegalArgumentException.class,
 				() -> this.speechCommandHandler.handleSpeechInput("unknownKeyword simple 10"));
+	}
+
+	@AfterEach
+	void cleanUp() throws IOException {
+		Files.walk(this.tempDir).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
 	}
 
 }

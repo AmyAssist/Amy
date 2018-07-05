@@ -21,26 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.service;
+package de.unistuttgart.iaas.amyassist.amy.core.persistence;
+
+import javax.persistence.EntityManager;
 
 /**
- * Interface between the SpeechRecognition System and the rest og the System
+ * The Persistence Service api
  * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-public interface AudioUserInteraction {
+public interface Persistence {
 	/**
-	 * Creates the Recognizer Objects
+	 * 
+	 * @param name
+	 *            the name of the Persistence Unit
+	 * @return the entity manager of the Persistence Unit
 	 */
-	void init();
-	/**
-	 * Start the Recognition System
-	 */
-	void start();
+	EntityManager getEntityManager(String name);
 
 	/**
-	 * Stop the Recognition System
+	 * 
+	 * @param entity
+	 *            the entity class to register in the Persistence manager
 	 */
-	void stop();
-
+	void register(Class<?> entity);
 }

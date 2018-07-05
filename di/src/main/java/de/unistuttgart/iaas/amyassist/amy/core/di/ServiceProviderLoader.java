@@ -21,26 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.service;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 /**
- * Interface between the SpeechRecognition System and the rest og the System
+ * A Interface for use with {@link java.util.ServiceLoader} to register Service classes, Service provider and Context
+ * Providers in the DI via the Configuration.
  * 
- * @author Kai Menzel
+ * Implementations of this interface MUST have a default public constructor.
+ * 
+ * @author Leon Kiefer
  */
-public interface AudioUserInteraction {
+public interface ServiceProviderLoader {
 	/**
-	 * Creates the Recognizer Objects
+	 * Called form the DI when loading services
+	 * 
+	 * @param configuration
+	 *            the Configuration used to register Service classes, Service provider and context provider
 	 */
-	void init();
-	/**
-	 * Start the Recognition System
-	 */
-	void start();
-
-	/**
-	 * Stop the Recognition System
-	 */
-	void stop();
-
+	void load(Configuration configuration);
 }

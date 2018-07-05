@@ -21,36 +21,56 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package de.unistuttgart.iaas.amyassist.amy.core.persistence.storage;
 
-import java.lang.reflect.Field;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PersistenceUnit;
 
 /**
- * A InjectionPoint is an abstraction of where an object is injected into an instance.
+ * Data Object for DatabaseStorage
  * 
  * @author Leon Kiefer
  */
-class InjetionPoint {
-	private Field field;
+@PersistenceUnit(unitName="DatabaseStorage")
+@Entity
+public class SimpleData {
 
-	public InjetionPoint(Field field) {
-		this.field = field;
+	@Id
+	private String key;
+
+	private String value;
+
+	private SimpleData() {
+
 	}
 
 	/**
-	 * 
-	 * @return
+	 * @param key
+	 *            the primary key
+	 * @param value
+	 *            the value of the data
 	 */
-	public Class<?> getType() {
-		return this.field.getType();
+	public SimpleData(String key, String value) {
+		this.key = key;
+		this.value = value;
 	}
 
-	public void inject(@Nonnull Object instance, @Nullable Object object) {
-		Util.inject(instance, object, this.field);
+	/**
+	 * Get's {@link #key key}
+	 * 
+	 * @return key
+	 */
+	public String getKey() {
+		return this.key;
+	}
+
+	/**
+	 * Get's {@link #value value}
+	 * 
+	 * @return value
+	 */
+	public String getValue() {
+		return this.value;
 	}
 }

@@ -43,7 +43,7 @@ public class ServiceProviderServiceFactory<T> implements ServiceFactory<T> {
 
 	private ServiceProvider<T> serviceProvider;
 
-	private Map<Class<?>, ServiceFactory<?>> resolvedDependencies = new HashMap<>();
+	private Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies = new HashMap<>();
 	private Map<String, StaticProvider<?>> contextProviders = new HashMap<>();
 	@Nullable
 	private ServiceConsumer consumer;
@@ -72,7 +72,7 @@ public class ServiceProviderServiceFactory<T> implements ServiceFactory<T> {
 		return Maps.transformValues(contextProviders, e -> e.getContext(consumerClass));
 	}
 
-	public void resolved(Class<?> dependency, ServiceFactory<?> dependencyFactory) {
+	public void resolved(ServiceDescription<?> dependency, ServiceFactory<?> dependencyFactory) {
 		this.resolvedDependencies.put(dependency, dependencyFactory);
 	}
 

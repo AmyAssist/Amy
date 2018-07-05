@@ -51,7 +51,7 @@ class TestNaturalLanguageInterpreterAnnotationReader {
 
 	@Test
 	public void testGrammar() {
-		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.resultHandler.SpeechCommand> grammars = NaturalLanguageInterpreterAnnotationReader
+		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.handler.SpeechCommand> grammars = NaturalLanguageInterpreterAnnotationReader
 				.getGrammars(Plugin.class);
 
 		assertThat(grammars.keySet(), containsInAnyOrder("count", "say (hello|test)"));

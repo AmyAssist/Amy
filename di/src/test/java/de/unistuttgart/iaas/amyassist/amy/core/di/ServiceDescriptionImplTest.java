@@ -21,26 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.service;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
+
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
- * Interface between the SpeechRecognition System and the rest og the System
+ * Test the equals method of ServiceDescriptionImpl
  * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-public interface AudioUserInteraction {
-	/**
-	 * Creates the Recognizer Objects
-	 */
-	void init();
-	/**
-	 * Start the Recognition System
-	 */
-	void start();
+class ServiceDescriptionImplTest {
 
-	/**
-	 * Stop the Recognition System
-	 */
-	void stop();
+	@ParameterizedTest
+	@MethodSource("values")
+	void testNotEquals(Object obj) {
+		assertThat(Util.serviceDescriptionFor(Service7API.class), is(not(equalTo(obj))));
+	}
+
+	static Stream<Object> values() {
+		return Stream.of(null, new Object(), Util.serviceDescriptionFor(Service1.class));
+	}
 
 }

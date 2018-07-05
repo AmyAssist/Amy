@@ -21,12 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.resultHandler;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.handler;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -39,9 +40,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.GrammarParser;
 import de.unistuttgart.iaas.amyassist.amy.core.PluginGrammarInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.TextToPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.util.NaturalLanguageInterpreterAnnotationReader;
 
 /**
@@ -53,19 +56,29 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.util.NaturalLanguageInterp
 public class SpeechCommandHandler {
 	@Reference
 	private Logger logger;
+	@Reference
+	private GrammarObjectsCreator grammarObjectsCreator;
 
 	private TextToPlugin textToPlugin;
-	private GrammarParser generator = new GrammarParser("grammar", Constants.WAKE_UP, Constants.GO_SLEEP,
-			Constants.SHUT_UP);
+	private GrammarParser generator;
 
 	private Map<PluginGrammarInfo, Class<?>> grammarInfos = new HashMap<>();
-	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.resultHandler.SpeechCommand> speechCommands = new HashMap<>();
+	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.handler.SpeechCommand> speechCommands = new HashMap<>();
 	@Reference
 	private ServiceLocator serviceLocator;
 
-	/** The file to save the grammer to */
-	private File fileToSaveGrammarTo;
+	@PostConstruct
+	private void init() {
+		this.generator = new GrammarParser(this.grammarObjectsCreator.getMainGrammar().getName(), Constants.WAKE_UP,
+				Constants.GO_SLEEP, Constants.SHUT_UP);
+	}
 
+	/**
+	 * Use this to register all SpeechCommand classes
+	 * 
+	 * @param class1
+	 *            the class that should be registered
+	 */
 	public void registerSpeechCommand(Class<?> class1) {
 		if (!class1.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand.class))
 			throw new IllegalArgumentException();
@@ -85,12 +98,15 @@ public class SpeechCommandHandler {
 	 */
 	public void completeSetup() {
 		String grammar = this.generator.getGrammar();
-		this.getFileToSaveGrammarTo().getParentFile().mkdirs();
-
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.getFileToSaveGrammarTo()))) {
+		try {
+			Files.createDirectories(this.getFileToSaveGrammarTo().getParent());
+		} catch (IOException e) {
+			throw new IllegalStateException("Can't create parent directories of the grammar file", e);
+		}
+		try (BufferedWriter bw = Files.newBufferedWriter(this.getFileToSaveGrammarTo(), StandardOpenOption.CREATE)) {
 			bw.write(grammar);
-		} catch (IOException e1) {
-			this.logger.error("Can't write grammar file", e1);
+		} catch (IOException e) {
+			throw new IllegalStateException("Can't write grammar file", e);
 		}
 
 		this.textToPlugin = new TextToPlugin(this.grammarInfos.keySet());
@@ -112,21 +128,11 @@ public class SpeechCommandHandler {
 	}
 
 	/**
-	 * Get's {@link #fileToSaveGrammarTo fileToSaveToGrammar}
+	 * Get's the path where the grammar file should be saved
 	 * 
 	 * @return fileToSaveToGrammar
 	 */
-	public File getFileToSaveGrammarTo() {
-		return this.fileToSaveGrammarTo;
-	}
-
-	/**
-	 * Set's {@link #fileToSaveGrammarTo fileToSaveToGrammar}
-	 * 
-	 * @param fileToSaveToGrammar
-	 *            fileToSaveToGrammar
-	 */
-	public void setFileToSaveGrammarTo(File fileToSaveToGrammar) {
-		this.fileToSaveGrammarTo = fileToSaveToGrammar;
+	private Path getFileToSaveGrammarTo() {
+		return this.grammarObjectsCreator.getMainGrammar().getFile().toPath();
 	}
 }

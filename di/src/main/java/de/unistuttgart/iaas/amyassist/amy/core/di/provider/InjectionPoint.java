@@ -25,28 +25,38 @@ package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
 import java.lang.reflect.Field;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
- * A ContextInjectionPoint is an InjectionPoint where the context is injected.
+ * A InjectionPoint is an abstraction of where an object is injected into an instance.
  * 
  * @author Leon Kiefer
  */
-public class ContextInjectionPoint extends InjectionPoint {
-
-	private String contextIdentifier;
+class InjectionPoint {
+	private Field field;
 
 	/**
-	 * @return the contextProviderType
+	 * 
+	 * @param field
+	 *            the field of the class
 	 */
-	public String getContextIdentifier() {
-		return this.contextIdentifier;
+	public InjectionPoint(Field field) {
+		this.field = field;
 	}
 
-	public ContextInjectionPoint(Field field) {
-		super(field);
-		Context context = field.getAnnotation(Context.class);
-		this.contextIdentifier = context.value();
+	/**
+	 * 
+	 * @return the Description of the Service required by this InjectionPoint
+	 */
+	public ServiceDescription<?> getServiceDescription() {
+		return Util.serviceDescriptionFor(this.field);
 	}
 
+	public void inject(@Nonnull Object instance, @Nullable Object object) {
+		Util.inject(instance, object, this.field);
+	}
 }

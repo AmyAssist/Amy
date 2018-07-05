@@ -40,7 +40,7 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 
 /**
  * This class create search query to the spotify web api and parse the results in a String or in a Hashmap with
@@ -248,7 +248,7 @@ public class Search {
 	 *            limit of returned playlists
 	 * @return a list from Playlists
 	 */
-	public List<Playlist> getOwnPlaylists(int limit) {
+	public List<PlaylistEntity> getOwnPlaylists(int limit) {
 		Paging<PlaylistSimplified> playlists = this.spotifyAPICalls.getOwnPlaylists(limit);
 		return generatePlaylistsOutput(playlists.getItems(), SearchTypes.USER_PLAYLISTS);
 	}
@@ -260,7 +260,7 @@ public class Search {
 	 *            limit of returned playlists
 	 * @return a list from Playlists
 	 */
-	public List<Playlist> getFeaturedPlaylists(int limit) {
+	public List<PlaylistEntity> getFeaturedPlaylists(int limit) {
 		FeaturedPlaylists playlists = this.spotifyAPICalls.getFeaturedPlaylists(limit);
 		if (playlists != null) {
 			return generatePlaylistsOutput(playlists.getPlaylists().getItems(), SearchTypes.FEATURED_PLAYLISTS);
@@ -268,15 +268,15 @@ public class Search {
 		return new ArrayList<>();
 	}
 
-	private List<Playlist> generatePlaylistsOutput(PlaylistSimplified[] playlists, SearchTypes type) {
-		ArrayList<Playlist> result = new ArrayList<>();
+	private List<PlaylistEntity> generatePlaylistsOutput(PlaylistSimplified[] playlists, SearchTypes type) {
+		ArrayList<PlaylistEntity> result = new ArrayList<>();
 		if (playlists != null) {
 			for (PlaylistSimplified playlist : playlists) {
 				if (playlist.getImages() != null && playlist.getImages().length > 0) {
-					result.add(new Playlist(playlist.getName(), null, playlist.getUri(),
+					result.add(new PlaylistEntity(playlist.getName(), null, playlist.getUri(),
 							playlist.getImages()[0].getUrl()));
 				} else {
-					result.add(new Playlist(playlist.getName(), null, playlist.getUri(), null));
+					result.add(new PlaylistEntity(playlist.getName(), null, playlist.getUri(), null));
 				}
 
 			}
@@ -310,7 +310,7 @@ public class Search {
 	 * @param type
 	 *            to write to right position
 	 */
-	private void writeUrisToStorage(List<Playlist> playlists, SearchTypes type) {
+	private void writeUrisToStorage(List<PlaylistEntity> playlists, SearchTypes type) {
 		deleteUrisFromStroage(type);
 		for (int i = 0; i < playlists.size(); i++) {
 			this.storage.put(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)),

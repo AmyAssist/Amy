@@ -31,35 +31,38 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Bräuner, Muhammed Kaya, Lars Buttgereit
  */
 @XmlRootElement
-public class Playlist {
+public class PlaylistEntity {
 
 	/**
 	 * constructor for a Playlist
 	 */
-	public Playlist() {
+	public PlaylistEntity() {
 
 	}
 
-/**
- * constructor for a Playlist with set values
- * @param name of the playlist
- * @param songs 
- * @param uri from a playlist to play it in spotify
- * @param imageUrl a url to image from the playlist. can be null
- */
-	public Playlist(String name, MusicEntity[] songs, String uri, String imageUrl) {
+	/**
+	* constructor for a Playlist with set values
+	* 
+	* @param name
+	*            of the playlist
+	* @param songs
+	* @param uri
+	*            from a playlist to play it in spotify
+	* @param imageUrl
+	*            a url to image from the playlist. can be null
+	*/
+	public PlaylistEntity(String name, MusicEntity[] songs, String uri, String imageUrl) {
 		this.name = name;
 		this.songs = songs;
 		this.uri = uri;
 		this.imageUrl = imageUrl;
-		
 	}
 
 	/**
 	 * the name of the playlist
 	 */
 	private String name = "";
-	
+
 	/**
 	 * the songs in the playlist
 	 */
@@ -69,12 +72,12 @@ public class Playlist {
 	 * uri of the playlist
 	 */
 	private String uri;
-	
+
 	/**
 	 * a Url to a image from the playlist
 	 */
 	private String imageUrl;
-	
+
 	/**
 	 * @return name
 	 */
@@ -83,7 +86,8 @@ public class Playlist {
 	}
 
 	/**
-	 * @param name to set
+	 * @param name
+	 *            to set
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -97,7 +101,8 @@ public class Playlist {
 	}
 
 	/**
-	 * @param songs to set
+	 * @param songs
+	 *            to set
 	 */
 	public void setSongs(MusicEntity[] songs) {
 		this.songs = songs;
@@ -105,6 +110,7 @@ public class Playlist {
 
 	/**
 	 * get the uri from the playlist
+	 * 
 	 * @return the uri
 	 */
 	public String getUri() {
@@ -113,7 +119,9 @@ public class Playlist {
 
 	/**
 	 * set the uri form the playlist
-	 * @param uri to set
+	 * 
+	 * @param uri
+	 *            to set
 	 */
 	public void setUri(String uri) {
 		this.uri = uri;
@@ -121,6 +129,7 @@ public class Playlist {
 
 	/**
 	 * get the image URL from the playlist image
+	 * 
 	 * @return url to the image
 	 */
 	public String getImageUrl() {
@@ -129,12 +138,14 @@ public class Playlist {
 
 	/**
 	 * set the image url from the playlist image
-	 * @param imageUrl url to set
+	 * 
+	 * @param imageUrl
+	 *            url to set
 	 */
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "name of the playlist is: ".concat(getName());
