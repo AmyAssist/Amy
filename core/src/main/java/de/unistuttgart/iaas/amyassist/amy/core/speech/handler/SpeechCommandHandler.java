@@ -63,7 +63,7 @@ public class SpeechCommandHandler {
 	private GrammarParser generator;
 
 	private Map<PluginGrammarInfo, Class<?>> grammarInfos = new HashMap<>();
-	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.handler.SpeechCommand> speechCommands = new HashMap<>();
+	private Map<String, SpeechCommand> speechCommands = new HashMap<>();
 	@Reference
 	private ServiceLocator serviceLocator;
 

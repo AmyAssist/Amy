@@ -33,7 +33,6 @@ import java.lang.reflect.Method;
  */
 public class SpeechCommand {
 	private Method method;
-	private String grammar;
 	private Class<?> speechCommandClass;
 
 	/**
@@ -55,7 +54,6 @@ public class SpeechCommand {
 	 */
 	public SpeechCommand(Method method, String grammar, Class<?> speechCommandClass) {
 		this.method = method;
-		this.grammar = grammar;
 		this.speechCommandClass = speechCommandClass;
 	}
 
