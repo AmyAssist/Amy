@@ -530,11 +530,14 @@ public class SpotifyAPICalls {
 		try {
 			return request.execute();
 		} catch (UnauthorizedException e) {
-			this.storage.put(SPOTIFY_ACCESSTOKEN, createAccessToken(getSpotifyApiWithoutAcToken()));
-			try {
-				return request.execute();
-			} catch (SpotifyWebApiException | IOException e1) {
-				this.logger.warn(SPOTIFY_ERROR_TAG, e1);
+			SpotifyApi spotifyApi = getSpotifyApiWithoutAcToken();
+			if (spotifyApi != null) {
+				this.storage.put(SPOTIFY_ACCESSTOKEN, createAccessToken(spotifyApi));
+				try {
+					return request.execute();
+				} catch (SpotifyWebApiException | IOException e1) {
+					this.logger.warn(SPOTIFY_ERROR_TAG, e1);
+				}
 			}
 			this.logger.warn(SPOTIFY_ERROR_TAG, e);
 			return null;
@@ -556,12 +559,15 @@ public class SpotifyAPICalls {
 			request.execute();
 			return true;
 		} catch (UnauthorizedException e) {
-			this.storage.put(SPOTIFY_ACCESSTOKEN, createAccessToken(getSpotifyApiWithoutAcToken()));
-			try {
-				request.execute();
-				return true;
-			} catch (SpotifyWebApiException | IOException e1) {
-				this.logger.warn(SPOTIFY_ERROR_TAG, e1);
+			SpotifyApi spotifyApi = getSpotifyApiWithoutAcToken();
+			if (spotifyApi != null) {
+				this.storage.put(SPOTIFY_ACCESSTOKEN, createAccessToken(spotifyApi));
+				try {
+					request.execute();
+					return true;
+				} catch (SpotifyWebApiException | IOException e1) {
+					this.logger.warn(SPOTIFY_ERROR_TAG, e1);
+				}
 			}
 			this.logger.warn(SPOTIFY_ERROR_TAG, e);
 			return false;
