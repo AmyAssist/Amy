@@ -335,7 +335,7 @@ public class Search {
 	private void deleteUrisFromStroage(SearchTypes type) {
 		int i = 0;
 		while (this.storage
-				.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))) != null) {
+				.has(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)))) {
 			this.storage.delete(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)));
 			i++;
 		}
@@ -352,7 +352,7 @@ public class Search {
 		List<String> result = new ArrayList<>();
 		int i = 0;
 		while (this.storage
-				.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))) != null) {
+				.has(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)))) {
 			result.add(this.storage
 					.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))));
 			i++;
