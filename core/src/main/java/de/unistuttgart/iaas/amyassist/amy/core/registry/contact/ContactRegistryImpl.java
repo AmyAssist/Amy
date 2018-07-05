@@ -27,6 +27,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
 import de.unistuttgart.iaas.amyassist.amy.core.registry.AbstractRegistry;
+import de.unistuttgart.iaas.amyassist.amy.core.registry.RegistryException;
 
 import javax.annotation.Nonnull;
 
@@ -82,7 +83,7 @@ public class ContactRegistryImpl extends AbstractRegistry<Contact> implements Co
 
     private void assertTrue(boolean b) {
         if (!b) {
-            throw new RuntimeException("Error in test");
+            throw new RegistryException("Error in test");
         }
     }
 }
