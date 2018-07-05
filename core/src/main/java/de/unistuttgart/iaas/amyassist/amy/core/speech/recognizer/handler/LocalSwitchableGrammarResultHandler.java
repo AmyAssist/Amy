@@ -25,7 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.AbstractSpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager;
 
 /**
  * Handler that handles the local SpeechRecognition System intern commands for additional Grammars
@@ -40,22 +40,20 @@ public class LocalSwitchableGrammarResultHandler extends AbstractRecognitionResu
 	 * @param grammar
 	 *            Grammar this ResultHandler handles
 	 */
-	public LocalSwitchableGrammarResultHandler(AbstractSpeechRecognizerManager srManager, Grammar grammar) {
+	public LocalSwitchableGrammarResultHandler(SpeechRecognitionResultManager srManager, Grammar grammar) {
 		super(srManager, grammar);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.AbstractRecognitionResultHandler#predefinedInputHandling(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.AbstractRecognitionResultHandler#environmentSpecificInputHandling(java.lang.String,
+	 *      de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager)
 	 */
 	@Override
-	protected boolean predefinedInputHandling(String result) {
-		if (result.equals(Constants.SHUT_UP)) {
-			this.srManager.stopOutput();
-			return true;
-		} else if (result.equals(Constants.GO_SLEEP)) {
-			this.srManager.handleListeningState(false);
-			this.srManager.voiceOutput("now sleeping");
-			this.srManager.handleGrammarSwitch(null);
+	protected boolean environmentSpecificInputHandling(String result, SpeechRecognitionResultManager srManager) {
+		if (result.equals(Constants.GO_SLEEP)) {
+			srManager.handleListeningState(false);
+			srManager.voiceOutput("now sleeping");
+			srManager.handleGrammarSwitch(null);
 			return true;
 		}
 		return false;

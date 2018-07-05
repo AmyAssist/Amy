@@ -206,6 +206,7 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public void voiceOutput(String outputString) {
+		setSoundPlaying(true);
 		this.output.output(this.listener, outputString);
 
 	}

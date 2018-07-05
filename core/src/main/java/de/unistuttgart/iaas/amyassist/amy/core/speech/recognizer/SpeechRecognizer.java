@@ -52,16 +52,24 @@ public class SpeechRecognizer implements Runnable {
 	 */
 	private final Logger logger = LoggerFactory.getLogger(SpeechRecognizer.class);
 
-	// Grammar of the Current running Recognizer
+	/**
+	 * Grammar of the Current running Recognizer
+	 */
 	private final Grammar grammar;
 
-	// The Input Stream Source
+	/**
+	 * The Input Stream Source
+	 */
 	private final AudioInputStream ais;
 
-	// Handler who use the translated String for commanding the System
+	/**
+	 * Handler who use the translated String for commanding the System
+	 */
 	private final RecognitionResultHandler resultHandler;
 
-	// The Recognizer which Handles the Recognition
+	/**
+	 * The Recognizer which Handles the Recognition
+	 */
 	private final StreamSpeechRecognizer recognizer;
 
 	// -----------------------------------------------------------------------------------------------

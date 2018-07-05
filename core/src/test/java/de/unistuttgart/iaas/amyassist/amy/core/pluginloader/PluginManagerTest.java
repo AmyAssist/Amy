@@ -36,7 +36,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.handler.SpeechCommandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 

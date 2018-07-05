@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.handler;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

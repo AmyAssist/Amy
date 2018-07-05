@@ -30,7 +30,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.handler.SpeechCommandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
 
 /**
  * Implementation of SpeechInputHandler

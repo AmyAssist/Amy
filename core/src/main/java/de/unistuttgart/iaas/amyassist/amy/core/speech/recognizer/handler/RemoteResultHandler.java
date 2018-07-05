@@ -23,9 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.AbstractSpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager;
 
 /**
  * Handler that handles the remote SpeechRecognition System intern commands
@@ -40,19 +39,16 @@ public class RemoteResultHandler extends AbstractRecognitionResultHandler {
 	 * @param grammar
 	 *            Grammar this ResultHandler handles
 	 */
-	public RemoteResultHandler(AbstractSpeechRecognizerManager srManager, Grammar grammar) {
+	public RemoteResultHandler(SpeechRecognitionResultManager srManager, Grammar grammar) {
 		super(srManager, grammar);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.AbstractRecognitionResultHandler#predefinedInputHandling(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.AbstractRecognitionResultHandler#environmentSpecificInputHandling(java.lang.String,
+	 *      de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager)
 	 */
 	@Override
-	protected boolean predefinedInputHandling(String result) {
-		if (result.equals(Constants.SHUT_UP)) {
-			this.srManager.stopOutput();
-			return true;
-		}
+	protected boolean environmentSpecificInputHandling(String result, SpeechRecognitionResultManager srManager) {
 		return false;
 	}
 

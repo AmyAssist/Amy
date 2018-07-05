@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.service;
+package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 /**
  * Interface between the SpeechRecognition System and the rest og the System

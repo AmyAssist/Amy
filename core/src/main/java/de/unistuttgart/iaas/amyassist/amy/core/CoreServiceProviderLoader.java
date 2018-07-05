@@ -38,9 +38,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.persistence.PersistenceService;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.storage.DatabaseStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.handler.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.service.LocalAudioUserInteraction;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 

@@ -50,9 +50,9 @@ public class NaturalLanguageInterpreterAnnotationReader {
 	 *            The class of which to get the grammars
 	 * @return a List of grammars
 	 */
-	public static Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.handler.SpeechCommand> getGrammars(
+	public static Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommand> getGrammars(
 			Class<?> cls) {
-		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.handler.SpeechCommand> map = new HashMap<>();
+		Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommand> map = new HashMap<>();
 		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Grammar.class);
 		for (Method method : methodsWithAnnotation) {
 			Class<?>[] parameterTypes = method.getParameterTypes();
@@ -67,7 +67,7 @@ public class NaturalLanguageInterpreterAnnotationReader {
 			}
 			String grammar = method.getAnnotation(Grammar.class).value();
 			map.put(grammar,
-					new de.unistuttgart.iaas.amyassist.amy.core.speech.handler.SpeechCommand(method, grammar, cls));
+					new de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommand(method, grammar, cls));
 
 		}
 		return map;

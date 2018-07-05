@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.service;
+package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -63,7 +63,7 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	private SpeechRecognizerManager localRecognition;
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.AudioUserInteraction#init()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction#init()
 	 */
 	@Override
 	public void init() {
@@ -72,7 +72,7 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.AudioUserInteraction#start()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction#start()
 	 */
 	@Override
 	public void start() {
@@ -80,12 +80,11 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.service.AudioUserInteraction#stop()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction#stop()
 	 */
 	@Override
 	public void stop() {
 		this.localRecognition.stop();
-		this.logger.info("Closing Local Speech Recognizer");
 	}
 
 	/**
