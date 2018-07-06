@@ -21,31 +21,25 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
-
-import javax.sound.sampled.LineListener;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.data;
 
 /**
- * Interface for the TextToSpeech
+ * non-Generic RuntimeException
  * 
  * @author Kai Menzel
  */
-public interface Output {
+public class RuntimeExceptionRecognizerCantBeCreated extends RuntimeException {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Method to Voice and Log output the input String
-	 * 
-	 * @param listener
-	 *            Listener for the Voice Output Clip
-	 * @param voiceOutput
-	 *            true if Amy shall voice the Output
-	 * @param s
-	 *            String that shall be said
+	 * @param string
+	 *            Message of the Exception
+	 * @param e
+	 *            Error Message
 	 */
-	void output(LineListener listener, boolean voiceOutput, String s);
+	public RuntimeExceptionRecognizerCantBeCreated(String string, Exception e) {
+		super(string, e);
+	}
 
-	/**
-	 * stop the OutputClip
-	 */
-	void stopOutput();
 }

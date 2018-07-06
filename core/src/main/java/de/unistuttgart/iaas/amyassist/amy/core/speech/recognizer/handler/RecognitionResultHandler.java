@@ -21,22 +21,32 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
-
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler;
 
 /**
- * Dummy test class
+ * Interface for the Handler that handles SpeechRecognition System intern commands
  * 
- * @author Leon Kiefer
+ * @author Kai Menzel
  */
-@SpeechCommand("testkeyword")
-public class TestSpeechCommand {
+public interface RecognitionResultHandler {
 
-	@Grammar("simple #")
-	public String simpleCommand(String... s) {
-		return s[1];
-	}
+	/**
+	 * Method to check if Recognition Thread is Running
+	 * 
+	 * @return if the Recognition Thread should be running
+	 */
+	boolean isRecognitionThreadRunning();
 
+	/**
+	 * handle the SR output
+	 * 
+	 * @param result
+	 *            SR output String
+	 */
+	void handle(String result);
+
+	/**
+	 * called when SR thread is closing, start new if needed
+	 */
+	void initiateChange();
 }

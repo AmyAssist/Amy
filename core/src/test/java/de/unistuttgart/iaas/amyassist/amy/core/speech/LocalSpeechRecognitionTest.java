@@ -23,17 +23,35 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+
 /**
- * Enum that Describes if the SR is currently active and listening
+ * Test Class for the Local Speech Recognition Service
+ * 
  * @author Kai Menzel
  */
-public enum SpeechRecognitionListening {
-	/**
-	 * SR is currently Listening
-	 */
-	AWAKE,
-	/**
-	 * SR is currently sleeping and inactive
-	 */
-	ASLEEP
+@ExtendWith(FrameworkExtension.class)
+public class LocalSpeechRecognitionTest {
+
+	@Reference
+	private TestFramework framework;
+
+	@BeforeEach
+	private void setup() {
+	}
+
+	@Test
+	private void test() {
+		AudioUserInteraction aui = this.framework.setServiceUnderTest(LocalAudioUserInteraction.class);
+		assertNotNull(aui);
+	}
+
 }

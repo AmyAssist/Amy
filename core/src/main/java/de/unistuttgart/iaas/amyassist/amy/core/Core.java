@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -35,13 +34,11 @@ import org.slf4j.LoggerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
@@ -62,6 +59,7 @@ public class Core {
 	private DependencyInjection di = new DependencyInjection();
 
 	private Server server;
+	private LocalAudioUserInteraction recognizer;
 
 	private CommandLineArgumentHandlerService cmaHandler;
 
@@ -95,6 +93,7 @@ public class Core {
 		this.logger.info("run");
 		this.init();
 		this.threads.forEach(Thread::start);
+		this.recognizer.start();
 		this.server.start();
 		this.logger.info("running");
 	}
@@ -114,20 +113,14 @@ public class Core {
 		console.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
 		this.threads.add(new Thread(console));
 
-		Environment environment = this.di.getService(Environment.class);
-
-		Path grammarFile = environment.getWorkingDirectory().resolve("resources")
-				.resolve("sphinx-grammars/grammar.gram");
-
-		AudioUserInteraction aui = this.di.createAndInitialize(AudioUserInteraction.class);
-		aui.setGrammars(new Grammar("grammar", grammarFile.toFile()), null);
-		aui.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
-		this.threads.add(new Thread(aui));
+		this.recognizer = this.di.getService(LocalAudioUserInteraction.class);
 
 		PluginManager pluginManager = this.di.getService(PluginManager.class);
 		pluginManager.loadPlugins();
 		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
 		speechCommandHandler.completeSetup();
+
+		this.recognizer.init();
 	}
 
 	/**
@@ -148,6 +141,7 @@ public class Core {
 	public void stop() {
 		this.logger.info("stop");
 		this.server.shutdown();
+		this.recognizer.stop();
 		this.threads.forEach(Thread::interrupt);
 		this.singleThreadScheduledExecutor.shutdownNow();
 		this.di.shutdown();

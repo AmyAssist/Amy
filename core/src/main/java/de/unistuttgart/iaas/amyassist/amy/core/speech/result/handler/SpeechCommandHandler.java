@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -40,9 +40,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.GrammarParser;
 import de.unistuttgart.iaas.amyassist.amy.core.PluginGrammarInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.TextToPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.util.NaturalLanguageInterpreterAnnotationReader;
 
 /**
@@ -55,16 +57,21 @@ public class SpeechCommandHandler {
 	@Reference
 	private Logger logger;
 	@Reference
-	private Environment environment;
+	private GrammarObjectsCreator grammarObjectsCreator;
 
 	private TextToPlugin textToPlugin;
-	private GrammarParser generator = new GrammarParser("grammar", Constants.WAKE_UP, Constants.GO_SLEEP,
-			Constants.SHUT_UP);
+	private GrammarParser generator;
 
 	private Map<PluginGrammarInfo, Class<?>> grammarInfos = new HashMap<>();
-	private Map<String, de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommand> speechCommands = new HashMap<>();
+	private Map<String, SpeechCommand> speechCommands = new HashMap<>();
 	@Reference
 	private ServiceLocator serviceLocator;
+
+	@PostConstruct
+	private void init() {
+		this.generator = new GrammarParser(this.grammarObjectsCreator.getMainGrammar().getName(), Constants.WAKE_UP,
+				Constants.GO_SLEEP, Constants.SHUT_UP);
+	}
 
 	/**
 	 * Use this to register all SpeechCommand classes
@@ -126,6 +133,6 @@ public class SpeechCommandHandler {
 	 * @return fileToSaveToGrammar
 	 */
 	private Path getFileToSaveGrammarTo() {
-		return this.environment.getWorkingDirectory().resolve("resources").resolve("sphinx-grammars/grammar.gram");
+		return this.grammarObjectsCreator.getMainGrammar().getFile().toPath();
 	}
 }

@@ -21,25 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager;
 
 /**
- * Interface between the SpeechRecognition System and the rest og the System
+ * Interface between the AudioUserInteraction and the many Recognizers belonging to one specific AudioInputStream
  * 
  * @author Kai Menzel
  */
-public interface AudioUserInteraction {
+public interface SpeechRecognizerManager {
+
 	/**
-	 * Creates the Recognizer Objects
-	 */
-	void init();
-	/**
-	 * Start the Recognition System
+	 * start the Recognition System
 	 */
 	void start();
 
 	/**
-	 * Stop the Recognition System
+	 * stop the Recognition System
 	 */
 	void stop();
 

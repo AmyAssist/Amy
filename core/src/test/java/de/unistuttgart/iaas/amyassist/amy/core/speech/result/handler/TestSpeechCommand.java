@@ -21,26 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
+
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 
 /**
- * Interface between the SpeechRecognition System and the rest og the System
+ * Dummy test class
  * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-public interface AudioUserInteraction {
-	/**
-	 * Creates the Recognizer Objects
-	 */
-	void init();
-	/**
-	 * Start the Recognition System
-	 */
-	void start();
+@SpeechCommand("testkeyword")
+public class TestSpeechCommand {
 
-	/**
-	 * Stop the Recognition System
-	 */
-	void stop();
+	@Grammar("simple #")
+	public String simpleCommand(String... s) {
+		return s[1];
+	}
 
 }
