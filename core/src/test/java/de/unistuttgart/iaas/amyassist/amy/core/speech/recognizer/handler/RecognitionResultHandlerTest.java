@@ -32,8 +32,8 @@ import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.LocalSpeechRecognizerManager;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.LocalSpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**

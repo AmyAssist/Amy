@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager;
 
 /**
  * Interface between the AudioUserInteraction and the many Recognizers belonging to one specific AudioInputStream

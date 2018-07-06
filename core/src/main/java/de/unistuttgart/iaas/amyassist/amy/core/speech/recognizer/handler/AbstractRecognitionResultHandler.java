@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
 
 /**
  * Handler that handles SpeechRecognition System intern commands

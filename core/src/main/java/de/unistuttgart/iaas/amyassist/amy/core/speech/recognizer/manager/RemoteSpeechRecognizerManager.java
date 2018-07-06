@@ -21,24 +21,23 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager;
 
 import javax.sound.sampled.AudioInputStream;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.LocalMainGrammarResultHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.LocalSwitchableGrammarResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RemoteResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
 
 /**
- * Class that manages the Recognizers belonging to the local AudioInputStream
+ * Class that manages the Recognizers belonging to a given AudioInputStream
  * 
  * @author Kai Menzel
  */
-public class LocalSpeechRecognizerManager extends AbstractSpeechRecognizerManager {
+public class RemoteSpeechRecognizerManager extends AbstractSpeechRecognizerManager {
 
 	/**
 	 * Object that handles All Recognizers with the given AudioInputStream
@@ -53,25 +52,25 @@ public class LocalSpeechRecognizerManager extends AbstractSpeechRecognizerManage
 	 *            DataSet of all GrammarObjects
 	 * 
 	 */
-	public LocalSpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
+	public RemoteSpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
 			GrammarObjectsCreator grammarData) {
 		super(ais, inputHandler, output, grammarData);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.AbstractSpeechRecognizerManager#getMainResultHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.AbstractSpeechRecognizerManager#getMainResultHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
 	 */
 	@Override
 	protected RecognitionResultHandler getMainResultHandler(Grammar grammar) {
-		return new LocalMainGrammarResultHandler(this, grammar);
+		return new RemoteResultHandler(this, grammar);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.AbstractSpeechRecognizerManager#getResultHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.AbstractSpeechRecognizerManager#getResultHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
 	 */
 	@Override
 	protected RecognitionResultHandler getResultHandler(Grammar grammar) {
-		return new LocalSwitchableGrammarResultHandler(this, grammar);
+		return new RemoteResultHandler(this, grammar);
 	}
 
 }

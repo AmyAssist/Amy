@@ -36,8 +36,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.RuntimeExceptionRecognizerCantBeCreated;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.LocalSpeechRecognizerManager;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.LocalSpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 
 /**

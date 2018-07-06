@@ -25,7 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager;
 
 /**
  * Handler that handles the local SpeechRecognition System intern commands for additional Grammars
@@ -46,7 +46,7 @@ public class LocalSwitchableGrammarResultHandler extends AbstractRecognitionResu
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.AbstractRecognitionResultHandler#environmentSpecificInputHandling(java.lang.String,
-	 *      de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognitionResultManager)
+	 *      de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager)
 	 */
 	@Override
 	protected boolean environmentSpecificInputHandling(String result, SpeechRecognitionResultManager srManager) {
