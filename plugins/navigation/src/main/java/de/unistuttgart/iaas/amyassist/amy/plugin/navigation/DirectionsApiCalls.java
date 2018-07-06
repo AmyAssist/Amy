@@ -76,8 +76,8 @@ public class DirectionsApiCalls {
 	 * @return a array with routes
 	 */
 	public DirectionsRoute[] fromTo(String origin, String destination, TravelMode mode) {
-		return errorHandling(new DirectionsApiRequest(this.context).origin(origin).destination(destination).mode(mode).units(Unit.METRIC)
-				.alternatives(true));
+		return errorHandling(new DirectionsApiRequest(this.context).origin(origin).destination(destination).mode(mode)
+				.units(Unit.METRIC).alternatives(true));
 	}
 
 	/**
@@ -129,8 +129,7 @@ public class DirectionsApiCalls {
 		} catch (InterruptedException e) {
 			this.logger.warn(ERROR_TAG, e);
 			Thread.currentThread().interrupt();
-		}
-		catch (ApiException | IOException | IllegalStateException e) {
+		} catch (ApiException | IOException | IllegalStateException e) {
 			this.logger.warn(ERROR_TAG, e);
 		}
 		return new DirectionsRoute[0];
