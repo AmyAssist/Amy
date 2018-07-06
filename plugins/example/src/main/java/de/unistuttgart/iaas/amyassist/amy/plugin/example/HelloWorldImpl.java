@@ -84,6 +84,10 @@ public class HelloWorldImpl implements HelloWorldService {
 		return hellos.toString().trim();
 	}
 
+	/**
+	 * Show all contacts
+	 * @return human-readable text
+	 */
 	@Override
 	public String demonstrateContactRegistry() {
 		List<? extends Contact> contactsList = contacts.getAll();
@@ -108,6 +112,10 @@ public class HelloWorldImpl implements HelloWorldService {
 		}
 	}
 
+	/**
+	 * Test the contact registry's functionality
+	 * @return human-readable text
+	 */
 	@Override
 	public String testContactRegistry() {
 		try {
@@ -129,6 +137,11 @@ public class HelloWorldImpl implements HelloWorldService {
 			contacts.save(personB);
 
 			assertTrue(personA.getId() != personB.getId());
+
+			List<Contact> list = contacts.getAll();
+			assertTrue(list.contains(personA));
+			assertTrue(list.contains(personB));
+
 			int personAId = personA.getId();
 
 			Contact personA2 = contacts.getById(personA.getId());

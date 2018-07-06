@@ -56,7 +56,7 @@ public abstract class AbstractRegistry<T> implements IRegistry<T> {
      * Can be a subclass of T
      * @return The type of the concrete entity class
      */
-    public abstract @Nonnull Class<? extends T> getEntityClass();
+    protected abstract @Nonnull Class<? extends T> getEntityClass();
 
     /**
      * Create an instance of the entity class

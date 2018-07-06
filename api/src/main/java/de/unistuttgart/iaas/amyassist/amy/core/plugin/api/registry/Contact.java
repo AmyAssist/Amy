@@ -30,21 +30,21 @@ package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
  */
 public interface Contact {
 
-    public String getFirstName();
+    String getFirstName();
 
-    public void setFirstName(String firstName);
+    void setFirstName(String firstName);
 
-    public String getLastName();
+    String getLastName();
 
-    public void setLastName(String lastName);
+    void setLastName(String lastName);
 
-    public boolean isImportant();
+    boolean isImportant();
 
-    public void setImportant(boolean important);
+    void setImportant(boolean important);
 
-    public String getEmail();
+    String getEmail();
 
-    public void setEmail(String email);
+    void setEmail(String email);
 
-    public int getId();
+    int getId();
 }
