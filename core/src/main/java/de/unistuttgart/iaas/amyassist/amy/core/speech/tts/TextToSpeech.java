@@ -21,12 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
 import java.io.IOException;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
@@ -34,8 +33,9 @@ import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import marytts.LocalMaryInterface;
 import marytts.exceptions.MaryConfigurationException;
@@ -50,17 +50,15 @@ import marytts.exceptions.SynthesisException;
 @Service(TextToSpeech.class)
 public class TextToSpeech implements Output {
 
-	private final Logger logger = LoggerFactory.getLogger(TextToSpeech.class);
+	@Reference
+	private Logger logger;
 
-	private static TextToSpeech tts;
-
-	private final LocalMaryInterface mary;
-
-	private AudioInputStream audio;
+	private LocalMaryInterface mary;
 
 	private Clip outputClip;
 
-	private TextToSpeech() {
+	@PostConstruct
+	private void init() {
 		try {
 			this.mary = new LocalMaryInterface();
 			this.mary.setVoice("dfki-poppy-hsmm");
@@ -68,16 +66,6 @@ public class TextToSpeech implements Output {
 			this.logger.error("initialization error", e);
 			throw new IllegalStateException(e);
 		}
-	}
-
-	/**
-	 * @return Returns the static tts Object
-	 */
-	public static TextToSpeech getTTS() {
-		if (tts == null) {
-			tts = new TextToSpeech();
-		}
-		return tts;
 	}
 
 	// -----------------------------------------------------------------------------------------------
@@ -93,12 +81,11 @@ public class TextToSpeech implements Output {
 	private void speak(LineListener listener, String s) {
 		stopOutput();
 		try {
-			this.audio = this.mary.generateAudio(s);
-			AudioFormat format = this.audio.getFormat();
+			AudioFormat format = this.mary.generateAudio(s).getFormat();
 			DataLine.Info info = new DataLine.Info(Clip.class, format);
 			this.outputClip = (Clip) AudioSystem.getLine(info);
 			this.outputClip.addLineListener(listener);
-			this.outputClip.open(this.audio);
+			this.outputClip.open(this.mary.generateAudio(s));
 			this.outputClip.start();
 		} catch (SynthesisException | LineUnavailableException | IOException e) {
 			this.logger.error("output error", e);
@@ -111,17 +98,13 @@ public class TextToSpeech implements Output {
 	 * 
 	 * @param listener
 	 *            Listener for the Voice Output Clip
-	 * @param voiceOutput
-	 *            true if Amy shall voice the Output
 	 * @param s
 	 *            String that shall be said
 	 */
 	@Override
-	public void output(LineListener listener, boolean voiceOutput, String s) {
+	public void output(LineListener listener, String s) {
 		this.logger.info("saying: {}", s);
-		if (voiceOutput) {
-			speak(listener, preProcessing(s));
-		}
+		speak(listener, preProcessing(s));
 	}
 
 	// -----------------------------------------------------------------------------------------------
