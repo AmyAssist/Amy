@@ -23,25 +23,24 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
-
-import java.nio.file.Paths;
-import java.util.Properties;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
-import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
+import java.util.Properties;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtensionHTTP;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**

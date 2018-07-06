@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.grammar;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -31,6 +31,8 @@ import java.util.HashMap;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 
 /**
  * Test Class for the Grammar Object

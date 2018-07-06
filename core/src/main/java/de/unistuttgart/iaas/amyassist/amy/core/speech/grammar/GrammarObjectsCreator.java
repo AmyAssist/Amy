@@ -21,44 +21,52 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.grammar;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ScheduledExecutorService;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
- * Implementation of SpeechInputHandler
+ * Class that Creates all Grammar Objects sets the MainGrammar and the List of all other Grammars
  * 
- * @author Leon Kiefer
+ * @author Kai Menzel
  */
-@Service
-public class NaturalLanaguageInputHandlerService implements SpeechInputHandler {
-	@Reference
-	private Core core;
+@Service(GrammarObjectsCreator.class)
+public class GrammarObjectsCreator {
 
 	@Reference
-	private SpeechCommandHandler speechCommandHandler;
+	private Environment environment;
 
-	private ScheduledExecutorService singleThreadScheduledExecutor;
+	private Grammar mainGrammar;
+	private List<Grammar> switchables;
 
 	@PostConstruct
-	private void setup() {
-		this.singleThreadScheduledExecutor = this.core.getScheduledExecutor();
+	private void init() {
+		this.switchables = new ArrayList<>();
+		Path grammarFile = this.environment.getWorkingDirectory().resolve("resources")
+				.resolve("sphinx-grammars/grammar.gram");
+		this.mainGrammar = new Grammar("grammar", grammarFile.toFile());
+
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler#handle(java.lang.String)
+	 * @return the MainGrammar of the Recognition System
 	 */
-	@Override
-	public CompletableFuture<String> handle(String speechInput) {
-		return CompletableFuture.supplyAsync(() -> this.speechCommandHandler.handleSpeechInput(speechInput),
-				this.singleThreadScheduledExecutor);
+	public Grammar getMainGrammar() {
+		return this.mainGrammar;
+	}
+
+	/**
+	 * @return List of the Switchable Grammars
+	 */
+	public List<Grammar> getSwitchableGrammars() {
+		return this.switchables;
 	}
 
 }

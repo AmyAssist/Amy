@@ -21,26 +21,38 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
- * Interface between the SpeechRecognition System and the rest og the System
+ * Test Class for the Text To Speech Output class
  * 
  * @author Kai Menzel
  */
-public interface AudioUserInteraction {
-	/**
-	 * Creates the Recognizer Objects
-	 */
-	void init();
-	/**
-	 * Start the Recognition System
-	 */
-	void start();
+@ExtendWith(FrameworkExtension.class)
+class TextToSpeechTest {
+
+	@Reference
+	private TestFramework framework;
+
+	private Output tts;
 
 	/**
-	 * Stop the Recognition System
+	 * test Logging
 	 */
-	void stop();
+	@Test
+	void test() {
+		this.tts = this.framework.setServiceUnderTest(TextToSpeech.class);
+		assertThat(this.tts == null, equalTo(false));
+	}
 
 }

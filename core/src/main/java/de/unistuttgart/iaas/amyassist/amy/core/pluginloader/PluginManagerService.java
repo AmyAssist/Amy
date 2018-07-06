@@ -43,7 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 
 /**
