@@ -33,7 +33,6 @@ import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 
 import com.google.maps.model.TravelMode;
@@ -46,8 +45,8 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * Test class for the api calls
  * @author Lars Buttgereit
  */
-@ExtendWith({ MockitoExtension.class, FrameworkExtension.class })
-public class DirectionsApiCalssTest {
+@ExtendWith(FrameworkExtension.class)
+public class DirectionsApiCallsTest {
 	private Properties mockProperties;
 	private DirectionsApiCalls calls;
 	private Logger logger;

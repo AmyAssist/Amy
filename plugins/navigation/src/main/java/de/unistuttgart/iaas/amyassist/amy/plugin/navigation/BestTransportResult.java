@@ -38,7 +38,7 @@ import com.google.maps.model.TravelMode;
 public class BestTransportResult {
 	private TravelMode mode;
 	private DirectionsRoute route;
-	
+
 	private static final String THE_ROUTE_IS = "The route is ";
 	private static final String LONG_AND_NEED = " long and need ";
 
@@ -72,14 +72,19 @@ public class BestTransportResult {
 	}
 
 	/**
-	 * Not implemented yet
-	 * get a string with the detailed steps and times. 
+	 * Not implemented yet get a string with the detailed steps and times.
+	 * 
 	 * @return
 	 */
 	public String routeToLongString() {
 		return null;
 	}
 
+	/**
+	 * get a String with informations for example arrival, departure time, duration or distance
+	 * 
+	 * @return
+	 */
 	public String routeToShortString() {
 		if (this.route != null && this.route.legs != null) {
 			DirectionsLeg leg = this.route.legs[0];
@@ -88,15 +93,15 @@ public class BestTransportResult {
 				if (leg.durationInTraffic != null) {
 					return THE_ROUTE_IS.concat(leg.distance.humanReadable)
 							.concat(LONG_AND_NEED.concat(leg.durationInTraffic.humanReadable))
-							.concat(" time in Traffic");
+							.concat(" time in traffic");
 				}
-				return "THE_ROUTE_IS".concat(leg.distance.humanReadable)
+				return THE_ROUTE_IS.concat(leg.distance.humanReadable)
 						.concat(LONG_AND_NEED.concat(leg.duration.humanReadable)).concat(" time");
 			case TRANSIT:
 				return "Departure time is ".concat(leg.departureTime.toString("HH:mm")).concat(", arrival time is ")
 						.concat(leg.arrivalTime.toString("HH:mm"));
 			case BICYCLING:
-				return "THE_ROUTE_IS".concat(leg.distance.humanReadable)
+				return THE_ROUTE_IS.concat(leg.distance.humanReadable)
 						.concat(LONG_AND_NEED.concat(leg.duration.humanReadable)).concat(" time");
 			default:
 				break;
