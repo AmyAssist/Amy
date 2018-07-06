@@ -24,9 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.LogManager;
 
@@ -119,7 +117,7 @@ public class TestFrameworkImpl implements TestFramework {
 	 * call this after the test execution
 	 */
 	public void after() {
-		if (this.server != null && this.server.isRunning()) {
+		if (this.server != null) {
 			this.server.shutdown();
 		}
 	}

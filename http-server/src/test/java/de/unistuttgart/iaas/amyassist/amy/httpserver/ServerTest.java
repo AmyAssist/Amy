@@ -33,6 +33,8 @@ import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
@@ -57,6 +59,7 @@ class ServerTest {
 
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(ConfigurationLoader.class, configLoader);
+		this.dependencyInjection.addExternalService(Logger.class, LoggerFactory.getLogger(Server.class));
 	}
 
 	@Test

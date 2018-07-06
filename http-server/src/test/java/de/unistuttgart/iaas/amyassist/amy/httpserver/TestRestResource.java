@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 /**
  * 
@@ -32,8 +33,10 @@ import javax.ws.rs.Path;
  */
 @Path("/")
 public class TestRestResource {
+
 	@GET
-	public String ping(String s) {
+	@Path("{s}")
+	public String ping(@PathParam("s") String s) {
 		return s;
 	}
 }

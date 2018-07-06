@@ -72,14 +72,12 @@ class TestFrameworkImplTest {
 
 	@Test
 	void testRESTResource() {
-		this.testFrameworkImpl.prepareServer();
 		this.testFrameworkImpl.before();
 		this.testFrameworkImpl.after();
 	}
 
 	@Test
 	void testRESTResourceMustBeAResource() {
-		this.testFrameworkImpl.prepareServer();
 		String message = assertThrows(IllegalArgumentException.class,
 				() -> this.testFrameworkImpl.setRESTResource(ServiceAPI.class)).getMessage();
 		assertThat(message, is("The Resource must have a @Path annotation"));

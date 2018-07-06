@@ -73,10 +73,10 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 
 		boolean found = false;
 		for (Path p : this.configDirs) {
-			if (Files.isDirectory(p)) {
+			if (p.toFile().isDirectory()) {
 				found = true;
 			} else {
-				this.logger.warn("Configuration directory {} does not exist", p.toString());
+				this.logger.warn("Configuration directory {} does not exist", p);
 			}
 		}
 		if (!found) {
@@ -95,7 +95,7 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 	private Path findPropertiesFile(String configurationName) {
 		for (int i = this.configDirs.size() - 1; i >= 0; i--) {
 			Path p = this.configDirs.get(i).resolve(configurationName + ".properties");
-			if (Files.exists(p))
+			if (p.toFile().exists())
 				return p;
 		}
 		return null;

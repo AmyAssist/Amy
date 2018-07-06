@@ -37,7 +37,6 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
@@ -61,13 +60,14 @@ public class Server {
 	/** The name of the property, which specifies whether the server should bind to local host only. */
 	public static final String PROPERTY_LOCALHOST = "local_host_only";
 
-	private final Logger logger = LoggerFactory.getLogger(Server.class);
+	@Reference
+	private Logger logger;
 
 	/**
 	 * The dependency injection instance, needed for binding the di to the server
 	 */
 	@Reference
-	ServiceLocator di;
+	private ServiceLocator di;
 
 	private Set<Class<?>> restResources = new HashSet<>();
 	private HttpServer httpServer;
