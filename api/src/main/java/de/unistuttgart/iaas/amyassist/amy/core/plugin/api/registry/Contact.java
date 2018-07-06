@@ -21,34 +21,30 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.example.api;
+package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
 
 /**
- * The api provided by the HelloWorldService
- * 
- * @author Leon Kiefer
+ * A contact entity for the contact registry
+ *
+ * @author Benno Krauß
  */
-public interface HelloWorldService {
+public interface Contact {
 
-	/**
-	 * The method that does all the logic.
-	 * 
-	 * @return the response
-	 */
-	String helloWorld();
+    String getFirstName();
 
-	String helloWorldXTimes(int times);
+    void setFirstName(String firstName);
 
-	/**
-	 * Demonstrate the registry's functionality
-	 * @return human-readable text
-	 */
-	String demonstrateContactRegistry();
+    String getLastName();
 
-	/**
-	 * Test the registry for correctness
-	 * @return human-readable text
-	 */
-	String testContactRegistry();
+    void setLastName(String lastName);
 
+    boolean isImportant();
+
+    void setImportant(boolean important);
+
+    String getEmail();
+
+    void setEmail(String email);
+
+    int getId();
 }
