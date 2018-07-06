@@ -64,7 +64,7 @@ public class TestBestTransportResult {
 	@Test
 	public void testRoutToShortStringtransit() {
 		this.bestResult = new BestTransportResult(TravelMode.TRANSIT, this.data.routeTransport1);
-		assertThat(this.bestResult.routeToShortString(), equalTo("Departure time is 09:00, arrival time is 10:20"));
+		assertThat(this.bestResult.routeToShortString(), equalTo("Departure time is 07:00, arrival time is 8:20"));
 	}
 
 	@Test
