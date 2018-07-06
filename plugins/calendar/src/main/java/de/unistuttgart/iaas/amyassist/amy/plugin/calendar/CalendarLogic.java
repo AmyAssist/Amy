@@ -28,8 +28,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -57,7 +60,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
- * This class is for the Calendar Authetification and Logic, parts of the Code are from
+ * This class is for the Calendar Authentication and Logic, parts of the Code are from
  * https://developers.google.com/calendar/quickstart/java
  * 
  * @author Patrick Gebhardt, Florian Bauer
@@ -140,7 +143,7 @@ public class CalendarLogic {
 			}
 			for (Event event : items) {
 				DateTime start = event.getStart().getDateTime();
-				eventCalc(start, event);
+				eventCalc(start, event, true);
 			}
 			return "You have following upcoming events:\n" + String.join("\n", this.eventList);
 		} catch (IOException e) {
@@ -151,11 +154,13 @@ public class CalendarLogic {
 	}
 
 	/**
-	 * This method contains the logic to show the calendar events today
+	 * This method contains the logic to show the calendar events today and tomorrow
 	 * 
-	 * @return the events of the actual day
+	 * @param day
+	 * 			true if it is today, false for tomorrow	
+	 * @return the events of the chosen day
 	 */
-	public String getEventsToday() {
+	public String getEventsByDay(boolean day) {
 		try {
 			this.eventList.clear();
 			DateTime now = new DateTime(System.currentTimeMillis());
@@ -164,6 +169,12 @@ public class CalendarLogic {
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return "No upcoming events found.";
+			}
+			if(!day) {
+				Date today = new Date();
+				LocalDateTime plusOne = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+				plusOne = plusOne.plusDays(1);
+				now = new DateTime(Date.from(plusOne.atZone(ZoneId.systemDefault()).toInstant()));
 			}
 			for (Event event : items) {
 				String eventdatetime = "";
@@ -175,15 +186,21 @@ public class CalendarLogic {
 				}
 				if (eventdatetime.equals(now.toString().substring(0, 10))) {
 					DateTime start = event.getStart().getDateTime();
-					eventCalc(start, event);
+					eventCalc(start, event, false);
 				} else if (eventdate.equals(now.toString().substring(0, 10))) {
-					eventCalc(null, event);
+					eventCalc(null, event, false);
 				}
 			}
-			if (this.eventList.isEmpty()) {
-				return "There are no events today.";
+			if(day) {
+				if (this.eventList.isEmpty()) {
+					return "There are no events today.";
+				}
+				return "You have following events today:\n" + String.join("\n", this.eventList);
 			}
-			return "You have following upcoming events:\n" + String.join("\n", this.eventList);
+			if (this.eventList.isEmpty()) {
+				return "There are no events tomorrow.";
+			}
+			return "You have following events tomorrow:\n" + String.join("\n", this.eventList);
 		} catch (IOException e) {
 			this.logger.error("Sorry, I am not able to get your events.", e);
 			return "An error occured.";
@@ -197,9 +214,12 @@ public class CalendarLogic {
 	 *            start time of the event
 	 * @param event
 	 *            data of the event
+	 * @param withDate
+	 *            determines if event output is with or without the date
 	 */
-	public void eventCalc(DateTime start, Event event) {
+	public void eventCalc(DateTime start, Event event, boolean withDate) {
 		String eventData;
+		String datePart = "";
 		if (start != null) {
 			String startData = start.toString();
 			String[] parts = startData.split("T");
@@ -212,22 +232,28 @@ public class CalendarLogic {
 			String yearpart2 = year.substring(2, 4);
 			String startTime = parts[1];
 			DateTime endtime = event.getEnd().getDateTime();
-			eventData = event.getSummary() + " on the " + ordinal(Integer.parseInt(day)) + " of " + getMonth(month)
-					+ " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2) + " at "
+			if(withDate) {
+				datePart = " on the " + ordinal(Integer.parseInt(day)) + " of " + getMonth(month)
+				+ " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2);
+			}
+			eventData = event.getSummary() + datePart  + " at "
 					+ startTime.substring(0, 5) + " until " + endtime.toString().substring(11, 16) + "\n";
 			this.eventList.add(eventData);
 		}
 		if (start == null) {
-			start = event.getStart().getDate();
-			String startData = start.toString();
+			DateTime date = event.getStart().getDate();
+			String startData = date.toString();
 			String[] dayParts = startData.split("-");
 			String day = dayParts[2];
 			String month = dayParts[1];
 			String year = dayParts[0];
 			String yearpart1 = year.substring(0, 2);
 			String yearpart2 = year.substring(2, 4);
-			eventData = event.getSummary() + " on the " + ordinal(Integer.parseInt(day)) + " of " + getMonth(month)
-					+ " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2) + " all day long." + "\n";
+			if(withDate) {
+				datePart = " on the " + ordinal(Integer.parseInt(day)) + " of " + getMonth(month)
+				+ " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2);
+			}
+			eventData = event.getSummary() + datePart + " all day long." + "\n";
 			this.eventList.add(eventData);
 		}
 	}
@@ -237,7 +263,7 @@ public class CalendarLogic {
 	 * 
 	 * @param month
 	 *            month of the event as a number in a String
-	 * @return current month of year as String (MMMM), e.g. May
+	 * @return current month of year as String, e.g. May
 	 */
 	public String getMonth(String month) {
 		String monthString = "";
