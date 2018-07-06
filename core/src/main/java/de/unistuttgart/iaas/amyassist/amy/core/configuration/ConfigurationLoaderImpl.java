@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -74,7 +73,7 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 
 		boolean found = false;
 		for (Path p : this.configDirs) {
-			if (p.toFile().isDirectory()) {
+			if (Files.isDirectory(p)) {
 				found = true;
 			} else {
 				this.logger.warn("Configuration directory {} does not exist", p.toString());
@@ -96,8 +95,7 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 	private Path findPropertiesFile(String configurationName) {
 		for (int i = this.configDirs.size() - 1; i >= 0; i--) {
 			Path p = this.configDirs.get(i).resolve(configurationName + ".properties");
-			File f = p.toFile();
-			if (f.exists())
+			if (Files.exists(p))
 				return p;
 		}
 		return null;
@@ -126,7 +124,8 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader#store(java.lang.String, java.util.Properties)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader#store(java.lang.String,
+	 *      java.util.Properties)
 	 */
 	@Override
 	public void store(String configurationName, Properties properties) {
