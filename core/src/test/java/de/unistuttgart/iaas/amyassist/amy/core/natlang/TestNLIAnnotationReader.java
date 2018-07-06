@@ -23,9 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
+import static org.hamcrest.Matchers.arrayWithSize;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -52,8 +56,7 @@ class TestNLIAnnotationReader {
 
 	@Test
 	public void testGrammar() {
-		Set<Method> grammars = NLIAnnotationReader
-				.getValidNLIMethods(Plugin.class);
+		Set<Method> grammars = NLIAnnotationReader.getValidNLIMethods(Plugin.class);
 
 		assertThat(grammars, hasSize(2));
 	}
@@ -79,8 +82,7 @@ class TestNLIAnnotationReader {
 
 	@Test
 	public void testIllegalTypes() {
-		assertThrows(IllegalArgumentException.class,
-				() -> NLIAnnotationReader.getValidNLIMethods(Brocken.class));
+		assertThrows(IllegalArgumentException.class, () -> NLIAnnotationReader.getValidNLIMethods(Brocken.class));
 	}
 
 	@SpeechCommand({})
