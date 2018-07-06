@@ -23,6 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.verify;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,18 +43,13 @@ import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.verify;
-
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtensionHTTP;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -58,7 +57,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Muhammed Kaya
  */
-@ExtendWith(FrameworkExtension.class)
+@ExtendWith(FrameworkExtensionHTTP.class)
 class MusicRestTest {
 
 	@Reference
@@ -83,7 +82,7 @@ class MusicRestTest {
 		this.logic = this.testFramework.mockService(PlayerLogic.class);
 
 		Client c = ClientBuilder.newClient();
-		this.target = c.target(Server.BASE_URI);
+		this.target = c.target(this.testFramework.getServerBaseURI());
 
 		createSongAndPlaylist();
 	}
@@ -312,14 +311,15 @@ class MusicRestTest {
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK, 5);
 		Mockito.verify(this.stringGenerator).generateSearchOutputString(this.logic.play(0, SearchTypes.NORMAL_SEARCH));
-		
+
 		Mockito.when(this.logic.search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK, 5))
 				.thenReturn(emptySearchList);
 		response = this.target.path("music").path("play").queryParam("type", "track").request().post(entity);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("No matching results found."));
 		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic, Mockito.times(2)).search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK, 5);
+		Mockito.verify(this.logic, Mockito.times(2)).search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK,
+				5);
 
 		response = this.target.path("music").path("play").queryParam("type", "track").request().post(null);
 		actualMsg = response.readEntity(String.class);
@@ -327,14 +327,13 @@ class MusicRestTest {
 		assertThat(response.getStatus(), is(409));
 
 		Mockito.when(this.logic.play(1, SearchTypes.USER_PLAYLISTS)).thenReturn(foundEntries);
-		Mockito.when(this.stringGenerator.generateSearchOutputString(foundEntries))
-				.thenReturn("myPlaylist");
+		Mockito.when(this.stringGenerator.generateSearchOutputString(foundEntries)).thenReturn("myPlaylist");
 		response = this.target.path("music").path("play").queryParam("type", "user").queryParam("songNumber", "1")
 				.request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("myPlaylist"));
 		assertThat(response.getStatus(), is(200));
-		
+
 		Mockito.when(this.logic.play(1, SearchTypes.USER_PLAYLISTS)).thenReturn(emptyList);
 		response = this.target.path("music").path("play").queryParam("type", "user").queryParam("songNumber", "1")
 				.request().post(null);
@@ -344,9 +343,7 @@ class MusicRestTest {
 		Mockito.verify(this.logic, Mockito.times(2)).play(1, SearchTypes.USER_PLAYLISTS);
 
 		Mockito.when(this.logic.play(0, SearchTypes.FEATURED_PLAYLISTS)).thenReturn(foundEntries);
-		Mockito.when(
-				this.stringGenerator.generateSearchOutputString(foundEntries))
-				.thenReturn("featuredPlaylist");
+		Mockito.when(this.stringGenerator.generateSearchOutputString(foundEntries)).thenReturn("featuredPlaylist");
 		response = this.target.path("music").path("play").queryParam("type", "featured").queryParam("limit", "4")
 				.request().post(null);
 		actualMsg = response.readEntity(String.class);
@@ -360,7 +357,7 @@ class MusicRestTest {
 		assertThat(actualMsg, is("name of the playlist is: featuredPlaylist"));
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).play();
-		
+
 		Mockito.when(this.logic.play(1, SearchTypes.FEATURED_PLAYLISTS)).thenReturn(emptyList);
 		response = this.target.path("music").path("play").queryParam("type", "featured").queryParam("songNumber", "1")
 				.request().post(null);

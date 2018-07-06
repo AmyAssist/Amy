@@ -68,12 +68,12 @@ class ConfigurationLoaderTest {
 		Files.createDirectory(this.tempDir.resolve("config"));
 		Mockito.when(environment.getWorkingDirectory()).thenReturn(this.tempDir);
 
-		this.configurationLoader = this.testFramework.setServiceUnderTest(ConfigurationLoader.class);
+		this.configurationLoader = this.testFramework.setServiceUnderTest(ConfigurationLoaderImpl.class);
 	}
 
 	@Test
 	void testStore() {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoader.class);
+		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
 		Properties properties = new Properties();
 		properties.setProperty("simpleKey", "test value!!");
 

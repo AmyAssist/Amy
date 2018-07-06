@@ -26,12 +26,14 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
@@ -53,6 +55,8 @@ import de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource;
  * @author Tim Neumann, Leon Kiefer
  */
 public class Core {
+	private static final String CONFIG_NAME = "core.config";
+	private static final String PROPERTY_ENABLE_CONSOLE = "enableConsole";
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
@@ -64,6 +68,8 @@ public class Core {
 	private Server server;
 
 	private CommandLineArgumentHandlerService cmaHandler;
+
+	private Properties config;
 
 	/**
 	 * Get's {@link #singleThreadScheduledExecutor singleThreadScheduledExecutor}
@@ -104,15 +110,16 @@ public class Core {
 	 */
 	private void init() {
 		this.registerAllCoreServices();
+		ConfigurationLoader configLoader = this.di.getService(ConfigurationLoader.class);
+		this.config = configLoader.load(CONFIG_NAME);
+
 		SpeechCommandHandler speechCommandHandler = this.di.getService(SpeechCommandHandler.class);
 		this.threads = new ArrayList<>();
 
 		this.server = this.di.getService(Server.class);
 		this.server.register(HomeResource.class);
 
-		Console console = this.di.getService(Console.class);
-		console.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
-		this.threads.add(new Thread(console));
+		initConsole();
 
 		Environment environment = this.di.getService(Environment.class);
 
@@ -128,6 +135,19 @@ public class Core {
 		pluginManager.loadPlugins();
 		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
 		speechCommandHandler.completeSetup();
+	}
+
+	private void initConsole() {
+		String enableConsole = this.config.getProperty(PROPERTY_ENABLE_CONSOLE);
+		if (enableConsole == null) {
+			this.logger.warn("Core config missing key {}.", PROPERTY_ENABLE_CONSOLE);
+			enableConsole = "true";
+		}
+		if (enableConsole.equals("true")) {
+			Console console = this.di.getService(Console.class);
+			console.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
+			this.threads.add(new Thread(console));
+		}
 	}
 
 	/**

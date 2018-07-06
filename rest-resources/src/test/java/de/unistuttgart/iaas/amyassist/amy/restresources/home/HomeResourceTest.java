@@ -23,8 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.restresources.home;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,8 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtensionHTTP;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -55,7 +53,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Christian Bräuner
  */
-@ExtendWith(FrameworkExtension.class)
+@ExtendWith(FrameworkExtensionHTTP.class)
 class HomeResourceTest {
 
 	@Reference
@@ -66,7 +64,9 @@ class HomeResourceTest {
 	private SpeechInputHandler speechInputHandler;
 
 	private PluginManager manager;
-	
+
+	private String targetUriString;
+
 	/**
 	 * setup for server and client
 	 */
@@ -77,23 +77,27 @@ class HomeResourceTest {
 		this.testFramework.setRESTResource(HomeResource.class);
 
 		Client c = ClientBuilder.newClient();
-		this.target = c.target(Server.BASE_URI.toString() + "/" + HomeResource.PATH);
+		this.targetUriString = this.testFramework.getServerBaseURI().toString() + HomeResource.PATH;
+
+		this.target = c.target(this.targetUriString);
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#useAmy(java.lang.String)}.
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#useAmy(java.lang.String)}.
 	 */
 	@Test
 	void testUseAmy() {
 		String consoleInput = "Amy do something";
 		String result = "I did something";
-		Mockito.when(this.speechInputHandler.handle(consoleInput)).thenReturn(CompletableFuture.completedFuture(result));
+		Mockito.when(this.speechInputHandler.handle(consoleInput))
+				.thenReturn(CompletableFuture.completedFuture(result));
 		Entity<String> entity = Entity.entity(consoleInput, MediaType.TEXT_PLAIN);
 		Response r = this.target.path("console").request().post(entity);
 		assertEquals(200, r.getStatus());
 		assertEquals(result, r.readEntity(String.class));
 		Mockito.verify(this.speechInputHandler).handle(consoleInput);
-		
+
 		consoleInput = "wrong input";
 		Mockito.when(this.speechInputHandler.handle(consoleInput)).thenThrow(new RuntimeException("some exception"));
 		entity = Entity.entity(consoleInput, MediaType.TEXT_PLAIN);
@@ -112,27 +116,28 @@ class HomeResourceTest {
 		Response r = this.target.request().get();
 		assertEquals(200, r.getStatus());
 		SimplePluginEntity[] spes = r.readEntity(SimplePluginEntity[].class);
-		assertEquals(plugins.length+1, spes.length);
-		for(int i = 0; i < plugins.length; i++) {
+		assertEquals(plugins.length + 1, spes.length);
+		for (int i = 0; i < plugins.length; i++) {
 			assertEquals(plugins[i].getDisplayName(), spes[i].getName());
 			assertEquals(plugins[i].getDescription(), spes[i].getDescription());
 			assertEquals(null, spes[i].getLink());
 		}
-		assertEquals("Configuration", spes[spes.length-1].getName());
-		assertEquals("Configurations for this Amy instance and installed plugins", spes[spes.length-1].getDescription());
-		assertEquals("http://localhost:8080/rest/config", spes[spes.length-1].getLink());
-		
+		assertEquals("Configuration", spes[spes.length - 1].getName());
+		assertEquals("Configurations for this Amy instance and installed plugins",
+				spes[spes.length - 1].getDescription());
+		assertEquals(this.testFramework.getServerBaseURI().toString() + "config", spes[spes.length - 1].getLink());
+
 	}
 
 	private IPlugin[] setupPlugins() {
 		IPlugin[] plugins = new IPlugin[5];
-		for(int i = 0; i < 5; i++) {
+		for (int i = 0; i < 5; i++) {
 			plugins[i] = Mockito.mock(IPlugin.class);
-			Mockito.when(plugins[i].getDisplayName()).thenReturn("Display"+i);
-			Mockito.when(plugins[i].getDescription()).thenReturn("Description"+i);
-			
+			Mockito.when(plugins[i].getDisplayName()).thenReturn("Display" + i);
+			Mockito.when(plugins[i].getDescription()).thenReturn("Description" + i);
+
 			Mockito.when(plugins[i].getClasses()).thenReturn(new ArrayList<>());
-			
+
 		}
 		return plugins;
 	}

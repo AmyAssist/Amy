@@ -35,12 +35,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtensionHTTP;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -48,7 +49,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Leon Kiefer
  */
-@ExtendWith(FrameworkExtension.class)
+@ExtendWith(FrameworkExtensionHTTP.class)
 class PluginManagerTest {
 	@Reference
 	private TestFramework testFramework;
@@ -63,7 +64,7 @@ class PluginManagerTest {
 		Environment environment = this.testFramework.mockService(Environment.class);
 		when(environment.getWorkingDirectory()).thenReturn(Paths.get("").toAbsolutePath());
 
-		ConfigurationLoader configurationLoader = this.testFramework.mockService(ConfigurationLoader.class);
+		ConfigurationLoader configurationLoader = this.testFramework.mockService(ConfigurationLoaderImpl.class);
 		this.properties = new Properties();
 		when(configurationLoader.load("plugin.config")).thenReturn(this.properties);
 

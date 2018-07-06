@@ -19,9 +19,11 @@
 		<amy.di.api.version>0.3.0-Snapshot</amy.di.api.version>
 		<amy.di.version>0.3.0-Snapshot</amy.di.version>
 		<amy.api.version>0.3.0-Snapshot</amy.api.version>
+		<amy.plugin-manager-api.version>0.3.0-Snapshot</amy.plugin-manager-api.version>
 		<amy.http-server.version>0.3.0-Snapshot</amy.http-server.version>
 		<amy.testing-framework.version>0.3.0-Snapshot</amy.testing-framework.version>
 		<amy.core.version>0.3.0-Snapshot</amy.core.version>
+		<amy.rest-resources.version>0.3.0-Snapshot</amy.rest-resources.version>
 
 		<!-- External dependency versions. Only project wide or core dependencies 
 			here -->
@@ -136,6 +138,11 @@
 				<groupId>de.unistuttgart.iaas.amyassist</groupId>
 				<artifactId>amy-api</artifactId>
 				<version>${amy.api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<artifactId>amy-plugin-manager-api</artifactId>
+				<version>${amy.plugin-manager-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.ws.rs</groupId>

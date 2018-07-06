@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.test;
 
+import java.net.URI;
+
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
 /**
@@ -61,6 +63,13 @@ public interface TestFramework {
 	 */
 	<T> T mockService(Class<T> serviceType);
 
+	/**
+	 * @return a storage object
+	 */
 	IStorage storage();
 
+	/**
+	 * @return the base URI of the Server
+	 */
+	URI getServerBaseURI();
 }

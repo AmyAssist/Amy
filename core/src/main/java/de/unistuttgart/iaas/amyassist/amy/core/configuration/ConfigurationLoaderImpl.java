@@ -47,7 +47,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
  * @author Leon Kiefer
  */
 @Service
-public class ConfigurationLoader {
+public class ConfigurationLoaderImpl implements ConfigurationLoader {
 
 	@Reference
 	private Logger logger;
@@ -104,11 +104,9 @@ public class ConfigurationLoader {
 	}
 
 	/**
-	 * 
-	 * @param configurationName
-	 *            the name of the config file, without the .properties
-	 * @return the loaded Properties or null if no such file was found
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader#load(java.lang.String)
 	 */
+	@Override
 	public Properties load(String configurationName) {
 		Properties properties = new Properties();
 		Path path = findPropertiesFile(configurationName);
@@ -128,12 +126,9 @@ public class ConfigurationLoader {
 	}
 
 	/**
-	 * 
-	 * @param configurationName
-	 *            the name of the config file, without the .properties
-	 * @param properties
-	 *            the Properties to be saved
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader#store(java.lang.String, java.util.Properties)
 	 */
+	@Override
 	public void store(String configurationName, Properties properties) {
 		Path path = findPropertiesFile(configurationName);
 

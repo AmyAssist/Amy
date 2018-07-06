@@ -23,28 +23,26 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import com.github.dvdme.ForecastIOLib.FIODaily;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import com.eclipsesource.json.JsonObject;
+import com.github.dvdme.ForecastIOLib.FIODaily;
 import com.github.dvdme.ForecastIOLib.FIODataPoint;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtensionHTTP;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -52,7 +50,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Muhammed Kaya
  */
-@ExtendWith(FrameworkExtension.class)
+@ExtendWith(FrameworkExtensionHTTP.class)
 public class WeatherRestTest {
 
 	@Reference
@@ -71,7 +69,7 @@ public class WeatherRestTest {
 		this.logic = this.testFramework.mockService(WeatherDarkSkyAPI.class);
 
 		Client c = ClientBuilder.newClient();
-		this.target = c.target(Server.BASE_URI);
+		this.target = c.target(this.testFramework.getServerBaseURI());
 
 		this.createDay();
 		this.createWeek();

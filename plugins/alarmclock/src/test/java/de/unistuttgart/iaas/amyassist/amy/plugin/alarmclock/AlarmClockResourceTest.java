@@ -23,10 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +43,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtensionHTTP;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -55,7 +52,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Christian Bräuner
  */
-@ExtendWith(FrameworkExtension.class)
+@ExtendWith(FrameworkExtensionHTTP.class)
 class AlarmClockResourceTest {
 
 	@Reference
@@ -64,6 +61,8 @@ class AlarmClockResourceTest {
 	private AlarmClockLogic logic;
 
 	private WebTarget target;
+
+	private String targetUriString;
 
 	/**
 	 * setup server and client for requests and responses
@@ -74,7 +73,8 @@ class AlarmClockResourceTest {
 		this.testFramework.setRESTResource(AlarmClockResource.class);
 
 		Client c = ClientBuilder.newClient();
-		this.target = c.target(Server.BASE_URI.toString() + "/" + AlarmClockResource.PATH);
+		this.targetUriString = this.testFramework.getServerBaseURI().toString() + AlarmClockResource.PATH;
+		this.target = c.target(this.targetUriString);
 	}
 
 	/**
@@ -92,7 +92,7 @@ class AlarmClockResourceTest {
 		for (int i = 0; i < ts.length; i++) {
 			Timestamp expected = new Timestamp(alarms.get(i));
 			assertEquals(expected, ts[i]);
-			assertEquals(Server.BASE_URI.toString() + "/" + AlarmClockResource.PATH + "/alarms/" + i, ts[i].getLink());
+			assertEquals(this.targetUriString + "/alarms/" + i, ts[i].getLink());
 		}
 
 	}
@@ -171,7 +171,7 @@ class AlarmClockResourceTest {
 		assertEquals(200, r.getStatus());
 		Timestamp tsr = r.readEntity(Timestamp.class);
 		assertEquals(new Timestamp(newAlarm), tsr);
-		assertEquals(Server.BASE_URI.toString() + "/" + AlarmClockResource.PATH + "/alarms/17", tsr.getLink());
+		assertEquals(this.targetUriString + "/alarms/17", tsr.getLink());
 
 		entity = Entity.entity(new Timestamp(27, 20), MediaType.APPLICATION_JSON);
 		r = this.target.path("alarms/new").request().post(entity);

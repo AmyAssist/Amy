@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
 import java.net.URI;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.ws.rs.Path;
@@ -37,7 +38,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
@@ -45,31 +48,76 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
 /**
  * A class to create a http server
  * 
- * @author Christian Bräuner, Leon Kiefer
+ * @author Christian Bräuner, Leon Kiefer, Tim Neumann
  */
 @Service
-public class Server{
+public class Server {
+	/** The name of the config used by this class */
+	public static final String CONFIG_NAME = "server.config";
+	/** The name of the property, which specifies the port */
+	public static final String PROPERTY_PORT = "port";
+	/** The name of the property, which specifies the root path of ther server */
+	public static final String PROPERTY_ROOT_PATH = "root_path";
+	/** The name of the property, which specifies whether the server should bind to local host only. */
+	public static final String PROPERTY_LOCALHOST = "local_host_only";
+
 	private final Logger logger = LoggerFactory.getLogger(Server.class);
 
+	/**
+	 * The dependency injection instance, needed for binding the di to the server
+	 */
 	@Reference
-	private ServiceLocator di;
+	ServiceLocator di;
+
 	private Set<Class<?>> restResources = new HashSet<>();
 	private HttpServer httpServer;
+
+	@Reference
+	private ConfigurationLoader configuration_loader;
 
 	/**
 	 * the URI of the server
 	 */
-	public static final URI BASE_URI = URI.create("http://localhost:8080/rest");
+	private URI baseUri;
+
+	@PostConstruct
+	private void init() {
+		Properties conf = this.configuration_loader.load(CONFIG_NAME);
+		String port = conf.getProperty(PROPERTY_PORT);
+		String root = conf.getProperty(PROPERTY_ROOT_PATH);
+		String local = conf.getProperty(PROPERTY_LOCALHOST);
+
+		if (port == null) {
+			this.logger.warn("Server config missing key {}.", PROPERTY_PORT);
+			port = "8080";
+		}
+
+		if (root == null) {
+			this.logger.warn("Server config missing key {}.", PROPERTY_ROOT_PATH);
+			root = "/rest/";
+		}
+
+		if (local == null) {
+			this.logger.warn("Server config missing key {}.", PROPERTY_LOCALHOST);
+			local = "true";
+		}
+
+		if (local.equals("true")) {
+			this.baseUri = URI.create("http://127.0.0.1:" + port + root);
+		} else {
+			this.baseUri = URI.create("http://0.0.0.0:" + port + root);
+		}
+	}
 
 	/**
 	 * creates and starts the HttpServer
 	 * 
-	 * @param classes the resource classes
+	 * @param classes
+	 *            the resource classes
 	 */
 	public void start(Class<?>... classes) {
-		if (this.httpServer != null) {
+		if (this.httpServer != null)
 			throw new IllegalStateException("The Server is already started");
-		}
 		this.logger.info("start the server");
 
 		ResourceConfig resourceConfig = new ResourceConfig(classes);
@@ -83,23 +131,32 @@ public class Server{
 				});
 			}
 		});
-		this.httpServer = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, resourceConfig);
+		this.httpServer = GrizzlyHttpServerFactory.createHttpServer(this.baseUri, resourceConfig);
 	}
 
 	/**
 	 * shutdown the server if the server is running
 	 */
 	public void shutdown() {
-		if (this.httpServer == null) {
+		if (this.httpServer == null)
 			throw new IllegalStateException("The Server is not running");
-		}
 		this.logger.info("shutdown the server");
 		this.httpServer.shutdownNow();
 		this.httpServer = null;
 	}
 
 	/**
-	 * @param cls a resource class
+	 * Checks whether the server is running
+	 * 
+	 * @return whether the server is running
+	 */
+	public boolean isRunning() {
+		return (this.httpServer != null);
+	}
+
+	/**
+	 * @param cls
+	 *            a resource class
 	 */
 	public void register(Class<?> cls) {
 		if (!cls.isAnnotationPresent(Path.class)) {
@@ -112,4 +169,10 @@ public class Server{
 		this.restResources.add(cls);
 	}
 
+	/**
+	 * @return the base uri of the server
+	 */
+	public URI getBaseUri() {
+		return this.baseUri;
+	}
 }

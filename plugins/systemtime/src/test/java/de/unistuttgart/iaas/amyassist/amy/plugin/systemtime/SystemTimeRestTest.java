@@ -23,8 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -37,8 +36,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtensionHTTP;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -47,7 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * @author Muhammed Kaya
  *
  */
-@ExtendWith(FrameworkExtension.class)
+@ExtendWith(FrameworkExtensionHTTP.class)
 class SystemTimeRestTest {
 
 	@Reference
@@ -63,7 +61,7 @@ class SystemTimeRestTest {
 		this.logic = this.testFramework.mockService(SystemTimeLogic.class);
 
 		Client c = ClientBuilder.newClient();
-		this.target = c.target(Server.BASE_URI);
+		this.target = c.target(this.testFramework.getServerBaseURI());
 	}
 
 	/**

@@ -23,8 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -36,9 +36,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtensionHTTP;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -46,7 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Leon Kiefer
  */
-@ExtendWith(FrameworkExtension.class)
+@ExtendWith(FrameworkExtensionHTTP.class)
 class HelloWorldRestTest {
 
 	@Reference
@@ -59,7 +58,7 @@ class HelloWorldRestTest {
 		this.testFramework.setRESTResource(HelloWorldRest.class);
 
 		Client c = ClientBuilder.newClient();
-		this.target = c.target(Server.BASE_URI);
+		this.target = c.target(this.testFramework.getServerBaseURI());
 	}
 
 	/**
