@@ -82,11 +82,11 @@ class TestNLIAnnotationReader {
 
 	@Test
 	public void testIllegalTypes() {
-		assertThrows(IllegalArgumentException.class, () -> NLIAnnotationReader.getValidNLIMethods(Brocken.class));
+		assertThrows(IllegalArgumentException.class, () -> NLIAnnotationReader.getValidNLIMethods(Broken.class));
 	}
 
 	@SpeechCommand({})
-	class Brocken {
+	class Broken {
 		@Grammar("count")
 		public int count(int i) {
 			return i;
@@ -96,12 +96,12 @@ class TestNLIAnnotationReader {
 	@Test
 	public void testIllegalReturnType() {
 		String message = assertThrows(IllegalArgumentException.class,
-				() -> NLIAnnotationReader.getValidNLIMethods(BrockenReturnType.class)).getMessage();
+				() -> NLIAnnotationReader.getValidNLIMethods(BrokenReturnType.class)).getMessage();
 		assertThat(message, equalTo("The returntype of a method annotated with @Grammar should be String."));
 	}
 
 	@SpeechCommand({})
-	class BrockenReturnType {
+	class BrokenReturnType {
 		@Grammar("count")
 		public int count(String[] i) {
 			return 0;
