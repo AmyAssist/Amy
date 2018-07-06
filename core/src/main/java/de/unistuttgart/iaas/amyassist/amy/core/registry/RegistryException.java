@@ -21,34 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.example.api;
+package de.unistuttgart.iaas.amyassist.amy.core.registry;
 
 /**
- * The api provided by the HelloWorldService
- * 
- * @author Leon Kiefer
+ * An exception in the registry.
  */
-public interface HelloWorldService {
+public class RegistryException extends RuntimeException {
 
-	/**
-	 * The method that does all the logic.
-	 * 
-	 * @return the response
-	 */
-	String helloWorld();
-
-	String helloWorldXTimes(int times);
-
-	/**
-	 * Demonstrate the registry's functionality
-	 * @return human-readable text
-	 */
-	String demonstrateContactRegistry();
-
-	/**
-	 * Test the registry for correctness
-	 * @return human-readable text
-	 */
-	String testContactRegistry();
-
+    /**
+     * Create an exception
+     * @param message a useful error message
+     */
+    public RegistryException(String message) {
+        super(message);
+    }
 }

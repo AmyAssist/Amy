@@ -21,34 +21,31 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.example.api;
+package de.unistuttgart.iaas.amyassist.amy.core.registry.contact;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
+import de.unistuttgart.iaas.amyassist.amy.core.registry.AbstractRegistry;
+
+import javax.annotation.Nonnull;
 
 /**
- * The api provided by the HelloWorldService
- * 
- * @author Leon Kiefer
+ * A contact registry
+ *
+ * @author Benno Krauß
  */
-public interface HelloWorldService {
+@Service(ContactRegistry.class)
+public class ContactRegistryImpl extends AbstractRegistry<Contact> implements ContactRegistry {
 
-	/**
-	 * The method that does all the logic.
-	 * 
-	 * @return the response
-	 */
-	String helloWorld();
+    @Override
+    protected String getPersistenceUnitName() {
+        return "ContactRegistry";
+    }
 
-	String helloWorldXTimes(int times);
-
-	/**
-	 * Demonstrate the registry's functionality
-	 * @return human-readable text
-	 */
-	String demonstrateContactRegistry();
-
-	/**
-	 * Test the registry for correctness
-	 * @return human-readable text
-	 */
-	String testContactRegistry();
-
+    @Nonnull
+    @Override
+    public Class<? extends Contact> getEntityClass() {
+        return ContactImpl.class;
+    }
 }
