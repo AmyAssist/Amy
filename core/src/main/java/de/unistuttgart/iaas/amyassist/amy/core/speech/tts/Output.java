@@ -21,26 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+
+import javax.sound.sampled.LineListener;
 
 /**
- * Interface between the SpeechRecognition System and the rest og the System
+ * Interface for the TextToSpeech
  * 
  * @author Kai Menzel
  */
-public interface AudioUserInteraction {
-	/**
-	 * Creates the Recognizer Objects
-	 */
-	void init();
-	/**
-	 * Start the Recognition System
-	 */
-	void start();
+public interface Output {
 
 	/**
-	 * Stop the Recognition System
+	 * Method to Voice and Log output the input String
+	 * 
+	 * @param listener
+	 *            Listener for the Voice Output Clip
+	 * @param s
+	 *            String that shall be said
 	 */
-	void stop();
+	void output(LineListener listener, String s);
 
+	/**
+	 * stop the OutputClip
+	 */
+	void stopOutput();
 }

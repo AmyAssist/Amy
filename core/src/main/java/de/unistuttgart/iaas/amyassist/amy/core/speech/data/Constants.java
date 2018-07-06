@@ -21,40 +21,30 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
-import org.junit.jupiter.api.Test;
-
-import uk.org.lidalia.slf4jtest.TestLogger;
-import uk.org.lidalia.slf4jtest.TestLoggerFactory;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.data;
 
 /**
- * Test Class for the Text To Speech Output class
+ * Class for important Constants for the SpeechRecognition Holds variabel if Recognition System is currently active
  * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-class TextToSpeechTest {
+public class Constants {
 
-	/**
-	 * tts Object
-	 */
-	Output tts;
-
-	private static final String TEST = "hello world";
-
-	/**
-	 * test Logging
-	 */
-	@Test
-	void test() {
-		this.tts = TextToSpeech.getTTS();
-		TestLogger logger = TestLoggerFactory.getTestLogger(TextToSpeech.class);
-		assertThat(this.tts == null, equalTo(false));
-		this.tts.output(null, false, TEST);
-		// assertThat(logger.getLoggingEvents(), contains(info(TEST)));
+	private Constants() {
+		// hide constructor
 	}
+
+	/**
+	 * Command String to wake up amy's SpeechRecogniton System
+	 */
+	public static final String WAKE_UP = "amy wake up";
+	/**
+	 * Command String to set the SpeechRecognition inactive, to stop listening to input until waked again
+	 */
+	public static final String GO_SLEEP = "go to sleep";
+	/**
+	 * Command String to stop current Voice Output of Amy
+	 */
+	public static final String SHUT_UP = "amy shut up";
 
 }

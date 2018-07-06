@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,7 +33,6 @@ import java.lang.reflect.Method;
  */
 public class SpeechCommand {
 	private Method method;
-	private String grammar;
 	private Class<?> speechCommandClass;
 
 	/**
@@ -55,7 +54,6 @@ public class SpeechCommand {
 	 */
 	public SpeechCommand(Method method, String grammar, Class<?> speechCommandClass) {
 		this.method = method;
-		this.grammar = grammar;
 		this.speechCommandClass = speechCommandClass;
 	}
 
@@ -71,7 +69,13 @@ public class SpeechCommand {
 			Object[] params = { input };
 			return (String) this.method.invoke(instance, params);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException("Tryed to invoke " + this.method.getName(), e);
+			throw new MethodNotCallableRuntimeException("Tryed to invoke " + this.method.getName(), e);
+		}
+	}
+
+	public class MethodNotCallableRuntimeException extends RuntimeException {
+		public MethodNotCallableRuntimeException(String s, Throwable e) {
+			super(s, e);
 		}
 	}
 }
