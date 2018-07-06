@@ -62,12 +62,6 @@ public class TestBestTransportResult {
 	}
 
 	@Test
-	public void testRoutToShortStringtransit() {
-		this.bestResult = new BestTransportResult(TravelMode.TRANSIT, this.data.routeTransport1);
-		assertThat(this.bestResult.routeToShortString(), equalTo("Departure time is 07:00, arrival time is 8:20"));
-	}
-
-	@Test
 	public void testRoutToShortStringBike() {
 		this.bestResult = new BestTransportResult(TravelMode.BICYCLING, this.data.routeBicycle1);
 		assertThat(this.bestResult.routeToShortString(), equalTo("The route is 2 km long and need 5 min time"));
