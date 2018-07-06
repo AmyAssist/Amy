@@ -50,7 +50,7 @@ public interface IRegistry<T> {
      * Get all entities of this registry
      * @return all entities
      */
-    List<? extends T> getAll();
+    List<T> getAll();
 
     /**
      * Get the entity with this exact id

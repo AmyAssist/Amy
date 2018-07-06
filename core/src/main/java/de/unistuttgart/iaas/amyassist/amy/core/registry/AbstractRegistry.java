@@ -86,9 +86,12 @@ public abstract class AbstractRegistry<T> implements IRegistry<T> {
      * Get all entities of this registry
      * @return all entities
      */
-    public List<? extends T> getAll() {
+    @SuppressWarnings("unchecked")
+    public List<T> getAll() {
         Class<? extends T> type = getEntityClass();
-        return this.entityManager.createQuery("SELECT x FROM " + type.getName() + " x", type).getResultList();
+        // This requires an explicit cast from List<? extends T> to List<T> because Java doesn't
+        // do it automatically
+        return (List<T>)this.entityManager.createQuery("SELECT x FROM " + type.getName() + " x", type).getResultList();
     }
 
     /**
