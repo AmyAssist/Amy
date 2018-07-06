@@ -23,41 +23,21 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.store.FileDataStoreFactory;
-import com.google.api.services.calendar.Calendar;
-import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
  * This class is for the Calendar Authentication and Logic, parts of the Code are from
@@ -67,62 +47,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
  */
 @Service
 public class CalendarLogic {
-	private static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
-	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-
-	/**
-	 * Global instance of the scopes required by this quickstart. If modifying these scopes, delete your previously
-	 * saved credentials/ folder.
-	 */
-	private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR_READONLY);
-
+	
 	@Reference
-	private Properties configuration;
-	@Reference
-	private Environment environment;
-	@Reference
+	private CalendarService calendarService;
+	@Reference 
 	private Logger logger;
 
-	private Calendar service;
-
 	private List<String> eventList = new ArrayList<>();
-
-	/**
-	 * Creates an authorized Credential object.
-	 * 
-	 * @param xHTTPTRANSPORT
-	 *            The network HTTP Transport.
-	 * @return An authorized Credential object.
-	 * @throws IOException
-	 *             If there is no client_secret.
-	 */
-	private Credential getCredentials(final NetHttpTransport xHTTPTRANSPORT) throws IOException {
-		// Load client secrets.
-		InputStream test = new ByteArrayInputStream(this.configuration.getProperty("JSON").getBytes());
-		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(test));
-		// Build flow and trigger user authorization request.
-		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(xHTTPTRANSPORT, JSON_FACTORY,
-				clientSecrets, SCOPES)
-						.setDataStoreFactory(new FileDataStoreFactory(this.environment.getWorkingDirectory()
-								.resolve("temp/calendarauth").toAbsolutePath().toFile()))
-						.setAccessType("offline").build();
-		return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-	}
-
-	/**
-	 * This method is to authorize the Google account with the calendar
-	 */
-	@PostConstruct
-	public void authorize() {
-		try {
-			// Build a new authorized API client service.
-			final NetHttpTransport yHTTPTRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-			this.service = new Calendar.Builder(yHTTPTRANSPORT, JSON_FACTORY, getCredentials(yHTTPTRANSPORT))
-					.setApplicationName(APPLICATION_NAME).build();
-		} catch (IOException | GeneralSecurityException e) {
-			this.logger.error("Sorry, an error occured during the authorization", e);
-		}
-	}
 
 	/**
 	 * This method lists the next events from the calendar
@@ -135,7 +66,7 @@ public class CalendarLogic {
 		try {
 			this.eventList.clear();
 			DateTime now = new DateTime(System.currentTimeMillis());
-			Events events = this.service.events().list("primary").setMaxResults(Integer.valueOf(number)).setTimeMin(now)
+			Events events = this.calendarService.getService().events().list("primary").setMaxResults(Integer.valueOf(number)).setTimeMin(now)
 					.setOrderBy("startTime").setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
@@ -164,7 +95,7 @@ public class CalendarLogic {
 		try {
 			this.eventList.clear();
 			DateTime now = new DateTime(System.currentTimeMillis());
-			Events events = this.service.events().list("primary").setTimeMin(now).setOrderBy("startTime")
+			Events events = this.calendarService.getService().events().list("primary").setTimeMin(now).setOrderBy("startTime")
 					.setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
