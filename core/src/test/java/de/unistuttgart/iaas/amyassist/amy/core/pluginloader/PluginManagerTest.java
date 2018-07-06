@@ -35,8 +35,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -60,7 +60,7 @@ class PluginManagerTest {
 		this.properties = new Properties();
 		when(configurationLoader.load("plugin.config")).thenReturn(this.properties);
 
-		this.testFramework.mockService(SpeechCommandHandler.class);
+		this.testFramework.mockService(NLProcessingManager.class);
 		this.testFramework.mockService(Persistence.class);
 
 		this.serviceUnderTest = this.testFramework.setServiceUnderTest(PluginManagerService.class);

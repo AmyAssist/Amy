@@ -23,7 +23,11 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.grammar;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,28 +35,42 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 
 /**
  * Class that Creates all Grammar Objects sets the MainGrammar and the List of all other Grammars
  * 
  * @author Kai Menzel
  */
-@Service(GrammarObjectsCreator.class)
+@Service
 public class GrammarObjectsCreator {
 
 	@Reference
 	private Environment environment;
+	@Reference
+	private NLProcessingManager nlProcessingManager;
 
 	private Grammar mainGrammar;
-	private List<Grammar> switchables;
+	private List<Grammar> switchables = new ArrayList<>();
 
-	@PostConstruct
-	private void init() {
-		this.switchables = new ArrayList<>();
+	/**
+	 * Call this after all register and before process
+	 */
+	public void completeSetup() {
 		Path grammarFile = this.environment.getWorkingDirectory().resolve("resources")
 				.resolve("sphinx-grammars/grammar.gram");
-		this.mainGrammar = new Grammar("grammar", grammarFile.toFile());
 
+		try {
+			Files.createDirectories(grammarFile.getParent());
+		} catch (IOException e) {
+			throw new IllegalStateException("Can't create parent directories of the grammar file", e);
+		}
+		try (BufferedWriter bw = Files.newBufferedWriter(grammarFile, StandardOpenOption.CREATE)) {
+			bw.write(this.nlProcessingManager.getGrammarFileString("grammar"));
+		} catch (IOException e) {
+			throw new IllegalStateException("Can't write grammar file", e);
+		}
+		this.mainGrammar = new Grammar("grammar", grammarFile);
 	}
 
 	/**

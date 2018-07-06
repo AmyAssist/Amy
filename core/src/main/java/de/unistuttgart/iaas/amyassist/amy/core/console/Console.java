@@ -56,6 +56,7 @@ public class Console implements SpeechIO {
 	@Reference
 	private Core core;
 
+	@Reference
 	private SpeechInputHandler handler;
 
 	@Command
@@ -84,13 +85,5 @@ public class Console implements SpeechIO {
 			this.logger.error("Error while running the console", e);
 		}
 		this.core.stop();
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO#setSpeechInputHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler)
-	 */
-	@Override
-	public void setSpeechInputHandler(SpeechInputHandler handler) {
-		this.handler = handler;
 	}
 }

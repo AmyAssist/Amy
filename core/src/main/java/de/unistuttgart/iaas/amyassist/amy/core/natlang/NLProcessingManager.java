@@ -46,4 +46,6 @@ public interface NLProcessingManager {
 	 *             if the string illegal character
 	 */
 	String process(String naturalLanguageText);
+
+	String getGrammarFileString(String grammarName);
 }

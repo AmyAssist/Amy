@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech.grammar;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,32 +36,32 @@ import java.util.Map;
 public class Grammar {
 
 	private String name;
-	private File file;
+	private Path path;
 	private Map<String, Grammar> switchList = new HashMap<>();
 
 	/**
 	 * @param name
 	 *            Name of the Grammar
-	 * @param file
+	 * @param path
 	 *            Path to the Grammar
 	 * 
 	 */
-	public Grammar(String name, File file) {
+	public Grammar(String name, Path path) {
 		this.name = name;
-		this.file = file;
+		this.path = path;
 	}
 
 	/**
 	 * @param name
 	 *            Name of the Grammar
-	 * @param file
+	 * @param path
 	 *            Path to the Grammar
 	 * @param switchList
 	 *            List of all possible Grammars with their call String
 	 */
-	public Grammar(String name, File file, Map<String, Grammar> switchList) {
+	public Grammar(String name, Path path, Map<String, Grammar> switchList) {
 		this.name = name;
-		this.file = file;
+		this.path = path;
 		this.switchList = switchList;
 	}
 
@@ -91,7 +92,7 @@ public class Grammar {
 	 * @return file
 	 */
 	public File getFile() {
-		return this.file;
+		return this.path.toFile();
 	}
 
 	/**
@@ -101,36 +102,6 @@ public class Grammar {
 	 */
 	public Map<String, Grammar> getSwitchList() {
 		return this.switchList;
-	}
-
-	/**
-	 * Setter
-	 * 
-	 * @param name
-	 *            name of Grammar, should be unique
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * Setter
-	 * 
-	 * @param file
-	 *            path to the Grammar file
-	 */
-	public void setFile(File file) {
-		this.file = file;
-	}
-
-	/**
-	 * Setter
-	 * 
-	 * @param switchList
-	 *            List of Possible Grammar Switches
-	 */
-	public void setSwitchList(Map<String, Grammar> switchList) {
-		this.switchList = switchList;
 	}
 
 }

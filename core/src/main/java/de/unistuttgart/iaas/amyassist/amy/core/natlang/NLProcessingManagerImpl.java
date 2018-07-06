@@ -23,12 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -41,11 +36,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFToken;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.Constants;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
 /**
  * The implementation of the NLProcessingManager. This implementation uses the Parsers in the
@@ -86,33 +80,15 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		return new PartialNLI(method, parseWholeExpression, natuaralLanguageInterpreter);
 	}
 
-	public String getGrammarFileString() {
-		JSGFGenerator generator = new JSGFGenerator("grammar", Constants.WAKE_UP, Constants.GO_SLEEP,
+	@Override
+	public String getGrammarFileString(String grammarName) {
+		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.WAKE_UP, Constants.GO_SLEEP,
 				Constants.SHUT_UP);
 		for (PartialNLI partialNLI : this.register) {
 			generator.addRule(partialNLI.getGrammar(), UUID.randomUUID().toString());
 		}
 
 		return generator.generateGrammarFileString();
-	}
-
-	/**
-	 * Call this after all register and before process
-	 */
-	public void completeSetup() {
-		Path resolve = this.environment.getWorkingDirectory().resolve("resources")
-				.resolve("sphinx-grammars/grammar.gram");
-
-		try {
-			Files.createDirectories(resolve.getParent());
-		} catch (IOException e) {
-			throw new IllegalStateException("Can't create parent directories of the grammar file", e);
-		}
-		try (BufferedWriter bw = Files.newBufferedWriter(resolve, StandardOpenOption.CREATE)) {
-			bw.write(this.getGrammarFileString());
-		} catch (IOException e) {
-			throw new IllegalStateException("Can't write grammar file", e);
-		}
 	}
 
 	@Override
