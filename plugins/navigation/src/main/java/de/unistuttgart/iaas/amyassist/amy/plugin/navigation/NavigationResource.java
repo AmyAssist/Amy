@@ -83,10 +83,10 @@ public class NavigationResource {
 	public BestTransportResult routeFromTo(@QueryParam("origin") String origin,
 			@QueryParam("destination") String destination, @QueryParam("travelMode") String travelMode,
 			@QueryParam("minute") @DefaultValue("-1") int minute, @QueryParam("hour") @DefaultValue("-1") int hour) {
-		if (checkOriginDestination(origin, destination) == false) {
+		if (!checkOriginDestination(origin, destination)) {
 			throw new WebApplicationException("Missing origin and/or destination input.", Status.CONFLICT);
 		}
-		if (checkTravelMode(travelMode) == false) {
+		if (!checkTravelMode(travelMode)) {
 			throw new WebApplicationException("Enter correct a correct travel mode", Status.CONFLICT);
 		}
 		TravelMode mode = this.logic.getTravelMode(travelMode);
@@ -126,10 +126,10 @@ public class NavigationResource {
 			@QueryParam("destination") @DefaultValue("") String destination,
 			@QueryParam("travelMode") String travelMode, @QueryParam("minute") int minute,
 			@QueryParam("hour") int hour) {
-		if (checkOriginDestination(origin, destination) == false) {
+		if (!checkOriginDestination(origin, destination)) {
 			throw new WebApplicationException("Missing origin and/or destination input.", Status.CONFLICT);
 		}
-		if (checkTravelMode(travelMode) == false) {
+		if (!checkTravelMode(travelMode)) {
 			throw new WebApplicationException("Enter correct a correct travel mode", Status.CONFLICT);
 		}
 		TravelMode mode = this.logic.getTravelMode(travelMode);
@@ -161,7 +161,7 @@ public class NavigationResource {
 	public BestTransportResult getBestTransportInTime(@QueryParam("origin") @DefaultValue("") String origin,
 			@QueryParam("destination") @DefaultValue("") String destination, @QueryParam("minute") int minute,
 			@QueryParam("hour") int hour) {
-		if (checkOriginDestination(origin, destination) == false) {
+		if (!checkOriginDestination(origin, destination)) {
 			throw new WebApplicationException("Missing origin and/or destination input.", Status.CONFLICT);
 		}
 		BestTransportResult bestTransport = this.logic.getBestTransportInTime(origin, destination,
@@ -182,10 +182,7 @@ public class NavigationResource {
 	 * @return true if origin and destination inputs are correct
 	 */
 	private boolean checkOriginDestination(String origin, String destination) {
-		if (!origin.equals(null) && !origin.equals("") && !destination.equals(null) && !destination.equals("")) {
-			return true;
-		}
-		return false;
+		return (origin != null && origin != "" && destination != null && destination != "");
 	}
 
 	/**
@@ -199,10 +196,7 @@ public class NavigationResource {
 	 */
 	private boolean checkTravelMode(String mode) {
 		TravelMode travelMode = this.logic.getTravelMode(mode);
-		if (travelMode != null) {
-			return true;
-		}
-		return false;
+		return (travelMode != null);
 	}
 
 	/**
