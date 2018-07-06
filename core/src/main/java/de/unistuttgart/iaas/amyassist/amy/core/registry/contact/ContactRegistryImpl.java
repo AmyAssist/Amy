@@ -27,7 +27,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
 import de.unistuttgart.iaas.amyassist.amy.core.registry.AbstractRegistry;
-import de.unistuttgart.iaas.amyassist.amy.core.registry.RegistryException;
 
 import javax.annotation.Nonnull;
 
@@ -46,44 +45,7 @@ public class ContactRegistryImpl extends AbstractRegistry<Contact> implements Co
 
     @Nonnull
     @Override
-    protected Class<? extends Contact> getEntityClass() {
+    public Class<? extends Contact> getEntityClass() {
         return ContactImpl.class;
-    }
-
-    public void testMyself() {
-        Contact personA = new ContactImpl();
-        personA.setEmail("a@b.c");
-        personA.setFirstName("Max");
-        personA.setLastName("Mustermann");
-        personA.setImportant(true);
-
-        Contact personB = new ContactImpl();
-        personB.setEmail("b@b.com");
-        personB.setFirstName("Alice");
-        personB.setLastName("Musterfrau");
-        personB.setImportant(true);
-
-        assertTrue(personA.getId() == 0);
-
-        this.save(personA);
-        this.save(personB);
-
-        assertTrue(personA.getId() != personB.getId());
-        int personAId = personA.getId();
-
-        Contact personA2 = this.getById(personA.getId());
-        assertTrue(personA.equals(personA2));
-
-        this.deleteById(personA.getId());
-        this.deleteById(personB.getId());
-
-        Contact c3 = this.getById(personAId);
-        assertTrue(c3 == null);
-    }
-
-    private void assertTrue(boolean b) {
-        if (!b) {
-            throw new RegistryException("Error in test");
-        }
     }
 }

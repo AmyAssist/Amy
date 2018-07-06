@@ -34,6 +34,19 @@ import java.util.List;
 public interface IRegistry<T> {
 
     /**
+     * Get entity class at runtime
+     * Can be a subclass of T
+     * @return The type of the concrete entity class
+     */
+    Class<? extends T> getEntityClass();
+
+    /**
+     * Create an instance of the entity class
+     * @return a new entity object
+     */
+    T createNewEntity();
+
+    /**
      * Get all entities of this registry
      * @return all entities
      */

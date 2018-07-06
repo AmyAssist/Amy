@@ -95,14 +95,64 @@ public class HelloWorldImpl implements HelloWorldService {
 		return b.toString();
 	}
 
+	/**
+	 * Exception class to signalize bad test result
+	 */
+	private class TestException extends Exception {
+		/**
+		 * Classic exception constructor
+		 * @param message exception message
+		 */
+		public TestException(String message) {
+			super(message);
+		}
+	}
+
 	@Override
 	public String testContactRegistry() {
 		try {
-			contacts.testMyself();
+			Contact personA = contacts.createNewEntity();
+			personA.setEmail("a@b.c");
+			personA.setFirstName("Max");
+			personA.setLastName("Mustermann");
+			personA.setImportant(true);
+
+			Contact personB = contacts.createNewEntity();
+			personB.setEmail("b@b.com");
+			personB.setFirstName("Alice");
+			personB.setLastName("Musterfrau");
+			personB.setImportant(true);
+
+			assertTrue(personA.getId() == 0);
+
+			contacts.save(personA);
+			contacts.save(personB);
+
+			assertTrue(personA.getId() != personB.getId());
+			int personAId = personA.getId();
+
+			Contact personA2 = contacts.getById(personA.getId());
+			assertTrue(personA.equals(personA2));
+
+			contacts.deleteById(personA.getId());
+			contacts.deleteById(personB.getId());
+
+			Contact c3 = contacts.getById(personAId);
+			assertTrue(c3 == null);
 			return "Tests successful";
-		} catch (RuntimeException e) {
+		} catch (TestException e) {
 			logger.warn("Registry test failed: ", e);
 			return "Tests failed: " + e.getLocalizedMessage();
+		}
+	}
+
+	/**
+	 * Tiny function for testing
+	 * @param b expression to be tested
+	 */
+	private void assertTrue(boolean b) throws TestException {
+		if (!b) {
+			throw new TestException("Error in test");
 		}
 	}
 }

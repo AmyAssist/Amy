@@ -56,7 +56,20 @@ public abstract class AbstractRegistry<T> implements IRegistry<T> {
      * Can be a subclass of T
      * @return The type of the concrete entity class
      */
-    protected abstract @Nonnull Class<? extends T> getEntityClass();
+    public abstract @Nonnull Class<? extends T> getEntityClass();
+
+    /**
+     * Create an instance of the entity class
+     * @return a new entity object
+     */
+    public T createNewEntity() {
+        try {
+            return getEntityClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            log.error("Error creating new entity instance in registry", e);
+            return null;
+        }
+    }
 
     /**
      * Basically a constructor. But the DI-way
