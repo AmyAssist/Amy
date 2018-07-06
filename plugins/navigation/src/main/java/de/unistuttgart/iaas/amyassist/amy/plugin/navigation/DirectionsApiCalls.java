@@ -35,6 +35,7 @@ import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TrafficModel;
 import com.google.maps.model.TravelMode;
+import com.google.maps.model.Unit;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -75,7 +76,7 @@ public class DirectionsApiCalls {
 	 * @return a array with routes
 	 */
 	public DirectionsRoute[] fromTo(String origin, String destination, TravelMode mode) {
-		return errorHandling(new DirectionsApiRequest(this.context).origin(origin).destination(destination).mode(mode)
+		return errorHandling(new DirectionsApiRequest(this.context).origin(origin).destination(destination).mode(mode).units(Unit.METRIC)
 				.alternatives(true));
 	}
 

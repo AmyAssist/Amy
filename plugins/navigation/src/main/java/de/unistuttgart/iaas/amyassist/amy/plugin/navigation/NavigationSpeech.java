@@ -30,8 +30,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.ReadableInstant;
 
-import com.google.maps.model.DirectionsLeg;
-import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -56,6 +54,13 @@ public class NavigationSpeech {
 	@Reference
 	private RegistryConnection registry;
 
+	/**
+	 * speech command for 'be at' feature
+	 * 
+	 * @param strings
+	 *            input
+	 * @return output string
+	 */
 	@Grammar("be at " + LOCATIONS + " at # oh # from " + LOCATIONS)
 	public String goToAt(String... strings) {
 		ReadableInstant time = this.logic.whenIHaveToGo(this.registry.getAdresse(strings[8]),
@@ -68,6 +73,13 @@ public class NavigationSpeech {
 		return "You are to late";
 	}
 
+	/**
+	 * speech command for 'be at' feature with public transport
+	 * 
+	 * @param strings
+	 *            input
+	 * @return output string
+	 */
 	@Grammar("be at " + LOCATIONS + " at # oh # from " + LOCATIONS + " by ( bus | train | transit )")
 	public String goToAtBy(String... strings) {
 		ReadableInstant time = this.logic.whenIHaveToGo(this.registry.getAdresse(strings[8]),
@@ -80,19 +92,55 @@ public class NavigationSpeech {
 		return "You are to late";
 	}
 
+	/**
+	 * speech command for best transport from A to B
+	 * 
+	 * @param strings
+	 *            input
+	 * @return output string
+	 */
 	@Grammar("best transport from " + LOCATIONS + " to " + LOCATIONS + " now")
 	public String bestRouteSM(String... strings) {
-		BestTransportResult result = this.logic.getBestTransportInTime("Stuttgart", "Muinch",
-				DateTime.now().plusMinutes(10));
-		return result.getMode().toString() + result.getRoute().summary;
+		BestTransportResult result = this.logic.getBestTransportInTime(this.registry.getAdresse(strings[3]),
+				this.registry.getAdresse(strings[5]), DateTime.now());
+		return "The best transport Mode is ".concat(result.getMode().toString()).concat(".\n")
+				+ result.getRoute().summary;
 	}
-	
+
+	/**
+	 * speech command for from A to B with ...
+	 * 
+	 * @param strings
+	 *            input
+	 * @return output string
+	 */
 	@Grammar("from " + LOCATIONS + " to " + LOCATIONS + " by (car | transport | bike)")
-	public String routeFromTo(String...strings) {
-		DirectionsLeg route = this.logic.fromTo(strings[1], strings[3], this.logic.getTravelMode(strings[5])).legs[0];
-		return route.distance.humanReadable + " in " + route.duration.humanReadable;
+	public String routeFromTo(String... strings) {
+		return this.logic.fromTo(this.registry.getAdresse(strings[1]), this.registry.getAdresse(strings[3]),
+				this.logic.getTravelMode(strings[5])).routeToShortString();
 	}
-	
+
+	/**
+	 * speech command for from A to B with ... at ...
+	 * 
+	 * @param strings
+	 *            input
+	 * @return output string
+	 */
+	@Grammar("from " + LOCATIONS + " to " + LOCATIONS + " by (car | transport | bike) at # oh #")
+	public String routeFromToWithTime(String... strings) {
+		return this.logic.fromToWithDeparture(this.registry.getAdresse(strings[1]),
+				this.registry.getAdresse(strings[3]), this.logic.getTravelMode(strings[5]),
+				formatTimes(Integer.parseInt(strings[9]), Integer.parseInt(strings[7]))).routeToShortString();
+	}
+
+	/**
+	 * get a formated time. set the actual date and time to the given time of the same date.
+	 * 
+	 * @param min
+	 * @param hour
+	 * @return the modifed date
+	 */
 	private DateTime formatTimes(int min, int hour) {
 		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
 		calendar.set(Calendar.MINUTE, min);

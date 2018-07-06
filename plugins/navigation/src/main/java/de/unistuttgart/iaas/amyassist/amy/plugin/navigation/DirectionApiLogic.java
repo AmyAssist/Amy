@@ -28,7 +28,6 @@ import java.util.EnumMap;
 import org.joda.time.DateTime;
 import org.joda.time.ReadableInstant;
 
-import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
 
@@ -46,9 +45,46 @@ public class DirectionApiLogic {
 	@Reference
 	private DirectionsApiCalls calls;
 
-	public DirectionsRoute fromTo(String origin, String destination, TravelMode mode) {
+	/**
+	 * find the best route from A to B with a given departure time
+	 * 
+	 * @param origin
+	 * @param destination
+	 * @param mode
+	 *            driving, transit, etc
+	 * @return a data structure with the best route and the transport type of the query
+	 */
+	public BestTransportResult fromTo(String origin, String destination, TravelMode mode) {
 		DirectionsRoute[] routes = this.calls.fromTo(origin, destination, mode);
-		return findBestRoute(routes, false);
+		if (mode == TravelMode.TRANSIT) {
+			return new BestTransportResult(mode, findBestArrivalTime(routes));
+		}
+		if (mode == TravelMode.DRIVING) {
+			return new BestTransportResult(mode, findBestRoute(routes, true));
+		}
+		return new BestTransportResult(mode, findBestRoute(routes, false));
+	}
+
+	/**
+	 * find the best route from A to B with a given departure time
+	 * 
+	 * @param origin
+	 * @param destination
+	 * @param mode
+	 *            driving, transit, etc
+	 * @param departureTime
+	 * @return a data structure with the best route and the transport type of the query
+	 */
+	public BestTransportResult fromToWithDeparture(String origin, String destination, TravelMode mode,
+			ReadableInstant departureTime) {
+		DirectionsRoute[] routes = this.calls.fromToWithDepartureTime(origin, destination, mode, departureTime);
+		if (mode == TravelMode.TRANSIT) {
+			return new BestTransportResult(mode, findBestArrivalTime(routes));
+		}
+		if (mode == TravelMode.DRIVING) {
+			return new BestTransportResult(mode, findBestRoute(routes, true));
+		}
+		return new BestTransportResult(mode, findBestRoute(routes, false));
 	}
 
 	/**
@@ -70,8 +106,8 @@ public class DirectionApiLogic {
 			route = findBestRoute(routes, true);
 			if (route != null && arrivalTime.getMillis() > DateTime.now()
 					.plusSeconds(Math.toIntExact(route.legs[0].durationInTraffic.inSeconds)).getMillis()) {
-				return new DateTime(arrivalTime.minusSeconds(Math.toIntExact(route.legs[0].durationInTraffic.inSeconds))
-						.getMillis());
+				return new DateTime(arrivalTime.minusSeconds(Math.toIntExact(
+						route.legs[0].durationInTraffic.inSeconds)).getMillis());
 			}
 			break;
 		case TRANSIT:
@@ -89,6 +125,14 @@ public class DirectionApiLogic {
 		return null;
 	}
 
+	/**
+	 * this find the best transport type out of driving, transit and bicycling
+	 * 
+	 * @param origin
+	 * @param destination
+	 * @param departureTime
+	 * @return a data structure with the best route and the transport type
+	 */
 	public BestTransportResult getBestTransportInTime(String origin, String destination,
 			ReadableInstant departureTime) {
 		EnumMap<TravelMode, DirectionsRoute> routesOfTravelModes = new EnumMap<>(TravelMode.class);
@@ -100,7 +144,7 @@ public class DirectionApiLogic {
 				this.calls.fromToWithDepartureTime(origin, destination, TravelMode.BICYCLING, departureTime), false));
 		long bestTime = Long.MAX_VALUE;
 		TravelMode bestTravelMode = null;
-		long time = Long.MAX_VALUE;
+		long time;
 		if (routesOfTravelModes.get(TravelMode.DRIVING) != null) {
 			time = new DateTime(departureTime)
 					.plusSeconds(Math.toIntExact(
@@ -148,7 +192,8 @@ public class DirectionApiLogic {
 		if (routes != null) {
 			for (DirectionsRoute route : routes) {
 				if (route.legs[0] != null) {
-					if (withTraffic && route.legs[0].durationInTraffic.inSeconds < shortestTime) {
+					if (withTraffic && route.legs[0].durationInTraffic != null
+							&& route.legs[0].durationInTraffic.inSeconds < shortestTime) {
 						shortestTime = route.legs[0].durationInTraffic.inSeconds;
 						shortestRoute = route;
 					} else if (route.legs[0].duration.inSeconds < shortestTime) {
@@ -182,6 +227,13 @@ public class DirectionApiLogic {
 		return shortestRoute;
 	}
 
+	/**
+	 * transfer a string to the apt TravelMode of the api
+	 * 
+	 * @param mode
+	 *            supported Strings: driving, car, bicycling, transit, public transport, transport, walking, walk
+	 * @return apt travelMode
+	 */
 	public TravelMode getTravelMode(String mode) {
 		switch (mode.toLowerCase()) {
 		case "driving":
