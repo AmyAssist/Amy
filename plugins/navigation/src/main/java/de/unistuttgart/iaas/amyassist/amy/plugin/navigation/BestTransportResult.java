@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
@@ -32,6 +34,7 @@ import com.google.maps.model.TravelMode;
  * 
  * @author Lars Buttgereit
  */
+@XmlRootElement
 public class BestTransportResult {
 	private TravelMode mode;
 	private DirectionsRoute route;
