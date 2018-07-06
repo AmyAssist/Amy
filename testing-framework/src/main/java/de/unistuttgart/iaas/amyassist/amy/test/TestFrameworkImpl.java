@@ -23,13 +23,17 @@
 
 package de.unistuttgart.iaas.amyassist.amy.test;
 
-import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.LogManager;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.UriBuilder;
 
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -57,6 +61,9 @@ public class TestFrameworkImpl implements TestFramework {
 		System.setProperty("java.util.logging.config.file", "");
 	}
 
+	private static final int TEST_SERVER_PORT = 50080;
+	private static final String TEST_SERVER_HOST = "127.0.0.1";
+
 	private IStorage storage;
 	private DependencyInjection dependencyInjection;
 	private Server server;
@@ -72,8 +79,8 @@ public class TestFrameworkImpl implements TestFramework {
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
 		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
+		this.dependencyInjection.register(Server.class);
 		this.dependencyInjection.register(Logger.class, new LoggerProvider());
-
 	}
 
 	/**
@@ -81,14 +88,11 @@ public class TestFrameworkImpl implements TestFramework {
 	 */
 	public void prepareServer() {
 		Properties serverConfig = new Properties();
-		serverConfig.setProperty(Server.PROPERTY_PORT, "50080");
-		serverConfig.setProperty(Server.PROPERTY_ROOT_PATH, "/test/");
+		serverConfig.setProperty(Server.PROPERTY_PORT, String.valueOf(TEST_SERVER_PORT));
+		serverConfig.setProperty(Server.PROPERTY_ROOT_PATH, "");
 		serverConfig.setProperty(Server.PROPERTY_LOCALHOST, "true");
-		ConfigurationLoader configLoader = Mockito.mock(ConfigurationLoader.class);
-		Mockito.when(configLoader.load(Server.CONFIG_NAME)).thenReturn(serverConfig);
-
-		this.dependencyInjection.addExternalService(ConfigurationLoader.class, configLoader);
-		this.dependencyInjection.register(Server.class);
+		ConfigurationLoader configLoader = this.registerService(ConfigurationLoader.class, TestConfiguration.class);
+		configLoader.store(Server.CONFIG_NAME, serverConfig);
 		this.server = this.dependencyInjection.getService(Server.class);
 	}
 
@@ -105,7 +109,8 @@ public class TestFrameworkImpl implements TestFramework {
 	 * call this before the test execution
 	 */
 	public void before() {
-		if (this.server != null && !this.restResources.isEmpty()) {
+		if (!this.restResources.isEmpty()) {
+			this.prepareServer();
 			this.server.start(this.restResources.toArray(new Class<?>[this.restResources.size()]));
 		}
 	}
@@ -146,23 +151,19 @@ public class TestFrameworkImpl implements TestFramework {
 	}
 
 	@Override
-	public void setRESTResource(Class<?> resource) {
-		if (this.server == null)
-			throw new IllegalStateException("Test Framwork not setup with Server.");
-
+	public WebTarget setRESTResource(Class<?> resource) {
 		if (resource.isAnnotationPresent(Path.class)) {
 			this.restResources.add(resource);
-		} else
+		} else {
 			throw new IllegalArgumentException("The Resource must have a @Path annotation");
+		}
+		return ClientBuilder.newClient()
+				.target(UriBuilder.fromResource(resource).scheme("http").host(TEST_SERVER_HOST).port(TEST_SERVER_PORT));
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.test.TestFramework#getServerBaseURI()
-	 */
 	@Override
-	public URI getServerBaseURI() {
-		if (this.server == null)
-			throw new IllegalStateException("Test Framwork not setup with Server.");
-		return this.server.getBaseUri();
+	public <T> T registerService(Class<T> serviceType, Class<? extends T> serviceClass) {
+		this.dependencyInjection.register(serviceClass);
+		return this.dependencyInjection.getService(serviceType);
 	}
 }

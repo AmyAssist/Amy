@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -45,7 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtensionHTTP;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -53,7 +51,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Christian Bräuner
  */
-@ExtendWith(FrameworkExtensionHTTP.class)
+@ExtendWith(FrameworkExtension.class)
 class HomeResourceTest {
 
 	@Reference
@@ -65,8 +63,6 @@ class HomeResourceTest {
 
 	private PluginManager manager;
 
-	private String targetUriString;
-
 	/**
 	 * setup for server and client
 	 */
@@ -74,12 +70,7 @@ class HomeResourceTest {
 	void setUp() {
 		this.manager = this.testFramework.mockService(PluginManager.class);
 		this.speechInputHandler = this.testFramework.mockService(SpeechInputHandler.class);
-		this.testFramework.setRESTResource(HomeResource.class);
-
-		Client c = ClientBuilder.newClient();
-		this.targetUriString = this.testFramework.getServerBaseURI().toString() + HomeResource.PATH;
-
-		this.target = c.target(this.targetUriString);
+		this.target = this.testFramework.setRESTResource(HomeResource.class);
 	}
 
 	/**
@@ -125,7 +116,7 @@ class HomeResourceTest {
 		assertEquals("Configuration", spes[spes.length - 1].getName());
 		assertEquals("Configurations for this Amy instance and installed plugins",
 				spes[spes.length - 1].getDescription());
-		assertEquals(this.testFramework.getServerBaseURI().toString() + "config", spes[spes.length - 1].getLink());
+		assertEquals(this.target.getUriBuilder().replacePath("config").toString(), spes[spes.length - 1].getLink());
 
 	}
 

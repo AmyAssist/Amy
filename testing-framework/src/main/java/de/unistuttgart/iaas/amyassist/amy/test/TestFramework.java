@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.test;
 
-import java.net.URI;
+import javax.ws.rs.client.WebTarget;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 
@@ -38,8 +38,9 @@ public interface TestFramework {
 	 * 
 	 * @param resource
 	 *            the class of the Rest resource
+	 * @return the WebTarget pointing to the REST Resource
 	 */
-	void setRESTResource(Class<?> resource);
+	WebTarget setRESTResource(Class<?> resource);
 
 	/**
 	 * specify the Service Under Test
@@ -64,12 +65,22 @@ public interface TestFramework {
 	<T> T mockService(Class<T> serviceType);
 
 	/**
+	 * register a real implementation instead of a mock and bind it in the DI. For "Storage" Services this is the best
+	 * solution if there is a simple in-memory implementation of the Service
+	 * 
+	 * @param serviceType
+	 *            the class of the service type
+	 * @param serviceClass
+	 *            the class of the implementation
+	 * @return the service instance
+	 * @param <T>
+	 *            the type of the service
+	 * 
+	 */
+	<T> T registerService(Class<T> serviceType, Class<? extends T> serviceClass);
+
+	/**
 	 * @return a storage object
 	 */
 	IStorage storage();
-
-	/**
-	 * @return the base URI of the Server
-	 */
-	URI getServerBaseURI();
 }

@@ -21,23 +21,43 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.test;
+package de.unistuttgart.iaas.amyassist.amy.test.matcher.rest;
 
-import org.junit.jupiter.api.extension.ExtensionContext;
+import javax.ws.rs.core.Response;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 
 /**
- * A Jupiter Extension for the TestFramework
+ * A collection of Metchers for Response
  * 
  * @author Leon Kiefer
  */
-public class FrameworkExtensionHTTP extends FrameworkExtension {
+public class ResponseMatchers {
+	private ResponseMatchers() {
+		// hide constructor
+	}
+
 	/**
-	 * @see org.junit.jupiter.api.extension.TestInstancePostProcessor#postProcessTestInstance(java.lang.Object,
-	 *      org.junit.jupiter.api.extension.ExtensionContext)
+	 * 
+	 * @param statusCode
+	 *            the expected status code of the Response
 	 */
-	@Override
-	public void postProcessTestInstance(Object instance, ExtensionContext arg1) throws Exception {
-		super.postProcessTestInstance(instance, arg1);
-		super.testFramework.prepareServer();
+	public static Matcher<Response> status(int statusCode) {
+		return new TypeSafeMatcher<Response>() {
+
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("status code is");
+				description.appendValue(statusCode);
+			}
+
+			@Override
+			protected boolean matchesSafely(Response item) {
+				return item.getStatus() == statusCode;
+			}
+		};
+
 	}
 }

@@ -42,7 +42,7 @@ import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 public class FrameworkExtension implements TestInstancePostProcessor, BeforeTestExecutionCallback,
 		AfterTestExecutionCallback, TestExecutionExceptionHandler {
 
-	protected TestFrameworkImpl testFramework;
+	private TestFrameworkImpl testFramework;
 
 	/**
 	 * @see org.junit.jupiter.api.extension.TestInstancePostProcessor#postProcessTestInstance(java.lang.Object,

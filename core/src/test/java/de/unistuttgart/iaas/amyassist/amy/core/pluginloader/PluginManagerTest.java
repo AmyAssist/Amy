@@ -23,8 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -35,13 +35,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtensionHTTP;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
@@ -49,10 +48,11 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * 
  * @author Leon Kiefer
  */
-@ExtendWith(FrameworkExtensionHTTP.class)
+@ExtendWith(FrameworkExtension.class)
 class PluginManagerTest {
 	@Reference
 	private TestFramework testFramework;
+
 	private PluginManager serviceUnderTest;
 	private Properties properties;
 
@@ -61,12 +61,12 @@ class PluginManagerTest {
 		this.testFramework.mockService(DependencyInjection.class);
 		this.testFramework.mockService(PluginLoader.class);
 		this.testFramework.mockService(CommandLineArgumentHandler.class);
+		ConfigurationLoader configurationLoader = this.testFramework.mockService(ConfigurationLoader.class);
 		Environment environment = this.testFramework.mockService(Environment.class);
 		when(environment.getWorkingDirectory()).thenReturn(Paths.get("").toAbsolutePath());
 
-		ConfigurationLoader configurationLoader = this.testFramework.mockService(ConfigurationLoaderImpl.class);
 		this.properties = new Properties();
-		when(configurationLoader.load("plugin.config")).thenReturn(this.properties);
+		configurationLoader.store("plugin.config", this.properties);
 
 		this.testFramework.mockService(SpeechCommandHandler.class);
 		this.testFramework.mockService(Persistence.class);

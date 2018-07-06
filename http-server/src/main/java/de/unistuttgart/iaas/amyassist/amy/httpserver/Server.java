@@ -29,6 +29,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.hk2.api.TypeLiteral;
@@ -40,7 +41,6 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
@@ -76,25 +76,17 @@ public class Server {
 	private ConfigurationLoader configuration_loader;
 
 	/**
-	 * the URI of the server
+	 * @return the URI of the server
 	 */
-	private URI baseUri;
-
-	@PostConstruct
-	private void init() {
+	private URI baseURI() {
 		Properties conf = this.configuration_loader.load(CONFIG_NAME);
-		String port = conf.getProperty(PROPERTY_PORT);
+		int port = Integer.parseInt(conf.getProperty(PROPERTY_PORT, "8080"));
 		String root = conf.getProperty(PROPERTY_ROOT_PATH);
 		String local = conf.getProperty(PROPERTY_LOCALHOST);
 
-		if (port == null) {
-			this.logger.warn("Server config missing key {}.", PROPERTY_PORT);
-			port = "8080";
-		}
-
 		if (root == null) {
 			this.logger.warn("Server config missing key {}.", PROPERTY_ROOT_PATH);
-			root = "/rest/";
+			root = "rest";
 		}
 
 		if (local == null) {
@@ -103,9 +95,9 @@ public class Server {
 		}
 
 		if (local.equals("true")) {
-			this.baseUri = URI.create("http://127.0.0.1:" + port + root);
+			return UriBuilder.fromPath(root).scheme("http").host("127.0.0.1").port(port).build();
 		} else {
-			this.baseUri = URI.create("http://0.0.0.0:" + port + root);
+			return UriBuilder.fromPath(root).scheme("http").host("0.0.0.0").port(port).build();
 		}
 	}
 
@@ -131,7 +123,7 @@ public class Server {
 				});
 			}
 		});
-		this.httpServer = GrizzlyHttpServerFactory.createHttpServer(this.baseUri, resourceConfig);
+		this.httpServer = GrizzlyHttpServerFactory.createHttpServer(this.baseURI(), resourceConfig);
 	}
 
 	/**
@@ -167,12 +159,5 @@ public class Server {
 		if (this.httpServer != null)
 			throw new IllegalStateException("The Server is already started");
 		this.restResources.add(cls);
-	}
-
-	/**
-	 * @return the base uri of the server
-	 */
-	public URI getBaseUri() {
-		return this.baseUri;
 	}
 }
