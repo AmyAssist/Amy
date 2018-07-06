@@ -23,10 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
@@ -53,8 +51,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
- * This class authorizes Amy to connect to the google calendar, 
- * this is a modified version from https://developers.google.com/calendar/quickstart/java
+ * This class authorizes Amy to connect to the google calendar, this is a modified version from
+ * https://developers.google.com/calendar/quickstart/java
  * 
  * @author Florian Bauer. Patrick Gebhardt
  */
@@ -62,18 +60,18 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 public class CalendarService {
 	private static final String APPLICATION_NAME = "Amy Google Calendar API";
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-	
+
 	private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR_READONLY);
-	
+
 	@Reference
 	private Properties configuration;
 	@Reference
 	private Environment environment;
-	@Reference 
+	@Reference
 	private Logger logger;
-	
+
 	private Calendar service;
-	
+
 	/**
 	 * Creates an authorized Credential object.
 	 * 
@@ -85,16 +83,17 @@ public class CalendarService {
 	 */
 	private Credential getCredentials(final NetHttpTransport xHTTPTRANSPORT) throws IOException {
 		// Load client secrets
-		InputStream clientSecretIn = new ByteArrayInputStream(this.configuration.getProperty("JSON").getBytes());
-		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(clientSecretIn));
+		String clientSecretIn = this.configuration.getProperty("JSON");
+		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new StringReader(clientSecretIn));
 		// Build flow and trigger user authorization request
-		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(xHTTPTRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-				.setDataStoreFactory(new FileDataStoreFactory(this.environment.getWorkingDirectory()
-						.resolve("temp/calendarauth").toAbsolutePath().toFile()))
-				.setAccessType("offline").build();
+		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(xHTTPTRANSPORT, JSON_FACTORY,
+				clientSecrets, SCOPES)
+						.setDataStoreFactory(new FileDataStoreFactory(this.environment.getWorkingDirectory()
+								.resolve("temp/calendarauth").toAbsolutePath().toFile()))
+						.setAccessType("offline").build();
 		return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
 	}
-	
+
 	/**
 	 * This method is to authorize the Google account with the calendar
 	 */
@@ -109,14 +108,13 @@ public class CalendarService {
 			this.logger.error("Sorry, an error occured during the authorization", e);
 		}
 	}
-	
+
 	/**
 	 * 
-	 * @return  service
+	 * @return service
 	 */
 	public Calendar getService() {
 		return this.service;
 	}
-	
-	
+
 }

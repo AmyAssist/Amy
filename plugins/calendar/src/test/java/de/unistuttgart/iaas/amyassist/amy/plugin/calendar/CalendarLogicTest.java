@@ -53,7 +53,8 @@ public class CalendarLogicTest {
 	 */
 	@BeforeEach
 	public void setup() {
-		// this.callog = this.framework.setServiceUnderTest(CalendarLogic.class);
+		this.framework.mockService(CalendarService.class);
+		this.callog = this.framework.setServiceUnderTest(CalendarLogic.class);
 	}
 
 	/**
