@@ -69,7 +69,13 @@ public class SpeechCommand {
 			Object[] params = { input };
 			return (String) this.method.invoke(instance, params);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException("Tryed to invoke " + this.method.getName(), e);
+			throw new MethodNotCallableRuntimeException("Tryed to invoke " + this.method.getName(), e);
+		}
+	}
+
+	public class MethodNotCallableRuntimeException extends RuntimeException {
+		public MethodNotCallableRuntimeException(String s, Throwable e) {
+			super(s, e);
 		}
 	}
 }
