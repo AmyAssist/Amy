@@ -126,9 +126,12 @@ public class DirectionsApiCalls {
 	private DirectionsRoute[] errorHandling(DirectionsApiRequest request) {
 		try {
 			return request.await().routes;
-		} catch (ApiException | InterruptedException | IOException e) {
+		} catch (InterruptedException e) {
 			this.logger.warn(ERROR_TAG, e);
 			Thread.currentThread().interrupt();
+		}
+		catch (ApiException | IOException | IllegalStateException e) {
+			this.logger.warn(ERROR_TAG, e);
 		}
 		return new DirectionsRoute[0];
 	}
