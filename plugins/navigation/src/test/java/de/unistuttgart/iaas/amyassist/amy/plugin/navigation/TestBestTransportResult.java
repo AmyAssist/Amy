@@ -43,27 +43,27 @@ public class TestBestTransportResult {
 
 	@Test
 	public void testGetter() {
-		this.bestResult = new BestTransportResult(TravelMode.DRIVING, this.data.routeCar1);
-		assertThat(this.bestResult.getRoute(), equalTo(this.data.routeCar1));
+		this.bestResult = new BestTransportResult(TravelMode.DRIVING, this.data.carRoutes[0]);
+		assertThat(this.bestResult.getRoute(), equalTo(this.data.carRoutes[0]));
 		assertThat(this.bestResult.getMode(), equalTo(TravelMode.DRIVING));
 	}
 
 	@Test
 	public void testRoutToShortStringCar() {
-		this.bestResult = new BestTransportResult(TravelMode.DRIVING, this.data.routeCar1);
+		this.bestResult = new BestTransportResult(TravelMode.DRIVING, this.data.carRoutes[0]);
 		assertThat(this.bestResult.routeToShortString(),
 				equalTo("The route is 2 km long and need 5 min time in traffic"));
 	}
 
 	@Test
 	public void testRoutToShortStringCarwithoutTraffic() {
-		this.bestResult = new BestTransportResult(TravelMode.DRIVING, this.data.routeCar2);
+		this.bestResult = new BestTransportResult(TravelMode.DRIVING, this.data.carRoutes[1]);
 		assertThat(this.bestResult.routeToShortString(), equalTo("The route is 2 km long and need 5 min time"));
 	}
 
 	@Test
 	public void testRoutToShortStringBike() {
-		this.bestResult = new BestTransportResult(TravelMode.BICYCLING, this.data.routeBicycle1);
+		this.bestResult = new BestTransportResult(TravelMode.BICYCLING, this.data.bicycleRoutes[0]);
 		assertThat(this.bestResult.routeToShortString(), equalTo("The route is 2 km long and need 5 min time"));
 	}
 

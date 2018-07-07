@@ -36,17 +36,12 @@ import com.google.maps.model.Duration;
  * @author Lars Buttgereit
  */
 public class TestDataForDirectionsRoutes {
-	protected DirectionsRoute routeCar1;
-	protected DirectionsRoute routeCar2;
-
-	protected DirectionsRoute routeTransport1;
-	protected DirectionsRoute routeTransport2;
-
-	protected DirectionsRoute routeBicycle1;
-	protected DirectionsRoute routeBicycle2;
+	protected DirectionsRoute[] carRoutes = new DirectionsRoute[6];
+	protected DirectionsRoute[] transportRoutes = new DirectionsRoute[7];
+	protected DirectionsRoute[] bicycleRoutes = new DirectionsRoute[2];
 
 	private Distance[] distances = new Distance[4];
-	private Duration[] durations = new Duration[4];
+	private Duration[] durations = new Duration[5];
 	private DateTime[] times = new DateTime[6];
 	
 	protected TestDataForDirectionsRoutes() {
@@ -86,6 +81,8 @@ public class TestDataForDirectionsRoutes {
 		this.durations[2].inSeconds = 4800;
 		this.durations[3].humanReadable = "2 h 2 min";
 		this.durations[3].inSeconds = 7320;
+		this.durations[4].humanReadable = "3 min";
+		this.durations[4].inSeconds = 180;
 	}
 
 	private void initTimes() {
@@ -98,40 +95,62 @@ public class TestDataForDirectionsRoutes {
 	}
 
 	private  void initRoutes() {
-		this.routeCar1 = new DirectionsRoute();
-		this.routeTransport1 = new DirectionsRoute();
-		this.routeBicycle1 = new DirectionsRoute();
-		this.routeCar2 = new DirectionsRoute();
-		this.routeTransport2 = new DirectionsRoute();
-		this.routeBicycle2 = new DirectionsRoute();
+		for(int i = 0; i < this.carRoutes.length; i++) {
+			this.carRoutes[i] = new DirectionsRoute();
+		}
+		for(int i = 0; i < this.transportRoutes.length; i++) {
+			this.transportRoutes[i] = new DirectionsRoute();
+		}
+		for(int i = 0; i < this.bicycleRoutes.length; i++) {
+			this.bicycleRoutes[i] = new DirectionsRoute();
+		}
+				
+		this.carRoutes[0] = createCarRoute(this.distances[3], this.durations[0], this.durations[0]);		
+		this.carRoutes[1] = createCarRoute(this.distances[3], this.durations[0], null);		
+		this.carRoutes[2] = createCarRoute( this.distances[1], null, this.durations[2]);		
+		this.carRoutes[3].legs = new DirectionsLeg[1];		
+		this.carRoutes[4] = createCarRoute(this.distances[3], this.durations[4], null);
+		this.carRoutes[5] = createCarRoute( this.distances[0], this.durations[3], this.durations[3]);
 		
-		DirectionsLeg legCar1 = new DirectionsLeg();
-		legCar1.distance = this.distances[3];
-		legCar1.duration = this.durations[0];
-		legCar1.durationInTraffic = this.durations[0];
-		DirectionsLeg[] legsCar1 = {legCar1};
-		this.routeCar1.legs = legsCar1;
+		this.transportRoutes[0] = createTransportRoute(this.durations[2], this.times[0], this.times[1]);
+		this.transportRoutes[1] = createTransportRoute(this.durations[2], this.times[0], this.times[2]);		
+		this.transportRoutes[2] = createTransportRoute(this.durations[3], this.times[0], this.times[0]);
+		this.transportRoutes[3] = createTransportRoute(this.durations[3], this.times[0], null);
+		this.transportRoutes[4].legs = new DirectionsLeg[1];
+		this.transportRoutes[5] = createTransportRoute(this.durations[3], new DateTime(Long.MAX_VALUE), new DateTime(Long.MAX_VALUE));
+		this.transportRoutes[6] = createTransportRoute(this.durations[3], new DateTime(Long.MIN_VALUE), new DateTime(Long.MIN_VALUE));
 		
-		DirectionsLeg legCar2 = new DirectionsLeg();
-		legCar2.distance = this.distances[3];
-		legCar2.duration = this.durations[0];
-		DirectionsLeg[] legsCar2 = {legCar2};
-		this.routeCar2.legs = legsCar2;
+		this.bicycleRoutes[0] = createBikeRoute(this.distances[3], this.durations[0]);
+		this.bicycleRoutes[1] = createBikeRoute(this.distances[0], this.durations[3]);
 		
-		DirectionsLeg legtransport1 = new DirectionsLeg();
-		legtransport1.duration = this.durations[2];
-		legtransport1.departureTime = this.times[0];
-		legtransport1.arrivalTime = this.times[1];
-		DirectionsLeg[] legstransport1 = {legtransport1};
-		this.routeTransport1.legs = legstransport1;
-		
-		DirectionsLeg legBicycle1 = new DirectionsLeg();
-		legBicycle1.distance = this.distances[3];
-		legBicycle1.duration = this.durations[0];
-		legBicycle1.durationInTraffic = this.durations[0];
-		DirectionsLeg[] legsBicycle1 = {legBicycle1};
-		this.routeBicycle1.legs = legsBicycle1;
-		
+	}
+	private DirectionsRoute createCarRoute(Distance distance, Duration duration, Duration traffic) {
+		DirectionsRoute route = new DirectionsRoute();
+		route.legs = new DirectionsLeg[1];
+		route.legs[0] = new DirectionsLeg();
+		route.legs[0].distance = distance;
+		route.legs[0].duration = duration;
+		route.legs[0].durationInTraffic = traffic;
+		return route;
+	}
+	
+	private DirectionsRoute createBikeRoute(Distance distance, Duration duration) {
+		DirectionsRoute route = new DirectionsRoute();
+		route.legs = new DirectionsLeg[1];
+		route.legs[0] = new DirectionsLeg();
+		route.legs[0].distance = distance;
+		route.legs[0].duration = duration;
+		return route;
+	}
+	
+	private DirectionsRoute createTransportRoute(Duration duration, DateTime depatureTime, DateTime arrivalTime) {
+		DirectionsRoute route = new DirectionsRoute();
+		route.legs = new DirectionsLeg[1];
+		route.legs[0] = new DirectionsLeg();
+		route.legs[0].duration = duration;
+		route.legs[0].departureTime = depatureTime;
+		route.legs[0].arrivalTime = arrivalTime;
+		return route;
 	}
 
 }

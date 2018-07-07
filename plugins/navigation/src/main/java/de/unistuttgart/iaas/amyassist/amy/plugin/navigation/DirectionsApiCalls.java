@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.joda.time.ReadableInstant;
 import org.slf4j.Logger;
@@ -62,7 +63,8 @@ public class DirectionsApiCalls {
 	 */
 	@PostConstruct
 	public void init() {
-		this.context = new GeoApiContext.Builder().apiKey(this.properties.getProperty("GOOGLE_API_KEY")).build();
+		this.context = new GeoApiContext.Builder().apiKey(this.properties.getProperty("GOOGLE_API_KEY")).maxRetries(1)
+				.retryTimeout(2, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build();
 	}
 
 	/**

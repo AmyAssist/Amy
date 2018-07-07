@@ -61,13 +61,13 @@ public class NavigationSpeech {
 	 *            input
 	 * @return output string
 	 */
-	@Grammar("be at " + LOCATIONS + " at # oh # from " + LOCATIONS)
+	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh # ")
 	public String goToAt(String... strings) {
-		ReadableInstant time = this.logic.whenIHaveToGo(this.registry.getAdresse(strings[8]),
+		ReadableInstant time = this.logic.whenIHaveToGo(this.registry.getAdresse(strings[4]),
 				this.registry.getAdresse(strings[2]), TravelMode.DRIVING,
-				formatTimes(Integer.parseInt(strings[6]), Integer.parseInt(strings[4])));
+				formatTimes(Integer.parseInt(strings[8]), Integer.parseInt(strings[6])));
 		if (time != null) {
-			return String.valueOf(time.get(DateTimeFieldType.hourOfDay())).concat(":")
+			return "You should go at ".concat(String.valueOf(time.get(DateTimeFieldType.hourOfDay()))).concat(":")
 					.concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
 		}
 		return "You are to late";
@@ -80,13 +80,13 @@ public class NavigationSpeech {
 	 *            input
 	 * @return output string
 	 */
-	@Grammar("be at " + LOCATIONS + " at # oh # from " + LOCATIONS + " by ( bus | train | transit )")
+	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh # "+  " by ( bus | train | transit )")
 	public String goToAtBy(String... strings) {
-		ReadableInstant time = this.logic.whenIHaveToGo(this.registry.getAdresse(strings[8]),
-				this.registry.getAdresse(strings[2]), TravelMode.TRANSIT,
-				formatTimes(Integer.parseInt(strings[6]), Integer.parseInt(strings[4])));
+		ReadableInstant time = this.logic.whenIHaveToGo(this.registry.getAdresse(strings[2]),
+				this.registry.getAdresse(strings[4]), TravelMode.TRANSIT,
+				formatTimes(Integer.parseInt(strings[8]), Integer.parseInt(strings[6])));
 		if (time != null) {
-			return String.valueOf(time.get(DateTimeFieldType.hourOfDay())).concat(":")
+			return "You should go at ".concat(String.valueOf(time.get(DateTimeFieldType.hourOfDay()))).concat(":")
 					.concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
 		}
 		return "You are to late";
@@ -104,7 +104,7 @@ public class NavigationSpeech {
 		BestTransportResult result = this.logic.getBestTransportInTime(this.registry.getAdresse(strings[3]),
 				this.registry.getAdresse(strings[5]), DateTime.now());
 		return "The best transport Mode is ".concat(result.getMode().toString()).concat(".\n")
-				+ result.getRoute().summary;
+				.concat(result.routeToShortString());
 	}
 
 	/**
@@ -139,12 +139,15 @@ public class NavigationSpeech {
 	 * 
 	 * @param min
 	 * @param hour
-	 * @return the modifed date
+	 * @return the modified date
 	 */
 	private DateTime formatTimes(int min, int hour) {
-		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-		calendar.set(Calendar.MINUTE, min);
-		calendar.set(Calendar.HOUR_OF_DAY, hour);
-		return new DateTime(calendar.getTime());
+		if ((hour >= 0 && hour < 24) && (min >= 0 && min < 60)) {
+			Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+			calendar.set(Calendar.MINUTE, min);
+			calendar.set(Calendar.HOUR_OF_DAY, hour);
+			return new DateTime(calendar.getTime());
+		}
+		return new DateTime();
 	}
 }
