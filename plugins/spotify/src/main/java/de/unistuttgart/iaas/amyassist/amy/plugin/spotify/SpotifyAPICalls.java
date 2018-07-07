@@ -498,6 +498,13 @@ public class SpotifyAPICalls {
 		return null;
 	}
 
+	/**
+	 * Functional interface for Spotify API calls
+	 * SonarLint detects some warnings that cannot be fixed, therefore suppressed
+	 * @param <Void> no parameter (cannot be left out for FunctionInterface)
+	 * @param <T> the return type of the API call
+	 */
+	@SuppressWarnings({"squid:S2326", "squid:S00119"})
 	@FunctionalInterface
 	public interface SpotifyCallLambda<Void, T> {
 		T execute() throws SpotifyWebApiException, IOException;
