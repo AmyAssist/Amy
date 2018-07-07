@@ -173,8 +173,8 @@ public class SpotifyAPICalls {
 	 */
 	private String createAccessToken(SpotifyApi spotifyApi) {
 		AuthorizationCodeRefreshRequest authCodeRefreshReq = spotifyApi.authorizationCodeRefresh().build();
-		AuthorizationCodeCredentials authCredentials = (AuthorizationCodeCredentials) exceptionHandlingWithResults(
-				authCodeRefreshReq);
+		AuthorizationCodeCredentials authCredentials = exceptionHandlingWithResults(
+				authCodeRefreshReq::execute);
 		if (authCredentials != null) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.SECOND, authCredentials.getExpiresIn().intValue() - TOKEN_EXPIRE_TIME_OFFSET);
@@ -220,8 +220,8 @@ public class SpotifyAPICalls {
 	 */
 	public boolean createRefreshToken(String authCode) {
 		AuthorizationCodeRequest authorizationCodeRequest = getSpotifyApi().authorizationCode(authCode).build();
-		AuthorizationCodeCredentials authCodeCredentials = (AuthorizationCodeCredentials) exceptionHandlingWithResults(
-				authorizationCodeRequest);
+		AuthorizationCodeCredentials authCodeCredentials = exceptionHandlingWithResults(
+				authorizationCodeRequest::execute);
 		if (authCodeCredentials != null) {
 			this.configLoader.setProperty(SPOTIFY_REFRSHTOKEN_KEY, authCodeCredentials.getRefreshToken());
 			return true;
@@ -292,7 +292,7 @@ public class SpotifyAPICalls {
 		if (getSpotifyApi() != null) {
 			GetUsersAvailableDevicesRequest getUsersAvailableDevicesRequest = getSpotifyApi().getUsersAvailableDevices()
 					.build();
-			devices = (Device[]) exceptionHandlingWithResults(getUsersAvailableDevicesRequest);
+			devices = exceptionHandlingWithResults(getUsersAvailableDevicesRequest::execute);
 			if (devices != null) {
 				return devices;
 			}
@@ -456,8 +456,8 @@ public class SpotifyAPICalls {
 		if (checkPlayerState()) {
 			GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = getSpotifyApi()
 					.getInformationAboutUsersCurrentPlayback().build();
-			return (CurrentlyPlayingContext) exceptionHandlingWithResults(
-					getInformationAboutUsersCurrentPlaybackRequest);
+			return exceptionHandlingWithResults(
+					getInformationAboutUsersCurrentPlaybackRequest::execute);
 		}
 		return null;
 	}
@@ -477,7 +477,7 @@ public class SpotifyAPICalls {
 		if (checkPlayerState()) {
 			SearchItemRequest searchItemRequest = getSpotifyApi().searchItem(searchItem, type.toLowerCase())
 					.limit(Integer.valueOf(limit)).offset(Integer.valueOf(0)).build();
-			return (SearchResult) exceptionHandlingWithResults(searchItemRequest);
+			return exceptionHandlingWithResults(searchItemRequest::execute);
 		}
 		return null;
 	}
@@ -494,9 +494,15 @@ public class SpotifyAPICalls {
 			GetListOfFeaturedPlaylistsRequest getListOfFeaturedPlaylistsRequest = getSpotifyApi()
 					.getListOfFeaturedPlaylists().country(CountryCode.DE).limit(Integer.valueOf(limit))
 					.offset(Integer.valueOf(0)).build();
-			return (FeaturedPlaylists) exceptionHandlingWithResults(getListOfFeaturedPlaylistsRequest);
+
+			return exceptionHandlingWithResults(getListOfFeaturedPlaylistsRequest::execute);
 		}
 		return null;
+	}
+
+	@FunctionalInterface
+	public interface SpotifyCallLambda<Void, T> {
+		T execute() throws SpotifyWebApiException, IOException;
 	}
 
 	/**
@@ -522,19 +528,19 @@ public class SpotifyAPICalls {
 	/**
 	 * handle the exception from the request created by the .execute() method
 	 * 
-	 * @param request
-	 *            spotify api request
+	 * @param f
+	 *            lambda calling spotify api request
 	 * @return if no exception is occurred then true, else false
 	 */
-	private Object exceptionHandlingWithResults(IRequest request) {
+	private <T> T exceptionHandlingWithResults(SpotifyCallLambda<Void, T> f) {
 		try {
-			return request.execute();
+			return f.execute();
 		} catch (UnauthorizedException e) {
 			SpotifyApi spotifyApi = getSpotifyApiWithoutAcToken();
 			if (spotifyApi != null) {
 				this.storage.put(SPOTIFY_ACCESSTOKEN, createAccessToken(spotifyApi));
 				try {
-					return request.execute();
+					return f.execute();
 				} catch (SpotifyWebApiException | IOException e1) {
 					this.logger.warn(SPOTIFY_ERROR_TAG, e1);
 				}
