@@ -21,35 +21,43 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
+
+import java.util.Iterator;
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
- * List of Node Types
+ * Interface definition of an NLParser
+ * 
  * @author Felix Burk
  */
-public enum AGFNodeType {
+public interface INLParser {
+	
 	/**
-	 * root node
+	 * adds a grammar to it's internal list 
+	 * of AGFNodes representing AGFGrammars
+	 * 
+	 * @param node to add
 	 */
-	AGF,
+	public void addAGFNode(AGFNode node);
+	
 	/**
-	 * OR group
+	 * removes an AGFNode from it's 
+	 * pool of AGFNodes
+	 * 
+	 * @param node to remove
 	 */
-	ORG,
+	public void removeAGFNode(AGFNode node);
+	
 	/**
-	 * optional group
+	 * returns matching AGFNode
+	 * 
+	 * @param nl the natural languge represented by an 
+	 * 		  Iterator containing all necessary WordTokens
+	 * 
+	 * @return the matching AGFNode
 	 */
-	OPG, 
-	/**
-	 * morphene node
-	 */
-	MORPH,
-	/**
-	 * rule
-	 */
-	RULE,
-	/**
-	 * word
-	 */
-	WORD
+	public AGFNode parseNL(Iterator<WordToken> nl);
+
 }

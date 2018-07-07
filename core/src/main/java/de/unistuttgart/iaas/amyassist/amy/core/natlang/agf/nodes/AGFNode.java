@@ -83,7 +83,7 @@ public class AGFNode  {
 	 * @return the type
 	 */
 	public AGFNodeType getType() {
-		return AGFNodeType.R;
+		return AGFNodeType.AGF;
 	}
 
 	/**

@@ -72,16 +72,16 @@ public class AGFParserTest {
 		AGFNode node = parser4.parseWholeExpression();
 		AGFNode orgroup = node.getChilds().get(0);
 		assertEquals(orgroup.getType(), type); 
-		assertEquals(orgroup.getChilds().get(0).getType(), AGFNodeType.R);
-		assertEquals(orgroup.getChilds().get(1).getType(), AGFNodeType.R);
+		assertEquals(orgroup.getChilds().get(0).getType(), AGFNodeType.AGF);
+		assertEquals(orgroup.getChilds().get(1).getType(), AGFNodeType.AGF);
 		
 		//test normal group with suffix
 		AGFParser parser5 = new AGFParser(new AGFLexer(brO + "wa|d" + brC + " bla"));
 		AGFNode node2 = parser5.parseWholeExpression();
 		AGFNode orgroup2 = node2.getChilds().get(0);
 		assertEquals(orgroup2.getType(), type); 
-		assertEquals(orgroup2.getChilds().get(0).getType(), AGFNodeType.R);
-		assertEquals(orgroup2.getChilds().get(1).getType(), AGFNodeType.R);
+		assertEquals(orgroup2.getChilds().get(0).getType(), AGFNodeType.AGF);
+		assertEquals(orgroup2.getChilds().get(1).getType(), AGFNodeType.AGF);
 		
 		//test nested groups
 		AGFParser parser6 = new AGFParser(new AGFLexer(brO + "wa"+brO+"a|b" + brC + "|d" + brC));

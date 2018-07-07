@@ -21,35 +21,25 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
 /**
- * List of Node Types
+ * Custom NLParser Runtime Exception
+ * 
  * @author Felix Burk
  */
-public enum AGFNodeType {
+public class NLParserException extends RuntimeException {
+	
 	/**
-	 * root node
+	 * 
 	 */
-	AGF,
+	private static final long serialVersionUID = 4842605729226226028L;
+
 	/**
-	 * OR group
+	 * @param msg the message to display
 	 */
-	ORG,
-	/**
-	 * optional group
-	 */
-	OPG, 
-	/**
-	 * morphene node
-	 */
-	MORPH,
-	/**
-	 * rule
-	 */
-	RULE,
-	/**
-	 * word
-	 */
-	WORD
+	public NLParserException(String msg) {
+		super(msg);
+	}
+
 }
