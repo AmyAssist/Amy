@@ -25,8 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.JSGFGenerator;
@@ -51,7 +49,6 @@ public class JSGFGeneratorTest {
 		JSGFGenerator gen = new JSGFGenerator("test", "test", "test", "test");
 		String s = gen.addRule(node, "testi");
 		gen.addRule(node2, "dwoa");
-		System.out.println(gen.generateGrammarFileString());
 		assertEquals(s.trim().replaceAll("\\s{2,}", " "), "public <testi> = set timer on <digit> minutes;");
 		
 	}

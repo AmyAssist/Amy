@@ -100,9 +100,10 @@ public class NLLexer implements Iterator<WordToken>{
 	}
 	
 	/**
-	 * parses a single WordToken
+	 * sets WordTokenType
 	 * 
 	 * @param next the WordToken
+	 * @return the parsed WordToken
 	 */
 	private WordToken parse(WordToken next) {
 		for (Map.Entry<String, WordTokenType> entry : this.regexTokenType.entrySet()){
