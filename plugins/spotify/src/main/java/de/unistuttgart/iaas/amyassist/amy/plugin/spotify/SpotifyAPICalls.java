@@ -501,7 +501,7 @@ public class SpotifyAPICalls {
 	/**
 	 * Functional interface for Spotify API calls
 	 * SonarLint detects some warnings that cannot be fixed, therefore suppressed
-	 * @param <Void> no parameter (cannot be left out for FunctionInterface)
+	 * @param <V> no parameter (cannot be left out for FunctionInterface)
 	 * @param <T> the return type of the API call
 	 */
 	@SuppressWarnings({"squid:S2326", "squid:S00119"})
