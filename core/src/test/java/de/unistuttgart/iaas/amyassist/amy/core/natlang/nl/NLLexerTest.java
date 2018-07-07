@@ -23,10 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -78,8 +82,24 @@ public class NLLexerTest {
 		
 		int i=0;
 		while(lexer.hasNext()) {
-			assertEquals(lexer.next().getContent(), input[i]);
+			assertThat(lexer.next().getContent(), is(input[i]));
 			i++;
 		}
+	}
+	
+	/**
+	 * standard test, more to come
+	 */
+	@Test
+	public void testTypes() {
+		NLLexer lex = new NLLexer("wajjo 9 0 oh 99");
+		
+		assertThat(lex.next().getType(), is(WordTokenType.WORD));
+		assertThat(lex.next().getType(), is(WordTokenType.NUMBER));
+		assertThat(lex.next().getType(), is(WordTokenType.NUMBER));
+		assertThat(lex.next().getType(), is(WordTokenType.WORD));
+		assertThat(lex.next().getType(), is(WordTokenType.NUMBER));
+
+		
 	}
 }

@@ -23,7 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -34,6 +36,14 @@ import java.util.NoSuchElementException;
  * @author Felix Burk
  */
 public class NLLexer implements Iterator<WordToken>{
+	
+	/**
+	 * contains regex with the corresponding WordTokenType
+	 */
+	Map<String, WordTokenType> regexTokenType = new HashMap<>();{
+		this.regexTokenType.put("[a-zA-Z]+", WordTokenType.WORD);
+		this.regexTokenType.put("[0-9]+", WordTokenType.NUMBER);
+	}
 	
 	private final String mToLex;
 	private int mIndex = 0;
@@ -75,7 +85,7 @@ public class NLLexer implements Iterator<WordToken>{
     			//handles single whitespace characters but not newline, tab or carriage return
     			case Character.SPACE_SEPARATOR:
     				if(currentWord.length() != 0) {
-        				return new WordToken(currentWord.toString());
+        				return parse(new WordToken(currentWord.toString()));
     				}
     				throw new NLLexerException("more than one whitespace found");
 				default:
@@ -84,9 +94,25 @@ public class NLLexer implements Iterator<WordToken>{
     			
     			
     		}
-    		return new WordToken(currentWord.toString());
+    		return parse(new WordToken(currentWord.toString()));
 		}
 		throw new NoSuchElementException("thrown by NLLexer");
+	}
+	
+	/**
+	 * parses a single WordToken
+	 * 
+	 * @param next the WordToken
+	 */
+	private WordToken parse(WordToken next) {
+		for (Map.Entry<String, WordTokenType> entry : this.regexTokenType.entrySet()){
+		    if(next.getContent().matches(entry.getKey())) {
+		    	next.setType(entry.getValue());
+		    	return next;
+		    }
+		}
+		throw new NLLexerException("no matching word type found");
+		
 	}
 	
 	 @Override
