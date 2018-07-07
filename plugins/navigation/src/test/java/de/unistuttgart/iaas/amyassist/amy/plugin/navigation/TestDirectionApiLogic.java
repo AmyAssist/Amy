@@ -258,36 +258,35 @@ public class TestDirectionApiLogic {
 		verify(this.directionsApiCalls).fromToWithDepartureTime("A", "B", TravelMode.TRANSIT, new DateTime(0));
 		verify(this.directionsApiCalls).fromToWithDepartureTime("A", "B", TravelMode.BICYCLING, new DateTime(0));
 	}
-	
+
 	@Test
 	public void testGetTravelModeDriving() {
 		assertThat(this.logic.getTravelMode("driving"), equalTo(TravelMode.DRIVING));
 		assertThat(this.logic.getTravelMode("car"), equalTo(TravelMode.DRIVING));
 	}
-	
+
 	@Test
 	public void testGetTravelModeBicycling() {
 		assertThat(this.logic.getTravelMode("bicycling"), equalTo(TravelMode.BICYCLING));
 		assertThat(this.logic.getTravelMode("bike"), equalTo(TravelMode.BICYCLING));
 	}
+
 	@Test
 	public void testGetTravelModeTransit() {
 		assertThat(this.logic.getTravelMode("transit"), equalTo(TravelMode.TRANSIT));
 		assertThat(this.logic.getTravelMode("public transport"), equalTo(TravelMode.TRANSIT));
-		assertThat(this.logic.getTravelMode("transport"), equalTo(TravelMode.TRANSIT));	
+		assertThat(this.logic.getTravelMode("transport"), equalTo(TravelMode.TRANSIT));
 	}
-	
+
 	@Test
 	public void testGetTravelModeWalking() {
 		assertThat(this.logic.getTravelMode("walking"), equalTo(TravelMode.WALKING));
 		assertThat(this.logic.getTravelMode("walk"), equalTo(TravelMode.WALKING));
 	}
-	
+
 	@Test
 	public void testGetTravelModeWrongMode() {
 		assertThat(this.logic.getTravelMode("tfgzutzvj"), equalTo(null));
 	}
-	
-	
 
 }

@@ -103,11 +103,10 @@ public class DirectionApiLogic {
 					.plusSeconds(Math.toIntExact(route.legs[0].durationInTraffic.inSeconds)).getMillis()) {
 				return new DateTime(arrivalTime.minusSeconds(Math.toIntExact(route.legs[0].durationInTraffic.inSeconds))
 						.getMillis());
-			}
-			else if(route != null && route.legs[0].duration != null && arrivalTime.getMillis() > DateTime.now()
+			} else if (route != null && route.legs[0].duration != null && arrivalTime.getMillis() > DateTime.now()
 					.plusSeconds(Math.toIntExact(route.legs[0].duration.inSeconds)).getMillis()) {
-				return new DateTime(arrivalTime.minusSeconds(Math.toIntExact(route.legs[0].duration.inSeconds))
-						.getMillis());
+				return new DateTime(
+						arrivalTime.minusSeconds(Math.toIntExact(route.legs[0].duration.inSeconds)).getMillis());
 			}
 			break;
 		case TRANSIT:
