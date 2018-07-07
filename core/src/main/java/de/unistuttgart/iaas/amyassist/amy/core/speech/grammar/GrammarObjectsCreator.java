@@ -65,7 +65,8 @@ public class GrammarObjectsCreator {
 		} catch (IOException e) {
 			throw new IllegalStateException("Can't create parent directories of the grammar file", e);
 		}
-		try (BufferedWriter bw = Files.newBufferedWriter(grammarFile, StandardOpenOption.CREATE)) {
+		try (BufferedWriter bw = Files.newBufferedWriter(grammarFile, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING)) {
 			bw.write(this.nlProcessingManager.getGrammarFileString("grammar"));
 		} catch (IOException e) {
 			throw new IllegalStateException("Can't write grammar file", e);
