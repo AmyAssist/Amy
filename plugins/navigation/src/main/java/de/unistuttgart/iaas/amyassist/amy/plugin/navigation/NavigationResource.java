@@ -218,7 +218,7 @@ public class NavigationResource {
 			return new DateTime(timestamp.getYear(), timestamp.getMonth(), timestamp.getDay(), timestamp.getHour(),
 					timestamp.getMinute(), timestamp.getSecond());
 		} catch (IllegalFieldValueException e) {
-			this.logger.error("Input values are not in range");
+			this.logger.error("Input values are not in range", e);
 			throw new WebApplicationException("Enter correct times.", Status.CONFLICT);
 		}
 	}
