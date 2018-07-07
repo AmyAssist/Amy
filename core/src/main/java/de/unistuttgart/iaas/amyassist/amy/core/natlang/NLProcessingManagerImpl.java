@@ -45,7 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFToken;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.Constants;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
 /**
  * The implementation of the NLProcessingManager. This implementation uses the Parsers in the
@@ -109,7 +109,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			throw new IllegalStateException("Can't create parent directories of the grammar file", e);
 		}
 		try (BufferedWriter bw = Files.newBufferedWriter(resolve, StandardOpenOption.CREATE)) {
-			bw.write(this.getGrammarFileString());
+			String s = this.getGrammarFileString();
+			System.out.println(s);
+			bw.write(s);
 		} catch (IOException e) {
 			throw new IllegalStateException("Can't write grammar file", e);
 		}

@@ -26,6 +26,10 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.unistuttgart.iaas.amyassist.amy.core.Core;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
@@ -34,6 +38,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
  * @author Felix Burk
  */
 public class JSGFGenerator {
+	
+	private final Logger logger = LoggerFactory.getLogger(JSGFGenerator.class);
+
 	
 	/**
 	 * a list of all rules
@@ -94,6 +101,8 @@ public class JSGFGenerator {
 			grammar.append(rule);
 		}
 		
+		logger.error(grammar.toString());
+		
 		return grammar.toString();
 	}
 	
@@ -108,7 +117,7 @@ public class JSGFGenerator {
 	public String addRule(AGFNode node, String ruleName) {
 		StringBuilder b = new StringBuilder();
 		b.append("public <" + ruleName + "> = ");
-		String rule = handleNode(b, node) + ";";
+		String rule = handleNode(b, node) + "; \n";
 		
 		this.rules.add(rule);
 		return rule;

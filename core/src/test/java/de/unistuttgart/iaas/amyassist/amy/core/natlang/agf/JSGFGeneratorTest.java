@@ -45,9 +45,13 @@ public class JSGFGeneratorTest {
 	public void testDigit() {
 		AGFParser parser = new AGFParser(new AGFLexer("set timer on # minutes"));
 		AGFNode node = parser.parseWholeExpression();
+		AGFParser parser2 = new AGFParser(new AGFLexer("set timer on x minutes"));
+		AGFNode node2 = parser2.parseWholeExpression();
 		
 		JSGFGenerator gen = new JSGFGenerator("test", "test", "test", "test");
 		String s = gen.addRule(node, "testi");
+		gen.addRule(node2, "dwoa");
+		System.out.println(gen.generateGrammarFileString());
 		assertEquals(s.trim().replaceAll("\\s{2,}", " "), "public <testi> = set timer on <digit> minutes;");
 		
 	}
