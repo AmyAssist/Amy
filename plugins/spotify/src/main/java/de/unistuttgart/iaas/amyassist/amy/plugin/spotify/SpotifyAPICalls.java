@@ -504,9 +504,9 @@ public class SpotifyAPICalls {
 	 * @param <V> no parameter (cannot be left out for FunctionInterface)
 	 * @param <T> the return type of the API call
 	 */
-	@SuppressWarnings({"squid:S2326", "squid:S00119"})
+	@SuppressWarnings("squid:S2326")
 	@FunctionalInterface
-	public interface SpotifyCallLambda<Void, T> {
+	public interface SpotifyCallLambda<V, T> {
 		T execute() throws SpotifyWebApiException, IOException;
 	}
 
