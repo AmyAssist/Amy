@@ -33,6 +33,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -61,6 +63,9 @@ public class NavigationResource {
 
 	@Reference
 	private DirectionApiLogic logic;
+
+	@Reference
+	private Logger logger;
 
 	/**
 	 * find the best route from A to B with or without a given departure time
@@ -123,7 +128,6 @@ public class NavigationResource {
 		checkTravelMode(travelMode);
 		TravelMode mode = this.logic.getTravelMode(travelMode);
 		ReadableInstant rtime = this.logic.whenIHaveToGo(origin, destination, mode, timestampToDateTime(timestamp));
-		System.out.println(rtime);
 		if (rtime != null) {
 			return new Timestamp(rtime.get(DateTimeFieldType.year()), rtime.get(DateTimeFieldType.monthOfYear()),
 					rtime.get(DateTimeFieldType.dayOfMonth()), rtime.get(DateTimeFieldType.hourOfDay()),
@@ -192,7 +196,8 @@ public class NavigationResource {
 	}
 
 	/**
-	 * converts Timestamp to DateTime, missing date values will set automatically to today, missing time values will set to 0
+	 * converts Timestamp to DateTime, missing date values will set automatically to today, missing time values will set
+	 * to 0
 	 * 
 	 * @param timestamp
 	 *            checks if the timestamp parameter is correct if yes then it will be converted to a DateTime object
@@ -210,10 +215,10 @@ public class NavigationResource {
 			timestamp.setDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
 		}
 		try {
-			DateTime dateTime = new DateTime(timestamp.getYear(), timestamp.getMonth(), timestamp.getDay(),
-					timestamp.getHour(), timestamp.getMinute(), timestamp.getSecond());
-			return dateTime;
+			return new DateTime(timestamp.getYear(), timestamp.getMonth(), timestamp.getDay(), timestamp.getHour(),
+					timestamp.getMinute(), timestamp.getSecond());
 		} catch (IllegalFieldValueException e) {
+			this.logger.error("Input values are not in range");
 			throw new WebApplicationException("Enter correct times.", Status.CONFLICT);
 		}
 	}
