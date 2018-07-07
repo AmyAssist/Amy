@@ -173,8 +173,7 @@ public class SpotifyAPICalls {
 	 */
 	private String createAccessToken(SpotifyApi spotifyApi) {
 		AuthorizationCodeRefreshRequest authCodeRefreshReq = spotifyApi.authorizationCodeRefresh().build();
-		AuthorizationCodeCredentials authCredentials = exceptionHandlingWithResults(
-				authCodeRefreshReq::execute);
+		AuthorizationCodeCredentials authCredentials = exceptionHandlingWithResults(authCodeRefreshReq::execute);
 		if (authCredentials != null) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.SECOND, authCredentials.getExpiresIn().intValue() - TOKEN_EXPIRE_TIME_OFFSET);
@@ -456,8 +455,7 @@ public class SpotifyAPICalls {
 		if (checkPlayerState()) {
 			GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = getSpotifyApi()
 					.getInformationAboutUsersCurrentPlayback().build();
-			return exceptionHandlingWithResults(
-					getInformationAboutUsersCurrentPlaybackRequest::execute);
+			return exceptionHandlingWithResults(getInformationAboutUsersCurrentPlaybackRequest::execute);
 		}
 		return null;
 	}
