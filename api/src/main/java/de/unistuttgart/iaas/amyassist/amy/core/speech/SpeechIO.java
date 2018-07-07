@@ -31,11 +31,4 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
  */
 public interface SpeechIO extends Runnable {
 
-	/**
-	 * Setter for the SpeechInputHandler. The SpeechInputHandler is used to process the user input.
-	 * 
-	 * @param handler
-	 *            the SpeechInputHandler to use
-	 */
-	void setSpeechInputHandler(SpeechInputHandler handler);
 }

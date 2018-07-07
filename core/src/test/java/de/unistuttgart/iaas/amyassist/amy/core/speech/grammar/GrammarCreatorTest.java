@@ -26,14 +26,21 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.grammar;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -48,27 +55,39 @@ public class GrammarCreatorTest {
 	@Reference
 	private TestFramework framework;
 
-	@Reference
-	private Environment environment;
-
 	private GrammarObjectsCreator objectsCreator;
 
 	private String grammarName;
 	private Path grammarFile;
 
-	@BeforeEach
-	private void setup() {
-		this.objectsCreator = this.framework.setServiceUnderTest(GrammarObjectsCreator.class);
+	private Path tempDir;
 
-		this.grammarFile = this.environment.getWorkingDirectory().resolve("resources")
-				.resolve("sphinx-grammars/grammar.gram");
+	@BeforeEach
+	public void setup() throws IOException {
 		this.grammarName = "grammar";
+
+		Environment environment = this.framework.mockService(Environment.class);
+		NLProcessingManager nlProcessingManager = this.framework.mockService(NLProcessingManager.class);
+		Mockito.when(nlProcessingManager.getGrammarFileString(this.grammarName)).thenReturn("");
+		this.tempDir = Files.createTempDirectory(GrammarCreatorTest.class.getName());
+		this.tempDir.toFile().deleteOnExit();
+		Mockito.when(environment.getWorkingDirectory()).thenReturn(this.tempDir);
+
+		this.grammarFile = this.tempDir.resolve("resources").resolve("sphinx-grammars/grammar.gram");
+
+		this.objectsCreator = this.framework.setServiceUnderTest(GrammarObjectsCreator.class);
 	}
 
 	@Test
-	private void test() {
+	public void test() {
+		this.objectsCreator.completeSetup();
 		assertThat(this.objectsCreator.getMainGrammar().getName(), equalTo(this.grammarName));
 		assertThat(this.objectsCreator.getMainGrammar().getFile(), equalTo(this.grammarFile.toFile()));
 		assertThat(this.objectsCreator.getSwitchableGrammars().isEmpty(), equalTo(true));
+	}
+
+	@AfterEach
+	void cleanUp() throws IOException {
+		Files.walk(this.tempDir).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
 	}
 }
