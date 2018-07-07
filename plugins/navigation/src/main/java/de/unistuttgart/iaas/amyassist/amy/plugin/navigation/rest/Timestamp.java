@@ -33,24 +33,56 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Timestamp {
 
+	/**
+	 * the year of the new timestamp
+	 */
 	private int year;
-	private int month;
-	private int day;
-	private int hour;
-	private int minute;
-	private int second;
-	
-	public Timestamp() {
-		
-	}
 	
 	/**
+	 * the month of the new timestamp
+	 */
+	private int month;
+	
+	/**
+	 * the day of the new timestamp
+	 */
+	private int day;
+	
+	/**
+	 * the hour of the new timestamp
+	 */
+	private int hour;
+	
+	/**
+	 * the minute of the new timestamp
+	 */
+	private int minute;
+	
+	/**
+	 * the second of the new timestamp
+	 */
+	private int second;
+
+	/**
+	 * constructor
+	 */
+	public Timestamp() {
+		// Needed for JSON
+	}
+
+	/**
 	 * @param year
+	 *            the year of the new timestamp
 	 * @param month
+	 *            the month of the new timestamp
 	 * @param day
+	 *            the day of the new timestamp
 	 * @param hour
+	 *            the hour of the new timestamp
 	 * @param minute
+	 *            the minute of the new timestamp
 	 * @param second
+	 *            the second of the new timestamp
 	 */
 	public Timestamp(int year, int month, int day, int hour, int minute, int second) {
 		this.year = year;
@@ -62,99 +94,115 @@ public class Timestamp {
 	}
 
 	/**
-	 * Get's {@link #year year}
-	 * @return  year
+	 * @return year
 	 */
 	public int getYear() {
 		return this.year;
 	}
 
 	/**
-	 * Set's {@link #year year}
-	 * @param year  year
+	 * @param year
+	 *            the year to set
 	 */
 	public void setYear(int year) {
 		this.year = year;
 	}
 
 	/**
-	 * Get's {@link #month month}
-	 * @return  month
+	 * @return month
 	 */
 	public int getMonth() {
 		return this.month;
 	}
 
 	/**
-	 * Set's {@link #month month}
-	 * @param month  month
+	 * @param month
+	 *            the month to set
 	 */
 	public void setMonth(int month) {
 		this.month = month;
 	}
 
 	/**
-	 * Get's {@link #day day}
-	 * @return  day
+	 * @return day
 	 */
 	public int getDay() {
 		return this.day;
 	}
 
 	/**
-	 * Set's {@link #day day}
-	 * @param day  day
+	 * @param day
+	 *            the day to set
 	 */
 	public void setDay(int day) {
 		this.day = day;
 	}
 
 	/**
-	 * Get's {@link #hour hour}
-	 * @return  hour
+	 * @return hour
 	 */
 	public int getHour() {
 		return this.hour;
 	}
 
 	/**
-	 * Set's {@link #hour hour}
-	 * @param hour  hour
+	 * @param hour
+	 *            the hour to set
 	 */
 	public void setHour(int hour) {
 		this.hour = hour;
 	}
 
 	/**
-	 * Get's {@link #minute minute}
-	 * @return  minute
+	 * @return minute
 	 */
 	public int getMinute() {
 		return this.minute;
 	}
 
 	/**
-	 * Set's {@link #minute minute}
-	 * @param minute  minute
+	 * @param minute
+	 *            the minute to set
 	 */
 	public void setMinute(int minute) {
 		this.minute = minute;
 	}
 
 	/**
-	 * Get's {@link #second second}
-	 * @return  second
+	 * @return second
 	 */
 	public int getSecond() {
 		return this.second;
 	}
 
 	/**
-	 * Set's {@link #second second}
-	 * @param second  second
+	 * @param second
+	 *            the second to set
 	 */
 	public void setSecond(int second) {
 		this.second = second;
 	}
 	
+	/**
+	 * @see java.lang.Object#equals
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Timestamp) {
+			Timestamp timestamp = (Timestamp) obj;
+			return this.year == timestamp.year && this.month == timestamp.month && this.day == timestamp.day
+					&& this.hour == timestamp.hour && this.minute == timestamp.minute
+					&& this.second == timestamp.second;
+		}
+		return false;
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
 }
