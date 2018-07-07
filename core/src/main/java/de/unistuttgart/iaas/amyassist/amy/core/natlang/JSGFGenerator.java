@@ -34,36 +34,40 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
  * @author Felix Burk
  */
 public class JSGFGenerator {
-	
+
 	/**
 	 * a list of all rules
 	 */
 	List<String> rules;
-	
+
 	private String name;
 	private String wakeup;
 	private String sleep;
 	private String shutdown;
-	
+
 	/**
 	 * constructor, generates a JSGF file
-	 * @param name the name of the grammar file
-	 * @param wakeup the wakeup command
-	 * @param sleep the sleep command
-	 * @param shutdown the shutdown command
+	 * 
+	 * @param name
+	 *            the name of the grammar file
+	 * @param wakeup
+	 *            the wakeup command
+	 * @param sleep
+	 *            the sleep command
+	 * @param shutdown
+	 *            the shutdown command
 	 */
 	public JSGFGenerator(String name, String wakeup, String sleep, String shutdown) {
 		this.name = name;
 		this.wakeup = wakeup;
 		this.sleep = sleep;
 		this.shutdown = shutdown;
-		
+
 		this.rules = new ArrayList<>();
 	}
-	
+
 	/**
-	 * generates a whole JSGF grammar file content
-	 * including previously added rules via addRule(..)
+	 * generates a whole JSGF grammar file content including previously added rules via addRule(..)
 	 * 
 	 * just put the returning string in a new file
 	 * 
@@ -71,7 +75,7 @@ public class JSGFGenerator {
 	 */
 	public String generateGrammarFileString() {
 		StringBuilder grammar = new StringBuilder();
-		
+
 		grammar.append("#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n" + " */\n" + "\n");
 
 		grammar.append("grammar " + this.name + ";\n");
@@ -88,28 +92,29 @@ public class JSGFGenerator {
 				+ "fifty | sixty  | seventy | eighty | ninety | and )+; \n");
 
 		grammar.append("\n//custom rules \n");
-		
-		
-		for(String rule : this.rules) {
+
+		for (String rule : this.rules) {
 			grammar.append(rule);
 		}
-		
+
 		return grammar.toString();
 	}
-	
+
 	/**
-	 * generates a valid public JSGF Rule from an AGFNode
-	 * the generated rule is added to an internal list of rules, if 
+	 * generates a valid public JSGF Rule from an AGFNode the generated rule is added to an internal list of rules, if
 	 * generateGrammarFileString() is called added rules are included
-	 * @param node root node
-	 * @param ruleName the name of the rule
+	 * 
+	 * @param node
+	 *            root node
+	 * @param ruleName
+	 *            the name of the rule
 	 * @return the rule as String
 	 */
 	public String addRule(AGFNode node, String ruleName) {
 		StringBuilder b = new StringBuilder();
 		b.append("public <" + ruleName + "> = ");
 		String rule = handleNode(b, node) + ";\n";
-		
+
 		this.rules.add(rule);
 		return rule;
 	}
@@ -117,13 +122,15 @@ public class JSGFGenerator {
 	/**
 	 * traverses the tree
 	 * 
-	 * @param b the string builder
-	 * @param node the current root node
+	 * @param b
+	 *            the string builder
+	 * @param node
+	 *            the current root node
 	 * @return the current string representation of the rule
 	 */
 	private String handleNode(StringBuilder b, AGFNode node) {
-		if(node != null) {
-			switch(node.getType()) {
+		if (node != null) {
+			switch (node.getType()) {
 			case WORD:
 				b.append(" " + node.getContent());
 				break;
@@ -141,12 +148,12 @@ public class JSGFGenerator {
 				b.append("] ");
 				break;
 			case MORPH:
-				for(AGFNode child : node.getChilds()) {
+				for (AGFNode child : node.getChilds()) {
 					handleNode(b, child);
 				}
 				break;
 			default:
-				for(AGFNode child : node.getChilds()) {
+				for (AGFNode child : node.getChilds()) {
 					handleNode(b, child);
 				}
 				break;
@@ -154,58 +161,21 @@ public class JSGFGenerator {
 		}
 		return b.toString();
 	}
-	
+
 	/**
 	 * convenience method to handle brace content
 	 * 
-	 * @param node the AGFNode
-	 * @param b the StringBuilder
+	 * @param node
+	 *            the AGFNode
+	 * @param b
+	 *            the StringBuilder
 	 */
 	private void handleBraceContent(AGFNode node, StringBuilder b) {
-		for(int i = 0; i < node.getChilds().size(); i++) {
+		for (int i = 0; i < node.getChilds().size(); i++) {
 			handleNode(b, node.getChilds().get(i));
-			if(i!=node.getChilds().size()-1) {
+			if (i != node.getChilds().size() - 1) {
 				b.append("|");
 			}
 		}
 	}
-	
-	/**
-	 * Adds a rule to the grammar
-	 *
-	 * @param ruleName
-	 *            The name of the rule
-	 * @param keyword
-	 *            The keyword
-	 */
-	@Deprecated
-	public void addRule(String ruleName, String[] keywords, String grammar) {
-		String rule = "public <" + ruleName + ">" + " = ";
-
-		if (keywords.length > 1) {
-			rule += "(";
-			for (String keyword : keywords) {
-				rule += this.parseKeyword(keyword) + "|";
-			}
-			rule = rule.substring(0, rule.length() - 1);
-			rule += ") " + this.parseKeyword(grammar) + "; \n";
-		} else {
-			rule += this.parseKeyword(keywords[0]) + " " + this.parseKeyword(grammar) + "; \n";
-		}
-
-		this.rules.add(rule);
-	}
-
-	/**
-	 * replace keywords with corresponding pre defined rule
-	 *
-	 * @param keyword
-	 *            The keyword
-	 * @return the corresponding rule
-	 */
-	@Deprecated
-	private String parseKeyword(String keyword) {
-		return keyword.replace("#", "<digit>");
-}
-
 }
