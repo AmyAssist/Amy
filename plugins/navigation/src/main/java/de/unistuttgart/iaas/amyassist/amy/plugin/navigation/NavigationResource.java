@@ -36,12 +36,14 @@ import javax.ws.rs.core.Response.Status;
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest.Timestamp;
 
 import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.IllegalFieldValueException;
 import org.joda.time.ReadableInstant;
 
 /**
@@ -70,27 +72,25 @@ public class NavigationResource {
 	 * @param travelMode
 	 *            How to travel: Allowed parameters: driving, car, bicycling, bike, transit, public transport,
 	 *            transport, walking, walk
-	 * @param minute
-	 *            in which minute to start: allowed parameters: from 0 to 60, can be null
-	 * @param hour
-	 *            in which hour to start: allowed parameters: from 0 to 24, can be null
+	 * @param timestamp
+	 *            time object which sets the departure time, can be null
 	 * @return a data structure with the best route and the transport type of the query
 	 */
 	@POST
 	@Path("fromTo")
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public BestTransportResult routeFromTo(@QueryParam("origin") String origin,
-			@QueryParam("destination") String destination, @QueryParam("travelMode") String travelMode,
-			@QueryParam("minute") @DefaultValue("-1") int minute, @QueryParam("hour") @DefaultValue("-1") int hour) {
+	public BestTransportResult routeFromTo(@QueryParam("origin") @DefaultValue("") String origin,
+			@QueryParam("destination") @DefaultValue("") String destination,
+			@QueryParam("travelMode") String travelMode, Timestamp timestamp) {
 		checkOriginDestination(origin, destination);
 		checkTravelMode(travelMode);
 		TravelMode mode = this.logic.getTravelMode(travelMode);
 		BestTransportResult bestRoute;
-		if (minute == -1 && hour == -1) {
+		if (timestamp == null) {
 			bestRoute = this.logic.fromTo(origin, destination, mode);
 		} else {
-			bestRoute = this.logic.fromToWithDeparture(origin, destination, mode, formatTimes(minute, hour));
+			bestRoute = this.logic.fromToWithDeparture(origin, destination, mode, timestampToDateTime(timestamp));
 		}
 		if (bestRoute != null) {
 			return bestRoute;
@@ -108,58 +108,54 @@ public class NavigationResource {
 	 * @param travelMode
 	 *            How to travel: Allowed parameters: driving, car, bicycling, bike, transit, public transport,
 	 *            transport, walking, walk
-	 * @param minute
-	 *            in which minute to start: allowed parameters: from 0 to 60
-	 * @param hour
-	 *            in which hour to start: allowed parameters: from 0 to 24
-	 * @return a ReadableInstant with the latest start time
+	 * @param timestamp
+	 *            time you plan to arrive at the destination
+	 * @return a Timestamp object with the latest start time
 	 */
 	@POST
 	@Path("when")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String whenIHaveToGo(@QueryParam("origin") @DefaultValue("") String origin,
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Timestamp whenIHaveToGo(@QueryParam("origin") @DefaultValue("") String origin,
 			@QueryParam("destination") @DefaultValue("") String destination,
-			@QueryParam("travelMode") String travelMode, @QueryParam("minute") int minute,
-			@QueryParam("hour") int hour) {
+			@QueryParam("travelMode") String travelMode, Timestamp timestamp) {
 		checkOriginDestination(origin, destination);
 		checkTravelMode(travelMode);
 		TravelMode mode = this.logic.getTravelMode(travelMode);
-		ReadableInstant time = this.logic.whenIHaveToGo(origin, destination, mode, formatTimes(minute, hour));
-		if (time != null) {
-			return String.valueOf(time.get(DateTimeFieldType.hourOfDay())).concat(":")
-					.concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
+		ReadableInstant rtime = this.logic.whenIHaveToGo(origin, destination, mode, timestampToDateTime(timestamp));
+		System.out.println(rtime);
+		if (rtime != null) {
+			return new Timestamp(rtime.get(DateTimeFieldType.year()), rtime.get(DateTimeFieldType.monthOfYear()),
+					rtime.get(DateTimeFieldType.dayOfMonth()), rtime.get(DateTimeFieldType.hourOfDay()),
+					rtime.get(DateTimeFieldType.minuteOfHour()), rtime.get(DateTimeFieldType.secondOfMinute()));
 		}
 		throw new WebApplicationException("No latest starttime found.", Status.NOT_FOUND);
 	}
 
 	/**
-	 * this find the best transport type out of driving, transit and bicycling
+	 * this method finds the best transport type out of driving, transit and bicycling
 	 * 
 	 * @param origin
 	 *            where to start
 	 * @param destination
 	 *            where to end
-	 * @param minute
-	 *            in which minute to start: allowed parameters: from 0 to 60
-	 * @param hour
-	 *            in which hour to start: allowed parameters: from 0 to 24
+	 * @param timestamp
+	 *            time object which sets the departure time
 	 * @return data structure with the best route and the transport type
 	 */
 	@POST
 	@Path("best")
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public BestTransportResult getBestTransportInTime(@QueryParam("origin") @DefaultValue("") String origin,
-			@QueryParam("destination") @DefaultValue("") String destination, @QueryParam("minute") int minute,
-			@QueryParam("hour") int hour) {
+			@QueryParam("destination") @DefaultValue("") String destination, Timestamp timestamp) {
 		checkOriginDestination(origin, destination);
 		BestTransportResult bestTransport = this.logic.getBestTransportInTime(origin, destination,
-				formatTimes(minute, hour));
+				timestampToDateTime(timestamp));
 		if (bestTransport != null) {
 			return bestTransport;
 		}
-		throw new WebApplicationException("No best transport time found.", Status.NOT_FOUND);
+		throw new WebApplicationException("No best transport type found.", Status.NOT_FOUND);
 	}
 
 	/**
@@ -192,26 +188,34 @@ public class NavigationResource {
 		if (travelMode != null) {
 			return true;
 		}
-		throw new WebApplicationException("Enter correct a correct travel mode", Status.CONFLICT);
+		throw new WebApplicationException("Enter a correct travel mode.", Status.CONFLICT);
 	}
 
 	/**
-	 * checks if minute and hour input is correct
+	 * converts Timestamp to DateTime, missing date values will set automatically to today, missing time values will set to 0
 	 * 
-	 * @param minute
-	 *            from 0 to 60
-	 * @param hour
-	 *            from 0 to 24
-	 * @return true if mode input is correct
+	 * @param timestamp
+	 *            checks if the timestamp parameter is correct if yes then it will be converted to a DateTime object
+	 * @return a DateTime object with values of the timestamp parameter
 	 */
-	private DateTime formatTimes(int minute, int hour) {
-		if ((hour >= 0 && hour < 24) && (minute >= 0 && minute < 60)) {
-			Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-			calendar.set(Calendar.MINUTE, minute);
-			calendar.set(Calendar.HOUR_OF_DAY, hour);
-			return new DateTime(calendar.getTime());
+	private DateTime timestampToDateTime(Timestamp timestamp) {
+		Calendar.getInstance(TimeZone.getDefault());
+		if (timestamp.getYear() == 0) {
+			timestamp.setYear(Calendar.getInstance().get(Calendar.YEAR));
 		}
-		throw new WebApplicationException("Enter correct times.", Status.CONFLICT);
+		if (timestamp.getMonth() == 0) {
+			timestamp.setMonth(Calendar.getInstance().get(Calendar.MONTH) + 1);
+		}
+		if (timestamp.getDay() == 0) {
+			timestamp.setDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+		}
+		try {
+			DateTime dateTime = new DateTime(timestamp.getYear(), timestamp.getMonth(), timestamp.getDay(),
+					timestamp.getHour(), timestamp.getMinute(), timestamp.getSecond());
+			return dateTime;
+		} catch (IllegalFieldValueException e) {
+			throw new WebApplicationException("Enter correct times.", Status.CONFLICT);
+		}
 	}
 
 }

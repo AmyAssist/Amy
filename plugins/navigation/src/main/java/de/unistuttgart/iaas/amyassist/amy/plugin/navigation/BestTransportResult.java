@@ -41,6 +41,13 @@ public class BestTransportResult {
 
 	private static final String THE_ROUTE_IS = "The route is ";
 	private static final String LONG_AND_NEED = " long and need ";
+	
+	/**
+	 * constructor
+	 */
+	public BestTransportResult() {
+		//Needed for JSON
+	}
 
 	/**
 	 * constructor
