@@ -31,7 +31,7 @@ public class SpotifyConstants {
 	public static final String TYPE_ALBUM = "album";
 	public static final String ITEM_NAME = "name";
 	public static final String GENRE = "genre";
-	public static final String ARTIST_NAME = "artisName";
+	public static final String ARTIST_NAME = "artistName";
 	public static final String ITEM_URI = "uri";
 	public static final String ITEM_TYPE = "type";
 	public static final String DEVICE_NAME = "deviceName";
