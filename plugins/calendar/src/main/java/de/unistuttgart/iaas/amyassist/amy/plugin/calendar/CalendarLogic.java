@@ -220,8 +220,8 @@ public class CalendarLogic {
 					.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + timeZone, formatter).minusDays(1);
 			withTime = false;
 		} else {
-			startDateTime = LocalDateTime.parse(event.getStart().getDateTime().toString(), formatter);
-			endDateTime = LocalDateTime.parse(event.getEnd().getDateTime().toString(), formatter);
+			startDateTime = ZonedDateTime.parse(event.getStart().getDateTime().toString()).withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+			endDateTime = ZonedDateTime.parse(event.getEnd().getDateTime().toString()).withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
 			withTime = true;
 		}
 		startDate = startDateTime.toLocalDate();

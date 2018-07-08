@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -85,36 +86,48 @@ public class CalendarLogicTest {
 	 */
 	public static Stream<Pair<Event, String>> testEventsWithDate() {
 		return Stream.of(
-				Pair.of(event("test event", new DateTime("2015-05-29T08:00:00"), new DateTime("2015-05-29T09:30:00")),
-						"test event from the 29th of may at 10:00 until the 29th of may at 11:30."),
-				Pair.of(event("write tests in Java", new DateTime("2015-05-28T12:59:15"),
-						new DateTime("2015-05-28T20:30:00")),
-						"write tests in Java on the 28th of MAY at 14:59 until 22:30."));
+				Pair.of(event("test event", "2015-05-29T08:00:00", "2015-05-29T09:30:00"),
+						"test event from the 29th of may at 08:00 until the 29th of may at 09:30."),
+				Pair.of(event("write tests in Java", "2015-05-28T12:59:15", "2015-05-28T20:30:00"),
+						"write tests in Java on the 28th of MAY at 12:59 until 20:30."));
 	}
+
 	/**
 	 * 
 	 * @return the test cases used in the {@link #testCheckDayWithoutDate(Pair)} test
 	 */
 	public static Stream<Pair<Event, String>> testEventsWithoutDate() {
-		return Stream.of(
-				Pair.of(event("test event", new DateTime("2015-05-29T08:00:00"), new DateTime("2015-05-29T09:30:00")),
-						"test event from the 29th of may at 10:00 until 11:30."));
+		return Stream.of(Pair.of(event("test event", "2015-05-29T08:00:00", "2015-05-29T09:30:00"),
+				"test event from the 29th of may at 08:00 until 09:30."));
 	}
 
-	private static Event event(String summary, DateTime start, DateTime end) {
+	private static Event event(String summary, String start, String end) {
 		Event event = new Event();
 		event.setSummary(summary);
-		event.setStart(new EventDateTime().setDateTime(start));
-		event.setEnd(new EventDateTime().setDateTime(end));
+		event.setStart(new EventDateTime().setDateTime(fromISO(start)));
+		event.setEnd(new EventDateTime().setDateTime(fromISO(end)));
 		return event;
 	}
 
-	private static Event eventAllDay(String summary, DateTime start, DateTime end) {
+	private static Event eventAllDay(String summary, String start, String end) {
 		Event event = new Event();
 		event.setSummary(summary);
-		event.setStart(new EventDateTime().setDate(start));
-		event.setEnd(new EventDateTime().setDate(end));
+		event.setStart(new EventDateTime().setDate(fromISO(start)));
+		event.setEnd(new EventDateTime().setDate(fromISO(end)));
 		return event;
+	}
+
+	/**
+	 * @param iso
+	 *            date-time without a time-zone
+	 * @return
+	 */
+	private static DateTime fromISO(String iso) {
+		return fromLocalDateTime(LocalDateTime.parse(iso));
+	}
+
+	private static DateTime fromLocalDateTime(LocalDateTime localDateTime) {
+		return new DateTime(localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
 	}
 
 }
