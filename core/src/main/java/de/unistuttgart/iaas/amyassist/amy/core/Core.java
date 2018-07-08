@@ -23,34 +23,22 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
-import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.AudioUserInteraction;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
@@ -71,7 +59,7 @@ public class Core {
 	private DependencyInjection di = new DependencyInjection();
 
 	private Server server;
-	private IStorage storage = new Storage("", new GlobalStorage());
+	private LocalAudioUserInteraction recognizer;
 
 	private CommandLineArgumentHandlerService cmaHandler;
 
@@ -105,6 +93,7 @@ public class Core {
 		this.logger.info("run");
 		this.init();
 		this.threads.forEach(Thread::start);
+		this.recognizer.start();
 		this.server.start();
 		this.logger.info("running");
 	}
@@ -124,49 +113,27 @@ public class Core {
 		console.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
 		this.threads.add(new Thread(console));
 
-		Environment environment = this.di.getService(Environment.class);
-
-		Path grammarFile = environment.getWorkingDirectory().resolve("resources")
-				.resolve("sphinx-grammars/grammar.gram");
-
-		speechCommandHandler.setFileToSaveGrammarTo(grammarFile.toFile());
-
-		AudioUserInteraction aui = AudioUserInteraction.getAudioUI();
-		aui.setGrammars(new Grammar("grammar", grammarFile.toFile()), null);
-
-		SpeechIO sr = aui;
-		this.di.inject(sr);
-		sr.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
-		this.threads.add(new Thread(sr));
+		this.recognizer = this.di.getService(LocalAudioUserInteraction.class);
 
 		PluginManager pluginManager = this.di.getService(PluginManager.class);
 		pluginManager.loadPlugins();
 		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
 		speechCommandHandler.completeSetup();
+
+		this.recognizer.init();
 	}
 
 	/**
 	 * register all instances and classes in the DI
 	 */
 	private void registerAllCoreServices() {
-		this.di.addExternalService(IStorage.class, this.storage);
 		this.di.addExternalService(DependencyInjection.class, this.di);
 		this.di.addExternalService(Core.class, this);
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
 		this.di.addExternalService(CommandLineArgumentHandler.class, this.cmaHandler);
 
-		this.di.register(Logger.class, new LoggerProvider());
-		this.di.register(Properties.class, new PropertiesProvider());
 
-		this.di.register(Server.class);
-		this.di.register(ConfigurationImpl.class);
-		this.di.register(Console.class);
-		this.di.register(SpeechCommandHandler.class);
-		this.di.register(ConfigurationLoader.class);
-		this.di.register(PluginLoader.class);
-		this.di.register(PluginManagerService.class);
-		this.di.register(EnvironmentService.class);
-		this.di.register(NaturalLanaguageInputHandlerService.class);
+		this.di.loadServices();
 	}
 
 	/**
@@ -175,6 +142,7 @@ public class Core {
 	public void stop() {
 		this.logger.info("stop");
 		this.server.shutdown();
+		this.recognizer.stop();
 		this.threads.forEach(Thread::interrupt);
 		this.singleThreadScheduledExecutor.shutdownNow();
 		this.di.shutdown();

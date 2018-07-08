@@ -32,7 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
  * 
  * @author Leon Kiefer
  */
-public class ContextInjectionPoint extends InjetionPoint {
+public class ContextInjectionPoint extends InjectionPoint {
 
 	private String contextIdentifier;
 
