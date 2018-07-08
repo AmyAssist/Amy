@@ -53,7 +53,7 @@ public class CalendarSpeech {
 		} else {
 			number = params[2];
 		}
-		return this.calendar.getEvents(number);
+		return this.calendar.getEvents(Integer.parseInt(number));
 	}
 
 	/**

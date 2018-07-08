@@ -61,8 +61,6 @@ public class CalendarLogic {
 		STARTINPAST, STARTINFUTURE, ALLDAYLONG, SINGLEDAY
 	}
 
-	private List<String> eventList = new ArrayList<>();
-
 	/**
 	 * This method lists the next events from the calendar
 	 *
@@ -70,25 +68,24 @@ public class CalendarLogic {
 	 *            number of events the user wants to get
 	 * @return event summary
 	 */
-	public String getEvents(String number) {
+	public String getEvents(int number) {
+		List<String> eventList = new ArrayList<>();
 		try {
-			this.eventList.clear();
 			DateTime current = new DateTime(System.currentTimeMillis());
-			Events events = this.calendarService.getService().events().list("primary")
-					.setMaxResults(Integer.valueOf(number)).setTimeMin(current).setOrderBy("startTime")
-					.setSingleEvents(true).execute();
+			Events events = this.calendarService.getService().events().list("primary").setMaxResults(number)
+					.setTimeMin(current).setOrderBy("startTime").setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return "No upcoming events found.";
 			}
 			LocalDateTime now = LocalDateTime.now();
 			for (Event event : items) {
-				checkDay(now, event, true);
+				eventList.add(checkDay(now, event, true));
 			}
-			if (number.equals("1")) {
-				return "You have following upcoming event:\n" + String.join("\n", this.eventList);
+			if (number == 1) {
+				return "You have following upcoming event:\n" + String.join("\n", eventList);
 			}
-			return "You have following upcoming " + number + " events:\n" + String.join("\n", this.eventList);
+			return "You have following upcoming " + number + " events:\n" + String.join("\n", eventList);
 		} catch (IOException e) {
 			this.logger.error("Sorry, I am not able to get your events.", e);
 			return "An error occured.";
@@ -104,8 +101,8 @@ public class CalendarLogic {
 	 * @return the events of the chosen day
 	 */
 	public String getEventsByDay(boolean today) {
+		List<String> eventList = new ArrayList<>();
 		try {
-			this.eventList.clear();
 			LocalDateTime now = LocalDateTime.now();
 			DateTime setup = new DateTime(System.currentTimeMillis());
 			Events events = this.calendarService.getService().events().list("primary").setTimeMin(setup)
@@ -132,25 +129,23 @@ public class CalendarLogic {
 				}
 				if (nowDate.isAfter(startDate) || nowDate.equals(startDate)) {
 					if (nowDate.isBefore(endDate) || nowDate.equals(endDate)) {
-						checkDay(now, event, false);
+						eventList.add(this.checkDay(now, event, false));
 					}
 				} else {
 					break;
 				}
 			}
 			if (today) {
-				if (this.eventList.isEmpty()) {
+				if (eventList.isEmpty()) {
 					return "There are no events today.";
 				}
-				return "You have following events today:\n" + String.join("\n", this.eventList);
+				return "You have following events today:\n" + String.join("\n", eventList);
 			}
-			if (this.eventList.isEmpty()) {
+			if (eventList.isEmpty()) {
 				return "There are no events tomorrow.";
 			}
-			return "You have following events tomorrow:\n" + String.join("\n", this.eventList);
-		} catch (
-
-		IOException e) {
+			return "You have following events tomorrow:\n" + String.join("\n", eventList);
+		} catch (IOException e) {
 			this.logger.error("Sorry, I am not able to get your events.", e);
 			return "An error occured.";
 		}
@@ -165,9 +160,9 @@ public class CalendarLogic {
 	 *            the current chosen event
 	 * @param withDate
 	 *            if the date should be displayed (or only the time)
-	 *
+	 * @return the event as natural language text
 	 */
-	public void checkDay(LocalDateTime dayToCheck, Event event, boolean withDate) {
+	public String checkDay(LocalDateTime dayToCheck, Event event, boolean withDate) {
 		SimpleDateFormat sdf = new SimpleDateFormat("XXX");
 		String timeZone = sdf.format(Date.from(dayToCheck.atZone(ZoneId.systemDefault()).toInstant()));
 		LocalDateTime startDateTime;
@@ -182,8 +177,7 @@ public class CalendarLogic {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 		// check if the day has a timestamp or only a date
 		if (event.getStart().getDate() != null) {
-			startDateTime = LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000" + timeZone,
-					formatter);
+			startDateTime = LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000" + timeZone);
 			endDateTime = LocalDateTime
 					.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + timeZone, formatter).minusDays(1);
 			withTime = false;
@@ -244,8 +238,7 @@ public class CalendarLogic {
 			}
 		}
 
-		eventToString(startDateTime, endDateTime, event, withStartDate, withEndDate, withTime, outputCase);
-
+		return eventToString(startDateTime, endDateTime, event, withStartDate, withEndDate, withTime, outputCase);
 	}
 
 	/**
@@ -265,8 +258,9 @@ public class CalendarLogic {
 	 *            distinguishes if it is an event with or without a time stamp
 	 * @param outputCase
 	 *            distinguishes between different output cases
+	 * @return the string generated for the event
 	 */
-	public void eventToString(LocalDateTime startDate, LocalDateTime endDate, Event event, boolean withStartDate,
+	public String eventToString(LocalDateTime startDate, LocalDateTime endDate, Event event, boolean withStartDate,
 			boolean withEndDate, boolean withTime, OutputCase outputCase) {
 		String eventData = event.getSummary();
 		String eventStartDate = "";
@@ -325,7 +319,7 @@ public class CalendarLogic {
 			break;
 		}
 
-		this.eventList.add(eventData);
+		return eventData;
 	}
 
 	/**
