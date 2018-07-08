@@ -40,28 +40,32 @@ public class NLParser implements INLParser {
 	/**
 	 * list of all loaded grammars
 	 */
-	List<AGFNode> grammars;
+	private List<AGFNode> grammars;
 	
 	/**
 	 * list of read tokens
 	 */
-	List<WordToken> mRead;
+	private List<WordToken> mRead;
 	
-	Iterator<WordToken> mTokens;
+	/**
+	 * internal iterator of tokens
+	 */
+	private Iterator<WordToken> mTokens;
 
 	/**
 	 * 
-	 * @param grammars
+	 * @param grammars all possible grammars to match
 	 */
 	public NLParser(List<AGFNode> grammars) {
 		this.grammars = grammars;
 	}
-
+	
+	
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser#parseNL(java.util.Iterator)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser#matchingNode(java.util.Iterator)
 	 */
 	@Override
-	public AGFNode parseNL(Iterator<WordToken> nl) {
+	public AGFNode matchingNode(Iterator<WordToken> nl) {
 		List<WordToken> backup = new ArrayList<>();
 		nl.forEachRemaining(backup::add);
 		
@@ -69,43 +73,52 @@ public class NLParser implements INLParser {
 			this.mRead = new ArrayList<>();
 			this.mTokens = backup.iterator();
 			
-			if(checkNode(agf, new ArrayList<Boolean>())) {
+			if(checkNode(agf)) {
 				return agf;
 			}
 		}
 		throw new NLParserException("could not find matching grammar");
 	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser#matchingNodeIndex(java.util.Iterator)
+	 */
+	@Override
+	public int matchingNodeIndex(Iterator<WordToken> nl) {
+		return this.grammars.indexOf(matchingNode(nl));
+	}
 	
 	/**
+	 * recursive method to check each node
+	 * preorder style
 	 * 
-	 * @param agf
-	 * @param nl
-	 * @return
+	 * @param agf current node to check
+	 * @return success
 	 */
-	private boolean checkNode(AGFNode agf, List<Boolean> eval) {		
+	private boolean checkNode(AGFNode agf) {		
 		switch(agf.getType()) {
 		case AGF:
 			for(AGFNode node : agf.getChilds()) {
-				if(!checkNode(node, eval)) {
+				if(!checkNode(node)) {
 					return false;
 				}
 			}
 			break;
 		case OPG:
 			for(AGFNode node : agf.getChilds()) {
-				checkNode(node, eval);
+				checkNode(node);
 			}
 			break;
 		case ORG:
 			for(AGFNode node : agf.getChilds()) {
-				if(checkNode(node, eval)){
+				if(checkNode(node)){
 					break;
 				}
 			}
 			break;
 		case MORPH:
 			for(AGFNode node : agf.getChilds()) {
-				if(!checkNode(node, eval)) {
+				if(!checkNode(node)) {
 					return false;
 				}
 			}
@@ -118,18 +131,20 @@ public class NLParser implements INLParser {
 			return false;
 			
 		}
-
 				
 		return true;
 	}
 	
 	/**
-	 * @param rule
-	 * @return
+	 * match a WordTokenType with current position
+	 * in iterator 
+	 * 
+	 * @param type the type to match
+	 * @return success
 	 */
-	private boolean matchType(WordTokenType rule) {
+	private boolean matchType(WordTokenType type) {
 		WordToken token = lookAhead(0);
-		if(token != null && token.getType().equals(rule)) {
+		if(token != null && token.getType().equals(type)) {
 			consume();
 			return true;
 		}
@@ -138,12 +153,11 @@ public class NLParser implements INLParser {
 
 	/**
 	 * does the current token match the expected one?
-	 * @param toMatch 
 	 * 
-	 * @param expected AGFToken
+	 * @param toMatch the node to match
 	 * @return if it matched
 	 */
-	public boolean match(AGFNode toMatch) {
+	private boolean match(AGFNode toMatch) {
 		WordToken token = lookAhead(0);
 		
 		if(token != null && toMatch.getContent().equals(token.getContent())){
@@ -156,9 +170,10 @@ public class NLParser implements INLParser {
 	
 	/**
 	 * consume a token
+	 * 
 	 * @return consumed token
 	 */
-	public WordToken consume() {
+	private WordToken consume() {
 		//make sure we read the token
 		WordToken token = lookAhead(0);
 		if(token != null) {
@@ -169,6 +184,7 @@ public class NLParser implements INLParser {
 	
 	/**
 	 * look ahead as many tokens as needed
+	 * 
 	 * @param distance needed
 	 * @return token at distance
 	 */
@@ -184,28 +200,4 @@ public class NLParser implements INLParser {
 	    
 	    return null;
 	}
-
-	/**
-	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser#addAGFNode(de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode)
-	 */
-	@Override
-	public void addAGFNode(AGFNode node) {
-		if(node != null) {
-			this.grammars.add(node);
-		}
-		
-	}
-
-	/**
-	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser#removeAGFNode(de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode)
-	 */
-	@Override
-	public void removeAGFNode(AGFNode node) {
-		if(this.grammars.contains(node)) {
-			this.grammars.remove(node);
-		}
-	}
-
 }

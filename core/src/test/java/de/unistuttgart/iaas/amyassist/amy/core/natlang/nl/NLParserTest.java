@@ -26,11 +26,16 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.JSGFGenerator;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
@@ -42,61 +47,63 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 public class NLParserTest {
 	
 	/**
-	 * pre defined grammars
+	 * hash map for pre defined gramars
 	 */
-	String[] grammars = {
-		"weather [today]",
-		"alarm (set|create) alarm (at|for) # oh #",
-		"test [# (minutes|minute)]",
-		"alarm clock (set|create) timer (for|on) [# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]",
-		"delete (alarm|timer) #",
-		"spotify play",
-		"edit alarm # to # oh #",
-		"when (does|is) timer # (ringing|ring)",
-		
-	};
-
+	Map<String, AGFNode> nlToGram;
 	
-	String [] nlInput = {
-		"test 10 minutes",
-		"test 10 minute",
-		"weather",
-		"weather today",
-		"wrong grammar",
-		"delete alarm 10",
-		"when does timer 10 ring",
-		"spotify play",
-		"edit alarm 10 to 20 oh 9",
-		"alarm clock create timer on 10 hours 2 minute 10 seconds"
-	};
+	/**
+	 * sets up nlToGram HashMap
+	 */
+	@BeforeEach
+	public void setup() {
+		this.nlToGram = new HashMap<>();
+		
+		AGFNode gram = new AGFParser(new AGFLexer("test [# (minutes|minute)]")).parseWholeExpression();
+		this.nlToGram.put("test 10 minutes", gram);
+		this.nlToGram.put("test 10 minute", gram);
+		
+		AGFNode weather = new AGFParser(new AGFLexer("weather [today]")).parseWholeExpression();
+		this.nlToGram.put("weather", weather);
+		this.nlToGram.put("weather today", weather);
+		
+		this.nlToGram.put("wrong grammar", null);
+		this.nlToGram.put("delete alarm 10", 
+				new AGFParser(new AGFLexer("delete (alarm|timer) #")).parseWholeExpression());
+		this.nlToGram.put("when does timer 10 ring", 
+				new AGFParser(new AGFLexer("when (does|is) timer # (ringing|ring)")).parseWholeExpression());
+		this.nlToGram.put("spotify play", 
+				new AGFParser(new AGFLexer("spotify play")).parseWholeExpression());
+		
+		AGFNode badGram = new AGFParser(
+				new AGFLexer("alarm clock (set|create) timer (for|on) "
+						+ "[# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")).parseWholeExpression();
+		this.nlToGram.put("alarm clock create timer on 10 hours 2 minute 10 seconds", badGram);
+		this.nlToGram.put("alarm clock create timer on 10 hours 11 seconds", badGram);
+
+	}
 
 	 /**
 	  * tests hard coded nls and grammars
 	  */
 	 @Test
 	 public void testParser() {
-		 List<AGFParser> parsers = new ArrayList<>();
-		 List<AGFNode> nodes = new ArrayList<>();
+		 List<AGFNode> addedNodes = new ArrayList<>();
 		 
-		 NLParser nlParser = new NLParser(new ArrayList<AGFNode>());
-		 
-		 for(String s : this.grammars) {
-			 System.out.println("grammar " + s);
-			 AGFParser p = new AGFParser(new AGFLexer(s));
-			 parsers.add(p);
-			 AGFNode agfGram = p.parseWholeExpression();
-			 nodes.add(agfGram);
-			 nlParser.addAGFNode(agfGram);
+		 for(String s : this.nlToGram.keySet()) {
+			 if(!addedNodes.contains(this.nlToGram.get(s))) {
+				 addedNodes.add(this.nlToGram.get(s));
+			 }
 		 }
 		 
-		 for(String s : nlInput) {
+		 NLParser nlParser = new NLParser(addedNodes);
+		 
+		 for(String s : this.nlToGram.keySet()) {
 			 NLLexer lex = new NLLexer(s);
 			 if(s.equals("wrong grammar")) {
-				 assertThrows(NLParserException.class, ()->nlParser.parseNL(lex));
+				 assertThrows(NLParserException.class, ()->nlParser.matchingNodeIndex(lex));
 			 }else {
-				 JSGFGenerator gen = new JSGFGenerator("test", "test", "test", "test");
 				 //matching grammars
-				 System.out.println(gen.addRule(nlParser.parseNL(lex), s));
+				 assertThat(nlParser.matchingNode(lex), equalTo(this.nlToGram.get(s)));
 			 }
 		 }
 	 }

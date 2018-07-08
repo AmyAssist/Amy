@@ -35,20 +35,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 public interface INLParser {
 	
 	/**
-	 * adds a grammar to it's internal list 
-	 * of AGFNodes representing AGFGrammars
+	 * returns matching index of internal List<AGFNode>
 	 * 
-	 * @param node to add
-	 */
-	public void addAGFNode(AGFNode node);
-	
-	/**
-	 * removes an AGFNode from it's 
-	 * pool of AGFNodes
+	 * @param nl the natural languge represented by an 
+	 * 		  Iterator containing all necessary WordTokens
 	 * 
-	 * @param node to remove
+	 * @return the matching AGFNode
 	 */
-	public void removeAGFNode(AGFNode node);
+	public int matchingNodeIndex(Iterator<WordToken> nl);
 	
 	/**
 	 * returns matching AGFNode
@@ -58,6 +52,6 @@ public interface INLParser {
 	 * 
 	 * @return the matching AGFNode
 	 */
-	public AGFNode parseNL(Iterator<WordToken> nl);
+	public AGFNode matchingNode(Iterator<WordToken> nl);
 
 }
