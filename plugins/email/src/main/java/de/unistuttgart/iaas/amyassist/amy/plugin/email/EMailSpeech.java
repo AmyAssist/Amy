@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
-import javax.mail.MessagingException;
-
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -35,8 +33,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 /**
  * Class that defines the speech commands for the email functionality and calls the logic methods
  * 
- * @author Patrick Singer
+ * @author Patrick Singer, Felix Burk
  */
+
 @Service(EMailSpeech.class)
 @SpeechCommand({ "email", "mail" })
 public class EMailSpeech {
@@ -56,15 +55,11 @@ public class EMailSpeech {
 	 */
 	@Grammar("new messages")
 	public String newMessages(String... params) {
-		try {
-			if (this.logic.hasUnreadMessages()) {
-				return "You have new messages.";
-			}
-			return "You have no new messages.";
-		} catch (MessagingException me) {
-			this.logger.error("Something wrong with inbox", me);
-			return "nope";
+		if (this.logic.hasUnreadMessages()) {
+			return "You have new messages.";
 		}
+		return "You have no new messages.";
+
 	}
 
 	/**
@@ -109,11 +104,6 @@ public class EMailSpeech {
 	 */
 	@Grammar("send example mail")
 	public String sendExampleMail(String... params) {
-		try {
-			return this.logic.sendMail("st142778@stud.uni-stuttgart.de", "Mail From Amy", "Hello!");
-		} catch (MessagingException e) {
-			this.logger.error("Sending mail failed!", e);
-			return "nope";
-		}
+		return this.logic.sendMail("st142778@stud.uni-stuttgart.de", "Mail From Amy", "Hello!");
 	}
 }

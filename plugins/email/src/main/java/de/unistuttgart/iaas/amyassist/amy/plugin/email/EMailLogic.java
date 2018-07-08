@@ -30,14 +30,14 @@ import java.util.Properties;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
+import javax.mail.Multipart;
+import javax.mail.Part;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
-import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.FlagTerm;
@@ -52,7 +52,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 /**
  * Logic class for the email functionality, that defines all the behaviour
  * 
- * @author Patrick Singer
+ * @author Patrick Singer, Felix Burk
  */
 @Service
 public class EMailLogic {
@@ -63,7 +63,13 @@ public class EMailLogic {
 	@Reference
 	private Properties configLoader;
 	
+	/**
+	 * user name key for properties file
+	 */
 	public static final String EMAIL_USR_KEY = "email_usr";
+	/**
+	 * password key for properties file
+	 */
 	public static final String EMAIL_PW_KEY = "email_pw";
 
 
@@ -109,7 +115,7 @@ public class EMailLogic {
 					}
 					count++;
 				}
-			} catch (MessagingException | IOException e) {
+			} catch (MessagingException e) {
 				this.logger.error("couldn't fetch messages from inbox");
 				return "";
 			}
@@ -122,12 +128,16 @@ public class EMailLogic {
 	 * returns if unread messages have been found
 	 * 
 	 * @return success
-	 * @throws MessagingException
 	 */
-	public boolean hasUnreadMessages() throws MessagingException {
+	public boolean hasUnreadMessages() {
 		if (this.inbox != null) {
-			 Message messages[] = this.inbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
-			 return messages.length > 0;
+			 Message messages[];
+			try {
+				messages = this.inbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
+				 return messages.length > 0;
+			} catch (MessagingException e) {
+				this.logger.error("could not read message");
+			}
 		}
 		return false;
 	}
@@ -138,42 +148,66 @@ public class EMailLogic {
 	 * @param message
 	 *            message to transform
 	 * @return concatenated String of message
-	 * @throws MessagingException
-	 * @throws IOException
 	 */
-	public static String concatenateMessage(Message message) throws MessagingException, IOException {
+	public String concatenateMessage(Message message) {
 		StringBuilder sb = new StringBuilder();
+		
 		sb.append("\nMessage:");
-		sb.append("\nFrom: " + Arrays.toString(message.getFrom()));
-		sb.append("\nSubject: " + message.getSubject());
-		sb.append("\nSent: " + message.getSentDate());
-		sb.append("\nContent: " + message.getContent());
+		try {
+			sb.append("\nFrom: " + Arrays.toString(message.getFrom()));
+			sb.append("\nSubject: " + message.getSubject());
+			sb.append("\nSent: " + message.getSentDate());
+			
+		} catch (MessagingException e) {
+			this.logger.error("could not read message");
+		}
 
 
-		// if (message.isMimeType("text/plain")) {
-		// sb.append("\nNachricht ist text/plain");
-		// } else if (message.isMimeType("multipart/*")) {
-		// sb.append("\nVerarbeite multipart/* Nachricht");
-		// Multipart mp = (Multipart) message.getContent();
-		//
-		// // Der erste Part ist immer die Hauptnachricht
-		// if (mp.getCount() > 1) {
-		// Part part = mp.getBodyPart(0);
-		// sb.append("\n" + part.getContent());
-		// }
-		// }
+		try {
+			if (message.isMimeType("text/plain")) {
+				sb.append("\nContent: " + message.getContent().toString());
+			
+			//still broken, probably wrong message part appended to string builder - Felix B
+			} else if (message.getContent() instanceof Multipart) {
+				sb.append("\nVerarbeite multipart/* Nachricht");
+				Multipart mp = (Multipart) message.getContent();
+			
+			// // Der erste Part ist immer die Hauptnachricht
+				if (mp.getCount() > 1) {
+					Part part = mp.getBodyPart(0);
+					sb.append("\n" + part.getContent());
+				}
+			}
+		} catch (MessagingException | IOException e) {
+			this.logger.error("error reading message");
+		}
 		return sb.toString();
 	}
 
-	public String sendMail(String recipient, String subject, String message) throws MessagingException {
+	/**
+	 * sends a message to some recipient
+	 * 
+	 * @param recipient the recipient
+	 * @param subject mail subject
+	 * @param message the mail body
+	 * @return success string 
+	 */
+	public String sendMail(String recipient, String subject, String message) {
 		Message msg = new MimeMessage(this.session);
+		
+		InternetAddress addressTo;
+		try {
+			addressTo = new InternetAddress(recipient);
+			msg.setRecipient(Message.RecipientType.TO, addressTo);
 
-		InternetAddress addressTo = new InternetAddress(recipient);
-		msg.setRecipient(Message.RecipientType.TO, addressTo);
-
-		msg.setSubject(subject);
-		msg.setContent(message, "text/plain");
-		Transport.send(msg);
+			msg.setSubject(subject);
+			msg.setContent(message, "text/plain");
+			Transport.send(msg);
+		} catch (MessagingException e) {
+			this.logger.error("messaging exception while sending mail");
+			return "Message could not be sent";
+		}
+		
 		return "Message sent!";
 	}
 
@@ -184,11 +218,8 @@ public class EMailLogic {
 	public void init() {
 		String username = this.configLoader.getProperty(EMAIL_USR_KEY);
 		String password = this.configLoader.getProperty(EMAIL_PW_KEY);
-		System.out.println("logging in2");
-
 
 		if(username != null && password != null) {
-			System.out.println("logging in");
 			startSession(username, password);
 			openInboxReadOnly();
 		}else {
@@ -197,9 +228,7 @@ public class EMailLogic {
 	}
 
 	/**
-	 * Closes the opened inbox
-	 * 
-	 * @throws MessagingException
+	 * closes opend inbox
 	 */
 	@PreDestroy
 	public void closeInbox() {
@@ -264,13 +293,9 @@ public class EMailLogic {
 			
 			this.inbox = folder;
 			
-		} catch (NoSuchProviderException e) {
-			System.out.println("Something went wrong!");
-			e.printStackTrace();
 		} catch (MessagingException e) {
-			System.out.println("Something went wrong!");
-			e.printStackTrace();
-		}
+			this.logger.error("could not open inbox");
+		} 
 
 	}
 }

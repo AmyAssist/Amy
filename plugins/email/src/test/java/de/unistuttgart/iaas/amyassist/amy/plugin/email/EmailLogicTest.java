@@ -67,12 +67,8 @@ public class EmailLogicTest {
 	@Test
 	public void testHasNewMessages() {
 		boolean b = false;
-		try {
-			b = this.emailLogic.hasUnreadMessages();
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		b = this.emailLogic.hasUnreadMessages();
+	
 		System.out.println("success? " + b);
 	}
 	
