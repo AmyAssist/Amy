@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class CalendarLogic {
 	private Logger logger;
 
 	private enum OutputCase {
-		STARTINPAST, STARTTODAY, STARTINFUTURE, ENDINFUTURE, SINGLEDAY, ALLDAYLONG
+		STARTINPAST, STARTINFUTURE, ALLDAYLONG, SINGLEDAY
 	}
 
 	private List<String> eventList = new ArrayList<>();
@@ -84,7 +85,10 @@ public class CalendarLogic {
 			for (Event event : items) {
 				checkDay(now, event, true);
 			}
-			return "You have following upcoming events:\n" + String.join("\n", this.eventList);
+			if (number.equals("1")) {
+				return "You have following upcoming event:\n" + String.join("\n", this.eventList);
+			}
+			return "You have following upcoming " + number + " events:\n" + String.join("\n", this.eventList);
 		} catch (IOException e) {
 			this.logger.error("Sorry, I am not able to get your events.", e);
 			return "An error occured.";
@@ -95,7 +99,7 @@ public class CalendarLogic {
 	/**
 	 * This method contains the logic to show the calendar events today and tomorrow
 	 *
-	 * @param day
+	 * @param today
 	 *            true if it is today, false for tomorrow
 	 * @return the events of the chosen day
 	 */
@@ -111,10 +115,26 @@ public class CalendarLogic {
 				return "No upcoming events found.";
 			}
 			if (!today) {
-				now = now.plusDays(1);
+				LocalTime zero = LocalTime.of(0, 0, 0, 0);
+				LocalDate nextDay = now.plusDays(1).toLocalDate();
+				now = LocalDateTime.of(nextDay, zero);
 			}
+			LocalDate startDate, nowDate = now.toLocalDate(), endDate;
 			for (Event event : items) {
-				checkDay(now, event, false);
+				if (event.getStart().getDate() != null) {
+					startDate = LocalDate.parse(event.getStart().getDate().toString());
+					endDate = LocalDate.parse(event.getEnd().getDate().toString()).minusDays(1);
+				} else {
+					startDate = LocalDate.parse(event.getStart().getDateTime().toString().substring(0, 10));
+					endDate = LocalDate.parse(event.getEnd().getDateTime().toString().substring(0, 10));
+				}
+				if (nowDate.isAfter(startDate) || nowDate.equals(startDate)) {
+					if (nowDate.isBefore(endDate) || nowDate.equals(endDate)) {
+						checkDay(now, event, false);
+					}
+				} else {
+					break;
+				}
 			}
 			if (today) {
 				if (this.eventList.isEmpty()) {
@@ -126,54 +146,98 @@ public class CalendarLogic {
 				return "There are no events tomorrow.";
 			}
 			return "You have following events tomorrow:\n" + String.join("\n", this.eventList);
-		} catch (IOException e) {
+		} catch (
+
+		IOException e) {
 			this.logger.error("Sorry, I am not able to get your events.", e);
 			return "An error occured.";
 		}
 	}
 
 	/**
+	 * This method checks if and how an event is to be displayed in the output.
+	 *
 	 * @param dayToCheck
+	 *            the day from which we want to know how the current event belongs to it
 	 * @param event
+	 *            the current chosen event
+	 * @param withDate
+	 *            if the date should be displayed (or only the time)
+	 *
 	 */
 	public void checkDay(LocalDateTime dayToCheck, Event event, boolean withDate) {
 		SimpleDateFormat sdf = new SimpleDateFormat("XXX");
 		String timeZone = sdf.format(Date.from(dayToCheck.atZone(ZoneId.systemDefault()).toInstant()));
 		LocalDateTime startDateTime, endDateTime;
 		LocalDate startDate, checkDate, endDate;
-		boolean allDay;
+		OutputCase outputCase = OutputCase.SINGLEDAY;
+		boolean withTime, withStartDate = withDate, withEndDate = withDate;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+		// check if the day has a timestamp or only a date
 		if (event.getStart().getDate() != null) {
 			startDateTime = LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000" + timeZone,
 					formatter);
-			endDateTime = LocalDateTime.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + timeZone,
-					formatter);
-			allDay = true;
+			endDateTime = LocalDateTime
+					.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + timeZone, formatter).minusDays(1);
+			withTime = false;
 		} else {
 			startDateTime = LocalDateTime.parse(event.getStart().getDateTime().toString(), formatter);
 			endDateTime = LocalDateTime.parse(event.getEnd().getDateTime().toString(), formatter);
-			allDay = false;
+			withTime = true;
 		}
 		startDate = startDateTime.toLocalDate();
 		checkDate = dayToCheck.toLocalDate();
 		endDate = endDateTime.toLocalDate();
 		// check if the beginning and the end of the event is on another day as the current day
-		if (checkDate.isAfter(startDate) && checkDate.isBefore(endDate)) {
-			eventToString(startDateTime, endDateTime, event, withDate, OutputCase.STARTINPAST);
-		}
 		if (dayToCheck.isAfter(startDateTime) && dayToCheck.isBefore(endDateTime)) {
-			if (checkDate.isEqual(startDate)) {
-				eventToString(startDateTime, endDateTime, event, withDate, OutputCase.STARTTODAY);
-			}
-		} else if (checkDate.isEqual(startDate)) {
-			if (allDay) {
-				eventToString(startDateTime, endDateTime, event, withDate, OutputCase.ALLDAYLONG);
-			} else if (checkDate.isEqual(endDate)) {
-				eventToString(startDateTime, endDateTime, event, withDate, OutputCase.SINGLEDAY);
+			// event already started
+			outputCase = OutputCase.STARTINPAST;
+			if (checkDate.isAfter(startDate) && checkDate.isBefore(endDate)) {
+				// event didn't start at dayToCheck and won't finish at dayToCheck
+				withStartDate = true;
+				withEndDate = true;
+			} else if (checkDate.isEqual(startDate)) {
+				// event started at dayToCheck
+				if (checkDate.isEqual(endDate)) {
+					// event will also finish at dayToCheck
+					if (withTime) {
+						// event has specific time stamps
+						outputCase = OutputCase.SINGLEDAY;
+						withStartDate = withDate;
+					} else {
+						// event is defined as all day long and has no specific time stamps
+						outputCase = OutputCase.ALLDAYLONG;
+						withStartDate = withDate;
+					}
+				} else {
+					// event will finish on a different date
+					withStartDate = withDate;
+					withEndDate = true;
+				}
 			} else {
-				eventToString(startDateTime, endDateTime, event, withDate, OutputCase.ENDINFUTURE);
+				// event ends on dayToCheck
+				withStartDate = true;
+			}
+		} else if (dayToCheck.isBefore(startDateTime)) {
+			// event will start in future
+			outputCase = OutputCase.STARTINFUTURE;
+			if (checkDate.isEqual(startDate)) {
+				// event will start at dayToCheck
+				withStartDate = withDate;
+				if (checkDate.isEqual(endDate)) {
+					// event will also finish at the same day
+					outputCase = OutputCase.SINGLEDAY;
+				} else {
+					// event will finish on an other day in the future
+					withEndDate = true;
+				}
+			} else {
+				// event will start on different date in the future
+				withStartDate = true;
 			}
 		}
+
+		eventToString(startDateTime, endDateTime, event, withStartDate, withEndDate, withTime, outputCase);
 
 	}
 
@@ -186,42 +250,68 @@ public class CalendarLogic {
 	 *            end time of the event
 	 * @param event
 	 *            data of the event
-	 * @param withDate
-	 *            determines if event output is with or without the date
+	 * @param withStartDate
+	 *            determines if event output is with or without the start date
+	 * @param withEndDate
+	 *            determines if event output is with or without the end date
+	 * @param withTime
+	 *            distinguishes if it is an event with or without a time stamp
 	 * @param outputCase
+	 *            distinguishes between different output cases
 	 */
-	public void eventToString(LocalDateTime startDate, LocalDateTime endDate, Event event, boolean withDate,
-			OutputCase outputCase) {
-		String eventData = "";
+	public void eventToString(LocalDateTime startDate, LocalDateTime endDate, Event event, boolean withStartDate,
+			boolean withEndDate, boolean withTime, OutputCase outputCase) {
+		String eventData = event.getSummary(), eventStartDate = "", eventEndDate = "", eventStartTime = "",
+				eventEndTime = "";
+		DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm");
+		if (withStartDate) {
+			eventStartDate = " the " + ordinal(startDate.getDayOfMonth()) + " of "
+					+ startDate.getMonth().toString().toLowerCase();
+			if (withTime) {
+				eventStartDate += " at";
+			}
+		}
+		if (withEndDate) {
+			eventEndDate = " the " + ordinal(endDate.getDayOfMonth()) + " of "
+					+ endDate.getMonth().toString().toLowerCase();
+			if (withTime) {
+				eventEndDate += " at";
+			}
+		}
+		if (withTime) {
+			eventStartTime = " " + time.format(startDate);
+			eventEndTime = " " + time.format(endDate);
+		}
 		switch (outputCase) {
 		case STARTINPAST:
-			eventData = event.getSummary() + " since the " + ordinal(startDate.getDayOfMonth()) + " of "
-					+ startDate.getMonth() + " at " + startDate.getHour() + ":" + startDate.getMinute() + " until the "
-					+ ordinal(endDate.getDayOfMonth()) + " of " + endDate.getMonth() + " " + endDate.getYear() + " at "
-					+ endDate.getHour() + ":" + endDate.getMinute() + ". \n";
+			if (withStartDate || withTime) {
+				eventData += " since" + eventStartDate + eventStartTime;
+			}
+			if (withEndDate || withTime) {
+				eventData += " until" + eventEndDate + eventEndTime;
+			}
+			eventData += ". \n";
 			break;
 		case STARTINFUTURE:
-			eventData = event.getSummary() + " from the " + ordinal(startDate.getDayOfMonth()) + " of "
-					+ startDate.getMonth() + " at " + startDate.getHour() + ":" + startDate.getMinute() + " until the "
-					+ ordinal(endDate.getDayOfMonth()) + " of " + endDate.getMonth() + " " + endDate.getYear() + " at "
-					+ endDate.getHour() + ":" + endDate.getMinute() + ". \n";
-			break;
-		case ENDINFUTURE:
-			eventData = event.getSummary() + " from " + startDate.getHour() + ":" + startDate.getMinute()
-					+ " until the " + ordinal(endDate.getDayOfMonth()) + " of " + endDate.getMonth() + " at "
-					+ endDate.getHour() + ":" + endDate.getMinute() + ". \n";
+			eventData += " from" + eventStartDate + eventStartTime + " until" + eventEndDate + eventEndTime + ". \n";
 			break;
 		case ALLDAYLONG:
-			eventData = event.getSummary() + " on the " + ordinal(startDate.getDayOfMonth()) + " of "
-					+ startDate.getMonth() + " all day long. \n";
+			if (withStartDate) {
+				eventStartDate = " on the " + ordinal(startDate.getDayOfMonth()) + " of " + startDate.getMonth();
+			}
+			eventData += eventStartDate + " all day long. \n";
 			break;
 		case SINGLEDAY:
-			eventData = event.getSummary() + " on the " + ordinal(startDate.getDayOfMonth()) + " of "
-					+ startDate.getMonth() + " at " + startDate.getHour() + ":" + startDate.getMinute() + " until "
-					+ endDate.getHour() + ":" + endDate.getMinute() + ". \n";
+			if (withStartDate) {
+				eventData += " on the " + ordinal(startDate.getDayOfMonth()) + " of " + startDate.getMonth() + " at "
+						+ time.format(startDate) + " until " + time.format(endDate) + ". \n";
+			} else {
+				eventData += " from " + time.format(startDate) + " until " + time.format(endDate) + ". \n";
+			}
 			break;
 
 		default:
+			this.logger.error("Missing or wrong output case.");
 			break;
 		}
 

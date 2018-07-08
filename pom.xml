@@ -45,6 +45,7 @@
 		<module>plugin-manager-api</module>
 		<module>rest-resources</module>
 		<module>plugins/alarmclock</module>
+		<module>plugins/calendar</module>
 		<module>plugins/example</module>
 		<module>plugins/spotify</module>
 		<module>plugins/systemtime</module>
