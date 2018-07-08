@@ -24,10 +24,13 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -69,9 +72,9 @@ public class CalendarLogic {
 	public String getEvents(String number) {
 		try {
 			this.eventList.clear();
-			DateTime now = new DateTime(System.currentTimeMillis());
+			DateTime current = new DateTime(System.currentTimeMillis());
 			Events events = this.calendarService.getService().events().list("primary")
-					.setMaxResults(Integer.valueOf(number)).setTimeMin(now).setOrderBy("startTime")
+					.setMaxResults(Integer.valueOf(number)).setTimeMin(current).setOrderBy("startTime")
 					.setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
@@ -134,14 +137,17 @@ public class CalendarLogic {
 	 * @param event
 	 */
 	public void checkDay(LocalDateTime dayToCheck, Event event, boolean withDate) {
+		SimpleDateFormat sdf = new SimpleDateFormat("XXX");
+		String timeZone = sdf.format(Date.from(dayToCheck.atZone(ZoneId.systemDefault()).toInstant()));
 		LocalDateTime startDateTime, endDateTime;
 		LocalDate startDate, checkDate, endDate;
 		boolean allDay;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 		if (event.getStart().getDate() != null) {
-			startDateTime = LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000+02:00",
+			startDateTime = LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000" + timeZone,
 					formatter);
-			endDateTime = LocalDateTime.parse(event.getEnd().getDate().toString() + "T23:59:59.000+02:00", formatter);
+			endDateTime = LocalDateTime.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + timeZone,
+					formatter);
 			allDay = true;
 		} else {
 			startDateTime = LocalDateTime.parse(event.getStart().getDateTime().toString(), formatter);
