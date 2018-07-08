@@ -115,5 +115,4 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		Object object = this.serviceLocator.createAndInitialize(partialNLI.getPartialNLIClass());
 		return partialNLI.call(object, arguments);
 	}
-
 }

@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,8 +40,12 @@ public class NLLexer {
 	/**
 	 * contains regex with the corresponding WordTokenType
 	 */
-	Map<String, WordTokenType> regexTokenType = new HashMap<>();
-	{
+	private final Map<String, WordTokenType> regexTokenType = new HashMap<>();
+
+	/**
+	 * 
+	 */
+	public NLLexer() {
 		this.regexTokenType.put("[a-zA-Z]+", WordTokenType.WORD);
 		this.regexTokenType.put("[0-9]+", WordTokenType.NUMBER);
 	}

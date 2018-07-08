@@ -31,7 +31,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 /**
  * This class generates JSGF grammars from AGF Syntax Trees
  * 
- * @author Felix Burk
+ * @author Felix Burk, Leon Kiefer
  */
 public class JSGFGenerator {
 	/**
@@ -78,9 +78,9 @@ public class JSGFGenerator {
 		grammar.append("#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n" + " */\n" + "\n");
 
 		grammar.append("grammar " + this.name + ";\n");
-		grammar.append("public <wakeup> = ( " + this.wakeup + " );\n");
-		grammar.append("public <sleep> = ( " + this.sleep + " );\n");
-		grammar.append("public <shutdown> = ( " + this.shutdown + " );\n");
+		publicRule(grammar, "wakeup", this.wakeup);
+		publicRule(grammar, "sleep", this.sleep);
+		publicRule(grammar, "shutdown", this.shutdown);
 
 		grammar.append("\n//pre defined rules \n");
 
@@ -99,6 +99,10 @@ public class JSGFGenerator {
 		return grammar.toString();
 	}
 
+	private void publicRule(StringBuilder builder, String ruleName, String rule) {
+		builder.append("public <").append(ruleName).append("> = ( ").append(rule).append(" );\n");
+	}
+
 	/**
 	 * generates a valid public JSGF Rule from an AGFNode the generated rule is added to an internal list of rules, if
 	 * generateGrammarFileString() is called added rules are included
@@ -112,7 +116,7 @@ public class JSGFGenerator {
 	public String addRule(AGFNode node, String ruleName) {
 		StringBuilder b = new StringBuilder();
 		b.append("public <" + ruleName + "> = ");
-		String rule = handleNode(b, node) + "; \n";
+		String rule = handleNode(b, node) + ";\n";
 
 		this.rules.add(rule);
 		return rule;
