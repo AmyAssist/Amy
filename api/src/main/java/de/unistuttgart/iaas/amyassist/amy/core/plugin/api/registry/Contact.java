@@ -21,25 +21,30 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
 
-public class SpotifyConstants {
+/**
+ * A contact entity for the contact registry
+ *
+ * @author Benno Krauß
+ */
+public interface Contact {
 
-	public static final String TYPE_ARTIST = "artist";
-	public static final String TYPE_TRACK = "track";
-	public static final String TYPE_PLAYLIST = "playlist";
-	public static final String TYPE_ALBUM = "album";
-	public static final String ITEM_NAME = "name";
-	public static final String GENRE = "genre";
-	public static final String ARTIST_NAME = "artistName";
-	public static final String ITEM_URI = "uri";
-	public static final String ITEM_TYPE = "type";
-	public static final String DEVICE_NAME = "deviceName";
-	public static final String DEVICE_ID = "deviceId";
-	public static final String DEVICE_TYPE = "deviceType";
+    String getFirstName();
 
-	private SpotifyConstants() {
+    void setFirstName(String firstName);
 
-	}
+    String getLastName();
 
+    void setLastName(String lastName);
+
+    boolean isImportant();
+
+    void setImportant(boolean important);
+
+    String getEmail();
+
+    void setEmail(String email);
+
+    int getId();
 }

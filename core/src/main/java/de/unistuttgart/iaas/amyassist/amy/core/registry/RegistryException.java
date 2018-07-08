@@ -21,25 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package de.unistuttgart.iaas.amyassist.amy.core.registry;
 
-public class SpotifyConstants {
+/**
+ * An exception in the registry.
+ */
+public class RegistryException extends RuntimeException {
 
-	public static final String TYPE_ARTIST = "artist";
-	public static final String TYPE_TRACK = "track";
-	public static final String TYPE_PLAYLIST = "playlist";
-	public static final String TYPE_ALBUM = "album";
-	public static final String ITEM_NAME = "name";
-	public static final String GENRE = "genre";
-	public static final String ARTIST_NAME = "artistName";
-	public static final String ITEM_URI = "uri";
-	public static final String ITEM_TYPE = "type";
-	public static final String DEVICE_NAME = "deviceName";
-	public static final String DEVICE_ID = "deviceId";
-	public static final String DEVICE_TYPE = "deviceType";
-
-	private SpotifyConstants() {
-
-	}
-
+    /**
+     * Create an exception
+     * @param message a useful error message
+     */
+    public RegistryException(String message) {
+        super(message);
+    }
 }

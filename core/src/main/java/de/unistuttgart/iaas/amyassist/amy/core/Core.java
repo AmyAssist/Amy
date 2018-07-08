@@ -152,6 +152,7 @@ public class Core {
 		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
 		this.di.addExternalService(CommandLineArgumentHandler.class, this.cmaHandler);
 
+
 		this.di.loadServices();
 	}
 

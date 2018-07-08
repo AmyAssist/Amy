@@ -21,25 +21,30 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
-public class SpotifyConstants {
+import java.util.HashMap;
 
-	public static final String TYPE_ARTIST = "artist";
-	public static final String TYPE_TRACK = "track";
-	public static final String TYPE_PLAYLIST = "playlist";
-	public static final String TYPE_ALBUM = "album";
-	public static final String ITEM_NAME = "name";
-	public static final String GENRE = "genre";
-	public static final String ARTIST_NAME = "artistName";
-	public static final String ITEM_URI = "uri";
-	public static final String ITEM_TYPE = "type";
-	public static final String DEVICE_NAME = "deviceName";
-	public static final String DEVICE_ID = "deviceId";
-	public static final String DEVICE_TYPE = "deviceType";
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
-	private SpotifyConstants() {
-
+/**
+ * get and set the data to the registry. At the moment with hardcoded data while registry is not avaiable
+ * @author Lars Buttgereit
+ */
+@Service
+public class RegistryConnection {
+	
+	HashMap<String, String> data = new HashMap<>();
+	
+	@PostConstruct
+	public void init() {
+		this.data.put("home", "Pforzheim");
+		this.data.put("work", "Stuttgart Universitätstraße 38");
+		this.data.put("mother", "München");
 	}
-
+	
+	public String getAdresse(String thing) {
+		return this.data.get(thing);
+	}
 }

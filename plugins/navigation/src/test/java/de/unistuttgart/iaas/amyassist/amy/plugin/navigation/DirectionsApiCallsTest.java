@@ -21,65 +21,60 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.example;
+package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.doReturn;
 
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
+import java.util.Properties;
+
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
+import org.slf4j.Logger;
+
+import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
- * A Test for the Hello World Plugin
- * 
- * @author Leon Kiefer
+ * Test class for the api calls
+ * @author Lars Buttgereit
  */
 @ExtendWith(FrameworkExtension.class)
-public class HelloWorldTest {
+public class DirectionsApiCallsTest {
+	private Properties mockProperties;
+	private DirectionsApiCalls calls;
+	private Logger logger;
+
 	@Reference
 	private TestFramework testFramework;
-
-	private HelloWorldImpl helloWorld;
-
+	
 	@BeforeEach
-	public void setup() {
-		testFramework.mockService(ContactRegistry.class);
-		helloWorld = this.testFramework.setServiceUnderTest(HelloWorldImpl.class);
+	public void init() {
+		
+		this.mockProperties = this.testFramework.mockService(Properties.class);
+		this.calls = this.testFramework.setServiceUnderTest(DirectionsApiCalls.class);
+		doReturn("GOOGLEKEY").when(this.mockProperties).getProperty("GOOGLE_API_KEY");
+		this.calls.init();
 	}
-
+	
 	@Test
-	public void testInit() {
-
-		IStorage storage = this.testFramework.storage();
-
-		assertThat(helloWorld.helloWorld(), equalTo("hello1"));
-
-		Mockito.verify(storage).put("hellocount", "1");
+	public void testFromToWothArrvialTime() {
+		assertThat(this.calls.fromToWithArrivalTime("start", "ende", TravelMode.DRIVING, new DateTime()).length, equalTo(0));
 	}
-
+	
 	@Test
-	public void testcount() {
-
-		IStorage storage = this.testFramework.storage();
-		storage.put("hellocount", "10");
-
-		assertThat(helloWorld.helloWorld(), equalTo("hello11"));
-
-		Mockito.verify(storage).put("hellocount", "11");
+	public void testFromTo() {
+		assertThat(this.calls.fromTo("start", "ende", TravelMode.DRIVING).length, equalTo(0));
 	}
-
+	
 	@Test
-	public void textHelloWorldXTimes() {
-
-		assertThat(helloWorld.helloWorldXTimes(3), equalTo("hello hello hello"));
-
+	public void testFromToWithDepartureTime() {
+		assertThat(this.calls.fromToWithDepartureTime("start", "ende", TravelMode.DRIVING, new DateTime()).length, equalTo(0));
 	}
 }
