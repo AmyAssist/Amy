@@ -23,9 +23,17 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
@@ -57,16 +65,56 @@ public class CalendarLogicTest {
 		this.callog = this.framework.setServiceUnderTest(CalendarLogic.class);
 	}
 
+	@ParameterizedTest
+	@MethodSource("testEventsWithDate")
+	public void testCheckDayWithDate(Pair<Event, String> testCase) {
+		String checkDay = this.callog.checkDay(LocalDateTime.parse("2015-05-28T09:00:00"), testCase.getLeft(), true);
+		assertThat(checkDay, equalToIgnoringWhiteSpace(testCase.getRight()));
+	}
+
+	@ParameterizedTest
+	@MethodSource("testEventsWithoutDate")
+	public void testCheckDayWithoutDate(Pair<Event, String> testCase) {
+		String checkDay = this.callog.checkDay(LocalDateTime.parse("2015-05-28T09:00:00"), testCase.getLeft(), false);
+		assertThat(checkDay, equalToIgnoringWhiteSpace(testCase.getRight()));
+	}
+
 	/**
-	 * Testing the eventCalc method
+	 * 
+	 * @return the test cases used in the {@link #testCheckDayWithDate(Pair)} test
 	 */
-	@Test
-	public void testEventCalc() {
+	public static Stream<Pair<Event, String>> testEventsWithDate() {
+		return Stream.of(
+				Pair.of(event("test event", new DateTime("2015-05-29T08:00:00"), new DateTime("2015-05-29T09:30:00")),
+						"test event from the 29th of may at 10:00 until the 29th of may at 11:30."),
+				Pair.of(event("write tests in Java", new DateTime("2015-05-28T12:59:15"),
+						new DateTime("2015-05-28T20:30:00")),
+						"write tests in Java on the 28th of MAY at 14:59 until 22:30."));
+	}
+	/**
+	 * 
+	 * @return the test cases used in the {@link #testCheckDayWithoutDate(Pair)} test
+	 */
+	public static Stream<Pair<Event, String>> testEventsWithoutDate() {
+		return Stream.of(
+				Pair.of(event("test event", new DateTime("2015-05-29T08:00:00"), new DateTime("2015-05-29T09:30:00")),
+						"test event from the 29th of may at 10:00 until 11:30."));
+	}
+
+	private static Event event(String summary, DateTime start, DateTime end) {
 		Event event = new Event();
-		event.setSummary("Testevent");
-		DateTime startDateTime = new DateTime("2015-05-28T09:00:00+02:00");
-		EventDateTime start = new EventDateTime().setDateTime(startDateTime).setTimeZone("Germany/Berlin");
-		event.setStart(start);
+		event.setSummary(summary);
+		event.setStart(new EventDateTime().setDateTime(start));
+		event.setEnd(new EventDateTime().setDateTime(end));
+		return event;
+	}
+
+	private static Event eventAllDay(String summary, DateTime start, DateTime end) {
+		Event event = new Event();
+		event.setSummary(summary);
+		event.setStart(new EventDateTime().setDate(start));
+		event.setEnd(new EventDateTime().setDate(end));
+		return event;
 	}
 
 }
