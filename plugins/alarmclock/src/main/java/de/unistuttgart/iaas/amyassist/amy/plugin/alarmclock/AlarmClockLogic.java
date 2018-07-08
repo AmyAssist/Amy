@@ -97,14 +97,15 @@ public class AlarmClockLogic {
 	 * @return counter, alarmTime[0], alarmTime[1]
 	 */
 	protected Alarm setAlarm(int hour, int minute) {
-		if (hour > 23 || minute > 59)
-			throw new IllegalArgumentException();
-		int counter = this.acStorage.incrementAlarmCounter();
-		Alarm alarm = new Alarm(counter, hour, minute, true);
-		this.acStorage.storeAlarm(alarm);
-		Runnable alarmRunnable = createAlarmRunnable(counter);
-		this.taskScheduler.schedule(alarmRunnable, alarm.getAlarmDate().getTime());
-		return alarm;
+		if (Alarm.timeValid(hour, minute)) {
+			int counter = this.acStorage.incrementAlarmCounter();
+			Alarm alarm = new Alarm(counter, hour, minute, true);
+			this.acStorage.storeAlarm(alarm);
+			Runnable alarmRunnable = createAlarmRunnable(counter);
+			this.taskScheduler.schedule(alarmRunnable, alarm.getAlarmDate().getTime());
+			return alarm;
+		}
+		throw new IllegalArgumentException();
 	}
 
 	/**
@@ -121,7 +122,7 @@ public class AlarmClockLogic {
 	 */
 	protected Timer setTimer(int hours, int minutes, int seconds) {
 
-		if (hours >= 0 && minutes >= 0 && seconds >= 0 && hours + minutes + seconds > 0) {
+		if (Timer.delayValid(hours, minutes, seconds)) {
 			int counter = this.acStorage.incrementTimerCounter();
 			Timer timer = new Timer(counter, hours, minutes, seconds, true);
 			this.acStorage.storeTimer(timer);
@@ -357,7 +358,7 @@ public class AlarmClockLogic {
 	 * @return alarmNumber + alarmTime new Time of the edited Alarm
 	 */
 	protected Alarm editAlarm(int alarmNumber, int hour, int minute) {
-		if (this.acStorage.hasAlarm(alarmNumber)) {
+		if (this.acStorage.hasAlarm(alarmNumber) && Alarm.timeValid(hour, minute)) {
 			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
 			alarm.setTime(hour, minute);
 			this.acStorage.storeAlarm(alarm);

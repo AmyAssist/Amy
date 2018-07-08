@@ -38,7 +38,8 @@ import com.wrapper.spotify.model_objects.specification.Track;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 
 /**
  * This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music
@@ -98,13 +99,13 @@ public class PlayerLogic {
 	 * 
 	 * @return empty ArrayList if no device available else Maps with the name, id and type of the device
 	 */
-	public List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> getDevices() {
-		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devicesList = new ArrayList<>();
+	public List<DeviceEntity> getDevices() {
+		List<DeviceEntity> devicesList = new ArrayList<>();
 		Device[] devices = this.spotifyAPICalls.getDevices();
 		if (devices != null) {
 			for (int i = 0; i < devices.length; i++) {
-				de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device deviceData;
-				deviceData = new de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device(devices[i].getType(),
+				DeviceEntity deviceData;
+				deviceData = new DeviceEntity(devices[i].getType(),
 						devices[i].getName(), devices[i].getId());
 				devicesList.add(deviceData);
 			}
@@ -120,7 +121,7 @@ public class PlayerLogic {
 	 * @return selected device
 	 */
 	public String setDevice(int deviceNumber) {
-		List<de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device> devices = getDevices();
+		List<DeviceEntity> devices = getDevices();
 		if (devices.size() > deviceNumber) {
 			this.spotifyAPICalls.setCurrentDevice(devices.get(deviceNumber).getID());
 			return devices.get(deviceNumber).getName();
@@ -160,8 +161,8 @@ public class PlayerLogic {
 	 * 
 	 * @return a Playlist object. can be null
 	 */
-	public Playlist play() {
-		List<Playlist> playLists;
+	public PlaylistEntity play() {
+		List<PlaylistEntity> playLists;
 		playLists = this.search.getFeaturedPlaylists(5);
 		if (!playLists.isEmpty() && 1 < playLists.size()
 				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).getUri())) {
@@ -247,7 +248,7 @@ public class PlayerLogic {
 	 *            limit of returned playlists
 	 * @return a list from Playlists
 	 */
-	public List<Playlist> getOwnPlaylists(int limit) {
+	public List<PlaylistEntity> getOwnPlaylists(int limit) {
 		return this.search.getOwnPlaylists(limit);
 	}
 
@@ -258,7 +259,7 @@ public class PlayerLogic {
 	 *            limit of returned playlists
 	 * @return a list from Playlists
 	 */
-	public List<Playlist> getFeaturedPlaylists(int limit) {
+	public List<PlaylistEntity> getFeaturedPlaylists(int limit) {
 		return this.search.getFeaturedPlaylists(limit);
 	}
 

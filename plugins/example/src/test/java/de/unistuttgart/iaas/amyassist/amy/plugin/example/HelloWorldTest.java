@@ -26,6 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -45,9 +47,16 @@ public class HelloWorldTest {
 	@Reference
 	private TestFramework testFramework;
 
+	private HelloWorldImpl helloWorld;
+
+	@BeforeEach
+	public void setup() {
+		testFramework.mockService(ContactRegistry.class);
+		helloWorld = this.testFramework.setServiceUnderTest(HelloWorldImpl.class);
+	}
+
 	@Test
 	public void testInit() {
-		HelloWorldImpl helloWorld = this.testFramework.setServiceUnderTest(HelloWorldImpl.class);
 
 		IStorage storage = this.testFramework.storage();
 
@@ -58,7 +67,6 @@ public class HelloWorldTest {
 
 	@Test
 	public void testcount() {
-		HelloWorldImpl helloWorld = this.testFramework.setServiceUnderTest(HelloWorldImpl.class);
 
 		IStorage storage = this.testFramework.storage();
 		storage.put("hellocount", "10");
@@ -70,7 +78,6 @@ public class HelloWorldTest {
 
 	@Test
 	public void textHelloWorldXTimes() {
-		HelloWorldImpl helloWorld = this.testFramework.setServiceUnderTest(HelloWorldImpl.class);
 
 		assertThat(helloWorld.helloWorldXTimes(3), equalTo("hello hello hello"));
 

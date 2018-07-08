@@ -23,11 +23,12 @@
 
 package de.unistuttgart.iaas.amyassist.amy.test;
 
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static uk.org.lidalia.slf4jtest.LoggingEvent.*;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -88,13 +89,18 @@ class TestFrameworkImplTest {
 		ServiceWithLogger serviceWithLogger = this.testFrameworkImpl.setServiceUnderTest(ServiceWithLogger.class);
 		assertThat(serviceWithLogger, is(notNullValue()));
 		serviceWithLogger.log("test");
-		assertThat(testLogger.getLoggingEvents(), contains(info("test")));
-		assertThat(testLogger.getLoggingEvents(), hasSize(1));
+		assertThat(testLogger, hasLogged(info("test")));
+		assertThat(testLogger, loggingEventCount(is(1)));
 	}
 
 	@Test
 	void testStorage() {
 		assertThat(this.testFrameworkImpl.storage(), is(notNullValue()));
+	}
+
+	@AfterEach
+	void cleanUp() {
+		TestLoggerFactory.clearAll();
 	}
 
 }

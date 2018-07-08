@@ -66,7 +66,6 @@ class ConfigurationLoaderTest {
 		this.tempDir = Files.createTempDirectory(ConfigurationLoaderTest.class.getName());
 		this.tempDir.toFile().deleteOnExit();
 		Files.createDirectory(this.tempDir.resolve("config"));
-		System.out.println(this.tempDir.toAbsolutePath().toString());
 		Mockito.when(environment.getWorkingDirectory()).thenReturn(this.tempDir);
 
 		this.configurationLoader = this.testFramework.setServiceUnderTest(ConfigurationLoader.class);

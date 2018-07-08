@@ -36,6 +36,7 @@ import com.neovisionaries.i18n.CountryCode;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.exceptions.detailed.UnauthorizedException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
@@ -85,7 +86,7 @@ public class SpotifyAPICalls {
 	 * Rules for the spotify user authentication e.g. access to the playcontrol
 	 */
 	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state,"
-			+ "playlist-read-private";
+			.concat("playlist-read-private");
 	private String deviceID = null;
 
 	public static final String SPOTIFY_CLIENTSECRET_KEY = "spotify_clientSecret";
@@ -126,34 +127,41 @@ public class SpotifyAPICalls {
 	 * @return a spotifyAPI object for queries to the Spotify Web API
 	 */
 	public SpotifyApi getSpotifyApi() {
-		SpotifyApi spotifyAPI = null;
+		SpotifyApi spotifyApi = getSpotifyApiWithoutAcToken();
+		if (spotifyApi != null && spotifyApi.getRefreshToken() != null) {
+			if (this.storage.has(SPOTIFY_ACCESSTOKEN) && this.storage.get(SPOTIFY_ACCESSTOKEN) != null) {
+				spotifyApi.setAccessToken(this.storage.get(SPOTIFY_ACCESSTOKEN));
+			} else {
+				String accessToken = createAccessToken(spotifyApi);
+				if (accessToken != null) {
+					spotifyApi.setAccessToken(accessToken);
+				} else {
+					this.logger.warn("Accsess Token can not generated");
+					return spotifyApi;
+				}
+			}
+		}
+		return spotifyApi;
+	}
+
+	private SpotifyApi getSpotifyApiWithoutAcToken() {
+		SpotifyApi spotifyApi = null;
 		if (this.configLoader.getProperty(SPOTIFY_CLIENTID_KEY) != null
 				&& this.configLoader.getProperty(SPOTIFY_CLIENTSECRET_KEY) != null) {
-			spotifyAPI = new SpotifyApi.Builder().setClientId(this.configLoader.getProperty(SPOTIFY_CLIENTID_KEY))
-					.setClientSecret(this.configLoader.getProperty(SPOTIFY_CLIENTSECRET_KEY)).setRedirectUri(this.redirectURI)
-					.build();
+			spotifyApi = new SpotifyApi.Builder().setClientId(this.configLoader.getProperty(SPOTIFY_CLIENTID_KEY))
+					.setClientSecret(this.configLoader.getProperty(SPOTIFY_CLIENTSECRET_KEY))
+					.setRedirectUri(this.redirectURI).build();
 		} else {
 			this.logger.warn("Client Secret and ID missing. Please insert the config file");
 			return null;
 		}
 		if (this.configLoader.getProperty(SPOTIFY_REFRSHTOKEN_KEY) != null) {
-			spotifyAPI.setRefreshToken(this.configLoader.getProperty(SPOTIFY_REFRSHTOKEN_KEY));
+			spotifyApi.setRefreshToken(this.configLoader.getProperty(SPOTIFY_REFRSHTOKEN_KEY));
 		} else {
 			this.logger.warn("Please exec the Authorization first");
-			return spotifyAPI;
+			return spotifyApi;
 		}
-		if (this.storage.get(SPOTIFY_ACCESSTOKEN) != null) {
-			spotifyAPI.setAccessToken(this.storage.get(SPOTIFY_ACCESSTOKEN));
-		} else {
-			String accessToken = createAccessToken(spotifyAPI);
-			if (accessToken != null) {
-				spotifyAPI.setAccessToken(accessToken);
-			} else {
-				this.logger.warn("Accsess Token can not generated");
-				return spotifyAPI;
-			}
-		}
-		return spotifyAPI;
+		return spotifyApi;
 	}
 
 	/**
@@ -165,8 +173,7 @@ public class SpotifyAPICalls {
 	 */
 	private String createAccessToken(SpotifyApi spotifyApi) {
 		AuthorizationCodeRefreshRequest authCodeRefreshReq = spotifyApi.authorizationCodeRefresh().build();
-		AuthorizationCodeCredentials authCredentials = (AuthorizationCodeCredentials) exceptionHandlingWithResults(
-				authCodeRefreshReq);
+		AuthorizationCodeCredentials authCredentials = exceptionHandlingWithResults(authCodeRefreshReq::execute);
 		if (authCredentials != null) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.SECOND, authCredentials.getExpiresIn().intValue() - TOKEN_EXPIRE_TIME_OFFSET);
@@ -184,8 +191,10 @@ public class SpotifyAPICalls {
 	 */
 	public Runnable refreshAccessToken() {
 		return () -> {
-			this.storage.delete(SPOTIFY_ACCESSTOKEN);
-			getSpotifyApi();
+			if (this.storage.has(SPOTIFY_ACCESSTOKEN)) {
+				this.storage.delete(SPOTIFY_ACCESSTOKEN);
+				getSpotifyApi();
+			}
 		};
 	}
 
@@ -210,8 +219,8 @@ public class SpotifyAPICalls {
 	 */
 	public boolean createRefreshToken(String authCode) {
 		AuthorizationCodeRequest authorizationCodeRequest = getSpotifyApi().authorizationCode(authCode).build();
-		AuthorizationCodeCredentials authCodeCredentials = (AuthorizationCodeCredentials) exceptionHandlingWithResults(
-				authorizationCodeRequest);
+		AuthorizationCodeCredentials authCodeCredentials = exceptionHandlingWithResults(
+				authorizationCodeRequest::execute);
 		if (authCodeCredentials != null) {
 			this.configLoader.setProperty(SPOTIFY_REFRSHTOKEN_KEY, authCodeCredentials.getRefreshToken());
 			return true;
@@ -282,7 +291,7 @@ public class SpotifyAPICalls {
 		if (getSpotifyApi() != null) {
 			GetUsersAvailableDevicesRequest getUsersAvailableDevicesRequest = getSpotifyApi().getUsersAvailableDevices()
 					.build();
-			devices = (Device[]) exceptionHandlingWithResults(getUsersAvailableDevicesRequest);
+			devices = exceptionHandlingWithResults(getUsersAvailableDevicesRequest::execute);
 			if (devices != null) {
 				return devices;
 			}
@@ -446,8 +455,7 @@ public class SpotifyAPICalls {
 		if (checkPlayerState()) {
 			GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = getSpotifyApi()
 					.getInformationAboutUsersCurrentPlayback().build();
-			return (CurrentlyPlayingContext) exceptionHandlingWithResults(
-					getInformationAboutUsersCurrentPlaybackRequest);
+			return exceptionHandlingWithResults(getInformationAboutUsersCurrentPlaybackRequest::execute);
 		}
 		return null;
 	}
@@ -467,7 +475,7 @@ public class SpotifyAPICalls {
 		if (checkPlayerState()) {
 			SearchItemRequest searchItemRequest = getSpotifyApi().searchItem(searchItem, type.toLowerCase())
 					.limit(Integer.valueOf(limit)).offset(Integer.valueOf(0)).build();
-			return (SearchResult) exceptionHandlingWithResults(searchItemRequest);
+			return exceptionHandlingWithResults(searchItemRequest::execute);
 		}
 		return null;
 	}
@@ -484,9 +492,20 @@ public class SpotifyAPICalls {
 			GetListOfFeaturedPlaylistsRequest getListOfFeaturedPlaylistsRequest = getSpotifyApi()
 					.getListOfFeaturedPlaylists().country(CountryCode.DE).limit(Integer.valueOf(limit))
 					.offset(Integer.valueOf(0)).build();
-			return (FeaturedPlaylists) exceptionHandlingWithResults(getListOfFeaturedPlaylistsRequest);
+
+			return exceptionHandlingWithResults(getListOfFeaturedPlaylistsRequest::execute);
 		}
 		return null;
+	}
+
+	/**
+	 * Functional interface for Spotify API calls
+	 * SonarLint detects some warnings that cannot be fixed, therefore suppressed
+	 * @param <T> the return type of the API call
+	 */
+	@FunctionalInterface
+	public interface SpotifyCallLambda<T> {
+		T execute() throws SpotifyWebApiException, IOException;
 	}
 
 	/**
@@ -512,13 +531,25 @@ public class SpotifyAPICalls {
 	/**
 	 * handle the exception from the request created by the .execute() method
 	 * 
-	 * @param request
-	 *            spotify api request
+	 * @param f
+	 *            lambda calling spotify api request
 	 * @return if no exception is occurred then true, else false
 	 */
-	private Object exceptionHandlingWithResults(IRequest request) {
+	private <T> T exceptionHandlingWithResults(SpotifyCallLambda<T> f) {
 		try {
-			return request.execute();
+			return f.execute();
+		} catch (UnauthorizedException e) {
+			SpotifyApi spotifyApi = getSpotifyApiWithoutAcToken();
+			if (spotifyApi != null) {
+				this.storage.put(SPOTIFY_ACCESSTOKEN, createAccessToken(spotifyApi));
+				try {
+					return f.execute();
+				} catch (SpotifyWebApiException | IOException e1) {
+					this.logger.warn(SPOTIFY_ERROR_TAG, e1);
+				}
+			}
+			this.logger.warn(SPOTIFY_ERROR_TAG, e);
+			return null;
 		} catch (SpotifyWebApiException | IOException e) {
 			this.logger.warn(SPOTIFY_ERROR_TAG, e);
 			return null;
@@ -536,6 +567,19 @@ public class SpotifyAPICalls {
 		try {
 			request.execute();
 			return true;
+		} catch (UnauthorizedException e) {
+			SpotifyApi spotifyApi = getSpotifyApiWithoutAcToken();
+			if (spotifyApi != null) {
+				this.storage.put(SPOTIFY_ACCESSTOKEN, createAccessToken(spotifyApi));
+				try {
+					request.execute();
+					return true;
+				} catch (SpotifyWebApiException | IOException e1) {
+					this.logger.warn(SPOTIFY_ERROR_TAG, e1);
+				}
+			}
+			this.logger.warn(SPOTIFY_ERROR_TAG, e);
+			return false;
 		} catch (SpotifyWebApiException | IOException e) {
 			this.logger.warn(SPOTIFY_ERROR_TAG, e);
 			return false;
