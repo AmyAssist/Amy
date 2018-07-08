@@ -24,10 +24,10 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -42,22 +42,26 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 /**
  * This class is for the Calendar Authentication and Logic, parts of the Code are from
  * https://developers.google.com/calendar/quickstart/java
- * 
+ *
  * @author Patrick Gebhardt, Florian Bauer
  */
 @Service
 public class CalendarLogic {
-	
+
 	@Reference
 	private CalendarService calendarService;
-	@Reference 
+	@Reference
 	private Logger logger;
+
+	private enum OutputCase {
+		STARTINPAST, STARTTODAY, STARTINFUTURE, ENDINFUTURE, SINGLEDAY, ALLDAYLONG
+	}
 
 	private List<String> eventList = new ArrayList<>();
 
 	/**
 	 * This method lists the next events from the calendar
-	 * 
+	 *
 	 * @param number
 	 *            number of events the user wants to get
 	 * @return event summary
@@ -66,15 +70,16 @@ public class CalendarLogic {
 		try {
 			this.eventList.clear();
 			DateTime now = new DateTime(System.currentTimeMillis());
-			Events events = this.calendarService.getService().events().list("primary").setMaxResults(Integer.valueOf(number)).setTimeMin(now)
-					.setOrderBy("startTime").setSingleEvents(true).execute();
+			Events events = this.calendarService.getService().events().list("primary")
+					.setMaxResults(Integer.valueOf(number)).setTimeMin(now).setOrderBy("startTime")
+					.setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return "No upcoming events found.";
 			}
+			LocalDateTime now = LocalDateTime.now();
 			for (Event event : items) {
-				DateTime start = event.getStart().getDateTime();
-				eventCalc(start, event, true);
+				checkDay(now, event, true);
 			}
 			return "You have following upcoming events:\n" + String.join("\n", this.eventList);
 		} catch (IOException e) {
@@ -86,43 +91,29 @@ public class CalendarLogic {
 
 	/**
 	 * This method contains the logic to show the calendar events today and tomorrow
-	 * 
+	 *
 	 * @param day
-	 * 			true if it is today, false for tomorrow	
+	 *            true if it is today, false for tomorrow
 	 * @return the events of the chosen day
 	 */
-	public String getEventsByDay(boolean day) {
+	public String getEventsByDay(boolean today) {
 		try {
 			this.eventList.clear();
-			DateTime now = new DateTime(System.currentTimeMillis());
-			Events events = this.calendarService.getService().events().list("primary").setTimeMin(now).setOrderBy("startTime")
-					.setSingleEvents(true).execute();
+			LocalDateTime now = LocalDateTime.now();
+			DateTime setup = new DateTime(System.currentTimeMillis());
+			Events events = this.calendarService.getService().events().list("primary").setTimeMin(setup)
+					.setOrderBy("startTime").setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return "No upcoming events found.";
 			}
-			if(!day) {
-				Date today = new Date();
-				LocalDateTime plusOne = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-				plusOne = plusOne.plusDays(1);
-				now = new DateTime(Date.from(plusOne.atZone(ZoneId.systemDefault()).toInstant()));
+			if (!today) {
+				now = now.plusDays(1);
 			}
 			for (Event event : items) {
-				String eventdatetime = "";
-				String eventdate = "";
-				if (event.getStart().getDateTime() != null) {
-					eventdatetime = event.getStart().getDateTime().toString().substring(0, 10);
-				} else if (event.getStart().getDate() != null) {
-					eventdate = event.getStart().getDate().toString().substring(0, 10);
-				}
-				if (eventdatetime.equals(now.toString().substring(0, 10))) {
-					DateTime start = event.getStart().getDateTime();
-					eventCalc(start, event, false);
-				} else if (eventdate.equals(now.toString().substring(0, 10))) {
-					eventCalc(null, event, false);
-				}
+				checkDay(now, event, false);
 			}
-			if(day) {
+			if (today) {
 				if (this.eventList.isEmpty()) {
 					return "There are no events today.";
 				}
@@ -139,96 +130,101 @@ public class CalendarLogic {
 	}
 
 	/**
+	 * @param dayToCheck
+	 * @param event
+	 */
+	public void checkDay(LocalDateTime dayToCheck, Event event, boolean withDate) {
+		LocalDateTime startDateTime, endDateTime;
+		LocalDate startDate, checkDate, endDate;
+		boolean allDay;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+		if (event.getStart().getDate() != null) {
+			startDateTime = LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000+02:00",
+					formatter);
+			endDateTime = LocalDateTime.parse(event.getEnd().getDate().toString() + "T23:59:59.000+02:00", formatter);
+			allDay = true;
+		} else {
+			startDateTime = LocalDateTime.parse(event.getStart().getDateTime().toString(), formatter);
+			endDateTime = LocalDateTime.parse(event.getEnd().getDateTime().toString(), formatter);
+			allDay = false;
+		}
+		startDate = startDateTime.toLocalDate();
+		checkDate = dayToCheck.toLocalDate();
+		endDate = endDateTime.toLocalDate();
+		// check if the beginning and the end of the event is on another day as the current day
+		if (checkDate.isAfter(startDate) && checkDate.isBefore(endDate)) {
+			eventToString(startDateTime, endDateTime, event, withDate, OutputCase.STARTINPAST);
+		}
+		if (dayToCheck.isAfter(startDateTime) && dayToCheck.isBefore(endDateTime)) {
+			if (checkDate.isEqual(startDate)) {
+				eventToString(startDateTime, endDateTime, event, withDate, OutputCase.STARTTODAY);
+			}
+		} else if (checkDate.isEqual(startDate)) {
+			if (allDay) {
+				eventToString(startDateTime, endDateTime, event, withDate, OutputCase.ALLDAYLONG);
+			} else if (checkDate.isEqual(endDate)) {
+				eventToString(startDateTime, endDateTime, event, withDate, OutputCase.SINGLEDAY);
+			} else {
+				eventToString(startDateTime, endDateTime, event, withDate, OutputCase.ENDINFUTURE);
+			}
+		}
+
+	}
+
+	/**
 	 * This method formats the date and time of the events and adds them into the list
-	 * 
-	 * @param start
+	 *
+	 * @param startDate
 	 *            start time of the event
+	 * @param endDate
+	 *            end time of the event
 	 * @param event
 	 *            data of the event
 	 * @param withDate
 	 *            determines if event output is with or without the date
+	 * @param outputCase
 	 */
-	public void eventCalc(DateTime start, Event event, boolean withDate) {
-		String eventData;
-		String datePart = "";
-		if (start != null) {
-			String startData = start.toString();
-			String[] parts = startData.split("T");
-			String startDate = parts[0];
-			String[] dayParts = startDate.split("-");
-			String day = dayParts[2];
-			String month = dayParts[1];
-			String year = dayParts[0];
-			String yearpart1 = year.substring(0, 2);
-			String yearpart2 = year.substring(2, 4);
-			String startTime = parts[1];
-			DateTime endtime = event.getEnd().getDateTime();
-			if(withDate) {
-				datePart = " on the " + ordinal(Integer.parseInt(day)) + " of " + getMonth(month)
-				+ " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2);
-			}
-			eventData = event.getSummary() + datePart  + " at "
-					+ startTime.substring(0, 5) + " until " + endtime.toString().substring(11, 16) + "\n";
-			this.eventList.add(eventData);
-		}
-		if (start == null) {
-			DateTime date = event.getStart().getDate();
-			String startData = date.toString();
-			String[] dayParts = startData.split("-");
-			String day = dayParts[2];
-			String month = dayParts[1];
-			String year = dayParts[0];
-			String yearpart1 = year.substring(0, 2);
-			String yearpart2 = year.substring(2, 4);
-			if(withDate) {
-				datePart = " on the " + ordinal(Integer.parseInt(day)) + " of " + getMonth(month)
-				+ " " + Integer.parseInt(yearpart1) + Integer.parseInt(yearpart2);
-			}
-			eventData = event.getSummary() + datePart + " all day long." + "\n";
-			this.eventList.add(eventData);
-		}
-	}
+	public void eventToString(LocalDateTime startDate, LocalDateTime endDate, Event event, boolean withDate,
+			OutputCase outputCase) {
+		String eventData = "";
+		switch (outputCase) {
+		case STARTINPAST:
+			eventData = event.getSummary() + " since the " + ordinal(startDate.getDayOfMonth()) + " of "
+					+ startDate.getMonth() + " at " + startDate.getHour() + ":" + startDate.getMinute() + " until the "
+					+ ordinal(endDate.getDayOfMonth()) + " of " + endDate.getMonth() + " " + endDate.getYear() + " at "
+					+ endDate.getHour() + ":" + endDate.getMinute() + ". \n";
+			break;
+		case STARTINFUTURE:
+			eventData = event.getSummary() + " from the " + ordinal(startDate.getDayOfMonth()) + " of "
+					+ startDate.getMonth() + " at " + startDate.getHour() + ":" + startDate.getMinute() + " until the "
+					+ ordinal(endDate.getDayOfMonth()) + " of " + endDate.getMonth() + " " + endDate.getYear() + " at "
+					+ endDate.getHour() + ":" + endDate.getMinute() + ". \n";
+			break;
+		case ENDINFUTURE:
+			eventData = event.getSummary() + " from " + startDate.getHour() + ":" + startDate.getMinute()
+					+ " until the " + ordinal(endDate.getDayOfMonth()) + " of " + endDate.getMonth() + " at "
+					+ endDate.getHour() + ":" + endDate.getMinute() + ". \n";
+			break;
+		case ALLDAYLONG:
+			eventData = event.getSummary() + " on the " + ordinal(startDate.getDayOfMonth()) + " of "
+					+ startDate.getMonth() + " all day long. \n";
+			break;
+		case SINGLEDAY:
+			eventData = event.getSummary() + " on the " + ordinal(startDate.getDayOfMonth()) + " of "
+					+ startDate.getMonth() + " at " + startDate.getHour() + ":" + startDate.getMinute() + " until "
+					+ endDate.getHour() + ":" + endDate.getMinute() + ". \n";
+			break;
 
-	/**
-	 * This method decides in which month the event is
-	 * 
-	 * @param month
-	 *            month of the event as a number in a String
-	 * @return current month of year as String, e.g. May
-	 */
-	public String getMonth(String month) {
-		String monthString = "";
-		if (month.equals("01")) {
-			monthString = "January";
-		} else if (month.equals("02")) {
-			monthString = "February";
-		} else if (month.equals("03")) {
-			monthString = "March";
-		} else if (month.equals("04")) {
-			monthString = "April";
-		} else if (month.equals("05")) {
-			monthString = "May";
-		} else if (month.equals("06")) {
-			monthString = "June";
-		} else if (month.equals("07")) {
-			monthString = "July";
-		} else if (month.equals("08")) {
-			monthString = "August";
-		} else if (month.equals("09")) {
-			monthString = "September";
-		} else if (month.equals("10")) {
-			monthString = "October";
-		} else if (month.equals("11")) {
-			monthString = "November";
-		} else if (month.equals("12")) {
-			monthString = "December";
+		default:
+			break;
 		}
-		return monthString;
+
+		this.eventList.add(eventData);
 	}
 
 	/**
 	 * A method to convert the integer day to an ordinal (from 1 to 31)
-	 * 
+	 *
 	 * @param i
 	 *            the day as integer
 	 * @return the day as ordinal, e.g. 1st
