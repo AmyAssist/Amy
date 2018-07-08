@@ -103,7 +103,7 @@ public class EMailLogic {
 	 */
 	public String printPlainTextMessages(int amount) {
 		StringBuilder b = new StringBuilder();
-		int count = 0;
+		int count = 1;
 		if (this.inbox != null) {
 			Message[] messages;
 			try {
@@ -130,7 +130,7 @@ public class EMailLogic {
 	 */
 	public boolean hasUnreadMessages() {
 		if (this.inbox != null) {
-			Message messages[];
+			Message[] messages;
 			try {
 				messages = this.inbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
 				return messages.length > 0;
@@ -150,7 +150,6 @@ public class EMailLogic {
 	 */
 	public String concatenateMessage(Message message) {
 		StringBuilder sb = new StringBuilder();
-
 		sb.append("\nMessage:");
 		try {
 			sb.append("\nFrom: " + Arrays.toString(message.getFrom()));
@@ -164,12 +163,10 @@ public class EMailLogic {
 		try {
 			if (message.isMimeType("text/plain")) {
 				sb.append("\nContent: " + message.getContent().toString());
-
 				// still broken, probably wrong message part appended to string builder - Felix B
 			} else if (message.getContent() instanceof Multipart) {
 				sb.append("\nVerarbeite multipart/* Nachricht");
 				Multipart mp = (Multipart) message.getContent();
-
 				// // Der erste Part ist immer die Hauptnachricht
 				if (mp.getCount() > 1) {
 					Part part = mp.getBodyPart(0);
