@@ -29,6 +29,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.ServiceLoader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,45 +60,51 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  * @author Leon Kiefer, Tim Neumann
  */
 @ParametersAreNullableByDefault
-public class DependencyInjection implements ServiceLocator {
+public class DependencyInjection implements ServiceLocator, Configuration {
 	/**
-	 * A register which maps a class to it's service provider.
+	 * A register which maps a service description to it's service provider.
 	 */
-	protected Map<Class<?>, ServiceFunction<?>> register;
+	protected Map<ServiceDescription<?>, ServiceFunction<?>> register;
 
-	protected Map<String, StaticProvider<?>> staticProvider;
+	protected Map<String, StaticProvider<?>> staticProviders;
 
 	/**
 	 * Creates a new Dependency Injection
 	 */
 	public DependencyInjection() {
 		this.register = new HashMap<>();
-		this.staticProvider = new HashMap<>();
+		this.staticProviders = new HashMap<>();
 
 		this.registerContextProvider("class", new ClassProvider());
 		this.addExternalService(ServiceLocator.class, this);
+		this.addExternalService(Configuration.class, this);
 	}
 
 	/**
-	 * Registers a service provider
+	 * Loads Services using the provider configuration file
+	 * META-INF/services/de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader and the
+	 * {@link ServiceProviderLoader}
 	 * 
-	 * @param serviceType
-	 *            The type of this service
-	 * @param serviceFunction
-	 *            The instance of the service provider
+	 * @see java.util.ServiceLoader
 	 */
+	public void loadServices() {
+		ServiceLoader.load(ServiceProviderLoader.class).forEach(s -> s.load(this));
+	}
+
+	@Override
 	public synchronized <T> void register(Class<T> serviceType, ServiceFunction<T> serviceFunction) {
-		if (this.hasServiceOfType(serviceType))
-			throw new DuplicateServiceException();
-		this.register.put(serviceType, serviceFunction);
+		this.register(Util.serviceDescriptionFor(serviceType), serviceFunction);
 	}
 
-	/**
-	 * Registers a service
-	 * 
-	 * @param cls
-	 *            The service to register.
-	 */
+	@Override
+	public synchronized <T> void register(ServiceDescription<T> serviceDescription,
+			ServiceFunction<T> serviceFunction) {
+		if (this.hasServiceOfType(serviceDescription))
+			throw new DuplicateServiceException();
+		this.register.put(serviceDescription, serviceFunction);
+	}
+
+	@Override
 	public synchronized void register(@Nonnull Class<?> cls) {
 		Service annotation = cls.getAnnotation(Service.class);
 		if (annotation == null)
@@ -112,7 +119,7 @@ public class DependencyInjection implements ServiceLocator {
 		}
 
 		for (Class<?> serviceType : serviceTypes) {
-			if (this.hasServiceOfType(serviceType)) {
+			if (this.hasServiceOfType(Util.serviceDescriptionFor(serviceType))) {
 				throw new DuplicateServiceException();
 			}
 			if (!serviceType.isAssignableFrom(cls)) {
@@ -122,43 +129,48 @@ public class DependencyInjection implements ServiceLocator {
 
 		for (Class<?> serviceType : serviceTypes) {
 			ServiceFunction<?> p = new ClassServiceProvider<>(cls);
-			this.register.put(serviceType, p);
+			this.register.put(Util.serviceDescriptionFor(serviceType), p);
 		}
 	}
 
+	@Override
 	public synchronized void registerContextProvider(String key, StaticProvider<?> staticProvider) {
-		this.staticProvider.put(key, staticProvider);
+		this.staticProviders.put(key, staticProvider);
 	}
 
-	/**
-	 * Adds an external Service instance to the DI. The DI does not manage the dependencies of the external Service, but
-	 * the DI can inject the external Service as dependency into other managed services.
-	 * 
-	 * @param serviceType
-	 *            The type of this service
-	 * @param externalService
-	 *            The instance of this service
-	 */
+	@Override
 	public synchronized <T> void addExternalService(@Nonnull Class<T> serviceType, @Nonnull T externalService) {
 		this.register(serviceType, new SingeltonServiceProvider<>(externalService));
 	}
 
-	private boolean hasServiceOfType(Class<?> serviceType) {
-		return this.register.containsKey(serviceType);
+	private boolean hasServiceOfType(ServiceDescription<?> serviceDescription) {
+		return this.register.containsKey(serviceDescription);
 	}
 
 	@Override
 	public <T> T getService(Class<T> serviceType) {
-		return this.getService(serviceType, null);
+		return this.getService(Util.serviceDescriptionFor(serviceType));
 	}
 
 	/**
 	 * @see ServiceLocator#getService(Class)
 	 */
 	public <T> T getService(Class<T> serviceType, @Nullable ServiceConsumer consumer) {
-		ServiceFunction<T> provider = this.getServiceProvider(serviceType);
+		return this.getService(Util.serviceDescriptionFor(serviceType), consumer);
+	}
+
+	/**
+	 * @see ServiceLocator#getService(ServiceDescription)
+	 */
+	public <T> T getService(ServiceDescription<T> serviceDescription, @Nullable ServiceConsumer consumer) {
+		ServiceFunction<T> provider = this.getServiceProvider(serviceDescription);
 		ServiceFactory<T> factory = this.resolve(provider, consumer);
 		return factory.build();
+	}
+
+	@Override
+	public <T> T getService(ServiceDescription<T> serviceDescription) {
+		return this.getService(serviceDescription, null);
 	}
 
 	/**
@@ -213,7 +225,7 @@ public class DependencyInjection implements ServiceLocator {
 		}
 		ServiceProviderServiceFactory<T> serviceProviderServiceFactory = new ServiceProviderServiceFactory<>(
 				serviceProvider);
-		for (Class<?> dependency : serviceProvider.getDependencies()) {
+		for (ServiceDescription<?> dependency : serviceProvider.getDependencies()) {
 			ServiceFunction<?> provider = this.getServiceProvider(dependency);
 			ServiceFactory<?> dependencyFactory = this.resolve(provider, stack, serviceProvider);
 			serviceProviderServiceFactory.resolved(dependency, dependencyFactory);
@@ -252,16 +264,16 @@ public class DependencyInjection implements ServiceLocator {
 
 	@Nonnull
 	@SuppressWarnings("unchecked")
-	private <T> ServiceFunction<T> getServiceProvider(Class<T> serviceType) {
-		if (!this.register.containsKey(serviceType))
-			throw new ServiceNotFoundException(serviceType);
-		return (ServiceFunction<T>) this.register.get(serviceType);
+	private <T> ServiceFunction<T> getServiceProvider(ServiceDescription<T> serviceDescription) {
+		if (!this.register.containsKey(serviceDescription))
+			throw new ServiceNotFoundException(serviceDescription);
+		return (ServiceFunction<T>) this.register.get(serviceDescription);
 	}
 
 	private StaticProvider<?> getContextProvider(@Nonnull String contextProviderType) {
-		if (!this.staticProvider.containsKey(contextProviderType))
+		if (!this.staticProviders.containsKey(contextProviderType))
 			throw new NoSuchElementException(contextProviderType);
-		return this.staticProvider.get(contextProviderType);
+		return this.staticProviders.get(contextProviderType);
 	}
 
 	@Override

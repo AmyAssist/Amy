@@ -29,8 +29,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Device;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.Playlist;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 
 /**
  * this class handle the speech commands from the spotify plugin
@@ -59,7 +59,7 @@ public class SpotifySpeech {
 	 */
 	@Grammar("get devices")
 	public String getDevices(String... params) {
-		List<Device> devices = this.playerLogic.getDevices();
+		List<DeviceEntity> devices = this.playerLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
 			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i).getName().concat("\n"));
@@ -160,7 +160,7 @@ public class SpotifySpeech {
 	@Grammar("get own playlists")
 	public String getUserplaylists(String... params) {
 		String output = "";
-		for (Playlist playlist : this.playerLogic.getOwnPlaylists(LIMIT_FOR_SEARCH)) {
+		for (PlaylistEntity playlist : this.playerLogic.getOwnPlaylists(LIMIT_FOR_SEARCH)) {
 			output = output.concat(playlist.toString()).concat("\n");
 		}
 		return output;
@@ -169,7 +169,7 @@ public class SpotifySpeech {
 	@Grammar("get featured playlists")
 	public String getFeaturedPlaylists(String... params) {
 		String output = "";
-		for (Playlist playlist : this.playerLogic.getFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
+		for (PlaylistEntity playlist : this.playerLogic.getFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
 			output = output.concat(playlist.toString()).concat("\n");
 		}
 		return output;

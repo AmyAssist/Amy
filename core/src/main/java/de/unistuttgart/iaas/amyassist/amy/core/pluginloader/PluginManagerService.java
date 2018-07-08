@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import javax.persistence.Entity;
 import javax.ws.rs.Path;
 
 import org.slf4j.Logger;
@@ -38,8 +39,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechCommandHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 
 /**
@@ -61,6 +63,8 @@ public class PluginManagerService implements PluginManager {
 
 	@Reference
 	private Server server;
+	@Reference
+	private Persistence persistence;
 	@Reference
 	private SpeechCommandHandler speechCommandHandler;
 	@Reference
@@ -163,6 +167,9 @@ public class PluginManagerService implements PluginManager {
 			}
 			if (cls.isAnnotationPresent(Path.class)) {
 				this.server.register(cls);
+			}
+			if (cls.isAnnotationPresent(Entity.class)) {
+				this.persistence.register(cls);
 			}
 		}
 	}

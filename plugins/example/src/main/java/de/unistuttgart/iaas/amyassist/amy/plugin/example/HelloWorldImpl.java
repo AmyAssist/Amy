@@ -23,12 +23,16 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
+
+import java.util.List;
 
 /**
  * Does the logic of the Hello World plugin
@@ -47,6 +51,9 @@ public class HelloWorldImpl implements HelloWorldService {
 	 */
 	@Reference
 	protected IStorage storage;
+
+	@Reference
+	private ContactRegistry contacts;
 
 	@Override
 	public String helloWorld() {
@@ -75,5 +82,90 @@ public class HelloWorldImpl implements HelloWorldService {
 		}
 
 		return hellos.toString().trim();
+	}
+
+	/**
+	 * Show all contacts
+	 * @return human-readable text
+	 */
+	@Override
+	public String demonstrateContactRegistry() {
+		List<? extends Contact> contactsList = contacts.getAll();
+		StringBuilder b = new StringBuilder("All contacts:\n");
+		for (Contact c: contactsList) {
+			b.append(c.getFirstName()).append(" ").append(c.getLastName()).append(" ")
+					.append(c.isImportant() ? "important" : "unimporant").append(" person").append("\n");
+		}
+		return b.toString();
+	}
+
+	/**
+	 * Exception class to signalize bad test result
+	 */
+	private class TestException extends Exception {
+		/**
+		 * Classic exception constructor
+		 * @param message exception message
+		 */
+		public TestException(String message) {
+			super(message);
+		}
+	}
+
+	/**
+	 * Test the contact registry's functionality
+	 * @return human-readable text
+	 */
+	@Override
+	public String testContactRegistry() {
+		try {
+			Contact personA = contacts.createNewEntity();
+			personA.setEmail("a@b.c");
+			personA.setFirstName("Max");
+			personA.setLastName("Mustermann");
+			personA.setImportant(true);
+
+			Contact personB = contacts.createNewEntity();
+			personB.setEmail("b@b.com");
+			personB.setFirstName("Alice");
+			personB.setLastName("Musterfrau");
+			personB.setImportant(true);
+
+			assertTrue(personA.getId() == 0);
+
+			contacts.save(personA);
+			contacts.save(personB);
+
+			assertTrue(personA.getId() != personB.getId());
+
+			List<Contact> list = contacts.getAll();
+			assertTrue(list.contains(personA));
+			assertTrue(list.contains(personB));
+
+			int personAId = personA.getId();
+
+			Contact personA2 = contacts.getById(personA.getId());
+			assertTrue(personA.equals(personA2));
+
+			contacts.deleteById(personA.getId());
+			contacts.deleteById(personB.getId());
+
+			Contact c3 = contacts.getById(personAId);
+			assertTrue(c3 == null);
+			return "Tests successful";
+		} catch (TestException e) {
+			logger.warn("Registry test failed: ", e);
+			return "Tests failed: " + e.getLocalizedMessage();
+		}
+	}
+
+	/**
+	 * Tiny function for testing
+	 * @param b expression to be tested
+	 */
+	private void assertTrue(boolean b) throws TestException {
+		if (!b) {
+			throw new TestException("Error in test");
+		}
 	}
 }

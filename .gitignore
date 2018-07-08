@@ -25,3 +25,5 @@ config/*.json
 
 #Ignore config files
 *.properties
+
+*.db

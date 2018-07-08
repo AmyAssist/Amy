@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
 
@@ -54,12 +55,13 @@ public class SingeltonServiceProvider<T> implements ServiceFunction<T> {
 	}
 
 	@Override
-	public T getService(Map<Class<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context) {
+	public T getService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies,
+			@Nullable Map<String, ?> context) {
 		return this.instance;
 	}
 
 	@Override
-	public Collection<Class<?>> getDependencies() {
+	public Collection<ServiceDescription<?>> getDependencies() {
 		return Collections.emptySet();
 	}
 
