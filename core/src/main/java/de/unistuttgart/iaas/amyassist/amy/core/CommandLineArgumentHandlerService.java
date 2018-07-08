@@ -122,7 +122,7 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 	@Override
 	public boolean shouldProgramContinue() {
 		if (this.flags == null)
-			throw new IllegalStateException("Not initialized.");
+			throw new NotInitializedException();
 		if (!this.flagsValid)
 			return false;
 		for (Flag f : this.flags.keySet()) {
@@ -138,7 +138,7 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 	@Override
 	public List<String> getConfigPaths() {
 		if (this.flags == null)
-			throw new IllegalStateException("Not initialized.");
+			throw new NotInitializedException();
 		return this.flags.get(Flag.CONFIG);
 	}
 
@@ -148,7 +148,7 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 	@Override
 	public List<String> getPluginPaths() {
 		if (this.flags == null)
-			throw new IllegalStateException("Not initialized.");
+			throw new NotInitializedException();
 		return this.flags.get(Flag.PLUGIN);
 	}
 

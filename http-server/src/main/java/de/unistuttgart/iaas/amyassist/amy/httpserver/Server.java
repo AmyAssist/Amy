@@ -55,10 +55,19 @@ public class Server {
 	public static final String CONFIG_NAME = "server.config";
 	/** The name of the property, which specifies the port */
 	public static final String PROPERTY_PORT = "port";
-	/** The name of the property, which specifies the root path of ther server */
+	/** The name of the property, which specifies the root path of the server */
 	public static final String PROPERTY_ROOT_PATH = "root_path";
 	/** The name of the property, which specifies whether the server should bind to local host only. */
 	public static final String PROPERTY_LOCALHOST = "local_host_only";
+
+	/**
+	 * The ip used, when the server should only be accessible from localhost
+	 */
+	public static final String IP_LOCAL = "127.0.0.1";
+	/**
+	 * The ip used, when the server should be accessible from anywhere
+	 */
+	public static final String IP_GLOBAL = "0.0.0.0";
 
 	@Reference
 	private Logger logger;
@@ -67,7 +76,7 @@ public class Server {
 	 * The dependency injection instance, needed for binding the di to the server
 	 */
 	@Reference
-	private ServiceLocator di;
+	ServiceLocator di;
 
 	private Set<Class<?>> restResources = new HashSet<>();
 	private HttpServer httpServer;
@@ -94,11 +103,9 @@ public class Server {
 			local = "true";
 		}
 
-		if (local.equals("true")) {
-			return UriBuilder.fromPath(root).scheme("http").host("127.0.0.1").port(port).build();
-		} else {
-			return UriBuilder.fromPath(root).scheme("http").host("0.0.0.0").port(port).build();
-		}
+		if (local.equals("true"))
+			return UriBuilder.fromPath(root).scheme("http").host(IP_LOCAL).port(port).build();
+		return UriBuilder.fromPath(root).scheme("http").host("0.0.0.0").port(port).build();
 	}
 
 	/**
