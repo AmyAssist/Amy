@@ -70,8 +70,6 @@ public class EMailLogic {
 	@Reference
 	private Logger logger;
 
-	private static final String CREDENTIALSFILEPATH = "src/main/java/Mail_Data.txt";
-
 	/**
 	 * Returns number of new messages in inbox. New refers to messages that were received while the mailbox was not
 	 * opened.
@@ -81,16 +79,13 @@ public class EMailLogic {
 	public int getNewMessageCount() {
 		if (this.inbox != null) {
 			try {
-				System.out.println(this.inbox.getFullName());
-				System.out.println(this.inbox.getUnreadMessageCount());
-				return this.inbox.getNewMessageCount();
+				return this.inbox.getUnreadMessageCount();
 			} catch (MessagingException e) {
 				this.logger.error("Inbox fail", e);
 			}
 		}
 		this.logger.error("Tried to access a closed inbox!");
 		return -1;
-
 	}
 
 	/**
@@ -100,23 +95,27 @@ public class EMailLogic {
 	 *            the amount of emails that should be returned
 	 * @return most recent emails
 	 * 
-	 * @throws MessagingException
-	 * @throws IOException
 	 */
-	public String[] printPlainTextMessages(int amount) throws MessagingException {
-		String[] stringMessages = new String[amount];
+	public String printPlainTextMessages(int amount) {
+		StringBuilder b = new StringBuilder();
+		int count = 0;
 		if (this.inbox != null) {
-			Message[] messages = this.inbox.getMessages();
-			for (int i = 1; i <= amount; i++) {
-				Message m = messages[i];
-				try {
-					stringMessages[i - 1] = concatenateMessage(m);
-				} catch (IOException ioe) {
-					this.logger.error("Something is wrong with the message", ioe);
+			Message[] messages;
+			try {
+				messages = this.inbox.getMessages();
+				for (Message m : messages) {
+					if(count <= amount) {
+						b.append(concatenateMessage(m));
+					}
+					count++;
 				}
+			} catch (MessagingException | IOException e) {
+				this.logger.error("couldn't fetch messages from inbox");
+				return "";
 			}
+			
 		}
-		return stringMessages;
+		return b.toString();
 	}
 
 	/**
@@ -125,7 +124,7 @@ public class EMailLogic {
 	 * @return success
 	 * @throws MessagingException
 	 */
-	public boolean hasNewMessages() throws MessagingException {
+	public boolean hasUnreadMessages() throws MessagingException {
 		if (this.inbox != null) {
 			 Message messages[] = this.inbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
 			 return messages.length > 0;
@@ -148,7 +147,8 @@ public class EMailLogic {
 		sb.append("\nFrom: " + Arrays.toString(message.getFrom()));
 		sb.append("\nSubject: " + message.getSubject());
 		sb.append("\nSent: " + message.getSentDate());
-		sb.append("\nContent-Type: " + new ContentType(message.getContentType()));
+		sb.append("\nContent: " + message.getContent());
+
 
 		// if (message.isMimeType("text/plain")) {
 		// sb.append("\nNachricht ist text/plain");
@@ -184,8 +184,11 @@ public class EMailLogic {
 	public void init() {
 		String username = this.configLoader.getProperty(EMAIL_USR_KEY);
 		String password = this.configLoader.getProperty(EMAIL_PW_KEY);
+		System.out.println("logging in2");
+
 
 		if(username != null && password != null) {
+			System.out.println("logging in");
 			startSession(username, password);
 			openInboxReadOnly();
 		}else {

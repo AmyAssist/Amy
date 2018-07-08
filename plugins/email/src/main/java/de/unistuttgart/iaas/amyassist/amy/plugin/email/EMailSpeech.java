@@ -54,11 +54,10 @@ public class EMailSpeech {
 	 *            words in the grammar annotation
 	 * @return yes or no
 	 */
-	// doesn't work
 	@Grammar("new messages")
 	public String newMessages(String... params) {
 		try {
-			if (this.logic.hasNewMessages()) {
+			if (this.logic.hasUnreadMessages()) {
 				return "You have new messages.";
 			}
 			return "You have no new messages.";
@@ -75,10 +74,13 @@ public class EMailSpeech {
 	 *            words in the grammar annotation
 	 * @return number of unseen emails
 	 */
-	// doesn't work
 	@Grammar("how many [new] (emails|mails) [do i have]")
 	public String numberOfNewMails(String... params) {
-		return this.logic.getNewMessageCount() + " new mails.";
+		int s = this.logic.getNewMessageCount();
+		if(s != -1) {
+			return this.logic.getNewMessageCount() + " new mails.";
+		}
+		return "something went wrong - i am deeply sorry";
 	}
 
 	/**
@@ -88,17 +90,14 @@ public class EMailSpeech {
 	 *            words in the grammar annotation
 	 * @return x most recent mails
 	 */
-	// order of emails is strange
 	@Grammar("read # most recent (emails|mails)")
 	public String readRecentMails(String... params) {
-		String[] messages;
-		try {
-			messages = this.logic.printPlainTextMessages(Integer.parseInt(params[1]));
-			return String.join("\n\n", messages);
-		} catch (MessagingException e) {
-			this.logger.error("Something is wrong with the inbox folder.", e);
-			return "nope";
+		String message;
+		message = this.logic.printPlainTextMessages(Integer.parseInt(params[1]));
+		if(message.equals("")) {
+			return "no messages received - poor you";
 		}
+		return message;
 	}
 
 	/**
@@ -108,7 +107,6 @@ public class EMailSpeech {
 	 *            words in the grammar annotation
 	 * @return confirmation
 	 */
-	// works
 	@Grammar("send example mail")
 	public String sendExampleMail(String... params) {
 		try {
