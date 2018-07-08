@@ -93,11 +93,11 @@ class MusicRestTest {
 	 */
 	private void createSongAndPlaylist() {
 		HashMap<String, String> currentSong = new HashMap<>();
-		currentSong.put("name", "Say Something");
-		currentSong.put("artist", "Justin Timberlake");
+		currentSong.put(SpotifyConstants.ITEM_NAME, "Say Something");
+		currentSong.put(SpotifyConstants.ARTIST_NAME, "Justin Timberlake");
 		Mockito.when(this.logic.getCurrentSong()).thenReturn(currentSong);
 
-		MusicEntity musicEntity1 = new MusicEntity(currentSong.get("name"), currentSong.get("artist"));
+		MusicEntity musicEntity1 = new MusicEntity(currentSong.get(SpotifyConstants.ITEM_NAME), currentSong.get(SpotifyConstants.ARTIST_NAME));
 		MusicEntity musicEntity2 = new MusicEntity("Flames", "David Guetta");
 		MusicEntity musicEntity3 = new MusicEntity("Holz", "Hans Dieter");
 
@@ -257,7 +257,7 @@ class MusicRestTest {
 	void testSearch() {
 		List<Map<String, String>> searchList = new ArrayList<>();
 		HashMap<String, String> entry = new HashMap<>();
-		entry.put("artist", "David Guetta");
+		entry.put(SpotifyConstants.ARTIST_NAME, "David Guetta");
 		entry.put("track", "Flames");
 		entry.put("album", "albumName");
 		entry.put("playlist", "playlistName");
@@ -299,7 +299,7 @@ class MusicRestTest {
 		List<Map<String, String>> searchList = new ArrayList<>();
 		Map<String, String> emptyList = new HashMap<>();
 		Map<String, String> foundEntries = new HashMap<>();
-		foundEntries.put("name", "Playlist");
+		foundEntries.put(SpotifyConstants.ITEM_NAME, "Playlist");
 		searchList.add(foundEntries);
 
 		Mockito.when(this.logic.search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK, 5))

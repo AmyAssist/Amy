@@ -153,8 +153,8 @@ public class SpotifySpeech {
 
 	@Grammar("get currently played song")
 	public String getCurrentlyPlayed(String... params) {
-		return "track: " + playerLogic.getCurrentSong().get("name") + " by "
-				+ playerLogic.getCurrentSong().get("artist");
+		return "track: " + playerLogic.getCurrentSong().get(SpotifyConstants.ITEM_NAME) + " by "
+				+ playerLogic.getCurrentSong().get(SpotifyConstants.ARTIST_NAME);
 	}
 
 	@Grammar("get own playlists")

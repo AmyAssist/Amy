@@ -322,9 +322,9 @@ public class MusicResource {
 		Map<String, String> currentSong = this.logic.getCurrentSong();
 		this.musicEntity = new MusicEntity();
 		if (currentSong != null && currentSong.containsKey(SpotifyConstants.ITEM_NAME)
-				&& currentSong.containsKey(SpotifyConstants.TYPE_ARTIST)) {
+				&& currentSong.containsKey(SpotifyConstants.ARTIST_NAME)) {
 			this.musicEntity = new MusicEntity(currentSong.get(SpotifyConstants.ITEM_NAME),
-					currentSong.get(SpotifyConstants.TYPE_ARTIST));
+					currentSong.get(SpotifyConstants.ARTIST_NAME));
 			return this.musicEntity;
 		}
 		throw new WebApplicationException("No song is currently playing", Status.CONFLICT);
