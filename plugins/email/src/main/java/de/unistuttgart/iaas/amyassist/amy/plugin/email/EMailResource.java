@@ -79,7 +79,7 @@ public class EMailResource {
 	@POST
 	@Path("plains")
 	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
 	public String printPlainTextMessages(@QueryParam("amount") @DefaultValue("5") int amount) {
 		String plains = this.logic.printPlainTextMessages(amount);
 		if (plains.equals("")) {
