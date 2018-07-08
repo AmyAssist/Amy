@@ -115,7 +115,7 @@ public class EMailLogic {
 					count++;
 				}
 			} catch (MessagingException e) {
-				this.logger.error("couldn't fetch messages from inbox");
+				this.logger.error("couldn't fetch messages from inbox", e);
 				return "";
 			}
 
@@ -135,7 +135,7 @@ public class EMailLogic {
 				messages = this.inbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
 				return messages.length > 0;
 			} catch (MessagingException e) {
-				this.logger.error("could not read message");
+				this.logger.error("could not read message", e);
 			}
 		}
 		return false;
@@ -157,7 +157,7 @@ public class EMailLogic {
 			sb.append("\nSent: " + message.getSentDate());
 
 		} catch (MessagingException e) {
-			this.logger.error("could not read message");
+			this.logger.error("could not read message", e);
 		}
 
 		try {
@@ -174,7 +174,7 @@ public class EMailLogic {
 				}
 			}
 		} catch (MessagingException | IOException e) {
-			this.logger.error("error reading message");
+			this.logger.error("error reading message", e);
 		}
 		return sb.toString();
 	}
@@ -202,7 +202,7 @@ public class EMailLogic {
 			msg.setContent(message, "text/plain");
 			Transport.send(msg);
 		} catch (MessagingException e) {
-			this.logger.error("messaging exception while sending mail");
+			this.logger.error("messaging exception while sending mail", e);
 			return "Message could not be sent";
 		}
 
@@ -292,7 +292,7 @@ public class EMailLogic {
 			this.inbox = folder;
 
 		} catch (MessagingException e) {
-			this.logger.error("could not open inbox");
+			this.logger.error("could not open inbox", e);
 		}
 
 	}
