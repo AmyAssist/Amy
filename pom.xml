@@ -49,6 +49,7 @@
 		<module>plugins/spotify</module>
 		<module>plugins/systemtime</module>
 		<module>plugins/weather</module>
+		<module>plugins/navigation</module>
 	</modules>
 	<licenses>
 		<license>

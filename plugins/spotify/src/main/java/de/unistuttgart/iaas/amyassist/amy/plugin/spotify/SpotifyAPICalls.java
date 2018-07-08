@@ -86,7 +86,7 @@ public class SpotifyAPICalls {
 	 * Rules for the spotify user authentication e.g. access to the playcontrol
 	 */
 	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state,"
-			+ "playlist-read-private";
+			.concat("playlist-read-private");
 	private String deviceID = null;
 
 	public static final String SPOTIFY_CLIENTSECRET_KEY = "spotify_clientSecret";
