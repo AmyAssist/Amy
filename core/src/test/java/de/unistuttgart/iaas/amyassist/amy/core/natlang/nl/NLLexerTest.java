@@ -23,80 +23,73 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import com.google.common.collect.Lists;
 
 /**
  * Test for NL Lexer
+ * 
  * @author Felix Burk
  */
 public class NLLexerTest {
-	
-	
+
 	/**
 	 * test normal words and numbers
 	 */
 	@Test
-	public void testWords() {
-		String[] words = {
-				"what", "the" , "99", "this", "is", "a", "test"
-		};
-		checkInput(words);
+	public static Stream<List<String>> testWords() {
+		return Stream.of(Arrays.asList("what", "the", "99", "this", "is", "a", "test"));
 	}
-	
+
 	/**
 	 * tests bad chars
 	 */
-	public void testBadChars() {
-		List<Character> badChars = new ArrayList<>(128);
-		
-		for(char c=0; c < 128; c++) {
-			//every ascii character except numbers of letters
-			if((c != 32 && c < 48) || (57 < c && c < 65) || (90 < c && c < 97) || 122 < c) {
-				badChars.add(c);
-			}
-		}
-
-		for(Character c : badChars) {	
-			NLLexer lexer = new NLLexer(c.toString());
-			assertThrows(NLLexerException.class, () -> lexer.next());
-		}
+	@ParameterizedTest
+	@MethodSource("badCharacters")
+	public void testBadChars(Character badCharacter) {
+		NLLexer lexer = new NLLexer();
+		assertThrows(NLLexerException.class, () -> lexer.tokenize(badCharacter.toString()));
 	}
 
-	
+	public static Stream<Character> badCharacters() {
+		// every ascii character except numbers of letters
+		return IntStream.range(0, 128).mapToObj(i -> (char) i)
+				.filter(c -> (c != 32 && c < 48) || (57 < c && c < 65) || (90 < c && c < 97) || 122 < c);
+	}
+
 	/**
 	 * standard test for the simple NL Lexer class
-	 * @param input 
+	 * 
+	 * @param input
 	 */
-	public void checkInput(String[] input) {
-		NLLexer lexer = new NLLexer(String.join(" ", input));
-		
-		int i=0;
-		while(lexer.hasNext()) {
-			assertThat(lexer.next().getContent(), is(input[i]));
-			i++;
-		}
+	@ParameterizedTest
+	@MethodSource("testWords")
+	public void checkInput(List<String> input) {
+		NLLexer lexer = new NLLexer();
+		List<WordToken> tokenize = lexer.tokenize(String.join(" ", input));
+		assertThat(Lists.transform(tokenize, WordToken::getContent), is(input));
 	}
-	
+
 	/**
 	 * standard test, more to come
 	 */
 	@Test
 	public void testTypes() {
-		NLLexer lex = new NLLexer("wajjo 9 0 oh 99");
-		
-		assertThat(lex.next().getType(), is(WordTokenType.WORD));
-		assertThat(lex.next().getType(), is(WordTokenType.NUMBER));
-		assertThat(lex.next().getType(), is(WordTokenType.NUMBER));
-		assertThat(lex.next().getType(), is(WordTokenType.WORD));
-		assertThat(lex.next().getType(), is(WordTokenType.NUMBER));
-
-		
+		NLLexer lex = new NLLexer();
+		List<WordToken> tokenize = lex.tokenize("wajjo 9 0 oh 99");
+		assertThat(Lists.transform(tokenize, WordToken::getType), contains(WordTokenType.WORD, WordTokenType.NUMBER,
+				WordTokenType.NUMBER, WordTokenType.WORD, WordTokenType.NUMBER));
 	}
 }

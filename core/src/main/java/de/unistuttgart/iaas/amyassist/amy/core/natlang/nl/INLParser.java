@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
-import java.util.Iterator;
+import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
@@ -42,7 +42,7 @@ public interface INLParser {
 	 * 
 	 * @return the matching AGFNode
 	 */
-	public int matchingNodeIndex(Iterator<WordToken> nl);
+	public int matchingNodeIndex(List<WordToken> nl);
 	
 	/**
 	 * returns matching AGFNode
@@ -52,6 +52,6 @@ public interface INLParser {
 	 * 
 	 * @return the matching AGFNode
 	 */
-	public AGFNode matchingNode(Iterator<WordToken> nl);
+	public AGFNode matchingNode(List<WordToken> nl);
 
 }

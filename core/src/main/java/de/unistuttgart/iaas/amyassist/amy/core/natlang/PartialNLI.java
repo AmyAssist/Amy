@@ -41,29 +41,29 @@ public class PartialNLI {
 	@Nonnull
 	private final AGFNode grammar;
 	@Nonnull
-	private final Class<?> speechCommandClass;
+	private final Class<?> partialNLIClass;
 
 	/**
 	 * @param method
 	 *            the method that is called
 	 * @param grammar
 	 *            the AGFNode representation of the Grammar
-	 * @param speechCommandClass
-	 *            the class of the SpeechCommand
+	 * @param partialNLIClass
+	 *            the class of the partialNLI
 	 */
-	public PartialNLI(@Nonnull Method method, @Nonnull AGFNode grammar, @Nonnull Class<?> speechCommandClass) {
+	public PartialNLI(@Nonnull Method method, @Nonnull AGFNode grammar, @Nonnull Class<?> partialNLIClass) {
 		this.method = method;
 		this.grammar = grammar;
-		this.speechCommandClass = speechCommandClass;
+		this.partialNLIClass = partialNLIClass;
 	}
 
 	/**
-	 * Get's {@link #speechCommandClass speechCommandClass}
+	 * Get's the partialNLI class
 	 * 
-	 * @return speechCommandClass
+	 * @return partialNLIClass
 	 */
-	public Class<?> getSpeechCommandClass() {
-		return this.speechCommandClass;
+	public Class<?> getPartialNLIClass() {
+		return this.partialNLIClass;
 	}
 
 	/**

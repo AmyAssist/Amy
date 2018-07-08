@@ -31,13 +31,19 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 
+import com.google.common.collect.Lists;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
@@ -56,7 +62,12 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Reference
 	private Environment environment;
 
+	@Reference
+	private ServiceLocator serviceLocator;
+
 	private final List<PartialNLI> register = new ArrayList<>();
+
+	private final List<AGFNode> cachedNodeList = new ArrayList<>();
 
 	@Override
 	public void register(Class<?> natuaralLanguageInterpreter) {
@@ -70,6 +81,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		for (Method e : grammars) {
 			PartialNLI partialNLI = this.generatePartialNLI(natuaralLanguageInterpreter, e);
 			this.register.add(partialNLI);
+			this.cachedNodeList.add(partialNLI.getGrammar());
 		}
 	}
 
@@ -94,10 +106,14 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Override
 	public String process(String naturalLanguageText) {
 		this.logger.debug("input {}", naturalLanguageText);
-		NLLexer nlLexer = new NLLexer(naturalLanguageText);
-		// TODO parser
-
-		return "";
+		NLLexer nlLexer = new NLLexer();
+		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
+		INLParser nlParser = new NLParser(this.cachedNodeList);
+		int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
+		PartialNLI partialNLI = this.register.get(matchingNodeIndex);
+		String[] arguments = Lists.transform(tokens, WordToken::getContent).toArray(new String[tokens.size()]);
+		Object object = this.serviceLocator.createAndInitialize(partialNLI.getPartialNLIClass());
+		return partialNLI.call(object, arguments);
 	}
 
 }

@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParseException;
@@ -36,89 +34,76 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
  * @author Felix Burk
  */
 public class NLParser implements INLParser {
-	
+
 	/**
 	 * list of all loaded grammars
 	 */
 	private List<AGFNode> grammars;
-	
+
 	/**
 	 * list of read tokens
 	 */
 	private List<WordToken> mRead;
-	
-	/**
-	 * internal iterator of tokens
-	 */
-	private Iterator<WordToken> mTokens;
+
+	private int currentIndex;
 
 	/**
 	 * 
-	 * @param grammars all possible grammars to match
+	 * @param grammars
+	 *            all possible grammars to match
 	 */
 	public NLParser(List<AGFNode> grammars) {
 		this.grammars = grammars;
 	}
-	
-	
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser#matchingNode(java.util.Iterator)
-	 */
+
 	@Override
-	public AGFNode matchingNode(Iterator<WordToken> nl) {
-		List<WordToken> backup = new ArrayList<>();
-		nl.forEachRemaining(backup::add);
-		
-		for(AGFNode agf : this.grammars) {
-			this.mRead = new ArrayList<>();
-			this.mTokens = backup.iterator();
-			
-			if(checkNode(agf)) {
+	public AGFNode matchingNode(List<WordToken> nl) {
+		this.mRead = nl;
+		for (AGFNode agf : this.grammars) {
+			this.currentIndex = 0;
+			if (checkNode(agf)) {
 				return agf;
 			}
 		}
-		throw new NLParserException("could not find matching grammar");
+		throw new NLParserException("could not find matching grammar for tokens" + nl);
+	}
+
+	@Override
+	public int matchingNodeIndex(List<WordToken> nl) {
+		return this.grammars.indexOf(matchingNode(nl));
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser#matchingNodeIndex(java.util.Iterator)
-	 */
-	@Override
-	public int matchingNodeIndex(Iterator<WordToken> nl) {
-		return this.grammars.indexOf(matchingNode(nl));
-	}
-	
-	/**
-	 * recursive method to check each node
-	 * preorder style
+	 * recursive method to check each node preorder style
 	 * 
-	 * @param agf current node to check
+	 * @param agf
+	 *            current node to check
 	 * @return success
 	 */
-	private boolean checkNode(AGFNode agf) {		
-		switch(agf.getType()) {
+	private boolean checkNode(AGFNode agf) {
+		switch (agf.getType()) {
 		case AGF:
-			for(AGFNode node : agf.getChilds()) {
-				if(!checkNode(node)) {
+			for (AGFNode node : agf.getChilds()) {
+				if (!checkNode(node)) {
 					return false;
 				}
 			}
 			break;
 		case OPG:
-			for(AGFNode node : agf.getChilds()) {
+			for (AGFNode node : agf.getChilds()) {
 				checkNode(node);
 			}
 			break;
 		case ORG:
-			for(AGFNode node : agf.getChilds()) {
-				if(checkNode(node)){
+			for (AGFNode node : agf.getChilds()) {
+				if (checkNode(node)) {
 					break;
 				}
 			}
 			break;
 		case MORPH:
-			for(AGFNode node : agf.getChilds()) {
-				if(!checkNode(node)) {
+			for (AGFNode node : agf.getChilds()) {
+				if (!checkNode(node)) {
 					return false;
 				}
 			}
@@ -129,22 +114,22 @@ public class NLParser implements INLParser {
 			return matchType(WordTokenType.NUMBER);
 		default:
 			return false;
-			
+
 		}
-				
+
 		return true;
 	}
-	
+
 	/**
-	 * match a WordTokenType with current position
-	 * in iterator 
+	 * match a WordTokenType with current position in iterator
 	 * 
-	 * @param type the type to match
+	 * @param type
+	 *            the type to match
 	 * @return success
 	 */
 	private boolean matchType(WordTokenType type) {
 		WordToken token = lookAhead(0);
-		if(token != null && token.getType().equals(type)) {
+		if (token != null && token.getType().equals(type)) {
 			consume();
 			return true;
 		}
@@ -154,50 +139,48 @@ public class NLParser implements INLParser {
 	/**
 	 * does the current token match the expected one?
 	 * 
-	 * @param toMatch the node to match
+	 * @param toMatch
+	 *            the node to match
 	 * @return if it matched
 	 */
 	private boolean match(AGFNode toMatch) {
 		WordToken token = lookAhead(0);
-		
-		if(token != null && toMatch.getContent().equals(token.getContent())){
+
+		if (token != null && toMatch.getContent().equals(token.getContent())) {
 			consume();
 			return true;
 		}
 		return false;
-		
+
 	}
-	
+
 	/**
 	 * consume a token
 	 * 
 	 * @return consumed token
 	 */
 	private WordToken consume() {
-		//make sure we read the token
-		WordToken token = lookAhead(0);
-		if(token != null) {
-			return this.mRead.remove(0);
+		if (this.mRead.size() > this.currentIndex) {
+			return this.mRead.get(this.currentIndex++);
+		} else {
+			throw new AGFParseException("could not consume token, end of input");
 		}
-		throw new AGFParseException("could not consume token, end of input");
 	}
-	
+
 	/**
 	 * look ahead as many tokens as needed
 	 * 
-	 * @param distance needed
+	 * @param distance
+	 *            needed
 	 * @return token at distance
 	 */
 	private WordToken lookAhead(int distance) {
-	    while (distance >= this.mRead.size() && this.mTokens.hasNext()) {
-	      this.mRead.add(this.mTokens.next());
-	    }
-	    
-	    if(this.mRead.size() > distance) {
-		    // Get the queued token.
-		    return this.mRead.get(distance);
-	    }
-	    
-	    return null;
+		int index = this.currentIndex + distance;
+		if (this.mRead.size() > index) {
+			// Get the queued token.
+			return this.mRead.get(index);
+		}
+
+		return null;
 	}
 }
