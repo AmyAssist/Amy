@@ -50,9 +50,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Logic class for the email functionality, that defines all the behaviour
+ * Logic class for the email functionality, that defines all the behavior
  * 
- * @author Patrick Singer, Felix Burk
+ * @author Patrick Singer, Felix Burk, Patrick Gebhardt
  */
 @Service
 public class EMailLogic {
@@ -214,38 +214,31 @@ public class EMailLogic {
 
 	/**
 	 * Get credentials from file or registry
-	 * 
-	 * @return
 	 */
 	@PostConstruct
-	public boolean init() {
+	public void init() {
 		String username = this.configLoader.getProperty(EMAIL_USR_KEY);
 		String password = this.configLoader.getProperty(EMAIL_PW_KEY);
 
 		if (username != null && password != null) {
 			startSession(username, password);
 			openInboxReadOnly();
-			return true;
+		} else {
+			this.logger.error("properties file not found");
 		}
-		this.logger.error("properties file not found");
-		return false;
 	}
 
 	/**
 	 * closes opened inbox
-	 * 
-	 * @return
 	 */
 	@PreDestroy
-	public boolean closeInbox() {
+	public void closeInbox() {
 		try {
 			this.inbox.close(false);
 			this.inbox.getStore().close();
 			this.inbox = null;
-			return true;
 		} catch (MessagingException e) {
 			this.logger.error("Closing inbox or closing store failed", e);
-			return false;
 		}
 	}
 
