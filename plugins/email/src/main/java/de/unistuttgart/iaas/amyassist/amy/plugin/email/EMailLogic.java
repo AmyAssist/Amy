@@ -35,9 +35,12 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
+import javax.mail.Flags;
+import javax.mail.Flags.Flag;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
 
@@ -56,6 +59,13 @@ public class EMailLogic {
 
 	private Session session;
 	private Folder inbox;
+	
+	@Reference
+	private Properties configLoader;
+	
+	public static final String EMAIL_USR_KEY = "email_usr";
+	public static final String EMAIL_PW_KEY = "email_pw";
+
 
 	@Reference
 	private Logger logger;
@@ -109,9 +119,16 @@ public class EMailLogic {
 		return stringMessages;
 	}
 
+	/**
+	 * returns if unread messages have been found
+	 * 
+	 * @return success
+	 * @throws MessagingException
+	 */
 	public boolean hasNewMessages() throws MessagingException {
 		if (this.inbox != null) {
-			return this.inbox.hasNewMessages();
+			 Message messages[] = this.inbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
+			 return messages.length > 0;
 		}
 		return false;
 	}
@@ -165,21 +182,15 @@ public class EMailLogic {
 	 */
 	@PostConstruct
 	public void init() {
-		String username = "amy.speechassist@gmail.com";
-		String password = "WirWollenDenGlaskasten";
-		// BufferedReader br;
-		// try {
-		// br = new BufferedReader(new FileReader(CREDENTIALSFILEPATH));
-		// username = br.readLine();
-		// password = br.readLine();
-		// br.close();
-		// } catch (FileNotFoundException e) {
-		// this.logger.error("Wrong file path!", e);
-		// } catch (IOException e) {
-		// this.logger.error("Something went wrong!", e);
-		// }
-		startSession(username, password);
-		openInboxReadOnly();
+		String username = this.configLoader.getProperty(EMAIL_USR_KEY);
+		String password = this.configLoader.getProperty(EMAIL_PW_KEY);
+
+		if(username != null && password != null) {
+			startSession(username, password);
+			openInboxReadOnly();
+		}else {
+			this.logger.error("properties file not found");
+		}
 	}
 
 	/**
@@ -247,8 +258,9 @@ public class EMailLogic {
 
 			Folder folder = store.getFolder("INBOX");
 			folder.open(Folder.READ_ONLY);
-
+			
 			this.inbox = folder;
+			
 		} catch (NoSuchProviderException e) {
 			System.out.println("Something went wrong!");
 			e.printStackTrace();
