@@ -119,7 +119,9 @@ public class CalendarLogic {
 				LocalDate nextDay = now.plusDays(1).toLocalDate();
 				now = LocalDateTime.of(nextDay, zero);
 			}
-			LocalDate startDate, nowDate = now.toLocalDate(), endDate;
+			LocalDate startDate;
+			LocalDate nowDate = now.toLocalDate();
+			LocalDate endDate;
 			for (Event event : items) {
 				if (event.getStart().getDate() != null) {
 					startDate = LocalDate.parse(event.getStart().getDate().toString());
@@ -168,10 +170,15 @@ public class CalendarLogic {
 	public void checkDay(LocalDateTime dayToCheck, Event event, boolean withDate) {
 		SimpleDateFormat sdf = new SimpleDateFormat("XXX");
 		String timeZone = sdf.format(Date.from(dayToCheck.atZone(ZoneId.systemDefault()).toInstant()));
-		LocalDateTime startDateTime, endDateTime;
-		LocalDate startDate, checkDate, endDate;
+		LocalDateTime startDateTime;
+		LocalDateTime endDateTime;
+		LocalDate startDate;
+		LocalDate checkDate;
+		LocalDate endDate;
 		OutputCase outputCase = OutputCase.SINGLEDAY;
-		boolean withTime, withStartDate = withDate, withEndDate = withDate;
+		boolean withTime;
+		boolean withStartDate = withDate;
+		boolean withEndDate = withDate;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 		// check if the day has a timestamp or only a date
 		if (event.getStart().getDate() != null) {
@@ -261,8 +268,11 @@ public class CalendarLogic {
 	 */
 	public void eventToString(LocalDateTime startDate, LocalDateTime endDate, Event event, boolean withStartDate,
 			boolean withEndDate, boolean withTime, OutputCase outputCase) {
-		String eventData = event.getSummary(), eventStartDate = "", eventEndDate = "", eventStartTime = "",
-				eventEndTime = "";
+		String eventData = event.getSummary();
+		String eventStartDate = "";
+		String eventEndDate = "";
+		String eventStartTime = "";
+		String eventEndTime = "";
 		DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm");
 		if (withStartDate) {
 			eventStartDate = " the " + ordinal(startDate.getDayOfMonth()) + " of "
