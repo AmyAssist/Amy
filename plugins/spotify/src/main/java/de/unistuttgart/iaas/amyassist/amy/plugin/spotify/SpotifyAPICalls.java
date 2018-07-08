@@ -94,7 +94,7 @@ public class SpotifyAPICalls {
 	public static final String SPOTIFY_ACCESSTOKEN = "spotify_Accsesstoken";
 	public static final int TOKEN_EXPIRE_TIME_OFFSET = 120;
 	public static final String SPOTIFY_ERROR_TAG = "Spotify Exception:";
-	public static final String SPOTIFY_EXPIRE_TIME_TOKEN = "SpotifyExpireTimeToken";
+	public static final String SPOTIFY_EXPIRE_TIME_TOKEN = "Spotify_Expire_Time_Token";
 
 	@Reference
 	private Properties configLoader;
