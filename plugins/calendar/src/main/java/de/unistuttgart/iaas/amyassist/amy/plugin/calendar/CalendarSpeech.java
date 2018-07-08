@@ -63,8 +63,10 @@ public class CalendarSpeech {
 	 */
 	@Grammar("events (today|tomorrow)")
 	public String getEventsToday(String[] params) {
-		boolean today = params[1].contains("today");
-		return this.calendar.getEventsByDay(today);
+		if (params[1].contains("today")) {
+			return this.calendar.getEventsToday();
+		}
+		return this.calendar.getEventsTomorrow();
 
 	}
 

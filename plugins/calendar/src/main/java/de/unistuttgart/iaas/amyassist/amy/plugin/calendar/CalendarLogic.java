@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -94,13 +95,11 @@ public class CalendarLogic {
 	}
 
 	/**
-	 * This method contains the logic to show the calendar events today and tomorrow
+	 * This method contains the logic to show the calendar events today
 	 *
-	 * @param today
-	 *            true if it is today, false for tomorrow
-	 * @return the events of the chosen day
+	 * @return the events of today
 	 */
-	public String getEventsByDay(boolean today) {
+	public String getEventsToday() {
 		List<String> eventList = new ArrayList<>();
 		try {
 			LocalDateTime now = LocalDateTime.now();
@@ -110,11 +109,6 @@ public class CalendarLogic {
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return "No upcoming events found.";
-			}
-			if (!today) {
-				LocalTime zero = LocalTime.of(0, 0, 0, 0);
-				LocalDate nextDay = now.plusDays(1).toLocalDate();
-				now = LocalDateTime.of(nextDay, zero);
 			}
 			LocalDate startDate;
 			LocalDate nowDate = now.toLocalDate();
@@ -135,11 +129,54 @@ public class CalendarLogic {
 					break;
 				}
 			}
-			if (today) {
-				if (eventList.isEmpty()) {
-					return "There are no events today.";
+			if (eventList.isEmpty()) {
+				return "There are no events today.";
+			}
+			return "You have following events today:\n" + String.join("\n", eventList);
+		} catch (IOException e) {
+			this.logger.error("Sorry, I am not able to get your events.", e);
+			return "An error occured.";
+		}
+	}
+
+	/**
+	 * This method contains the logic to show the calendar events tomorrow
+	 *
+	 * @return the events of tomorrow
+	 */
+	public String getEventsTomorrow() {
+		List<String> eventList = new ArrayList<>();
+		try {
+			LocalDateTime now = LocalDateTime.now();
+			LocalTime zero = LocalTime.of(0, 0, 0, 0);
+			LocalDate nextDay = now.plusDays(1).toLocalDate();
+			now = LocalDateTime.of(nextDay, zero);
+			ZonedDateTime zdt = now.atZone(ZoneId.systemDefault());
+			DateTime setup = new DateTime(zdt.toInstant().toEpochMilli());
+			Events events = this.calendarService.getService().events().list("primary").setTimeMin(setup)
+					.setOrderBy("startTime").setSingleEvents(true).execute();
+			List<Event> items = events.getItems();
+			if (items.isEmpty()) {
+				return "No upcoming events found.";
+			}
+			LocalDate startDate;
+			LocalDate nowDate = now.toLocalDate();
+			LocalDate endDate;
+			for (Event event : items) {
+				if (event.getStart().getDate() != null) {
+					startDate = LocalDate.parse(event.getStart().getDate().toString());
+					endDate = LocalDate.parse(event.getEnd().getDate().toString()).minusDays(1);
+				} else {
+					startDate = LocalDate.parse(event.getStart().getDateTime().toString().substring(0, 10));
+					endDate = LocalDate.parse(event.getEnd().getDateTime().toString().substring(0, 10));
 				}
-				return "You have following events today:\n" + String.join("\n", eventList);
+				if (nowDate.isAfter(startDate) || nowDate.equals(startDate)) {
+					if (nowDate.isBefore(endDate) || nowDate.equals(endDate)) {
+						eventList.add(this.checkDay(now, event, false));
+					}
+				} else {
+					break;
+				}
 			}
 			if (eventList.isEmpty()) {
 				return "There are no events tomorrow.";
@@ -177,7 +214,8 @@ public class CalendarLogic {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 		// check if the day has a timestamp or only a date
 		if (event.getStart().getDate() != null) {
-			startDateTime = LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000" + timeZone);
+			startDateTime = LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000" + timeZone,
+					formatter);
 			endDateTime = LocalDateTime
 					.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + timeZone, formatter).minusDays(1);
 			withTime = false;
