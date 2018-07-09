@@ -203,25 +203,6 @@ public class CalendarLogic {
 		boolean withTime = Boolean.getBoolean(dateData[4]);
 		boolean withStartDate = withDate;
 		boolean withEndDate = withDate;
-<<<<<<< .merge_file_a05804
-=======
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-		// check if the day has a timestamp or only a date
-		if (event.getStart().getDate() != null) {
-			startDateTime = LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000" + timeZone,
-					formatter);
-			endDateTime = LocalDateTime
-					.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + timeZone, formatter).minusDays(1);
-			withTime = false;
-		} else {
-			startDateTime = ZonedDateTime.parse(event.getStart().getDateTime().toString()).withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-			endDateTime = ZonedDateTime.parse(event.getEnd().getDateTime().toString()).withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-			withTime = true;
-		}
-		startDate = startDateTime.toLocalDate();
-		checkDate = dayToCheck.toLocalDate();
-		endDate = endDateTime.toLocalDate();
->>>>>>> .merge_file_a10880
 		// check if the beginning and the end of the event is on another day as the current day
 		if (dayToCheck.isAfter(startDateTime) && dayToCheck.isBefore(endDateTime)) {
 			// event already started
