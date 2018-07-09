@@ -105,7 +105,7 @@ public class Server {
 
 		if (local.equals("true"))
 			return UriBuilder.fromPath(root).scheme("http").host(IP_LOCAL).port(port).build();
-		return UriBuilder.fromPath(root).scheme("http").host("0.0.0.0").port(port).build();
+		return UriBuilder.fromPath(root).scheme("http").host(IP_GLOBAL).port(port).build();
 	}
 
 	/**

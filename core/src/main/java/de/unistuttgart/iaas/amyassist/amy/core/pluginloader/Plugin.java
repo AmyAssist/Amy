@@ -67,6 +67,7 @@ public class Plugin implements IPlugin {
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getFile()
+	 * @deprecated In favor to {@link #getPath()}
 	 */
 	@Override
 	@Deprecated
@@ -96,8 +97,7 @@ public class Plugin implements IPlugin {
 	@Override
 	public String getUniqueName() {
 		if (this.manifest == null) {
-			this.logger.error("Plugin manifest is null. Falling back to file name for unique name!: {}",
-					this.path.toString());
+			this.logger.error("Plugin manifest is null. Falling back to file name for unique name!: {}", this.path);
 			return this.path.toString();
 		}
 		return this.manifest.getMainAttributes().getValue(UNIQUE_NAME_KEY);

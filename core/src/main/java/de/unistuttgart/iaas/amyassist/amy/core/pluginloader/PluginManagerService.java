@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import javax.persistence.Entity;
 
@@ -140,8 +141,8 @@ public class PluginManagerService implements PluginManager {
 					}
 				}
 			} else if (mode.equals("docker")) {
-				try {
-					Files.list(pluginDir).forEach(p -> this.pluginLoader.loadPlugin(p));
+				try (Stream<Path> childs = Files.list(pluginDir)) {
+					childs.forEach(p -> this.pluginLoader.loadPlugin(p));
 				} catch (IOException e) {
 					this.logger.error("Failed loading plugins", e);
 				}
@@ -171,9 +172,9 @@ public class PluginManagerService implements PluginManager {
 			return false;
 		}
 
-		try {
-			Optional<Path> jar = Files.list(target)
-					.filter(j -> j.getFileName().toString().endsWith("with-dependencies.jar")).findFirst();
+		try (Stream<Path> childs = Files.list(target)) {
+			Optional<Path> jar = childs.filter(j -> j.getFileName().toString().endsWith("with-dependencies.jar"))
+					.findFirst();
 			if (!jar.isPresent()) {
 				this.logger.warn("The jar with dependencies is missing for plugin {}", pluginID);
 				return false;
