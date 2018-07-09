@@ -114,9 +114,13 @@ public class CalendarLogic {
 			LocalDate nowDate = now.toLocalDate();
 			LocalDate endDate;
 			for (Event event : items) {
-				String[] dateData = getDates(event);
-				startDate = LocalDate.parse(dateData[1]);
-				endDate = LocalDate.parse(dateData[3]);
+				if (event.getStart().getDate() != null) {
+					startDate = LocalDate.parse(event.getStart().getDate().toString());
+					endDate = LocalDate.parse(event.getEnd().getDate().toString()).minusDays(1);
+				} else {
+					startDate = LocalDate.parse(event.getStart().getDateTime().toString().substring(0, 10));
+					endDate = LocalDate.parse(event.getEnd().getDateTime().toString().substring(0, 10));
+				}
 				if (nowDate.isAfter(startDate) || nowDate.equals(startDate)) {
 					if (nowDate.isBefore(endDate) || nowDate.equals(endDate)) {
 						eventList.add(this.checkDay(now, event, false));
@@ -159,9 +163,13 @@ public class CalendarLogic {
 			LocalDate nowDate = now.toLocalDate();
 			LocalDate endDate;
 			for (Event event : items) {
-				String[] dateData = getDates(event);
-				startDate = LocalDate.parse(dateData[1]);
-				endDate = LocalDate.parse(dateData[3]);
+				if (event.getStart().getDate() != null) {
+					startDate = LocalDate.parse(event.getStart().getDate().toString());
+					endDate = LocalDate.parse(event.getEnd().getDate().toString()).minusDays(1);
+				} else {
+					startDate = LocalDate.parse(event.getStart().getDateTime().toString().substring(0, 10));
+					endDate = LocalDate.parse(event.getEnd().getDateTime().toString().substring(0, 10));
+				}
 				if (nowDate.isAfter(startDate) || nowDate.equals(startDate)) {
 					if (nowDate.isBefore(endDate) || nowDate.equals(endDate)) {
 						eventList.add(this.checkDay(now, event, false));
@@ -192,17 +200,35 @@ public class CalendarLogic {
 	 * @return the event as natural language text
 	 */
 	public String checkDay(LocalDateTime dayToCheck, Event event, boolean withDate) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-		String[] dateData = getDates(event);
-		LocalDateTime startDateTime = LocalDateTime.parse(dateData[0], formatter);
-		LocalDateTime endDateTime = LocalDateTime.parse(dateData[2], formatter);
-		LocalDate startDate = startDateTime.toLocalDate();
-		LocalDate checkDate = dayToCheck.toLocalDate();
-		LocalDate endDate = endDateTime.toLocalDate();
+		SimpleDateFormat sdf = new SimpleDateFormat("XXX");
+		String timeZone = sdf.format(Date.from(dayToCheck.atZone(ZoneId.systemDefault()).toInstant()));
+		LocalDateTime startDateTime;
+		LocalDateTime endDateTime;
+		LocalDate startDate;
+		LocalDate checkDate;
+		LocalDate endDate;
 		OutputCase outputCase = OutputCase.SINGLEDAY;
-		boolean withTime = Boolean.getBoolean(dateData[4]);
+		boolean withTime;
 		boolean withStartDate = withDate;
 		boolean withEndDate = withDate;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+		// check if the day has a timestamp or only a date
+		if (event.getStart().getDate() != null) {
+			startDateTime = LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000" + timeZone,
+					formatter);
+			endDateTime = LocalDateTime
+					.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + timeZone, formatter).minusDays(1);
+			withTime = false;
+		} else {
+			startDateTime = ZonedDateTime.parse(event.getStart().getDateTime().toString())
+					.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+			endDateTime = ZonedDateTime.parse(event.getEnd().getDateTime().toString())
+					.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+			withTime = true;
+		}
+		startDate = startDateTime.toLocalDate();
+		checkDate = dayToCheck.toLocalDate();
+		endDate = endDateTime.toLocalDate();
 		// check if the beginning and the end of the event is on another day as the current day
 		if (dayToCheck.isAfter(startDateTime) && dayToCheck.isBefore(endDateTime)) {
 			// event already started
