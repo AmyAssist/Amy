@@ -363,66 +363,6 @@ public class CalendarLogic {
 	}
 
 	/**
-	 * This method retrieves LocalDateTime and LocalDate information from an event
-	 *
-	 * @param event
-	 *            the current event
-	 *
-	 * @return startDateTime, startDate, endDateTime, endDate, withTime
-	 */
-	public static String[] getDates(Event event) {
-		String startDateTime;
-		String startDate;
-		String endDateTime;
-		String endDate;
-		String withTime;
-		String timeZone = new SimpleDateFormat("XXX").format(new Date());
-		if (event.getStart().getDate() != null) {
-			startDate = event.getEnd().getDate().toString();
-			startDateTime = startDate + "T00:00:00.000" + timeZone;
-			endDate = LocalDate.parse(event.getEnd().getDate().toString()).minusDays(1).toString();
-			endDateTime = endDate + "T23:59:59.999" + timeZone;
-			withTime = "false";
-		} else {
-			startDateTime = event.getStart().getDateTime().toString();
-			startDate = startDateTime.substring(0, 10);
-			endDateTime = event.getEnd().getDateTime().toString();
-			endDate = endDateTime.substring(0, 10);
-			withTime = "true";
-		}
-		return new String[] { startDateTime, startDate, endDateTime, endDate, withTime };
-	}
-
-	// public static String[] getCase(LocalDate startDate, LocalDate now, LocalDate endDate) {
-	// if (now.isAfter(startDate) && now.isBefore(endDate)) {
-	// // event didn't start at dayToCheck and won't finish at dayToCheck
-	// withStartDate = true;
-	// withEndDate = true;
-	// } else if (now.isEqual(startDate)) {
-	// // event started at dayToCheck
-	// if (now.isEqual(endDate)) {
-	// // event will also finish at dayToCheck
-	// if (withTime) {
-	// // event has specific time stamps
-	// outputCase = OutputCase.SINGLEDAY;
-	// withStartDate = withDate;
-	// } else {
-	// // event is defined as all day long and has no specific time stamps
-	// outputCase = OutputCase.ALLDAYLONG;
-	// withStartDate = withDate;
-	// }
-	// } else {
-	// // event will finish on a different date
-	// withStartDate = withDate;
-	// withEndDate = true;
-	// }
-	// } else {
-	// // event ends on dayToCheck
-	// withStartDate = true;
-	// }
-	// }
-
-	/**
 	 * A method to convert the integer day to an ordinal (from 1 to 31)
 	 *
 	 * @param i
