@@ -29,8 +29,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
 
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * This class is responsible to read the annotations of a given class

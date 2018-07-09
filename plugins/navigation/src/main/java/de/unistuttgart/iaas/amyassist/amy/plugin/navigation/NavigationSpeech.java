@@ -34,8 +34,8 @@ import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * This class handle the speech input for the navigation plugin
@@ -61,7 +61,7 @@ public class NavigationSpeech {
 	 *            input
 	 * @return output string
 	 */
-	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh # ")
+	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh #")
 	public String goToAt(String... strings) {
 		ReadableInstant time = this.logic.whenIHaveToGo(this.registry.getAdresse(strings[4]),
 				this.registry.getAdresse(strings[2]), TravelMode.DRIVING,

@@ -40,11 +40,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
 /**
@@ -72,10 +72,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Override
 	public void register(Class<?> natuaralLanguageInterpreter) {
 		if (!natuaralLanguageInterpreter
-				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand.class)) {
+				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand.class)) {
 			throw new IllegalArgumentException();
 		}
-		String[] speechKeyword = NLIAnnotationReader.getSpeechKeywords(natuaralLanguageInterpreter);
 		Set<Method> grammars = NLIAnnotationReader.getValidNLIMethods(natuaralLanguageInterpreter);
 
 		for (Method e : grammars) {

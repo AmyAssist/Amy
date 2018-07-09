@@ -21,14 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-// TODO move the class in a package in the natlang package
 /**
  * The definition of a grammar annotation.
  * 

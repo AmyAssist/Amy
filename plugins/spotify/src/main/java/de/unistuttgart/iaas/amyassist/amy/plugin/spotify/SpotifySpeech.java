@@ -27,8 +27,8 @@ import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 
