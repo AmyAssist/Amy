@@ -4,7 +4,14 @@ jdk:
 #  - openjdk8
 jobs:
   include:
-    - stage: test
+    - stage: test and code quality
+      script:
+      - mvn clean test jacoco:report sonar:sonar
+      - bash <(curl -s https://codecov.io/bash)
+      addons:
+        sonarcloud:
+          organization: "amyassist"
+          token: $SONAR_TOKEN
     - stage: deploy
       script: ./scripts/deployGH-Pages.sh
       deploy:
@@ -14,18 +21,8 @@ jobs:
         local_dir: gh-pages/
         on:
           branch: dev
-    - stage: code quality
-      script:
-      - mvn clean test jacoco:report
-      - bash <(curl -s https://codecov.io/bash)
-    - script: mvn clean test jacoco:report sonar:sonar
-      addons:
-        sonarcloud:
-          organization: "amyassist"
-          token: $SONAR_TOKEN
 stages:
-  - test
-  - code quality
+  - test and code quality
   - name: deploy
     if: branch = dev
 notifications:
