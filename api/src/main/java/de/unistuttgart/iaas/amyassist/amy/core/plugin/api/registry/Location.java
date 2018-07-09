@@ -21,39 +21,45 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.example.api;
+package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
 
 /**
- * The api provided by the HelloWorldService
- * 
- * @author Leon Kiefer
+ * Location object interface
+ * @author Benno Krauß
  */
-public interface HelloWorldService {
+public interface Location {
 
-	/**
-	 * The method that does all the logic.
-	 * 
-	 * @return the response
-	 */
-	String helloWorld();
+    int getId();
 
-	String helloWorldXTimes(int times);
+    String getZipCode();
 
-	/**
-	 * Demonstrate the registry's functionality
-	 * @return human-readable text
-	 */
-	String demonstrateContactRegistry();
+    void setZipCode(String zipCode);
 
-	/**
-	 * Test the registry for correctness
-	 * @return human-readable text
-	 */
-	String testContactRegistry();
+    String getCity();
 
-	/**
-	 * Test the location registry
-	 * @return
-	 */
-    String testLocationRegistry();
+    void setCity(String city);
+
+    String getStreet();
+
+    void setStreet(String street);
+
+    int getHouseNumber();
+
+    void setHouseNumber(int houseNumber);
+
+    double getLongitude();
+
+    void setLongitude(double longitude);
+
+    double getLatitude();
+
+    void setLatitude(double latitude);
+
+    boolean isHome();
+
+    void setHome(boolean home);
+
+    boolean isWork();
+
+    void setWork(boolean work);
 }
