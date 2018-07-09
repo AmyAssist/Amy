@@ -29,6 +29,7 @@ import static org.mockito.Mockito.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Calendar;
 import java.util.Properties;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -255,6 +256,9 @@ class SpotifyAPICallsTest {
 		doReturn(CLIENT_SECRET).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
 		doReturn(REFRESH_TOKEN).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY);
 		this.storage.put(SpotifyAPICalls.SPOTIFY_ACCESSTOKEN, ACCESS_TOKEN);
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.MINUTE, 20);
+		this.storage.put(SpotifyAPICalls.SPOTIFY_EXPIRE_TIME_TOKEN, String.valueOf(calendar.getTimeInMillis()));
 		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
 		assertThat(spotifyApi.getClientId(), equalTo(CLIENT_ID));
 		assertThat(spotifyApi.getClientSecret(), equalTo(CLIENT_SECRET));

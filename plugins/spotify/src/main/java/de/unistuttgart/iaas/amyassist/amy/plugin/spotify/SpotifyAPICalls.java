@@ -36,7 +36,6 @@ import com.neovisionaries.i18n.CountryCode;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import com.wrapper.spotify.exceptions.detailed.UnauthorizedException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
@@ -64,7 +63,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 
 /**
  * 
@@ -83,7 +81,7 @@ public class SpotifyAPICalls {
 	 * id from the current device
 	 */
 	/**
-	 * Rules for the spotify user authentication e.g. access to the playcontrol
+	 * Rules for the spotify user authentication e.g. access to the playercontrol
 	 */
 	private static final String SPOTIFY_RULES = "user-modify-playback-state,user-read-playback-state,"
 			.concat("playlist-read-private");
@@ -96,6 +94,7 @@ public class SpotifyAPICalls {
 	public static final String SPOTIFY_ACCESSTOKEN = "spotify_Accsesstoken";
 	public static final int TOKEN_EXPIRE_TIME_OFFSET = 120;
 	public static final String SPOTIFY_ERROR_TAG = "Spotify Exception:";
+	public static final String SPOTIFY_EXPIRE_TIME_TOKEN = "Spotify_Expire_Time_Token";
 
 	@Reference
 	private Properties configLoader;
@@ -105,9 +104,6 @@ public class SpotifyAPICalls {
 
 	@Reference
 	private IStorage storage;
-
-	@Reference
-	private TaskSchedulerAPI taskScheduler;
 
 	/**
 	 * init the api calls
@@ -129,7 +125,11 @@ public class SpotifyAPICalls {
 	public SpotifyApi getSpotifyApi() {
 		SpotifyApi spotifyApi = getSpotifyApiWithoutAcToken();
 		if (spotifyApi != null && spotifyApi.getRefreshToken() != null) {
-			if (this.storage.has(SPOTIFY_ACCESSTOKEN) && this.storage.get(SPOTIFY_ACCESSTOKEN) != null) {
+			if (this.storage.has(SPOTIFY_ACCESSTOKEN) && this.storage.get(SPOTIFY_ACCESSTOKEN) != null
+					&& this.storage.has(SPOTIFY_EXPIRE_TIME_TOKEN)
+					&& this.storage.get(SPOTIFY_EXPIRE_TIME_TOKEN) != null
+					&& Long.parseLong(this.storage.get(SPOTIFY_EXPIRE_TIME_TOKEN)) > Calendar.getInstance()
+							.getTimeInMillis()) {
 				spotifyApi.setAccessToken(this.storage.get(SPOTIFY_ACCESSTOKEN));
 			} else {
 				String accessToken = createAccessToken(spotifyApi);
@@ -177,25 +177,11 @@ public class SpotifyAPICalls {
 		if (authCredentials != null) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.SECOND, authCredentials.getExpiresIn().intValue() - TOKEN_EXPIRE_TIME_OFFSET);
-			this.taskScheduler.schedule(refreshAccessToken(), calendar.getTime());
+			this.storage.put(SPOTIFY_EXPIRE_TIME_TOKEN, String.valueOf(calendar.getTimeInMillis()));
 			this.storage.put(SPOTIFY_ACCESSTOKEN, authCredentials.getAccessToken());
 			return authCredentials.getAccessToken();
 		}
 		return null;
-	}
-
-	/**
-	 * refresh the access token when it expire
-	 * 
-	 * @return a runnable to start with the task scheduler
-	 */
-	public Runnable refreshAccessToken() {
-		return () -> {
-			if (this.storage.has(SPOTIFY_ACCESSTOKEN)) {
-				this.storage.delete(SPOTIFY_ACCESSTOKEN);
-				getSpotifyApi();
-			}
-		};
 	}
 
 	/**
@@ -538,18 +524,6 @@ public class SpotifyAPICalls {
 	private <T> T exceptionHandlingWithResults(SpotifyCallLambda<T> f) {
 		try {
 			return f.execute();
-		} catch (UnauthorizedException e) {
-			SpotifyApi spotifyApi = getSpotifyApiWithoutAcToken();
-			if (spotifyApi != null) {
-				this.storage.put(SPOTIFY_ACCESSTOKEN, createAccessToken(spotifyApi));
-				try {
-					return f.execute();
-				} catch (SpotifyWebApiException | IOException e1) {
-					this.logger.warn(SPOTIFY_ERROR_TAG, e1);
-				}
-			}
-			this.logger.warn(SPOTIFY_ERROR_TAG, e);
-			return null;
 		} catch (SpotifyWebApiException | IOException e) {
 			this.logger.warn(SPOTIFY_ERROR_TAG, e);
 			return null;
@@ -567,19 +541,6 @@ public class SpotifyAPICalls {
 		try {
 			request.execute();
 			return true;
-		} catch (UnauthorizedException e) {
-			SpotifyApi spotifyApi = getSpotifyApiWithoutAcToken();
-			if (spotifyApi != null) {
-				this.storage.put(SPOTIFY_ACCESSTOKEN, createAccessToken(spotifyApi));
-				try {
-					request.execute();
-					return true;
-				} catch (SpotifyWebApiException | IOException e1) {
-					this.logger.warn(SPOTIFY_ERROR_TAG, e1);
-				}
-			}
-			this.logger.warn(SPOTIFY_ERROR_TAG, e);
-			return false;
 		} catch (SpotifyWebApiException | IOException e) {
 			this.logger.warn(SPOTIFY_ERROR_TAG, e);
 			return false;
