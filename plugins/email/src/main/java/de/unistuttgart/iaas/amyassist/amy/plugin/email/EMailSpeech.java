@@ -35,9 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
  * 
  * @author Patrick Singer, Felix Burk
  */
-
-@Service(EMailSpeech.class)
-@SpeechCommand({ "email", "mail" })
+@SpeechCommand
 public class EMailSpeech {
 
 	@Reference

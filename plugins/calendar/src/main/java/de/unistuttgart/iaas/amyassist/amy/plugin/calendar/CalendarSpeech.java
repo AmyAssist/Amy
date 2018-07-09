@@ -32,7 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
  * 
  * @author Patrick Gebhardt, Florian Bauer
  */
-@SpeechCommand("calendar")
+@SpeechCommand
 public class CalendarSpeech {
 
 	@Reference

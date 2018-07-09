@@ -26,7 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
@@ -37,8 +36,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
  * 
  * @author Lars Buttgereit
  */
-@Service(SpotifySpeech.class)
-@SpeechCommand({ "music", "spotify" })
+@SpeechCommand
 public class SpotifySpeech {
 
 	private static final String ERROR_MESSAGE = "An error occurred";
@@ -77,11 +75,11 @@ public class SpotifySpeech {
 	 * 
 	 * @return
 	 */
-	@Grammar("set device #")
+	@Grammar("spotify set device #")
 	public String setDevice(String... params) {
 		if (2 < params.length) {
 			try {
-				return this.playerLogic.setDevice(Integer.parseInt(params[2]));
+				return this.playerLogic.setDevice(Integer.parseInt(params[3]));
 			} catch (NumberFormatException e) {
 				return "Input please as Integer";
 			}
@@ -94,7 +92,7 @@ public class SpotifySpeech {
 	 * 
 	 * @return
 	 */
-	@Grammar("play")
+	@Grammar("[music|spotify] play [music]")
 	public String playASong(String... params) {
 		return (this.playerLogic.play().toString());
 	}

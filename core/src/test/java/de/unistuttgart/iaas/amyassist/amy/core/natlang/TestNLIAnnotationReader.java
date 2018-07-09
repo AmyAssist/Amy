@@ -43,27 +43,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 class TestNLIAnnotationReader {
 
 	@Test
-	void testSpeechKeyword() {
-		String[] speechKeyword = NLIAnnotationReader.getSpeechKeywords(Plugin.class);
-
-		assertThat(speechKeyword, is(arrayWithSize(2)));
-		assertThat(speechKeyword, is(arrayContainingInAnyOrder("test", "unittest")));
-	}
-
-	@Test
 	public void testGrammar() {
 		Set<Method> grammars = NLIAnnotationReader.getValidNLIMethods(Plugin.class);
 
 		assertThat(grammars, hasSize(2));
 	}
 
-	@Test
-	public void testNoSpeechKeyword() {
-		assertThrows(RuntimeException.class,
-				() -> NLIAnnotationReader.getSpeechKeywords(TestNLIAnnotationReader.class));
-	}
-
-	@SpeechCommand({ "test", "unittest" })
+	@SpeechCommand
 	class Plugin {
 		@Grammar("count")
 		public String count(String... s) {
@@ -81,7 +67,7 @@ class TestNLIAnnotationReader {
 		assertThrows(IllegalArgumentException.class, () -> NLIAnnotationReader.getValidNLIMethods(Broken.class));
 	}
 
-	@SpeechCommand({})
+	@SpeechCommand
 	class Broken {
 		@Grammar("count")
 		public int count(int i) {
@@ -96,7 +82,7 @@ class TestNLIAnnotationReader {
 		assertThat(message, equalTo("The returntype of a method annotated with @Grammar should be String."));
 	}
 
-	@SpeechCommand({})
+	@SpeechCommand
 	class BrokenReturnType {
 		@Grammar("count")
 		public int count(String[] i) {

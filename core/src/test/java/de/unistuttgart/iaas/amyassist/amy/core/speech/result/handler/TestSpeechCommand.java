@@ -31,7 +31,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
  * 
  * @author Leon Kiefer
  */
-@SpeechCommand("testkeyword")
+@SpeechCommand
 public class TestSpeechCommand {
 
 	@Grammar("simple #")

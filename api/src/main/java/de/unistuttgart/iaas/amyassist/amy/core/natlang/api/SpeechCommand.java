@@ -27,6 +27,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 //TODO rename the annotation
 /**
  * The definition of a speech command annotation
@@ -37,9 +38,5 @@ import java.lang.annotation.Target;
 @Documented
 @Target(java.lang.annotation.ElementType.TYPE)
 public @interface SpeechCommand {
-	/**
-	 * @return the keyword of the speech command
-	 */
-	@Deprecated
-	String[] value();
+
 }

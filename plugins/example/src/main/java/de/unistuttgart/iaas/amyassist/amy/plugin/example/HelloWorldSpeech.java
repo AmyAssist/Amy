@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
@@ -34,8 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
  * 
  * @author Leon Kiefer, Tim Neumann
  */
-@Service
-@SpeechCommand("hello")
+@SpeechCommand
 public class HelloWorldSpeech {
 
 	/**

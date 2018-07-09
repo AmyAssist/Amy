@@ -30,7 +30,6 @@ import java.util.Set;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * This class is responsible to read the annotations of a given class
@@ -77,20 +76,5 @@ public class NLIAnnotationReader {
 		if (!method.getReturnType().equals(String.class)) {
 			throw new IllegalArgumentException("The returntype of a method annotated with @Grammar should be String.");
 		}
-	}
-
-	/**
-	 * Get's the annotated keywords of this class
-	 * 
-	 * @param cls
-	 *            The class of which to get the keyword
-	 * @return the keywords
-	 */
-	public static String[] getSpeechKeywords(Class<?> cls) {
-		SpeechCommand speechCommand = cls.getAnnotation(SpeechCommand.class);
-		if (speechCommand == null)
-			throw new IllegalArgumentException("The class " + cls.getName() + " have no SpeechCommand Annotation.");
-
-		return speechCommand.value();
 	}
 }

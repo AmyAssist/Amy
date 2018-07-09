@@ -33,7 +33,6 @@ import org.joda.time.ReadableInstant;
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
@@ -42,8 +41,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
  * 
  * @author Lars Buttgereit
  */
-@Service
-@SpeechCommand("navigate")
+@SpeechCommand
 public class NavigationSpeech {
 
 	private static final String LOCATIONS = "(home|work|mother)";

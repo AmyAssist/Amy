@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
@@ -33,8 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
  * 
  * @author Florian Bauer, Patrick Gebhardt
  */
-@Service
-@SpeechCommand({ "what is", "tell me" })
+@SpeechCommand
 public class SystemTimeSpeech {
 
 	@Reference
@@ -61,7 +59,7 @@ public class SystemTimeSpeech {
 	 * 
 	 * @return current time (hour minute) in a string, e.g. it is 10:30
 	 */
-	@Grammar("the time")
+	@Grammar("(what is|tell me) the time")
 	public String time(String[] s) {
 		return "it is " + this.logic.getHour() + ":" + this.logic.getMinute();
 	}
@@ -71,7 +69,7 @@ public class SystemTimeSpeech {
 	 * 
 	 * @return current date (day month year) in a string, e.g. it is the 20th of june
 	 */
-	@Grammar("the date")
+	@Grammar("(what is|tell me) the date")
 	public String date(String[] s) {
 		return "it is the " + ordinal(Integer.parseInt(this.logic.getDay())) + " of " + this.logic.getMonth();
 	}
@@ -81,7 +79,7 @@ public class SystemTimeSpeech {
 	 * 
 	 * @return current year in a string, e.g. it is 2018
 	 */
-	@Grammar("the year")
+	@Grammar("(what is|tell me) the year")
 	public String year(String[] s) {
 		return "it is " + this.logic.getYear();
 	}
