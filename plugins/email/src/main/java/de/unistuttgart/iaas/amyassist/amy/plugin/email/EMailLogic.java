@@ -144,7 +144,6 @@ public class EMailLogic {
 				this.logger.error("could not read message", e);
 			}
 		}
-		System.out.println("inbox null");
 		return false;
 	}
 
