@@ -23,8 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 import java.nio.file.Paths;
 import java.util.Properties;

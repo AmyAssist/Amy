@@ -23,11 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.persistence.Entity;
@@ -112,19 +114,19 @@ public class PluginManagerService implements PluginManager {
 		if (this.cmaHandler.getPluginPaths() != null) {
 			for (String pathS : this.cmaHandler.getPluginPaths()) {
 				Path path = this.projectDir.resolve(pathS);
-				this.pluginLoader.loadPlugin(path.toFile());
+				this.pluginLoader.loadPlugin(path);
 			}
 		} else {
 			this.logger.debug("projectDir: {}", this.projectDir);
 
-			if (!this.projectDir.toFile().exists()) {
+			if (!Files.exists(this.projectDir)) {
 				this.logger.error("Project directory does not exist.");
 				return;
 			}
 
-			File pluginDir = new File(this.projectDir.toFile(), this.config.getProperty(PROPERTY_PLUGIN_DIR));
+			Path pluginDir = this.projectDir.resolve(this.config.getProperty(PROPERTY_PLUGIN_DIR));
 
-			if (!pluginDir.exists()) {
+			if (!Files.exists(pluginDir)) {
 				this.logger.error(
 						"Plugin directory does not exist. Is the project path correct for your working directory?");
 				return;
@@ -138,8 +140,10 @@ public class PluginManagerService implements PluginManager {
 					}
 				}
 			} else if (mode.equals("docker")) {
-				for (File f : pluginDir.listFiles()) {
-					this.pluginLoader.loadPlugin(f);
+				try {
+					Files.list(pluginDir).forEach(p -> this.pluginLoader.loadPlugin(p));
+				} catch (IOException e) {
+					this.logger.error("Failed loading plugins", e);
 				}
 			} else {
 				this.logger.error("Unknown plugin mode: {}", mode);
@@ -153,25 +157,32 @@ public class PluginManagerService implements PluginManager {
 		this.loaded = true;
 	}
 
-	private boolean tryLoadPlugin(File pluginDir, String pluginID) {
+	private boolean tryLoadPlugin(Path pluginDir, String pluginID) {
 		this.logger.debug("try load plugin {}", pluginID);
-		File p = new File(pluginDir, pluginID);
+		Path p = pluginDir.resolve(pluginID);
 
-		if (!p.exists()) {
-			this.logger.warn("The plugin {} does not exist in the plugin directory.", p.getName());
+		if (!Files.exists(p)) {
+			this.logger.warn("The plugin {} does not exist in the plugin directory.", p);
 			return false;
 		}
-		File target = new File(p, "target");
-		if (!target.exists()) {
-			this.logger.warn("Plugin {} has no target directory. Did you run mvn install?", p.getName());
+		Path target = p.resolve("target");
+		if (!Files.exists(target)) {
+			this.logger.warn("Plugin {} has no target directory. Did you run mvn install?", p);
 			return false;
 		}
 
-		for (File child : target.listFiles()) {
-			if (child.getName().endsWith("with-dependencies.jar"))
-				return this.pluginLoader.loadPlugin(child);
+		try {
+			Optional<Path> jar = Files.list(target)
+					.filter(j -> j.getFileName().toString().endsWith("with-dependencies.jar")).findFirst();
+			if (!jar.isPresent()) {
+				this.logger.warn("The jar with dependencies is missing for plugin {}", pluginID);
+				return false;
+			}
+
+			return this.pluginLoader.loadPlugin(jar.get());
+		} catch (IOException e) {
+			this.logger.error("Failed to load plugin", e);
 		}
-		this.logger.warn("The jar with dependencies is missing for plugin {}", pluginID);
 		return false;
 	}
 

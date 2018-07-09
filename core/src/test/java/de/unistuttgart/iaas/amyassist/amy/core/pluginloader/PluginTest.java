@@ -23,13 +23,12 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -39,7 +38,6 @@ import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -67,20 +65,32 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setFile(File)} and
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getFile()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setPath(Path)} and
+	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getPath()}.
 	 */
 	@ParameterizedTest
-	@MethodSource("files")
-	void testFile(File file) {
+	@MethodSource("paths")
+	void testPath(Path path) {
 		Plugin p = new Plugin();
 
-		p.setFile(file);
-		assertThat("Wrong file", p.getFile(), is(file));
+		p.setPath(path);
+		assertThat("Wrong path", p.getPath(), is(path));
 	}
 
-	static Stream<File> files() {
-		return Stream.of("/", "/test", "C://test", "test").map(path -> new File(path));
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getFile()}
+	 */
+	@ParameterizedTest
+	@MethodSource("paths")
+	void testFile(Path path) {
+		Plugin p = new Plugin();
+
+		p.setPath(path);
+		assertThat("Wrong file", p.getFile(), is(path.toFile()));
+	}
+
+	static Stream<Path> paths() {
+		return Stream.of("/", "/test", "C://test", "test").map(path -> Paths.get(path));
 	}
 
 	/**

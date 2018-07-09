@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes.Name;
@@ -45,9 +46,9 @@ public class Plugin implements IPlugin {
 	private final Logger logger = LoggerFactory.getLogger(Plugin.class);
 
 	/**
-	 * The file of the jar of the plugin.
+	 * The path to the jar of the plugin.
 	 */
-	private File file;
+	private Path path;
 
 	/**
 	 * The class loader that loads this jar.
@@ -65,15 +66,24 @@ public class Plugin implements IPlugin {
 	private List<Class<?>> classes = new ArrayList<>();
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getFile()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getFile()
 	 */
 	@Override
+	@Deprecated
 	public File getFile() {
-		return this.file;
+		return this.path.toFile();
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getClassLoader()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getPath()
+	 */
+	@Override
+	public Path getPath() {
+		return this.path;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getClassLoader()
 	 */
 	@Override
 	public ClassLoader getClassLoader() {
@@ -81,20 +91,20 @@ public class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getUniqueName()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getUniqueName()
 	 */
 	@Override
 	public String getUniqueName() {
 		if (this.manifest == null) {
 			this.logger.error("Plugin manifest is null. Falling back to file name for unique name!: {}",
-					this.file.getName());
-			return this.file.getName();
+					this.path.toString());
+			return this.path.toString();
 		}
 		return this.manifest.getMainAttributes().getValue(UNIQUE_NAME_KEY);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getDisplayName()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {
@@ -102,7 +112,7 @@ public class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getVersion()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getVersion()
 	 */
 	@Override
 	public String getVersion() {
@@ -114,7 +124,7 @@ public class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getDescription()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getDescription()
 	 */
 	@Override
 	public String getDescription() {
@@ -126,7 +136,7 @@ public class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getClasses()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getClasses()
 	 */
 	@Override
 	public List<Class<?>> getClasses() {
@@ -134,7 +144,7 @@ public class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.IPlugin#getManifest()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getManifest()
 	 */
 	@Override
 	public Manifest getManifest() {
@@ -142,13 +152,13 @@ public class Plugin implements IPlugin {
 	}
 
 	/**
-	 * Set's {@link #file file}
+	 * Set's {@link #path path}
 	 * 
-	 * @param file
-	 *            file
+	 * @param path
+	 *            path
 	 */
-	protected void setFile(File file) {
-		this.file = file;
+	protected void setPath(Path path) {
+		this.path = path;
 	}
 
 	/**

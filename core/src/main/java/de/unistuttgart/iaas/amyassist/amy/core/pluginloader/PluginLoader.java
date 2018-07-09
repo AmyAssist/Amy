@@ -23,10 +23,11 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -60,24 +61,24 @@ public class PluginLoader {
 	/**
 	 * Loads the plugin found at the uri
 	 * 
-	 * @param file
+	 * @param path
 	 *            The location of the plugin
 	 * @return Whether loading was successful
 	 * @throws IllegalArgumentException
 	 *             When the given location is not a valid plugin file
 	 */
-	public boolean loadPlugin(File file) {
-		this.logger.debug("try to load plugin from {}", file.getAbsolutePath());
+	public boolean loadPlugin(Path path) {
+		this.logger.debug("try to load plugin from {}", path);
 
-		if (!file.exists() || file.isDirectory())
+		if (!Files.exists(path) || Files.isDirectory(path))
 			throw new IllegalArgumentException("Invalid file");
 
 		Plugin plugin = new Plugin();
-		plugin.setFile(file);
+		plugin.setPath(path);
 
-		try (JarFile jar = new JarFile(file)) {
+		try (JarFile jar = new JarFile(path.toFile())) {
 			Enumeration<JarEntry> jarEntries = jar.entries();
-			URL[] urls = { file.toURI().toURL() };
+			URL[] urls = { path.toUri().toURL() };
 
 			// We need that classLoader to stay open.
 			@SuppressWarnings("resource")
@@ -85,7 +86,7 @@ public class PluginLoader {
 
 			Manifest mf = jar.getManifest();
 			if (mf == null) {
-				this.logger.error("Can't find manifest for plugin {}", file.getAbsolutePath());
+				this.logger.error("Can't find manifest for plugin {}", path);
 			}
 
 			ArrayList<Class<?>> classes = new ArrayList<>();
@@ -108,7 +109,7 @@ public class PluginLoader {
 			plugin.setClasses(classes);
 
 		} catch (IOException | ClassNotFoundException e) {
-			this.logger.error("Exception while loading plugin {}", file.getAbsolutePath(), e);
+			this.logger.error("Exception while loading plugin {}", path, e);
 			return false;
 		}
 		this.addPlugin(plugin);
