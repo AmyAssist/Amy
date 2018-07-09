@@ -86,8 +86,7 @@ public class LocationRegistryImpl extends AbstractRegistry<Location> implements 
         List<LocationImpl> homes = typedQuery.getResultList();
         if (!homes.isEmpty()) {
             return homes.get(0);
-        }
-        else {
+        } else {
             return null;
         }
     }

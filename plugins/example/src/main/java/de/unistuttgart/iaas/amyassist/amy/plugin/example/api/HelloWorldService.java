@@ -53,7 +53,7 @@ public interface HelloWorldService {
 
 	/**
 	 * Test the location registry
-	 * @return
+	 * @return human-readable text
 	 */
     String testLocationRegistry();
 }
