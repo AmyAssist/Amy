@@ -179,6 +179,8 @@ public class HelloWorldImpl implements HelloWorldService {
 			work.setLatitude(48.745172);
 			work.setWork(true);
 
+			assertTrue(work.getAddressString().equals("Universitätsstraße 38, 70563 Stuttgart"));
+
 			locationRegistry.save(work);
 
 			assertTrue(locationRegistry.getById(work.getId()).equals(work));

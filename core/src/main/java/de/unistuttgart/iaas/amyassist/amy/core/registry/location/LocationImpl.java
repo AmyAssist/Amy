@@ -119,6 +119,11 @@ public class LocationImpl implements Location {
     }
 
     @Override
+    public String getAddressString() {
+        return String.format("%s %d, %s %s", getStreet(), getHouseNumber(), getZipCode(), getCity());
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
