@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +28,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
  * 
  * @author Leon Kiefer
  */
-public class Service7 implements Service7API{
+public class Service7 implements Service7API {
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.Service7API#foo()

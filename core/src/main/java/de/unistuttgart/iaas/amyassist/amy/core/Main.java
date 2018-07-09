@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +25,11 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.util.logging.LogManager;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 
 /**
  * The main entry point of the application
- * 
+ *
  * @author Tim Neumann, Leon Kiefer
  */
 public class Main {
@@ -46,28 +44,12 @@ public class Main {
 
 	/**
 	 * The main entry point of the program
-	 * 
+	 *
 	 * @param args
-	 *            [not used] The command line arguments
+	 *            The command line arguments. Will be passed to the core.
 	 */
 	public static void main(String[] args) {
-		setLogLevel(org.slf4j.Logger.ROOT_LOGGER_NAME, Level.INFO);
-		setLogLevel("marytts", Level.WARN);
-		setLogLevel("default.config.edu.cmu.sphinx", Level.WARN);
 		Core core = new Core();
-		core.run();
+		core.start(args);
 	}
-
-	/**
-	 * Set the log level for all Logger of a given package
-	 * 
-	 * @param name
-	 *            the name of the package
-	 * @param level
-	 *            the log level
-	 */
-	public static void setLogLevel(String name, Level level) {
-		((Logger) LoggerFactory.getLogger(name)).setLevel(level);
-	}
-
 }

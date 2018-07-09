@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +37,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  */
 @Path("systemtime")
 public class SystemTimeResource {
-	
+
 	@Reference
 	private SystemTimeLogic logic;
-	
+
 	/**
 	 * get the current system time
 	 * 
@@ -50,7 +52,7 @@ public class SystemTimeResource {
 	public String getTime() {
 		return this.logic.getTime();
 	}
-	
+
 	/**
 	 * get the current system date
 	 * 

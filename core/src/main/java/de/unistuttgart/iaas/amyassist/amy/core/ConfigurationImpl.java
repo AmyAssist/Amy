@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +27,7 @@ import java.util.Set;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 
 /**
@@ -53,9 +55,20 @@ public class ConfigurationImpl implements Configuration {
 	 */
 	@Override
 	public String getPluginVersion(String pluginName) {
-		Plugin plugin = this.loader.getPlugin(pluginName);
+		IPlugin plugin = this.loader.getPlugin(pluginName);
 		if (plugin != null)
 			return plugin.getVersion();
+		return null;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.Configuration#getPluginDescription(java.lang.String)
+	 */
+	@Override
+	public String getPluginDescription(String pluginName) {
+		IPlugin plugin = this.loader.getPlugin(pluginName);
+		if (plugin != null)
+			return plugin.getDescription();
 		return null;
 	}
 

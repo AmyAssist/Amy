@@ -5,10 +5,17 @@
 	<artifactId>amy-api</artifactId>
 	<name>Amy api</name>
 	<description>The Amy api interfaces</description>
-        <parent>
-                <groupId>de.unistuttgart.iaas.amyassist</groupId>
-                <artifactId>amy</artifactId>
-                <version>0.2.0</version>
-                <relativePath>../pom.xml</relativePath>
-        </parent>
+	<parent>
+		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<artifactId>amy</artifactId>
+		<version>0.3.0</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<dependencies>
+		<!-- JPA -->
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>javax.persistence-api</artifactId>
+		</dependency>
+	</dependencies>
 </project>

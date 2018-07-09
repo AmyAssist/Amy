@@ -12,3 +12,13 @@ This is a research project from students. No functionality is tested. There may 
 For license information see [License-Notice](notice.md).
 
 Maven: de.unistuttgart.iaas.amyassist.amy
+
+## Development
+
+Documentation is in the [Wiki](https://github.com/AmyAssist/Amy/wiki) of GitHub.
+
+Direct links:
+- [How To Test](https://github.com/AmyAssist/Amy/wiki/How-to-Test)
+- [Logger](https://github.com/AmyAssist/Amy/wiki/Logger)
+- [How to create a plugin](https://github.com/AmyAssist/Amy/wiki/How-to-create-a-plugin)
+- [Dependency Injection](https://github.com/AmyAssist/Amy/wiki/Dependency-Injection-(DI))(uncomplete)

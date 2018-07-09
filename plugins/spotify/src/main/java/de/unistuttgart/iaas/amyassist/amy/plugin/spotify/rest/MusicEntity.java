@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,32 +33,70 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class MusicEntity {
 
+	/**
+	 * constructor for a MusicEntity
+	 */
+	public MusicEntity() {
+
+	}
+
+	/**
+	 * constructor for a MusicEntity with set values
+	 * 
+	 * @param title
+	 *            title of the music
+	 * @param artist
+	 *            artist of the music
+	 */
 	public MusicEntity(String title, String artist) {
 		this.title = title;
 		this.artist = artist;
 	}
-	
-	public MusicEntity()
-	{
-		
-	}
-	
+
 	/**
 	 * the artist of the music
 	 */
-	public String artist;
+	private String artist;
 	
 	/**
 	 * the title of the music
 	 */
-	public String title;
+	private String title;
 	
 	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		
 		return this.title + " " + this.artist;
 	}
+
+	/**
+	 * @return artist
+	 */
+	public String getArtist() {
+		return this.artist;
+	}
+
+	/**
+	 * @param artist to set
+	 */
+	public void setArtist(String artist) {
+		this.artist = artist;
+	}
+
+	/**
+	 * @return title
+	 */
+	public String getTitle() {
+		return this.title;
+	}
+
+	/**
+	 * @param title to set
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
 }

@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * generates a valid *.gram file, keywords get replaced by pre defined rules
- * JSGF specification: https://www.w3.org/TR/jsgf/
+ * generates a valid *.gram file, keywords get replaced by pre defined rules JSGF specification:
+ * https://www.w3.org/TR/jsgf/
  *
  * @author Felix Burk
  */
@@ -45,9 +47,8 @@ public class GrammarParser {
 	/**
 	 * initializes the parser
 	 *
-	 * possible expansions: more custom keywords, weights may be supported,
-	 * <NULL> and <VOID> support, Unary Operators (kleene star, plus operator
-	 * and tags)
+	 * possible expansions: more custom keywords, weights may be supported, <NULL> and <VOID> support, Unary Operators
+	 * (kleene star, plus operator and tags)
 	 *
 	 * @param name
 	 *            The name of the grammar
@@ -86,7 +87,7 @@ public class GrammarParser {
 
 		// pre defined rules
 		// TODO add them to external file via import rule in JSGF
-		grammar += "<digit> = (one | two | three | four | five | six | seven |"
+		grammar += "<digit> = (zero | one | two | three | four | five | six | seven |"
 				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
 				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
 				+ "fifty | sixty  | seventy | eighty | ninety | and )+; \n";
@@ -118,10 +119,9 @@ public class GrammarParser {
 			}
 			rule = rule.substring(0, rule.length() - 1);
 			rule += ") " + this.parseKeyword(grammar) + "; \n";
-		}else {
+		} else {
 			rule += this.parseKeyword(keywords[0]) + " " + this.parseKeyword(grammar) + "; \n";
 		}
-
 
 		this.addedRules.add(rule);
 	}

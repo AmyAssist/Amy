@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,4 +44,13 @@ public interface Configuration {
 	 * @return the version of the plugin
 	 */
 	String getPluginVersion(String pluginName);
+
+	/**
+	 * Get the description of a installed plugin
+	 * 
+	 * @param pluginName
+	 *            the name of the plugin
+	 * @return the description of the plugin
+	 */
+	String getPluginDescription(String pluginName);
 }

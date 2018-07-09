@@ -5,7 +5,7 @@
 	<packaging>pom</packaging>
 	<groupId>de.unistuttgart.iaas.amyassist</groupId>
 	<artifactId>amy</artifactId>
-	<version>0.2.0</version>
+	<version>0.3.0</version>
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
 	<properties>
@@ -16,12 +16,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Amy versions to depend on -->
-		<amy.di.api.version>0.2.0</amy.di.api.version>
-		<amy.di.version>0.2.0</amy.di.version>
-		<amy.api.version>0.2.0</amy.api.version>
-		<amy.http-server.version>0.2.0</amy.http-server.version>
-		<amy.testing-framework.version>0.2.0</amy.testing-framework.version>
-		<amy.core.version>0.2.0</amy.core.version>
+		<amy.di.api.version>0.3.0</amy.di.api.version>
+		<amy.di.version>0.3.0</amy.di.version>
+		<amy.api.version>0.3.0</amy.api.version>
+		<amy.http-server.version>0.3.0</amy.http-server.version>
+		<amy.testing-framework.version>0.3.0</amy.testing-framework.version>
+		<amy.core.version>0.3.0</amy.core.version>
 
 		<!-- External dependency versions. Only project wide or core dependencies 
 			here -->
@@ -42,11 +42,16 @@
 		<module>http-server</module>
 		<module>testing-framework</module>
 		<module>core</module>
+		<module>plugin-manager-api</module>
+		<module>rest-resources</module>
 		<module>plugins/alarmclock</module>
+		<module>plugins/calendar</module>
+		<module>plugins/email</module>
 		<module>plugins/example</module>
 		<module>plugins/spotify</module>
 		<module>plugins/systemtime</module>
 		<module>plugins/weather</module>
+		<module>plugins/navigation</module>
 	</modules>
 	<licenses>
 		<license>
@@ -103,6 +108,9 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.19.1</version>
 				<configuration>
+					<classpathDependencyExcludes>
+						<classpathDependencyExcludes>ch.qos.logback:logback-classic</classpathDependencyExcludes>
+					</classpathDependencyExcludes>
 					<includes>
 						<include>**/Test*.java</include>
 						<include>**/*Test.java</include>
@@ -175,6 +183,12 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-params</artifactId>
+				<version>${junit.jupiter.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-all</artifactId>
 				<version>${hamcrest.version}</version>
@@ -185,6 +199,21 @@
 				<artifactId>mockito-junit-jupiter</artifactId>
 				<version>${mockito.version}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.google.code.findbugs</groupId>
+				<artifactId>jsr305</artifactId>
+				<version>3.0.2</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>25.1-jre</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.persistence</groupId>
+				<artifactId>javax.persistence-api</artifactId>
+				<version>2.2</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

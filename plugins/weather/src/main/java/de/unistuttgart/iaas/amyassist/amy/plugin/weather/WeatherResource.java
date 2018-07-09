@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +27,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
@@ -37,17 +37,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  */
 @Path("weather")
 public class WeatherResource {
-	
+
 	@Reference
 	private WeatherDarkSkyAPI weatherLogic;
-	
-//	@GET
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public WeatherReportDay getWeather() {
-//		return weatherEntity;
-//
-//	}
-	
+
 	/**
 	 * get the weather forecast for today
 	 * 
@@ -58,8 +51,8 @@ public class WeatherResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public WeatherReportDay getWeatherToday() {
 		return this.weatherLogic.getReportToday();
-		
 	}
+
 	/**
 	 * get the weather forecast for tomorrow
 	 * 
@@ -71,7 +64,7 @@ public class WeatherResource {
 	public WeatherReportDay getWeatherTomorrow() {
 		return this.weatherLogic.getReportTomorrow();
 	}
-	
+
 	/**
 	 * get the weather forecast for the week
 	 * 

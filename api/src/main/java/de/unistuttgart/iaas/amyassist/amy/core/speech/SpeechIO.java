@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,17 +24,15 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 /**
- * A interface that defines an Speech Input Output component. The component is
- * executed in its own Thread and must use the SpeechInputHandler to pass the
- * user speech input to the application.
+ * A interface that defines an Speech Input Output component. The component is executed in its own Thread and must use
+ * the SpeechInputHandler to pass the user speech input to the application.
  * 
  * @author Leon Kiefer
  */
 public interface SpeechIO extends Runnable {
 
 	/**
-	 * Setter for the SpeechInputHandler. The SpeechInputHandler is used to
-	 * process the user input.
+	 * Setter for the SpeechInputHandler. The SpeechInputHandler is used to process the user input.
 	 * 
 	 * @param handler
 	 *            the SpeechInputHandler to use

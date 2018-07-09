@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +72,7 @@ class SystemTimeLogicTest {
 		Date time = this.calendar.getTime();
 		Mockito.doReturn(time).when(this.systemTimeLogic).getTimeStamp();
 
-		assertThat(this.systemTimeLogic.getMonth(), equalTo("04"));
+		assertThat(this.systemTimeLogic.getMonth(), equalTo("April"));
 	}
 
 	@Test

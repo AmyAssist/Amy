@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +36,19 @@ public interface HelloWorldService {
 	 * @return the response
 	 */
 	String helloWorld();
-	
+
 	String helloWorldXTimes(int times);
+
+	/**
+	 * Demonstrate the registry's functionality
+	 * @return human-readable text
+	 */
+	String demonstrateContactRegistry();
+
+	/**
+	 * Test the registry for correctness
+	 * @return human-readable text
+	 */
+	String testContactRegistry();
 
 }

@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
 
 /**
  * this class handle the speech commands from the spotify plugin
@@ -37,33 +41,39 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 @SpeechCommand({ "music", "spotify" })
 public class SpotifySpeech {
 
-	private final int SEARCH_LIMIT = 4;
+	private static final String ERROR_MESSAGE = "An error occurred";
+	private static final int LIMIT_FOR_SEARCH = 5;
 
 	@Reference
-	PlayerLogic playerLogic;
+	private PlayerLogic playerLogic;
+
+	@Reference
+	private StringGenerator stringGenerator;
 
 	/**
 	 * get a String of all name of all devices
-	 * @param params not used here
-	 * @return 
+	 * 
+	 * @param params
+	 *            not used here
+	 * @return
 	 */
 	@Grammar("get devices")
 	public String getDevices(String... params) {
-		ArrayList<String> devices = this.playerLogic.getDevices();
+		List<DeviceEntity> devices = this.playerLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
-			output = output + i + ". " + devices.get(i);
+			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i).getName().concat("\n"));
 		}
 		if (output.equals("")) {
-			return "no deivce found";
+			return "no device found";
 		}
 		return output;
 	}
 
 	/**
-	 * set the device in the player logic # is a number between 0 and theoretically
-	 * infinite
-	 * @param params 
+	 * set the device in the player logic # is a number between 0 and theoretically infinite
+	 * 
+	 * @param params
 	 * 
 	 * @return
 	 */
@@ -76,9 +86,8 @@ public class SpotifySpeech {
 				return "Input please as Integer";
 			}
 		}
-		return "Wrong request";
+		return ERROR_MESSAGE;
 	}
-
 
 	/**
 	 * play a featured playlist
@@ -86,40 +95,52 @@ public class SpotifySpeech {
 	 * @return
 	 */
 	@Grammar("play")
+	public String playASong(String... params) {
+		return (this.playerLogic.play().toString());
+	}
+
+	@Grammar("play featured playlist #")
 	public String playFeaturedPlaylist(String... params) {
-		return this.playerLogic.play();
+		return this.stringGenerator.generateSearchOutputString(
+				this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.FEATURED_PLAYLISTS));
+	}
+
+	@Grammar("play own playlist #")
+	public String play(String... params) {
+		return this.stringGenerator.generateSearchOutputString(
+				this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.USER_PLAYLISTS));
 	}
 
 	@Grammar("resume")
 	public String resume(String... params) {
-		if(this.playerLogic.resume()) {
-		return "resume";
+		if (this.playerLogic.resume()) {
+			return "resume";
 		}
-		return "An error occurred";
+		return ERROR_MESSAGE;
 	}
 
 	@Grammar("pause")
 	public String pause(String... params) {
-		if(this.playerLogic.pausePlayback()) {
-		return "pause";
+		if (this.playerLogic.pause()) {
+			return "pause";
 		}
-		return "An error occurred";
+		return ERROR_MESSAGE;
 	}
 
 	@Grammar("skip")
 	public String skip(String... params) {
-		if(this.playerLogic.skip()) {
-		return "skip";
+		if (this.playerLogic.skip()) {
+			return "skip";
 		}
-		return "An error occurred";
+		return ERROR_MESSAGE;
 	}
 
 	@Grammar("back")
 	public String back(String... params) {
 		if (this.playerLogic.back()) {
-		return "back";
+			return "back";
 		}
-		return "An error occurred";
+		return ERROR_MESSAGE;
 	}
 
 	@Grammar("volume (mute|max|up|down)")
@@ -129,8 +150,34 @@ public class SpotifySpeech {
 		}
 		return "not enough arguments";
 	}
+
 	@Grammar("get currently played song")
 	public String getCurrentlyPlayed(String... params) {
-		return "track: " + playerLogic.getCurrentSong().get("name") + " by " + playerLogic.getCurrentSong().get("artist");
+		return "track: " + playerLogic.getCurrentSong().get(SpotifyConstants.ITEM_NAME) + " by "
+				+ playerLogic.getCurrentSong().get(SpotifyConstants.ARTIST_NAME);
 	}
+
+	@Grammar("get own playlists")
+	public String getUserplaylists(String... params) {
+		String output = "";
+		for (PlaylistEntity playlist : this.playerLogic.getOwnPlaylists(LIMIT_FOR_SEARCH)) {
+			output = output.concat(playlist.toString()).concat("\n");
+		}
+		return output;
+	}
+
+	@Grammar("get featured playlists")
+	public String getFeaturedPlaylists(String... params) {
+		String output = "";
+		for (PlaylistEntity playlist : this.playerLogic.getFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
+			output = output.concat(playlist.toString()).concat("\n");
+		}
+		return output;
+	}
+
+	@Grammar("create login link")
+	public String createLoginLink(String... params) {
+		return this.playerLogic.firstTimeInit().toString();
+	}
+
 }

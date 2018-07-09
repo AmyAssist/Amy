@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,16 +47,13 @@ public class GrammarParserTest {
 	 */
 	@Test
 	public void test() {
-		this.parser.addRule("wecker", new String[] {"wecker"}, "(today|tomorrow) ((at #)|abend|mittag)");
+		this.parser.addRule("wecker", new String[] { "wecker" }, "(today|tomorrow) ((at #)|abend|mittag)");
 		String grammarResult = this.parser.getGrammar();
-		assertThat(grammarResult, containsString(
-				"public <wecker> = wecker (today|tomorrow) ((at <digit>)|abend|mittag);"));
 		assertThat(grammarResult,
-				containsString("public <sleep> = ( sleep );"));
-		assertThat(grammarResult,
-				containsString("public <shutdown> = ( die );"));
-		assertThat(grammarResult,
-				containsString("public <wakeup> = ( okay amy );"));
+				containsString("public <wecker> = wecker (today|tomorrow) ((at <digit>)|abend|mittag);"));
+		assertThat(grammarResult, containsString("public <sleep> = ( sleep );"));
+		assertThat(grammarResult, containsString("public <shutdown> = ( die );"));
+		assertThat(grammarResult, containsString("public <wakeup> = ( okay amy );"));
 	}
 
 }

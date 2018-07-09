@@ -3,6 +3,8 @@
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +45,7 @@ public interface IStorage {
 	 * 
 	 * @param key
 	 *            The key of the data to return
-	 * @return the value of the data
-	 *             when the given key is not set
+	 * @return the value of the data when the given key is not set
 	 */
 	String get(String key);
 
