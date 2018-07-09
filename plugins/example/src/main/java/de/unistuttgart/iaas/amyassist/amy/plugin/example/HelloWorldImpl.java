@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.LocationRegistry;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -54,6 +56,9 @@ public class HelloWorldImpl implements HelloWorldService {
 
 	@Reference
 	private ContactRegistry contacts;
+
+	@Reference
+	private LocationRegistry locationRegistry;
 
 	@Override
 	public String helloWorld() {
@@ -155,7 +160,41 @@ public class HelloWorldImpl implements HelloWorldService {
 			return "Tests successful";
 		} catch (TestException e) {
 			logger.warn("Registry test failed: ", e);
-			return "Tests failed: " + e.getLocalizedMessage();
+			return "Tests failed: " + e.getMessage();
+		}
+	}
+
+	@Override
+	public String testLocationRegistry() {
+		try {
+			List<Location> pois = locationRegistry.getAll();
+			assertTrue(pois.isEmpty());
+
+			Location work = locationRegistry.createNewEntity();
+			work.setCity("Stuttgart");
+			work.setZipCode("70563");
+			work.setStreet("Universitätsstraße");
+			work.setHouseNumber(38);
+			work.setLongitude(9.106600);
+			work.setLatitude(48.745172);
+			work.setWork(true);
+
+			assertTrue(work.getAddressString().equals("Universitätsstraße 38, 70563 Stuttgart"));
+
+			locationRegistry.save(work);
+
+			assertTrue(locationRegistry.getById(work.getId()).equals(work));
+
+			assertTrue(locationRegistry.getWork().equals(work));
+
+			locationRegistry.deleteById(work.getId());
+
+			assertTrue(locationRegistry.getWork() == null);
+
+			return "Test successful";
+		} catch (TestException e) {
+			logger.warn("Location registry test failed: ",e);
+			return "Tests failed: " + e.getMessage();
 		}
 	}
 
