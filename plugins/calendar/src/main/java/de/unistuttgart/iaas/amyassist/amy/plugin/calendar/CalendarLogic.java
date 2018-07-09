@@ -63,6 +63,27 @@ public class CalendarLogic {
 	}
 
 	/**
+	 * Output of the logger
+	 */
+	String errorLogger = "An error occurred.";
+	/**
+	 * Natural language response of Amy if error occurred.
+	 */
+	String errorOutput = "Sorry, I am not able to get your events.";
+	/**
+	 * Natural language response of Amy when the event list is empty.
+	 */
+	String noEventsFound = "No upcoming events found.";
+	/**
+	 * List key to get events from Google.
+	 */
+	String primary = "primary";
+	/**
+	 * The way the events are ordered in the list.
+	 */
+	String orderBy = "startTime";
+
+	/**
 	 * This method lists the next events from the calendar
 	 *
 	 * @param number
@@ -73,11 +94,11 @@ public class CalendarLogic {
 		List<String> eventList = new ArrayList<>();
 		try {
 			DateTime current = new DateTime(System.currentTimeMillis());
-			Events events = this.calendarService.getService().events().list("primary").setMaxResults(number)
-					.setTimeMin(current).setOrderBy("startTime").setSingleEvents(true).execute();
+			Events events = this.calendarService.getService().events().list(this.primary).setMaxResults(number)
+					.setTimeMin(current).setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
-				return "No upcoming events found.";
+				return this.noEventsFound;
 			}
 			LocalDateTime now = LocalDateTime.now();
 			for (Event event : items) {
@@ -88,8 +109,8 @@ public class CalendarLogic {
 			}
 			return "You have following upcoming " + number + " events:\n" + String.join("\n", eventList);
 		} catch (IOException e) {
-			this.logger.error("Sorry, I am not able to get your events.", e);
-			return "An error occured.";
+			this.logger.error(this.errorLogger, e);
+			return this.errorOutput;
 		}
 
 	}
@@ -104,11 +125,11 @@ public class CalendarLogic {
 		try {
 			LocalDateTime now = LocalDateTime.now();
 			DateTime setup = new DateTime(System.currentTimeMillis());
-			Events events = this.calendarService.getService().events().list("primary").setTimeMin(setup)
-					.setOrderBy("startTime").setSingleEvents(true).execute();
+			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
+					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
-				return "No upcoming events found.";
+				return this.noEventsFound;
 			}
 			LocalDate startDate;
 			LocalDate nowDate = now.toLocalDate();
@@ -134,8 +155,8 @@ public class CalendarLogic {
 			}
 			return "You have following events today:\n" + String.join("\n", eventList);
 		} catch (IOException e) {
-			this.logger.error("Sorry, I am not able to get your events.", e);
-			return "An error occured.";
+			this.logger.error(this.errorLogger, e);
+			return this.errorOutput;
 		}
 	}
 
@@ -153,11 +174,11 @@ public class CalendarLogic {
 			now = LocalDateTime.of(nextDay, zero);
 			ZonedDateTime zdt = now.atZone(ZoneId.systemDefault());
 			DateTime setup = new DateTime(zdt.toInstant().toEpochMilli());
-			Events events = this.calendarService.getService().events().list("primary").setTimeMin(setup)
-					.setOrderBy("startTime").setSingleEvents(true).execute();
+			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
+					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
-				return "No upcoming events found.";
+				return this.noEventsFound;
 			}
 			LocalDate startDate;
 			LocalDate nowDate = now.toLocalDate();
@@ -183,8 +204,8 @@ public class CalendarLogic {
 			}
 			return "You have following events tomorrow:\n" + String.join("\n", eventList);
 		} catch (IOException e) {
-			this.logger.error("Sorry, I am not able to get your events.", e);
-			return "An error occured.";
+			this.logger.error(this.errorLogger, e);
+			return this.errorOutput;
 		}
 	}
 
