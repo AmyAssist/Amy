@@ -62,4 +62,6 @@ public interface Location {
     boolean isWork();
 
     void setWork(boolean work);
+
+    String getAddressString();
 }
