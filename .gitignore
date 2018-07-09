@@ -20,9 +20,6 @@ dependency-reduced-pom.xml
 .idea
 *.iml
 
-#Other -PatrickGe
-config/*.json
-
 #Ignore config files
 *.properties
 
