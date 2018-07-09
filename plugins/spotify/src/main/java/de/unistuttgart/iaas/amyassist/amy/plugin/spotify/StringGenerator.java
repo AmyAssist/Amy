@@ -36,6 +36,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  */
 @Service
 public class StringGenerator {
+	private static final String EMPTY = "Empty";
 
 	/**
 	 * generate one String out of the search result list. Useful for example for console or speech output
@@ -54,7 +55,7 @@ public class StringGenerator {
 			}
 		}
 		if(result.equals("")) {
-			return "Empty";
+			return EMPTY;
 		}
 		return result;
 	}
@@ -97,7 +98,7 @@ public class StringGenerator {
 		result = result.concat("Track name is ").concat(track.get(SpotifyConstants.ITEM_NAME)).concat(" by ")
 				.concat(track.get(SpotifyConstants.ARTIST_NAME));
 		if(result.equals("")) {
-			return "Empty";
+			return EMPTY;
 		}
 		return result;
 	}
@@ -114,7 +115,7 @@ public class StringGenerator {
 		result = result.concat("Album name is ").concat(album.get(SpotifyConstants.ITEM_NAME)).concat(" by ")
 				.concat(album.get(SpotifyConstants.ARTIST_NAME));
 		if(result.equals("")) {
-			return "Empty";
+			return EMPTY;
 		}
 		return result;
 	}
