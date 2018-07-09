@@ -104,6 +104,6 @@ public class EMailSpeech {
 	 */
 	@Grammar("send example mail")
 	public String sendExampleMail(String... params) {
-		return this.logic.sendMail("st142778@stud.uni-stuttgart.de", "Mail From Amy", "Hello!");
+		return this.logic.sendMail("amy.speechassist@gmail.com", "Mail From Amy", "Hello!");
 	}
 }
