@@ -53,6 +53,9 @@ public class StringGenerator {
 				result = result.concat(String.valueOf(i)).concat(". ").concat(itemString).concat("\n");
 			}
 		}
+		if(result.equals("")) {
+			return "Empty";
+		}
 		return result;
 	}
 
@@ -93,6 +96,9 @@ public class StringGenerator {
 		String result = "";
 		result = result.concat("Track name is ").concat(track.get(SpotifyConstants.ITEM_NAME)).concat(" by ")
 				.concat(track.get(SpotifyConstants.ARTIST_NAME));
+		if(result.equals("")) {
+			return "Empty";
+		}
 		return result;
 	}
 
@@ -107,6 +113,9 @@ public class StringGenerator {
 		String result = "";
 		result = result.concat("Album name is ").concat(album.get(SpotifyConstants.ITEM_NAME)).concat(" by ")
 				.concat(album.get(SpotifyConstants.ARTIST_NAME));
+		if(result.equals("")) {
+			return "Empty";
+		}
 		return result;
 	}
 
@@ -120,7 +129,7 @@ public class StringGenerator {
 	private String artistOutputString(Map<String, String> artist) {
 		String result = "";
 		result = result.concat("Artist name is ").concat(artist.get(SpotifyConstants.ARTIST_NAME))
-				.concat(" in the genre ").concat(artist.get(SpotifyConstants.GENRE));
+				.concat(" in the genre ").concat(artist.get(SpotifyConstants.GENRE));	
 		return result;
 	}
 
