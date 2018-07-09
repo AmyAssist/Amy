@@ -57,7 +57,17 @@ public class HelloWorldSpeech {
 	}
 
 	@Grammar("say hello # times")
-	public String sayXTimes(String... params) {
+	public String sayHelloXTimes(String... params) {
 		return this.helloWorld.helloWorldXTimes(Integer.parseInt(params[2]));
+	}
+
+	@Grammar("get contacts")
+	public String getContacts(String... params) {
+		return this.helloWorld.demonstrateContactRegistry();
+	}
+
+	@Grammar("test contacts registry")
+	public String testContacts(String... params) {
+		return this.helloWorld.testContactRegistry();
 	}
 }

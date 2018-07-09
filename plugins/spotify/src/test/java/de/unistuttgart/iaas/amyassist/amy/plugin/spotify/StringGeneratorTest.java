@@ -136,6 +136,6 @@ public class StringGeneratorTest {
 	@Test
 	public void testWrongType() {
 
-		assertThat(this.stringGenerator.generateSearchOutputString(this.wrongTypeList), equalTo(""));
+		assertThat(this.stringGenerator.generateSearchOutputString(this.wrongTypeList), equalTo("Empty"));
 	}
 }

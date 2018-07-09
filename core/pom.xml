@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.3.0-Snapshot</version>
+		<version>0.4.0-Snapshot</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<properties>
@@ -67,12 +67,12 @@
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-plugin-manager-api</artifactId>
-			<version>0.3.0-Snapshot</version>
+			<version>0.4.0-Snapshot</version>
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-rest-resources</artifactId>
-			<version>0.3.0-Snapshot</version>
+			<version>0.4.0-Snapshot</version>
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
@@ -133,6 +133,16 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.196</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>5.3.1.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.1.2</version>
 		</dependency>
 		<!-- Tests -->
 		<dependency>
