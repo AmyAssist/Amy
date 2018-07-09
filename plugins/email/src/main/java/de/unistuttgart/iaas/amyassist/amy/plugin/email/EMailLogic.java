@@ -58,7 +58,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class EMailLogic {
 
 	private Session session;
-	private Folder inbox;
+	
+	/**
+	 * the inbox object containing all messages
+	 * this is not private because we need to change 
+	 * the inbox in the unit tests
+	 */
+	Folder inbox;
 
 	@Reference
 	private Properties configLoader;
@@ -138,6 +144,7 @@ public class EMailLogic {
 				this.logger.error("could not read message", e);
 			}
 		}
+		System.out.println("inbox null");
 		return false;
 	}
 
@@ -223,6 +230,7 @@ public class EMailLogic {
 		} else {
 			this.logger.error("properties file not found");
 		}
+
 	}
 
 	/**
@@ -248,7 +256,7 @@ public class EMailLogic {
 	 *            password of the account
 	 */
 	private void startSession(String username, String password) {
-		final Properties props = new Properties();
+		final Properties props = System.getProperties();
 
 		/*
 		 * We should probably use imap instead of pop because it syncs up with the email server
