@@ -32,29 +32,78 @@ public class Method {
 
 	private String link;
 	private String description;
-	private MethodType type;
+	private String type;
+	private Parameter[] parameters;
 
+	/**
+	 * gets the link
+	 * 
+	 * @return the link
+	 */
 	public String getLink() {
-		return link;
+		return this.link;
 	}
 
+	/**
+	 * sets the link
+	 * 
+	 * @param link the new link
+	 */
 	public void setLink(String link) {
 		this.link = link;
 	}
 
+	/**
+	 * gets the description
+	 * 
+	 * @return the description
+	 */
 	public String getDescription() {
-		return description;
+		return this.description;
 	}
 
+	/**
+	 * sets the description
+	 * 
+	 * @param description the new description
+	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-	public MethodType getType() {
-		return type;
+	/**
+	 * gets the type of the method
+	 * 
+	 * @return the type of the method
+	 */
+	public String getType() {
+		return this.type;
 	}
 
-	public void setType(MethodType type) {
+	/**
+	 * sets the type of the method
+	 * 
+	 * @param type the new type
+	 */
+	public void setType(String type) {
 		this.type = type;
+	}
+
+	/**
+	 * gets the parameters
+	 * 
+	 * @return the parameters
+	 */
+	public Parameter[] getParameters() {
+		return this.parameters;
+	}
+
+	/**
+	 * sets the parameters
+	 * 
+	 * @param parameters the new parameters
+	 */
+	public void setParameters(Parameter[] parameters) {
+		this.parameters = parameters;
 	}
 }

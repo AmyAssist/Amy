@@ -28,7 +28,24 @@ package de.unistuttgart.iaas.amyassist.amy.utility.rest;
  * 
  * @author Christian Bräuner
  */
-public enum MethodType {
+public class MethodType {
 
-	GET, POST, DELETE;
+	/**
+	 * GET
+	 */
+	public static final String GET = "GET";
+	/**
+	 * POST
+	 */
+	public static final String POST = "POST";
+	/**
+	 * DELETE
+	 */
+	public static final String DELETE = "DELETE";
+	
+	
+	private MethodType() {
+		
+	}
+	
 }

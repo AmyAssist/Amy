@@ -23,11 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.utility.rest;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * POJO for Resource description
  * 
  * @author Christian Bräuner
  */
+@XmlRootElement
 public class ResourceEntity extends Entity {
 	
 	private String name;

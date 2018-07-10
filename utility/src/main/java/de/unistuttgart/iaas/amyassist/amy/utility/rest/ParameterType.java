@@ -28,6 +28,26 @@ package de.unistuttgart.iaas.amyassist.amy.utility.rest;
  * 
  * @author Christian Bräuner
  */
-public enum ParameterType {
-	STRING, INTEGER, FLOAT;
+public class ParameterType {
+	
+	/**
+	 * Integer (32bit)
+	 */
+	public static final String INTEGER = "int32"; 
+	/**
+	 * Long (64bit)
+	 */
+	public static final String LONG = "int64";
+	/**
+	 * String
+	 */
+	public static final String STRING = "string";
+	/**
+	 * Float
+	 */
+	public static final String FLOAT = "float"; 
+	
+	private ParameterType() {
+		
+	}
 }
