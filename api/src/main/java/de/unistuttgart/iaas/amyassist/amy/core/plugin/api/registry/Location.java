@@ -31,6 +31,10 @@ public interface Location {
 
     int getId();
 
+    String getName();
+
+    void setName(String name);
+
     String getZipCode();
 
     void setZipCode(String zipCode);
