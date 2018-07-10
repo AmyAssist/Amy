@@ -29,6 +29,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 /**
  * REST Resource for the system time
@@ -36,7 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  * @author Muhammed Kaya
  */
 @Path("systemtime")
-public class SystemTimeResource {
+public class SystemTimeResource implements Resource{
 
 	@Reference
 	private SystemTimeLogic logic;
@@ -63,6 +65,14 @@ public class SystemTimeResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getDate() {
 		return this.logic.getDate();
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 */
+	@Override
+	public ResourceEntity getPluginDescripion() {
+		return null;
 	}
 
 }

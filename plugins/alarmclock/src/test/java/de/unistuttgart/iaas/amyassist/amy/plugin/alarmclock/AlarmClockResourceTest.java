@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -41,6 +43,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
@@ -85,7 +88,7 @@ class AlarmClockResourceTest {
 			Timestamp expected = new Timestamp(alarms.get(i));
 			assertEquals(expected, ts[i]);
 			assertEquals(this.target.getUriBuilder().path(AlarmClockResource.class, "getAlarm").build(i).toString(),
-					ts[i].getLink());
+					ts[i].getLink().toString());
 		}
 
 	}
@@ -165,7 +168,7 @@ class AlarmClockResourceTest {
 		Timestamp tsr = r.readEntity(Timestamp.class);
 		assertEquals(new Timestamp(newAlarm), tsr);
 		assertEquals(this.target.getUriBuilder().path(AlarmClockResource.class, "getAlarm").build(17).toString(),
-				tsr.getLink());
+				tsr.getLink().toString());
 
 		entity = Entity.entity(new Timestamp(27, 20), MediaType.APPLICATION_JSON);
 		r = this.target.path("alarms/new").request().post(entity);

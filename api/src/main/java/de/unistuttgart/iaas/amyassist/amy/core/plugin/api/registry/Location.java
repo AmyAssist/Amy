@@ -21,40 +21,47 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
+package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
 
 /**
- * POJO-mapping of JSON method object
- * 
- * @author Christian Bräuner
+ * Location object interface
+ * @author Benno Krauß
  */
-public class Method {
+public interface Location {
 
-	private String link;
-	private String description;
-	private MethodType type;
+    int getId();
 
-	public String getLink() {
-		return link;
-	}
+    String getZipCode();
 
-	public void setLink(String link) {
-		this.link = link;
-	}
+    void setZipCode(String zipCode);
 
-	public String getDescription() {
-		return description;
-	}
+    String getCity();
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    void setCity(String city);
 
-	public MethodType getType() {
-		return type;
-	}
+    String getStreet();
 
-	public void setType(MethodType type) {
-		this.type = type;
-	}
+    void setStreet(String street);
+
+    int getHouseNumber();
+
+    void setHouseNumber(int houseNumber);
+
+    double getLongitude();
+
+    void setLongitude(double longitude);
+
+    double getLatitude();
+
+    void setLatitude(double latitude);
+
+    boolean isHome();
+
+    void setHome(boolean home);
+
+    boolean isWork();
+
+    void setWork(boolean work);
+
+    String getAddressString();
 }

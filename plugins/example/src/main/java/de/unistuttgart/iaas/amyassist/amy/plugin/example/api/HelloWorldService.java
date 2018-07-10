@@ -51,4 +51,9 @@ public interface HelloWorldService {
 	 */
 	String testContactRegistry();
 
+	/**
+	 * Test the location registry
+	 * @return human-readable text
+	 */
+    String testLocationRegistry();
 }

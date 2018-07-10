@@ -21,14 +21,34 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
+package de.unistuttgart.iaas.amyassist.amy.utility.rest;
+
+import java.net.URI;
 
 /**
- * The possible Http Methods
+ * Base class for all rest entities
  * 
  * @author Christian Bräuner
  */
-public enum MethodType {
+public abstract class Entity {
 
-	GET, POST, DELETE;
+	private URI link;
+	
+	/**
+	 * gets the link of the entity
+	 * 
+	 * @return the link of the entity
+	 */
+	public URI getLink() {
+		return this.link != null ? this.link : URI.create("");
+	}
+
+	/**
+	 * sets the link of the entity
+	 * 
+	 * @param link the link to set
+	 */
+	public void setLink(URI link) {
+		this.link = link;
+	}
 }

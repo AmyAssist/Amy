@@ -16,14 +16,14 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Amy versions to depend on -->
-		<amy.di.api.version>0.3.0-Snapshot</amy.di.api.version>
-		<amy.di.version>0.3.0-Snapshot</amy.di.version>
-		<amy.api.version>0.3.0-Snapshot</amy.api.version>
-		<amy.plugin-manager-api.version>0.3.0-Snapshot</amy.plugin-manager-api.version>
-		<amy.http-server.version>0.3.0-Snapshot</amy.http-server.version>
-		<amy.testing-framework.version>0.3.0-Snapshot</amy.testing-framework.version>
-		<amy.core.version>0.3.0-Snapshot</amy.core.version>
-		<amy.rest-resources.version>0.3.0-Snapshot</amy.rest-resources.version>
+		<amy.di.api.version>0.4.0-Snapshot</amy.di.api.version>
+		<amy.di.version>0.4.0-Snapshot</amy.di.version>
+		<amy.api.version>0.4.0-Snapshot</amy.api.version>
+		<amy.plugin-manager-api.version>0.4.0-Snapshot</amy.plugin-manager-api.version>
+		<amy.http-server.version>0.4.0-Snapshot</amy.http-server.version>
+		<amy.testing-framework.version>0.4.0-Snapshot</amy.testing-framework.version>
+		<amy.core.version>0.4.0-Snapshot</amy.core.version>
+		<amy.rest-resources.version>0.4.0-Snapshot</amy.rest-resources.version>
 
 		<!-- External dependency versions. Only project wide or core dependencies 
 			here -->
@@ -47,12 +47,14 @@
 		<module>plugin-manager-api</module>
 		<module>rest-resources</module>
 		<module>plugins/alarmclock</module>
+		<module>plugins/calendar</module>
 		<module>plugins/email</module>
 		<module>plugins/example</module>
 		<module>plugins/spotify</module>
 		<module>plugins/systemtime</module>
 		<module>plugins/weather</module>
 		<module>plugins/navigation</module>
+      <module>utility</module>
 	</modules>
 	<licenses>
 		<license>
