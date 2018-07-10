@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.Alarm;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
 
 /**
  * A timestamp
@@ -36,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.Alarm;
  * @author Christian Bräuner
  */
 @XmlRootElement
-public class Timestamp {
+public class Timestamp extends Entity{
 
 	/**
 	 * the hour of the timestamp
@@ -47,8 +48,6 @@ public class Timestamp {
 	 * the minute of the timestamp
 	 */
 	private int minute = 0;
-
-	private String link = "";
 
 	/**
 	 * constructor for a timestamp without set values
@@ -160,20 +159,6 @@ public class Timestamp {
 		this.minute = minute;
 	}
 
-	/**
-	 * @return the link
-	 */
-	public String getLink() {
-		return this.link;
-	}
-
-	/**
-	 * @param link
-	 *            the link to set
-	 */
-	public void setLink(String link) {
-		this.link = link;
-	}
 
 	/**
 	 * @see java.lang.Object#equals

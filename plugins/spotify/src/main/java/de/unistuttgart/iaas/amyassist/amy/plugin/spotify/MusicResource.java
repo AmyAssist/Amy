@@ -43,6 +43,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 /**
  * Rest Resource for music
@@ -50,7 +52,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
  * @author Muhammed Kaya, Christian Bräuner
  */
 @Path(MusicResource.PATH)
-public class MusicResource {
+public class MusicResource implements Resource{
 
 	/**
 	 * the resource path for this plugin
@@ -399,6 +401,15 @@ public class MusicResource {
 			}
 		}
 		throw new WebApplicationException("Check player state", Status.CONFLICT);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 */
+	@Override
+	public ResourceEntity getPluginDescripion() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
