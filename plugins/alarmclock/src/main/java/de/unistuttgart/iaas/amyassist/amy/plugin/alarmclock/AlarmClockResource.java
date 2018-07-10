@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -182,9 +183,9 @@ public class AlarmClockResource implements Resource{
 		this.logic.resetAlarms();
 	}
 
-	private String createAlarmPath(int id) {
+	private URI createAlarmPath(int id) {
 		return this.uri.getBaseUriBuilder().path(AlarmClockResource.class).path(AlarmClockResource.class, "getAlarm")
-				.build(Integer.valueOf(id)).toString();
+				.build(Integer.valueOf(id));
 	}
 
 	/**

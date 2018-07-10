@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.utility.rest;
 
+import java.net.URI;
+
 /**
  * Base class for all rest entities
  * 
@@ -30,15 +32,15 @@ package de.unistuttgart.iaas.amyassist.amy.utility.rest;
  */
 public abstract class Entity {
 
-	private String link = "";
+	private URI link;
 	
 	/**
 	 * gets the link of the entity
 	 * 
 	 * @return the link of the entity
 	 */
-	public String getLink() {
-		return this.link;
+	public URI getLink() {
+		return this.link != null ? this.link : URI.create("");
 	}
 
 	/**
@@ -46,7 +48,7 @@ public abstract class Entity {
 	 * 
 	 * @param link the link to set
 	 */
-	public void setLink(String link) {
+	public void setLink(URI link) {
 		this.link = link;
 	}
 }
