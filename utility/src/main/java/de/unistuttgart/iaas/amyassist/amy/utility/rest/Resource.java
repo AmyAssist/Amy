@@ -21,31 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
+package de.unistuttgart.iaas.amyassist.amy.utility.rest;
 
 /**
- * POJO mapping of a parameter
+ * Interface for Resource Classes
  * 
- * @author Tim Neumann
+ * @author Christian Bräuner
  */
-public class Parameter {
+public interface Resource {
 
-	private String name;
-	private ParameterType type;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public ParameterType getType() {
-		return type;
-	}
-
-	public void setType(ParameterType type) {
-		this.type = type;
-	}
+	/**
+	 * returns a description for a this plugin, that contains information
+	 * about provided methods and needed parameters
+	 * 
+	 * @return the enitity representing the plugin
+	 */
+	public ResourceEntity getPluginDescripion();
 }

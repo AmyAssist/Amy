@@ -92,7 +92,7 @@ class AlarmClockResourceTest {
 		for (int i = 0; i < ts.length; i++) {
 			Timestamp expected = new Timestamp(alarms.get(i));
 			assertEquals(expected, ts[i]);
-			assertEquals(Server.BASE_URI.toString() + "/" + AlarmClockResource.PATH + "/alarms/" + i, ts[i].getLink());
+			assertEquals(Server.BASE_URI.toString() + "/" + AlarmClockResource.PATH + "/alarms/" + i, ts[i].getLink().toString());
 		}
 
 	}
@@ -171,7 +171,7 @@ class AlarmClockResourceTest {
 		assertEquals(200, r.getStatus());
 		Timestamp tsr = r.readEntity(Timestamp.class);
 		assertEquals(new Timestamp(newAlarm), tsr);
-		assertEquals(Server.BASE_URI.toString() + "/" + AlarmClockResource.PATH + "/alarms/17", tsr.getLink());
+		assertEquals(Server.BASE_URI.toString() + "/" + AlarmClockResource.PATH + "/alarms/17", tsr.getLink().toString());
 
 		entity = Entity.entity(new Timestamp(27, 20), MediaType.APPLICATION_JSON);
 		r = this.target.path("alarms/new").request().post(entity);

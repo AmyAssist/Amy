@@ -21,13 +21,51 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
+package de.unistuttgart.iaas.amyassist.amy.utility.rest;
 
 /**
- * possible parameter types for methods
+ * POJO mapping of a parameter
  * 
- * @author Christian Bräuner
+ * @author Tim Neumann
  */
-public enum ParameterType {
-	STRING, INTEGER, FLOAT;
+public class Parameter {
+
+	private String name;
+	private String type;
+
+	/**
+	 * gets the name
+	 * 
+	 * @return the name
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * sets the name
+	 * 
+	 * @param name the new name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * gets the type
+	 * 
+	 * @return the type
+	 */
+	public String getType() {
+		return this.type;
+	}
+
+	/**
+	 * sets the type
+	 * 
+	 * @param type the new type
+	 */
+	public void setType(String type) {
+		this.type = type;
+	}
 }

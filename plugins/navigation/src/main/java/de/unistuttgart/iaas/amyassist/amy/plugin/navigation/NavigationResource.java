@@ -39,6 +39,8 @@ import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest.Timestamp;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -54,7 +56,7 @@ import org.joda.time.ReadableInstant;
  * @author Muhammed Kaya
  */
 @Path(NavigationResource.PATH)
-public class NavigationResource {
+public class NavigationResource implements Resource{
 
 	/**
 	 * the resource path for this plugin
@@ -220,6 +222,14 @@ public class NavigationResource {
 			this.logger.error("Input values are not in range.", e);
 			throw new WebApplicationException("Enter correct times.", Status.CONFLICT);
 		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 */
+	@Override
+	public ResourceEntity getPluginDescripion() {
+		return null;
 	}
 
 }

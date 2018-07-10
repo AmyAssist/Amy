@@ -91,6 +91,7 @@ public class WeatherRestTest {
 		this.day = new WeatherReportDay("This is the weather report for today.", p);
 
 		this.obj = new JsonObject();
+		this.obj.add("link", this.day.getLink().toString());
 		this.obj.add("summary", this.day.getSummary());
 		this.obj.add("precip", this.day.isPrecip());
 		this.obj.add("precipProbability", this.day.getPrecipProbability());

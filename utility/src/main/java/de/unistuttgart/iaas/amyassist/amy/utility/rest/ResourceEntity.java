@@ -21,35 +21,61 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
+package de.unistuttgart.iaas.amyassist.amy.utility.rest;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
-import com.github.dvdme.ForecastIOLib.FIODaily;
-
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
-
+/**
+ * POJO for Resource description
+ * 
+ * @author Christian Bräuner
+ */
 @XmlRootElement
-public class WeatherReportWeek extends Entity{
+public class ResourceEntity extends Entity {
+	
+	private String name;
+	private Method[] methods;
 
-	@XmlTransient
-	public final String preamble;
-
-	public final WeatherReportDay[] days;
-	public final String summary;
-
-	public WeatherReportWeek(String preamble, FIODaily d) {
-		this.preamble = preamble;
-		this.days = new WeatherReportDay[d.days()];
-		for (int i = 0; i < d.days(); i++) {
-			this.days[i] = new WeatherReportDay(null, d.getDay(i));
-		}
-		this.summary = d.getSummary();
+	/**
+	 * base construktor for the ResourceEntity
+	 */
+	public ResourceEntity() {
+		//needed for JSON
 	}
 
-	@Override
-	public String toString() {
-		return (this.preamble != null ? this.preamble + " " : "") + this.summary;
+	/**
+	 * gets the name of the resource
+	 * 
+	 * @return the name
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * sets the name of the resource
+	 * 
+	 * @param name the new name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * returns the methodes of the resource
+	 * 
+	 * @return an array of methods
+	 */
+	public Method[] getMethods() {
+		return this.methods;
+	}
+
+	/**
+	 * sets the methods
+	 * 
+	 * @param methods the new methods
+	 */
+	public void setMethods(Method[] methods) {
+		this.methods = methods;
 	}
 }
