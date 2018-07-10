@@ -23,9 +23,12 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
 
@@ -62,6 +65,7 @@ public class NLIAnnotationReader {
 	}
 
 	/**
+	 * Check if method is a valid annotated method. Annotated methods must not throw Exceptions.
 	 * 
 	 * @param method
 	 *            the method that should be a NLIMethod
@@ -75,6 +79,41 @@ public class NLIAnnotationReader {
 		}
 		if (!method.getReturnType().equals(String.class)) {
 			throw new IllegalArgumentException("The returntype of a method annotated with @Grammar should be String.");
+		}
+		if (method.getExceptionTypes().length > 0) {
+			throw new IllegalArgumentException(
+					"The method annotated with @Grammar should should not throw exceptions.");
+		}
+	}
+
+	/**
+	 * 
+	 *
+	 * @param method
+	 *            the method to call
+	 * @param instance
+	 *            the instance of which to call the method
+	 * @param arg
+	 *            the arguments to the NLI method
+	 * @return the result of the call to the NLI method
+	 * @throws IllegalArgumentException
+	 *             if the annotated methods not valid
+	 */
+	public static String callNLIMethod(@Nonnull Method method, @Nonnull Object instance, Object[] arg) {
+		assertValid(method);
+
+		try {
+			method.setAccessible(true);
+			return (String) method.invoke(instance, arg);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("tryed to invoke method " + method + " but got an error", e);
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getCause();
+
+			if (cause instanceof RuntimeException) {
+				throw (RuntimeException) cause;
+			}
+			throw new IllegalArgumentException("method " + method + " throw an exception", cause);
 		}
 	}
 }

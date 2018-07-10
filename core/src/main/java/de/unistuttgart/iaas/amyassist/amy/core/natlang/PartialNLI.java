@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.annotation.Nonnull;
@@ -83,11 +82,7 @@ public class PartialNLI {
 	 * @return the result String from calling the command
 	 */
 	public String call(Object instance, String... input) {
-		try {
-			Object[] params = { input };
-			return (String) this.method.invoke(instance, params);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException("Tryed to invoke " + this.method.getName(), e);
-		}
+		Object[] params = { input };
+		return NLIAnnotationReader.callNLIMethod(this.method, instance, params);
 	}
 }
