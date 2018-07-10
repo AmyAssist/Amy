@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * Does the logic of the Hello World plugin
  * 
- * @author Tim Neumann
+ * @author Tim Neumann, Benno Krauß
  */
 @Service
 public class HelloWorldImpl implements HelloWorldService {
