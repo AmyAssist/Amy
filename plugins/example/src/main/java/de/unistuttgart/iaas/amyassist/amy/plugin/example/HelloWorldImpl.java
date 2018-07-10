@@ -120,7 +120,7 @@ public class HelloWorldImpl implements HelloWorldService {
 	 */
 	@Override
 	public String testContactRegistry() {
-		try {
+		return performTest(() -> {
 			Contact personA = contacts.createNewEntity();
 			personA.setEmail("a@b.c");
 			personA.setFirstName("Max");
@@ -154,17 +154,12 @@ public class HelloWorldImpl implements HelloWorldService {
 
 			Contact c3 = contacts.getById(personAId);
 			assertTrue(c3 == null);
-			return "Tests successful";
-		} catch (TestException e) {
-			logger.warn("Registry test failed: ", e);
-			return "Tests failed: " + e.getMessage();
-		}
+		});
 	}
 
 	@Override
 	public String testLocationRegistry() {
-		try {
-
+		return performTest(() -> {
 			// Test that there are no locations to begin with
 			List<Location> pois = locationRegistry.getAll();
 			assertTrue(pois.isEmpty());
@@ -206,10 +201,20 @@ public class HelloWorldImpl implements HelloWorldService {
 			locationRegistry.deleteById(work.getId());
 
 			assertTrue(locationRegistry.getWork() == null);
+		});
+	}
 
+	@FunctionalInterface
+	private interface Test {
+		void test() throws HelloWorldImpl.TestException;
+	}
+
+	private String performTest(Test test) {
+		try {
+			test.test();
 			return "Test successful";
 		} catch (TestException e) {
-			logger.warn("Location registry test failed: ",e);
+			logger.warn("Test failed: ",e);
 			return "Tests failed: " + e.getMessage();
 		}
 	}
