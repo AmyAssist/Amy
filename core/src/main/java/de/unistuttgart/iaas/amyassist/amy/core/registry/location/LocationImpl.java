@@ -41,6 +41,7 @@ public class LocationImpl implements Location {
     @Column(updatable = false, nullable = false)
     private int id;
 
+    private String name;
     private String zipCode;
     private String city;
     private String street;
@@ -52,6 +53,14 @@ public class LocationImpl implements Location {
 
     public int getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getZipCode() {
@@ -134,6 +143,7 @@ public class LocationImpl implements Location {
                 Double.compare(location.latitude, latitude) == 0 &&
                 isHome == location.isHome &&
                 isWork == location.isWork &&
+                Objects.equals(name, location.name) &&
                 Objects.equals(zipCode, location.zipCode) &&
                 Objects.equals(city, location.city) &&
                 Objects.equals(street, location.street);
@@ -142,6 +152,6 @@ public class LocationImpl implements Location {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, zipCode, city, street, houseNumber, longitude, latitude, isHome, isWork);
+        return Objects.hash(id, name, zipCode, city, street, houseNumber, longitude, latitude, isHome, isWork);
     }
 }
