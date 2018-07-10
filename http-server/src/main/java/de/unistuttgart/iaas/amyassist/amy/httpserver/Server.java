@@ -82,13 +82,13 @@ public class Server {
 	private HttpServer httpServer;
 
 	@Reference
-	private ConfigurationLoader configuration_loader;
+	private ConfigurationLoader configurationLoader;
 
 	/**
 	 * @return the URI of the server
 	 */
 	private URI baseURI() {
-		Properties conf = this.configuration_loader.load(CONFIG_NAME);
+		Properties conf = this.configurationLoader.load(CONFIG_NAME);
 		int port = Integer.parseInt(conf.getProperty(PROPERTY_PORT, "8080"));
 		String root = conf.getProperty(PROPERTY_ROOT_PATH);
 		String local = conf.getProperty(PROPERTY_LOCALHOST);

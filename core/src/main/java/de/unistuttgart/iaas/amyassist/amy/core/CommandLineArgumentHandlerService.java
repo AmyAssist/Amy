@@ -51,62 +51,19 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 	 */
 	public void init(String[] args) {
 		this.flags = new EnumMap<>(Flag.class);
-		Flag flagExpectingPara = null;
-		int paraCount = 0;
-		List<String> paras = null;
-		for (String s : args) {
-			if (flagExpectingPara != null && paras != null) {
-				paras.add(s);
-				paraCount--;
-				if (paraCount == 0) {
-					this.flags.put(flagExpectingPara, paras);
-					paras = null;
-					flagExpectingPara = null;
-				}
+
+		FlagParameterInformation flagParaInfo = new FlagParameterInformation(null);
+		for (String arg : args) {
+			if (flagParaInfo.getRemainingParaCount() > 0) {
+				processFlagParameter(flagParaInfo, arg);
 				continue;
 			}
-			Flag f = Flag.getFlagFromString(s);
-			if (f == null) {
-				output("Unknown command line flag: " + s + ". Run with -h for help.");
-				this.flagsValid = false;
+			flagParaInfo = processNewFlag(arg);
+			if (flagParaInfo == null)
 				return;
-			}
-
-			if (this.flags.containsKey(f) && !f.canRepeat()) {
-				output("Duplicate command line flag: " + s + ". Run with -h for help.");
-				this.flagsValid = false;
-				return;
-			}
-
-			if (f.getParameterCount() > 0) {
-				flagExpectingPara = f;
-				paraCount = f.getParameterCount();
-				if (this.flags.containsKey(f)) {
-					paras = this.flags.get(f);
-				} else {
-					paras = new ArrayList<>();
-				}
-			} else {
-				this.flags.put(f, null);
-			}
-
-			switch (f) {
-			case HELP:
-				printHelp();
-				return;
-			case VERSION:
-				output(version());
-				return;
-			case NOTICE:
-				output(notice());
-				return;
-			default:
-				// All other flags don't do anything immediately.
-				break;
-			}
 		}
 
-		if (paraCount > 0) {
+		if (flagParaInfo.getRemainingParaCount() > 0) {
 			output("Missing parameter for last flag.");
 			this.flagsValid = false;
 			return;
@@ -114,6 +71,73 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 
 		output("This is Amy. Copyright (c) 2018 the Amy project authors. For help run with flag -h.");
 
+	}
+
+	/**
+	 * Processes the argument strin as a new flag
+	 * 
+	 * @param arg
+	 *            The string argument
+	 * @return The new {@link FlagParameterInformation} object
+	 */
+	private FlagParameterInformation processNewFlag(String arg) {
+		Flag f = Flag.getFlagFromString(arg);
+
+		if (f == null) {
+			output("Unknown command line flag: " + arg + ". Run with -h for help.");
+			this.flagsValid = false;
+			return null;
+		}
+
+		if (this.flags.containsKey(f) && !f.canRepeat()) {
+			output("Duplicate command line flag: " + arg + ". Run with -h for help.");
+			this.flagsValid = false;
+			return null;
+		}
+
+		FlagParameterInformation info = new FlagParameterInformation(f);
+
+		if (info.getRemainingParaCount() <= 0) {
+			this.flags.put(f, null);
+		}
+
+		switch (f) {
+		case HELP:
+			printHelp();
+			break;
+		case VERSION:
+			output(version());
+			break;
+		case NOTICE:
+			output(notice());
+			break;
+		default:
+			// All other flags don't do anything immediately.
+			break;
+		}
+
+		return info;
+	}
+
+	/**
+	 * Processes the argument string as a flag parameter to the Flag specified in flagParaInfo
+	 * 
+	 * @param flagParaInfo
+	 *            The current {@link FlagParameterInformation} object
+	 * @param arg
+	 *            The string argument
+	 */
+	private void processFlagParameter(FlagParameterInformation flagParaInfo, String arg) {
+		flagParaInfo.getParas().add(arg);
+		flagParaInfo.decreaseRemainingParaCount();
+		if (flagParaInfo.getRemainingParaCount() == 0) {
+			if (this.flags.containsKey(flagParaInfo.getFlag())) {
+				List<String> existingParas = this.flags.get(flagParaInfo.getFlag());
+				existingParas.addAll(flagParaInfo.getParas());
+			} else {
+				this.flags.put(flagParaInfo.getFlag(), flagParaInfo.getParas());
+			}
+		}
 	}
 
 	/**
@@ -216,6 +240,79 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 
 	private void output(String s) {
 		System.out.println(s);
+	}
+
+	/**
+	 * A data structure to contain all information required while reading the parameters of a flag
+	 * 
+	 * @author Tim Neumann
+	 */
+	private class FlagParameterInformation {
+		/**
+		 * The flag that this information is for.
+		 */
+		private Flag flag;
+
+		/**
+		 * The count of parameters still expecting
+		 */
+		private int remainingParaCount;
+
+		/**
+		 * The parameters already found.
+		 */
+		private List<String> paras;
+
+		/**
+		 * Creates a new flag parameter information.
+		 * 
+		 * @param flag
+		 *            The flag the parameters are for
+		 */
+		public FlagParameterInformation(Flag flag) {
+			this.flag = flag;
+			if (flag != null) {
+				this.remainingParaCount = flag.getParameterCount();
+			} else {
+				this.remainingParaCount = 0;
+			}
+			this.paras = new ArrayList<>(this.remainingParaCount);
+		}
+
+		/**
+		 * Get's {@link #flag flag}
+		 * 
+		 * @return flag
+		 */
+		public Flag getFlag() {
+			return this.flag;
+		}
+
+		/**
+		 * Decreases {@link #remainingParaCount paraCount}
+		 * 
+		 */
+		public void decreaseRemainingParaCount() {
+			this.remainingParaCount--;
+		}
+
+		/**
+		 * Get's {@link #remainingParaCount paraCount}
+		 * 
+		 * @return paraCount
+		 */
+		public int getRemainingParaCount() {
+			return this.remainingParaCount;
+		}
+
+		/**
+		 * Get's {@link #paras paras}
+		 * 
+		 * @return paras
+		 */
+		public List<String> getParas() {
+			return this.paras;
+		}
 	}
 
 	private enum Flag {
