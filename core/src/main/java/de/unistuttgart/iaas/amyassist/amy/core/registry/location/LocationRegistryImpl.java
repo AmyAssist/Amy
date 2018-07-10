@@ -27,7 +27,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Location;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.LocationRegistry;
 import de.unistuttgart.iaas.amyassist.amy.core.registry.AbstractRegistry;
-import de.unistuttgart.iaas.amyassist.amy.core.registry.RegistryException;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.RegistryException;
 
 import javax.annotation.Nonnull;
 import javax.persistence.TypedQuery;
