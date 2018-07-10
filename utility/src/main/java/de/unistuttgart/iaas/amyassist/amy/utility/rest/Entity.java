@@ -30,7 +30,7 @@ package de.unistuttgart.iaas.amyassist.amy.utility.rest;
  */
 public abstract class Entity {
 
-	private String link;
+	private String link = "";
 	
 	/**
 	 * gets the link of the entity
