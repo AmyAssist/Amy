@@ -150,7 +150,6 @@ public class EMailResource implements Resource{
 	 */
 	@Override
 	public ResourceEntity getPluginDescripion() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
