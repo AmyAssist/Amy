@@ -107,7 +107,7 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 	@Override
 	public Properties load(String configurationName) {
 		Properties properties = new Properties();
-		Path path = findPropertiesFile(configurationName);
+		Path path = this.findPropertiesFile(configurationName);
 
 		if (path == null) {
 			this.logger.error("Could not load the configuration {}, because it was not found in any config dir.",
@@ -131,6 +131,7 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 	public void store(String configurationName, Properties properties) {
 		Path path = findPropertiesFile(configurationName);
 
+		// No property file with this name was found, so create one in the highest priority config folder.
 		if (path == null) {
 			path = this.configDirs.get(this.configDirs.size() - 1).resolve(configurationName + ".properties");
 		}

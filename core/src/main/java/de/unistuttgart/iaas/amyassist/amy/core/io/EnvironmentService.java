@@ -41,7 +41,7 @@ public class EnvironmentService implements Environment {
 
 	@PostConstruct
 	private void init() {
-		this.workingDirectory = Paths.get("").toAbsolutePath();
+		this.workingDirectory = Paths.get("");
 	}
 
 	@Override

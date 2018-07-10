@@ -64,6 +64,12 @@ class ConfigurationLoaderTest {
 	private ConfigurationLoader configurationLoader;
 	private Path tempDir;
 
+	/**
+	 * Setup before each test
+	 * 
+	 * @throws IOException
+	 *             when a file system error occurs
+	 */
 	@BeforeEach
 	void setup() throws IOException {
 		CommandLineArgumentHandler cmaHandler = this.testFramework.mockService(CommandLineArgumentHandler.class);
@@ -111,39 +117,75 @@ class ConfigurationLoaderTest {
 		return ret;
 	}
 
+	/**
+	 * Test the load method for the hierarchy level 3/3.
+	 */
 	@Test
-	void testLoad() {
+	void testLoadFromConf3() {
 		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
+
 		Properties prop1 = this.configurationLoader.load("test1");
 		Assertions.assertEquals("conf3", prop1.getProperty("Test1"),
 				"test1.properties should be loaded from config3, but the value of Test1 is wrong");
 		Assertions.assertEquals(1, prop1.size(), "test1.properties should only contain one element");
+
+		assertThat(testLogger.getLoggingEvents(), is(empty()));
+	}
+
+	/**
+	 * Test the load method for the hierarchy level 2/3.
+	 */
+	@Test
+	void testLoadFromConf2() {
+		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
 
 		Properties prop2 = this.configurationLoader.load("test2");
 		Assertions.assertEquals("conf2", prop2.getProperty("Test2"),
 				"test2.properties should be loaded from config2, but the value of Test2 is wrong");
 		Assertions.assertEquals(1, prop2.size(), "test2.properties should only contain one element");
 
+		assertThat(testLogger.getLoggingEvents(), is(empty()));
+	}
+
+	/**
+	 * Test the load method for the hierarchy level 1/3.
+	 */
+	@Test
+	void testLoadFromConf1() {
+		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
+
 		Properties prop3 = this.configurationLoader.load("test3");
 		Assertions.assertEquals("conf1", prop3.getProperty("Test3"),
 				"test3.properties should be loaded from config1, but the value of Test3 is wrong");
 		Assertions.assertEquals(1, prop3.size(), "test3.properties should only contain one element");
 
+		assertThat(testLogger.getLoggingEvents(), is(empty()));
+	}
+
+	/**
+	 * Test the load method for the hierarchy level 0/3.
+	 */
+	@Test
+	void testLoadFromConf0() {
+		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
+
 		Properties prop4 = this.configurationLoader.load("test4");
 		Assertions.assertEquals("conf0", prop4.getProperty("Test4"),
 				"test4.properties should be loaded from config, but the value of Test4 is wrong");
 		Assertions.assertEquals(1, prop4.size(), "test4.properties should only contain one element");
+
+		assertThat(testLogger.getLoggingEvents(), is(empty()));
 	}
 
+	/**
+	 * Test the store method when overwriting existing config files.
+	 * 
+	 * @throws IOException
+	 *             when a file system error occurs
+	 */
 	@Test
-	void testStore() throws IOException {
+	void testStoreExistingFile() throws IOException {
 		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
-		Properties properties = new Properties();
-		properties.setProperty("simpleKey", "test value!!");
-
-		this.configurationLoader.store("test", properties);
-
-		assertThat(Files.exists(this.tempDir.resolve("config3").resolve("test.properties")), is(true));
 
 		Properties prop1 = this.configurationLoader.load("test1");
 		Properties prop2 = this.configurationLoader.load("test2");
@@ -195,6 +237,27 @@ class ConfigurationLoaderTest {
 		assertThat(testLogger.getLoggingEvents(), is(empty()));
 	}
 
+	/**
+	 * Test the store method when no such file exists yet.
+	 */
+	@Test
+	void testStoreNewFile() {
+		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
+		Properties properties = new Properties();
+		properties.setProperty("simpleKey", "test value!!");
+
+		this.configurationLoader.store("test", properties);
+
+		assertThat(Files.exists(this.tempDir.resolve("config3").resolve("test.properties")), is(true));
+		assertThat(testLogger.getLoggingEvents(), is(empty()));
+	}
+
+	/**
+	 * Clean up after each test
+	 * 
+	 * @throws IOException
+	 *             when a file system error occurs
+	 */
 	@AfterEach
 	void cleanUp() throws IOException {
 		Files.walk(this.tempDir).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
