@@ -21,31 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
+package de.unistuttgart.iaas.amyassist.amy.utility.rest;
 
 /**
- * POJO mapping of a parameter
+ * The possible Http Methods
  * 
- * @author Tim Neumann
+ * @author Christian Bräuner
  */
-public class Parameter {
+public enum MethodType {
 
-	private String name;
-	private ParameterType type;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public ParameterType getType() {
-		return type;
-	}
-
-	public void setType(ParameterType type) {
-		this.type = type;
-	}
+	GET, POST, DELETE;
 }
