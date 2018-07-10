@@ -87,7 +87,7 @@ public class GrammarParser {
 
 		// pre defined rules
 		// TODO add them to external file via import rule in JSGF
-		grammar += "<digit> = (one | two | three | four | five | six | seven |"
+		grammar += "<digit> = (zero | one | two | three | four | five | six | seven |"
 				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
 				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
 				+ "fifty | sixty  | seventy | eighty | ninety | and )+; \n";

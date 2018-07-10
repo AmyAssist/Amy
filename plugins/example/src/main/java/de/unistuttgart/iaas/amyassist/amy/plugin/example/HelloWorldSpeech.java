@@ -70,4 +70,9 @@ public class HelloWorldSpeech {
 	public String testContacts(String... params) {
 		return this.helloWorld.testContactRegistry();
 	}
+
+	@Grammar("test location registry")
+	public String testLocation(String... params) {
+		return this.helloWorld.testLocationRegistry();
+	}
 }
