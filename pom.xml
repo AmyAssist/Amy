@@ -42,6 +42,7 @@
 		<module>di-api</module>
 		<module>di</module>
 		<module>api</module>
+		<module>utility</module>
 		<module>http-server</module>
 		<module>testing-framework</module>
 		<module>core</module>
