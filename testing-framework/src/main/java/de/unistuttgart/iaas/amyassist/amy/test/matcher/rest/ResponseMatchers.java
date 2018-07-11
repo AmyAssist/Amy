@@ -21,22 +21,43 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.test.matcher.rest;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 
 /**
+ * A collection of Metchers for Response
  * 
  * @author Leon Kiefer
  */
-@Path("/")
-public class TestRestResource {
+public class ResponseMatchers {
+	private ResponseMatchers() {
+		// hide constructor
+	}
 
-	@GET
-	@Path("{s}")
-	public String ping(@PathParam("s") String s) {
-		return s;
+	/**
+	 * 
+	 * @param statusCode
+	 *            the expected status code of the Response
+	 */
+	public static Matcher<Response> status(int statusCode) {
+		return new TypeSafeMatcher<Response>() {
+
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("status code is");
+				description.appendValue(statusCode);
+			}
+
+			@Override
+			protected boolean matchesSafely(Response item) {
+				return item.getStatus() == statusCode;
+			}
+		};
+
 	}
 }

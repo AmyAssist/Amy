@@ -21,22 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.test;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
+ * Simple in-memory ConfigurationLoader implementation for tests
  * 
  * @author Leon Kiefer
  */
-@Path("/")
-public class TestRestResource {
+@Service
+public class TestConfiguration implements ConfigurationLoader {
 
-	@GET
-	@Path("{s}")
-	public String ping(@PathParam("s") String s) {
-		return s;
+	private Map<String, Properties> map = new HashMap<>();
+
+	@Override
+	public Properties load(String configurationName) {
+		return this.map.get(configurationName);
 	}
+
+	@Override
+	public void store(String configurationName, Properties properties) {
+		this.map.put(configurationName, properties);
+	}
+
 }

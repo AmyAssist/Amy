@@ -21,22 +21,32 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import java.util.Properties;
 
 /**
+ * The interface of a configuration loader
  * 
- * @author Leon Kiefer
+ * @author Tim Neumann
  */
-@Path("/")
-public class TestRestResource {
+public interface ConfigurationLoader {
 
-	@GET
-	@Path("{s}")
-	public String ping(@PathParam("s") String s) {
-		return s;
-	}
+	/**
+	 * 
+	 * @param configurationName
+	 *            the name of the config file, without the .properties
+	 * @return the loaded Properties or null if no such file was found
+	 */
+	Properties load(String configurationName);
+
+	/**
+	 * 
+	 * @param configurationName
+	 *            the name of the config file, without the .properties
+	 * @param properties
+	 *            the Properties to be saved
+	 */
+	void store(String configurationName, Properties properties);
+
 }

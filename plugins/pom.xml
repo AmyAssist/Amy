@@ -42,13 +42,12 @@
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-utility</artifactId>
-			<version>0.4.0-Snapshot</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-registry</artifactId>
-			<version>0.4.0-Snapshot</version>
+			<version>${amy.registry.version}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
