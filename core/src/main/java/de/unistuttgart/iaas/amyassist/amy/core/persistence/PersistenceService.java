@@ -104,7 +104,7 @@ public class PersistenceService implements Persistence {
 			throw new IllegalArgumentException("@Entity annotation missing!");
 		}
 		if (!entity.isAnnotationPresent(PersistenceUnit.class)) {
-			throw new IllegalArgumentException("Persistede Unit must be specifiyed");
+			throw new IllegalArgumentException("Persistence Unit must be specified");
 		}
 
 		PersistenceUnit annotation = entity.getAnnotation(PersistenceUnit.class);
