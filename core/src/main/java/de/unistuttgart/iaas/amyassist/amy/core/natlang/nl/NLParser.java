@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParseException;
@@ -61,7 +63,7 @@ public class NLParser implements INLParser {
 		this.mRead = nl;
 		for (AGFNode agf : this.grammars) {
 			this.currentIndex = 0;
-			if (checkNode(agf)) {
+			if (checkNode(agf) && this.currentIndex == nl.size()) {
 				return agf;
 			}
 		}
@@ -83,24 +85,31 @@ public class NLParser implements INLParser {
 	private boolean checkNode(AGFNode agf) {
 		switch (agf.getType()) {
 		case AGF:
+			int traceBack = this.currentIndex;
 			for (AGFNode node : agf.getChilds()) {
 				if (!checkNode(node)) {
+					this.currentIndex = traceBack;
 					return false;
 				}
 			}
 			break;
 		case OPG:
+			int traceBackOp = this.currentIndex;
 			for (AGFNode node : agf.getChilds()) {
-				checkNode(node);
-			}
-			break;
-		case ORG:
-			for (AGFNode node : agf.getChilds()) {
-				if (checkNode(node)) {
-					break;
+				if(!checkNode(node)) {
+					this.currentIndex = traceBackOp;
 				}
 			}
 			break;
+		case ORG:
+			int traceBackOr = this.currentIndex;
+			for (AGFNode node : agf.getChilds()) {
+				if (checkNode(node)) {
+					return true;
+				}
+				this.currentIndex = traceBackOr;
+			}
+			return false;
 		case MORPH:
 			for (AGFNode node : agf.getChilds()) {
 				if (!checkNode(node)) {
@@ -116,7 +125,6 @@ public class NLParser implements INLParser {
 			return false;
 
 		}
-
 		return true;
 	}
 
@@ -150,6 +158,7 @@ public class NLParser implements INLParser {
 			consume();
 			return true;
 		}
+
 		return false;
 
 	}
@@ -162,9 +171,8 @@ public class NLParser implements INLParser {
 	private WordToken consume() {
 		if (this.mRead.size() > this.currentIndex) {
 			return this.mRead.get(this.currentIndex++);
-		} else {
-			throw new AGFParseException("could not consume token, end of input");
 		}
+		throw new AGFParseException("could not consume token, end of input");
 	}
 
 	/**

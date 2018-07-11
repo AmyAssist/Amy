@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -47,6 +48,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
  */
 public class NLParserTest {
 
+	/**
+	 * contains a stream of pairs, containing natural language strings and matching AGFNodes
+	 * @return Stream containing pairs of natural language strings and matching AGFNodes
+	 */
 	public static Stream<Pair<String, AGFNode>> testData() {
 		AGFNode gram = grammars.get(0);
 		AGFNode weather = grammars.get(1);
@@ -67,10 +72,40 @@ public class NLParserTest {
 			new AGFParser(new AGFLexer("spotify play")).parseWholeExpression(),
 			new AGFParser(new AGFLexer("alarm clock (set|create) timer (for|on) "
 					+ "[# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")).parseWholeExpression());
+	
+	/**
+	 * this methods tests the grammar 
+	 * "alarm clock (set|create) timer (for|on) [# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]"
+	 * which needs traces back
+	 * 
+	 * for example: natlang input = "alarm clock create timer on 10 hours 11 seconds"
+	 * 
+	 * here the first sign in the second optional group matches, but not the or group inside the optional group (minute|minutes)
+	 * this means we need to set back the counter to test for the last optional group
+	 */
+	@Test
+	public void testGrammarWithTraceBack() {
+		AGFNode node = new AGFParser(new AGFLexer("alarm clock (set|create) timer (for|on) "
+				+ "[# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")).parseWholeExpression();
+		List<AGFNode> list = new ArrayList<>();
+		list.add(node);
+		NLParser nlParser = new NLParser(list);
+		NLLexer lex = new NLLexer();
+		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 10 hours 1 minute 11 seconds")), equalTo(node));
+		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 10 hours 11 seconds")), equalTo(node));
+		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 11 seconds")), equalTo(node));
+		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 1 minute")), equalTo(node));
+		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 22 hours")), equalTo(node));
+		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 10 hours 1 minutes")), equalTo(node));
+		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 1 minute 11 seconds")), equalTo(node));
 
+	}
+	
+	
 	/**
 	 * tests hard coded nls and grammars
-	 */
+	 * @param testcase all pairs of natlang strings and grammars
+	*/
 	@ParameterizedTest
 	@MethodSource("testData")
 	public void testParser(Pair<String, AGFNode> testcase) {
@@ -78,15 +113,34 @@ public class NLParserTest {
 		NLLexer lex = new NLLexer();
 
 		List<WordToken> tokenize = lex.tokenize(testcase.getLeft());
+		System.out.println(testcase.getRight().printSelf());
 		assertThat(nlParser.matchingNode(tokenize), equalTo(testcase.getRight()));
 	}
+	
+	
+	/**
+	 * contains natural language strings not matching any grammars
+	 * @return a stream of strings, containing natural language strings
+	 */
+	public static Stream<String> testWrongData() {
+		return Stream.of("test 10 blah minutes", "test 10 minute blah blah", "blah blah test 10 minute");
+	}
 
-	@Test
-	public void testWrongGrammar() {
+	/**
+	 * tests wrong hard coded natural language strings not matching any grammar
+	 * @param natLang natural language strings
+	*/
+	@ParameterizedTest
+	@MethodSource("testWrongData")
+	public void testWrongGrammar(String natLang) {
 		NLParser nlParser = new NLParser(grammars);
 		NLLexer lex = new NLLexer();
-		List<WordToken> tokenize = lex.tokenize("wrong grammar");
+		List<WordToken> tokenize = lex.tokenize(natLang);
+
 		assertThrows(NLParserException.class, () -> nlParser.matchingNodeIndex(tokenize));
+
 	}
+	
+	
 
 }

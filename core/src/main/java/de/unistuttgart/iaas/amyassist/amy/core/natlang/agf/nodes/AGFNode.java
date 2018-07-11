@@ -85,6 +85,24 @@ public class AGFNode  {
 	public AGFNodeType getType() {
 		return AGFNodeType.AGF;
 	}
+	
+	/**
+	 * equal to convenience method
+	 * @param node the AGFNode to compare to
+	 * @return success
+	 */
+	public boolean equalTo(AGFNode node) {
+		if(!this.getType().equals(node.getType())) return false;
+		if(!this.getContent().equals(node.getContent())) return false;
+		if(this.childs.size() != node.childs.size()) return false;
+		
+		for(int i = 0; i < this.childs.size(); i++) {
+			if(!this.childs.get(i).equalTo(node.getChilds().get(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	/**
 	 * helper method to pretty print
