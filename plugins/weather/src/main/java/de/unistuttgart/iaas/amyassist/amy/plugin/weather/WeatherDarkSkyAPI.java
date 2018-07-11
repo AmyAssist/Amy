@@ -49,7 +49,7 @@ public class WeatherDarkSkyAPI {
 	private static final String API_SECRET_CONFIG_KEY = "DARKSKY_API_SECRET";
 	
 	private FIODaily dailyReports;
-	private Calendar lastrequest;
+	private Calendar lastRequest;
 
 	private FIODaily getDailyReports() {
 		if(this.dailyReports == null || checkTime()) {
@@ -67,13 +67,22 @@ public class WeatherDarkSkyAPI {
 		return this.dailyReports;
 	}
 
+	/**
+	 * checks if the time of the last request is still actual and on the same day
+	 * 
+	 * @return true if the data is outdated, false if its actual
+	 */
 	private boolean checkTime() {
 		Calendar now = Calendar.getInstance();	
-		boolean sameDay = now.get(Calendar.YEAR) != this.lastrequest.get(Calendar.YEAR) 
-				|| now.get(Calendar.DAY_OF_YEAR) != this.lastrequest.get(Calendar.DAY_OF_YEAR);
+		boolean sameDay = now.get(Calendar.YEAR) == this.lastRequest.get(Calendar.YEAR) 
+				&& now.get(Calendar.DAY_OF_YEAR) == this.lastRequest.get(Calendar.DAY_OF_YEAR);
 		if(sameDay) {
-			return now.getTimeInMillis() - this.lastrequest.getTimeInMillis() > 60*60*1000;
+			boolean withinHour = now.getTimeInMillis() - this.lastRequest.getTimeInMillis() < 60*60*1000;
+			if(withinHour) {
+				return false;
+			}			
 		}
+		this.lastRequest = now;
 		return true;
 	}
 
