@@ -38,8 +38,11 @@ import java.lang.annotation.Target;
 @Target(java.lang.annotation.ElementType.METHOD)
 public @interface Grammar {
 	/**
-	 * TODO description
-	 * 
+	 * The string inside this annotation has to be in
+	 * Amy Grammar Format (AGF), a description and examples
+	 * can be found in the amy-assist wiki 
+	 * https://github.com/AmyAssist/Amy/wiki/Annotations
+	 *  
 	 * @return the grammar in AGF - Amy Grammar Format
 	 */
 	String value();
