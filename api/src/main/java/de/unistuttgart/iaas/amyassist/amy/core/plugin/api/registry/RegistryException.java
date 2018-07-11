@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.registry;
+package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
 
 /**
  * An exception in the registry.

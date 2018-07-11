@@ -23,10 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Location;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.LocationRegistry;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.*;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -39,7 +36,7 @@ import java.util.List;
 /**
  * Does the logic of the Hello World plugin
  * 
- * @author Tim Neumann
+ * @author Tim Neumann, Benno Krauß
  */
 @Service
 public class HelloWorldImpl implements HelloWorldService {
@@ -123,7 +120,7 @@ public class HelloWorldImpl implements HelloWorldService {
 	 */
 	@Override
 	public String testContactRegistry() {
-		try {
+		return performTest(() -> {
 			Contact personA = contacts.createNewEntity();
 			personA.setEmail("a@b.c");
 			personA.setFirstName("Max");
@@ -157,19 +154,17 @@ public class HelloWorldImpl implements HelloWorldService {
 
 			Contact c3 = contacts.getById(personAId);
 			assertTrue(c3 == null);
-			return "Tests successful";
-		} catch (TestException e) {
-			logger.warn("Registry test failed: ", e);
-			return "Tests failed: " + e.getMessage();
-		}
+		});
 	}
 
 	@Override
 	public String testLocationRegistry() {
-		try {
+		return performTest(() -> {
+			// Test that there are no locations to begin with
 			List<Location> pois = locationRegistry.getAll();
 			assertTrue(pois.isEmpty());
 
+			// Test creation of a location
 			Location work = locationRegistry.createNewEntity();
 			work.setCity("Stuttgart");
 			work.setZipCode("70563");
@@ -178,22 +173,48 @@ public class HelloWorldImpl implements HelloWorldService {
 			work.setLongitude(9.106600);
 			work.setLatitude(48.745172);
 			work.setWork(true);
+			work.setName("Uni");
 
+			// Test getAddressString method
 			assertTrue(work.getAddressString().equals("Universitätsstraße 38, 70563 Stuttgart"));
 
+			// Test entity saving
 			locationRegistry.save(work);
 
 			assertTrue(locationRegistry.getById(work.getId()).equals(work));
 
+			// Test getWork method
 			assertTrue(locationRegistry.getWork().equals(work));
 
+			// Test exclusivity of work attribute
+			Location city = locationRegistry.createNewEntity();
+			city.setWork(true);
+
+			try {
+				locationRegistry.save(city);
+				throw new TestException("Saving second 'work'-location didn't produce exception");
+			} catch (RegistryException e) {
+				// Test successful
+			}
+
+			// Test deletion
 			locationRegistry.deleteById(work.getId());
 
 			assertTrue(locationRegistry.getWork() == null);
+		});
+	}
 
+	@FunctionalInterface
+	private interface Test {
+		void test() throws HelloWorldImpl.TestException;
+	}
+
+	private String performTest(Test test) {
+		try {
+			test.test();
 			return "Test successful";
 		} catch (TestException e) {
-			logger.warn("Location registry test failed: ",e);
+			logger.warn("Test failed: ",e);
 			return "Tests failed: " + e.getMessage();
 		}
 	}
