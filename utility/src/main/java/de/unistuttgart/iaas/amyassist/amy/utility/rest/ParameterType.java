@@ -21,30 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
+package de.unistuttgart.iaas.amyassist.amy.utility.rest;
 
 /**
- * A contact entity for the contact registry
- *
- * @author Benno Krauß
+ * possible parameter types for methods
+ * 
+ * @author Christian Bräuner
  */
-public interface Contact {
-
-    String getFirstName();
-
-    void setFirstName(String firstName);
-
-    String getLastName();
-
-    void setLastName(String lastName);
-
-    boolean isImportant();
-
-    void setImportant(boolean important);
-
-    String getEmail();
-
-    void setEmail(String email);
-
-    int getId();
+public class ParameterType {
+	
+	/**
+	 * Integer (32bit)
+	 */
+	public static final String INTEGER = "int32"; 
+	/**
+	 * Long (64bit)
+	 */
+	public static final String LONG = "int64";
+	/**
+	 * String
+	 */
+	public static final String STRING = "string";
+	/**
+	 * Float
+	 */
+	public static final String FLOAT = "float"; 
+	
+	private ParameterType() {
+		
+	}
 }

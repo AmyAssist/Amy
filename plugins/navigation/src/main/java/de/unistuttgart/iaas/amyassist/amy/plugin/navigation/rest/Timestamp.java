@@ -25,13 +25,15 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
+
 /**
  * Timestamp class serves as entity for time and date
  * 
  * @author Muhammed Kaya
  */
 @XmlRootElement
-public class Timestamp {
+public class Timestamp extends Entity{
 
 	/**
 	 * the year of the new timestamp

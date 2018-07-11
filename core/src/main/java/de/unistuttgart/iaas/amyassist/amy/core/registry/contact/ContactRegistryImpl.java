@@ -24,9 +24,9 @@
 package de.unistuttgart.iaas.amyassist.amy.core.registry.contact;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
-import de.unistuttgart.iaas.amyassist.amy.core.registry.AbstractRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
+import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry;
 
 import javax.annotation.Nonnull;
 

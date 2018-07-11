@@ -23,28 +23,53 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
-import java.util.HashMap;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 
 /**
  * get and set the data to the registry. At the moment with hardcoded data while registry is not avaiable
+ * 
  * @author Lars Buttgereit
  */
 @Service
 public class RegistryConnection {
-	
-	HashMap<String, String> data = new HashMap<>();
-	
-	@PostConstruct
-	public void init() {
-		this.data.put("home", "Pforzheim");
-		this.data.put("work", "Stuttgart Universitätstraße 38");
-		this.data.put("mother", "München");
+
+	@Reference
+	private LocationRegistry locationRegistry;
+
+	/**
+	 * get the address from the registry with the given name
+	 * 
+	 * @param name
+	 *            name of the location
+	 * @return one String with all address data, to use for e.g. google maps queries
+	 */
+	public String getAddress(String name) {
+		switch (name.toLowerCase()) {
+		case "home":
+			if (this.locationRegistry.getHome() != null) {
+				return this.locationRegistry.getHome().getAddressString();
+			}
+			break;
+		case "work":
+			if (this.locationRegistry.getWork() != null) {
+				return this.locationRegistry.getWork().getAddressString();
+			}
+			break;
+		default:
+			return findOtherLocations(name);
+		}
+		return null;
 	}
-	
-	public String getAdresse(String thing) {
-		return this.data.get(thing);
+
+	private String findOtherLocations(String loc) {
+		for (Location location : this.locationRegistry.getAll()) {
+			if (location.getName().equals(loc)) {
+				return location.getAddressString();
+			}
+		}
+		return null;
 	}
 }

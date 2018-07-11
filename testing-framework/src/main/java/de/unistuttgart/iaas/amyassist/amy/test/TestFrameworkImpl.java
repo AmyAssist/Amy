@@ -25,14 +25,19 @@ package de.unistuttgart.iaas.amyassist.amy.test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.LogManager;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.UriBuilder;
 
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceNotFoundException;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -43,7 +48,7 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 /**
  * The Implementation of the TestFramework
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Tim Neumann
  */
 public class TestFrameworkImpl implements TestFramework {
 	static {
@@ -53,6 +58,9 @@ public class TestFrameworkImpl implements TestFramework {
 		// https://github.com/cmusphinx/sphinx4/blob/master/sphinx4-core/src/main/java/edu/cmu/sphinx/util/props/ConfigurationManagerUtils.java#L138
 		System.setProperty("java.util.logging.config.file", "");
 	}
+
+	private static final int TEST_SERVER_PORT = 50080;
+	private static final String TEST_SERVER_HOST = "127.0.0.1";
 
 	private IStorage storage;
 	private DependencyInjection dependencyInjection;
@@ -65,11 +73,25 @@ public class TestFrameworkImpl implements TestFramework {
 	public TestFrameworkImpl() {
 		this.storage = Mockito.mock(Storage.class,
 				Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS).useConstructor());
+
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
 		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
 		this.dependencyInjection.register(Server.class);
 		this.dependencyInjection.register(Logger.class, new LoggerProvider());
+	}
+
+	/**
+	 * Prepares the server.
+	 */
+	public void prepareServer() {
+		Properties serverConfig = new Properties();
+		serverConfig.setProperty(Server.PROPERTY_PORT, String.valueOf(TEST_SERVER_PORT));
+		serverConfig.setProperty(Server.PROPERTY_ROOT_PATH, "");
+		serverConfig.setProperty(Server.PROPERTY_LOCALHOST, "true");
+		ConfigurationLoader configLoader = this.registerService(ConfigurationLoader.class, TestConfiguration.class);
+		configLoader.store(Server.CONFIG_NAME, serverConfig);
+		this.server = this.dependencyInjection.getService(Server.class);
 	}
 
 	/**
@@ -86,7 +108,7 @@ public class TestFrameworkImpl implements TestFramework {
 	 */
 	public void before() {
 		if (!this.restResources.isEmpty()) {
-			this.server = this.dependencyInjection.getService(Server.class);
+			this.prepareServer();
 			this.server.start(this.restResources.toArray(new Class<?>[this.restResources.size()]));
 		}
 	}
@@ -127,11 +149,19 @@ public class TestFrameworkImpl implements TestFramework {
 	}
 
 	@Override
-	public void setRESTResource(Class<?> resource) {
+	public WebTarget setRESTResource(Class<?> resource) {
 		if (resource.isAnnotationPresent(Path.class)) {
 			this.restResources.add(resource);
 		} else {
 			throw new IllegalArgumentException("The Resource must have a @Path annotation");
 		}
+		return ClientBuilder.newClient()
+				.target(UriBuilder.fromResource(resource).scheme("http").host(TEST_SERVER_HOST).port(TEST_SERVER_PORT));
+	}
+
+	@Override
+	public <T> T registerService(Class<T> serviceType, Class<? extends T> serviceClass) {
+		this.dependencyInjection.register(serviceClass);
+		return this.dependencyInjection.getService(serviceType);
 	}
 }

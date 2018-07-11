@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
+package de.unistuttgart.iaas.amyassist.amy.utility.rest;
 
 /**
  * POJO mapping of a parameter
@@ -31,21 +31,41 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
 public class Parameter {
 
 	private String name;
-	private ParameterType type;
+	private String type;
 
+	/**
+	 * gets the name
+	 * 
+	 * @return the name
+	 */
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
+	/**
+	 * sets the name
+	 * 
+	 * @param name the new name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public ParameterType getType() {
-		return type;
+	/**
+	 * gets the type
+	 * 
+	 * @return the type
+	 */
+	public String getType() {
+		return this.type;
 	}
 
-	public void setType(ParameterType type) {
+	/**
+	 * sets the type
+	 * 
+	 * @param type the new type
+	 */
+	public void setType(String type) {
 		this.type = type;
 	}
 }

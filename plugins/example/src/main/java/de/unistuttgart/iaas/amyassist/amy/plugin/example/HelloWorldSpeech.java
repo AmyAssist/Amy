@@ -31,7 +31,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
 /**
  * A example plugin
  * 
- * @author Leon Kiefer, Tim Neumann
+ * @author Leon Kiefer, Tim Neumann, Benno Krauß
  */
 @SpeechCommand
 public class HelloWorldSpeech {
@@ -67,5 +67,15 @@ public class HelloWorldSpeech {
 	@Grammar("test contacts registry")
 	public String testContacts(String... params) {
 		return this.helloWorld.testContactRegistry();
+	}
+
+	@Grammar("test location registry")
+	public String testLocation(String... params) {
+		return this.helloWorld.testLocationRegistry();
+	}
+
+	@Grammar("test custom registry")
+	public String testCustom(String... params) {
+		return this.helloWorld.testCustomRegistry();
 	}
 }

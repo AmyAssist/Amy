@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import java.util.List;
+
 /**
  * The interface of our command line argument handler
  * 
@@ -33,16 +35,25 @@ public interface CommandLineArgumentHandler {
 	/**
 	 * @return whether the program should continue with normal execution considering these command line flags
 	 * @throws IllegalStateException
-	 *             When the CommandLineArgumentHandler is not initialized. (When {@link #init(String[]) init} was not
-	 *             called before.)
+	 *             When the CommandLineArgumentHandler is not initialized.
 	 */
 	boolean shouldProgramContinue();
 
 	/**
-	 * Get the alternate config path set by the command line flags.
+	 * Get the additional config paths set by the command line flags.
 	 * 
-	 * @return The alternate config path or null if none is set.
+	 * @return a list of config paths or null if none is set.
+	 * @throws IllegalStateException
+	 *             When the CommandLineArgumentHandler is not initialized.
 	 */
-	String getConfigPath();
+	List<String> getConfigPaths();
 
+	/**
+	 * Get a list of plugin paths
+	 * 
+	 * @return a list of paths or null if none was sepcified.
+	 * @throws IllegalStateException
+	 *             When the CommandLineArgumentHandler is not initialized.
+	 */
+	List<String> getPluginPaths();
 }

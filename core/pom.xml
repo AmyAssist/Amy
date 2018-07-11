@@ -61,24 +61,32 @@
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-utility</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-http-server</artifactId>
 			<version>${amy.http-server.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-plugin-manager-api</artifactId>
-			<version>0.4.0-Snapshot</version>
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-rest-resources</artifactId>
-			<version>0.4.0-Snapshot</version>
+			<version>${amy.rest-resources.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-testing-framework</artifactId>
 			<version>${amy.testing-framework.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-registry</artifactId>
+			<version>${amy.registry.version}</version>
 		</dependency>
 		<!-- CMU Sphinx for SR -->
 		<dependency>
