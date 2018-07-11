@@ -21,46 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
-
-import java.util.List;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
 /**
- * Abstract persistent registry interface
- *
+ * Location registry with special home, work functionality
  * @author Benno Krauß
- * @param <T> the entity type
  */
-public interface IRegistry<T> {
-
-    /**
-     * Create an instance of the entity class
-     * @return a new entity object
-     */
-    T createNewEntity();
-
-    /**
-     * Get all entities of this registry
-     * @return all entities
-     */
-    List<T> getAll();
-
-    /**
-     * Get the entity with this exact id
-     * @param id the primary key of the requested entity
-     * @return the entity instance with this id
-     */
-    T getById(Object id);
-
-    /**
-     * Persist an entity
-     * @param t the entity to be saved
-     */
-    void save(T t);
-
-    /**
-     * Delete an entity
-     * @param key the primary key of the entity
-     */
-    void deleteById(Object key);
+public interface LocationRegistry extends IRegistry<Location> {
+    Location getHome();
+    Location getWork();
 }

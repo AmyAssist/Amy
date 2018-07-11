@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.registry.location;
 
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
 
 import javax.persistence.*;
 import java.util.Objects;

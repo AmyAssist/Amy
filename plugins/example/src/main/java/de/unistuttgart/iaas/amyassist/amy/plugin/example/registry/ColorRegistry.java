@@ -21,31 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.registry.contact;
+package de.unistuttgart.iaas.amyassist.amy.plugin.example.registry;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
-import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 import de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry;
 
 import javax.annotation.Nonnull;
 
 /**
- * A contact registry
+ * Custom registry for testing
  *
  * @author Benno Krauß
  */
-@Service(ContactRegistry.class)
-public class ContactRegistryImpl extends AbstractRegistry<Contact> implements ContactRegistry {
+@Service(ColorRegistry.class)
+public class ColorRegistry extends AbstractRegistry<ColorEntity> {
 
     @Override
     protected String getPersistenceUnitName() {
-        return "ContactRegistry";
+        return "ColorRegistry";
     }
 
     @Nonnull
     @Override
-    public Class<? extends Contact> getEntityClass() {
-        return ContactImpl.class;
+    protected Class<? extends ColorEntity> getEntityClass() {
+        return ColorEntity.class;
     }
 }
