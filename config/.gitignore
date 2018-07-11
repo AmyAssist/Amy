@@ -1,3 +1,5 @@
 #Keep plugin config
 !plugin.config.properties
 !persistence.properties
+!core.config.properties
+!server.config.properties
