@@ -148,7 +148,6 @@ public class NavigationResource implements Resource {
 		ReadableInstant rtime = this.logic.whenIHaveToGo(origin, destination, mode, convert(arrivalTime));
 		if (rtime != null) {
 			return ZonedDateTime.parse(rtime.toString());
-
 		}
 		throw new WebApplicationException("No latest starttime found.", Status.NOT_FOUND);
 	}
@@ -220,7 +219,6 @@ public class NavigationResource implements Resource {
 	 */
 	private DateTime convert(ZonedDateTime zDateTime) {
 		DateTime dateTime = new DateTime(zDateTime.toInstant().toEpochMilli());
-		System.out.println(dateTime);
 		return dateTime;
 	}
 
