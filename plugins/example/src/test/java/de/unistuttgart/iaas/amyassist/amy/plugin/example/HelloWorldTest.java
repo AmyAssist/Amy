@@ -26,8 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.LocationRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

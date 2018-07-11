@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
 /**
- * Location registry with special home, work functionality
+ * Contact registry. A registry for contacts, doh.
+ *
  * @author Benno Krauß
  */
-public interface LocationRegistry extends IRegistry<Location> {
-    Location getHome();
-    Location getWork();
+
+public interface ContactRegistry extends IRegistry<Contact> {
 }

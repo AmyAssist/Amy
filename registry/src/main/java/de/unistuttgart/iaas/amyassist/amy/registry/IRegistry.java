@@ -21,18 +21,46 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
+package de.unistuttgart.iaas.amyassist.amy.registry;
+
+import java.util.List;
 
 /**
- * An exception in the registry.
+ * Abstract persistent registry interface
+ *
+ * @author Benno Krauß
+ * @param <T> the entity type
  */
-public class RegistryException extends RuntimeException {
+public interface IRegistry<T> {
 
     /**
-     * Create an exception
-     * @param message a useful error message
+     * Create an instance of the entity class
+     * @return a new entity object
      */
-    public RegistryException(String message) {
-        super(message);
-    }
+    T createNewEntity();
+
+    /**
+     * Get all entities of this registry
+     * @return all entities
+     */
+    List<T> getAll();
+
+    /**
+     * Get the entity with this exact id
+     * @param id the primary key of the requested entity
+     * @return the entity instance with this id
+     */
+    T getById(Object id);
+
+    /**
+     * Persist an entity
+     * @param t the entity to be saved
+     */
+    void save(T t);
+
+    /**
+     * Delete an entity
+     * @param key the primary key of the entity
+     */
+    void deleteById(Object key);
 }
