@@ -64,7 +64,7 @@ public class LocalDateTimeMessageBodyWriter implements MessageBodyWriter<LocalDa
 	@Override
 	public void writeTo(LocalDateTime t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
 			MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-			throws IOException, WebApplicationException {
+			throws IOException {
 		Writer writer = new PrintWriter(entityStream);
 		writer.write(t.toString());
 		writer.flush();

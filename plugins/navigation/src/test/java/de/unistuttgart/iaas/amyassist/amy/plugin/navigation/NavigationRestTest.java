@@ -67,7 +67,6 @@ class NavigationRestTest {
 	private TravelMode travelMode;
 	private BestTransportResult bestResult;
 	private DateTime dateTime;
-	private Entity<Timestamp> entity;
 	private ReadableInstant instant;
 
 	/**
@@ -229,7 +228,7 @@ class NavigationRestTest {
 		Mockito.when(this.logic.getBestTransportInTime(this.origin, this.destination, this.dateTime)).thenReturn(null);
 		response = this.target.path("best/2020-01-02T20:20:20Z").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
-				.post(this.entity);
+				.post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("No best transport type found."));
 		assertThat(response.getStatus(), is(404));

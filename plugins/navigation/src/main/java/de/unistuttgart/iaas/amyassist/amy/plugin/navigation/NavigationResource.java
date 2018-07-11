@@ -218,8 +218,7 @@ public class NavigationResource implements Resource {
 	 * @return converted DateTime
 	 */
 	private DateTime convert(ZonedDateTime zDateTime) {
-		DateTime dateTime = new DateTime(zDateTime.toInstant().toEpochMilli());
-		return dateTime;
+		return new DateTime(zDateTime.toInstant().toEpochMilli());
 	}
 
 	/**

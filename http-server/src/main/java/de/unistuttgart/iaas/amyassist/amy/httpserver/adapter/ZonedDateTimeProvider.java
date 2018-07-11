@@ -31,7 +31,7 @@ import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ParamConverterProvider;
 
 /**
- * A LocalDateTime provider to return LocalDateTimeParameterConverter according to ISO-8601
+ * A ZonedDateTime provider to return LocalDateTimeParameterConverter according to ISO-8601
  * 
  * @author Leon Kiefer, Muhammed Kaya
  */

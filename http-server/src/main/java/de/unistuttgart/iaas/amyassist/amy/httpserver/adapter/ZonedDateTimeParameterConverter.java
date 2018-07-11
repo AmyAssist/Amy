@@ -28,7 +28,7 @@ import java.time.ZonedDateTime;
 import javax.ws.rs.ext.ParamConverter;
 
 /**
- * A LocalDateTime parameter converter to parse and get Strings according to ISO-8601
+ * A ZonedDateTime parameter converter to parse and get Strings according to ISO-8601
  * 
  * @author Leon Kiefer, Muhammed Kaya
  */

@@ -39,7 +39,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
- * A LocalDateTime message body writer to write OutputStreams according to ISO-8601
+ * A ZonedDateTime message body writer to write OutputStreams according to ISO-8601
  * 
  * @author Leon Kiefer, Muhammed Kaya
  */
@@ -64,7 +64,7 @@ public class ZonedDateTimeMessageBodyWriter implements MessageBodyWriter<ZonedDa
 	@Override
 	public void writeTo(ZonedDateTime t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
 			MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-			throws IOException, WebApplicationException {
+			throws IOException {
 		Writer writer = new PrintWriter(entityStream);
 		writer.write(t.toString());
 		writer.flush();
