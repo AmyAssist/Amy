@@ -28,7 +28,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.registry.Location;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 
-
 /**
  * get and set the data to the registry. At the moment with hardcoded data while registry is not avaiable
  * 
@@ -45,18 +44,24 @@ public class RegistryConnection {
 	 * 
 	 * @param name
 	 *            name of the location
-	 * @return one String with all adress data, to use for e.g. google maps queries
+	 * @return one String with all address data, to use for e.g. google maps queries
 	 */
-	public String getAdress(String name) {
+	public String getAddress(String name) {
 		switch (name.toLowerCase()) {
 		case "home":
-			return this.locationRegistry.getHome().getAddressString();
+			if (this.locationRegistry.getHome() != null) {
+				return this.locationRegistry.getHome().getAddressString();
+			}
+			break;
 		case "work":
-			return this.locationRegistry.getWork().getAddressString();
+			if (this.locationRegistry.getWork() != null) {
+				return this.locationRegistry.getWork().getAddressString();
+			}
+			break;
 		default:
 			return findOtherLocations(name);
 		}
-
+		return null;
 	}
 
 	private String findOtherLocations(String loc) {

@@ -73,14 +73,14 @@ public class TestRegistryConnection {
 	public void testGetAdressHome() {
 		when(this.location.getAddressString()).thenReturn("Pforzheim");
 		when(this.registry.getHome()).thenReturn(this.location);
-		assertThat(this.connection.getAdress("Home"), equalTo("Pforzheim"));
+		assertThat(this.connection.getAddress("Home"), equalTo("Pforzheim"));
 	}
 
 	@Test
 	public void testGetAdressWork() {
 		when(this.location.getAddressString()).thenReturn("Pforzheim");
 		when(this.registry.getWork()).thenReturn(this.location);
-		assertThat(this.connection.getAdress("work"), equalTo("Pforzheim"));
+		assertThat(this.connection.getAddress("work"), equalTo("Pforzheim"));
 	}
 
 	@Test
@@ -92,7 +92,7 @@ public class TestRegistryConnection {
 		locations.add(this.location);
 		when(this.location2.getName()).thenReturn("other");
 		when(this.registry.getAll()).thenReturn(locations);
-		assertThat(this.connection.getAdress("friend"), equalTo("Pforzheim"));
+		assertThat(this.connection.getAddress("friend"), equalTo("Pforzheim"));
 	}
 
 	@Test
@@ -103,6 +103,16 @@ public class TestRegistryConnection {
 		locations.add(this.location);
 		when(this.location2.getName()).thenReturn("other");
 		when(this.registry.getAll()).thenReturn(locations);
-		assertThat(this.connection.getAdress("bla"), equalTo(null));
+		assertThat(this.connection.getAddress("bla"), equalTo(null));
+	}
+	
+	@Test
+	public void testGetAdressNoHome() {
+		assertThat(this.connection.getAddress("home"), equalTo(null));
+	}
+	
+	@Test
+	public void testGetAdressNoWork() {
+		assertThat(this.connection.getAddress("work"), equalTo(null));
 	}
 }
