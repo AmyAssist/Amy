@@ -103,7 +103,7 @@ public class Server {
 			local = "true";
 		}
 
-		if (local.equals("true"))
+		if (Boolean.parseBoolean(local))
 			return UriBuilder.fromPath(root).scheme("http").host(IP_LOCAL).port(port).build();
 		return UriBuilder.fromPath(root).scheme("http").host(IP_GLOBAL).port(port).build();
 	}
