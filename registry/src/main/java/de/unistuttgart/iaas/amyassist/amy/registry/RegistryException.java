@@ -21,30 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
 /**
- * A contact entity for the contact registry
- *
- * @author Benno Krauß
+ * An exception in the registry.
  */
-public interface Contact {
+public class RegistryException extends RuntimeException {
 
-    String getFirstName();
-
-    void setFirstName(String firstName);
-
-    String getLastName();
-
-    void setLastName(String lastName);
-
-    boolean isImportant();
-
-    void setImportant(boolean important);
-
-    String getEmail();
-
-    void setEmail(String email);
-
-    int getId();
+    /**
+     * Create an exception
+     * @param message a useful error message
+     */
+    public RegistryException(String message) {
+        super(message);
+    }
 }

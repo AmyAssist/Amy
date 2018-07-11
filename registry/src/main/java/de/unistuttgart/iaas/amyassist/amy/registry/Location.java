@@ -21,13 +21,51 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
 /**
- * Contact registry. A registry for contacts, doh.
- *
+ * Location object interface
  * @author Benno Krauß
  */
+public interface Location {
 
-public interface ContactRegistry extends IRegistry<Contact> {
+    int getId();
+
+    String getName();
+
+    void setName(String name);
+
+    String getZipCode();
+
+    void setZipCode(String zipCode);
+
+    String getCity();
+
+    void setCity(String city);
+
+    String getStreet();
+
+    void setStreet(String street);
+
+    int getHouseNumber();
+
+    void setHouseNumber(int houseNumber);
+
+    double getLongitude();
+
+    void setLongitude(double longitude);
+
+    double getLatitude();
+
+    void setLatitude(double latitude);
+
+    boolean isHome();
+
+    void setHome(boolean home);
+
+    boolean isWork();
+
+    void setWork(boolean work);
+
+    String getAddressString();
 }
