@@ -64,7 +64,8 @@ public class NavigationSpeech {
 	 */
 	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh # ")
 	public String goToAt(String... strings) {
-		if (this.registryConnection.getAdress(strings[4]) != null && this.registryConnection.getAdress(strings[2]) != null) {
+		if (this.registryConnection.getAdress(strings[4]) != null
+				&& this.registryConnection.getAdress(strings[2]) != null) {
 			ReadableInstant time = this.logic.whenIHaveToGo(this.registryConnection.getAdress(strings[4]),
 					this.registryConnection.getAdress(strings[2]), TravelMode.DRIVING,
 					formatTimes(Integer.parseInt(strings[8]), Integer.parseInt(strings[6])));
@@ -86,7 +87,8 @@ public class NavigationSpeech {
 	 */
 	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh # " + " by ( bus | train | transit )")
 	public String goToAtBy(String... strings) {
-		if (this.registryConnection.getAdress(strings[4]) != null && this.registryConnection.getAdress(strings[2]) != null) {
+		if (this.registryConnection.getAdress(strings[4]) != null
+				&& this.registryConnection.getAdress(strings[2]) != null) {
 			ReadableInstant time = this.logic.whenIHaveToGo(this.registryConnection.getAdress(strings[2]),
 					this.registryConnection.getAdress(strings[4]), TravelMode.TRANSIT,
 					formatTimes(Integer.parseInt(strings[8]), Integer.parseInt(strings[6])));
@@ -108,9 +110,11 @@ public class NavigationSpeech {
 	 */
 	@Grammar("best transport from " + LOCATIONS + " to " + LOCATIONS + " now")
 	public String bestRouteSM(String... strings) {
-		if (this.registryConnection.getAdress(strings[3]) != null && this.registryConnection.getAdress(strings[5]) != null) {
-			BestTransportResult result = this.logic.getBestTransportInTime(this.registryConnection.getAdress(strings[3]),
-					this.registryConnection.getAdress(strings[5]), DateTime.now());
+		if (this.registryConnection.getAdress(strings[3]) != null
+				&& this.registryConnection.getAdress(strings[5]) != null) {
+			BestTransportResult result = this.logic.getBestTransportInTime(
+					this.registryConnection.getAdress(strings[3]), this.registryConnection.getAdress(strings[5]),
+					DateTime.now());
 			return "The best transport Mode is ".concat(result.getMode().toString()).concat(".\n")
 					.concat(result.routeToShortString());
 		}
@@ -126,9 +130,12 @@ public class NavigationSpeech {
 	 */
 	@Grammar("from " + LOCATIONS + " to " + LOCATIONS + " by (car | transport | bike)")
 	public String routeFromTo(String... strings) {
-		if (this.registryConnection.getAdress(strings[3]) != null && this.registryConnection.getAdress(strings[5]) != null) {
-			return this.logic.fromTo(this.registryConnection.getAdress(strings[1]), this.registryConnection.getAdress(strings[3]),
-					this.logic.getTravelMode(strings[5])).routeToShortString();
+		if (this.registryConnection.getAdress(strings[3]) != null
+				&& this.registryConnection.getAdress(strings[5]) != null) {
+			return this.logic
+					.fromTo(this.registryConnection.getAdress(strings[1]),
+							this.registryConnection.getAdress(strings[3]), this.logic.getTravelMode(strings[5]))
+					.routeToShortString();
 		}
 		return WRONG_PLACE;
 	}
@@ -142,10 +149,11 @@ public class NavigationSpeech {
 	 */
 	@Grammar("from " + LOCATIONS + " to " + LOCATIONS + " by (car | transport | bike) at # oh #")
 	public String routeFromToWithTime(String... strings) {
-		if (this.registryConnection.getAdress(strings[1]) != null && this.registryConnection.getAdress(strings[3]) != null) {
+		if (this.registryConnection.getAdress(strings[3]) != null
+				&& this.registryConnection.getAdress(strings[5]) != null) {
 			return this.logic
-					.fromToWithDeparture(this.registryConnection.getAdress(strings[1]), this.registryConnection.getAdress(strings[3]),
-							this.logic.getTravelMode(strings[5]),
+					.fromToWithDeparture(this.registryConnection.getAdress(strings[1]),
+							this.registryConnection.getAdress(strings[3]), this.logic.getTravelMode(strings[5]),
 							formatTimes(Integer.parseInt(strings[9]), Integer.parseInt(strings[7])))
 					.routeToShortString();
 		}

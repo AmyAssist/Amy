@@ -25,8 +25,9 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Location;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.LocationRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
+
 
 /**
  * get and set the data to the registry. At the moment with hardcoded data while registry is not avaiable

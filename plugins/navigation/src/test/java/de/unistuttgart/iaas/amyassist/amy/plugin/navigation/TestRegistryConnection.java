@@ -37,8 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Location;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.LocationRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
