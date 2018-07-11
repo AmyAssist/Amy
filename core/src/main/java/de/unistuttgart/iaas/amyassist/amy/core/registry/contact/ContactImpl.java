@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.registry.contact;
 
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
+import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
 
 import javax.persistence.*;
 import java.util.Objects;

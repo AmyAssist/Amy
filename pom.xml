@@ -52,7 +52,8 @@
 		<module>plugins/systemtime</module>
 		<module>plugins/weather</module>
 		<module>plugins/navigation</module>
-      <module>utility</module>
+      	<module>utility</module>
+		<module>registry</module>
 	</modules>
 	<licenses>
 		<license>

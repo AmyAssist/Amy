@@ -23,7 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.*;
+import de.unistuttgart.iaas.amyassist.amy.plugin.example.registry.ColorEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.example.registry.ColorRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.*;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -56,6 +58,9 @@ public class HelloWorldImpl implements HelloWorldService {
 
 	@Reference
 	private LocationRegistry locationRegistry;
+
+	@Reference
+	private ColorRegistry colorRegistry;
 
 	@Override
 	public String helloWorld() {
@@ -201,6 +206,34 @@ public class HelloWorldImpl implements HelloWorldService {
 			locationRegistry.deleteById(work.getId());
 
 			assertTrue(locationRegistry.getWork() == null);
+		});
+	}
+
+	@Override
+	public String testCustomRegistry() {
+		return performTest(() -> {
+			// Probe if color registry is empty
+			assertTrue(colorRegistry.getAll().isEmpty());
+
+			// Create new entity, save entity
+			ColorEntity c1 = colorRegistry.createNewEntity();
+			c1.setRedComponent(0.1f);
+			c1.setGreenComponent(0.1f);
+			c1.setBlueComponent(0.1f);
+
+			colorRegistry.save(c1);
+
+			// Entity retrieval works
+			assertTrue(colorRegistry.getById(c1.getId()).equals(c1));
+
+			assertTrue(colorRegistry.getAll().size() == 1);
+
+			// Entity deletion works
+			colorRegistry.deleteById(c1.getId());
+
+			assertTrue(colorRegistry.getAll().isEmpty());
+
+			assertTrue(colorRegistry.getById(c1.getId()) == null);
 		});
 	}
 

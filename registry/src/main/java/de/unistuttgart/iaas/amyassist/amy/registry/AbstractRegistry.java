@@ -21,13 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.registry;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.IRegistry;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.RegistryException;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;

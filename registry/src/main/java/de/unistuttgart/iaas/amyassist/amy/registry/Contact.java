@@ -21,51 +21,30 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
 /**
- * Location object interface
+ * A contact entity for the contact registry
+ *
  * @author Benno Krauß
  */
-public interface Location {
+public interface Contact {
+
+    String getFirstName();
+
+    void setFirstName(String firstName);
+
+    String getLastName();
+
+    void setLastName(String lastName);
+
+    boolean isImportant();
+
+    void setImportant(boolean important);
+
+    String getEmail();
+
+    void setEmail(String email);
 
     int getId();
-
-    String getName();
-
-    void setName(String name);
-
-    String getZipCode();
-
-    void setZipCode(String zipCode);
-
-    String getCity();
-
-    void setCity(String city);
-
-    String getStreet();
-
-    void setStreet(String street);
-
-    int getHouseNumber();
-
-    void setHouseNumber(int houseNumber);
-
-    double getLongitude();
-
-    void setLongitude(double longitude);
-
-    double getLatitude();
-
-    void setLatitude(double latitude);
-
-    boolean isHome();
-
-    void setHome(boolean home);
-
-    boolean isWork();
-
-    void setWork(boolean work);
-
-    String getAddressString();
 }
