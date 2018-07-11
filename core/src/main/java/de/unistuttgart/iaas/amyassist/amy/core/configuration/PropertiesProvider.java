@@ -46,7 +46,7 @@ public class PropertiesProvider implements ServiceFunction<Properties> {
 	public Properties getService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies,
 			Map<String, ?> context) {
 		ConfigurationLoader configurationLoader = (ConfigurationLoader) resolvedDependencies
-				.get(Util.serviceDescriptionFor(ConfigurationLoaderImpl.class)).build();
+				.get(Util.serviceDescriptionFor(ConfigurationLoader.class)).build();
 		IPlugin plugin = (IPlugin) context.get(Context.PLUGIN);
 		String uniqueName = plugin.getUniqueName();
 		return configurationLoader.load(uniqueName);
@@ -54,7 +54,7 @@ public class PropertiesProvider implements ServiceFunction<Properties> {
 
 	@Override
 	public Collection<ServiceDescription<?>> getDependencies() {
-		return Collections.singleton(Util.serviceDescriptionFor(ConfigurationLoaderImpl.class));
+		return Collections.singleton(Util.serviceDescriptionFor(ConfigurationLoader.class));
 	}
 
 	@Override
