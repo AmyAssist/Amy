@@ -40,9 +40,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 

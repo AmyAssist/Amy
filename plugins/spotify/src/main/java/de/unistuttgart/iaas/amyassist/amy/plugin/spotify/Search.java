@@ -40,7 +40,7 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 
 /**
  * This class create search query to the spotify web api and parse the results in a String or in a Hashmap with

@@ -38,8 +38,8 @@ import com.wrapper.spotify.model_objects.specification.Track;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 
 /**
  * This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music
@@ -123,7 +123,7 @@ public class PlayerLogic {
 	public String setDevice(int deviceNumber) {
 		List<DeviceEntity> devices = getDevices();
 		if (devices.size() > deviceNumber) {
-			this.spotifyAPICalls.setCurrentDevice(devices.get(deviceNumber).getID());
+			this.spotifyAPICalls.setCurrentDevice(devices.get(deviceNumber).getUri());
 			return devices.get(deviceNumber).getName();
 		}
 		this.logger.warn("No device with this number was found");
