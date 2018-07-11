@@ -25,9 +25,11 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
 import java.net.URI;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.hk2.api.TypeLiteral;
@@ -35,8 +37,8 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -45,31 +47,76 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
 /**
  * A class to create a http server
  * 
- * @author Christian Bräuner, Leon Kiefer
+ * @author Christian Bräuner, Leon Kiefer, Tim Neumann
  */
 @Service
-public class Server{
-	private final Logger logger = LoggerFactory.getLogger(Server.class);
+public class Server {
+	/** The name of the config used by this class */
+	public static final String CONFIG_NAME = "server.config";
+	/** The name of the property, which specifies the port */
+	public static final String PROPERTY_PORT = "port";
+	/** The name of the property, which specifies the root path of the server */
+	public static final String PROPERTY_ROOT_PATH = "root_path";
+	/** The name of the property, which specifies whether the server should bind to local host only. */
+	public static final String PROPERTY_LOCALHOST = "local_host_only";
+
+	/**
+	 * The ip used, when the server should only be accessible from localhost
+	 */
+	public static final String IP_LOCAL = "127.0.0.1";
+	/**
+	 * The ip used, when the server should be accessible from anywhere
+	 */
+	public static final String IP_GLOBAL = "0.0.0.0";
 
 	@Reference
-	private ServiceLocator di;
+	private Logger logger;
+
+	/**
+	 * The dependency injection instance, needed for binding the di to the server
+	 */
+	@Reference
+	ServiceLocator di;
+
 	private Set<Class<?>> restResources = new HashSet<>();
 	private HttpServer httpServer;
 
+	@Reference
+	private ConfigurationLoader configurationLoader;
+
 	/**
-	 * the URI of the server
+	 * @return the URI of the server
 	 */
-	public static final URI BASE_URI = URI.create("http://localhost:8080/rest");
+	private URI baseURI() {
+		Properties conf = this.configurationLoader.load(CONFIG_NAME);
+		int port = Integer.parseInt(conf.getProperty(PROPERTY_PORT, "8080"));
+		String root = conf.getProperty(PROPERTY_ROOT_PATH);
+		String local = conf.getProperty(PROPERTY_LOCALHOST);
+
+		if (root == null) {
+			this.logger.warn("Server config missing key {}.", PROPERTY_ROOT_PATH);
+			root = "rest";
+		}
+
+		if (local == null) {
+			this.logger.warn("Server config missing key {}.", PROPERTY_LOCALHOST);
+			local = "true";
+		}
+
+		if (Boolean.parseBoolean(local))
+			return UriBuilder.fromPath(root).scheme("http").host(IP_LOCAL).port(port).build();
+		return UriBuilder.fromPath(root).scheme("http").host(IP_GLOBAL).port(port).build();
+	}
 
 	/**
 	 * creates and starts the HttpServer
 	 * 
-	 * @param classes the resource classes
+	 * @param classes
+	 *            the resource classes
 	 */
 	public void start(Class<?>... classes) {
-		if (this.httpServer != null) {
+		if (this.httpServer != null)
 			throw new IllegalStateException("The Server is already started");
-		}
 		this.logger.info("start the server");
 
 		ResourceConfig resourceConfig = new ResourceConfig(classes);
@@ -83,23 +130,32 @@ public class Server{
 				});
 			}
 		});
-		this.httpServer = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, resourceConfig);
+		this.httpServer = GrizzlyHttpServerFactory.createHttpServer(this.baseURI(), resourceConfig);
 	}
 
 	/**
 	 * shutdown the server if the server is running
 	 */
 	public void shutdown() {
-		if (this.httpServer == null) {
+		if (this.httpServer == null)
 			throw new IllegalStateException("The Server is not running");
-		}
 		this.logger.info("shutdown the server");
 		this.httpServer.shutdownNow();
 		this.httpServer = null;
 	}
 
 	/**
-	 * @param cls a resource class
+	 * Checks whether the server is running
+	 * 
+	 * @return whether the server is running
+	 */
+	public boolean isRunning() {
+		return (this.httpServer != null);
+	}
+
+	/**
+	 * @param cls
+	 *            a resource class
 	 */
 	public void register(Class<?> cls) {
 		if (!cls.isAnnotationPresent(Path.class)) {
@@ -111,5 +167,4 @@ public class Server{
 			throw new IllegalStateException("The Server is already started");
 		this.restResources.add(cls);
 	}
-
 }

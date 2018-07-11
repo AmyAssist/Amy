@@ -29,7 +29,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.registry.contact.ContactRegistryI
 import de.unistuttgart.iaas.amyassist.amy.core.registry.location.LocationRegistryImpl;
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
@@ -64,7 +64,7 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 		di.register(ConfigurationImpl.class);
 		di.register(Console.class);
 		di.register(SpeechCommandHandler.class);
-		di.register(ConfigurationLoader.class);
+		di.register(ConfigurationLoaderImpl.class);
 		di.register(PluginLoader.class);
 		di.register(PluginManagerService.class);
 		di.register(EnvironmentService.class);

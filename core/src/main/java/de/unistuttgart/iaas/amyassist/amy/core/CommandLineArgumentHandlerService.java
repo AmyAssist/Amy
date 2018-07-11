@@ -23,7 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 import asg.cliche.Command;
@@ -37,7 +39,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 @Service
 public class CommandLineArgumentHandlerService implements CommandLineArgumentHandler {
 
-	private Map<Flag, String> parameters;
+	private Map<Flag, List<String>> flags;
 
 	private boolean flagsValid = true;
 
@@ -48,43 +50,94 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 	 *            The command line arguments.
 	 */
 	public void init(String[] args) {
-		this.parameters = new EnumMap<>(Flag.class);
-		Flag flagExpectingPara = null;
-		for (String s : args) {
-			if (flagExpectingPara != null) {
-				this.parameters.put(flagExpectingPara, s);
-				flagExpectingPara = null;
+		this.flags = new EnumMap<>(Flag.class);
+
+		FlagParameterInformation flagParaInfo = new FlagParameterInformation(null);
+		for (String arg : args) {
+			if (flagParaInfo.getRemainingParaCount() > 0) {
+				processFlagParameter(flagParaInfo, arg);
 				continue;
 			}
-			Flag f = Flag.getFlagFromString(s);
-			if (f == null) {
-				output("Unknown command line flag: " + s + ". Run with -h for help.");
-				this.flagsValid = false;
+			flagParaInfo = processNewFlag(arg);
+			if (flagParaInfo == null)
 				return;
-			}
+		}
 
-			if (f.hasParameter()) {
-				flagExpectingPara = f;
+		if (flagParaInfo.getRemainingParaCount() > 0) {
+			output("Missing parameter for last flag.");
+			this.flagsValid = false;
+			return;
+		}
+
+		output("This is Amy. Copyright (c) 2018 the Amy project authors. For help run with flag -h.");
+
+	}
+
+	/**
+	 * Processes the argument strin as a new flag
+	 * 
+	 * @param arg
+	 *            The string argument
+	 * @return The new {@link FlagParameterInformation} object
+	 */
+	private FlagParameterInformation processNewFlag(String arg) {
+		Flag f = Flag.getFlagFromString(arg);
+
+		if (f == null) {
+			output("Unknown command line flag: " + arg + ". Run with -h for help.");
+			this.flagsValid = false;
+			return null;
+		}
+
+		if (this.flags.containsKey(f) && !f.canRepeat()) {
+			output("Duplicate command line flag: " + arg + ". Run with -h for help.");
+			this.flagsValid = false;
+			return null;
+		}
+
+		FlagParameterInformation info = new FlagParameterInformation(f);
+
+		if (info.getRemainingParaCount() <= 0) {
+			this.flags.put(f, null);
+		}
+
+		switch (f) {
+		case HELP:
+			printHelp();
+			break;
+		case VERSION:
+			output(version());
+			break;
+		case NOTICE:
+			output(notice());
+			break;
+		default:
+			// All other flags don't do anything immediately.
+			break;
+		}
+
+		return info;
+	}
+
+	/**
+	 * Processes the argument string as a flag parameter to the Flag specified in flagParaInfo
+	 * 
+	 * @param flagParaInfo
+	 *            The current {@link FlagParameterInformation} object
+	 * @param arg
+	 *            The string argument
+	 */
+	private void processFlagParameter(FlagParameterInformation flagParaInfo, String arg) {
+		flagParaInfo.getParas().add(arg);
+		flagParaInfo.decreaseRemainingParaCount();
+		if (flagParaInfo.getRemainingParaCount() == 0) {
+			if (this.flags.containsKey(flagParaInfo.getFlag())) {
+				List<String> existingParas = this.flags.get(flagParaInfo.getFlag());
+				existingParas.addAll(flagParaInfo.getParas());
 			} else {
-				this.parameters.put(f, "");
-			}
-
-			switch (f) {
-			case HELP:
-				printHelp();
-				return;
-			case VERSION:
-				output(version());
-				return;
-			case NOTICE:
-				output(notice());
-				return;
-			default:
-				// All other flags don't do anything immediately.
-				break;
+				this.flags.put(flagParaInfo.getFlag(), flagParaInfo.getParas());
 			}
 		}
-		output("This is Amy. Copyright (c) 2018 the Amy project authors. For help run with flag -h.");
 	}
 
 	/**
@@ -92,23 +145,35 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 	 */
 	@Override
 	public boolean shouldProgramContinue() {
-		if (this.parameters == null)
-			throw new IllegalStateException("Not initialiozed.");
+		if (this.flags == null)
+			throw new NotInitializedException();
 		if (!this.flagsValid)
 			return false;
-		for (Flag f : this.parameters.keySet()) {
-			if (f.isStopExecutaion())
+		for (Flag f : this.flags.keySet()) {
+			if (f.isStopExecution())
 				return false;
 		}
 		return true;
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#getConfigPath()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#getConfigPaths()
 	 */
 	@Override
-	public String getConfigPath() {
-		return this.parameters.get(Flag.CONFIG);
+	public List<String> getConfigPaths() {
+		if (this.flags == null)
+			throw new NotInitializedException();
+		return this.flags.get(Flag.CONFIG);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#getPluginPaths()
+	 */
+	@Override
+	public List<String> getPluginPaths() {
+		if (this.flags == null)
+			throw new NotInitializedException();
+		return this.flags.get(Flag.PLUGIN);
 	}
 
 	private void printHelp() {
@@ -177,40 +242,124 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 		System.out.println(s);
 	}
 
+	/**
+	 * A data structure to contain all information required while reading the parameters of a flag
+	 * 
+	 * @author Tim Neumann
+	 */
+	private class FlagParameterInformation {
+		/**
+		 * The flag that this information is for.
+		 */
+		private Flag flag;
+
+		/**
+		 * The count of parameters still expecting
+		 */
+		private int remainingParaCount;
+
+		/**
+		 * The parameters already found.
+		 */
+		private List<String> paras;
+
+		/**
+		 * Creates a new flag parameter information.
+		 * 
+		 * @param flag
+		 *            The flag the parameters are for
+		 */
+		public FlagParameterInformation(Flag flag) {
+			this.flag = flag;
+			if (flag != null) {
+				this.remainingParaCount = flag.getParameterCount();
+			} else {
+				this.remainingParaCount = 0;
+			}
+			this.paras = new ArrayList<>(this.remainingParaCount);
+		}
+
+		/**
+		 * Get's {@link #flag flag}
+		 * 
+		 * @return flag
+		 */
+		public Flag getFlag() {
+			return this.flag;
+		}
+
+		/**
+		 * Decreases {@link #remainingParaCount paraCount}
+		 * 
+		 */
+		public void decreaseRemainingParaCount() {
+			this.remainingParaCount--;
+		}
+
+		/**
+		 * Get's {@link #remainingParaCount paraCount}
+		 * 
+		 * @return paraCount
+		 */
+		public int getRemainingParaCount() {
+			return this.remainingParaCount;
+		}
+
+		/**
+		 * Get's {@link #paras paras}
+		 * 
+		 * @return paras
+		 */
+		public List<String> getParas() {
+			return this.paras;
+		}
+	}
+
 	private enum Flag {
 		/**
 		 * The help flag.
 		 */
-		HELP("-h", "--help", "Prints a help message", true, false),
+		HELP("-h", "--help", "Prints a help message", true, 0, false),
 
 		/**
 		 * The version flag
 		 */
-		VERSION("-v", "--version", "Prints out the version.", true, false),
+		VERSION("-v", "--version", "Prints out the version.", true, 0, false),
 
 		/**
 		 * The license notice flag
 		 */
-		NOTICE("", "--notice", "Prints out the license notice.", true, false),
+		NOTICE("", "--notice", "Prints out the license notice.", true, 0, false),
 
 		/**
 		 * The config dir flag
 		 */
-		CONFIG("-c", "--config <path>", "Set a alternate location for the config directory", false, true);
+		CONFIG("-c", "--config <path>", "Add a alternate location for the config directory."
+				+ "Can be used multiple times to add multiple config directorys.", false, 1, true),
+
+		/**
+		 * The plugin url flag
+		 */
+		PLUGIN("-p", "--plugin <path>",
+				"Load the plugin found at the following path. "
+						+ "Ignore the plugin conf. Can be used multiple times to load more then one plugin.",
+				false, 1, true);
 
 		private String shortVariant;
 		private String longVariant;
 		private String description;
-		private boolean hasParameter;
-		private boolean stopExecutaion;
+		private int parameterCount;
+		private boolean stopExecution;
+		private boolean canRepeat;
 
-		Flag(String pShortVariant, String pLongVariant, String pDescription, boolean pStopExecution,
-				boolean pHasParameter) {
+		Flag(String pShortVariant, String pLongVariant, String pDescription, boolean pStopExecution, int parameterCount,
+				boolean pCanRepeat) {
 			this.shortVariant = pShortVariant;
 			this.longVariant = pLongVariant;
 			this.description = pDescription;
-			this.hasParameter = pHasParameter;
-			this.stopExecutaion = pStopExecution;
+			this.parameterCount = parameterCount;
+			this.stopExecution = pStopExecution;
+			this.canRepeat = pCanRepeat;
 		}
 
 		/**
@@ -256,22 +405,30 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 		}
 
 		/**
-		 * Get's {@link #hasParameter hasParameter}
+		 * Get's {@link #parameterCount hasParameter}
 		 *
 		 * @return hasParameter
 		 */
-		public boolean hasParameter() {
-			return this.hasParameter;
+		public int getParameterCount() {
+			return this.parameterCount;
 		}
 
 		/**
-		 * Get's {@link #stopExecutaion stopExecutaion}
+		 * Get's {@link #stopExecution stopExecution}
 		 *
-		 * @return stopExecutaion
+		 * @return stopExecution
 		 */
-		public boolean isStopExecutaion() {
-			return this.stopExecutaion;
+		public boolean isStopExecution() {
+			return this.stopExecution;
 		}
 
+		/**
+		 * Get's {@link #canRepeat canRepeat}
+		 * 
+		 * @return canRepeat
+		 */
+		public boolean canRepeat() {
+			return this.canRepeat;
+		}
 	}
 }

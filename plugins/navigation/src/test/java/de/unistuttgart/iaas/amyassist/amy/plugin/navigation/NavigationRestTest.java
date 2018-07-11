@@ -23,8 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -37,13 +38,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest.Timestamp;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
@@ -78,12 +75,8 @@ class NavigationRestTest {
 	 */
 	@BeforeEach
 	public void setUp() {
-		this.testFramework.setRESTResource(NavigationResource.class);
+		this.target = this.testFramework.setRESTResource(NavigationResource.class);
 		this.logic = this.testFramework.mockService(DirectionApiLogic.class);
-
-		Client c = ClientBuilder.newClient();
-		this.target = c.target(Server.BASE_URI);
-
 		initInputs();
 	}
 
@@ -112,7 +105,7 @@ class NavigationRestTest {
 		Mockito.when(this.logic.getTravelMode("driving")).thenReturn(this.travelMode);
 		Mockito.when(this.logic.fromTo(this.origin, this.destination, this.travelMode)).thenReturn(this.bestResult);
 
-		Response response = this.target.path("navigation").path("fromTo").queryParam("origin", this.origin)
+		Response response = this.target.path("fromTo").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request().post(null);
 		BestTransportResult actual = response.readEntity(BestTransportResult.class);
 		assertThat(actual.getRoute().bounds, is(this.bestResult.getRoute().bounds));
@@ -123,10 +116,10 @@ class NavigationRestTest {
 		assertThat(actual.getMode(), is(this.bestResult.getMode()));
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).fromTo(this.origin, this.destination, this.travelMode);
-		
+
 		Mockito.when(this.logic.fromToWithDeparture(this.origin, this.destination, this.travelMode, this.dateTime))
 				.thenReturn(this.bestResult);
-		response = this.target.path("navigation").path("fromTo").queryParam("origin", this.origin)
+		response = this.target.path("fromTo").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
 				.post(this.entity);
 		actual = response.readEntity(BestTransportResult.class);
@@ -139,14 +132,14 @@ class NavigationRestTest {
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).fromToWithDeparture(this.origin, this.destination, this.travelMode, this.dateTime);
 
-		response = this.target.path("navigation").path("fromTo").queryParam("destination", null)
-				.queryParam("travelMode", "driving").request().post(null);
+		response = this.target.path("fromTo").queryParam("destination", null).queryParam("travelMode", "driving")
+				.request().post(null);
 		String actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Missing origin and/or destination input."));
 		assertThat(response.getStatus(), is(409));
 
 		Mockito.when(this.logic.getTravelMode("blabla")).thenReturn(null);
-		response = this.target.path("navigation").path("fromTo").queryParam("origin", this.origin)
+		response = this.target.path("fromTo").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).queryParam("travelMode", "blabla").request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Enter a correct travel mode."));
@@ -155,7 +148,7 @@ class NavigationRestTest {
 
 		Mockito.when(this.logic.getTravelMode("walking")).thenReturn(TravelMode.WALKING);
 		Mockito.when(this.logic.fromTo(this.origin, this.destination, TravelMode.WALKING)).thenReturn(null);
-		response = this.target.path("navigation").path("fromTo").queryParam("origin", this.origin)
+		response = this.target.path("fromTo").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).queryParam("travelMode", "walking").request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("No route found."));
@@ -174,7 +167,7 @@ class NavigationRestTest {
 		Mockito.when(this.logic.whenIHaveToGo(this.origin, this.destination, this.travelMode, this.dateTime))
 				.thenReturn(this.instant);
 
-		Response response = this.target.path("navigation").path("when").queryParam("origin", this.origin)
+		Response response = this.target.path("when").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
 				.post(this.entity);
 		Timestamp actual = response.readEntity(Timestamp.class);
@@ -183,21 +176,21 @@ class NavigationRestTest {
 
 		Mockito.when(this.logic.whenIHaveToGo(this.origin, this.destination, this.travelMode, this.dateTime))
 				.thenReturn(null);
-		response = this.target.path("navigation").path("when").queryParam("origin", this.origin)
+		response = this.target.path("when").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
 				.post(this.entity);
 		String actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("No latest starttime found."));
 		assertThat(response.getStatus(), is(404));
 
-		response = this.target.path("navigation").path("when").queryParam("destination", null)
-				.queryParam("travelMode", "driving").request().post(this.entity);
+		response = this.target.path("when").queryParam("destination", null).queryParam("travelMode", "driving")
+				.request().post(this.entity);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Missing origin and/or destination input."));
 		assertThat(response.getStatus(), is(409));
 
 		Mockito.when(this.logic.getTravelMode("blabla")).thenReturn(null);
-		response = this.target.path("navigation").path("when").queryParam("origin", this.origin)
+		response = this.target.path("when").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).queryParam("travelMode", "blabla").request()
 				.post(this.entity);
 		actualMsg = response.readEntity(String.class);
@@ -214,9 +207,8 @@ class NavigationRestTest {
 	void testGetBestTransportInTime() {
 		Mockito.when(this.logic.getBestTransportInTime(this.origin, this.destination, this.dateTime))
 				.thenReturn(this.bestResult);
-		Response response = this.target.path("navigation").path("best").queryParam("origin", this.origin)
-				.queryParam("destination", this.destination).request()
-				.post(this.entity);
+		Response response = this.target.path("best").queryParam("origin", this.origin)
+				.queryParam("destination", this.destination).request().post(this.entity);
 		BestTransportResult actual = response.readEntity(BestTransportResult.class);
 		assertThat(actual.getRoute().bounds, is(this.bestResult.getRoute().bounds));
 		assertThat(actual.getRoute().copyrights, is(this.bestResult.getRoute().copyrights));
@@ -227,13 +219,13 @@ class NavigationRestTest {
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).getBestTransportInTime(this.origin, this.destination, this.dateTime);
 
-		response = this.target.path("navigation").path("best").queryParam("destination", null).request().post(null);
+		response = this.target.path("best").queryParam("destination", null).request().post(null);
 		String actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Missing origin and/or destination input."));
 		assertThat(response.getStatus(), is(409));
 
 		Mockito.when(this.logic.getBestTransportInTime(this.origin, this.destination, this.dateTime)).thenReturn(null);
-		response = this.target.path("navigation").path("best").queryParam("origin", this.origin)
+		response = this.target.path("best").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
 				.post(this.entity);
 		actualMsg = response.readEntity(String.class);
