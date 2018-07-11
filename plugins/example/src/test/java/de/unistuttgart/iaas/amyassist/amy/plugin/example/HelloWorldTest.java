@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
+import de.unistuttgart.iaas.amyassist.amy.plugin.example.registry.ColorRegistry;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +55,7 @@ public class HelloWorldTest {
 	public void setup() {
 		testFramework.mockService(ContactRegistry.class);
 		testFramework.mockService(LocationRegistry.class);
+		testFramework.mockService(ColorRegistry.class);
 		helloWorld = this.testFramework.setServiceUnderTest(HelloWorldImpl.class);
 	}
 

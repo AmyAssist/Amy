@@ -56,4 +56,10 @@ public interface HelloWorldService {
 	 * @return human-readable text
 	 */
     String testLocationRegistry();
+
+	/**
+	 * Test custom registry
+	 * @return human-readable text
+	 */
+	String testCustomRegistry();
 }
