@@ -47,12 +47,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
 public class NavigationSpeech {
 
 	private static final String LOCATIONS = "(home|work|mother)";
+	private static final String WRONG_PLACE = "One or more places are not in the registry";
 
 	@Reference
 	private DirectionApiLogic logic;
 
 	@Reference
-	private RegistryConnection registry;
+	private RegistryConnection registryConnection;
 
 	/**
 	 * speech command for 'be at' feature
@@ -63,14 +64,17 @@ public class NavigationSpeech {
 	 */
 	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh # ")
 	public String goToAt(String... strings) {
-		ReadableInstant time = this.logic.whenIHaveToGo(this.registry.getAdresse(strings[4]),
-				this.registry.getAdresse(strings[2]), TravelMode.DRIVING,
-				formatTimes(Integer.parseInt(strings[8]), Integer.parseInt(strings[6])));
-		if (time != null) {
-			return "You should go at ".concat(String.valueOf(time.get(DateTimeFieldType.hourOfDay()))).concat(":")
-					.concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
+		if (this.registryConnection.getAdress(strings[4]) != null && this.registryConnection.getAdress(strings[2]) != null) {
+			ReadableInstant time = this.logic.whenIHaveToGo(this.registryConnection.getAdress(strings[4]),
+					this.registryConnection.getAdress(strings[2]), TravelMode.DRIVING,
+					formatTimes(Integer.parseInt(strings[8]), Integer.parseInt(strings[6])));
+			if (time != null) {
+				return "You should go at ".concat(String.valueOf(time.get(DateTimeFieldType.hourOfDay()))).concat(":")
+						.concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
+			}
+			return "You are to late";
 		}
-		return "You are to late";
+		return WRONG_PLACE;
 	}
 
 	/**
@@ -80,16 +84,19 @@ public class NavigationSpeech {
 	 *            input
 	 * @return output string
 	 */
-	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh # "+  " by ( bus | train | transit )")
+	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh # " + " by ( bus | train | transit )")
 	public String goToAtBy(String... strings) {
-		ReadableInstant time = this.logic.whenIHaveToGo(this.registry.getAdresse(strings[2]),
-				this.registry.getAdresse(strings[4]), TravelMode.TRANSIT,
-				formatTimes(Integer.parseInt(strings[8]), Integer.parseInt(strings[6])));
-		if (time != null) {
-			return "You should go at ".concat(String.valueOf(time.get(DateTimeFieldType.hourOfDay()))).concat(":")
-					.concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
+		if (this.registryConnection.getAdress(strings[4]) != null && this.registryConnection.getAdress(strings[2]) != null) {
+			ReadableInstant time = this.logic.whenIHaveToGo(this.registryConnection.getAdress(strings[2]),
+					this.registryConnection.getAdress(strings[4]), TravelMode.TRANSIT,
+					formatTimes(Integer.parseInt(strings[8]), Integer.parseInt(strings[6])));
+			if (time != null) {
+				return "You should go at ".concat(String.valueOf(time.get(DateTimeFieldType.hourOfDay()))).concat(":")
+						.concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
+			}
+			return "You are to late";
 		}
-		return "You are to late";
+		return WRONG_PLACE;
 	}
 
 	/**
@@ -101,10 +108,13 @@ public class NavigationSpeech {
 	 */
 	@Grammar("best transport from " + LOCATIONS + " to " + LOCATIONS + " now")
 	public String bestRouteSM(String... strings) {
-		BestTransportResult result = this.logic.getBestTransportInTime(this.registry.getAdresse(strings[3]),
-				this.registry.getAdresse(strings[5]), DateTime.now());
-		return "The best transport Mode is ".concat(result.getMode().toString()).concat(".\n")
-				.concat(result.routeToShortString());
+		if (this.registryConnection.getAdress(strings[3]) != null && this.registryConnection.getAdress(strings[5]) != null) {
+			BestTransportResult result = this.logic.getBestTransportInTime(this.registryConnection.getAdress(strings[3]),
+					this.registryConnection.getAdress(strings[5]), DateTime.now());
+			return "The best transport Mode is ".concat(result.getMode().toString()).concat(".\n")
+					.concat(result.routeToShortString());
+		}
+		return WRONG_PLACE;
 	}
 
 	/**
@@ -116,8 +126,11 @@ public class NavigationSpeech {
 	 */
 	@Grammar("from " + LOCATIONS + " to " + LOCATIONS + " by (car | transport | bike)")
 	public String routeFromTo(String... strings) {
-		return this.logic.fromTo(this.registry.getAdresse(strings[1]), this.registry.getAdresse(strings[3]),
-				this.logic.getTravelMode(strings[5])).routeToShortString();
+		if (this.registryConnection.getAdress(strings[3]) != null && this.registryConnection.getAdress(strings[5]) != null) {
+			return this.logic.fromTo(this.registryConnection.getAdress(strings[1]), this.registryConnection.getAdress(strings[3]),
+					this.logic.getTravelMode(strings[5])).routeToShortString();
+		}
+		return WRONG_PLACE;
 	}
 
 	/**
@@ -129,9 +142,14 @@ public class NavigationSpeech {
 	 */
 	@Grammar("from " + LOCATIONS + " to " + LOCATIONS + " by (car | transport | bike) at # oh #")
 	public String routeFromToWithTime(String... strings) {
-		return this.logic.fromToWithDeparture(this.registry.getAdresse(strings[1]),
-				this.registry.getAdresse(strings[3]), this.logic.getTravelMode(strings[5]),
-				formatTimes(Integer.parseInt(strings[9]), Integer.parseInt(strings[7]))).routeToShortString();
+		if (this.registryConnection.getAdress(strings[1]) != null && this.registryConnection.getAdress(strings[3]) != null) {
+			return this.logic
+					.fromToWithDeparture(this.registryConnection.getAdress(strings[1]), this.registryConnection.getAdress(strings[3]),
+							this.logic.getTravelMode(strings[5]),
+							formatTimes(Integer.parseInt(strings[9]), Integer.parseInt(strings[7])))
+					.routeToShortString();
+		}
+		return WRONG_PLACE;
 	}
 
 	/**
