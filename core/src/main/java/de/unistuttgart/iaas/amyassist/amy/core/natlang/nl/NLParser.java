@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParseException;
