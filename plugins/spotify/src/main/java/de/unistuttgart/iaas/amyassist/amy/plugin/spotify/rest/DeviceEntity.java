@@ -25,13 +25,15 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
+
 /**
  * Device Entity for JSON
  * 
  * @author Muhammed Kaya
  */
 @XmlRootElement
-public class DeviceEntity {
+public class DeviceEntity extends Entity{
 
 	/**
 	 * constructor for a Device

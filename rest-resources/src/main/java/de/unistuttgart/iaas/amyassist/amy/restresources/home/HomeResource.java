@@ -101,7 +101,7 @@ public class HomeResource {
 		SimplePluginEntity config = new SimplePluginEntity();
 		config.setName("Configuration");
 		config.setDescription("Configurations for this Amy instance and installed plugins");
-		config.setLink(this.uriInfo.getBaseUri().toString() + "config");
+		config.setLink(this.uriInfo.getBaseUriBuilder().path("config").toString());
 		return config;
 	}
 

@@ -23,27 +23,23 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import com.github.dvdme.ForecastIOLib.FIODaily;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import com.eclipsesource.json.JsonObject;
+import com.github.dvdme.ForecastIOLib.FIODaily;
 import com.github.dvdme.ForecastIOLib.FIODataPoint;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -67,11 +63,8 @@ public class WeatherRestTest {
 
 	@BeforeEach
 	public void setUp() {
-		this.testFramework.setRESTResource(WeatherResource.class);
+		this.target = this.testFramework.setRESTResource(WeatherResource.class);
 		this.logic = this.testFramework.mockService(WeatherDarkSkyAPI.class);
-
-		Client c = ClientBuilder.newClient();
-		this.target = c.target(Server.BASE_URI);
 
 		this.createDay();
 		this.createWeek();
@@ -91,6 +84,7 @@ public class WeatherRestTest {
 		this.day = new WeatherReportDay("This is the weather report for today.", p);
 
 		this.obj = new JsonObject();
+		this.obj.add("link", this.day.getLink().toString());
 		this.obj.add("summary", this.day.getSummary());
 		this.obj.add("precip", this.day.isPrecip());
 		this.obj.add("precipProbability", this.day.getPrecipProbability());
@@ -116,9 +110,9 @@ public class WeatherRestTest {
 	void testGetWeatherToday() {
 		Mockito.when(this.logic.getReportToday()).thenReturn(this.day);
 
-		Response response = this.target.path("weather").path("today").request().get();
+		Response response = this.target.path("today").request().get();
 
-		assertThat(response.getStatus(), is(200));
+		assertThat(response, status(200));
 		assertEquals(this.obj.toString(), response.readEntity(String.class));
 	}
 
@@ -129,9 +123,9 @@ public class WeatherRestTest {
 	void testGetWeatherTomorrow() {
 		Mockito.when(this.logic.getReportTomorrow()).thenReturn(this.day);
 
-		Response response = this.target.path("weather").path("tomorrow").request().get();
+		Response response = this.target.path("tomorrow").request().get();
 
-		assertThat(response.getStatus(), is(200));
+		assertThat(response, status(200));
 		assertEquals(this.obj.toString(), response.readEntity(String.class));
 	}
 
@@ -142,9 +136,9 @@ public class WeatherRestTest {
 	void testGetWeatherWeek() {
 		Mockito.when(this.logic.getReportWeek()).thenReturn(this.week);
 
-		Response response = this.target.path("weather").path("week").request().get();
+		Response response = this.target.path("week").request().get();
 
-		assertThat(response.getStatus(), is(200));
+		assertThat(response, status(200));
 		assertTrue(response.readEntity(String.class).contains(this.week.summary));
 	}
 

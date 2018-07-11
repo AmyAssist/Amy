@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
 import com.github.dvdme.ForecastIOLib.FIODataPoint;
 
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.text.SimpleDateFormat;
@@ -33,7 +35,7 @@ import java.util.Date;
 import static java.lang.Math.round;
 
 @XmlRootElement
-public class WeatherReportDay {
+public class WeatherReportDay extends Entity{
 	private final String preamble;
 	private final String summary;
 	private final boolean precip;

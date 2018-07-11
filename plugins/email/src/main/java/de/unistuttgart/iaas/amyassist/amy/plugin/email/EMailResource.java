@@ -35,6 +35,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 /**
  * Rest Resource for email
@@ -42,7 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  * @author Muhammed Kaya
  */
 @Path(EMailResource.PATH)
-public class EMailResource {
+public class EMailResource implements Resource{
 
 	/**
 	 * the resource path for this plugin
@@ -141,6 +143,14 @@ public class EMailResource {
 	@Path("close")
 	public void closeInbox() {
 		this.logic.closeInbox();
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 */
+	@Override
+	public ResourceEntity getPluginDescripion() {
+		return null;
 	}
 
 }

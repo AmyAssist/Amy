@@ -21,18 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.registry;
+package de.unistuttgart.iaas.amyassist.amy.test;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * An exception in the registry.
+ * Simple in-memory ConfigurationLoader implementation for tests
+ * 
+ * @author Leon Kiefer
  */
-public class RegistryException extends RuntimeException {
+@Service
+public class TestConfiguration implements ConfigurationLoader {
 
-    /**
-     * Create an exception
-     * @param message a useful error message
-     */
-    public RegistryException(String message) {
-        super(message);
-    }
+	private Map<String, Properties> map = new HashMap<>();
+
+	@Override
+	public Properties load(String configurationName) {
+		return this.map.get(configurationName);
+	}
+
+	@Override
+	public void store(String configurationName, Properties properties) {
+		this.map.put(configurationName, properties);
+	}
+
 }

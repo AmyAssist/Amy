@@ -21,14 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
 /**
- * The possible Http Methods
- * 
- * @author Christian Bräuner
+ * Location registry with special home, work functionality
+ * @author Benno Krauß
  */
-public enum MethodType {
-
-	GET, POST, DELETE;
+public interface LocationRegistry extends IRegistry<Location> {
+    Location getHome();
+    Location getWork();
 }

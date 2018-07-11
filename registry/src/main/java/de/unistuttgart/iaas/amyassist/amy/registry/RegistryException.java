@@ -21,13 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
 /**
- * Contact registry. A registry for contacts, doh.
- *
- * @author Benno Krauß
+ * An exception in the registry.
  */
+public class RegistryException extends RuntimeException {
 
-public interface ContactRegistry extends IRegistry<Contact> {
+    /**
+     * Create an exception
+     * @param message a useful error message
+     */
+    public RegistryException(String message) {
+        super(message);
+    }
 }

@@ -29,6 +29,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 /**
  * REST Resource for weather
@@ -36,7 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  * @author Muhammed Kaya, Christian Bräuner
  */
 @Path("weather")
-public class WeatherResource {
+public class WeatherResource implements Resource{
 
 	@Reference
 	private WeatherDarkSkyAPI weatherLogic;
@@ -75,6 +77,14 @@ public class WeatherResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public WeatherReportWeek getWeatherWeek() {
 		return this.weatherLogic.getReportWeek();
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 */
+	@Override
+	public ResourceEntity getPluginDescripion() {
+		return null;
 	}
 
 }

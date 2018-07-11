@@ -21,40 +21,34 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.rest;
+package de.unistuttgart.iaas.amyassist.amy.utility.rest;
+
+import java.net.URI;
 
 /**
- * POJO-mapping of JSON method object
+ * Base class for all rest entities
  * 
  * @author Christian Bräuner
  */
-public class Method {
+public abstract class Entity {
 
-	private String link;
-	private String description;
-	private MethodType type;
-
-	public String getLink() {
-		return link;
+	private URI link;
+	
+	/**
+	 * gets the link of the entity
+	 * 
+	 * @return the link of the entity
+	 */
+	public URI getLink() {
+		return this.link != null ? this.link : URI.create("");
 	}
 
-	public void setLink(String link) {
+	/**
+	 * sets the link of the entity
+	 * 
+	 * @param link the link to set
+	 */
+	public void setLink(URI link) {
 		this.link = link;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public MethodType getType() {
-		return type;
-	}
-
-	public void setType(MethodType type) {
-		this.type = type;
 	}
 }

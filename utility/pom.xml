@@ -1,0 +1,16 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>amy-utility</artifactId>
+	<name>Amy utility</name>
+	<description>Utility classes for plugins</description>
+	<parent>
+		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<artifactId>amy</artifactId>
+		<version>0.4.0-Snapshot</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<dependencies>
+	</dependencies>
+</project>
