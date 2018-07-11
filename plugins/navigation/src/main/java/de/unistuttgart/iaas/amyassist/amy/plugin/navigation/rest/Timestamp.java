@@ -23,9 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest;
 
+import java.time.ZonedDateTime;
+
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.ZonedDateTimeAdapter;
 
 /**
  * Timestamp class serves as entity for time and date
@@ -33,7 +37,26 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
  * @author Muhammed Kaya
  */
 @XmlRootElement
-public class Timestamp extends Entity{
+public class Timestamp extends Entity {
+	
+	@XmlJavaTypeAdapter(ZonedDateTimeAdapter.class)
+	private ZonedDateTime dateTime;
+
+	/**
+	 * Get's {@link #dateTime dateTime}
+	 * @return  dateTime
+	 */
+	public ZonedDateTime getDateTime() {
+		return this.dateTime;
+	}
+
+	/**
+	 * Set's {@link #dateTime dateTime}
+	 * @param dateTime  dateTime
+	 */
+	public void setDateTime(ZonedDateTime dateTime) {
+		this.dateTime = dateTime;
+	}
 
 	/**
 	 * the year of the new timestamp

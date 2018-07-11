@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response;
 import org.joda.time.DateTime;
 import org.joda.time.ReadableInstant;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -51,6 +52,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * @author Muhammed Kaya
  */
 @ExtendWith(FrameworkExtension.class)
+@Disabled
 class NavigationRestTest {
 
 	@Reference
