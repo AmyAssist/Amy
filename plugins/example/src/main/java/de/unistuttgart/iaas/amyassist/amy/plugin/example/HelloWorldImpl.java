@@ -231,7 +231,7 @@ public class HelloWorldImpl implements HelloWorldService {
 			// Entity deletion works
 			colorRegistry.deleteById(c1.getId());
 
-			assertTrue(colorRegistry.getAll().size() == 0);
+			assertTrue(colorRegistry.getAll().isEmpty());
 
 			assertTrue(colorRegistry.getById(c1.getId()) == null);
 		});
