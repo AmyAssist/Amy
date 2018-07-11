@@ -49,8 +49,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
-import uk.org.lidalia.slf4jtest.TestLogger;
-import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 /**
  * Test IO of ConfigurationLoader
@@ -122,14 +120,10 @@ class ConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadFromConf3() {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
-
 		Properties prop1 = this.configurationLoader.load("test1");
 		Assertions.assertEquals("conf3", prop1.getProperty("Test1"),
 				"test1.properties should be loaded from config3, but the value of Test1 is wrong");
 		Assertions.assertEquals(1, prop1.size(), "test1.properties should only contain one element");
-
-		assertThat(testLogger.getLoggingEvents(), is(empty()));
 	}
 
 	/**
@@ -137,14 +131,10 @@ class ConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadFromConf2() {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
-
 		Properties prop2 = this.configurationLoader.load("test2");
 		Assertions.assertEquals("conf2", prop2.getProperty("Test2"),
 				"test2.properties should be loaded from config2, but the value of Test2 is wrong");
 		Assertions.assertEquals(1, prop2.size(), "test2.properties should only contain one element");
-
-		assertThat(testLogger.getLoggingEvents(), is(empty()));
 	}
 
 	/**
@@ -152,14 +142,10 @@ class ConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadFromConf1() {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
-
 		Properties prop3 = this.configurationLoader.load("test3");
 		Assertions.assertEquals("conf1", prop3.getProperty("Test3"),
 				"test3.properties should be loaded from config1, but the value of Test3 is wrong");
 		Assertions.assertEquals(1, prop3.size(), "test3.properties should only contain one element");
-
-		assertThat(testLogger.getLoggingEvents(), is(empty()));
 	}
 
 	/**
@@ -167,14 +153,10 @@ class ConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadFromConf0() {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
-
 		Properties prop4 = this.configurationLoader.load("test4");
 		Assertions.assertEquals("conf0", prop4.getProperty("Test4"),
 				"test4.properties should be loaded from config, but the value of Test4 is wrong");
 		Assertions.assertEquals(1, prop4.size(), "test4.properties should only contain one element");
-
-		assertThat(testLogger.getLoggingEvents(), is(empty()));
 	}
 
 	/**
@@ -185,8 +167,6 @@ class ConfigurationLoaderTest {
 	 */
 	@Test
 	void testStoreExistingFile() throws IOException {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
-
 		Properties prop1 = this.configurationLoader.load("test1");
 		Properties prop2 = this.configurationLoader.load("test2");
 		Properties prop3 = this.configurationLoader.load("test3");
@@ -234,7 +214,6 @@ class ConfigurationLoaderTest {
 		assertThat("config3/test1.properties should have been written to.",
 				readFile(this.tempDir.resolve("config3").resolve("test1.properties")), containsString(searchString));
 
-		assertThat(testLogger.getLoggingEvents(), is(empty()));
 	}
 
 	/**
@@ -242,14 +221,12 @@ class ConfigurationLoaderTest {
 	 */
 	@Test
 	void testStoreNewFile() {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(ConfigurationLoaderImpl.class);
 		Properties properties = new Properties();
 		properties.setProperty("simpleKey", "test value!!");
 
 		this.configurationLoader.store("test", properties);
 
 		assertThat(Files.exists(this.tempDir.resolve("config3").resolve("test.properties")), is(true));
-		assertThat(testLogger.getLoggingEvents(), is(empty()));
 	}
 
 	/**
