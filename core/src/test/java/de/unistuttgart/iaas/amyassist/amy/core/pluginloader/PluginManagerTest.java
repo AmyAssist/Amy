@@ -23,10 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -42,11 +46,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import uk.org.lidalia.slf4jtest.TestLogger;
+import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 /**
  * Test the PluginManager
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Tim Neumann
  */
 @ExtendWith(FrameworkExtension.class)
 class PluginManagerTest {
@@ -56,17 +62,29 @@ class PluginManagerTest {
 	private PluginManager serviceUnderTest;
 	private Properties properties;
 
+	private Path tempDir;
+
 	@BeforeEach
-	void setup() {
+	void setup() throws IOException {
 		this.testFramework.mockService(DependencyInjection.class);
 		this.testFramework.mockService(PluginLoader.class);
-		this.testFramework.mockService(CommandLineArgumentHandler.class);
-		ConfigurationLoader configurationLoader = this.testFramework.mockService(ConfigurationLoader.class);
-		Environment environment = this.testFramework.mockService(Environment.class);
-		when(environment.getWorkingDirectory()).thenReturn(Paths.get("").toAbsolutePath());
 
+		this.tempDir = Files.createTempDirectory(PluginManagerService.class.getName());
+		this.tempDir.toFile().deleteOnExit();
+		Environment environment = this.testFramework.mockService(Environment.class);
+		when(environment.getWorkingDirectory()).thenReturn(this.tempDir);
+
+		Files.createDirectory(this.tempDir.resolve("plugins"));
+
+		CommandLineArgumentHandler cmaHandler = this.testFramework.mockService(CommandLineArgumentHandler.class);
+		when(cmaHandler.getPluginPaths()).thenReturn(null);
+
+		ConfigurationLoader configurationLoader = this.testFramework.mockService(ConfigurationLoader.class);
 		this.properties = new Properties();
-		configurationLoader.store("plugin.config", this.properties);
+		this.properties.setProperty("pluginDir", "plugins");
+		this.properties.setProperty("plugins", "");
+		this.properties.setProperty("mode", "dev");
+		when(configurationLoader.load("plugin.config")).thenReturn(this.properties);
 
 		this.testFramework.mockService(SpeechCommandHandler.class);
 		this.testFramework.mockService(Persistence.class);
@@ -76,8 +94,6 @@ class PluginManagerTest {
 
 	@Test
 	void testCantLoadTwice() {
-		this.properties.setProperty("pluginDir", "");
-		this.properties.setProperty("plugins", "");
 
 		this.serviceUnderTest.loadPlugins();
 		assertThrows(IllegalStateException.class, () -> this.serviceUnderTest.loadPlugins());
@@ -85,11 +101,12 @@ class PluginManagerTest {
 
 	@Test
 	void testPluginNotFound() {
-		this.properties.setProperty("pluginDir", "");
+		TestLogger testLogger = TestLoggerFactory.getTestLogger(PluginManagerService.class);
 		this.properties.setProperty("plugins", "testPlugin");
 
 		this.serviceUnderTest.loadPlugins();
-
+		assertThat(testLogger, hasLogged(warn("The plugin {} does not exist in the plugin directory.",
+				this.tempDir.resolve("plugins").resolve("testPlugin"))));
 	}
 
 }
