@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
-import javax.sound.sampled.LineListener;
-
 /**
  * Interface for the TextToSpeech
  * 
@@ -35,15 +33,18 @@ public interface Output {
 	/**
 	 * Method to Voice and Log output the input String
 	 * 
-	 * @param listener
-	 *            Listener for the Voice Output Clip
 	 * @param s
 	 *            String that shall be said
 	 */
-	void output(LineListener listener, String s);
+	void output(String s);
 
 	/**
 	 * stop the OutputClip
 	 */
 	void stopOutput();
+
+	/**
+	 * @return whether this output is currently outputting information.
+	 */
+	boolean isCurrentlyOutputting();
 }
