@@ -25,8 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver.adapter;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.Writer;
+import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
@@ -64,7 +63,7 @@ public class LocalDateTimeMessageBodyWriter implements MessageBodyWriter<LocalDa
 	public void writeTo(LocalDateTime t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
 			MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
 			throws IOException {
-		Writer writer = new PrintWriter(entityStream);
+		OutputStreamWriter writer = new OutputStreamWriter(entityStream, "ISO-8859-1");
 		writer.write(t.toString());
 		writer.flush();
 		writer.close();

@@ -75,7 +75,6 @@ public class NavigationResource implements Resource {
 	 */
 	@POST
 	@Path("fromTo")
-	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public BestTransportResult routeFromTo(@QueryParam("origin") @DefaultValue("") String origin,
 			@QueryParam("destination") @DefaultValue("") String destination,
@@ -89,7 +88,7 @@ public class NavigationResource implements Resource {
 		}
 		throw new WebApplicationException("No route found.", Status.NOT_FOUND);
 	}
-	
+
 	/**
 	 * Find the best route from A to B with a given departure time
 	 * 
@@ -114,7 +113,8 @@ public class NavigationResource implements Resource {
 		checkOriginDestination(origin, destination);
 		checkTravelMode(travelMode);
 		TravelMode mode = this.logic.getTravelMode(travelMode);
-		BestTransportResult bestRoute = this.logic.fromToWithDeparture(origin, destination, mode, convert(departureTime));
+		BestTransportResult bestRoute = this.logic.fromToWithDeparture(origin, destination, mode,
+				convert(departureTime));
 		if (bestRoute != null) {
 			return bestRoute;
 		}
@@ -138,7 +138,7 @@ public class NavigationResource implements Resource {
 	@POST
 	@Path("when/{arrivalTime}")
 	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
 	public ZonedDateTime whenIHaveToGo(@QueryParam("origin") @DefaultValue("") String origin,
 			@QueryParam("destination") @DefaultValue("") String destination,
 			@QueryParam("travelMode") String travelMode, @PathParam("arrivalTime") ZonedDateTime arrivalTime) {

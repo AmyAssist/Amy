@@ -23,11 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
-import java.util.Arrays;
-
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsRoute;
@@ -116,11 +112,9 @@ public class BestTransportResult {
 						.concat(LONG_AND_NEED.concat(leg.duration.humanReadable)).concat(" time");
 			default:
 				break;
-
 			}
 		}
 		return "";
-
 	}
 
 	/**
@@ -130,12 +124,7 @@ public class BestTransportResult {
 	public boolean equals(Object obj) {
 		if (obj instanceof BestTransportResult) {
 			BestTransportResult best = (BestTransportResult) obj;
-			return this.mode == best.mode && this.route.bounds == best.route.bounds
-					&& this.route.copyrights == best.route.copyrights && this.route.fare == best.route.fare
-					&& this.route.overviewPolyline == best.route.overviewPolyline
-					&& this.route.summary == best.route.summary && this.route.legs.length == best.route.legs.length
-					&& Arrays.equals(this.route.warnings, best.route.warnings)
-					&& Arrays.equals(this.route.waypointOrder, best.route.waypointOrder);
+			return this.mode.equals(best.mode) && this.route.equals(best.route);
 		}
 		return false;
 	}
@@ -145,7 +134,11 @@ public class BestTransportResult {
 	 */
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(17, 31).append(this.mode).append(this.route).toHashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mode == null) ? 0 : mode.hashCode());
+		result = prime * result + ((route == null) ? 0 : route.hashCode());
+		return result;
 	}
 
 }
