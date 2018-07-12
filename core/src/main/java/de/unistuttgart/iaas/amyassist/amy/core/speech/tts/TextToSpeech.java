@@ -64,8 +64,6 @@ public class TextToSpeech implements Output {
 	private Thread currentAudioWriterThread;
 	private Queue<Thread> nextAudioWriterThreads;
 
-	private AudioFormat audioFormat;
-
 	@PostConstruct
 	private void init() {
 		this.nextAudioWriterThreads = new ConcurrentLinkedQueue<>();
@@ -77,13 +75,13 @@ public class TextToSpeech implements Output {
 			this.mary.setVoice(voice.getName());
 
 			// We need to do this, because the audio format depends on the voice of mary
-			this.audioFormat = voice.dbAudioFormat();
+			AudioFormat audioFormat = voice.dbAudioFormat();
 
-			if (!AudioSystem.isLineSupported(new DataLine.Info(SourceDataLine.class, this.audioFormat))) {
+			if (!AudioSystem.isLineSupported(new DataLine.Info(SourceDataLine.class, audioFormat))) {
 				this.logger.error("The Audio System does not support the required ");
 			} else {
-				this.outputLine = AudioSystem.getSourceDataLine(this.audioFormat);
-				this.outputLine.open(this.audioFormat);
+				this.outputLine = AudioSystem.getSourceDataLine(audioFormat);
+				this.outputLine.open(audioFormat);
 				this.outputLine.start();
 			}
 		} catch (MaryConfigurationException | LineUnavailableException e) {
@@ -140,7 +138,7 @@ public class TextToSpeech implements Output {
 		try {
 			this.nextAudioWriterThreads.add(
 					new Thread(new AudioWriter(this.mary.generateAudio(s), this.outputLine, WAIT_TIME_AFTER_SPEECH)));
-			new Thread(() -> startNextAudioWriterThread()).run();
+			new Thread(this::startNextAudioWriterThread).start();
 		} catch (SynthesisException e) {
 			this.logger.error("output error", e);
 		}
@@ -160,6 +158,7 @@ public class TextToSpeech implements Output {
 			this.currentAudioWriterThread.join();
 		} catch (InterruptedException e) {
 			this.logger.warn("Was interrupted while waiting for old thread to finnish", e);
+			Thread.currentThread().interrupt();
 		}
 		this.currentAudioWriterThread = this.nextAudioWriterThreads.poll();
 		if (this.currentAudioWriterThread == null)
