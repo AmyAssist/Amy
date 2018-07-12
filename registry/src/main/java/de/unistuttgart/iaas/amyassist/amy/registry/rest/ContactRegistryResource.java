@@ -23,17 +23,17 @@
 
 package de.unistuttgart.iaas.amyassist.amy.registry.rest;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.Location;
-import de.unistuttgart.iaas.amyassist.amy.registry.LocationImpl;
-import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
+import de.unistuttgart.iaas.amyassist.amy.registry.ContactImpl;
+import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 
 import javax.ws.rs.Path;
 
 /**
- * location registry REST resource
+ * Contact registry REST resource
  *
  * @author Benno Krauß
  */
-@Path("registry/location")
-public class LocationRegistryResource extends AbstractRegistryResource<LocationRegistry, Location, LocationImpl, Integer> {
+@Path("registry/contact/")
+public class ContactRegistryResource extends AbstractRegistryResource<ContactRegistry, Contact, ContactImpl, Integer> {
 }
