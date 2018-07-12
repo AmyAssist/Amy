@@ -21,43 +21,32 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.io;
+package de.unistuttgart.iaas.amyassist.amy.httpserver.adapter;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.time.ZonedDateTime;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import javax.ws.rs.ext.ParamConverter;
+import javax.ws.rs.ext.ParamConverterProvider;
 
 /**
- * The Service implementation of the Environment
+ * A ZonedDateTime provider to return LocalDateTimeParameterConverter according to ISO-8601
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Muhammed Kaya
  */
-@Service
-public class EnvironmentService implements Environment {
+public class ZonedDateTimeProvider implements ParamConverterProvider {
 
-	private Path workingDirectory;
-
-	@PostConstruct
-	private void init() {
-		this.workingDirectory = Paths.get("");
-	}
-
+	/**
+	 * @see javax.ws.rs.ext.ParamConverterProvider#getConverter(java.lang.Class, java.lang.reflect.Type,
+	 *      java.lang.annotation.Annotation[])
+	 */
 	@Override
-	public Path getWorkingDirectory() {
-		return this.workingDirectory;
+	public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
+		if (rawType.equals(ZonedDateTime.class)) {
+			return (ParamConverter<T>) new ZonedDateTimeParameterConverter();
+		}
+		return null;
 	}
 
-	@Override
-	public LocalDateTime getCurrentLocalDateTime() {
-		return LocalDateTime.now();
-	}
-
-	@Override
-	public ZonedDateTime getCurrentDateTime() {
-		return ZonedDateTime.now();
-	}
 }

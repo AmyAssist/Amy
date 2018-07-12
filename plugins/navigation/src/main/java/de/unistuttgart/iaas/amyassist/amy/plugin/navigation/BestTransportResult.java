@@ -32,7 +32,7 @@ import com.google.maps.model.TravelMode;
 /**
  * This class is needed to store the best route and the transport type
  * 
- * @author Lars Buttgereit
+ * @author Lars Buttgereit, Muhammed Kaya
  */
 @XmlRootElement
 public class BestTransportResult {
@@ -41,12 +41,12 @@ public class BestTransportResult {
 
 	private static final String THE_ROUTE_IS = "The route is ";
 	private static final String LONG_AND_NEED = " long and need ";
-	
+
 	/**
 	 * constructor
 	 */
 	public BestTransportResult() {
-		//Needed for JSON
+		// Needed for JSON
 	}
 
 	/**
@@ -112,11 +112,33 @@ public class BestTransportResult {
 						.concat(LONG_AND_NEED.concat(leg.duration.humanReadable)).concat(" time");
 			default:
 				break;
-
 			}
 		}
 		return "";
+	}
 
+	/**
+	 * @see java.lang.Object#equals
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof BestTransportResult) {
+			BestTransportResult best = (BestTransportResult) obj;
+			return this.mode.equals(best.mode) && this.route.equals(best.route);
+		}
+		return false;
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mode == null) ? 0 : mode.hashCode());
+		result = prime * result + ((route == null) ? 0 : route.hashCode());
+		return result;
 	}
 
 }

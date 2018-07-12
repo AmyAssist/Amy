@@ -21,43 +21,32 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.io;
+package de.unistuttgart.iaas.amyassist.amy.httpserver.adapter;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import javax.ws.rs.ext.ParamConverter;
 
 /**
- * The Service implementation of the Environment
+ * A LocalDateTime parameter converter to parse and get Strings according to ISO-8601
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Muhammed Kaya
  */
-@Service
-public class EnvironmentService implements Environment {
+public class LocalDateTimeParameterConverter implements ParamConverter<LocalDateTime> {
 
-	private Path workingDirectory;
-
-	@PostConstruct
-	private void init() {
-		this.workingDirectory = Paths.get("");
-	}
-
+	/**
+	 * @see javax.ws.rs.ext.ParamConverter#fromString(java.lang.String)
+	 */
 	@Override
-	public Path getWorkingDirectory() {
-		return this.workingDirectory;
+	public LocalDateTime fromString(String value) {
+		return LocalDateTime.parse(value);
 	}
 
+	/**
+	 * @see javax.ws.rs.ext.ParamConverter#toString(java.lang.Object)
+	 */
 	@Override
-	public LocalDateTime getCurrentLocalDateTime() {
-		return LocalDateTime.now();
+	public String toString(LocalDateTime value) {
+		return value.toString();
 	}
 
-	@Override
-	public ZonedDateTime getCurrentDateTime() {
-		return ZonedDateTime.now();
-	}
 }
