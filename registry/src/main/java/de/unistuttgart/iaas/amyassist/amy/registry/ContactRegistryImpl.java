@@ -21,12 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.registry.contact;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
-import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
-import de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry;
 
 import javax.annotation.Nonnull;
 

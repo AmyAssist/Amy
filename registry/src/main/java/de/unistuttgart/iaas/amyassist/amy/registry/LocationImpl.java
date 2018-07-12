@@ -21,9 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.registry.location;
-
-import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
 import javax.persistence.*;
 import java.util.Objects;
