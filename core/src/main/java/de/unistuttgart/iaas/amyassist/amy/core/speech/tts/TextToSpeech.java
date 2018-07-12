@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
@@ -39,6 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import marytts.LocalMaryInterface;
 import marytts.exceptions.MaryConfigurationException;
 import marytts.exceptions.SynthesisException;
+import marytts.modules.synthesis.Voice;
 
 /**
  * This class outputs Strings as Voice using MaryTTS.
@@ -62,12 +64,7 @@ public class TextToSpeech implements Output {
 	private Thread currentAudioWriterThread;
 	private Queue<Thread> nextAudioWriterThreads;
 
-	/**
-	 * @return The {@link AudioFormat} used by the TTS
-	 */
-	protected AudioFormat getAudioFormat() {
-		return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 16000, 16, 1, 2, 16000, false);
-	}
+	private AudioFormat audioFormat;
 
 	@PostConstruct
 	private void init() {
@@ -75,10 +72,20 @@ public class TextToSpeech implements Output {
 		this.currentAudioWriterThread = new Thread();
 		try {
 			this.mary = new LocalMaryInterface();
-			this.mary.setVoice("dfki-poppy-hsmm");
-			this.outputLine = AudioSystem.getSourceDataLine(this.getAudioFormat());
-			this.outputLine.open(this.getAudioFormat());
-			this.outputLine.start();
+
+			Voice voice = Voice.getVoice("dfki-poppy-hsmm");
+			this.mary.setVoice(voice.getName());
+
+			// We need to do this, because the audio format depends on the voice of mary
+			this.audioFormat = voice.dbAudioFormat();
+
+			if (!AudioSystem.isLineSupported(new DataLine.Info(SourceDataLine.class, this.audioFormat))) {
+				this.logger.error("The Audio System does not support the required ");
+			} else {
+				this.outputLine = AudioSystem.getSourceDataLine(this.audioFormat);
+				this.outputLine.open(this.audioFormat);
+				this.outputLine.start();
+			}
 		} catch (MaryConfigurationException | LineUnavailableException e) {
 			this.logger.error("initialization error", e);
 			throw new IllegalStateException(e);
@@ -117,8 +124,6 @@ public class TextToSpeech implements Output {
 	 */
 	@Override
 	public boolean isCurrentlyOutputting() {
-		this.logger.info("TTS Writer alive: {} and state: {} ", this.currentAudioWriterThread.isAlive(),
-				this.currentAudioWriterThread.getState());
 		return this.currentAudioWriterThread.isAlive();
 	}
 
@@ -132,9 +137,6 @@ public class TextToSpeech implements Output {
 	 */
 	private void speak(String s) {
 		stopOutput();
-
-		System.out.println("speak");
-
 		try {
 			this.nextAudioWriterThreads.add(
 					new Thread(new AudioWriter(this.mary.generateAudio(s), this.outputLine, WAIT_TIME_AFTER_SPEECH)));
@@ -154,8 +156,6 @@ public class TextToSpeech implements Output {
 	 * This method waits until the last thread is finished, therefore this should only be called from a separate Thread.
 	 */
 	private void startNextAudioWriterThread() {
-		System.out.println("startNext");
-
 		try {
 			this.currentAudioWriterThread.join();
 		} catch (InterruptedException e) {
@@ -165,7 +165,6 @@ public class TextToSpeech implements Output {
 		if (this.currentAudioWriterThread == null)
 			throw new IllegalStateException("Can't start next audio writer, because queue is empty.");
 
-		System.out.println("starting next");
 		this.currentAudioWriterThread.start();
 
 	}
