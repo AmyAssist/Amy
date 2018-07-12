@@ -23,10 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
+import javax.annotation.Nonnull;
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
@@ -35,6 +38,7 @@ import javax.sound.sampled.SourceDataLine;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import marytts.LocalMaryInterface;
@@ -50,24 +54,29 @@ import marytts.modules.synthesis.Voice;
  * @author Tim Neumann, Kai Menzel
  */
 @Service(TextToSpeech.class)
-public class TextToSpeech implements Output {
+public class TextToSpeech implements Output, Runnable {
 
 	private static final int WAIT_TIME_AFTER_SPEECH = 1000;
+	private static final int BYTE_BUFFER_SIZE = 1024;
+	private static final int QUEUE_SIZE = 10;
 
 	@Reference
 	private Logger logger;
-
+	@Nonnull
 	private LocalMaryInterface mary;
-
+	@Nonnull
 	private SourceDataLine outputLine;
+	@Nonnull
+	private BlockingQueue<String> queue;
 
-	private Thread currentAudioWriterThread;
-	private Queue<Thread> nextAudioWriterThreads;
+	private volatile boolean isTalking = false;
+	private volatile boolean stop = false;
+
+	private Thread thread;
 
 	@PostConstruct
 	private void init() {
-		this.nextAudioWriterThreads = new ConcurrentLinkedQueue<>();
-		this.currentAudioWriterThread = new Thread();
+		this.queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
 		try {
 			this.mary = new LocalMaryInterface();
 
@@ -88,6 +97,50 @@ public class TextToSpeech implements Output {
 			this.logger.error("initialization error", e);
 			throw new IllegalStateException(e);
 		}
+		this.thread = new Thread(this, "TextToSpeech");
+		this.thread.start();
+	}
+
+	@Override
+	public void run() {
+		try {
+			while (!Thread.currentThread().isInterrupted()) {
+				String s = this.queue.take();
+				this.stop = false;
+				this.writeAudio(s);
+				Thread.sleep(WAIT_TIME_AFTER_SPEECH);
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		} finally {
+			this.logger.info("Text to speech stopped");
+		}
+	}
+
+	private void writeAudio(String s) {
+		try (AudioInputStream a = this.mary.generateAudio(s)) {
+			this.isTalking = true;
+			moveBytes(a, this.outputLine);
+		} catch (SynthesisException e) {
+			this.logger.error("output error", e);
+		} catch (IOException e) {
+			this.logger.error("Error from MaryTTS InputStream", e);
+		} finally {
+			this.isTalking = false;
+		}
+	}
+
+	private void moveBytes(AudioInputStream ais, SourceDataLine sdl) throws IOException {
+		byte[] buffer = new byte[BYTE_BUFFER_SIZE];
+		int readBytes = 0;
+
+		while (!this.stop && !Thread.currentThread().isInterrupted() && readBytes >= 0) {
+			readBytes = ais.read(buffer, 0, BYTE_BUFFER_SIZE);
+
+			if (readBytes > 0) {
+				sdl.write(buffer, 0, readBytes);
+			}
+		}
 	}
 
 	// -----------------------------------------------------------------------------------------------
@@ -99,9 +152,9 @@ public class TextToSpeech implements Output {
 	 *            String that shall be said
 	 */
 	@Override
-	public void output(String s) {
+	public synchronized void output(String s) {
 		this.logger.info("saying: {}", s);
-		speak(preProcessing(s));
+		this.speak(this.preProcessing(s));
 	}
 
 	/**
@@ -112,20 +165,14 @@ public class TextToSpeech implements Output {
 	 */
 	@Override
 	public void stopOutput() {
-		if (isCurrentlyOutputting()) {
-			this.currentAudioWriterThread.interrupt();
-		}
+		this.queue.clear();
+		this.stop = true;
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output#isCurrentlyOutputting()
-	 */
 	@Override
 	public boolean isCurrentlyOutputting() {
-		return this.currentAudioWriterThread.isAlive();
+		return this.isTalking;
 	}
-
-	// -----------------------------------------------------------------------------------------------
 
 	/**
 	 * outputs Speech translated from given String
@@ -134,38 +181,10 @@ public class TextToSpeech implements Output {
 	 *            String that shall be said
 	 */
 	private void speak(String s) {
-		stopOutput();
-		try {
-			this.nextAudioWriterThreads.add(
-					new Thread(new AudioWriter(this.mary.generateAudio(s), this.outputLine, WAIT_TIME_AFTER_SPEECH)));
-			new Thread(this::startNextAudioWriterThread).start();
-		} catch (SynthesisException e) {
-			this.logger.error("output error", e);
+		boolean offer = this.queue.offer(s);
+		if (!offer) {
+			this.logger.warn("the text '{}' could not be outputted by the TTS, because the queue is full", s);
 		}
-
-	}
-
-	/**
-	 * Waits for the current AudioWriterThread to finish and then starts the next AudioWriterThread from the queue.
-	 * 
-	 * This is needed because the thread will sleep a bit after stopOutput() is called. See {@link #stopOutput()} for
-	 * more information.
-	 * 
-	 * This method waits until the last thread is finished, therefore this should only be called from a separate Thread.
-	 */
-	private void startNextAudioWriterThread() {
-		try {
-			this.currentAudioWriterThread.join();
-		} catch (InterruptedException e) {
-			this.logger.warn("Was interrupted while waiting for old thread to finnish", e);
-			Thread.currentThread().interrupt();
-		}
-		this.currentAudioWriterThread = this.nextAudioWriterThreads.poll();
-		if (this.currentAudioWriterThread == null)
-			throw new IllegalStateException("Can't start next audio writer, because queue is empty.");
-
-		this.currentAudioWriterThread.start();
-
 	}
 
 	/**
@@ -182,4 +201,8 @@ public class TextToSpeech implements Output {
 		return text;
 	}
 
+	@PreDestroy
+	private void stop() {
+		this.thread.interrupt();
+	}
 }
