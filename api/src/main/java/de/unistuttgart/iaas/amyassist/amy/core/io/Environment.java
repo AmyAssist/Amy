@@ -24,6 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.core.io;
 
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 /**
  * Information about the execution environment
@@ -38,4 +40,19 @@ public interface Environment {
 	 * @return the path of the current working directory
 	 */
 	Path getWorkingDirectory();
+
+	/**
+	 * The current Date combinded with the local time as seen on a wall clock. It does not represent an instant on the
+	 * time-line and cant be used to compare with other environments.
+	 * 
+	 * @return the current date-time
+	 */
+	LocalDateTime getCurrentLocalDateTime();
+
+	/**
+	 * The current date-time with the time zone of this environment.
+	 * 
+	 * @return the current date-time with time zone
+	 */
+	ZonedDateTime getCurrentDateTime();
 }
