@@ -52,7 +52,7 @@ public class WeatherDarkSkyAPI {
 	private Calendar lastRequest;
 
 	private FIODaily getDailyReports() {
-		if(this.dailyReports == null || checkTime()) {
+		if(this.dailyReports == null | checkTime()) {
 			ForecastIO fio = new ForecastIO(this.configuration.getProperty(API_SECRET_CONFIG_KEY));
 			fio.setUnits(ForecastIO.UNITS_SI);
 			fio.getForecast(WeatherDarkSkyAPI.STUTTGART_COORDINATES_LAT, WeatherDarkSkyAPI.STUTTGART_COORDINATES_LONG);
@@ -73,13 +73,15 @@ public class WeatherDarkSkyAPI {
 	 * @return true if the data is outdated, false if its actual
 	 */
 	private boolean checkTime() {
-		Calendar now = Calendar.getInstance();	
-		boolean sameDay = now.get(Calendar.YEAR) == this.lastRequest.get(Calendar.YEAR) 
-				&& now.get(Calendar.DAY_OF_YEAR) == this.lastRequest.get(Calendar.DAY_OF_YEAR);
-		if(sameDay) {
-			boolean withinHour = now.getTimeInMillis() - this.lastRequest.getTimeInMillis() < 60*60*1000;
-			if(withinHour) {
-				return false;
+		Calendar now = Calendar.getInstance();
+		if(this.lastRequest != null) {
+			boolean sameDay = now.get(Calendar.YEAR) == this.lastRequest.get(Calendar.YEAR) 
+					&& now.get(Calendar.DAY_OF_YEAR) == this.lastRequest.get(Calendar.DAY_OF_YEAR);
+			if(sameDay) {
+				boolean withinHour = now.getTimeInMillis() - this.lastRequest.getTimeInMillis() < 60*60*1000;
+				if(withinHour) {
+					return false;
+				}			
 			}			
 		}
 		this.lastRequest = now;
