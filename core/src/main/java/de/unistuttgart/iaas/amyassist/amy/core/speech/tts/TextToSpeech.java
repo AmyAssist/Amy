@@ -50,6 +50,8 @@ import marytts.exceptions.SynthesisException;
 @Service(TextToSpeech.class)
 public class TextToSpeech implements Output {
 
+	private static final int WAIT_TIME_AFTER_SPEECH = 1000;
+
 	@Reference
 	private Logger logger;
 
@@ -134,8 +136,8 @@ public class TextToSpeech implements Output {
 		System.out.println("speak");
 
 		try {
-			this.nextAudioWriterThreads
-					.add(new Thread(new AudioWriter(this.mary.generateAudio(s), this.outputLine, 3000)));
+			this.nextAudioWriterThreads.add(
+					new Thread(new AudioWriter(this.mary.generateAudio(s), this.outputLine, WAIT_TIME_AFTER_SPEECH)));
 			new Thread(() -> startNextAudioWriterThread()).run();
 		} catch (SynthesisException e) {
 			this.logger.error("output error", e);
