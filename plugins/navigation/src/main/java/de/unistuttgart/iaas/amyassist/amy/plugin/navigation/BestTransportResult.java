@@ -27,6 +27,8 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
@@ -131,8 +133,7 @@ public class BestTransportResult {
 			return this.mode == best.mode && this.route.bounds == best.route.bounds
 					&& this.route.copyrights == best.route.copyrights && this.route.fare == best.route.fare
 					&& this.route.overviewPolyline == best.route.overviewPolyline
-					&& this.route.summary == best.route.summary
-					&& this.route.legs.length == best.route.legs.length
+					&& this.route.summary == best.route.summary && this.route.legs.length == best.route.legs.length
 					&& Arrays.equals(this.route.warnings, best.route.warnings)
 					&& Arrays.equals(this.route.waypointOrder, best.route.waypointOrder);
 		}
@@ -144,8 +145,7 @@ public class BestTransportResult {
 	 */
 	@Override
 	public int hashCode() {
-		// TODO Auto-generated method stub
-		return super.hashCode();
+		return new HashCodeBuilder(17, 31).append(this.mode).append(this.route).toHashCode();
 	}
 
 }
