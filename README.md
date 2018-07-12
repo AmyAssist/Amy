@@ -8,9 +8,13 @@
 
 ### Personal Assistance System
 
-This is a research project from students of the University of Stuttgart. No functionality is tested. There may be harmful errors.
+This is a research project from students of the University of Stuttgart. No functionality is tested. There may be harmful errors.  
+
+In parallel, we are working on a web interface for Amy, which you can find [here](https://github.com/AmyAssist/Amy-Web)
+
 
 Maven: de.unistuttgart.iaas.amyassist.amy
+
 
 
 ## Getting Started
@@ -43,13 +47,16 @@ If you wish that Amy stops listening, simply say `Amy sleep` and she will not re
 
 
 #### Using the console to give Amy commands
-It is possible to give Amy commands through the console just by typing them in, just be careful that you put the word `say` in front of your commands, otherwise the errors will haunt you even in your dreams.  
-A valid command looks like this: `say how many emails do i have`  
+There are commands which can be typed into the console that do not trigger any plugin actions. An example would be `?list`.  
+This command lists all of the possible commands that you can give Amy.  
+
+If you wish to trigger a plugin action with a command, be careful that you put the word `say` in front of your command, otherwise the errors will haunt you even in your dreams.  
+A valid command looks like this: `say how many emails do i have`
 
 
 ## Running the tests
 
-If you wish to run the automated tests, run `mvn install` in your console while being in the root folder of the project (the same as the one you installed in) 
+If you wish to run the automated tests, run `mvn test` in your console while being in the root folder of the project (the same as the one you installed in) 
 
 ## Development
 
