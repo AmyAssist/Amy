@@ -64,7 +64,7 @@ public abstract class AbstractRegistryResource<R extends IRegistry<E>, E, I exte
     @GET
     @Path("{id : \\d+}")
     @Produces(MediaType.APPLICATION_JSON)
-    public E getById(@PathParam("id") int id) {
+    public E getById(@PathParam("id") P id) {
         return registry.getById(id);
     }
 
@@ -74,7 +74,7 @@ public abstract class AbstractRegistryResource<R extends IRegistry<E>, E, I exte
      */
     @DELETE
     @Path("{id : \\d+}")
-    public void deleteById(@PathParam("id") int id) {
+    public void deleteById(@PathParam("id") P id) {
         registry.deleteById(id);
     }
 

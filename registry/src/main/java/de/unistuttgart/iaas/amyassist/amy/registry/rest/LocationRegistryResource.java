@@ -35,5 +35,6 @@ import javax.ws.rs.Path;
  * @author Benno Krauß
  */
 @Path("registry/location")
-public class LocationRegistryResource extends AbstractRegistryResource<LocationRegistry, Location, LocationImpl, Integer> {
+public class LocationRegistryResource extends AbstractRegistryResource
+        <LocationRegistry, Location, LocationImpl, Integer> {
 }
