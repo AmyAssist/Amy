@@ -24,11 +24,16 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Method;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.MethodType;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
@@ -43,6 +48,9 @@ public class SystemTimeResource implements Resource{
 	@Reference
 	private SystemTimeLogic logic;
 
+	@Context
+	private UriInfo info;
+	
 	/**
 	 * get the current system time
 	 * 
@@ -71,8 +79,60 @@ public class SystemTimeResource implements Resource{
 	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
 	 */
 	@Override
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	public ResourceEntity getPluginDescripion() {
-		return null;
+		ResourceEntity resource = new ResourceEntity();
+		resource.setName("SystemTime");
+		resource.setDescription("Plugin for requesting current time and date");
+		Method[] methods = new Method[2];
+		methods[0] = createGetTimeMethod();
+		methods[1] = createGetDateMethod();
+		resource.setMethods(methods);
+		resource.setLink(this.info.getBaseUriBuilder().path(SystemTimeResource.class).build());
+		return resource;
+	}
+	
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginMethods()
+	 */
+	@Override
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method[] getPluginMethods() {
+		return this.getPluginDescripion().getMethods();
+	}
+
+	/**
+	 * returns the options for the time
+	 * 
+	 * @return a Method object containing all information
+	 */
+	@Path("time")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createGetTimeMethod() {
+		Method m = new Method();
+		m.setDescription("Returns the current time");
+		m.setLink(this.info.getBaseUriBuilder().path(SystemTimeResource.class).path(SystemTimeResource.class, "getTime").build());
+		m.setType(MethodType.GET);
+		return m;
+	}
+
+	/**
+	 * returns the options for the dat3e
+	 * 
+	 * @return a Method object containing all information
+	 */
+	@Path("date")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createGetDateMethod() {
+		Method m = new Method();
+		m.setDescription("Returns the current date");
+		m.setLink(this.info.getBaseUriBuilder().path(SystemTimeResource.class).path(SystemTimeResource.class, "getDate").build());
+		m.setType(MethodType.GET);
+		return m;
 	}
 
 }

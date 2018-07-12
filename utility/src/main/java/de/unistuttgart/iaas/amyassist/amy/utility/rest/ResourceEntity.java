@@ -34,6 +34,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ResourceEntity extends Entity {
 	
 	private String name;
+	private String description;
+
 	private Method[] methods;
 
 	/**
@@ -61,6 +63,22 @@ public class ResourceEntity extends Entity {
 		this.name = name;
 	}
 
+	/**
+	 * gets the description
+	 * @return  the description
+	 */
+	public String getDescription() {
+		return this.description;
+	}
+	
+	/**
+	 * sets the description
+	 * @param description  the new description
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 	/**
 	 * returns the methodes of the resource
 	 * 
