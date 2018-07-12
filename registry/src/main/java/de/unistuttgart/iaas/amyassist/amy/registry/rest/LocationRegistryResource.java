@@ -52,39 +52,40 @@ public class LocationRegistryResource implements Resource {
         return registry.getAll();
     }
 
+    /**
+     * Get a location by its id
+     * @param id primary key value
+     * @return the entity
+     */
     @GET
     @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Location getById(@PathParam("id") int id) {
         return registry.getById(id);
     }
 
+    /**
+     * Delete a location
+     * @param id the primary key
+     */
     @DELETE
     @Path("{id}")
     public void deleteById(@PathParam("id") int id) {
         registry.deleteById(id);
     }
 
+    /**
+     * create a new location
+     * "@Path" annotation is left out because an empty path results in a warning (same as no annotation)
+     * @param l the location to be persisted
+     * @return the newly created entity with the primary key set
+     */
     @POST
-    @Path("")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Location create(LocationImpl l) {
-
-        Location loc = registry.createNewEntity();
-
-        loc.setName(l.getName());
-        loc.setZipCode(l.getZipCode());
-        loc.setCity(l.getCity());
-        loc.setStreet(l.getStreet());
-        loc.setHouseNumber(l.getHouseNumber());
-        loc.setLongitude(l.getLongitude());
-        loc.setLatitude(l.getLatitude());
-        loc.setHome(l.isHome());
-        loc.setWork(l.isWork());
-
-        registry.save(loc);
-
-        return loc;
+        registry.save(l);
+        return l;
     }
 
     @Override
