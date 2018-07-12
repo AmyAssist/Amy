@@ -25,10 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.ZonedDateTime;
-
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
@@ -104,27 +102,16 @@ class NavigationRestTest {
 		Response response = this.target.path("fromTo").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request().post(null);
 		BestTransportResult actual = response.readEntity(BestTransportResult.class);
-		assertThat(actual.getRoute().bounds, is(this.bestResult.getRoute().bounds));
-		assertThat(actual.getRoute().copyrights, is(this.bestResult.getRoute().copyrights));
-		assertThat(actual.getRoute().fare, is(this.bestResult.getRoute().fare));
-		assertThat(actual.getRoute().overviewPolyline, is(this.bestResult.getRoute().overviewPolyline));
-		assertThat(actual.getRoute().summary, is(this.bestResult.getRoute().summary));
-		assertThat(actual.getMode(), is(this.bestResult.getMode()));
+		assertTrue(actual.equals(this.bestResult));
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).fromTo(this.origin, this.destination, this.travelMode);
 
 		Mockito.when(this.logic.fromToWithDeparture(this.origin, this.destination, this.travelMode, this.dateTime))
 				.thenReturn(this.bestResult);
 		response = this.target.path("fromTo/2020-01-02T20:20:20Z").queryParam("origin", this.origin)
-				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
-				.post(null);
+				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request().post(null);
 		actual = response.readEntity(BestTransportResult.class);
-		assertThat(actual.getRoute().bounds, is(this.bestResult.getRoute().bounds));
-		assertThat(actual.getRoute().copyrights, is(this.bestResult.getRoute().copyrights));
-		assertThat(actual.getRoute().fare, is(this.bestResult.getRoute().fare));
-		assertThat(actual.getRoute().overviewPolyline, is(this.bestResult.getRoute().overviewPolyline));
-		assertThat(actual.getRoute().summary, is(this.bestResult.getRoute().summary));
-		assertThat(actual.getMode(), is(this.bestResult.getMode()));
+		assertTrue(actual.equals(this.bestResult));
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).fromToWithDeparture(this.origin, this.destination, this.travelMode, this.dateTime);
 
@@ -149,7 +136,7 @@ class NavigationRestTest {
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("No route found."));
 		assertThat(response.getStatus(), is(404));
-		
+
 		response = this.target.path("fromTo/1960-01-02T10:10:10Z").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).queryParam("travelMode", "walking").request().post(null);
 		actualMsg = response.readEntity(String.class);
@@ -169,31 +156,30 @@ class NavigationRestTest {
 				.thenReturn(this.instant);
 
 		Response response = this.target.path("when/2020-01-02T20:20:20Z").queryParam("origin", this.origin)
-				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
-				.post(null);
-//		String actual = response.readEntity(String.class);
-//		assertThat(actual, is(ZonedDateTime.parse("2020-01-02T20:20:20Z")));
+				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request().post(null);
+		String actual = response.readEntity(String.class);
+		assertTrue(actual.contains("year\":2020"));
+		assertTrue(actual.contains("month\":\"JANUARY"));
+		assertTrue(actual.contains("dayOfMonth\":2"));
 		assertThat(response.getStatus(), is(200));
 
 		Mockito.when(this.logic.whenIHaveToGo(this.origin, this.destination, this.travelMode, this.dateTime))
 				.thenReturn(null);
 		response = this.target.path("when/2020-01-02T20:20:20Z").queryParam("origin", this.origin)
-				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
-				.post(null);
+				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request().post(null);
 		String actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("No latest starttime found."));
 		assertThat(response.getStatus(), is(404));
 
-		response = this.target.path("when/2020-01-02T20:20:20Z").queryParam("destination", null).queryParam("travelMode", "driving")
-				.request().post(null);
+		response = this.target.path("when/2020-01-02T20:20:20Z").queryParam("destination", null)
+				.queryParam("travelMode", "driving").request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Missing origin and/or destination input."));
 		assertThat(response.getStatus(), is(409));
 
 		Mockito.when(this.logic.getTravelMode("blabla")).thenReturn(null);
 		response = this.target.path("when/2020-01-02T20:20:20Z").queryParam("origin", this.origin)
-				.queryParam("destination", this.destination).queryParam("travelMode", "blabla").request()
-				.post(null);
+				.queryParam("destination", this.destination).queryParam("travelMode", "blabla").request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Enter a correct travel mode."));
 		assertThat(response.getStatus(), is(409));
@@ -211,12 +197,7 @@ class NavigationRestTest {
 		Response response = this.target.path("best/2020-01-02T20:20:20Z").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).request().post(null);
 		BestTransportResult actual = response.readEntity(BestTransportResult.class);
-		assertThat(actual.getRoute().bounds, is(this.bestResult.getRoute().bounds));
-		assertThat(actual.getRoute().copyrights, is(this.bestResult.getRoute().copyrights));
-		assertThat(actual.getRoute().fare, is(this.bestResult.getRoute().fare));
-		assertThat(actual.getRoute().overviewPolyline, is(this.bestResult.getRoute().overviewPolyline));
-		assertThat(actual.getRoute().summary, is(this.bestResult.getRoute().summary));
-		assertThat(actual.getMode(), is(this.bestResult.getMode()));
+		assertTrue(actual.equals(this.bestResult));
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).getBestTransportInTime(this.origin, this.destination, this.dateTime);
 
@@ -227,8 +208,7 @@ class NavigationRestTest {
 
 		Mockito.when(this.logic.getBestTransportInTime(this.origin, this.destination, this.dateTime)).thenReturn(null);
 		response = this.target.path("best/2020-01-02T20:20:20Z").queryParam("origin", this.origin)
-				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
-				.post(null);
+				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("No best transport type found."));
 		assertThat(response.getStatus(), is(404));

@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
+import java.util.Arrays;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.maps.model.DirectionsLeg;
@@ -32,7 +34,7 @@ import com.google.maps.model.TravelMode;
 /**
  * This class is needed to store the best route and the transport type
  * 
- * @author Lars Buttgereit
+ * @author Lars Buttgereit, Muhammed Kaya
  */
 @XmlRootElement
 public class BestTransportResult {
@@ -41,12 +43,12 @@ public class BestTransportResult {
 
 	private static final String THE_ROUTE_IS = "The route is ";
 	private static final String LONG_AND_NEED = " long and need ";
-	
+
 	/**
 	 * constructor
 	 */
 	public BestTransportResult() {
-		//Needed for JSON
+		// Needed for JSON
 	}
 
 	/**
@@ -117,6 +119,24 @@ public class BestTransportResult {
 		}
 		return "";
 
+	}
+
+	/**
+	 * @see java.lang.Object#equals
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof BestTransportResult) {
+			BestTransportResult best = (BestTransportResult) obj;
+			return this.mode == best.mode && this.route.bounds == best.route.bounds
+					&& this.route.copyrights == best.route.copyrights && this.route.fare == best.route.fare
+					&& this.route.overviewPolyline == best.route.overviewPolyline
+					&& this.route.summary == best.route.summary
+					&& this.route.legs.length == best.route.legs.length
+					&& Arrays.equals(this.route.warnings, best.route.warnings)
+					&& Arrays.equals(this.route.waypointOrder, best.route.waypointOrder);
+		}
+		return false;
 	}
 
 }
