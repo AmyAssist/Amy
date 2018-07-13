@@ -33,7 +33,11 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
- * Abstract registry rest resource
+ * Abstract registry rest resource.
+ * This class can be used as a template to create a rest-resource with basic functionality for any registry.
+ * Take a look at
+ * {@link de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource ContactRegistryResource }
+ * for an example.
  *
  * This class is intentionally public. Otherwise Jersey throws some errors because it can't access this class
  *
