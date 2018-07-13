@@ -27,9 +27,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,7 +60,7 @@ public class NLLexer {
 	 * 
 	 */
 	public NLLexer() {
-		this.wordToNumber = this.readNumbers();
+		this.wordToNumber = this.readNumbersFromFile();
 		
 		if(!this.wordToNumber.isEmpty()) {
 			String regex = "((\\b"+ String.join("\\b|\\b", this.wordToNumber.keySet()) + "\\b)\\s{0,1})+";
@@ -78,12 +76,12 @@ public class NLLexer {
 	/**
 	 * lexer implemented as Iterator
 	 * 
-	 * @param toLex
-	 *            the stirng to lex
+	 * @param nlInput the stirng to lex
+	 * @return returns processed list of WordTokens
 	 */
-	public List<WordToken> tokenize(String toLex) {
+	public List<WordToken> tokenize(String nlInput) {
 		List<WordToken> list = new LinkedList<>();
-		toLex = toLex.toLowerCase();
+		String toLex = nlInput.toLowerCase();
 
 		StringBuilder currentWord = new StringBuilder();
 		for (int mIndex = 0; mIndex < toLex.length(); mIndex++) {
@@ -118,41 +116,25 @@ public class NLLexer {
 	 * this method changes WordToken content of numbers to decimal numbers
 	 * and adds numbers together not surrounded by words
 	 * 
-	 * @param list 
-	 * @return
+	 * @param list of all tokens containing potential written numbers that have to be merged
+	 * @return final list containing the correct numbers
 	 */
 	private List<WordToken> concatNumbers(List<WordToken> list) {
 		List<WordToken> result = new ArrayList<>();
 		
-		WordTokenType lookAhead;
 		for(int i = 0; i < list.size(); i++) {
-			int newNumber = 0;
-			int partialNumber = 0;
+
 			boolean foundNumber = false;
+			int start = i;
+			//this is kinda ugly.. let me know if anyone has a better idea for this
 			while(i < list.size() && list.get(i).getType() == WordTokenType.NUMBER &&
 					list.get(i).getContent().matches("[a-zA-Z]+")) {
-				String currentNum = list.get(i).getContent();
 				foundNumber = true;
-				if(this.wordToNumber.get(currentNum) >= 1000) {
-					if(partialNumber == 0) partialNumber = 1;
-					partialNumber *= this.wordToNumber.get(currentNum);
-					newNumber += partialNumber;
-					partialNumber = 0;
-				}else {
-					if(this.wordToNumber.get(currentNum) == 100) {
-						if(partialNumber == 0) {
-							partialNumber = 1;
-						}
-						partialNumber *= this.wordToNumber.get(currentNum);
-					}else {
-						partialNumber += this.wordToNumber.get(currentNum);
-					}
-				}
 				i++;
 			}
-			newNumber += partialNumber;
+			int finalNumber = calcNumber(list.subList(start, i));
 			if(foundNumber) {
-				WordToken t = new WordToken(String.valueOf(newNumber));
+				WordToken t = new WordToken(String.valueOf(finalNumber));
 				t.setType(WordTokenType.NUMBER);
 				result.add(t);
 			}
@@ -161,6 +143,40 @@ public class NLLexer {
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * calculates the number from a string of words
+	 * (should work in english and maybe german or spanish
+	 * - other languages need a custom method for this)
+	 * 
+	 * if the word representation of numbers won't make sense
+	 * e.g. twenty two ten 
+	 * they will just get added together - i think this is an okay way of handling this
+	 * 
+	 * @param subList the sublist containing the list of word representations 
+	 * @return the calculated number
+	 */
+	private int calcNumber(List<WordToken> subList) {
+		int finalNumber = 0;
+		int partialNumber = 0;
+		for(WordToken t : subList) {
+			if(this.wordToNumber.get(t.getContent()) >= 1000) {
+				if(partialNumber == 0) partialNumber = 1;
+				partialNumber *= this.wordToNumber.get(t.getContent());
+				finalNumber += partialNumber;
+				partialNumber = 0;
+			}else {
+				if(this.wordToNumber.get(t.getContent()) == 100) {
+					if(partialNumber == 0) partialNumber = 1;
+					partialNumber *= this.wordToNumber.get(t.getContent());
+				}else {
+					partialNumber += this.wordToNumber.get(t.getContent());
+				}
+			}
+		}
+		finalNumber += partialNumber;
+		return finalNumber;
 	}
 
 	/**
@@ -186,7 +202,7 @@ public class NLLexer {
 	 *
 	 * @return List of all numbers in the language
 	 */
-	public final Map<String, Integer> readNumbers(){
+	public final Map<String, Integer> readNumbersFromFile(){
 		Map<String, Integer> result = new HashMap<>();
 		String[] stringNmbRep;
 		
@@ -222,7 +238,7 @@ public class NLLexer {
 		    }
 		    
 		} catch (IOException e) {
-			this.logger.error("number file not found");
+			this.logger.error(String.format("number file not found %s", e.toString()));
 		}
 		
 		return result;
@@ -230,6 +246,7 @@ public class NLLexer {
 
 	/**
 	 * changes numbers from string to integer
+	 * and catches + logs potential NumberFormatExceptions
 	 * 
 	 * @param numberInt the number as string
 	 * @return number as integer
@@ -238,7 +255,7 @@ public class NLLexer {
 		try {
 			return Integer.valueOf(numberInt);
 			}catch(NumberFormatException e) {
-				this.logger.error("number in numbers file in wrong format " + numberInt);
+				this.logger.error(String.format("number in numbers file in wrong format %s" , numberInt));
 			}
 		return Integer.MAX_VALUE;
 	}

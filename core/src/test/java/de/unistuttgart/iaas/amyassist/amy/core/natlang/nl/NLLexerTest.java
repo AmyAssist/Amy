@@ -30,11 +30,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.IntStream.Builder;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -47,26 +46,20 @@ import com.google.common.collect.Lists;
  * @author Felix Burk
  */
 public class NLLexerTest {
-	
-	/**
-	 * test normal words and numbers
-	 */
-	@Test
-	public static Stream<List<String>> testWords() {
-		return Stream.of(Arrays.asList("what", "the", "99", "this", "is", "a", "test"));
-	}
-	
-	@Test 
-	public static Stream<Integer> numbers(){
-		Stream<Integer> zeroToNineteen = IntStream.range(0, 20).boxed();
-		Stream<Integer> until90 = IntStream.iterate(20, i -> i + 10).limit(8).boxed();
-		Stream<Integer> untilMillion = IntStream.of(100,1000000).boxed();
-		return Stream.concat(
-			      Stream.concat(zeroToNineteen, until90), untilMillion);
-	}
 
 	/**
+	 * stream of bad characters that should not be matched
+	 * @return the stream
+	 */
+	public static Stream<Character> badCharacters() {
+		// every ascii character except numbers of letters
+		return IntStream.range(0, 128).mapToObj(i -> (char) i)
+				.filter(c -> (c != 32 && c < 48) || (57 < c && c < 65) || (90 < c && c < 97) || 122 < c);
+	}
+	
+	/**
 	 * tests bad chars
+	 * @param badCharacter to test
 	 */
 	@ParameterizedTest
 	@MethodSource("badCharacters")
@@ -74,17 +67,21 @@ public class NLLexerTest {
 		NLLexer lexer = new NLLexer();
 		assertThrows(NLLexerException.class, () -> lexer.tokenize(badCharacter.toString()));
 	}
-
-	public static Stream<Character> badCharacters() {
-		// every ascii character except numbers of letters
-		return IntStream.range(0, 128).mapToObj(i -> (char) i)
-				.filter(c -> (c != 32 && c < 48) || (57 < c && c < 65) || (90 < c && c < 97) || 122 < c);
+	
+	/**
+	 * test normal words and numbers
+	 * @return Stream of lists
+	 */
+	@Test
+	public static Stream<List<String>> testWords() {
+		return Stream.of(Arrays.asList("what", "the", "99", "this", "is", "a", "test"));
 	}
+	
 
 	/**
-	 * standard test for the simple NL Lexer class
+	 * tests if content of WordTokens matches the nl input
 	 * 
-	 * @param input
+	 * @param input word to test
 	 */
 	@ParameterizedTest
 	@MethodSource("testWords")
@@ -95,7 +92,7 @@ public class NLLexerTest {
 	}
 
 	/**
-	 * standard test, more to come
+	 * standard test to check if types are correct
 	 */
 	@Test
 	public void testTypes() {
@@ -108,32 +105,70 @@ public class NLLexerTest {
 	}
 	
 	/**
-	 * tests if all numbers are read correctly
-	 * @param number to check
+	 * tests concatination of numbers
+	 * because internally written numbers e.g. two hundred 
+	 * get recognized as two WordTokens, thats why the NLLexer uses a concat method
+	 * to merge the tokens "two" and "hundred" into a new token containing "200"
+	 * with the help of number conversions
 	 */
-	@ParameterizedTest
-	@MethodSource("numbers")
-	public void testNumbersFileReader(int number) {
-		NLLexer lex = new NLLexer();
-		Map<String, Integer> numbers = lex.readNumbers();
-		assertThat(new Boolean(true), is(numbers.values().contains(number)));
-	}
-	
-	
 	@Test
-	public void testsNumbers() {
+	public void testConcatNumbers() {
 		NLLexer lex = new NLLexer();
 		List<WordToken> tokenize = lex.tokenize("test one hundred twenty two test");
 		
 		assertThat(Lists.transform(tokenize, WordToken::getType), 
 				contains(WordTokenType.WORD, WordTokenType.NUMBER,
 				WordTokenType.WORD));
-		System.out.println(tokenize.get(1).getContent());
 		assertThat(new Boolean(true), is(tokenize.get(1).getContent().equals("122")));
 	}
 	
+	/**
+	 * stream of all numbers that have to be present to calculate the right number
+	 * @return the stream
+	 */
+	@Test 
+	public static Stream<Integer> fileNumbers(){
+		Stream<Integer> zeroToNineteen = IntStream.range(0, 20).boxed();
+		Stream<Integer> until90 = IntStream.iterate(20, i -> i + 10).limit(8).boxed();
+		Stream<Integer> untilMillion = IntStream.of(100,1000000).boxed();
+		return Stream.concat(
+			      Stream.concat(zeroToNineteen, until90), untilMillion);
+	}
 	
+	/**
+	 * tests if all numbers are read correctly from the file
+	 * @param number to check
+	 */
+	@ParameterizedTest
+	@MethodSource("fileNumbers")
+	public void testNumbersFileReader(int number) {
+		NLLexer lex = new NLLexer();
+		Map<String, Integer> numbers = lex.readNumbersFromFile();
+		assertThat(new Boolean(true), is(numbers.values().contains(number)));
+	}
 	
+	/**
+	 * returns pair of strings and their matching digit representation of the containting number
+	 * @return the pair
+	 */
+	public static Stream<Pair<String, Integer>> numberStringToInt() {
+		return Stream.of(Pair.of("10", 10), Pair.of("twenty two", 22), Pair.of("three thousand", 3000),
+				Pair.of("twenty two million", 22000000), Pair.of("twenty two million forty six", 22000046),
+				Pair.of("ten", 10), Pair.of("twenty two million thirty thousand nine hundred forty six", 22030946),
+				Pair.of("twenty two million nine hundred two thousand seven hundred forty nine", 22902749));
+	}	
 	
+	/**
+	 * tests the pair stream of numberStringToInt
+	 * @param pair to test
+	 */
+	@ParameterizedTest
+	@MethodSource("numberStringToInt")
+	public void testNumberConversion(Pair<String, Integer> pair) {
+		NLLexer lex = new NLLexer();
+		List<WordToken> numbers = lex.tokenize(pair.getLeft());
+		assertThat(new Boolean(true), is(numbers.get(0).getContent().equals((String.valueOf(pair.getRight())))));
+
+	}
 	
 }
