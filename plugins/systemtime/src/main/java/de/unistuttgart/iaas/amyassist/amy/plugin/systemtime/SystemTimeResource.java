@@ -38,7 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
  * @author Muhammed Kaya
  */
 @Path("systemtime")
-public class SystemTimeResource implements Resource{
+public class SystemTimeResource implements Resource {
 
 	@Reference
 	private SystemTimeLogic logic;
