@@ -25,8 +25,9 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.google.maps.model.TravelMode;
@@ -34,7 +35,7 @@ import com.google.maps.model.TravelMode;
 /**
  * Test class for the BestTransportResult class
  * 
- * @author Lars Buttgereit
+ * @author Lars Buttgereit, Muhammed Kaya
  */
 public class TestBestTransportResult {
 
@@ -67,4 +68,11 @@ public class TestBestTransportResult {
 		assertThat(this.bestResult.routeToShortString(), equalTo("The route is 2 km long and need 5 min time"));
 	}
 
+	@Test
+	void testEquals() {
+		this.bestResult = new BestTransportResult(TravelMode.TRANSIT, this.data.transportRoutes[0]);
+		assertTrue(this.bestResult.equals(new BestTransportResult(TravelMode.TRANSIT, this.data.transportRoutes[0])));
+		assertFalse(this.bestResult.equals(new BestTransportResult(TravelMode.BICYCLING, this.data.bicycleRoutes[0])));
+		assertFalse(this.bestResult.equals(new BestTransportResult()));
+	}
 }

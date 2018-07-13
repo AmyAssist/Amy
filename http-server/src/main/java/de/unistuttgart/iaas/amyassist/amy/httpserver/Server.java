@@ -42,6 +42,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.LocalDateTimeMessageBodyWriter;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.LocalDateTimeProvider;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeMessageBodyWriter;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeProvider;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
 
 /**
@@ -122,6 +126,10 @@ public class Server {
 		ResourceConfig resourceConfig = new ResourceConfig(classes);
 		resourceConfig.registerClasses(this.restResources);
 		resourceConfig.register(ThrowableExceptionMapper.class);
+		resourceConfig.register(ZonedDateTimeProvider.class);
+		resourceConfig.register(ZonedDateTimeMessageBodyWriter.class);
+		resourceConfig.register(LocalDateTimeProvider.class);
+		resourceConfig.register(LocalDateTimeMessageBodyWriter.class);
 		resourceConfig.register(CORSFilter.class);
 		resourceConfig.register(new AbstractBinder() {
 			@Override
