@@ -26,12 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -70,6 +66,10 @@ public class CalendarLogicTest {
 		this.callog = this.framework.setServiceUnderTest(CalendarLogic.class);
 	}
 
+	/**
+	 * @param testCase
+	 *            a combination of the input variables and the expected outcome
+	 */
 	@ParameterizedTest
 	@MethodSource("testEventsWithDate")
 	public void testCheckDayWithDate(Pair<Event, String> testCase) {
@@ -77,6 +77,10 @@ public class CalendarLogicTest {
 		assertThat(checkDay, equalToIgnoringWhiteSpace(testCase.getRight()));
 	}
 
+	/**
+	 * @param testCase
+	 *            a combination of the input variables and the expected outcome
+	 */
 	@ParameterizedTest
 	@MethodSource("testEventsWithoutDate")
 	public void testCheckDayWithoutDate(Pair<Event, String> testCase) {
@@ -132,15 +136,15 @@ public class CalendarLogicTest {
 	private static Event eventAllDay(String summary, String start, String end) {
 		Event event = new Event();
 		event.setSummary(summary);
-		event.setStart(new EventDateTime().setDate(fromISO2(start)));
-		event.setEnd(new EventDateTime().setDate(fromISO2(end)));
+		event.setStart(new EventDateTime().setDate(new DateTime(start)));
+		event.setEnd(new EventDateTime().setDate(new DateTime(end)));
 		return event;
 	}
 
 	/**
 	 * @param iso
 	 *            date-time without a time-zone
-	 * @return
+	 * @return the DateTime of a String with correct time-zone
 	 */
 	private static DateTime fromISO(String iso) {
 		return fromLocalDateTime(LocalDateTime.parse(iso));
@@ -148,23 +152,5 @@ public class CalendarLogicTest {
 
 	private static DateTime fromLocalDateTime(LocalDateTime localDateTime) {
 		return new DateTime(localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-	}
-
-	/**
-	 * @param iso
-	 *            date-time without a time-zone
-	 * @return
-	 */
-	private static DateTime fromISO2(String iso) {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date date = null;
-		try {
-			date = df.parse(iso);
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
-		String dateStr = df.format(date);
-		DateTime dateTime = new DateTime(dateStr);
-		return dateTime;
 	}
 }
