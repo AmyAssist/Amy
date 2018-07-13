@@ -31,9 +31,11 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 
@@ -205,6 +207,48 @@ public class CalendarLogic {
 	}
 
 	/**
+	 * This method contains the logic to show the calendar events tomorrow
+	 *
+	 * @param now
+	 *            LocalDateTime variable
+	 * @return the events of the chosen day
+	 */
+	public String getEventsAt(LocalDateTime now) {
+		List<String> eventList = new ArrayList<>();
+		try {
+			ZonedDateTime zdt = now.atZone(ZoneId.systemDefault());
+			DateTime setup = new DateTime(zdt.toInstant().toEpochMilli());
+			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
+					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
+			List<Event> items = events.getItems();
+			if (items.isEmpty()) {
+				return this.noEventsFound;
+			}
+			LocalDate startDate;
+			LocalDate nowDate = now.toLocalDate();
+			LocalDate endDate;
+			for (Event event : items) {
+				startDate = getLocalDateStart(event);
+				endDate = getLocalDateEnd(event);
+				if (nowDate.isAfter(startDate) || nowDate.equals(startDate)) {
+					if (nowDate.isBefore(endDate) || nowDate.equals(endDate)) {
+						eventList.add(this.checkDay(now, event, false));
+					}
+				} else {
+					break;
+				}
+			}
+			if (eventList.isEmpty()) {
+				return "There are no events on the " + getDate(nowDate) + ".";
+			}
+			return "You have following events on the " + getDate(nowDate) + ":\n" + String.join("\n", eventList);
+		} catch (IOException e) {
+			this.logger.error(this.errorLogger, e);
+			return this.errorOutput;
+		}
+	}
+
+	/**
 	 * This method checks if and how an event is to be displayed in the output.
 	 *
 	 * @param dayToCheck
@@ -221,12 +265,12 @@ public class CalendarLogic {
 		LocalDate startDate = getLocalDateStart(event);
 		LocalDate checkDate = dayToCheck.toLocalDate();
 		LocalDate endDate = getLocalDateEnd(event);
-		OutputCase outputCase = OutputCase.SINGLEDAY;
-		boolean withTime = isAllDay(event);
+		OutputCase outputCase;
+		boolean withTime = !isAllDay(event);
 		boolean withStartDate = withDate;
 		boolean withEndDate = withDate;
 		// check if the beginning and the end of the event is on another day as the current day
-		if (dayToCheck.isAfter(startDateTime) && dayToCheck.isBefore(endDateTime)) {
+		if (dayToCheck.isAfter(startDateTime)) {
 			// event already started
 			outputCase = OutputCase.STARTINPAST;
 			if (checkDate.isAfter(startDate) && checkDate.isBefore(endDate)) {
@@ -240,37 +284,34 @@ public class CalendarLogic {
 					if (withTime) {
 						// event has specific time stamps
 						outputCase = OutputCase.SINGLEDAY;
-						withStartDate = withDate;
 					} else {
 						// event is defined as all day long and has no specific time stamps
 						outputCase = OutputCase.ALLDAYLONG;
-						withStartDate = withDate;
 					}
 				} else {
 					// event will finish on a different date
-					withStartDate = withDate;
 					withEndDate = true;
 				}
 			} else {
 				// event ends on dayToCheck
 				withStartDate = true;
 			}
-		} else if (dayToCheck.isBefore(startDateTime)) {
+		} else {
 			// event will start in future
 			outputCase = OutputCase.STARTINFUTURE;
-			if (checkDate.isEqual(startDate)) {
-				// event will start at dayToCheck
-				withStartDate = withDate;
-				if (checkDate.isEqual(endDate)) {
-					// event will also finish at the same day
+			if (startDate.isEqual(endDate)) {
+				// event will also finish at the same day
+				if (withTime) {
+					// event has specific time stamps
 					outputCase = OutputCase.SINGLEDAY;
 				} else {
-					// event will finish on an other day in the future
-					withEndDate = true;
+					// event is defined as all day long and has no specific time stamps
+					outputCase = OutputCase.ALLDAYLONG;
 				}
+				withEndDate = false;
 			} else {
-				// event will start on different date in the future
-				withStartDate = true;
+				// event will finish on an other day in the future
+				withEndDate = true;
 			}
 		}
 
@@ -375,7 +416,6 @@ public class CalendarLogic {
 			return LocalDate.parse(event.getStart().getDate().toString());
 		}
 		return LocalDate.parse(event.getStart().getDateTime().toString().substring(0, 10));
-
 	}
 
 	/**
@@ -401,6 +441,10 @@ public class CalendarLogic {
 				.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
 	}
 
+	/**
+	 * @param event
+	 * @return
+	 */
 	public static LocalDateTime getLocalDateTimeEnd(Event event) {
 		if (isAllDay(event)) {
 			return LocalDateTime.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + timeZone, formatter)
@@ -408,6 +452,15 @@ public class CalendarLogic {
 		}
 		return ZonedDateTime.parse(event.getEnd().getDateTime().toString()).withZoneSameInstant(ZoneId.systemDefault())
 				.toLocalDateTime();
+	}
+
+	/**
+	 * @param date
+	 *            a date as LocalDate
+	 * @return String in Natural Language of the date, e.g. "12th of May"
+	 */
+	public String getDate(LocalDate date) {
+		return ordinal(date.getDayOfMonth()) + " of " + date.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
 	}
 
 	/**
