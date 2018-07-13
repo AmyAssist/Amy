@@ -213,7 +213,6 @@ public class NLLexer {
 			return new HashMap<>();
 		}
 		
-		//wontfix
 		try (
 		    InputStreamReader inputStreamReader = new InputStreamReader(grammarFile, "UTF-8");
 		    BufferedReader bufferedReader = new BufferedReader(inputStreamReader)){
@@ -238,7 +237,7 @@ public class NLLexer {
 		    }
 		    
 		} catch (IOException e) {
-			this.logger.error(String.format("number file not found %s", e.toString()));
+			this.logger.error(String.format("number file not found %s", e));
 		}
 		
 		return result;
