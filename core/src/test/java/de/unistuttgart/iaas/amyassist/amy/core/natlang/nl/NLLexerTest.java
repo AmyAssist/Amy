@@ -29,7 +29,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.IntStream.Builder;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -44,13 +47,22 @@ import com.google.common.collect.Lists;
  * @author Felix Burk
  */
 public class NLLexerTest {
-
+	
 	/**
 	 * test normal words and numbers
 	 */
 	@Test
 	public static Stream<List<String>> testWords() {
 		return Stream.of(Arrays.asList("what", "the", "99", "this", "is", "a", "test"));
+	}
+	
+	@Test 
+	public static Stream<Integer> numbers(){
+		Stream<Integer> zeroToNineteen = IntStream.range(0, 20).boxed();
+		Stream<Integer> until90 = IntStream.iterate(20, i -> i + 10).limit(8).boxed();
+		Stream<Integer> untilMillion = IntStream.of(100,1000000).boxed();
+		return Stream.concat(
+			      Stream.concat(zeroToNineteen, until90), untilMillion);
 	}
 
 	/**
@@ -88,8 +100,40 @@ public class NLLexerTest {
 	@Test
 	public void testTypes() {
 		NLLexer lex = new NLLexer();
-		List<WordToken> tokenize = lex.tokenize("wajjo 9 0 oh 99");
-		assertThat(Lists.transform(tokenize, WordToken::getType), contains(WordTokenType.WORD, WordTokenType.NUMBER,
-				WordTokenType.NUMBER, WordTokenType.WORD, WordTokenType.NUMBER));
+		List<WordToken> tokenize = lex.tokenize("wajjo 9 0 oh 99 oh one");
+		assertThat(Lists.transform(tokenize, WordToken::getType), 
+				contains(WordTokenType.WORD, WordTokenType.NUMBER,
+				WordTokenType.NUMBER, WordTokenType.WORD, WordTokenType.NUMBER,
+				WordTokenType.WORD, WordTokenType.NUMBER));
 	}
+	
+	/**
+	 * tests if all numbers are read correctly
+	 * @param number to check
+	 */
+	@ParameterizedTest
+	@MethodSource("numbers")
+	public void testNumbersFileReader(int number) {
+		NLLexer lex = new NLLexer();
+		Map<String, Integer> numbers = lex.readNumbers();
+		assertThat(new Boolean(true), is(numbers.values().contains(number)));
+	}
+	
+	
+	@Test
+	public void testsNumbers() {
+		NLLexer lex = new NLLexer();
+		List<WordToken> tokenize = lex.tokenize("test one hundred twenty two test");
+		
+		assertThat(Lists.transform(tokenize, WordToken::getType), 
+				contains(WordTokenType.WORD, WordTokenType.NUMBER,
+				WordTokenType.WORD));
+		System.out.println(tokenize.get(1).getContent());
+		assertThat(new Boolean(true), is(tokenize.get(1).getContent().equals("122")));
+	}
+	
+	
+	
+	
+	
 }
