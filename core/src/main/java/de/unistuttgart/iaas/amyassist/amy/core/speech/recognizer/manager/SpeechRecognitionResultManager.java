@@ -77,14 +77,6 @@ public interface SpeechRecognitionResultManager {
 	void stopOutput();
 
 	/**
-	 * Set boolean if the output is Currently Active
-	 * 
-	 * @param outputActive
-	 *            true if sound Playing
-	 */
-	void setSoundPlaying(boolean outputActive);
-
-	/**
 	 * Method to check if output is currently active
 	 * 
 	 * @return true if sound Playing
