@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +40,9 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SearchTypes;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyConstants;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 
 /**

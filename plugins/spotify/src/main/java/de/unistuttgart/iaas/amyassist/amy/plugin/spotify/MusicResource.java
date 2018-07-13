@@ -43,6 +43,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
@@ -64,6 +66,9 @@ public class MusicResource implements Resource{
 
 	@Reference
 	private StringGenerator stringGenerator;
+	
+	@Reference
+	private DeviceLogic deviceLogic;
 
 	private MusicEntity musicEntity;
 
@@ -121,7 +126,7 @@ public class MusicResource implements Resource{
 	@Path("getDevices")
 	@Produces(MediaType.APPLICATION_JSON)
 	public DeviceEntity[] getDevices() {
-		List<DeviceEntity> deviceList = this.logic.getDevices();
+		List<DeviceEntity> deviceList = this.deviceLogic.getDevices();
 		if (deviceList.isEmpty()) {
 			throw new WebApplicationException("Currently there are no devices available or connected", Status.CONFLICT);
 		}
@@ -147,13 +152,13 @@ public class MusicResource implements Resource{
 	public String setDevice(@PathParam("deviceValue") String deviceValue) {
 		try {
 			int deviceNumber = Integer.parseInt(deviceValue);
-			String result = this.logic.setDevice(deviceNumber);
+			String result = this.deviceLogic.setDevice(deviceNumber);
 			if (result.equals("No device found")) {
 				throw new WebApplicationException("No device found", Status.NOT_FOUND);
 			}
 			return result;
 		} catch (NumberFormatException e) {
-			if (this.logic.setDevice(deviceValue)) {
+			if (this.deviceLogic.setDevice(deviceValue)) {
 				return "Device: '" + deviceValue + "' is selected now";
 			}
 			throw new WebApplicationException("Device: '" + deviceValue + "' is not available", Status.CONFLICT);

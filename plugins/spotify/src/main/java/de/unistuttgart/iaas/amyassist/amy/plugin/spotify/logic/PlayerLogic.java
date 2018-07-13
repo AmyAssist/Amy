@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -38,6 +38,8 @@ import com.wrapper.spotify.model_objects.specification.Track;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SearchTypes;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 
@@ -92,53 +94,6 @@ public class PlayerLogic {
 	 */
 	public void inputAuthCode(String authCode) {
 		this.spotifyAPICalls.createRefreshToken(authCode);
-	}
-
-	/**
-	 * get all devices that logged in at the moment
-	 * 
-	 * @return empty ArrayList if no device available else Maps with the name, id and type of the device
-	 */
-	public List<DeviceEntity> getDevices() {
-		List<DeviceEntity> devicesList = new ArrayList<>();
-		Device[] devices = this.spotifyAPICalls.getDevices();
-		if (devices != null) {
-			for (int i = 0; i < devices.length; i++) {
-				DeviceEntity deviceData;
-				deviceData = new DeviceEntity(devices[i].getType(),
-						devices[i].getName(), devices[i].getId());
-				devicesList.add(deviceData);
-			}
-		}
-		return devicesList;
-	}
-
-	/**
-	 * set the given device as acutal active device for playing music
-	 * 
-	 * @param deviceNumber
-	 *            index of the device array. Order is the same as in the output in getDevices
-	 * @return selected device
-	 */
-	public String setDevice(int deviceNumber) {
-		List<DeviceEntity> devices = getDevices();
-		if (devices.size() > deviceNumber) {
-			this.spotifyAPICalls.setCurrentDevice(devices.get(deviceNumber).getUri());
-			return devices.get(deviceNumber).getName();
-		}
-		this.logger.warn("No device with this number was found");
-		return "No device found";
-	}
-
-	/**
-	 * set a device direct with the device id
-	 * 
-	 * @param deviceID
-	 *            from a spotify device
-	 * @return true if the device is available, else false
-	 */
-	public boolean setDevice(String deviceID) {
-		return this.spotifyAPICalls.setCurrentDevice(deviceID);
 	}
 
 	/**
