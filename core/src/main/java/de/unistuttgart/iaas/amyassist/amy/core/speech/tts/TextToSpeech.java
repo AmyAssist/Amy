@@ -106,9 +106,10 @@ public class TextToSpeech implements Output, Runnable {
 		try {
 			while (!Thread.currentThread().isInterrupted()) {
 				String s = this.queue.take();
-				this.stop = false;
+				this.isTalking = true;
 				this.writeAudio(s);
 				Thread.sleep(WAIT_TIME_AFTER_SPEECH);
+				this.isTalking = false;
 			}
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
@@ -119,14 +120,12 @@ public class TextToSpeech implements Output, Runnable {
 
 	private void writeAudio(String s) {
 		try (AudioInputStream a = this.mary.generateAudio(s)) {
-			this.isTalking = true;
 			moveBytes(a, this.outputLine);
 		} catch (SynthesisException e) {
 			this.logger.error("output error", e);
 		} catch (IOException e) {
 			this.logger.error("Error from MaryTTS InputStream", e);
 		} finally {
-			this.isTalking = false;
 		}
 	}
 
@@ -154,6 +153,7 @@ public class TextToSpeech implements Output, Runnable {
 	@Override
 	public synchronized void output(String s) {
 		this.logger.info("saying: {}", s);
+		this.stop = false;
 		this.speak(this.preProcessing(s));
 	}
 
