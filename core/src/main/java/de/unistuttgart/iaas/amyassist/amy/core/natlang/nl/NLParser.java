@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
+import java.util.Collections;
 import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParseException;
@@ -60,12 +61,44 @@ public class NLParser implements INLParser {
 	public AGFNode matchingNode(List<WordToken> nl) {
 		this.mRead = nl;
 		for (AGFNode agf : this.grammars) {
+			AGFNode nodeSorted = sortChildsOfOrAndOp(agf);
 			this.currentIndex = 0;
-			if (checkNode(agf) && this.currentIndex == nl.size()) {
+			if (checkNode(nodeSorted) && this.currentIndex == nl.size()) {
 				return agf;
 			}
 		}
 		throw new NLParserException("could not find matching grammar for tokens" + nl);
+	}
+
+	/**
+	 * sorts childs of or groups and optional groups by size 
+	 * size meaning number of words inside the sentences seperated by '|'
+	 * 
+	 * this prevents problems like [very | very very] very
+	 * not beeing recognized with the input very very very
+	 * because this parser is greedy and picks the first matching sentence 
+	 * it finds. If we just order the sentences in or and optional groups
+	 * we will be fine
+	 * 
+	 * @param node to sort
+	 * @return sorted node
+	 */
+	public AGFNode sortChildsOfOrAndOp(AGFNode node) {
+		
+		switch(node.getType()) {
+		case OPG: 
+			//fall through
+		case ORG:
+			Collections.sort(node.getChilds());
+			Collections.reverse(node.getChilds());
+			break;
+		default:
+			for(AGFNode child : node.getChilds()) {
+				sortChildsOfOrAndOp(child);
+			}
+		}
+		
+		return node;
 	}
 
 	@Override
@@ -92,20 +125,15 @@ public class NLParser implements INLParser {
 			}
 			break;
 		case OPG:
-			int traceBackOp = this.currentIndex;
 			for (AGFNode node : agf.getChilds()) {
-				if(!checkNode(node)) {
-					this.currentIndex = traceBackOp;
-				}
+				checkNode(node);
 			}
 			break;
 		case ORG:
-			int traceBackOr = this.currentIndex;
 			for (AGFNode node : agf.getChilds()) {
 				if (checkNode(node)) {
 					return true;
 				}
-				this.currentIndex = traceBackOr;
 			}
 			return false;
 		case MORPH:

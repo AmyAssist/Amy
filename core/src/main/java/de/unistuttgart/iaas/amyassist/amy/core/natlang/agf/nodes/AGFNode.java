@@ -31,7 +31,7 @@ import java.util.List;
  * 
  * @author Felix Burk
  */
-public class AGFNode  {
+public class AGFNode implements Comparable<AGFNode>  {
 
 	/**
 	 * all child nodes
@@ -134,6 +134,35 @@ public class AGFNode  {
 	 */
 	public String printSelf() {
 		return printSelf("AGFNode", 0);
+	}
+	
+	/**
+	 * counts the number of words and rules this node contains
+	 * @return number of leafes
+	 */
+	private int countLeafes() {
+		int count = 0;
+		if(!this.childs.isEmpty()) {
+			for(AGFNode node : this.childs) {
+				count += node.countLeafes();
+			}
+		}else {
+			return 1;
+		}
+		return count;
+	}
+
+	/**
+	 * overrides compareTo method to compare number of children
+	 * 
+	 * this is not the same as equals, because i use a special compareTo method here
+	 * talking to you sonarcloud
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(AGFNode node) {
+		return Integer.compare(this.countLeafes(), node.countLeafes());
 	}
 
 }

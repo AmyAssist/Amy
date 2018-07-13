@@ -56,7 +56,7 @@ public class NLParserTest {
 		AGFNode gram = grammars.get(0);
 		AGFNode weather = grammars.get(1);
 		AGFNode badGram = grammars.get(5);
-
+		
 		return Stream.of(Pair.of("test 10 minutes", gram), Pair.of("test 10 minute", gram), Pair.of("weather", weather),
 				Pair.of("weather today", weather), Pair.of("delete alarm 10", grammars.get(2)),
 				Pair.of("when does timer 10 ring", grammars.get(3)), Pair.of("spotify play", grammars.get(4)),
@@ -101,6 +101,37 @@ public class NLParserTest {
 
 	}
 	
+	/**
+	 * this checks if longer options in optional groups are used
+	 */
+	@Test
+	public void testPreferLongOptionsOP() {
+		AGFNode node = new AGFParser(new AGFLexer("this grammar is [very |very very] bad")).parseWholeExpression();
+		List<AGFNode> list = new ArrayList<>();
+		list.add(node);
+		NLParser nlParser = new NLParser(list);
+		NLLexer lex = new NLLexer();
+
+		assertThat(nlParser.matchingNode(lex.tokenize("this grammar is very very bad")), equalTo(node));
+		assertThat(nlParser.matchingNode(lex.tokenize("this grammar is bad")), equalTo(node));
+		assertThat(nlParser.matchingNode(lex.tokenize("this grammar is very bad")), equalTo(node));
+	}
+	
+	/**
+	 * this checks if longer options in or groups are used
+	 */
+	@Test
+	public void testPreferLongOptionsOR() {
+		AGFNode node = new AGFParser(new AGFLexer("this grammar is (very |very very) bad")).parseWholeExpression();
+		List<AGFNode> list = new ArrayList<>();
+		list.add(node);
+		NLParser nlParser = new NLParser(list);
+		NLLexer lex = new NLLexer();
+
+		assertThat(nlParser.matchingNode(lex.tokenize("this grammar is very very bad")), equalTo(node));
+		assertThat(nlParser.matchingNode(lex.tokenize("this grammar is very bad")), equalTo(node));
+	}
+	
 	
 	/**
 	 * tests hard coded nls and grammars
@@ -113,7 +144,6 @@ public class NLParserTest {
 		NLLexer lex = new NLLexer();
 
 		List<WordToken> tokenize = lex.tokenize(testcase.getLeft());
-		System.out.println(testcase.getRight().printSelf());
 		assertThat(nlParser.matchingNode(tokenize), equalTo(testcase.getRight()));
 	}
 	
@@ -140,7 +170,5 @@ public class NLParserTest {
 		assertThrows(NLParserException.class, () -> nlParser.matchingNodeIndex(tokenize));
 
 	}
-	
-	
 
 }
