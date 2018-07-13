@@ -125,7 +125,6 @@ public class TextToSpeech implements Output, Runnable {
 			this.logger.error("output error", e);
 		} catch (IOException e) {
 			this.logger.error("Error from MaryTTS InputStream", e);
-		} finally {
 		}
 	}
 
@@ -164,7 +163,7 @@ public class TextToSpeech implements Output, Runnable {
 	 * keep returning true for a moment. This is to make sure there is a small break between outputs.
 	 */
 	@Override
-	public void stopOutput() {
+	public synchronized void stopOutput() {
 		this.queue.clear();
 		this.stop = true;
 	}
