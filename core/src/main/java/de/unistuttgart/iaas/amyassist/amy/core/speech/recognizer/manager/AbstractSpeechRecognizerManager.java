@@ -29,9 +29,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +57,6 @@ public abstract class AbstractSpeechRecognizerManager
 	private SpeechRecognizer mainRecognizer;
 	private Map<String, SpeechRecognizer> recognizerList = new HashMap<>();
 
-	private boolean soundPlaying = false;
 	private boolean srListening = false;
 
 	private Thread currentRecognizer;
@@ -192,11 +188,6 @@ public abstract class AbstractSpeechRecognizerManager
 	}
 
 	/**
-	 * Notify the System that sound is (not longer) Playing
-	 * T O D O private void notify(boolean listening) {}
-	 */
-
-	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isListening()
 	 */
 	@Override
@@ -209,9 +200,7 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public void voiceOutput(String outputString) {
-		setSoundPlaying(true);
-		this.output.output(this.listener, outputString);
-
+		this.output.output(outputString);
 	}
 
 	/**
@@ -223,19 +212,11 @@ public abstract class AbstractSpeechRecognizerManager
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#setSoundPlaying(boolean)
-	 */
-	@Override
-	public void setSoundPlaying(boolean outputActive) {
-		this.soundPlaying = outputActive;
-	}
-
-	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isSoundPlaying()
 	 */
 	@Override
 	public boolean isSoundPlaying() {
-		return this.soundPlaying;
+		return this.output.isCurrentlyOutputting();
 	}
 
 	/**
@@ -253,15 +234,5 @@ public abstract class AbstractSpeechRecognizerManager
 	public boolean isRecognitionThreadRunning() {
 		return this.recognitionThreadRunning;
 	}
-
-	/**
-	 * listens to the Voice Output
-	 */
-	private LineListener listener = event -> {
-		if (event.getType() == LineEvent.Type.STOP) {
-			((Clip) event.getSource()).close();
-			setSoundPlaying(false);
-		}
-	};
 
 }

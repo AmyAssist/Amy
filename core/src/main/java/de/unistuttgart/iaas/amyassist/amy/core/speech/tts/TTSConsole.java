@@ -23,28 +23,26 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
+import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+
 /**
- * Interface for the TextToSpeech
+ * Console Tool to test the TextToSpeech service
  * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-public interface Output {
+public class TTSConsole {
+	@Reference
+	private TextToSpeech tts;
 
-	/**
-	 * Method to Voice and Log output the input String
-	 * 
-	 * @param s
-	 *            String that shall be said
-	 */
-	void output(String s);
+	@Command(name = "TextToSpeech", abbrev = "tts", description = "Let the TextToSpeech Service output text as speech")
+	public void textToSpeech(String... text) {
+		this.tts.output(String.join(" ", text));
+	}
 
-	/**
-	 * stop the OutputClip
-	 */
-	void stopOutput();
-
-	/**
-	 * @return whether this output is currently outputting information.
-	 */
-	boolean isCurrentlyOutputting();
+	@Command(name = "StopTextToSpeech", abbrev = "tts:stop",
+			description = "stop the current and all queued output of the TextToSpeech Service")
+	public void stopTextToSpeech() {
+		this.tts.stopOutput();
+	}
 }
