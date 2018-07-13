@@ -64,8 +64,8 @@ public class CalendarLogic {
 		STARTINPAST, STARTINFUTURE, ALLDAYLONG, SINGLEDAY
 	}
 
-	private static SimpleDateFormat sdf = new SimpleDateFormat("XXX");
-	private static String timeZone = sdf
+	private SimpleDateFormat sdf = new SimpleDateFormat("XXX");
+	private String timeZone = this.sdf
 			.format(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
@@ -433,9 +433,10 @@ public class CalendarLogic {
 	 * @param event
 	 * @return
 	 */
-	public static LocalDateTime getLocalDateTimeStart(Event event) {
+	public LocalDateTime getLocalDateTimeStart(Event event) {
 		if (isAllDay(event)) {
-			return LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000" + timeZone, formatter);
+			return LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000" + this.timeZone,
+					formatter);
 		}
 		return ZonedDateTime.parse(event.getStart().getDateTime().toString())
 				.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
@@ -445,9 +446,9 @@ public class CalendarLogic {
 	 * @param event
 	 * @return
 	 */
-	public static LocalDateTime getLocalDateTimeEnd(Event event) {
+	public LocalDateTime getLocalDateTimeEnd(Event event) {
 		if (isAllDay(event)) {
-			return LocalDateTime.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + timeZone, formatter)
+			return LocalDateTime.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + this.timeZone, formatter)
 					.minusDays(1);
 		}
 		return ZonedDateTime.parse(event.getEnd().getDateTime().toString()).withZoneSameInstant(ZoneId.systemDefault())
