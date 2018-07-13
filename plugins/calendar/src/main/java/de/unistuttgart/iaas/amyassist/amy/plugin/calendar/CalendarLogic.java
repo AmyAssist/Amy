@@ -68,6 +68,7 @@ public class CalendarLogic {
 	private String timeZone = this.sdf
 			.format(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+	private LocalTime zero = LocalTime.of(0, 0, 0, 0);
 
 	/**
 	 * Output of the logger
@@ -131,26 +132,19 @@ public class CalendarLogic {
 		List<String> eventList = new ArrayList<>();
 		try {
 			LocalDateTime now = LocalDateTime.now();
+			LocalDate nextDay = now.plusDays(1).toLocalDate();
+			LocalDateTime endOfDay = LocalDateTime.of(nextDay, this.zero);
+			ZonedDateTime zdt = endOfDay.atZone(ZoneId.systemDefault());
+			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
 			DateTime setup = new DateTime(System.currentTimeMillis());
 			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
+					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return this.noEventsFound;
 			}
-			LocalDate startDate;
-			LocalDate nowDate = now.toLocalDate();
-			LocalDate endDate;
 			for (Event event : items) {
-				startDate = getLocalDateStart(event);
-				endDate = getLocalDateEnd(event);
-				if (nowDate.isAfter(startDate) || nowDate.equals(startDate)) {
-					if (nowDate.isBefore(endDate) || nowDate.equals(endDate)) {
-						eventList.add(this.checkDay(now, event, false));
-					}
-				} else {
-					break;
-				}
+				eventList.add(this.checkDay(now, event, false));
 			}
 			if (eventList.isEmpty()) {
 				return "There are no events today.";
@@ -171,30 +165,21 @@ public class CalendarLogic {
 		List<String> eventList = new ArrayList<>();
 		try {
 			LocalDateTime now = LocalDateTime.now();
-			LocalTime zero = LocalTime.of(0, 0, 0, 0);
 			LocalDate nextDay = now.plusDays(1).toLocalDate();
-			now = LocalDateTime.of(nextDay, zero);
+			now = LocalDateTime.of(nextDay, this.zero);
 			ZonedDateTime zdt = now.atZone(ZoneId.systemDefault());
 			DateTime setup = new DateTime(zdt.toInstant().toEpochMilli());
+			LocalDateTime endOfTomorrow = now.plusDays(1);
+			zdt = endOfTomorrow.atZone(ZoneId.systemDefault());
+			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
 			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
+					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return this.noEventsFound;
 			}
-			LocalDate startDate;
-			LocalDate nowDate = now.toLocalDate();
-			LocalDate endDate;
 			for (Event event : items) {
-				startDate = getLocalDateStart(event);
-				endDate = getLocalDateEnd(event);
-				if (nowDate.isAfter(startDate) || nowDate.equals(startDate)) {
-					if (nowDate.isBefore(endDate) || nowDate.equals(endDate)) {
-						eventList.add(this.checkDay(now, event, false));
-					}
-				} else {
-					break;
-				}
+				eventList.add(this.checkDay(now, event, false));
 			}
 			if (eventList.isEmpty()) {
 				return "There are no events tomorrow.";
@@ -213,35 +198,29 @@ public class CalendarLogic {
 	 *            LocalDateTime variable
 	 * @return the events of the chosen day
 	 */
-	public String getEventsAt(LocalDateTime now) {
+	public String getEventsAt(LocalDateTime ldt) {
 		List<String> eventList = new ArrayList<>();
 		try {
+			LocalDateTime now = LocalDateTime.of(ldt.toLocalDate(), this.zero);
 			ZonedDateTime zdt = now.atZone(ZoneId.systemDefault());
 			DateTime setup = new DateTime(zdt.toInstant().toEpochMilli());
+			LocalDateTime nextDay = now.plusDays(1);
+			zdt = nextDay.atZone(ZoneId.systemDefault());
+			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
 			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
+					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return this.noEventsFound;
 			}
-			LocalDate startDate;
-			LocalDate nowDate = now.toLocalDate();
-			LocalDate endDate;
 			for (Event event : items) {
-				startDate = getLocalDateStart(event);
-				endDate = getLocalDateEnd(event);
-				if (nowDate.isAfter(startDate) || nowDate.equals(startDate)) {
-					if (nowDate.isBefore(endDate) || nowDate.equals(endDate)) {
-						eventList.add(this.checkDay(now, event, false));
-					}
-				} else {
-					break;
-				}
+				eventList.add(this.checkDay(now, event, false));
 			}
 			if (eventList.isEmpty()) {
-				return "There are no events on the " + getDate(nowDate) + ".";
+				return "There are no events on the " + getDate(now.toLocalDate()) + ".";
 			}
-			return "You have following events on the " + getDate(nowDate) + ":\n" + String.join("\n", eventList);
+			return "You have following events on the " + getDate(now.toLocalDate()) + ":\n"
+					+ String.join("\n", eventList);
 		} catch (IOException e) {
 			this.logger.error(this.errorLogger, e);
 			return this.errorOutput;
