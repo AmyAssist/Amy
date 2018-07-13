@@ -37,14 +37,29 @@ import javax.annotation.Nonnull;
 @Service(DeviceRegistry.class)
 public class DeviceRegistry extends AbstractRegistry<DeviceEntity> {
 
-    @Override
-    protected String getPersistenceUnitName() {
-        return "ColorRegistry";
-    }
+	@Override
+	protected String getPersistenceUnitName() {
+		return "SpotifyDeviceRegistry";
+	}
 
-    @Nonnull
-    @Override
-    protected Class<? extends DeviceEntity> getEntityClass() {
-        return DeviceEntity.class;
-    }
+	@Nonnull
+	@Override
+	protected Class<? extends DeviceEntity> getEntityClass() {
+		return DeviceEntity.class;
+	}
+
+	/**
+	 * find a device in the registry with the uri
+	 * 
+	 * @param uri
+	 * @return the device or null if the device not in the registry
+	 */
+	public DeviceEntity findDeviceWithUri(String uri) {
+		for (DeviceEntity device : getAll()) {
+			if (device.getUri() != null && device.getUri().equals(uri)) {
+				return device;
+			}
+		}
+		return null;
+	}
 }

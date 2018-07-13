@@ -34,6 +34,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.registry.DeviceRegistry;
 
 /**
  * In this class the devices from spotify are managed
@@ -47,6 +48,8 @@ public class DeviceLogic {
 	private SpotifyAPICalls spotifyAPICalls;
 	@Reference
 	private Logger logger;
+	@Reference
+	private DeviceRegistry deviceRegistry;
 
 	/**
 	 * get all devices that logged in at the moment
@@ -57,9 +60,14 @@ public class DeviceLogic {
 		List<DeviceEntity> devicesList = new ArrayList<>();
 		Device[] devices = this.spotifyAPICalls.getDevices();
 		if (devices != null) {
-			for (int i = 0; i < devices.length; i++) {
+			for (Device device : devices) {
 				DeviceEntity deviceData;
-				deviceData = new DeviceEntity(devices[i].getType(), devices[i].getName(), devices[i].getId());
+				deviceData = new DeviceEntity(device.getType(), device.getName(), device.getId());
+				if (this.deviceRegistry.findDeviceWithUri(device.getId()) != null) {
+					deviceData = this.deviceRegistry.findDeviceWithUri(device.getId());
+				} else {
+					this.deviceRegistry.save(deviceData);
+				}
 				devicesList.add(deviceData);
 			}
 		}
@@ -67,7 +75,7 @@ public class DeviceLogic {
 	}
 
 	/**
-	 * set the given device as acutal active device for playing music
+	 * set the given device as actual active device for playing music
 	 * 
 	 * @param deviceNumber
 	 *            index of the device array. Order is the same as in the output in getDevices

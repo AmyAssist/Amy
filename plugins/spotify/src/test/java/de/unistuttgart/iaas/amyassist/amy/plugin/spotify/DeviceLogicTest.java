@@ -46,24 +46,22 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.registry.DeviceRegistry;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
  * Test class for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic}
+ * 
  * @author Lars Buttgereit
  */
 @ExtendWith({ MockitoExtension.class, FrameworkExtension.class })
 public class DeviceLogicTest {
-	
+
 	private static final String ID1 = "abc123";
 	private static final String ID2 = "123abc";
 	private static final String DEVICE_NAME1 = "Hello";
 	private static final String DEVICE_NAME2 = "Godbye";
-	private static final String PLAYLIST_NAME1 = "New Hits";
-	private static final String PLAYLIST_NAME2 = "must popular hits";
-	private static final String ARTIST_NAME1 = "David Guetta";
-	private static final String ARTIST_NAME2 = "Justin Timberlake";
 
 	private DeviceLogic deviceLogic;
 
@@ -71,31 +69,16 @@ public class DeviceLogicTest {
 	private TestFramework testFramework;
 
 	private Device[] devices;
-	private CurrentlyPlayingContext currentlyPlayingContext;
-	private Paging<PlaylistSimplified> playlistsSpotifyFormat;
-	private List<PlaylistEntity> playlistsOwnFormat;
-
-	@Mock
 	private SpotifyAPICalls spotifyAPICalls;
-
-	@Mock
-	private Search search;
+	private DeviceRegistry registry;
 
 	@BeforeEach
 	public void init() {
+		this.registry = this.testFramework.mockService(DeviceRegistry.class);
 		this.spotifyAPICalls = this.testFramework.mockService(SpotifyAPICalls.class);
 		this.deviceLogic = this.testFramework.setServiceUnderTest(DeviceLogic.class);
 		initDevices();
 
-	}
-	
-	@Test
-	public void testGetDevices() {
-		when(this.spotifyAPICalls.getDevices()).thenReturn(devices);
-		List<DeviceEntity> result = this.deviceLogic.getDevices();
-		assertThat(result.get(0).getName(), equalTo(DEVICE_NAME1));
-		assertThat(result.get(1).getName(), equalTo(DEVICE_NAME2));
-		verify(this.spotifyAPICalls).getDevices();
 	}
 
 	public void initDevices() {
@@ -105,12 +88,32 @@ public class DeviceLogicTest {
 		devices[1] = new Device.Builder().setId(ID2).setIs_active(false).setName(DEVICE_NAME2).setType("Computer")
 				.build();
 	}
-	
+
 	@Test
 	public void testGetDevicesWithNoDevices() {
 		when(this.spotifyAPICalls.getDevices()).thenReturn(null);
 		List<DeviceEntity> result = this.deviceLogic.getDevices();
 		assertThat(result.isEmpty(), equalTo(true));
+		verify(this.spotifyAPICalls).getDevices();
+	}
+
+	@Test
+	public void testGetDevices() {
+		when(this.spotifyAPICalls.getDevices()).thenReturn(devices);
+		List<DeviceEntity> result = this.deviceLogic.getDevices();
+		assertThat(result.get(0).getName(), equalTo(DEVICE_NAME1));
+		assertThat(result.get(1).getName(), equalTo(DEVICE_NAME2));
+		verify(this.spotifyAPICalls).getDevices();
+	}
+
+	@Test
+	public void testGetDevicesOneInRegistry() {
+		DeviceEntity entity = new DeviceEntity("Computer", DEVICE_NAME1, ID1);
+		when(this.spotifyAPICalls.getDevices()).thenReturn(devices);
+		when(this.registry.findDeviceWithUri(ID1)).thenReturn(entity);
+		List<DeviceEntity> result = this.deviceLogic.getDevices();
+		assertThat(result.get(0).getName(), equalTo(DEVICE_NAME1));
+		assertThat(result.get(1).getName(), equalTo(DEVICE_NAME2));
 		verify(this.spotifyAPICalls).getDevices();
 	}
 
