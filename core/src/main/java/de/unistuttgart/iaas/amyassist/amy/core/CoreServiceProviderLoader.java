@@ -25,6 +25,10 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.util.Properties;
 
+
+import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistryImpl;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistryImpl;
+
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl;

@@ -21,43 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.io;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * The Service implementation of the Environment
+ * Console Tool to test the TextToSpeech service
  * 
  * @author Leon Kiefer
  */
-@Service
-public class EnvironmentService implements Environment {
+public class TTSConsole {
+	@Reference
+	private TextToSpeech tts;
 
-	private Path workingDirectory;
-
-	@PostConstruct
-	private void init() {
-		this.workingDirectory = Paths.get("");
+	@Command(name = "TextToSpeech", abbrev = "tts", description = "Let the TextToSpeech Service output text as speech")
+	public void textToSpeech(String... text) {
+		this.tts.output(String.join(" ", text));
 	}
 
-	@Override
-	public Path getWorkingDirectory() {
-		return this.workingDirectory;
-	}
-
-	@Override
-	public LocalDateTime getCurrentLocalDateTime() {
-		return LocalDateTime.now();
-	}
-
-	@Override
-	public ZonedDateTime getCurrentDateTime() {
-		return ZonedDateTime.now();
+	@Command(name = "StopTextToSpeech", abbrev = "tts:stop",
+			description = "stop the current and all queued output of the TextToSpeech Service")
+	public void stopTextToSpeech() {
+		this.tts.stopOutput();
 	}
 }

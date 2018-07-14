@@ -21,30 +21,19 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+package de.unistuttgart.iaas.amyassist.amy.registry.rest;
+
+import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
+import de.unistuttgart.iaas.amyassist.amy.registry.ContactImpl;
+import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
+
+import javax.ws.rs.Path;
 
 /**
- * Interface for the TextToSpeech
- * 
- * @author Kai Menzel
+ * Contact registry REST resource
+ *
+ * @author Benno Krauß
  */
-public interface Output {
-
-	/**
-	 * Method to Voice and Log output the input String
-	 * 
-	 * @param s
-	 *            String that shall be said
-	 */
-	void output(String s);
-
-	/**
-	 * stop the OutputClip
-	 */
-	void stopOutput();
-
-	/**
-	 * @return whether this output is currently outputting information.
-	 */
-	boolean isCurrentlyOutputting();
+@Path("registry/contact/")
+public class ContactRegistryResource extends AbstractRegistryResource<ContactRegistry, Contact, ContactImpl, Integer> {
 }

@@ -21,43 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.io;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
+import javax.annotation.Nonnull;
+
 /**
- * The Service implementation of the Environment
- * 
- * @author Leon Kiefer
+ * A contact registry
+ *
+ * @author Benno Krauß
  */
-@Service
-public class EnvironmentService implements Environment {
+@Service(ContactRegistry.class)
+public class ContactRegistryImpl extends AbstractRegistry<Contact> implements ContactRegistry {
 
-	private Path workingDirectory;
+    @Override
+    protected String getPersistenceUnitName() {
+        return "ContactRegistry";
+    }
 
-	@PostConstruct
-	private void init() {
-		this.workingDirectory = Paths.get("");
-	}
-
-	@Override
-	public Path getWorkingDirectory() {
-		return this.workingDirectory;
-	}
-
-	@Override
-	public LocalDateTime getCurrentLocalDateTime() {
-		return LocalDateTime.now();
-	}
-
-	@Override
-	public ZonedDateTime getCurrentDateTime() {
-		return ZonedDateTime.now();
-	}
+    @Nonnull
+    @Override
+    public Class<? extends Contact> getEntityClass() {
+        return ContactImpl.class;
+    }
 }

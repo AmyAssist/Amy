@@ -322,7 +322,7 @@ public class SpotifyAPICalls {
 	 *            from a song
 	 * @return true if no problem occur else false
 	 */
-	protected boolean playSongFromUri(String uri) {
+	public boolean playSongFromUri(String uri) {
 		if (checkPlayerState()) {
 			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = getSpotifyApi().startResumeUsersPlayback()
 					.device_id(this.deviceID).uris(new JsonParser().parse("[\"" + uri + "\"]").getAsJsonArray())
@@ -339,7 +339,7 @@ public class SpotifyAPICalls {
 	 *            uro from a playlist or album
 	 * @return true if no problem occur else false
 	 */
-	protected boolean playListFromUri(String uri) {
+	public boolean playListFromUri(String uri) {
 		if (checkPlayerState()) {
 			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = getSpotifyApi().startResumeUsersPlayback()
 					.context_uri(uri).device_id(this.deviceID).build();
@@ -411,7 +411,7 @@ public class SpotifyAPICalls {
 	 *            int between 0 and 100
 	 * @return if setVolume success then return true, else false
 	 */
-	protected boolean setVolume(int volume) {
+	public boolean setVolume(int volume) {
 		if (checkPlayerState()) {
 			SetVolumeForUsersPlaybackRequest setVolumeForUsersPlaybackRequest = getSpotifyApi()
 					.setVolumeForUsersPlayback(volume).device_id(this.deviceID).build();
