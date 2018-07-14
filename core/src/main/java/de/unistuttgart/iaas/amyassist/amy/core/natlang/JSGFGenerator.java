@@ -85,7 +85,7 @@ public class JSGFGenerator {
 		grammar.append("\n//pre defined rules \n");
 
 		// pre defined rules
-		grammar.append("<digit> = (one | two | three | four | five | six | seven |"
+		grammar.append("<number> = (one | two | three | four | five | six | seven |"
 				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
 				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
 				+ "fifty | sixty  | seventy | eighty | ninety | and )+; \n");
@@ -138,7 +138,7 @@ public class JSGFGenerator {
 				b.append(" " + node.getContent());
 				break;
 			case RULE:
-				b.append(" <digit>");
+				b.append(" <number>");
 				break;
 			case ORG:
 				b.append(" (");

@@ -49,7 +49,7 @@ public class JSGFGeneratorTest {
 		JSGFGenerator gen = new JSGFGenerator("test", "test", "test", "test");
 		String s = gen.addRule(node, "testi");
 		gen.addRule(node2, "dwoa");
-		assertEquals(s.trim().replaceAll("\\s{2,}", " "), "public <testi> = set timer on <digit> minutes;");
+		assertEquals(s.trim().replaceAll("\\s{2,}", " "), "public <testi> = set timer on <number> minutes;");
 		
 	}
 	
@@ -65,7 +65,7 @@ public class JSGFGeneratorTest {
 				
 		JSGFGenerator gen = new JSGFGenerator("test", "test", "test", "test");
 		String s = gen.addRule(node, "test");
-		assertEquals(s.replaceAll("\\s*", "").trim(), "public <test> = set timer on (x|(wa|d)) [<digit> [x] hours] [<digit> minutes] [<digit> seconds] test;".replaceAll("\\s*", ""));
+		assertEquals(s.replaceAll("\\s*", "").trim(), "public <test> = set timer on (x|(wa|d)) [<number> [x] hours] [<number> minutes] [<number> seconds] test;".replaceAll("\\s*", ""));
 		
 	}
 }
