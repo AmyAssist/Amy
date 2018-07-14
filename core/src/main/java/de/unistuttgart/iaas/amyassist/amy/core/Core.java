@@ -29,8 +29,6 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +43,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCrea
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
+import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
 import de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource;
 
 /**

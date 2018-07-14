@@ -25,10 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.util.Properties;
 
-
-import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistryImpl;
-import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistryImpl;
-
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl;
@@ -43,12 +39,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.persistence.PersistenceService;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.storage.DatabaseStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService;
-import de.unistuttgart.iaas.amyassist.amy.core.registry.contact.ContactRegistryImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.registry.location.LocationRegistryImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistryImpl;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistryImpl;
 
 /**
  * Register the Services of Core
