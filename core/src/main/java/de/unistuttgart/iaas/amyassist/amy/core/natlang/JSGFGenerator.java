@@ -115,11 +115,12 @@ public class JSGFGenerator {
 	 */
 	public String addRule(AGFNode node, String ruleName) {
 		StringBuilder b = new StringBuilder();
-		b.append("public <" + ruleName + "> = ");
-		String rule = handleNode(b, node) + ";\n";
+		StringBuilder rule = new StringBuilder();
+		publicRule(rule, ruleName, handleNode(b, node));
 
-		this.rules.add(rule);
-		return rule;
+
+		this.rules.add(rule.toString());
+		return rule.toString();
 	}
 
 	/**

@@ -69,6 +69,11 @@ public class NLIAnnotationReader {
 	 * 
 	 * @param method
 	 *            the method that should be a NLIMethod
+	 *            
+	 * @throws IllegalArgumentException 
+	 * 			  in case of wrong parameter types, the method throws exceptions
+	 * 			  or the return type is not a String
+	 * 
 	 */
 	public static void assertValid(Method method) {
 		Class<?>[] parameterTypes = method.getParameterTypes();
