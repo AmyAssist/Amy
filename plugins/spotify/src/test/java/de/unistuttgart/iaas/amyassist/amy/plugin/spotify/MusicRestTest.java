@@ -560,5 +560,15 @@ class MusicRestTest {
 		assertThat(response.getStatus(), is(409));
 		assertThat(response.readEntity(String.class), is("Check player state"));
 	}
+	
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#setDeviceName(String, String)}.
+	 */
+	@Test
+	public void setDeviceName() {
+		Response response = this.target.path("setDeviceName").request().post(null);
+		verify(this.deviceLogic).setNewDeviceName(any(), any());
+	}
 
 }

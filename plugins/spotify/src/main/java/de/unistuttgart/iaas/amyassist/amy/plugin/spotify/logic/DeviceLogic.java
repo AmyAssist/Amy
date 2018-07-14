@@ -52,7 +52,7 @@ public class DeviceLogic {
 	private DeviceRegistry deviceRegistry;
 
 	/**
-	 * get all devices that logged in at the moment
+	 * get all devices that logged in at the moment with possible changed name from the registry
 	 * 
 	 * @return empty ArrayList if no device available else Maps with the name, id and type of the device
 	 */
@@ -94,11 +94,29 @@ public class DeviceLogic {
 	/**
 	 * set a device direct with the device id
 	 * 
-	 * @param deviceID
+	 * @param deviceUri
 	 *            from a spotify device
 	 * @return true if the device is available, else false
 	 */
-	public boolean setDevice(String deviceID) {
-		return this.spotifyAPICalls.setCurrentDevice(deviceID);
+	public boolean setDevice(String deviceUri) {
+		return this.spotifyAPICalls.setCurrentDevice(deviceUri);
+	}
+
+	/**
+	 * set the new name of the given device
+	 * 
+	 * @param deviceUri
+	 *            the Uri from the device to change
+	 * @param newName
+	 * @return the deviceEntity with the new name or null if the Uri is not found in the registry
+	 */
+	public DeviceEntity setNewDeviceName(String deviceUri, String newName) {
+		DeviceEntity deviceToChange = this.deviceRegistry.findDeviceWithUri(deviceUri);
+		if (deviceToChange != null) {
+			deviceToChange.setName(newName);
+			this.deviceRegistry.save(deviceToChange);
+			return deviceToChange;
+		}
+		return null;
 	}
 }

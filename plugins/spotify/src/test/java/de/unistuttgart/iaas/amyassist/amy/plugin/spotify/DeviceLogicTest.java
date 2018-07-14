@@ -131,4 +131,18 @@ public class DeviceLogicTest {
 		assertThat(this.deviceLogic.setDevice("1"), equalTo(false));
 		verify(this.spotifyAPICalls).setCurrentDevice("1");
 	}
+	
+	@Test
+	public void testSetNewName() {
+		DeviceEntity entity = new DeviceEntity("Computer", DEVICE_NAME1, ID1);
+		when(this.registry.findDeviceWithUri(ID1)).thenReturn(entity);
+		assertThat(this.deviceLogic.setNewDeviceName(ID1, DEVICE_NAME2).getName(), equalTo(DEVICE_NAME2));
+		verify(this.registry).save(entity);
+	}
+	@Test
+	public void testSetNewNameNotinReg() {
+		DeviceEntity entity = new DeviceEntity("Computer", DEVICE_NAME1, ID1);
+		when(this.registry.findDeviceWithUri(ID1)).thenReturn(null);
+		assertThat(this.deviceLogic.setNewDeviceName(ID1, DEVICE_NAME2), equalTo(null));
+	}
 }

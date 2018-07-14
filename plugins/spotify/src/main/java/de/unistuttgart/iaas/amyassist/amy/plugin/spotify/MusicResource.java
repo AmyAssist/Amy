@@ -51,7 +51,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 /**
  * Rest Resource for music
  * 
- * @author Muhammed Kaya, Christian Bräuner
+ * @author Muhammed Kaya, Christian Bräuner, Lars Buttgereit
  */
 @Path(MusicResource.PATH)
 public class MusicResource implements Resource{
@@ -416,4 +416,24 @@ public class MusicResource implements Resource{
 		return null;
 	}
 
+	/**
+	 * set the new name of the given device
+	 * 
+	 * @param deviceUri
+	 *            the Uri from the device to change
+	 * @param newName
+	 * @return the deviceEntity with the new name or null if the Uri is not found in the registry
+	 */
+	@POST
+	@Path("setDeviceName")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public DeviceEntity setDeviceName(
+			@QueryParam("uri") @DefaultValue("") String uri, @QueryParam("newName") @DefaultValue("" )String newName) {
+		DeviceEntity device = this.deviceLogic.setNewDeviceName(uri, newName);
+		if(device != null) {
+			return device;
+		}
+		throw new  WebApplicationException("No device with this uri", Status.NOT_FOUND);
+	}
 }
