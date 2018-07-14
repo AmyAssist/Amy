@@ -32,7 +32,7 @@ public interface NLProcessingManager {
 	/**
 	 * 
 	 * @param natuaralLanguageInterpreter
-	 *            a class annotated with {@link de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand}
+	 *            a class annotated with {@link de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand}
 	 */
 	void register(Class<?> natuaralLanguageInterpreter);
 

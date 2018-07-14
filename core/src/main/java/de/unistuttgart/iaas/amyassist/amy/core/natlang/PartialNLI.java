@@ -75,10 +75,12 @@ public class PartialNLI {
 	}
 
 	/**
-	 * Invoke the method of this SpeechCommand with an instance of the speechCommandClass
+	 * Invoke the method of this partialNLI with an instance of the partialNLIClass
 	 * 
 	 * @param instance
+	 *            the instance of the partialNLIClass
 	 * @param input
+	 *            the natural language text splitted into words
 	 * @return the result String from calling the command
 	 */
 	public String call(Object instance, String... input) {
