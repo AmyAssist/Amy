@@ -23,8 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,7 +50,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 @Service
 public class AlarmBeepService {
 
-	private static final String ALARMSOUND = "plugins/alarmclock/res/alarmsound.wav";
+	private static final String ALARMSOUND = "alarmsound.wav";
 
 	@Reference
 	private Logger logger;
@@ -66,10 +67,11 @@ public class AlarmBeepService {
 
 	@PostConstruct
 	private void init() {
-		Path resolve = this.env.getWorkingDirectory().resolve(ALARMSOUND);
+		InputStream resolve = this.getClass().getResourceAsStream(ALARMSOUND);
+		InputStream bufferedIn = new BufferedInputStream(resolve);
 		try {
 			this.clip = AudioSystem.getClip();
-			this.clip.open(AudioSystem.getAudioInputStream(resolve.toFile()));
+			this.clip.open(AudioSystem.getAudioInputStream(bufferedIn));
 		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
 			this.logger.error("Cant play alarm sound", e);
 		}
