@@ -21,31 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.registry.contact;
+package de.unistuttgart.iaas.amyassist.amy.registry.rest;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
-import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
-import de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationImpl;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 
-import javax.annotation.Nonnull;
+import javax.ws.rs.Path;
 
 /**
- * A contact registry
+ * location registry REST resource
  *
  * @author Benno Krauß
  */
-@Service(ContactRegistry.class)
-public class ContactRegistryImpl extends AbstractRegistry<Contact> implements ContactRegistry {
-
-    @Override
-    protected String getPersistenceUnitName() {
-        return "ContactRegistry";
-    }
-
-    @Nonnull
-    @Override
-    public Class<? extends Contact> getEntityClass() {
-        return ContactImpl.class;
-    }
+@Path("registry/location")
+public class LocationRegistryResource extends AbstractRegistryResource
+        <LocationRegistry, Location, LocationImpl, Integer> {
 }
