@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest;
+package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

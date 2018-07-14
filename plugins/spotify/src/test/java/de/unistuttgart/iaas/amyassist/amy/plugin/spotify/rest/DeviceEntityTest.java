@@ -28,25 +28,30 @@ import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+
 /**
  * Test case for DeviceEntity
  * 
- * @author Muhammed Kaya
+ * @author Muhammed Kaya, Lars Buttgereit
  */
 class DeviceEntityTest {
-	
+
 	private DeviceEntity deviceEntity;
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity#Device(java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#Device(java.lang.String, java.lang.String, java.lang.String)}.
 	 */
-	@Test @BeforeEach
+	@Test
+	@BeforeEach
 	void init() {
 		this.deviceEntity = new DeviceEntity("Smartphone", "Hello", "abc123");
+
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity#getType()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#getType()}.
 	 */
 	@Test
 	void testGetType() {
@@ -54,7 +59,8 @@ class DeviceEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity#setType(java.lang.String)}.
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#setType(java.lang.String)}.
 	 */
 	@Test
 	void testSetType() {
@@ -63,7 +69,7 @@ class DeviceEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity#getName()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#getName()}.
 	 */
 	@Test
 	void testGetName() {
@@ -71,7 +77,8 @@ class DeviceEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity#setName(java.lang.String)}.
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#setName(java.lang.String)}.
 	 */
 	@Test
 	void testSetName() {
@@ -80,20 +87,60 @@ class DeviceEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity#getID()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#getUri()}.
 	 */
 	@Test
-	void testGetID() {
-		assertThat(this.deviceEntity.getID(), equalTo("abc123"));
+	void testGetUri() {
+		assertThat(this.deviceEntity.getUri(), equalTo("abc123"));
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity#setID(java.lang.String)}.
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#setUri(java.lang.String)}.
 	 */
 	@Test
-	void testSetID() {
-		this.deviceEntity.setID("123abc");
-		assertThat(this.deviceEntity.getID(), equalTo("123abc"));
+	void testSetUri() {
+		this.deviceEntity.setUri("123abc");
+		assertThat(this.deviceEntity.getUri(), equalTo("123abc"));
 	}
-	
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#equals(Object)}.
+	 */
+	@Test
+	public void testEqualsSameObject() {
+		assertThat(this.deviceEntity.equals(this.deviceEntity), equalTo(true));
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#equals(Object)}.
+	 */
+	@Test
+	public void testEqualsOtherClass() {
+		assertThat(this.deviceEntity.equals(""), equalTo(false));
+		assertThat(this.deviceEntity.equals(null), equalTo(false));
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#equals(Object)}.
+	 */
+	@Test
+	public void testEquals() {
+		DeviceEntity deviceEntity2 = new DeviceEntity("Smartphone", "Hello", "abc123");
+		assertThat(this.deviceEntity.equals(deviceEntity2), equalTo(true));
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#equals(Object)}.
+	 */
+	@Test
+	public void testEqualsNotEqual() {
+		DeviceEntity deviceEntity2 = new DeviceEntity("Smartphone", "Hello", "123");
+		assertThat(this.deviceEntity.equals(deviceEntity2), equalTo(false));
+		DeviceEntity deviceEntity3 = new DeviceEntity("Smartphone", "Hallo", "123");
+		assertThat(this.deviceEntity.equals(deviceEntity3), equalTo(false));
+		DeviceEntity deviceEntity4 = new DeviceEntity("Computer", "Hallo", "123");
+		assertThat(this.deviceEntity.equals(deviceEntity4), equalTo(false));
+	}
+
 }
