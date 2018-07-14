@@ -72,7 +72,6 @@ public class NLLexerTest {
 	 * test normal words and numbers
 	 * @return Stream of lists
 	 */
-	@Test
 	public static Stream<List<String>> testWords() {
 		return Stream.of(Arrays.asList("what", "the", "99", "this", "is", "a", "test"));
 	}
@@ -126,7 +125,6 @@ public class NLLexerTest {
 	 * stream of all numbers that have to be present to calculate the right number
 	 * @return the stream
 	 */
-	@Test 
 	public static Stream<Integer> fileNumbers(){
 		Stream<Integer> zeroToNineteen = IntStream.range(0, 20).boxed();
 		Stream<Integer> until90 = IntStream.iterate(20, i -> i + 10).limit(8).boxed();

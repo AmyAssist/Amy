@@ -89,7 +89,7 @@ public class NLParser implements INLParser {
 		case OPG: 
 			//fall through
 		case ORG:
-			Collections.sort(node.getChilds());
+			Collections.sort(node.getChilds(), (n1, n2) -> Integer.compare(n1.countLeafes(), n2.countLeafes()));
 			Collections.reverse(node.getChilds());
 			break;
 		default:
