@@ -106,7 +106,7 @@ public class LanguageSpecifics {
 		Map<String, Integer> result = new HashMap<>();
 		String[] stringNmbRep;
 		
-		InputStream grammarFile = this.getClass().getResourceAsStream("englishNumbers.natlang");
+		InputStream grammarFile = this.getClass().getClassLoader().getResourceAsStream("englishNumbers.natlang");
 		
 		if(grammarFile == null) {
 			this.logger.error("could not find numbers file");
