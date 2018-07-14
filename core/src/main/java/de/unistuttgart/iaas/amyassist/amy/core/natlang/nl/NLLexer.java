@@ -42,39 +42,37 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.LanguageSpecifics;
  * @author Felix Burk
  */
 public class NLLexer {
-	
-	private final Logger logger = LoggerFactory.getLogger(NLLexer.class);
 
+	private final Logger logger = LoggerFactory.getLogger(NLLexer.class);
 
 	/**
 	 * contains regex with the corresponding WordTokenType
 	 */
 	private final Map<String, WordTokenType> regexTokenType = new HashMap<>();
-	
 
 	/**
 	 * helper class handling language specific details
 	 */
 	LanguageSpecifics lang;
-	
+
 	/**
-	 * this class handles natural language input of 
-	 * any type
+	 * this class handles natural language input of any type
 	 * 
-	 * @param lang language specific details
+	 * @param lang
+	 *            language specific details
 	 * 
 	 */
 	public NLLexer(LanguageSpecifics lang) {
-		
+
 		this.lang = lang;
-		
-		if(!lang.wordToNumber.isEmpty()) {
-			String regex = "((\\b"+ String.join("\\b|\\b", lang.wordToNumber.keySet()) + "\\b)\\s{0,1})+";
+
+		if (!lang.wordToNumber.isEmpty()) {
+			String regex = "((\\b" + String.join("\\b|\\b", lang.wordToNumber.keySet()) + "\\b)\\s{0,1})+";
 			this.regexTokenType.put(regex, WordTokenType.NUMBER);
-		}else {
+		} else {
 			this.logger.error("problem with numbers file, written numbers will not be recognized");
 		}
-		
+
 		this.regexTokenType.put("[a-zA-Z]+", WordTokenType.WORD);
 		this.regexTokenType.put("[0-9]+", WordTokenType.NUMBER);
 	}
@@ -82,7 +80,8 @@ public class NLLexer {
 	/**
 	 * lexer implemented as Iterator
 	 * 
-	 * @param nlInput the stirng to lex
+	 * @param nlInput
+	 *            the stirng to lex
 	 * @return returns processed list of WordTokens
 	 */
 	public List<WordToken> tokenize(String nlInput) {
@@ -119,36 +118,39 @@ public class NLLexer {
 	}
 
 	/**
-	 * this method changes WordToken content of numbers to decimal numbers
-	 * and adds numbers together not surrounded by words
+	 * this method changes WordToken content of numbers to decimal numbers and adds numbers together not surrounded by
+	 * words
 	 * 
-	 * @param list of all tokens containing potential written numbers that have to be merged
+	 * @param list
+	 *            of all tokens containing potential written numbers that have to be merged
 	 * @return final list containing the correct numbers
 	 */
 	private List<WordToken> concatNumbers(List<WordToken> list) {
 		List<WordToken> result = new ArrayList<>();
-		
-		for(int i = 0; i < list.size(); i++) {
+		List<WordToken> numbers = new ArrayList<>();
+		for (WordToken wordToken : list) {
+			if (wordToken.getType() == WordTokenType.NUMBER && wordToken.getContent().matches("[a-zA-Z]+")) {
+				numbers.add(wordToken);
+			} else {
+				if (!numbers.isEmpty()) {
+					result.add(this.fromNumbers(numbers));
+					numbers.clear();
+				}
 
-			boolean foundNumber = false;
-			int start = i;
-			//this is kinda ugly.. let me know if anyone has a better idea for this
-			while(i < list.size() && list.get(i).getType() == WordTokenType.NUMBER &&
-					list.get(i).getContent().matches("[a-zA-Z]+")) {
-				foundNumber = true;
-				i++;
-			}
-			int finalNumber = this.lang.calcNumber(list.subList(start, i));
-			if(foundNumber) {
-				WordToken t = new WordToken(String.valueOf(finalNumber));
-				t.setType(WordTokenType.NUMBER);
-				result.add(t);
-			}
-			if(i < list.size()) {
-				result.add(list.get(i));
+				result.add(wordToken);
 			}
 		}
+		if (!numbers.isEmpty()) {
+			result.add(this.fromNumbers(numbers));
+		}
 		return result;
+	}
+
+	private WordToken fromNumbers(List<WordToken> numbers) {
+		int finalNumber = this.lang.calcNumber(numbers);
+		WordToken t = new WordToken(String.valueOf(finalNumber));
+		t.setType(WordTokenType.NUMBER);
+		return t;
 	}
 
 	/**
@@ -167,11 +169,5 @@ public class NLLexer {
 		}
 		throw new NLLexerException("no matching word type found");
 	}
-	
-	
+
 }
-
-
-
-
-
