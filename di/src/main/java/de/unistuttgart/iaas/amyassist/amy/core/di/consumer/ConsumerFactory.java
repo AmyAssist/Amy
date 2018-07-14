@@ -26,25 +26,17 @@ package de.unistuttgart.iaas.amyassist.amy.core.di.consumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 
 /**
- * A Service Consumer
+ * Consumer Factory to create ServiceConsumers from a class and a ServiceDescription
  * 
  * @author Leon Kiefer
- * 
- * @param <T>
- *            the type of the Service that is consumed
  */
-public interface ServiceConsumer<T> {
-	/**
-	 * The class which contains this Service consumer
-	 * 
-	 * @return the class
-	 */
-	Class<?> getConsumerClass();
+public class ConsumerFactory {
+	private ConsumerFactory() {
+		// hide constructor
+	}
 
-	/**
-	 * The Service description of the required Service
-	 * 
-	 * @return the ServiceDescription of the consumed Service
-	 */
-	ServiceDescription<T> getServiceDescription();
+	public static <C, T> ServiceConsumer<T> build(Class<C> cls, ServiceDescription<T> serviceDescription) {
+		return new ServiceConsumerImpl<>(cls, serviceDescription);
+
+	}
 }
