@@ -106,7 +106,7 @@ public class LanguageSpecifics {
 		Map<String, Integer> result = new HashMap<>();
 		String[] stringNmbRep;
 		
-		InputStream grammarFile = this.getClass().getClassLoader().getResourceAsStream("englishNumbers.natlang");
+		InputStream grammarFile = this.getClass().getResourceAsStream("englishNumbers.natlang");
 		
 		if(grammarFile == null) {
 			this.logger.error("could not find numbers file");
@@ -137,7 +137,7 @@ public class LanguageSpecifics {
 		    }
 		    
 		} catch (IOException e) {
-			this.logger.error(String.format("number file not found %s", e));
+			this.logger.error("number file not found", e);
 		}
 		
 		return result;
@@ -154,7 +154,7 @@ public class LanguageSpecifics {
 		try {
 			return Integer.valueOf(numberInt);
 			}catch(NumberFormatException e) {
-				this.logger.error(String.format("number in numbers file in wrong format %s" , numberInt));
+				this.logger.error("number in numbers file in wrong format {}", numberInt, e);
 			}
 		return Integer.MAX_VALUE;
 	}
