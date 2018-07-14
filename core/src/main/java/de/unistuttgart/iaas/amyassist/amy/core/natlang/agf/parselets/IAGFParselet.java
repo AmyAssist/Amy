@@ -28,7 +28,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.Parser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
- * AGF Parselet interface
+ * AGF Parselet interface - use this for different parse implementations
  * 
  * parslets implement this class to handle their own parsing behavior
  * 
@@ -37,6 +37,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 public interface IAGFParselet {
 
 	/**
+	 * parses the parslet
+	 * 
 	 * @param parser the parser
 	 * @param token the token
 	 * @return the generated node
