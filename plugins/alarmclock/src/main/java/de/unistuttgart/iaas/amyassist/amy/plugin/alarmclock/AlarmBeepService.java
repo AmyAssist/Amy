@@ -49,7 +49,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 @Service
 public class AlarmBeepService {
 
-	private static final String ALARMSOUND = "resources/alarmsound.wav";
+	private static final String ALARMSOUND = "plugins/alarmclock/res/alarmsound.wav";
 
 	@Reference
 	private Logger logger;
@@ -67,7 +67,6 @@ public class AlarmBeepService {
 	@PostConstruct
 	private void init() {
 		Path resolve = this.env.getWorkingDirectory().resolve(ALARMSOUND);
-
 		try {
 			this.clip = AudioSystem.getClip();
 			this.clip.open(AudioSystem.getAudioInputStream(resolve.toFile()));
