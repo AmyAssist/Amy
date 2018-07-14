@@ -68,14 +68,13 @@ public class AlarmBeepService {
 
 	private Set<Integer> timerList = new HashSet<>();
 
-	private AudioInputStream soundIn;
 
 	@PostConstruct
 	private void init() {
 		InputStream resolve = this.getClass().getResourceAsStream(ALARMSOUND);
-		InputStream bufferedIn = new BufferedInputStream(resolve);
-		try  (AudioInputStream soundIn = AudioSystem.getAudioInputStream(bufferedIn);){
-			AudioFormat format = this.soundIn.getFormat();
+		try  (InputStream bufferedIn = new BufferedInputStream(resolve);
+				AudioInputStream soundIn = AudioSystem.getAudioInputStream(bufferedIn);){
+			AudioFormat format = soundIn.getFormat();
 			DataLine.Info info = new DataLine.Info(Clip.class, format);
 			this.clip = (Clip)AudioSystem.getLine(info);
 			this.clip.open(soundIn);
