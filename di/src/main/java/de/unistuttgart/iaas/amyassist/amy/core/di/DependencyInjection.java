@@ -239,6 +239,19 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	}
 
+	/**
+	 * This method is needed because the type system in Java can't express type equality in local blocks without a fixed
+	 * type on method level.
+	 * 
+	 * @param <T>
+	 *            local type
+	 * @param dependency
+	 *            the Service consumer that need the service
+	 * @param stack
+	 *            the stack of transitive dependency to this ServiceConsumer
+	 * @param serviceProviderServiceFactory
+	 *            the ServiceFactory to resolve the dependency of
+	 */
 	private <T> void typeSaveResolve(@Nonnull ServiceConsumer<T> dependency, @Nonnull Deque<ServiceProvider<?>> stack,
 			@Nonnull ServiceProviderServiceFactory<?> serviceProviderServiceFactory) {
 		ServiceProvider<T> provider = this.getServiceProvider(dependency.getServiceDescription());
@@ -263,6 +276,17 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		Util.postConstruct(postConstructMe);
 	}
 
+	/**
+	 * This is the only method that gets ServiceProvider from the register and casts them to the correct return type
+	 * 
+	 * @param <T>
+	 *            the type of the service
+	 * @param serviceDescription
+	 *            the description of the wanted service
+	 * @return the ServiceProvider that can provide matching services for the given ServiceDescription
+	 * @throws ServiceNotFoundException
+	 *             if no service is found for the given ServiceDescription
+	 */
 	@Nonnull
 	@SuppressWarnings("unchecked")
 	private <T> ServiceProvider<T> getServiceProvider(ServiceDescription<T> serviceDescription) {
@@ -271,6 +295,15 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		return (ServiceProvider<T>) this.register.get(serviceDescription);
 	}
 
+	/**
+	 * Getter for the Context provider for the given identifier
+	 * 
+	 * @param contextProviderType
+	 *            the context identifier
+	 * @return the static ContextProvider
+	 * @throws NoSuchElementException
+	 *             if there is no ContextProvider for the given identifier
+	 */
 	private StaticProvider<?> getContextProvider(@Nonnull String contextProviderType) {
 		if (!this.staticProviders.containsKey(contextProviderType))
 			throw new NoSuchElementException(contextProviderType);
