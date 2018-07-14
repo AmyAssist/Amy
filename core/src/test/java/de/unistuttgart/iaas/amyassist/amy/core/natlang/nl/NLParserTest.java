@@ -102,6 +102,19 @@ public class NLParserTest {
 	}
 	
 	/**
+	 * tests multiple nested groups
+	 */
+	@Test
+	public void testNestedGroups() {
+		AGFNode node = new AGFParser(new AGFLexer("this [text make (no|[hello] (#|nothing|nothing nothing [else|to do]))] sense")).parseWholeExpression();
+		List<AGFNode> list = new ArrayList<>();
+		list.add(node);
+		NLParser nlParser = new NLParser(list);
+		NLLexer lex = new NLLexer();
+		assertThat(nlParser.matchingNode(lex.tokenize("this text make hello nothing nothing else sense")), equalTo(node));
+	}
+	
+	/**
 	 * this checks if longer options in optional groups are used
 	 */
 	@Test

@@ -28,6 +28,7 @@ import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParseException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 
 /**
  * NLParser implementation, matches NL input to AGFNodes
@@ -78,6 +79,7 @@ public class NLParser implements INLParser {
 	 * not beeing recognized with the input very very very
 	 * because this parser is greedy and picks the first matching sentence 
 	 * it finds. If we just order the sentences in or and optional groups
+	 * by number of leafes (meaning words/rules)
 	 * we will be fine
 	 * 
 	 * @param node to sort
@@ -85,17 +87,13 @@ public class NLParser implements INLParser {
 	 */
 	public AGFNode sortChildsOfOrAndOp(AGFNode node) {
 		
-		switch(node.getType()) {
-		case OPG: 
-			//fall through
-		case ORG:
+		if(node.getType().equals(AGFNodeType.OPG) || node.getType().equals(AGFNodeType.ORG)) {
 			Collections.sort(node.getChilds(), (n1, n2) -> Integer.compare(n1.countLeafes(), n2.countLeafes()));
 			Collections.reverse(node.getChilds());
-			break;
-		default:
-			for(AGFNode child : node.getChilds()) {
-				sortChildsOfOrAndOp(child);
-			}
+		}
+
+		for(AGFNode child : node.getChilds()) {
+			sortChildsOfOrAndOp(child);
 		}
 		
 		return node;
