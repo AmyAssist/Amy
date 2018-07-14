@@ -34,11 +34,14 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.google.common.collect.Lists;
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.LanguageSpecifics;
 
 /**
  * Test for NL Lexer
@@ -46,6 +49,16 @@ import com.google.common.collect.Lists;
  * @author Felix Burk
  */
 public class NLLexerTest {
+	
+	private LanguageSpecifics lang;
+	
+	/**
+	 * handles language specifics setup
+	 */
+	@BeforeEach
+	public void setup() {
+		this.lang = new LanguageSpecifics();
+	}
 
 	/**
 	 * stream of bad characters that should not be matched
@@ -64,7 +77,7 @@ public class NLLexerTest {
 	@ParameterizedTest
 	@MethodSource("badCharacters")
 	public void testBadChars(Character badCharacter) {
-		NLLexer lexer = new NLLexer();
+		NLLexer lexer = new NLLexer(this.lang);
 		assertThrows(NLLexerException.class, () -> lexer.tokenize(badCharacter.toString()));
 	}
 	
@@ -85,7 +98,7 @@ public class NLLexerTest {
 	@ParameterizedTest
 	@MethodSource("testWords")
 	public void checkInput(List<String> input) {
-		NLLexer lexer = new NLLexer();
+		NLLexer lexer = new NLLexer(this.lang);
 		List<WordToken> tokenize = lexer.tokenize(String.join(" ", input));
 		assertThat(Lists.transform(tokenize, WordToken::getContent), is(input));
 	}
@@ -95,7 +108,7 @@ public class NLLexerTest {
 	 */
 	@Test
 	public void testTypes() {
-		NLLexer lex = new NLLexer();
+		NLLexer lex = new NLLexer(this.lang);
 		List<WordToken> tokenize = lex.tokenize("wajjo 9 0 oh 99 oh one");
 		assertThat(Lists.transform(tokenize, WordToken::getType), 
 				contains(WordTokenType.WORD, WordTokenType.NUMBER,
@@ -112,7 +125,7 @@ public class NLLexerTest {
 	 */
 	@Test
 	public void testConcatNumbers() {
-		NLLexer lex = new NLLexer();
+		NLLexer lex = new NLLexer(this.lang);
 		List<WordToken> tokenize = lex.tokenize("test one hundred twenty two test");
 		
 		assertThat(Lists.transform(tokenize, WordToken::getType), 
@@ -140,8 +153,7 @@ public class NLLexerTest {
 	@ParameterizedTest
 	@MethodSource("fileNumbers")
 	public void testNumbersFileReader(int number) {
-		NLLexer lex = new NLLexer();
-		Map<String, Integer> numbers = lex.readNumbersFromFile();
+		Map<String, Integer> numbers = this.lang.wordToNumber;
 		assertThat(new Boolean(true), is(numbers.values().contains(number)));
 	}
 	
@@ -163,7 +175,7 @@ public class NLLexerTest {
 	@ParameterizedTest
 	@MethodSource("numberStringToInt")
 	public void testNumberConversion(Pair<String, Integer> pair) {
-		NLLexer lex = new NLLexer();
+		NLLexer lex = new NLLexer(this.lang);
 		List<WordToken> numbers = lex.tokenize(pair.getLeft());
 		assertThat(new Boolean(true), is(numbers.get(0).getContent().equals((String.valueOf(pair.getRight())))));
 

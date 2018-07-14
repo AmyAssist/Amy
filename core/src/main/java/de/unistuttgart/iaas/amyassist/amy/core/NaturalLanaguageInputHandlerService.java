@@ -29,6 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.LanguageSpecifics;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 
@@ -46,10 +47,13 @@ public class NaturalLanaguageInputHandlerService implements SpeechInputHandler {
 	private NLProcessingManager nlProcessingManager;
 
 	private ScheduledExecutorService singleThreadScheduledExecutor;
+	
+	private LanguageSpecifics lang;
 
 	@PostConstruct
 	private void setup() {
 		this.singleThreadScheduledExecutor = this.core.getScheduledExecutor();
+		this.lang = new LanguageSpecifics();
 	}
 
 	/**
@@ -57,7 +61,7 @@ public class NaturalLanaguageInputHandlerService implements SpeechInputHandler {
 	 */
 	@Override
 	public CompletableFuture<String> handle(String naturalLanguageText) {
-		return CompletableFuture.supplyAsync(() -> this.nlProcessingManager.process(naturalLanguageText),
+		return CompletableFuture.supplyAsync(() -> this.nlProcessingManager.process(naturalLanguageText, this.lang),
 				this.singleThreadScheduledExecutor);
 	}
 

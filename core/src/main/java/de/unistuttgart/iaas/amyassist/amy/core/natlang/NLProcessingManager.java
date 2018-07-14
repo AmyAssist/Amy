@@ -41,11 +41,16 @@ public interface NLProcessingManager {
 	 * 
 	 * @param naturalLanguageText
 	 *            a natural language text string that only contains alphanumeric character and white space character
+	 * @param lang the language specifics like numbers
 	 * @return a answer as natural language text
 	 * @throws IllegalArgumentException
 	 *             if the string illegal character
 	 */
-	String process(String naturalLanguageText);
+	String process(String naturalLanguageText, LanguageSpecifics lang);
 
+	/**
+	 * @param grammarName name of the grammar
+	 * @return the grammar file string
+	 */
 	String getGrammarFileString(String grammarName);
 }

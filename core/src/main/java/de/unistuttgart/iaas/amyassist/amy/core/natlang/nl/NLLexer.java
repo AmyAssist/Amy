@@ -23,10 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -35,6 +31,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.LanguageSpecifics;
 
 /**
  * Lexer for language input from speechs
@@ -53,17 +51,25 @@ public class NLLexer {
 	 */
 	private final Map<String, WordTokenType> regexTokenType = new HashMap<>();
 	
-	
-	private final Map<String, Integer> wordToNumber;
 
 	/**
+	 * helper class handling language specific details
+	 */
+	LanguageSpecifics lang;
+	
+	/**
+	 * this class handles natural language input of 
+	 * any type
+	 * 
+	 * @param lang language specific details
 	 * 
 	 */
-	public NLLexer() {
-		this.wordToNumber = this.readNumbersFromFile();
+	public NLLexer(LanguageSpecifics lang) {
 		
-		if(!this.wordToNumber.isEmpty()) {
-			String regex = "((\\b"+ String.join("\\b|\\b", this.wordToNumber.keySet()) + "\\b)\\s{0,1})+";
+		this.lang = lang;
+		
+		if(!lang.wordToNumber.isEmpty()) {
+			String regex = "((\\b"+ String.join("\\b|\\b", lang.wordToNumber.keySet()) + "\\b)\\s{0,1})+";
 			this.regexTokenType.put(regex, WordTokenType.NUMBER);
 		}else {
 			this.logger.error("problem with numbers file, written numbers will not be recognized");
@@ -132,7 +138,7 @@ public class NLLexer {
 				foundNumber = true;
 				i++;
 			}
-			int finalNumber = calcNumber(list.subList(start, i));
+			int finalNumber = this.lang.calcNumber(list.subList(start, i));
 			if(foundNumber) {
 				WordToken t = new WordToken(String.valueOf(finalNumber));
 				t.setType(WordTokenType.NUMBER);
@@ -143,40 +149,6 @@ public class NLLexer {
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * calculates the number from a string of words
-	 * (should work in english and maybe german or spanish
-	 * - other languages need a custom method for this)
-	 * 
-	 * if the word representation of numbers won't make sense
-	 * e.g. twenty two ten 
-	 * they will just get added together - i think this is an okay way of handling this
-	 * 
-	 * @param subList the sublist containing the list of word representations 
-	 * @return the calculated number
-	 */
-	private int calcNumber(List<WordToken> subList) {
-		int finalNumber = 0;
-		int partialNumber = 0;
-		for(WordToken t : subList) {
-			if(this.wordToNumber.get(t.getContent()) >= 1000) {
-				if(partialNumber == 0) partialNumber = 1;
-				partialNumber *= this.wordToNumber.get(t.getContent());
-				finalNumber += partialNumber;
-				partialNumber = 0;
-			}else {
-				if(this.wordToNumber.get(t.getContent()) == 100) {
-					if(partialNumber == 0) partialNumber = 1;
-					partialNumber *= this.wordToNumber.get(t.getContent());
-				}else {
-					partialNumber += this.wordToNumber.get(t.getContent());
-				}
-			}
-		}
-		finalNumber += partialNumber;
-		return finalNumber;
 	}
 
 	/**
@@ -196,68 +168,7 @@ public class NLLexer {
 		throw new NLLexerException("no matching word type found");
 	}
 	
-	/**
-	 * read numbers of a language from a *.natlang file in 
-	 *	/resources/langs/numbers/*.natlang
-	 *
-	 * @return List of all numbers in the language
-	 */
-	public final Map<String, Integer> readNumbersFromFile(){
-		Map<String, Integer> result = new HashMap<>();
-		String[] stringNmbRep;
-		
-		InputStream grammarFile = this.getClass().getResourceAsStream("englishNumbers.natlang");
-		
-		if(grammarFile == null) {
-			this.logger.error("could not find numbers file");
-			return new HashMap<>();
-		}
-		
-		try (
-		    InputStreamReader inputStreamReader = new InputStreamReader(grammarFile, "UTF-8");
-		    BufferedReader bufferedReader = new BufferedReader(inputStreamReader)){
-		   
-		    //first line contains all numbers seperated by ',' and ending with ';'
-		    String s = bufferedReader.readLine();
-		    
-		    String [] temp = s.split(";");
-		    
-		    if(temp.length == 1) {
-		    	stringNmbRep = temp[0].split(",");
-		    	for(String textNumberRep : stringNmbRep) {
-		    		String[] split = textNumberRep.split(":");
-		    		if(split.length == 2) {
-		    			result.put(split[0], parseNumber(split[1]));
-		    		}else {
-				    	this.logger.error("numbers file is in wrong format");
-		    		}
-		    	}
-		    }else {
-		    	this.logger.error("numbers file is in wrong format");
-		    }
-		    
-		} catch (IOException e) {
-			this.logger.error(String.format("number file not found %s", e));
-		}
-		
-		return result;
-	}
-
-	/**
-	 * changes numbers from string to integer
-	 * and catches + logs potential NumberFormatExceptions
-	 * 
-	 * @param numberInt the number as string
-	 * @return number as integer
-	 */
-	private int parseNumber(String numberInt) {
-		try {
-			return Integer.valueOf(numberInt);
-			}catch(NumberFormatException e) {
-				this.logger.error(String.format("number in numbers file in wrong format %s" , numberInt));
-			}
-		return Integer.MAX_VALUE;
-	}
+	
 }
 
 

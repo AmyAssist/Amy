@@ -103,9 +103,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	@Override
-	public String process(String naturalLanguageText) {
+	public String process(String naturalLanguageText, LanguageSpecifics lang) {
 		this.logger.debug("input {}", naturalLanguageText);
-		NLLexer nlLexer = new NLLexer();
+		NLLexer nlLexer = new NLLexer(lang);
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
 		INLParser nlParser = new NLParser(this.cachedNodeList);
 		int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
