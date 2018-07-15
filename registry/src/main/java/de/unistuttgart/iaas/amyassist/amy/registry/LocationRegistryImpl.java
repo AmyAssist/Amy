@@ -21,13 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.registry.location;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.registry.Location;
-import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
-import de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry;
-import de.unistuttgart.iaas.amyassist.amy.registry.RegistryException;
 
 import javax.annotation.Nonnull;
 import javax.persistence.TypedQuery;

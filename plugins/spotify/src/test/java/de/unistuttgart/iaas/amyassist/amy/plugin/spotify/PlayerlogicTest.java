@@ -52,8 +52,10 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.User;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -150,37 +152,9 @@ class PlayerLogicTest {
 		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
-	@Test
-	public void testGetDevices() {
-		when(this.spotifyAPICalls.getDevices()).thenReturn(devices);
-		List<DeviceEntity> result = this.playerLogic.getDevices();
-		assertThat(result.get(0).getName(), equalTo(DEVICE_NAME1));
-		assertThat(result.get(1).getName(), equalTo(DEVICE_NAME2));
-		verify(this.spotifyAPICalls).getDevices();
-	}
+	
 
-	@Test
-	public void testGetDevicesWithNoDevices() {
-		when(this.spotifyAPICalls.getDevices()).thenReturn(null);
-		List<DeviceEntity> result = this.playerLogic.getDevices();
-		assertThat(result.isEmpty(), equalTo(true));
-		verify(this.spotifyAPICalls).getDevices();
-	}
-
-	@Test
-	public void testSetDevice() {
-		when(this.spotifyAPICalls.getDevices()).thenReturn(null);
-		assertThat(this.playerLogic.setDevice(0), equalTo("No device found"));
-
-		when(this.spotifyAPICalls.getDevices()).thenReturn(devices);
-		assertThat(this.playerLogic.setDevice(0), equalTo(DEVICE_NAME1));
-	}
-
-	@Test
-	public void testSetDeviceWithId() {
-		assertThat(this.playerLogic.setDevice("1"), equalTo(false));
-		verify(this.spotifyAPICalls).setCurrentDevice("1");
-	}
+	
 
 	@Test
 	public void testSearch() {

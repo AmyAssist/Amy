@@ -21,30 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+package de.unistuttgart.iaas.amyassist.amy.registry.rest;
+
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationImpl;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
+
+import javax.ws.rs.Path;
 
 /**
- * Interface for the TextToSpeech
- * 
- * @author Kai Menzel
+ * location registry REST resource
+ *
+ * @author Benno Krauß
  */
-public interface Output {
-
-	/**
-	 * Method to Voice and Log output the input String
-	 * 
-	 * @param s
-	 *            String that shall be said
-	 */
-	void output(String s);
-
-	/**
-	 * stop the OutputClip
-	 */
-	void stopOutput();
-
-	/**
-	 * @return whether this output is currently outputting information.
-	 */
-	boolean isCurrentlyOutputting();
+@Path("registry/location")
+public class LocationRegistryResource extends AbstractRegistryResource
+        <LocationRegistry, Location, LocationImpl, Integer> {
 }
