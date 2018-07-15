@@ -23,14 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 
 /**
  * 
@@ -48,19 +48,19 @@ public interface ServiceProvider<T> {
 	 * @return the service of this ServiceProvider for the given context
 	 */
 	@Nonnull
-	T getService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context);
+	T getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context);
 
 	/**
 	 * 
 	 * @return the dependencies
 	 */
 	@Nonnull
-	Collection<ServiceDescription<?>> getDependencies();
+	Set<ServiceConsumer<?>> getDependencies();
 
 	/**
 	 * @return the requiredContextProviderTypes
 	 */
 	@Nonnull
-	Collection<String> getRequiredContextIdentifiers();
+	Set<String> getRequiredContextIdentifiers();
 
 }
