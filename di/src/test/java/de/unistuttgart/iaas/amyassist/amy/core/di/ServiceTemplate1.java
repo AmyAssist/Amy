@@ -21,30 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.consumer;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * A Service Consumer
+ * Service which extends a abstract service template
  * 
  * @author Leon Kiefer
- * 
- * @param <T>
- *            the type of the Service that is consumed
  */
-public interface ServiceConsumer<T> {
-	/**
-	 * The class which contains this Service consumer
-	 * 
-	 * @return the class
-	 */
-	Class<?> getConsumerClass();
+@Service
+public class ServiceTemplate1 extends AbstractServiceTemplate {
+
+	@Reference
+	private Service12 service12;
 
 	/**
-	 * The Service description of the required Service
+	 * Get's {@link #service12 service12}
 	 * 
-	 * @return the ServiceDescription of the consumed Service
+	 * @return service12
 	 */
-	ServiceDescription<T> getServiceDescription();
+	public Service12 getService12() {
+		return this.service12;
+	}
+
 }

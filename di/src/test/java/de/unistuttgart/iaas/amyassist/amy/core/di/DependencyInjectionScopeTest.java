@@ -136,6 +136,21 @@ public class DependencyInjectionScopeTest {
 		assertThat(message, equalTo("custom"));
 	}
 
+	@Test
+	public void testContextProviderWithAbstractClass() {
+		this.dependencyInjection.register(Service12.class);
+		this.dependencyInjection.register(ServiceTemplate1.class);
+
+		ServiceTemplate1 service = this.dependencyInjection.getService(ServiceTemplate1.class);
+		assertThat(service.getService12(), is(notNullValue()));
+		assertThat(service.getService12FromAbstractServiceTemplate(), is(notNullValue()));
+
+		assertThat(service.getService12().getConsumerClass(), is(equalTo(ServiceTemplate1.class)));
+		assertThat(service.getService12FromAbstractServiceTemplate().getConsumerClass(),
+				is(equalTo(AbstractServiceTemplate.class)));
+		assertThat(service.getService12(), is(not(theInstance(service.getService12FromAbstractServiceTemplate()))));
+	}
+
 	/**
 	 * Clear loggers
 	 */

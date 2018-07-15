@@ -29,8 +29,11 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -68,10 +71,12 @@ public class AlarmBeepService {
 	@PostConstruct
 	private void init() {
 		InputStream resolve = this.getClass().getResourceAsStream(ALARMSOUND);
-		InputStream bufferedIn = new BufferedInputStream(resolve);
-		try {
-			this.clip = AudioSystem.getClip();
-			this.clip.open(AudioSystem.getAudioInputStream(bufferedIn));
+		try (InputStream bufferedIn = new BufferedInputStream(resolve);
+				AudioInputStream soundIn = AudioSystem.getAudioInputStream(bufferedIn);) {
+			AudioFormat format = soundIn.getFormat();
+			DataLine.Info info = new DataLine.Info(Clip.class, format);
+			this.clip = (Clip) AudioSystem.getLine(info);
+			this.clip.open(soundIn);
 		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
 			this.logger.error("Cant play alarm sound", e);
 		}
