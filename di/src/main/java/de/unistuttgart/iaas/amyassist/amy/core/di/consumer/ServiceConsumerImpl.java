@@ -23,13 +23,34 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.consumer;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 
 /**
- * A combination of ServiceConsumer and ServiceProvider
+ * Simple ServiceConsumer implementation with constructor
  * 
  * @author Leon Kiefer
  */
-public interface ServiceFunction<T> extends ServiceConsumer, ServiceProvider<T> {
+public class ServiceConsumerImpl<T> implements ServiceConsumer<T> {
+
+	private Class<?> cls;
+	private ServiceDescription<T> serviceDescription;
+
+	/**
+	 * 
+	 */
+	public ServiceConsumerImpl(Class<?> cls, ServiceDescription<T> serviceDescription) {
+		this.cls = cls;
+		this.serviceDescription = serviceDescription;
+	}
+
+	@Override
+	public Class<?> getConsumerClass() {
+		return this.cls;
+	}
+
+	@Override
+	public ServiceDescription<T> getServiceDescription() {
+		return this.serviceDescription;
+	}
 
 }
