@@ -41,12 +41,13 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
  * Tests for the CalendarLogic class
- * 
+ *
  * @author Patrick Gebhardt, Florian Bauer
  */
 @ExtendWith(FrameworkExtension.class)
@@ -63,6 +64,7 @@ public class CalendarLogicTest {
 	@BeforeEach
 	public void setup() {
 		this.framework.mockService(CalendarService.class);
+		this.framework.mockService(Environment.class);
 		this.callog = this.framework.setServiceUnderTest(CalendarLogic.class);
 	}
 
