@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Properties;
@@ -34,8 +35,9 @@ import javax.ws.rs.core.UriBuilder;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.grizzly2.servlet.GrizzlyWebContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
@@ -47,6 +49,7 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.LocalDateTimeProvid
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeMessageBodyWriter;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeProvider;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
+import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 
 /**
  * A class to create a http server
@@ -125,6 +128,7 @@ public class Server {
 
 		ResourceConfig resourceConfig = new ResourceConfig(classes);
 		resourceConfig.registerClasses(this.restResources);
+		resourceConfig.registerClasses(OpenApiResource.class);
 		resourceConfig.register(ThrowableExceptionMapper.class);
 		resourceConfig.register(ZonedDateTimeProvider.class);
 		resourceConfig.register(ZonedDateTimeMessageBodyWriter.class);
@@ -138,7 +142,12 @@ public class Server {
 				});
 			}
 		});
-		this.httpServer = GrizzlyHttpServerFactory.createHttpServer(this.baseURI(), resourceConfig);
+		try {
+			this.httpServer = GrizzlyWebContainerFactory.create(this.baseURI(), new ServletContainer(resourceConfig),
+					null, null);
+		} catch (IOException e) {
+			throw new IllegalStateException("The Server is can not be started", e);
+		}
 	}
 
 	/**
