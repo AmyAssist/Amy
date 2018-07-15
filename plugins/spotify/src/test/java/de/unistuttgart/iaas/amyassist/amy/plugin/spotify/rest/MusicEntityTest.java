@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 
 /**
@@ -42,7 +43,7 @@ class MusicEntityTest {
 	private MusicEntity musicEntity;
 	
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity#MusicEntity(String, String)}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity#MusicEntity(String, String)}.
 	 */
 	@Test @BeforeEach
 	void init() {
@@ -50,7 +51,7 @@ class MusicEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity#toString()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity#toString()}.
 	 */
 	@Test
 	void testToString() {
@@ -58,7 +59,7 @@ class MusicEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity#getArtist()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity#getArtist()}.
 	 */
 	@Test
 	void testGetArtist() {
@@ -66,7 +67,7 @@ class MusicEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity#setArtist(java.lang.String)}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity#setArtist(java.lang.String)}.
 	 */
 	@Test
 	void testSetArtist() {
@@ -75,7 +76,7 @@ class MusicEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity#getTitle()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity#getTitle()}.
 	 */
 	@Test
 	void testGetTitle() {
@@ -83,7 +84,7 @@ class MusicEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity#setTitle(java.lang.String)}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity#setTitle(java.lang.String)}.
 	 */
 	@Test
 	void testSetTitle() {

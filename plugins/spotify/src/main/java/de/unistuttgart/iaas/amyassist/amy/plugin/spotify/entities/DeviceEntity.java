@@ -21,19 +21,30 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest;
+package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
 
+import java.util.Objects;
+
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.PersistenceUnit;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
 
 /**
- * Device Entity for JSON
+ * Device Entity for JSON and Registry
  * 
- * @author Muhammed Kaya
+ * @author Muhammed Kaya, Lars Buttgereit
  */
 @XmlRootElement
-public class DeviceEntity extends Entity{
+@javax.persistence.Entity
+@PersistenceUnit(unitName = "SpotifyDeviceRegistry")
+public class DeviceEntity extends Entity {
+
+	@Id
+	@GeneratedValue
+	private int id;
 
 	/**
 	 * constructor for a Device
@@ -45,10 +56,10 @@ public class DeviceEntity extends Entity{
 	/**
 	 * constructor for a Device with set values
 	 */
-	public DeviceEntity(String type, String name, String id) {
+	public DeviceEntity(String type, String name, String uri) {
 		this.type = type;
 		this.name = name;
-		this.id = id;
+		this.uri = uri;
 	}
 
 	/**
@@ -64,7 +75,7 @@ public class DeviceEntity extends Entity{
 	/**
 	 * the ID of the device
 	 */
-	private String id;
+	private String uri;
 
 	/**
 	 * @return type
@@ -74,7 +85,8 @@ public class DeviceEntity extends Entity{
 	}
 
 	/**
-	 * @param type to set
+	 * @param type
+	 *            to set
 	 */
 	public void setType(String type) {
 		this.type = type;
@@ -88,24 +100,51 @@ public class DeviceEntity extends Entity{
 	}
 
 	/**
-	 * @param name to set
+	 * @param name
+	 *            to set
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-	 * @return id
+	 * @return uri
 	 */
-	public String getID() {
-		return this.id;
+	public String getUri() {
+		return this.uri;
 	}
 
 	/**
-	 * @param id to set
+	 * @param uri
+	 *            to set
 	 */
-	public void setID(String id) {
-		this.id = id;
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+
+	/**
+	 * Get's {@link #id id}
+	 * 
+	 * @return id
+	 */
+	public int getId() {
+		return this.id;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		DeviceEntity that = (DeviceEntity) o;
+		return this.id == that.id && this.name.equals(that.name) && this.type.equals(that.type)
+				&& this.uri.equals(that.uri);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.id, this.name, this.type, this.uri);
 	}
 
 }

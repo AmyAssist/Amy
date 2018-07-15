@@ -21,15 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.consumer;
+package de.unistuttgart.iaas.amyassist.amy.registry.rest;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationImpl;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
+
+import javax.ws.rs.Path;
 
 /**
- * A combination of ServiceConsumer and ServiceProvider
- * 
- * @author Leon Kiefer
+ * location registry REST resource
+ *
+ * @author Benno Krauß
  */
-public interface ServiceFunction<T> extends ServiceConsumer, ServiceProvider<T> {
-
+@Path("registry/location")
+public class LocationRegistryResource extends AbstractRegistryResource
+        <LocationRegistry, Location, LocationImpl, Integer> {
 }

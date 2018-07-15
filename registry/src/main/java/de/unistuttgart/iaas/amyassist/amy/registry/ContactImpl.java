@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.registry.contact;
+package de.unistuttgart.iaas.amyassist.amy.registry;
 
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
 

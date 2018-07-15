@@ -109,8 +109,11 @@ public abstract class AbstractRegistry<T> implements IRegistry<T> {
 
     private void transaction(TransactionBlock block) {
         entityManager.getTransaction().begin();
-        block.perform();
-        entityManager.getTransaction().commit();
+        try {
+            block.perform();
+        } finally {
+            entityManager.getTransaction().commit();
+        }
     }
 
     /**
