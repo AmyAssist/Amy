@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -33,7 +32,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,6 +43,7 @@ import com.google.api.services.calendar.model.Events;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
  * This class is for the Calendar Authentication and Logic, parts of the Code are from
@@ -59,15 +58,14 @@ public class CalendarLogic {
 	private CalendarService calendarService;
 	@Reference
 	private Logger logger;
+	@Reference
+	private Environment environment;
 
 	private enum OutputCase {
 		STARTINPAST, STARTINFUTURE, ALLDAYLONG, SINGLEDAY
 	}
 
-	private SimpleDateFormat sdf = new SimpleDateFormat("XXX");
-	private String timeZone = this.sdf
-			.format(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
-	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 	private LocalTime zero = LocalTime.of(0, 0, 0, 0);
 
 	/**
@@ -131,7 +129,7 @@ public class CalendarLogic {
 	public String getEventsToday() {
 		List<String> eventList = new ArrayList<>();
 		try {
-			LocalDateTime now = LocalDateTime.now();
+			LocalDateTime now = this.environment.getCurrentLocalDateTime();
 			LocalDate nextDay = now.plusDays(1).toLocalDate();
 			LocalDateTime endOfDay = LocalDateTime.of(nextDay, this.zero);
 			ZonedDateTime zdt = endOfDay.atZone(ZoneId.systemDefault());
@@ -164,7 +162,7 @@ public class CalendarLogic {
 	public String getEventsTomorrow() {
 		List<String> eventList = new ArrayList<>();
 		try {
-			LocalDateTime now = LocalDateTime.now();
+			LocalDateTime now = this.environment.getCurrentLocalDateTime();
 			LocalDate nextDay = now.plusDays(1).toLocalDate();
 			now = LocalDateTime.of(nextDay, this.zero);
 			ZonedDateTime zdt = now.atZone(ZoneId.systemDefault());
@@ -194,17 +192,17 @@ public class CalendarLogic {
 	/**
 	 * This method contains the logic to show the calendar events tomorrow
 	 *
-	 * @param now
+	 * @param ldt
 	 *            LocalDateTime variable
 	 * @return the events of the chosen day
 	 */
 	public String getEventsAt(LocalDateTime ldt) {
 		List<String> eventList = new ArrayList<>();
 		try {
-			LocalDateTime now = LocalDateTime.of(ldt.toLocalDate(), this.zero);
-			ZonedDateTime zdt = now.atZone(ZoneId.systemDefault());
+			LocalDateTime chosenDay = LocalDateTime.of(ldt.toLocalDate(), this.zero);
+			ZonedDateTime zdt = chosenDay.atZone(ZoneId.systemDefault());
 			DateTime setup = new DateTime(zdt.toInstant().toEpochMilli());
-			LocalDateTime nextDay = now.plusDays(1);
+			LocalDateTime nextDay = chosenDay.plusDays(1);
 			zdt = nextDay.atZone(ZoneId.systemDefault());
 			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
 			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
@@ -214,12 +212,12 @@ public class CalendarLogic {
 				return this.noEventsFound;
 			}
 			for (Event event : items) {
-				eventList.add(this.checkDay(now, event, false));
+				eventList.add(this.checkDay(chosenDay, event, false));
 			}
 			if (eventList.isEmpty()) {
-				return "There are no events on the " + getDate(now.toLocalDate()) + ".";
+				return "There are no events on the " + getDate(chosenDay.toLocalDate()) + ".";
 			}
-			return "You have following events on the " + getDate(now.toLocalDate()) + ":\n"
+			return "You have following events on the " + getDate(chosenDay.toLocalDate()) + ":\n"
 					+ String.join("\n", eventList);
 		} catch (IOException e) {
 			this.logger.error(this.errorLogger, e);
@@ -414,8 +412,7 @@ public class CalendarLogic {
 	 */
 	public LocalDateTime getLocalDateTimeStart(Event event) {
 		if (isAllDay(event)) {
-			return LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000" + this.timeZone,
-					formatter);
+			return LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000", formatter);
 		}
 		return ZonedDateTime.parse(event.getStart().getDateTime().toString())
 				.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
@@ -427,8 +424,7 @@ public class CalendarLogic {
 	 */
 	public LocalDateTime getLocalDateTimeEnd(Event event) {
 		if (isAllDay(event)) {
-			return LocalDateTime.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + this.timeZone, formatter)
-					.minusDays(1);
+			return LocalDateTime.parse(event.getEnd().getDate().toString() + "T23:59:59.999", formatter).minusDays(1);
 		}
 		return ZonedDateTime.parse(event.getEnd().getDateTime().toString()).withZoneSameInstant(ZoneId.systemDefault())
 				.toLocalDateTime();
