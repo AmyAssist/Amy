@@ -68,15 +68,14 @@ public class AlarmBeepService {
 
 	private Set<Integer> timerList = new HashSet<>();
 
-
 	@PostConstruct
 	private void init() {
 		InputStream resolve = this.getClass().getResourceAsStream(ALARMSOUND);
-		try  (InputStream bufferedIn = new BufferedInputStream(resolve);
-				AudioInputStream soundIn = AudioSystem.getAudioInputStream(bufferedIn);){
+		try (InputStream bufferedIn = new BufferedInputStream(resolve);
+				AudioInputStream soundIn = AudioSystem.getAudioInputStream(bufferedIn);) {
 			AudioFormat format = soundIn.getFormat();
 			DataLine.Info info = new DataLine.Info(Clip.class, format);
-			this.clip = (Clip)AudioSystem.getLine(info);
+			this.clip = (Clip) AudioSystem.getLine(info);
 			this.clip.open(soundIn);
 		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
 			this.logger.error("Cant play alarm sound", e);
