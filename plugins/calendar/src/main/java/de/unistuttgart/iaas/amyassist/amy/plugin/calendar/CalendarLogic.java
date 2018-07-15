@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
@@ -396,7 +397,8 @@ public class CalendarLogic {
 	 *            the default OutputCase
 	 * @return which OutputCase is needed
 	 */
-	public static OutputCase eventType(LocalDate date1, LocalDate date2, Event event, OutputCase defaultCase) {
+	public static OutputCase eventType(ChronoLocalDate date1, ChronoLocalDate date2, Event event,
+			OutputCase defaultCase) {
 		if (date1.isEqual(date2)) {
 			if (isAllDay(event)) {
 				return OutputCase.ALLDAYLONG;
