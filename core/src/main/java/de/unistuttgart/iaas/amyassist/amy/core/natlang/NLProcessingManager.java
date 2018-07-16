@@ -30,6 +30,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
  */
 public interface NLProcessingManager {
 	/**
+	 * registers the given class
 	 * 
 	 * @param natuaralLanguageInterpreter
 	 *            a class annotated with {@link de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand}

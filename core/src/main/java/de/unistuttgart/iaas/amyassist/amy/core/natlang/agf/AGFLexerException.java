@@ -29,11 +29,12 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
  * @author Felix Burk
  */
 public class AGFLexerException extends RuntimeException {
-	
+
+
 	/**
-	 * serial version uid
+	 * generated serial version UID
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -8618145709696288795L;
 
 	/**
 	 * @param content string to print

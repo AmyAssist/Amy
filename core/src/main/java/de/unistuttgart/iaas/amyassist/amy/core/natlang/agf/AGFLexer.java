@@ -69,17 +69,17 @@ public class AGFLexer implements Iterator<AGFToken> {
 			
 			switch(c) {
     			case '(':
-    				return new AGFToken(AGFTokenType.OPENBR, "(");
+    				return new AGFToken(AGFTokenType.OPENBR);
     			case ')':
-    				return new AGFToken(AGFTokenType.CLOSEBR, ")");
+    				return new AGFToken(AGFTokenType.CLOSEBR);
     			case '|':
-    				return new AGFToken(AGFTokenType.OR, "|");
+    				return new AGFToken(AGFTokenType.OR);
     			case '[':
-    				return new AGFToken(AGFTokenType.OPENSBR, "[");
+    				return new AGFToken(AGFTokenType.OPENSBR);
     			case ']':
-    				return new AGFToken(AGFTokenType.CLOSESBR, "]");
+    				return new AGFToken(AGFTokenType.CLOSESBR);
     			case '#':
-    				return new AGFToken(AGFTokenType.RULE, "#");
+    				return new AGFToken(AGFTokenType.RULE);
     			//only allow normal SPACE codepoint 32, U+0020
     			case 32: 
     				return this.next();
@@ -98,7 +98,7 @@ public class AGFLexer implements Iterator<AGFToken> {
     				
 			} 		
 		}
-		throw new NoSuchElementException("thrown by AGFLexer");
+		throw new NoSuchElementException();
 
 	}
 

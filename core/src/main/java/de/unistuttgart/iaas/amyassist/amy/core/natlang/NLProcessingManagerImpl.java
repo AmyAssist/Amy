@@ -67,20 +67,21 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	private final List<PartialNLI> register = new ArrayList<>();
 
-	private final List<AGFNode> cachedNodeList = new ArrayList<>();
+	private final List<AGFNode> registeredNodeList = new ArrayList<>();
 
 	@Override
-	public void register(Class<?> natuaralLanguageInterpreter) {
-		if (!natuaralLanguageInterpreter
+	public void register(Class<?> naturalLanguageInterpreter) {
+		if (!naturalLanguageInterpreter
 				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand.class)) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("annotation is not present in " 
+				+ naturalLanguageInterpreter.getSimpleName());
 		}
-		Set<Method> grammars = NLIAnnotationReader.getValidNLIMethods(natuaralLanguageInterpreter);
+		Set<Method> grammars = NLIAnnotationReader.getValidNLIMethods(naturalLanguageInterpreter);
 
 		for (Method e : grammars) {
-			PartialNLI partialNLI = this.generatePartialNLI(natuaralLanguageInterpreter, e);
+			PartialNLI partialNLI = this.generatePartialNLI(naturalLanguageInterpreter, e);
 			this.register.add(partialNLI);
-			this.cachedNodeList.add(partialNLI.getGrammar());
+			this.registeredNodeList.add(partialNLI.getGrammar());
 		}
 	}
 
@@ -107,7 +108,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		this.logger.debug("input {}", naturalLanguageText);
 		NLLexer nlLexer = new NLLexer(lang);
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
-		INLParser nlParser = new NLParser(this.cachedNodeList);
+		INLParser nlParser = new NLParser(this.registeredNodeList);
 		int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 		PartialNLI partialNLI = this.register.get(matchingNodeIndex);
 		String[] arguments = Lists.transform(tokens, WordToken::getContent).toArray(new String[tokens.size()]);

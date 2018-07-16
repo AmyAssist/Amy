@@ -88,6 +88,7 @@ public class Parser {
 	}
 
 	/**
+	 * tries to parse the whole expression 
 	 * 
 	 * @return generated AGFNode
 	 */
@@ -100,7 +101,8 @@ public class Parser {
 	}
 
 	/**
-	 * parse the expression
+	 * parses only a part of the expression
+	 * meaning only one agf parselet
 	 * 
 	 * @return the node
 	 */

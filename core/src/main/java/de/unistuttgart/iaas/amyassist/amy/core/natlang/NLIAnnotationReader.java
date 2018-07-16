@@ -92,8 +92,7 @@ public class NLIAnnotationReader {
 	}
 
 	/**
-	 * 
-	 * calls the given method and handles handles possible exceptions
+	 * calls the given method and handles possible exceptions
 	 *
 	 * @param method
 	 *            the method to call
