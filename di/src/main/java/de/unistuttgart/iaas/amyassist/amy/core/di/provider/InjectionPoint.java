@@ -28,7 +28,8 @@ import java.lang.reflect.Field;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
@@ -38,6 +39,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  */
 class InjectionPoint {
 	private Field field;
+	private ServiceConsumer<?> serviceConsumer;
 
 	/**
 	 * 
@@ -46,14 +48,15 @@ class InjectionPoint {
 	 */
 	public InjectionPoint(Field field) {
 		this.field = field;
+		this.serviceConsumer = ConsumerFactory.build(field.getDeclaringClass(), Util.serviceDescriptionFor(this.field));
 	}
 
 	/**
 	 * 
 	 * @return the Description of the Service required by this InjectionPoint
 	 */
-	public ServiceDescription<?> getServiceDescription() {
-		return Util.serviceDescriptionFor(this.field);
+	public ServiceConsumer<?> getServiceConsumer() {
+		return this.serviceConsumer;
 	}
 
 	public void inject(@Nonnull Object instance, @Nullable Object object) {

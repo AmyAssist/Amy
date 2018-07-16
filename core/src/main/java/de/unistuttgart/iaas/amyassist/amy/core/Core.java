@@ -29,6 +29,8 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
+import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,6 +119,8 @@ public class Core {
 
 		this.server = this.di.getService(Server.class);
 		this.server.register(HomeResource.class);
+		this.server.register(LocationRegistryResource.class);
+		this.server.register(ContactRegistryResource.class);
 
 		initConsole();
 
