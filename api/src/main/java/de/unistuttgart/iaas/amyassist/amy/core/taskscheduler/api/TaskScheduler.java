@@ -45,7 +45,7 @@ public interface TaskScheduler {
 	 * @param task
 	 *            the task to execute
 	 * @param instant
-	 *            The date at which to execute that task
+	 *            The instant at which to execute that task
 	 */
 	void schedule(Runnable task, Instant instant);
 }
