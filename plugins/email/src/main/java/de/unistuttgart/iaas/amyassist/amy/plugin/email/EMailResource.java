@@ -23,11 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -44,7 +47,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
  * @author Muhammed Kaya
  */
 @Path(EMailResource.PATH)
-public class EMailResource implements Resource{
+public class EMailResource implements Resource {
 
 	/**
 	 * the resource path for this plugin
@@ -61,7 +64,7 @@ public class EMailResource implements Resource{
 	 * @return number of messages in inbox
 	 */
 	@GET
-	@Path("count")
+	@Path("new/count")
 	@Produces(MediaType.TEXT_PLAIN)
 	public int getNewMessageCount() {
 		int count = this.logic.getNewMessageCount();
@@ -72,18 +75,26 @@ public class EMailResource implements Resource{
 	}
 
 	/**
-	 * Prints the plain text from all the mails in the inbox
+	 * Prints the plain text from all the mails in the inbox or only from important people
 	 * 
+	 * @param important
+	 *            used to print mails only from important people: add /important to the path
 	 * @param amount
-	 *            the amount of emails that should be returned
+	 *            the amount of messages that should be returned, -1 to have all messages returned default is 5
 	 * @return most recent emails
 	 */
 	@POST
-	@Path("plains")
+	@Path("plains{important : (/important)?}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String printPlainTextMessages(@QueryParam("amount") @DefaultValue("5") int amount) {
-		String plains = this.logic.printPlainTextMessages(amount);
+	public String printPlainTextMessages(@PathParam("important") String important,
+			@QueryParam("amount") @DefaultValue("5") int amount) {
+		String plains;
+		if (important.isEmpty()) {
+			plains = this.logic.printPlainTextMessages(amount);
+		} else {
+			plains = this.logic.printImportantMessages(amount);
+		}
 		if (plains.equals("")) {
 			throw new WebApplicationException("Could not fetch messages from inbox.", Status.CONFLICT);
 		}
@@ -101,7 +112,7 @@ public class EMailResource implements Resource{
 	public boolean hasUnreadMessages() {
 		return this.logic.hasUnreadMessages();
 	}
-	
+
 	/**
 	 * Sends a message to some recipient
 	 * 
@@ -125,6 +136,22 @@ public class EMailResource implements Resource{
 			throw new WebApplicationException("Message could not be sent.", Status.CONFLICT);
 		}
 		return response;
+	}
+
+	/**
+	 * Checks if the given email belongs to an important person
+	 * 
+	 * @return if found, a List with important Mail Addresses
+	 */
+	@GET
+	@Path("addresses")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<String> getImportantMailAddresses() {
+		List<String> addressesList = this.logic.getImportantMailAddresses();
+		if (addressesList.isEmpty()) {
+			throw new WebApplicationException("No important mail addresses were found.", Status.CONFLICT);
+		}
+		return addressesList;
 	}
 
 	/**
