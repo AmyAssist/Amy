@@ -59,14 +59,24 @@ public class CalendarResource {
 	private CalendarLogic logic;
 
 	/**
+	 * Natural language response of Amy when the event list is empty.
+	 */
+	String noEventsFound = "No upcoming events found.";
+	
+	/**
 	 * Natural language response of Amy when the event list of today is empty.
 	 */
-	private final String noEventsToday = "There are no events today.";
+	private String noEventsToday = "There are no events today.";
 
 	/**
 	 * Natural language response of Amy when the event list of tomorrow is empty.
 	 */
-	private final String noEventsTomorrow = "There are no events tomorrow.";
+	private String noEventsTomorrow = "There are no events tomorrow.";
+	
+	/**
+	 * Output of the logger
+	 */
+	private String errorLogger = "An error occurred.";
 
 	/**
 	 * This method lists the next events from the calendar
@@ -148,7 +158,7 @@ public class CalendarResource {
 		if (!events.isEmpty()) {
 			return events;
 		}
-		throw new WebApplicationException("An error occurred.", Status.CONFLICT);
+		throw new WebApplicationException(this.errorLogger, Status.CONFLICT);
 	}
 
 	/**
@@ -174,13 +184,13 @@ public class CalendarResource {
 	private boolean checkEvents(String events) {
 		switch (events) {
 		case "No upcoming events found.":
-			throw new WebApplicationException("No upcoming events found.", Status.NOT_FOUND);
+			throw new WebApplicationException(this.noEventsFound, Status.NOT_FOUND);
 		case "There are no events today.":
-			throw new WebApplicationException("There are no events today.", Status.NOT_FOUND);
+			throw new WebApplicationException(this.noEventsToday, Status.NOT_FOUND);
 		case "There are no events tomorrow.":
-			throw new WebApplicationException("There are no events tomorrow.", Status.NOT_FOUND);
+			throw new WebApplicationException(this.noEventsTomorrow, Status.NOT_FOUND);
 		case "An error occurred.":
-			throw new WebApplicationException("An error occurred.", Status.CONFLICT);
+			throw new WebApplicationException(this.errorLogger, Status.CONFLICT);
 		default:
 			return true;
 		}
