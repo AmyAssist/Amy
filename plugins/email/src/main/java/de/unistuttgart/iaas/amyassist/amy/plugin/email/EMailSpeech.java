@@ -72,8 +72,10 @@ public class EMailSpeech {
 	@Grammar("how many [new] (emails|mails) [do i have]")
 	public String numberOfNewMails(String... params) {
 		int s = this.logic.getNewMessageCount();
-		if (s != -1) {
+		if (s > 0) {
 			return this.logic.getNewMessageCount() + " new mails.";
+		} else if (s == 0) {
+			return "You don't have new mails.";
 		}
 		return "something went wrong - i am deeply sorry";
 	}
