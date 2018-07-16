@@ -52,7 +52,7 @@ public class WeatherDarkSkyAPI {
 	private Calendar lastRequest;
 
 	private FIODaily getDailyReports() {
-		if(this.dailyReports == null | checkTime()) {
+		if(this.dailyReports == null || checkTime()) {
 			ForecastIO fio = new ForecastIO(this.configuration.getProperty(API_SECRET_CONFIG_KEY));
 			fio.setUnits(ForecastIO.UNITS_SI);
 			fio.getForecast(WeatherDarkSkyAPI.STUTTGART_COORDINATES_LAT, WeatherDarkSkyAPI.STUTTGART_COORDINATES_LONG);
@@ -62,6 +62,7 @@ public class WeatherDarkSkyAPI {
 				FIODataPoint report = this.dailyReports.getDay(i);
 				report.setTimezone(fio.getTimezone());
 			}			
+			this.lastRequest = Calendar.getInstance();
 		}
 
 		return this.dailyReports;
@@ -84,7 +85,6 @@ public class WeatherDarkSkyAPI {
 				}			
 			}			
 		}
-		this.lastRequest = now;
 		return true;
 	}
 
