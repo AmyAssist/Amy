@@ -101,9 +101,8 @@ public class CalendarLogic {
 		List<String> eventList = new ArrayList<>();
 		try {
 			DateTime current = new DateTime(System.currentTimeMillis());
-			Events events = this.calendarService.getService().events().list(this.primary)
-					.setMaxResults(Integer.valueOf(number)).setTimeMin(current).setOrderBy(this.orderBy)
-					.setSingleEvents(Boolean.valueOf(true)).execute();
+			Events events = this.calendarService.getService().events().list(this.primary).setMaxResults(number)
+					.setTimeMin(current).setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return this.noEventsFound;
@@ -138,7 +137,7 @@ public class CalendarLogic {
 			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
 			DateTime setup = new DateTime(System.currentTimeMillis());
 			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(Boolean.valueOf(true)).execute();
+					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return this.noEventsFound;
@@ -173,7 +172,7 @@ public class CalendarLogic {
 			zdt = endOfTomorrow.atZone(ZoneId.systemDefault());
 			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
 			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(Boolean.valueOf(true)).execute();
+					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return this.noEventsFound;
@@ -208,7 +207,7 @@ public class CalendarLogic {
 			zdt = nextDay.atZone(ZoneId.systemDefault());
 			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
 			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(Boolean.valueOf(true)).execute();
+					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return this.noEventsFound;
@@ -243,7 +242,7 @@ public class CalendarLogic {
 			zdt = nextDay.atZone(ZoneId.systemDefault());
 			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
 			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(Boolean.valueOf(true)).execute();
+					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			items = events.getItems();
 		} catch (IOException e) {
 			this.logger.error(this.errorLogger, e);
