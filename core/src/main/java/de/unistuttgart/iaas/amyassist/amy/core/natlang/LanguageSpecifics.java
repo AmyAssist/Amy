@@ -106,9 +106,7 @@ public class LanguageSpecifics {
 		try (InputStreamReader inputStreamReader = new InputStreamReader(grammarFile, "UTF-8");
 				BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
 
-			// first line contains all numbers seperated by ',' and ending with ';'
-			String s = bufferedReader.readLine();
-			
+			// every line contains the number seperated by ',' and ending with ';'			
 			Stream<String> lines = bufferedReader.lines();
 			
 			Stream<String> matchingLines = lines.filter(l->l.matches("[a-zA-Z]+:[0-9]*,"));
