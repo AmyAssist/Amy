@@ -41,12 +41,13 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
  * Tests for the CalendarLogic class
- * 
+ *
  * @author Patrick Gebhardt, Florian Bauer
  */
 @ExtendWith(FrameworkExtension.class)
@@ -63,9 +64,14 @@ public class CalendarLogicTest {
 	@BeforeEach
 	public void setup() {
 		this.framework.mockService(CalendarService.class);
+		this.framework.mockService(Environment.class);
 		this.callog = this.framework.setServiceUnderTest(CalendarLogic.class);
 	}
 
+	/**
+	 * @param testCase
+	 *            a combination of the input variables and the expected outcome
+	 */
 	@ParameterizedTest
 	@MethodSource("testEventsWithDate")
 	public void testCheckDayWithDate(Pair<Event, String> testCase) {
@@ -73,6 +79,10 @@ public class CalendarLogicTest {
 		assertThat(checkDay, equalToIgnoringWhiteSpace(testCase.getRight()));
 	}
 
+	/**
+	 * @param testCase
+	 *            a combination of the input variables and the expected outcome
+	 */
 	@ParameterizedTest
 	@MethodSource("testEventsWithoutDate")
 	public void testCheckDayWithoutDate(Pair<Event, String> testCase) {
@@ -81,13 +91,13 @@ public class CalendarLogicTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the test cases used in the {@link #testCheckDayWithDate(Pair)} test
 	 */
 	public static Stream<Pair<Event, String>> testEventsWithDate() {
 		return Stream.of(
 				Pair.of(event("test event", "2015-05-29T08:00:00", "2015-05-29T09:30:00"),
-						"test event from the 29th of may at 08:00 until the 29th of may at 09:30."),
+						"test event on the 29th of may at 08:00 until 09:30."),
 				Pair.of(event("write tests in Java", "2015-05-28T12:59:15", "2015-05-28T20:30:00"),
 						"write tests in Java on the 28th of may at 12:59 until 20:30."),
 				Pair.of(event("event start in past", "2015-05-12T13:05:00", "2015-05-29T15:30:00"),
@@ -99,7 +109,9 @@ public class CalendarLogicTest {
 				Pair.of(event("event end today", "2015-05-27T22:00:00", "2015-05-28T10:00:00"),
 						"event end today since the 27th of may at 22:00 until the 28th of may at 10:00."),
 				Pair.of(event("event start today end tomorrow", "2015-05-28T15:30:00", "2015-05-29T15:30:00"),
-						"event start today end tomorrow from the 28th of may at 15:30 until the 29th of may at 15:30."));
+						"event start today end tomorrow from the 28th of may at 15:30 until the 29th of may at 15:30."),
+				Pair.of(eventAllDay("event tomorrow all day", "2015-05-29", "2015-05-30"),
+						"event tomorrow all day on the 29th of may all day long."));
 	}
 
 	/**
@@ -108,10 +120,11 @@ public class CalendarLogicTest {
 	 */
 	public static Stream<Pair<Event, String>> testEventsWithoutDate() {
 		return Stream.of(
-				Pair.of(event("test event", "2015-05-29T08:00:00", "2015-05-29T09:30:00"),
-						"test event from the 29th of may at 08:00 until 09:30."),
 				Pair.of(event("event later that day", "2015-05-28T14:00:00", "2015-05-28T16:30:00"),
-						"event later that day from 14:00 until 16:30."));
+						"event later that day from 14:00 until 16:30."),
+				Pair.of(eventAllDay("event all day", "2015-05-28", "2015-05-29"), "event all day all day long."),
+				Pair.of(event("event finish today", "2015-05-27T23:00:00", "2015-05-28T10:00:00"),
+						"event finish today since the 27th of may at 23:00 until 10:00."));
 	}
 
 	private static Event event(String summary, String start, String end) {
@@ -125,15 +138,15 @@ public class CalendarLogicTest {
 	private static Event eventAllDay(String summary, String start, String end) {
 		Event event = new Event();
 		event.setSummary(summary);
-		event.setStart(new EventDateTime().setDate(fromISO(start)));
-		event.setEnd(new EventDateTime().setDate(fromISO(end)));
+		event.setStart(new EventDateTime().setDate(new DateTime(start)));
+		event.setEnd(new EventDateTime().setDate(new DateTime(end)));
 		return event;
 	}
 
 	/**
 	 * @param iso
 	 *            date-time without a time-zone
-	 * @return
+	 * @return the DateTime of a String with correct time-zone
 	 */
 	private static DateTime fromISO(String iso) {
 		return fromLocalDateTime(LocalDateTime.parse(iso));
@@ -142,5 +155,4 @@ public class CalendarLogicTest {
 	private static DateTime fromLocalDateTime(LocalDateTime localDateTime) {
 		return new DateTime(localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
 	}
-
 }
