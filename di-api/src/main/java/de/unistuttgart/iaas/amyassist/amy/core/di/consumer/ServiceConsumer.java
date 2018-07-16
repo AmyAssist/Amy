@@ -23,13 +23,28 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.consumer;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+
 /**
  * A Service Consumer
  * 
  * @author Leon Kiefer
+ * 
+ * @param <T>
+ *            the type of the Service that is consumed
  */
-public interface ServiceConsumer {
-	default Class<?> getConsumerClass() {
-		return null;
-	}
+public interface ServiceConsumer<T> {
+	/**
+	 * The class which contains this Service consumer
+	 * 
+	 * @return the class
+	 */
+	Class<?> getConsumerClass();
+
+	/**
+	 * The Service description of the required Service
+	 * 
+	 * @return the ServiceDescription of the consumed Service
+	 */
+	ServiceDescription<T> getServiceDescription();
 }

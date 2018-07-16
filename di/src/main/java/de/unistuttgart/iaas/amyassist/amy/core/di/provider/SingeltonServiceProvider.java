@@ -23,16 +23,15 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 
 /**
  * A ServiceProvider which provides only a single existing instance
@@ -41,7 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
  * @param <T>
  *            the type of the singleton
  */
-public class SingeltonServiceProvider<T> implements ServiceFunction<T> {
+public class SingeltonServiceProvider<T> implements ServiceProvider<T> {
 
 	private final T instance;
 
@@ -55,18 +54,18 @@ public class SingeltonServiceProvider<T> implements ServiceFunction<T> {
 	}
 
 	@Override
-	public T getService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies,
+	public T getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
 			@Nullable Map<String, ?> context) {
 		return this.instance;
 	}
 
 	@Override
-	public Collection<ServiceDescription<?>> getDependencies() {
+	public Set<ServiceConsumer<?>> getDependencies() {
 		return Collections.emptySet();
 	}
 
 	@Override
-	public Collection<String> getRequiredContextIdentifiers() {
+	public Set<String> getRequiredContextIdentifiers() {
 		return Collections.emptySet();
 	}
 }

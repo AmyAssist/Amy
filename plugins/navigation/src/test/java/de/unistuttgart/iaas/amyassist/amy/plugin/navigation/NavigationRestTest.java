@@ -25,10 +25,11 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.ws.rs.client.Entity;
+import java.time.ZonedDateTime;
+
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.joda.time.DateTime;
@@ -41,7 +42,6 @@ import org.mockito.Mockito;
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest.Timestamp;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -60,14 +60,12 @@ class NavigationRestTest {
 
 	private WebTarget target;
 
-	private Timestamp timestamp;
 	private TestDataForDirectionsRoutes data;
 	private String origin;
 	private String destination;
 	private TravelMode travelMode;
 	private BestTransportResult bestResult;
 	private DateTime dateTime;
-	private Entity<Timestamp> entity;
 	private ReadableInstant instant;
 
 	/**
@@ -84,15 +82,12 @@ class NavigationRestTest {
 	 * inits all needed inputs
 	 */
 	private void initInputs() {
-		this.timestamp = new Timestamp(2020, 1, 2, 20, 20, 20); // 2020.01.02 20:20:20
 		this.origin = "Stuttgart";
 		this.destination = "Berlin";
 		this.travelMode = TravelMode.DRIVING;
 		this.data = new TestDataForDirectionsRoutes();
 		this.bestResult = new BestTransportResult(TravelMode.DRIVING, this.data.carRoutes[0]);
-		this.dateTime = new DateTime(this.timestamp.getYear(), this.timestamp.getMonth(), this.timestamp.getDay(),
-				this.timestamp.getHour(), this.timestamp.getMinute(), this.timestamp.getSecond());
-		this.entity = Entity.entity(this.timestamp, MediaType.APPLICATION_JSON);
+		this.dateTime = new DateTime("2020-01-02T20:20:20+00:00"); // 2020.01.02 20:20:20 UTC
 		this.instant = this.dateTime;
 	}
 
@@ -108,27 +103,16 @@ class NavigationRestTest {
 		Response response = this.target.path("fromTo").queryParam("origin", this.origin)
 				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request().post(null);
 		BestTransportResult actual = response.readEntity(BestTransportResult.class);
-		assertThat(actual.getRoute().bounds, is(this.bestResult.getRoute().bounds));
-		assertThat(actual.getRoute().copyrights, is(this.bestResult.getRoute().copyrights));
-		assertThat(actual.getRoute().fare, is(this.bestResult.getRoute().fare));
-		assertThat(actual.getRoute().overviewPolyline, is(this.bestResult.getRoute().overviewPolyline));
-		assertThat(actual.getRoute().summary, is(this.bestResult.getRoute().summary));
-		assertThat(actual.getMode(), is(this.bestResult.getMode()));
+		assertTrue(actual.getMode().equals(this.bestResult.getMode()));
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).fromTo(this.origin, this.destination, this.travelMode);
 
 		Mockito.when(this.logic.fromToWithDeparture(this.origin, this.destination, this.travelMode, this.dateTime))
 				.thenReturn(this.bestResult);
-		response = this.target.path("fromTo").queryParam("origin", this.origin)
-				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
-				.post(this.entity);
+		response = this.target.path("fromTo/2020-01-02T20:20:20+00:00").queryParam("origin", this.origin)
+				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request().post(null);
 		actual = response.readEntity(BestTransportResult.class);
-		assertThat(actual.getRoute().bounds, is(this.bestResult.getRoute().bounds));
-		assertThat(actual.getRoute().copyrights, is(this.bestResult.getRoute().copyrights));
-		assertThat(actual.getRoute().fare, is(this.bestResult.getRoute().fare));
-		assertThat(actual.getRoute().overviewPolyline, is(this.bestResult.getRoute().overviewPolyline));
-		assertThat(actual.getRoute().summary, is(this.bestResult.getRoute().summary));
-		assertThat(actual.getMode(), is(this.bestResult.getMode()));
+		assertTrue(actual.getMode().equals(this.bestResult.getMode()));
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).fromToWithDeparture(this.origin, this.destination, this.travelMode, this.dateTime);
 
@@ -153,8 +137,13 @@ class NavigationRestTest {
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("No route found."));
 		assertThat(response.getStatus(), is(404));
-		Mockito.verify(this.logic, Mockito.times(2)).getTravelMode("walking");
-		Mockito.verify(this.logic).fromTo(this.origin, this.destination, TravelMode.WALKING);
+
+		response = this.target.path("fromTo/1960-01-02T10:10:10+00:00").queryParam("origin", this.origin)
+				.queryParam("destination", this.destination).queryParam("travelMode", "walking").request().post(null);
+		actualMsg = response.readEntity(String.class);
+		assertThat(actualMsg, is("No route found."));
+		assertThat(response.getStatus(), is(404));
+		Mockito.verify(this.logic, Mockito.times(4)).getTravelMode("walking");
 	}
 
 	/**
@@ -167,32 +156,29 @@ class NavigationRestTest {
 		Mockito.when(this.logic.whenIHaveToGo(this.origin, this.destination, this.travelMode, this.dateTime))
 				.thenReturn(this.instant);
 
-		Response response = this.target.path("when").queryParam("origin", this.origin)
-				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
-				.post(this.entity);
-		Timestamp actual = response.readEntity(Timestamp.class);
-		assertThat(actual, is(this.timestamp));
+		Response response = this.target.path("when/2020-01-02T20:20:20+00:00").queryParam("origin", this.origin)
+				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request().post(null);
+		String actual = response.readEntity(String.class);
+		assertThat(actual, is(ZonedDateTime.parse(this.dateTime.toString()).toString()));
 		assertThat(response.getStatus(), is(200));
 
 		Mockito.when(this.logic.whenIHaveToGo(this.origin, this.destination, this.travelMode, this.dateTime))
 				.thenReturn(null);
-		response = this.target.path("when").queryParam("origin", this.origin)
-				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
-				.post(this.entity);
+		response = this.target.path("when/2020-01-02T20:20:20+00:00").queryParam("origin", this.origin)
+				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request().post(null);
 		String actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("No latest starttime found."));
 		assertThat(response.getStatus(), is(404));
 
-		response = this.target.path("when").queryParam("destination", null).queryParam("travelMode", "driving")
-				.request().post(this.entity);
+		response = this.target.path("when/2020-01-02T20:20:20+00:00").queryParam("destination", null)
+				.queryParam("travelMode", "driving").request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Missing origin and/or destination input."));
 		assertThat(response.getStatus(), is(409));
 
 		Mockito.when(this.logic.getTravelMode("blabla")).thenReturn(null);
-		response = this.target.path("when").queryParam("origin", this.origin)
-				.queryParam("destination", this.destination).queryParam("travelMode", "blabla").request()
-				.post(this.entity);
+		response = this.target.path("when/2020-01-02T20:20:20+00:00").queryParam("origin", this.origin)
+				.queryParam("destination", this.destination).queryParam("travelMode", "blabla").request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Enter a correct travel mode."));
 		assertThat(response.getStatus(), is(409));
@@ -207,27 +193,21 @@ class NavigationRestTest {
 	void testGetBestTransportInTime() {
 		Mockito.when(this.logic.getBestTransportInTime(this.origin, this.destination, this.dateTime))
 				.thenReturn(this.bestResult);
-		Response response = this.target.path("best").queryParam("origin", this.origin)
-				.queryParam("destination", this.destination).request().post(this.entity);
+		Response response = this.target.path("best/2020-01-02T20:20:20+00:00").queryParam("origin", this.origin)
+				.queryParam("destination", this.destination).request().post(null);
 		BestTransportResult actual = response.readEntity(BestTransportResult.class);
-		assertThat(actual.getRoute().bounds, is(this.bestResult.getRoute().bounds));
-		assertThat(actual.getRoute().copyrights, is(this.bestResult.getRoute().copyrights));
-		assertThat(actual.getRoute().fare, is(this.bestResult.getRoute().fare));
-		assertThat(actual.getRoute().overviewPolyline, is(this.bestResult.getRoute().overviewPolyline));
-		assertThat(actual.getRoute().summary, is(this.bestResult.getRoute().summary));
-		assertThat(actual.getMode(), is(this.bestResult.getMode()));
+		assertTrue(actual.getMode().equals(this.bestResult.getMode()));
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).getBestTransportInTime(this.origin, this.destination, this.dateTime);
 
-		response = this.target.path("best").queryParam("destination", null).request().post(null);
+		response = this.target.path("best/2020-01-02T20:20:20+00:00").queryParam("destination", null).request().post(null);
 		String actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Missing origin and/or destination input."));
 		assertThat(response.getStatus(), is(409));
 
 		Mockito.when(this.logic.getBestTransportInTime(this.origin, this.destination, this.dateTime)).thenReturn(null);
-		response = this.target.path("best").queryParam("origin", this.origin)
-				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request()
-				.post(this.entity);
+		response = this.target.path("best/2020-01-02T20:20:20+00:00").queryParam("origin", this.origin)
+				.queryParam("destination", this.destination).queryParam("travelMode", "driving").request().post(null);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("No best transport type found."));
 		assertThat(response.getStatus(), is(404));

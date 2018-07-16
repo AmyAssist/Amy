@@ -21,15 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.consumer;
+package de.unistuttgart.iaas.amyassist.amy.httpserver.adapter;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import java.time.ZonedDateTime;
+
+import javax.ws.rs.ext.ParamConverter;
 
 /**
- * A combination of ServiceConsumer and ServiceProvider
+ * A ZonedDateTime parameter converter to parse and get Strings according to ISO-8601
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Muhammed Kaya
  */
-public interface ServiceFunction<T> extends ServiceConsumer, ServiceProvider<T> {
+public class ZonedDateTimeParameterConverter implements ParamConverter<ZonedDateTime> {
+
+	/**
+	 * @see javax.ws.rs.ext.ParamConverter#fromString(java.lang.String)
+	 */
+	@Override
+	public ZonedDateTime fromString(String value) {
+		return ZonedDateTime.parse(value);
+	}
+
+	/**
+	 * @see javax.ws.rs.ext.ParamConverter#toString(java.lang.Object)
+	 */
+	@Override
+	public String toString(ZonedDateTime value) {
+		return value.toString();
+	}
 
 }

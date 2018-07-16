@@ -25,8 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 
 /**
  * Configuration of the Service Locator
@@ -63,7 +63,7 @@ public interface Configuration {
 	 * @param serviceFunction
 	 *            The instance of the service provider
 	 */
-	<T> void register(ServiceDescription<T> serviceDescription, ServiceFunction<T> serviceFunction);
+	<T> void register(ServiceDescription<T> serviceDescription, ServiceProvider<T> serviceFunction);
 
 	/**
 	 * Registers a service provider
@@ -73,6 +73,6 @@ public interface Configuration {
 	 * @param serviceFunction
 	 *            The instance of the service provider
 	 */
-	<T> void register(Class<T> serviceType, ServiceFunction<T> serviceFunction);
+	<T> void register(Class<T> serviceType, ServiceProvider<T> serviceFunction);
 
 }

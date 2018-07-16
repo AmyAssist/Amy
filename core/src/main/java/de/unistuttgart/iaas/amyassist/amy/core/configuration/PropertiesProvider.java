@@ -23,15 +23,16 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 
@@ -40,25 +41,31 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
  * 
  * @author Leon Kiefer
  */
-public class PropertiesProvider implements ServiceFunction<Properties> {
+public class PropertiesProvider implements ServiceProvider<Properties> {
+
+	private ServiceConsumer<ConfigurationLoader> consumer;
+
+	public PropertiesProvider() {
+		this.consumer = ConsumerFactory.build(null, Util.serviceDescriptionFor(ConfigurationLoader.class));
+	}
 
 	@Override
-	public Properties getService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies,
+	public Properties getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
 			Map<String, ?> context) {
 		ConfigurationLoader configurationLoader = (ConfigurationLoader) resolvedDependencies
-				.get(Util.serviceDescriptionFor(ConfigurationLoaderImpl.class)).build();
+				.get(this.consumer).build();
 		IPlugin plugin = (IPlugin) context.get(Context.PLUGIN);
 		String uniqueName = plugin.getUniqueName();
 		return configurationLoader.load(uniqueName);
 	}
 
 	@Override
-	public Collection<ServiceDescription<?>> getDependencies() {
-		return Collections.singleton(Util.serviceDescriptionFor(ConfigurationLoaderImpl.class));
+	public Set<ServiceConsumer<?>> getDependencies() {
+		return Collections.singleton(this.consumer);
 	}
 
 	@Override
-	public Collection<String> getRequiredContextIdentifiers() {
-		return Collections.singletonList(Context.PLUGIN);
+	public Set<String> getRequiredContextIdentifiers() {
+		return Collections.singleton(Context.PLUGIN);
 	}
 }
