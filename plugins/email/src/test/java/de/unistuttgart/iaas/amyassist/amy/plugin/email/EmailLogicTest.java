@@ -23,6 +23,12 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+
 import java.util.Properties;
 
 import javax.mail.Flags.Flag;
@@ -41,41 +47,38 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.jvnet.mock_javamail.Mailbox;
 import org.jvnet.mock_javamail.MockFolder;
 import org.jvnet.mock_javamail.MockStore;
-import org.mockito.Mock;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.*;
-
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
- * Test for the email logic class 
+ * Test for the email logic class
  * 
  * @author Felix Burk
  */
 @ExtendWith(FrameworkExtension.class)
 public class EmailLogicTest {
-		
-	@Mock
-	private Properties configLoader;
-	
+
 	@Reference
-	private  TestFramework framework;
-	
+	private TestFramework framework;
+
+	private Properties configLoader;
+
+	private ContactRegistry contactRegistry;
+
 	private static EMailLogic emailLogic;
-	
+
 	/**
 	 * Initializes the class variables before each test
 	 */
 	@BeforeEach
 	public void setup() {
 		this.configLoader = this.framework.mockService(Properties.class);
+		this.contactRegistry = this.framework.mockService(ContactRegistry.class);
 		emailLogic = this.framework.setServiceUnderTest(EMailLogic.class);
-		
+
 		final Session session = Session.getInstance(System.getProperties());
 		Mailbox mMailbox;
 		MockFolder folder;
@@ -85,7 +88,7 @@ public class EmailLogicTest {
 			MockStore store = new MockStore(session, new URLName("amy.speechassist@gmail.com"));
 			mMailbox = new Mailbox(new InternetAddress("amy.speechassist@gmail.com"));
 			folder = new MockFolder(store, mMailbox);
-			
+
 			msg.addRecipients(Message.RecipientType.TO, "amy.speechassist@gmail.com");
 			msg.setSubject("Test");
 			msg.setFlag(Flag.RECENT, true);
@@ -93,15 +96,15 @@ public class EmailLogicTest {
 			msg.setText("some text");
 			Transport.send(msg);
 			Transport.send(msg);
-			folder.appendMessages(new Message[] {msg, msg});
+			folder.appendMessages(new Message[] { msg, msg });
 			emailLogic.inbox = folder;
-			
+
 		} catch (MessagingException e1) {
 			e1.printStackTrace();
 		}
-		
+
 	}
-	
+
 	/**
 	 * tests if new messages are received
 	 */
@@ -109,10 +112,10 @@ public class EmailLogicTest {
 	public void testHasNewMessages() {
 		boolean b = false;
 		b = emailLogic.hasUnreadMessages();
-	
+
 		assertThat(new Boolean(b), equalTo(new Boolean(true)));
 	}
-	
+
 	/**
 	 * tests get plain text messages
 	 */
@@ -120,19 +123,18 @@ public class EmailLogicTest {
 	public void testgetMessages() {
 		assertThat(emailLogic.printPlainTextMessages(1), is(not(nullValue())));
 	}
-	
+
 	/**
 	 * tests the number of unread messages
 	 */
 	@Test
-	public void testMessageCound() {
+	public void testMessageCount() {
 		assertThat(new Integer(emailLogic.getNewMessageCount()), equalTo(new Integer(2)));
 	}
-	
+
 	/**
-	 * tests sending a message,
-	 * problem: we can't really check if a message is sent because we are not logged
-	 * in to the amy google account
+	 * tests sending a message, problem: we can't really check if a message is sent because we are not logged in to the
+	 * amy google account
 	 * 
 	 * thats why this is not an optimal test
 	 */
@@ -140,7 +142,7 @@ public class EmailLogicTest {
 	public void testSendMessage() {
 		assertThat(emailLogic.sendMail("amy.speechassist@gmail.com", "test", "testBody"), equalTo("Message sent!"));
 	}
-	
+
 	/**
 	 * cleans up the mailbox
 	 */
