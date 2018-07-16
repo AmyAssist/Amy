@@ -38,7 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 
 /**
- * Implementation of {@link TaskScheduler}
+ * Implementation of Service {@link TaskScheduler}
  * 
  * @author Leon Kiefer
  */
