@@ -52,7 +52,7 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 
 	private static final String ALLOWED_ORIGIN = "https://amyassist.github.io";
 	private static final String ALLOWED_HEADERS = "Content-Type, " + Headers.XOPTIONS;
-	private static final String ALLOWED_METHODS = "GET, POST, OPTIONS, DELETE";
+	private static final String ALLOWED_METHODS = "GET, POST, PUT, DELETE, OPTIONS, HEAD";
 	
 	private List<String> allowedOrigins;
 
