@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 
 /**
  * This class implements the logic for all the functions that our alarm clock and timer are capable of
@@ -46,7 +46,7 @@ public class AlarmClockLogic {
 	private IAlarmClockStorage acStorage;
 
 	@Reference
-	private TaskSchedulerAPI taskScheduler;
+	private TaskScheduler taskScheduler;
 
 	/**
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
@@ -102,7 +102,7 @@ public class AlarmClockLogic {
 			Alarm alarm = new Alarm(counter, hour, minute, true);
 			this.acStorage.storeAlarm(alarm);
 			Runnable alarmRunnable = createAlarmRunnable(counter);
-			this.taskScheduler.schedule(alarmRunnable, alarm.getAlarmDate().getTime());
+			this.taskScheduler.schedule(alarmRunnable, alarm.getAlarmDate().toInstant());
 			return alarm;
 		}
 		throw new IllegalArgumentException();
@@ -127,7 +127,7 @@ public class AlarmClockLogic {
 			Timer timer = new Timer(counter, hours, minutes, seconds, true);
 			this.acStorage.storeTimer(timer);
 			Runnable timerRunnable = createTimerRunnable(counter);
-			this.taskScheduler.schedule(timerRunnable, timer.getTimerDate().getTime());
+			this.taskScheduler.schedule(timerRunnable, timer.getTimerDate().toInstant());
 			return timer;
 		}
 		throw new IllegalArgumentException();

@@ -23,14 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Service to schedule and execute concurrent tasks.
  * 
  * @author Leon Kiefer
  */
-public interface TaskSchedulerAPI {
+public interface TaskScheduler {
 	/**
 	 * Executes the given command at some time in the future.
 	 * 
@@ -44,8 +44,8 @@ public interface TaskSchedulerAPI {
 	 * 
 	 * @param task
 	 *            the task to execute
-	 * @param date
+	 * @param instant
 	 *            The date at which to execute that task
 	 */
-	void schedule(Runnable task, Date date);
+	void schedule(Runnable task, Instant instant);
 }

@@ -29,8 +29,6 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,9 +41,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
+import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
 import de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource;
 
 /**
@@ -153,9 +151,7 @@ public class Core {
 	private void registerAllCoreServices() {
 		this.di.addExternalService(DependencyInjection.class, this.di);
 		this.di.addExternalService(Core.class, this);
-		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
 		this.di.addExternalService(CommandLineArgumentHandler.class, this.cmaHandler);
-
 
 		this.di.loadServices();
 	}
