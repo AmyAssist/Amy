@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 
@@ -94,7 +96,6 @@ public class LanguageSpecifics {
 	 */
 	private final Map<String, Integer> readNumbersFromFile() {
 		Map<String, Integer> result = new HashMap<>();
-		String[] stringNmbRep;
 
 		InputStream grammarFile = this.getClass().getResourceAsStream("englishNumbers.natlang");
 
@@ -107,22 +108,27 @@ public class LanguageSpecifics {
 
 			// first line contains all numbers seperated by ',' and ending with ';'
 			String s = bufferedReader.readLine();
+			
+			Stream<String> lines = bufferedReader.lines();
+			
+			Stream<String> matchingLines = lines.filter(l->l.matches("[a-zA-Z]+:[0-9]*,"));
 
-			String[] temp = s.split(";");
-
-			if (temp.length == 1) {
-				stringNmbRep = temp[0].split(",");
-				for (String textNumberRep : stringNmbRep) {
-					String[] split = textNumberRep.split(":");
-					if (split.length == 2) {
-						result.put(split[0], parseNumber(split[1]));
-					} else {
-						throw new IllegalStateException("numbers file is in wrong format");
-					}
+			
+			Iterator<String> iter = matchingLines.iterator();
+						
+			while(iter.hasNext()) {
+				String curr = iter.next();
+				curr = curr.substring(0, curr.indexOf(','));
+				String[] split = curr.split(":");
+				if (split.length == 2) {
+					result.put(split[0], parseNumber(split[1]));
+				} else {
+					throw new IllegalStateException("numbers file is in wrong format");
 				}
-			} else {
-				throw new IllegalStateException("numbers file is in wrong format");
 			}
+			
+			lines.close();
+			matchingLines.close();
 
 		} catch (IOException e) {
 			throw new IllegalStateException("number file not found", e);
