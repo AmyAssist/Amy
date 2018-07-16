@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -52,6 +53,8 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	private static final String ALLOWED_ORIGIN = "https://amyassist.github.io";
 	private static final String ALLOWED_HEADERS = "Content-Type, " + Headers.XOPTIONS;
 	private static final String ALLOWED_METHODS = "GET, POST, OPTIONS, DELETE";
+	
+	private List<String> allowedOrigins;
 
 	@Override
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
@@ -92,10 +95,28 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	}
 
 	private void checkOrigin(ContainerRequestContext requestContext, String origin) {
-		if (!origin.equals(ALLOWED_ORIGIN)) {
+		if (!this.allowedOrigins.contains(origin) && !origin.contains("localhost")) {
 			requestContext.setProperty(ACCESS_DENIED, Boolean.TRUE);
 			throw new WebApplicationException(origin + " not allowed", Status.FORBIDDEN);
 		}
 
+	}
+
+	/**
+	 * gets all allowed origins
+	 * 
+	 * @return a list of allowed origins
+	 */
+	public List<String> getAllowedOrigins() {
+		return this.allowedOrigins;
+	}
+
+	/**
+	 * sets all allowed origins
+	 * 
+	 * @param allowedOrigins all allowed origins
+	 */
+	public void setAllowedOrigins(List<String> allowedOrigins) {
+		this.allowedOrigins = allowedOrigins;
 	}
 }
