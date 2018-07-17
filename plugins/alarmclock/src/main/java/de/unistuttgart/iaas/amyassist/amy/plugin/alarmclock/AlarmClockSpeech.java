@@ -30,17 +30,15 @@ import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * Speech class for alarm clock
  *
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
-@Service(AlarmClockSpeech.class)
-@SpeechCommand({ "alarm", "alarm clock" })
+@SpeechCommand
 public class AlarmClockSpeech {
 
 	@Reference

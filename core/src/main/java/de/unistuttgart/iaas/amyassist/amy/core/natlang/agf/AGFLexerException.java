@@ -21,24 +21,26 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
 /**
- * The definition of a speech command annotation
- * 
- * @author Leon Kiefer
+ * custom lexer exception
+ * used for things like "character not recognized" etc
+ * @author Felix Burk
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Target(java.lang.annotation.ElementType.TYPE)
-public @interface SpeechCommand {
+public class AGFLexerException extends RuntimeException {
+
+
 	/**
-	 * @return the keyword of the speech command
+	 * generated serial version UID
 	 */
-	String[] value();
+	private static final long serialVersionUID = -8618145709696288795L;
+
+	/**
+	 * @param content string to print
+	 */
+	public AGFLexerException(String content) {
+		super(content);
+	}
+
 }

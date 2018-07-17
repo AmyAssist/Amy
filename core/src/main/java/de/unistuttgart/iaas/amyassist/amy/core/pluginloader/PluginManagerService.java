@@ -44,9 +44,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 
 /**
@@ -72,7 +72,7 @@ public class PluginManagerService implements PluginManager {
 	@Reference
 	private Persistence persistence;
 	@Reference
-	private SpeechCommandHandler speechCommandHandler;
+	private NLProcessingManager nlProcessingManager;
 	@Reference
 	private ConfigurationLoader configurationLoader;
 	@Reference
@@ -196,7 +196,7 @@ public class PluginManagerService implements PluginManager {
 	private void processPlugin(IPlugin plugin) {
 		for (Class<?> cls : plugin.getClasses()) {
 			if (cls.isAnnotationPresent(SpeechCommand.class)) {
-				this.speechCommandHandler.registerSpeechCommand(cls);
+				this.nlProcessingManager.register(cls);
 			}
 			if (cls.isAnnotationPresent(Service.class)) {
 				this.di.register(cls);
