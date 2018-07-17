@@ -56,7 +56,7 @@ public class DeviceRegistry extends AbstractRegistry<DeviceEntity> {
 	 */
 	public DeviceEntity findDeviceWithUri(String uri) {
 		for (DeviceEntity device : getAll()) {
-			if (device.getUri() != null && device.getUri().equals(uri)) {
+			if (device.getID() != null && device.getID().equals(uri)) {
 				return device;
 			}
 		}
