@@ -152,6 +152,7 @@ public class LocationImpl implements Location {
     @Override
     public int hashCode() {
 
-        return Objects.hash(persistentId, name, zipCode, city, street, houseNumber, longitude, latitude, isHome, isWork);
+        return Objects.hash(persistentId, name, zipCode, city, street, houseNumber, longitude, latitude, isHome,
+                isWork);
     }
 }
