@@ -37,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
  * @author Christian Bräuner
  */
 @XmlRootElement
-public class Timestamp extends Entity{
+public class Timestamp extends Entity {
 
 	/**
 	 * the hour of the timestamp
