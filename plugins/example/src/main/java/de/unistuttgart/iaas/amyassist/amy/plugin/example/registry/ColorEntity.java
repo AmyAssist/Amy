@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example.registry;
 
+import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -36,17 +38,17 @@ import java.util.Objects;
  */
 @Entity
 @PersistenceUnit(unitName="ColorRegistry")
-public class ColorEntity {
+public class ColorEntity implements RegistryEntity {
     @Id
     @GeneratedValue
-    private int id;
+    private int persistentId;
 
     private float redComponent;
     private float greenComponent;
     private float blueComponent;
 
-    public int getId() {
-        return id;
+    public int getPersistentId() {
+        return persistentId;
     }
 
     public float getRedComponent() {
@@ -78,7 +80,7 @@ public class ColorEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ColorEntity that = (ColorEntity) o;
-        return id == that.id &&
+        return persistentId == that.persistentId &&
                 Float.compare(that.redComponent, redComponent) == 0 &&
                 Float.compare(that.greenComponent, greenComponent) == 0 &&
                 Float.compare(that.blueComponent, blueComponent) == 0;
@@ -87,6 +89,6 @@ public class ColorEntity {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, redComponent, greenComponent, blueComponent);
+        return Objects.hash(persistentId, redComponent, greenComponent, blueComponent);
     }
 }
