@@ -23,49 +23,52 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.taskscheduler;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
+import de.unistuttgart.iaas.amyassist.amy.core.Core;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 
 /**
- * Implementation of {@link TaskSchedulerAPI}
+ * Implementation of Service {@link TaskScheduler}
  * 
  * @author Leon Kiefer
  */
-public class TaskScheduler implements TaskSchedulerAPI {
+@Service
+public class TaskSchedulerImpl implements TaskScheduler {
+	@Reference
+	private Logger logger;
 
-	private final Logger logger = LoggerFactory.getLogger(TaskScheduler.class);
+	@Reference
+	private Core core;
+
+	@Reference
+	private Environment environment;
 
 	private ScheduledExecutorService scheduledExecutorService;
 
-	/**
-	 * @param scheduledExecutorService
-	 */
-	public TaskScheduler(ScheduledExecutorService scheduledExecutorService) {
-		this.scheduledExecutorService = scheduledExecutorService;
+	@PostConstruct
+	private void setup() {
+		this.scheduledExecutorService = this.core.getScheduledExecutor();
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI#execute(java.lang.Runnable)
-	 */
 	@Override
 	public void execute(Runnable runnable) {
 		this.scheduledExecutorService.execute(runnable);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI#schedule(java.lang.Runnable,
-	 *      java.util.Date)
-	 */
 	@Override
-	public void schedule(Runnable task, Date date) {
-		this.logger.debug("schedule task for {}", date);
-		long delay = date.getTime() - System.currentTimeMillis();
+	public void schedule(Runnable task, Instant instant) {
+		this.logger.debug("schedule task for {}", instant);
+		long delay = ChronoUnit.MILLIS.between(this.environment.getCurrentDateTime().toInstant(), instant);
 		this.logger.debug("the delay of the task is {} ms", delay);
 		this.scheduledExecutorService.schedule(task, delay, TimeUnit.MILLISECONDS);
 	}
