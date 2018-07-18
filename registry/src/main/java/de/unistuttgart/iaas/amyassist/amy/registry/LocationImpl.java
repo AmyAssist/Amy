@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.registry;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.Objects;
 
 
@@ -37,7 +38,7 @@ public class LocationImpl implements Location {
     @Id
     @GeneratedValue
     @Column(updatable = false, nullable = false)
-    private int id;
+    private int persistentId;
 
     private String name;
     private String zipCode;
@@ -49,8 +50,8 @@ public class LocationImpl implements Location {
     private boolean isHome;
     private boolean isWork;
 
-    public int getId() {
-        return id;
+    public int getPersistentId() {
+        return persistentId;
     }
 
     public String getName() {
@@ -135,7 +136,7 @@ public class LocationImpl implements Location {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LocationImpl location = (LocationImpl) o;
-        return id == location.id &&
+        return persistentId == location.persistentId &&
                 houseNumber == location.houseNumber &&
                 Double.compare(location.longitude, longitude) == 0 &&
                 Double.compare(location.latitude, latitude) == 0 &&
@@ -150,6 +151,6 @@ public class LocationImpl implements Location {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, name, zipCode, city, street, houseNumber, longitude, latitude, isHome, isWork);
+        return Objects.hash(persistentId, name, zipCode, city, street, houseNumber, longitude, latitude, isHome, isWork);
     }
 }

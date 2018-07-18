@@ -27,9 +27,7 @@ package de.unistuttgart.iaas.amyassist.amy.registry;
  * Location object interface
  * @author Benno Krauß
  */
-public interface Location {
-
-    int getId();
+public interface Location extends RegistryEntity {
 
     String getName();
 
