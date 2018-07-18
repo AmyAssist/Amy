@@ -43,7 +43,7 @@ import com.wrapper.spotify.model_objects.miscellaneous.Device;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -70,7 +70,7 @@ class SpotifyAPICallsTest {
 	@BeforeEach
 	public void init() {
 		this.configLoader = this.testFramework.mockService(Properties.class);
-		this.testFramework.mockService(TaskSchedulerAPI.class);
+		this.testFramework.mockService(TaskScheduler.class);
 		this.spotifyAPICalls = this.testFramework.setServiceUnderTest(SpotifyAPICalls.class);
 		this.spotifyAPICalls = spy(this.spotifyAPICalls);
 		try {
