@@ -23,7 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
-import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
@@ -32,7 +33,6 @@ import org.joda.time.ReadableInstant;
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
@@ -46,13 +46,9 @@ public class NavigationSpeech {
 
 	private static final String LOCATIONS = "(home|work|mother)";
 	private static final String WRONG_PLACE = "One or more places are not in the registry";
-	private static final String TIME_STRING = "(# o clock|(#|quarter)(past|to)#)";
 
 	@Reference
 	private DirectionApiLogic logic;
-
-	@Reference
-	private Environment environment;
 
 	@Reference
 	private RegistryConnection registryConnection;
@@ -64,14 +60,13 @@ public class NavigationSpeech {
 	 *            input
 	 * @return output string
 	 */
-	@Grammar("When do I have to leave " + LOCATIONS + "to get" + LOCATIONS + "at " + TIME_STRING)
+	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh #")
 	public String goToAt(String... strings) {
-		if (this.registryConnection.getAddress(strings[6]) != null
-				&& this.registryConnection.getAddress(strings[9]) != null) {
-			String[] rawTime = {strings[11], strings[12], strings[13]};
-			ReadableInstant time = this.logic.whenIHaveToGo(this.registryConnection.getAddress(strings[9]),
-					this.registryConnection.getAddress(strings[6]), TravelMode.DRIVING,
-					formatTimes(rawTime));
+		if (this.registryConnection.getAddress(strings[4]) != null
+				&& this.registryConnection.getAddress(strings[2]) != null) {
+			ReadableInstant time = this.logic.whenIHaveToGo(this.registryConnection.getAddress(strings[4]),
+					this.registryConnection.getAddress(strings[2]), TravelMode.DRIVING,
+					formatTimes(Integer.parseInt(strings[8]), Integer.parseInt(strings[6])));
 			if (time != null) {
 				return "You should go at ".concat(String.valueOf(time.get(DateTimeFieldType.hourOfDay()))).concat(":")
 						.concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
@@ -88,14 +83,13 @@ public class NavigationSpeech {
 	 *            input
 	 * @return output string
 	 */
-	@Grammar("When do I have to leave " + LOCATIONS + "to get" + LOCATIONS + "at " + TIME_STRING + " by ( bus | train | transit )")
+	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh # " + " by ( bus | train | transit )")
 	public String goToAtBy(String... strings) {
-		if (this.registryConnection.getAddress(strings[6]) != null
-				&& this.registryConnection.getAddress(strings[9]) != null) {
-			String[] rawTime = {strings[11], strings[12], strings[13]};
+		if (this.registryConnection.getAddress(strings[4]) != null
+				&& this.registryConnection.getAddress(strings[2]) != null) {
 			ReadableInstant time = this.logic.whenIHaveToGo(this.registryConnection.getAddress(strings[2]),
 					this.registryConnection.getAddress(strings[4]), TravelMode.TRANSIT,
-					formatTimes(rawTime));
+					formatTimes(Integer.parseInt(strings[8]), Integer.parseInt(strings[6])));
 			if (time != null) {
 				return "You should go at ".concat(String.valueOf(time.get(DateTimeFieldType.hourOfDay()))).concat(":")
 						.concat(String.valueOf(time.get(DateTimeFieldType.minuteOfHour())));
@@ -151,15 +145,14 @@ public class NavigationSpeech {
 	 *            input
 	 * @return output string
 	 */
-	@Grammar("from " + LOCATIONS + " to " + LOCATIONS + " by (car | transport | bike) at " + TIME_STRING)
+	@Grammar("from " + LOCATIONS + " to " + LOCATIONS + " by (car | transport | bike) at # oh #")
 	public String routeFromToWithTime(String... strings) {
 		if (this.registryConnection.getAddress(strings[3]) != null
 				&& this.registryConnection.getAddress(strings[5]) != null) {
-			String[] rawTime = {strings[7], strings[8], strings[9]};
 			return this.logic
 					.fromToWithDeparture(this.registryConnection.getAddress(strings[1]),
 							this.registryConnection.getAddress(strings[3]), this.logic.getTravelMode(strings[5]),
-							formatTimes(rawTime))
+							formatTimes(Integer.parseInt(strings[9]), Integer.parseInt(strings[7])))
 					.routeToShortString();
 		}
 		return WRONG_PLACE;
@@ -172,30 +165,13 @@ public class NavigationSpeech {
 	 * @param hour
 	 * @return the modified date
 	 */
-	private DateTime formatTimes(String[] input) {
-        LocalDateTime currentTime = this.environment.getCurrentLocalDateTime();
-        int day = currentTime.getDayOfMonth();
-        int month = currentTime.getMonthValue();
-        int year = currentTime.getYear();
-        DateTime inputTime = null;
-        if (input.length == 3) {
-            if (input[0].equals("quarter")) {
-                if (input[1].equals("past") && (Integer.parseInt(input[2]) >= 0 && Integer.parseInt(input[2]) < 24)) {
-                    inputTime = new DateTime(year, month, day, Integer.parseInt(input[2]), 15);
-                } else if (input[1].equals("to")
-                        && (Integer.parseInt(input[2]) >= 0 && Integer.parseInt(input[2]) < 24)) {
-                    inputTime = new DateTime(year, month, day, Integer.parseInt(input[2]) - 1, 15);
-                }
-            } else if (input[1].equals("o") && (Integer.parseInt(input[0]) >= 0 && Integer.parseInt(input[0]) < 24)) {
-                inputTime = new DateTime(year, month, day, Integer.parseInt(input[0]), 0);
-            } else if (input[1].equals("past") && (Integer.parseInt(input[2]) >= 0 && Integer.parseInt(input[2]) < 24)
-                    && (Integer.parseInt(input[0]) >= 0 && Integer.parseInt(input[0]) < 60)) {
-                inputTime = new DateTime(year, month, day, Integer.parseInt(input[2]), Integer.parseInt(input[0]));
-            } else if (input[1].equals("to") && (Integer.parseInt(input[2]) >= 0 && Integer.parseInt(input[2]) < 24)
-                    && (Integer.parseInt(input[0]) >= 0 && Integer.parseInt(input[0]) < 60)) {
-                inputTime = new DateTime(year, month, day, Integer.parseInt(input[2]) - 1, Integer.parseInt(input[0]));
-            }
-        }
-        return inputTime;
-    }
+	private DateTime formatTimes(int min, int hour) {
+		if ((hour >= 0 && hour < 24) && (min >= 0 && min < 60)) {
+			Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+			calendar.set(Calendar.MINUTE, min);
+			calendar.set(Calendar.HOUR_OF_DAY, hour);
+			return new DateTime(calendar.getTime());
+		}
+		return new DateTime();
+	}
 }
