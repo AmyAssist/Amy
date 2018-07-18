@@ -23,11 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -84,8 +86,9 @@ public class WeatherResource implements Resource {
 	}
 
 	@PUT
-	@Path("setLocation/{locationId}")
-	public void setLocation(@PathParam("locationId") String locationId) {
+	@Path("setLocation")
+	@Consumes(MediaType.TEXT_PLAIN)
+	public void setLocation(String locationId) {
 		try {
 			this.weatherLogic.setLocation(Integer.parseInt(locationId));
 		} catch (NumberFormatException e) {

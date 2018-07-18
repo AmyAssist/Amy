@@ -51,6 +51,8 @@ public class WeatherDarkSkyAPI {
 
 	@Reference
 	private IStorage storage;
+	
+	private boolean locationNotChanged = false;
 
 	private String coordinateLat;
 	private String coordinateLong;
@@ -62,7 +64,7 @@ public class WeatherDarkSkyAPI {
 	private Calendar lastRequest;
 
 	private FIODaily getDailyReports() {
-		if (this.dailyReports == null || checkTime()) {
+		if (this.dailyReports == null || checkTime() || locationNotChanged) {
 			loadLocation();
 			ForecastIO fio = new ForecastIO(this.configuration.getProperty(API_SECRET_CONFIG_KEY));
 			fio.setUnits(ForecastIO.UNITS_SI);
@@ -135,6 +137,7 @@ public class WeatherDarkSkyAPI {
 	 *            id from the registry entry
 	 */
 	public void setLocation(int locationId) {
+		this.locationNotChanged = true;
 		this.storage.put(WEATHER_LOCATION_ID_STRING, String.valueOf(locationId));
 	}
 
