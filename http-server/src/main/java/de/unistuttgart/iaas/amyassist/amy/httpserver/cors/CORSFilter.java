@@ -23,9 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -41,7 +45,7 @@ import javax.ws.rs.ext.Provider;
 /**
  * a filter for CORS requests and OPTIONS calls
  * 
- * @author Christian Bräuner
+ * @author Christian Bräuner, Benno Krauß
  *
  */
 @Provider
@@ -51,13 +55,17 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	private static final String OPTIONS = "OPTIONS";
 	private static final String ACCESS_DENIED = "access.denied";
 
-	private static final String ALLOWED_ORIGIN = "https://amyassist.github.io";
 	private static final String ALLOWED_HEADERS = "Content-Type, " + Headers.XOPTIONS;
 	private static final String ALLOWED_METHODS = "GET, POST, PUT, DELETE, OPTIONS, HEAD";
 
 	private static final String LOCALHOST_REGEX = "^http(s)?:\\/\\/localhost(:[1-9][0-9]*)?$";
-	
-	private List<String> allowedOrigins = Arrays.asList(ALLOWED_ORIGIN);
+	private static final String CONFIG_NAME = "cors.config";
+	private static final String CONFIG_ORIGINS_KEY = "origins";
+
+	@Reference
+	public ConfigurationLoader configurationLoader;
+	private Properties config;
+
 
 	@Override
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
@@ -98,7 +106,7 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	}
 
 	private void checkOrigin(ContainerRequestContext requestContext, String origin) {
-		if (!this.allowedOrigins.contains(origin) && !origin.matches(LOCALHOST_REGEX)) {
+		if (!getAllowedOrigins().contains(origin) && !origin.matches(LOCALHOST_REGEX)) {
 			requestContext.setProperty(ACCESS_DENIED, Boolean.TRUE);
 			throw new WebApplicationException(origin + " not allowed", Status.FORBIDDEN);
 		}
@@ -111,15 +119,12 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	 * @return a list of allowed origins
 	 */
 	public List<String> getAllowedOrigins() {
-		return this.allowedOrigins;
-	}
-
-	/**
-	 * sets all allowed origins
-	 * 
-	 * @param allowedOrigins all allowed origins
-	 */
-	public void setAllowedOrigins(List<String> allowedOrigins) {
-		this.allowedOrigins = allowedOrigins;
+		if (config == null) {
+			config = configurationLoader.load(CONFIG_NAME);
+		}
+		// Load pipe-separated list of allowed origins from config
+		String[] origins = config.getProperty(CONFIG_ORIGINS_KEY).split("\\|");
+		// Convert primitive array to list
+		return Arrays.asList(origins);
 	}
 }
