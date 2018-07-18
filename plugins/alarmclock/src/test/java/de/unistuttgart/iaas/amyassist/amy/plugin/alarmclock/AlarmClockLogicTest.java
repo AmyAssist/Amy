@@ -340,38 +340,6 @@ public class AlarmClockLogicTest {
 	}
 
 	/**
-	 * Tests activateTimer with active alarm
-	 */
-	@Test
-	protected void testActivateTimerActive() {
-		Timer timer2 = new Timer(2, 12, 0, 0, true);
-
-		when(this.acStorage.hasTimer(2)).thenReturn(true);
-		when(this.acStorage.getTimer(2)).thenReturn(timer2);
-
-		assertThat(this.acl.activateTimer(2), is("Timer 2 is already active"));
-		verify(this.acStorage).hasTimer(2);
-		verify(this.acStorage).getTimer(2);
-		verify(this.acStorage, never()).storeTimer(ArgumentMatchers.any(Timer.class));
-	}
-
-	/**
-	 * Tests activateTimer with inactive alarm
-	 */
-	@Test
-	protected void testActivateTimerInactive() {
-		Timer timer8 = new Timer(8, 22, 57, 44, false);
-
-		when(this.acStorage.hasTimer(8)).thenReturn(true);
-		when(this.acStorage.getTimer(8)).thenReturn(timer8);
-
-		assertThat(this.acl.activateTimer(8), is("Timer 8 activated"));
-		verify(this.acStorage).hasTimer(8);
-		verify(this.acStorage).getTimer(8);
-		verify(this.acStorage).storeTimer(timer8);
-	}
-
-	/**
 	 * Tests activateTimer with non existent alarm
 	 */
 	@Test

@@ -268,26 +268,6 @@ public class AlarmClockLogic {
 	}
 
 	/**
-	 * Activates an existing timer, so it will ring.
-	 * 
-	 * @param timerNumber
-	 *            number of the timer
-	 * @return timerNumber
-	 */
-	protected String activateTimer(int timerNumber) {
-		if (this.acStorage.hasTimer(timerNumber)) {
-			Timer timer = this.acStorage.getTimer(timerNumber);
-			if (!timer.isActive()) {
-				timer.setActive(true);
-				this.acStorage.storeTimer(timer);
-				return "Timer " + timerNumber + " activated";
-			}
-			return "Timer " + timerNumber + " is already active";
-		}
-		throw new NoSuchElementException();
-	}
-
-	/**
 	 * Read out one alarm
 	 * 
 	 * @param alarmNumber
@@ -365,16 +345,5 @@ public class AlarmClockLogic {
 			return alarm;
 		}
 		throw new NoSuchElementException();
-	}
-
-	/**
-	 * Returns the remaining timer delay in hours, minutes and seconds
-	 * 
-	 * @param timerNumber
-	 *            id of the timer
-	 * @return remaining timer delay
-	 */
-	protected int[] getRemainingTimerDelay(int timerNumber) {
-		return this.acStorage.getTimer(timerNumber).getRemainingTime();
 	}
 }
