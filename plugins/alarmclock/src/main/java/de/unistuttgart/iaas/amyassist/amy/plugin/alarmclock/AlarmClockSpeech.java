@@ -52,37 +52,21 @@ public class AlarmClockSpeech {
 
 	private static final int MINUTESINHOUR = 60;
 	private static final int MINUTESQUARTERHOUR = 15;
+	private static final int HALFDAYINHOURS = 12;
 
 	/**
-	 * Sets new alarm with this scheme: hh:mm
+	 * Creates new alarm
 	 * 
 	 * @param params
 	 *            words in the grammar annotation
-	 * @return params[3], params[5]
+	 * 
+	 * @return info if creation was successful
 	 */
-	@Grammar("(set|create) alarm (at|for|on) (#|quarter|half) (past|to) #")
+	@Grammar("(set|create) alarm (at|for|on) ( (#|quarter|half) (past|to) # [am|pm] | # oh # [am|pm] )")
 	public String setAlarm(String[] params) {
-
-		int alarmHour = -1;
-		int alarmMinute = -1;
-		int minuteAddition = 0;
-
-		if (params[3].equals("quarter"))
-			minuteAddition = MINUTESQUARTERHOUR;
-		else if (params[3].equals("half"))
-			minuteAddition = 2 * MINUTESQUARTERHOUR;
-		else
-			minuteAddition = Integer.parseInt(params[3]);
-
-		if (params[4].equals("past")) {
-			alarmHour = Integer.parseInt(params[5]);
-			alarmMinute = minuteAddition;
-		} else {
-			alarmHour = Integer.parseInt(params[5]) - 1;
-			alarmMinute = MINUTESINHOUR - minuteAddition;
-		}
+		int[] alarmTime = extractAlarmTime(params);
 		try {
-			Alarm alarm = this.logic.setAlarm(alarmHour, alarmMinute);
+			Alarm alarm = this.logic.setAlarm(alarmTime[0], alarmTime[1]);
 			Calendar time = alarm.getAlarmDate();
 			return "Alarm " + alarm.getId() + " set for " + time.get(Calendar.HOUR_OF_DAY) + ":"
 					+ time.get(Calendar.MINUTE);
@@ -90,6 +74,49 @@ public class AlarmClockSpeech {
 			this.logException(e);
 			return PARAMSNOTVALID;
 		}
+	}
+
+	/**
+	 * Handles the speech command to set an alarm and calls the method to create it
+	 * 
+	 * @param params
+	 *            words in the grammar annotation {@link #setAlarm(String[] params)}
+	 * @return info if creation was successful
+	 */
+
+	private int[] extractAlarmTime(String[] params) {
+		int alarmHour = -1;
+		int alarmMinute = -1;
+		int minuteAddition = 0;
+		int hourAddition = 0;
+
+		if (params.length == 7 && params[6].equals("pm"))
+			hourAddition = HALFDAYINHOURS;
+
+		if (params[4].equals("oh")) {
+			// second option in "or"
+			alarmHour = Integer.parseInt(params[3]) + hourAddition;
+			alarmMinute = Integer.parseInt(params[5]);
+		} else {
+			// first option in "or"
+			if (params[3].equals("quarter"))
+				minuteAddition = MINUTESQUARTERHOUR;
+			else if (params[3].equals("half"))
+				minuteAddition = 2 * MINUTESQUARTERHOUR;
+			else
+				minuteAddition = Integer.parseInt(params[3]);
+
+			if (params[4].equals("past")) {
+				alarmHour = Integer.parseInt(params[5]) + hourAddition;
+				if (alarmHour == 24)
+					alarmHour = 0;
+				alarmMinute = minuteAddition;
+			} else {
+				alarmHour = Integer.parseInt(params[5]) + hourAddition - 1;
+				alarmMinute = MINUTESINHOUR - minuteAddition;
+			}
+		}
+		return new int[] { alarmHour, alarmMinute };
 	}
 
 	/**
