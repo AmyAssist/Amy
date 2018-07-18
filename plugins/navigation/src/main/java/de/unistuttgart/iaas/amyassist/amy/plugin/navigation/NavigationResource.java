@@ -100,7 +100,8 @@ public class NavigationResource implements Resource {
 		checkRoute(route);
 		checkTravelMode(route.getTravelmode());
 		TravelMode mode = this.logic.getTravelMode(route.getTravelmode());
-		ReadableInstant rtime = this.logic.whenIHaveToGo(route.getOrigin(), route.getDestination(), mode, convert(route.getTime()));
+		ReadableInstant rtime = this.logic.whenIHaveToGo(route.getOrigin(), route.getDestination(), 
+				mode, convert(route.getTime()));
 		if (rtime != null) {
 			return ZonedDateTime.parse(rtime.toString());
 		}
