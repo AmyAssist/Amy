@@ -51,11 +51,11 @@ public class WeatherDarkSkyAPI {
 
 	@Reference
 	private IStorage storage;
-	
+
 	private boolean locationNotChanged = false;
 
-	private String coordinateLat;
-	private String coordinateLong;
+	private String coordinateLat = "48.745886";
+	private String coordinateLong = "9.107881";
 
 	private static final String API_SECRET_CONFIG_KEY = "DARKSKY_API_SECRET";
 	private static final String WEATHER_LOCATION_ID_STRING = "WEATHER_LOCATION_ID";
@@ -64,11 +64,11 @@ public class WeatherDarkSkyAPI {
 	private Calendar lastRequest;
 
 	private FIODaily getDailyReports() {
-		if (this.dailyReports == null || checkTime() || locationNotChanged) {
+		if (this.dailyReports == null || checkTime() || this.locationNotChanged) {
 			loadLocation();
 			ForecastIO fio = new ForecastIO(this.configuration.getProperty(API_SECRET_CONFIG_KEY));
 			fio.setUnits(ForecastIO.UNITS_SI);
-			fio.getForecast(WeatherDarkSkyAPI.this.coordinateLat, WeatherDarkSkyAPI.this.coordinateLong);
+			fio.getForecast(this.coordinateLat, this.coordinateLong);
 
 			this.dailyReports = new FIODaily(fio);
 			for (int i = 0; i < this.dailyReports.days(); i++) {
@@ -76,6 +76,7 @@ public class WeatherDarkSkyAPI {
 				report.setTimezone(fio.getTimezone());
 			}
 			this.lastRequest = Calendar.getInstance();
+			this.locationNotChanged = true;
 		}
 
 		return this.dailyReports;
