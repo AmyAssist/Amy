@@ -41,6 +41,7 @@ import javax.ws.rs.core.Response.Status;
 import com.google.api.services.calendar.model.Event;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 
 /**
  * REST Resource for calendar
@@ -48,7 +49,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  * @author Muhammed Kaya
  */
 @Path(CalendarResource.PATH)
-public class CalendarResource {
+public class CalendarResource implements Resource{
 
 	/**
 	 * the resource path for this plugin
