@@ -38,7 +38,7 @@ import java.util.List;
  *
  * @author Benno Krauß
  */
-public abstract class AbstractRegistry<T> implements IRegistry<T> {
+public abstract class AbstractRegistry<T extends RegistryEntity> implements IRegistry<T> {
 
     @Reference
     private Logger log;
@@ -121,8 +121,13 @@ public abstract class AbstractRegistry<T> implements IRegistry<T> {
      * @param t
      */
     public void save(T t) {
-        transaction(() -> entityManager.persist(t));
-        transaction(() -> entityManager.detach(t));
+        // If the entity has been persisted before, we need to update it instead
+        if (t.getPersistentId() != 0) {
+            transaction(() -> entityManager.merge(t));
+        } else {
+            transaction(() -> entityManager.persist(t));
+            transaction(() -> entityManager.detach(t));
+        }
     }
 
     /**

@@ -29,8 +29,6 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,11 +39,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskScheduler;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
+import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
 import de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource;
 
 /**
@@ -114,7 +111,6 @@ public class Core {
 		ConfigurationLoader configLoader = this.di.getService(ConfigurationLoader.class);
 		this.config = configLoader.load(CONFIG_NAME);
 
-		SpeechCommandHandler speechCommandHandler = this.di.getService(SpeechCommandHandler.class);
 		this.threads = new ArrayList<>();
 
 		this.server = this.di.getService(Server.class);
@@ -124,13 +120,12 @@ public class Core {
 
 		initConsole();
 
-		this.recognizer = this.di.getService(LocalAudioUserInteraction.class);
-
 		PluginManager pluginManager = this.di.getService(PluginManager.class);
 		pluginManager.loadPlugins();
 		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
-		speechCommandHandler.completeSetup();
 
+		this.di.getService(GrammarObjectsCreator.class).completeSetup();
+		this.recognizer = this.di.getService(LocalAudioUserInteraction.class);
 		this.recognizer.init();
 	}
 
@@ -142,7 +137,6 @@ public class Core {
 		}
 		if (enableConsole.equals("true")) {
 			Console console = this.di.getService(Console.class);
-			console.setSpeechInputHandler(this.di.getService(SpeechInputHandler.class));
 			this.threads.add(new Thread(console));
 		}
 	}
@@ -153,9 +147,7 @@ public class Core {
 	private void registerAllCoreServices() {
 		this.di.addExternalService(DependencyInjection.class, this.di);
 		this.di.addExternalService(Core.class, this);
-		this.di.addExternalService(TaskSchedulerAPI.class, new TaskScheduler(this.singleThreadScheduledExecutor));
 		this.di.addExternalService(CommandLineArgumentHandler.class, this.cmaHandler);
-
 
 		this.di.loadServices();
 	}

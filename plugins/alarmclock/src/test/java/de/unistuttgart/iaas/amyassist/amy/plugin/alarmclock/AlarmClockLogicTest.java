@@ -33,8 +33,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -44,7 +44,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -63,7 +63,7 @@ public class AlarmClockLogicTest {
 
 	private AlarmBeepService abs;
 
-	private TaskSchedulerAPI scheduler;
+	private TaskScheduler scheduler;
 
 	private IAlarmClockStorage acStorage;
 
@@ -72,7 +72,7 @@ public class AlarmClockLogicTest {
 	 */
 	@BeforeEach
 	public void setup() {
-		this.scheduler = this.framework.mockService(TaskSchedulerAPI.class);
+		this.scheduler = this.framework.mockService(TaskScheduler.class);
 		this.acStorage = this.framework.mockService(IAlarmClockStorage.class);
 		this.abs = this.framework.mockService(AlarmBeepService.class);
 		this.acl = this.framework.setServiceUnderTest(AlarmClockLogic.class);
@@ -87,7 +87,7 @@ public class AlarmClockLogicTest {
 		this.acl.setAlarm(4, 20);
 		verify(this.acStorage).incrementAlarmCounter();
 		verify(this.acStorage).storeAlarm(ArgumentMatchers.any(Alarm.class));
-		verify(this.scheduler).schedule(ArgumentMatchers.any(Runnable.class), ArgumentMatchers.any(Date.class));
+		verify(this.scheduler).schedule(ArgumentMatchers.any(Runnable.class), ArgumentMatchers.any(Instant.class));
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class AlarmClockLogicTest {
 		this.acl.setTimer(12, 35, 40);
 		verify(this.acStorage).incrementTimerCounter();
 		verify(this.acStorage).storeTimer(ArgumentMatchers.any(Timer.class));
-		verify(this.scheduler).schedule(ArgumentMatchers.any(Runnable.class), ArgumentMatchers.any(Date.class));
+		verify(this.scheduler).schedule(ArgumentMatchers.any(Runnable.class), ArgumentMatchers.any(Instant.class));
 
 	}
 

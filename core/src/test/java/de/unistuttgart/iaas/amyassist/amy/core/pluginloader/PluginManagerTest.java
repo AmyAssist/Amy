@@ -23,7 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.*;
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.hasLogged;
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.warn;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -42,8 +43,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.SpeechCommandHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 import uk.org.lidalia.slf4jtest.TestLogger;
@@ -86,7 +87,7 @@ class PluginManagerTest {
 		this.properties.setProperty("mode", "dev");
 		when(configurationLoader.load("plugin.config")).thenReturn(this.properties);
 
-		this.testFramework.mockService(SpeechCommandHandler.class);
+		this.testFramework.mockService(NLProcessingManager.class);
 		this.testFramework.mockService(Persistence.class);
 
 		this.serviceUnderTest = this.testFramework.setServiceUnderTest(PluginManagerService.class);

@@ -24,15 +24,15 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * This is the speech class, which contains the commands for the calendar
  * 
  * @author Patrick Gebhardt, Florian Bauer
  */
-@SpeechCommand("calendar")
+@SpeechCommand
 public class CalendarSpeech {
 
 	@Reference
