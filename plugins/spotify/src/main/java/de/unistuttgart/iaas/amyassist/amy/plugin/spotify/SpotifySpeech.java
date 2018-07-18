@@ -26,19 +26,20 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
+
 
 /**
  * this class handle the speech commands from the spotify plugin
  * 
  * @author Lars Buttgereit
  */
-@Service(SpotifySpeech.class)
-@SpeechCommand({ "music", "spotify" })
+@SpeechCommand
 public class SpotifySpeech {
 
 	private static final String ERROR_MESSAGE = "An error occurred";
@@ -46,6 +47,9 @@ public class SpotifySpeech {
 
 	@Reference
 	private PlayerLogic playerLogic;
+	
+	@Reference
+	private DeviceLogic deviceLogic;
 
 	@Reference
 	private StringGenerator stringGenerator;
@@ -59,7 +63,7 @@ public class SpotifySpeech {
 	 */
 	@Grammar("get devices")
 	public String getDevices(String... params) {
-		List<DeviceEntity> devices = this.playerLogic.getDevices();
+		List<DeviceEntity> devices = this.deviceLogic.getDevices();
 		String output = "";
 		for (int i = 0; i < devices.size(); i++) {
 			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i).getName().concat("\n"));
@@ -77,11 +81,11 @@ public class SpotifySpeech {
 	 * 
 	 * @return
 	 */
-	@Grammar("set device #")
+	@Grammar("spotify set device #")
 	public String setDevice(String... params) {
 		if (2 < params.length) {
 			try {
-				return this.playerLogic.setDevice(Integer.parseInt(params[2]));
+				return this.deviceLogic.setDevice(Integer.parseInt(params[3]));
 			} catch (NumberFormatException e) {
 				return "Input please as Integer";
 			}
@@ -94,7 +98,7 @@ public class SpotifySpeech {
 	 * 
 	 * @return
 	 */
-	@Grammar("play")
+	@Grammar("[music|spotify] play [music]")
 	public String playASong(String... params) {
 		return (this.playerLogic.play().toString());
 	}

@@ -33,17 +33,15 @@ import org.joda.time.ReadableInstant;
 import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * This class handle the speech input for the navigation plugin
  * 
  * @author Lars Buttgereit
  */
-@Service
-@SpeechCommand("navigate")
+@SpeechCommand
 public class NavigationSpeech {
 
 	private static final String LOCATIONS = "(home|work|mother)";
@@ -62,7 +60,7 @@ public class NavigationSpeech {
 	 *            input
 	 * @return output string
 	 */
-	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh # ")
+	@Grammar("be at " + LOCATIONS + " from " + LOCATIONS + " at # oh #")
 	public String goToAt(String... strings) {
 		if (this.registryConnection.getAddress(strings[4]) != null
 				&& this.registryConnection.getAddress(strings[2]) != null) {

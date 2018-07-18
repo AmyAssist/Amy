@@ -35,8 +35,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class ServiceWithDuplicateDependency {
 
 	@Reference
-	private Service6 service6;
+	private Service1 service1;
 
 	@Reference
-	private Service6 aService;
+	private Service1 aService;
 }

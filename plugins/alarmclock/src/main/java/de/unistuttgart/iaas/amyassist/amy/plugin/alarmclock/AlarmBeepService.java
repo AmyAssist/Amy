@@ -23,13 +23,17 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -49,7 +53,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 @Service
 public class AlarmBeepService {
 
-	private static final String ALARMSOUND = "resources/alarmsound.wav";
+	private static final String ALARMSOUND = "alarmsound.wav";
 
 	@Reference
 	private Logger logger;
@@ -66,11 +70,13 @@ public class AlarmBeepService {
 
 	@PostConstruct
 	private void init() {
-		Path resolve = this.env.getWorkingDirectory().resolve(ALARMSOUND);
-
-		try {
-			this.clip = AudioSystem.getClip();
-			this.clip.open(AudioSystem.getAudioInputStream(resolve.toFile()));
+		InputStream resolve = this.getClass().getResourceAsStream(ALARMSOUND);
+		try (InputStream bufferedIn = new BufferedInputStream(resolve);
+				AudioInputStream soundIn = AudioSystem.getAudioInputStream(bufferedIn);) {
+			AudioFormat format = soundIn.getFormat();
+			DataLine.Info info = new DataLine.Info(Clip.class, format);
+			this.clip = (Clip) AudioSystem.getLine(info);
+			this.clip.open(soundIn);
 		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
 			this.logger.error("Cant play alarm sound", e);
 		}

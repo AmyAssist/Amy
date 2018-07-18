@@ -23,13 +23,12 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceFunction;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
@@ -40,7 +39,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  * @param <T>
  *            the service type
  */
-public class ClassServiceProviderWithoutDependencies<T> implements ServiceFunction<T> {
+public class ClassServiceProviderWithoutDependencies<T> implements ServiceProvider<T> {
 
 	protected Class<? extends T> cls;
 
@@ -52,7 +51,7 @@ public class ClassServiceProviderWithoutDependencies<T> implements ServiceFuncti
 	}
 
 	@Override
-	public T getService(Map<ServiceDescription<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
+	public T getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
 		return this.createService();
 	}
 
@@ -66,12 +65,12 @@ public class ClassServiceProviderWithoutDependencies<T> implements ServiceFuncti
 	}
 
 	@Override
-	public Collection<ServiceDescription<?>> getDependencies() {
-		return Collections.emptyList();
+	public Set<ServiceConsumer<?>> getDependencies() {
+		return Collections.emptySet();
 	}
 
 	@Override
-	public Collection<String> getRequiredContextIdentifiers() {
-		return Collections.emptyList();
+	public Set<String> getRequiredContextIdentifiers() {
+		return Collections.emptySet();
 	}
 }

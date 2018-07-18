@@ -44,9 +44,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -63,6 +65,7 @@ class MusicRestTest {
 
 	private StringGenerator stringGenerator;
 	private PlayerLogic logic;
+	private DeviceLogic deviceLogic;
 	private MusicEntity[] userMusics;
 	private MusicEntity[] featuredMusics;
 	private List<PlaylistEntity> userPlaylists;
@@ -77,6 +80,7 @@ class MusicRestTest {
 	public void setUp() {
 		this.target = this.testFramework.setRESTResource(MusicResource.class);
 		this.stringGenerator = this.testFramework.mockService(StringGenerator.class);
+		this.deviceLogic = this.testFramework.mockService(DeviceLogic.class);
 		this.logic = this.testFramework.mockService(PlayerLogic.class);
 
 		createSongAndPlaylist();
@@ -191,7 +195,7 @@ class MusicRestTest {
 	 */
 	@Test
 	void testGetDevices() {
-		Mockito.when(this.logic.getDevices()).thenReturn(createDeviceList());
+		Mockito.when(this.deviceLogic.getDevices()).thenReturn(createDeviceList());
 
 		Response response = this.target.path("getDevices").request().get();
 
@@ -205,7 +209,7 @@ class MusicRestTest {
 		assertThat(response.getStatus(), is(200));
 
 		List<DeviceEntity> emptyList = new ArrayList<>();
-		Mockito.when(this.logic.getDevices()).thenReturn(emptyList);
+		Mockito.when(this.deviceLogic.getDevices()).thenReturn(emptyList);
 
 		response = this.target.path("getDevices").request().get();
 
@@ -218,29 +222,29 @@ class MusicRestTest {
 	 */
 	@Test
 	void testSetDevice() {
-		Mockito.when(this.logic.setDevice(0)).thenReturn("Hello");
+		Mockito.when(this.deviceLogic.setDevice(0)).thenReturn("Hello");
 		Response response = this.target.path("setDevice/0").request().post(null);
 		assertThat(response.readEntity(String.class), is("Hello"));
 		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).setDevice(0);
+		Mockito.verify(this.deviceLogic).setDevice(0);
 
-		Mockito.when(this.logic.setDevice(2)).thenReturn("No device found");
+		Mockito.when(this.deviceLogic.setDevice(2)).thenReturn("No device found");
 		response = this.target.path("setDevice/2").request().post(null);
 		assertThat(response.readEntity(String.class), is("No device found"));
 		assertThat(response.getStatus(), is(404));
-		Mockito.verify(this.logic).setDevice(2);
+		Mockito.verify(this.deviceLogic).setDevice(2);
 
-		Mockito.when(this.logic.setDevice("abc123")).thenReturn(true);
+		Mockito.when(this.deviceLogic.setDevice("abc123")).thenReturn(true);
 		response = this.target.path("setDevice/abc123").request().post(null);
 		assertThat(response.readEntity(String.class), is("Device: 'abc123' is selected now"));
 		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).setDevice("abc123");
+		Mockito.verify(this.deviceLogic).setDevice("abc123");
 
-		Mockito.when(this.logic.setDevice("xyz789")).thenReturn(false);
+		Mockito.when(this.deviceLogic.setDevice("xyz789")).thenReturn(false);
 		response = this.target.path("setDevice/xyz789").request().post(null);
 		assertThat(response.readEntity(String.class), is("Device: 'xyz789' is not available"));
 		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic).setDevice("xyz789");
+		Mockito.verify(this.deviceLogic).setDevice("xyz789");
 	}
 
 	/**
@@ -555,6 +559,16 @@ class MusicRestTest {
 		response = this.target.path("volume/mute").request().post(null);
 		assertThat(response.getStatus(), is(409));
 		assertThat(response.readEntity(String.class), is("Check player state"));
+	}
+	
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#setDeviceName(String, String)}.
+	 */
+	@Test
+	public void setDeviceName() {
+		Response response = this.target.path("setDeviceName").request().post(null);
+		verify(this.deviceLogic).setNewDeviceName(any(), any());
 	}
 
 }

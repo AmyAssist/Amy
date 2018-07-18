@@ -24,7 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 /**
- * Interface between the SpeechRecognition System and the rest og the System
+ * Interface between the SpeechRecognition System and the rest of the System
  * 
  * @author Kai Menzel
  */

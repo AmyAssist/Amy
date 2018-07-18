@@ -39,6 +39,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerCLI;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TTSConsole;
 
 /**
  * The Console reads input from the command line and pass it to the TextParser
@@ -56,6 +57,7 @@ public class Console implements SpeechIO {
 	@Reference
 	private Core core;
 
+	@Reference
 	private SpeechInputHandler handler;
 
 	@Command
@@ -78,19 +80,12 @@ public class Console implements SpeechIO {
 		try {
 			Shell shell = ShellFactory.createConsoleShell("amy", "", this);
 			shell.addMainHandler(this.serviceLocator.createAndInitialize(PluginManagerCLI.class), "");
+			shell.addMainHandler(this.serviceLocator.createAndInitialize(TTSConsole.class), "");
 			shell.addMainHandler(new CommandLineArgumentHandlerService(), "");
 			shell.commandLoop();
 		} catch (IOException e) {
 			this.logger.error("Error while running the console", e);
 		}
 		this.core.stop();
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO#setSpeechInputHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler)
-	 */
-	@Override
-	public void setSpeechInputHandler(SpeechInputHandler handler) {
-		this.handler = handler;
 	}
 }

@@ -26,18 +26,15 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * Class that defines the speech commands for the email functionality and calls the logic methods
  * 
  * @author Patrick Singer, Felix Burk
  */
-
-@Service(EMailSpeech.class)
-@SpeechCommand({ "email", "mail" })
+@SpeechCommand
 public class EMailSpeech {
 
 	@Reference
@@ -72,8 +69,10 @@ public class EMailSpeech {
 	@Grammar("how many [new] (emails|mails) [do i have]")
 	public String numberOfNewMails(String... params) {
 		int s = this.logic.getNewMessageCount();
-		if(s != -1) {
+		if (s > 0) {
 			return this.logic.getNewMessageCount() + " new mails.";
+		} else if (s == 0) {
+			return "You don't have new mails.";
 		}
 		return "something went wrong - i am deeply sorry";
 	}
@@ -85,12 +84,37 @@ public class EMailSpeech {
 	 *            words in the grammar annotation
 	 * @return x most recent mails
 	 */
-	@Grammar("read # most recent (emails|mails)")
+	@Grammar("read [# most recent] (emails|mails)")
 	public String readRecentMails(String... params) {
 		String message;
-		message = this.logic.printPlainTextMessages(Integer.parseInt(params[1]));
-		if(message.equals("")) {
+		if (params.length == 2) {
+			message = this.logic.printPlainTextMessages(-1);
+		} else {
+			message = this.logic.printPlainTextMessages(Integer.parseInt(params[1]));
+		}
+		if (message.isEmpty()) {
 			return "no messages received - poor you";
+		}
+		return message;
+	}
+
+	/**
+	 * Reads all messages from important people
+	 * 
+	 * @param params
+	 *            words in the grammar annotation
+	 * @return all important mails
+	 */
+	@Grammar("read [# most recent] important (emails|mails)")
+	public String readImportantMails(String... params) {
+		String message;
+		if (params.length == 3) {
+			message = this.logic.printImportantMessages(-1);
+		} else {
+			message = this.logic.printImportantMessages(Integer.parseInt(params[1]));
+		}
+		if (message.isEmpty()) {
+			return "You have no important messages";
 		}
 		return message;
 	}
