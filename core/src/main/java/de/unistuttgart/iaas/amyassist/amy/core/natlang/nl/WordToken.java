@@ -21,23 +21,59 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
-
-import java.util.List;
-import java.util.Set;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
 /**
- * Plugin grammar info helper class
+ * Word Token class used in the Lexer and parser
  * 
  * @author Felix Burk
  */
-public class PluginGrammarInfo {
+public class WordToken {
 
-	List<String> keywords;
-	Set<String> grammars;
+	private final String content;
 
-	public PluginGrammarInfo(List<String> keywords, Set<String> grammars) {
-		this.keywords = keywords;
-		this.grammars = grammars;
+	private WordTokenType type;
+
+	/**
+	 * constructor for word token
+	 * 
+	 * @param content
+	 *            the content
+	 */
+	public WordToken(String content) {
+		this.content = content;
+	}
+
+	/**
+	 * getter for string content
+	 * 
+	 * @return the content
+	 */
+	public String getContent() {
+		return this.content;
+	}
+
+	/**
+	 * setter for type
+	 * 
+	 * @param type
+	 *            the type to set
+	 */
+	public void setType(WordTokenType type) {
+		this.type = type;
+	}
+
+	/**
+	 * returns the type
+	 * 
+	 * @return the type
+	 */
+	public WordTokenType getType() {
+		return this.type;
+	}
+
+	@Override
+	public String toString() {
+		return this.content;
 	}
 }

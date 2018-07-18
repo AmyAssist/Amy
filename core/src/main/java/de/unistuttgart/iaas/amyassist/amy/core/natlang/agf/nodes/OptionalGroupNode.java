@@ -21,24 +21,30 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
- * The definition of a grammar annotation.
- * 
- * @author Leon Kiefer
+ * describes an optional group node
+ * it contains optional AGF Syntax 
+ *
+ * @author Felix Burk
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Target(java.lang.annotation.ElementType.METHOD)
-public @interface Grammar {
+public class OptionalGroupNode extends AGFNode {
+
 	/**
-	 * @return the grammar
+	 * @param content the content
 	 */
-	String value();
+	public OptionalGroupNode(String content) {
+		super(content);
+	}
+	
+	/**
+	 * returns the node type
+	 * @return the type
+	 */
+	@Override
+	public AGFNodeType getType() {
+		return AGFNodeType.OPG;
+	}
+
 }

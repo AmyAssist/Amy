@@ -87,21 +87,21 @@ class DeviceEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#getUri()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#getID()}.
 	 */
 	@Test
 	void testGetUri() {
-		assertThat(this.deviceEntity.getUri(), equalTo("abc123"));
+		assertThat(this.deviceEntity.getID(), equalTo("abc123"));
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#setUri(java.lang.String)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#setID(java.lang.String)}.
 	 */
 	@Test
 	void testSetUri() {
-		this.deviceEntity.setUri("123abc");
-		assertThat(this.deviceEntity.getUri(), equalTo("123abc"));
+		this.deviceEntity.setID("123abc");
+		assertThat(this.deviceEntity.getID(), equalTo("123abc"));
 	}
 
 	/**
