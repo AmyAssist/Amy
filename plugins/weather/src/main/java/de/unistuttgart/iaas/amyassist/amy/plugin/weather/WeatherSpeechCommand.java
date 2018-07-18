@@ -99,7 +99,7 @@ public class WeatherSpeechCommand {
 			location = this.locationRegistry.getWork();
 		}
 		if (location != null) {
-			this.weatherAPI.setLocation(location.getId());
+			this.weatherAPI.setLocation(location.getPersistentId());
 			return "new Location ist " + location.getName();
 		}
 		return "new location not found";
