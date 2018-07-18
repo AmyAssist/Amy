@@ -100,7 +100,7 @@ public class WeatherSpeechCommand {
 		}
 		if (location != null) {
 			this.weatherAPI.setLocation(location.getId());
-			return "new Location ist " + String.valueOf(location.getLongitude());
+			return "new Location ist " + location.getName();
 		}
 		return "new location not found";
 	}
