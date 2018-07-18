@@ -126,6 +126,7 @@ public class HelloWorldImpl implements HelloWorldService {
 	@Override
 	public String testContactRegistry() {
 		return performTest(() -> {
+			// Test creation
 			Contact personA = contacts.createNewEntity();
 			personA.setEmail("a@b.c");
 			personA.setFirstName("Max");
@@ -138,24 +139,33 @@ public class HelloWorldImpl implements HelloWorldService {
 			personB.setLastName("Musterfrau");
 			personB.setImportant(true);
 
-			assertTrue(personA.getId() == 0);
+			assertTrue(personA.getPersistentId() == 0);
 
 			contacts.save(personA);
 			contacts.save(personB);
 
-			assertTrue(personA.getId() != personB.getId());
+			// Make sure primary keys are set
+			assertTrue(personA.getPersistentId() != personB.getPersistentId());
 
+			// Make sure getAll works
 			List<Contact> list = contacts.getAll();
 			assertTrue(list.contains(personA));
 			assertTrue(list.contains(personB));
 
-			int personAId = personA.getId();
+			// Test update functionality
+			personA.setEmail("x@y.z");
+			contacts.save(personA);
+			assertTrue(contacts.getById(personA.getPersistentId()).equals(personA));
 
-			Contact personA2 = contacts.getById(personA.getId());
+			int personAId = personA.getPersistentId();
+
+			// Test retrieval
+			Contact personA2 = contacts.getById(personA.getPersistentId());
 			assertTrue(personA.equals(personA2));
 
-			contacts.deleteById(personA.getId());
-			contacts.deleteById(personB.getId());
+			// Test deletion
+			contacts.deleteById(personA.getPersistentId());
+			contacts.deleteById(personB.getPersistentId());
 
 			Contact c3 = contacts.getById(personAId);
 			assertTrue(c3 == null);
@@ -186,7 +196,7 @@ public class HelloWorldImpl implements HelloWorldService {
 			// Test entity saving
 			locationRegistry.save(work);
 
-			assertTrue(locationRegistry.getById(work.getId()).equals(work));
+			assertTrue(locationRegistry.getById(work.getPersistentId()).equals(work));
 
 			// Test getWork method
 			assertTrue(locationRegistry.getWork().equals(work));
@@ -203,7 +213,7 @@ public class HelloWorldImpl implements HelloWorldService {
 			}
 
 			// Test deletion
-			locationRegistry.deleteById(work.getId());
+			locationRegistry.deleteById(work.getPersistentId());
 
 			assertTrue(locationRegistry.getWork() == null);
 		});
@@ -224,16 +234,16 @@ public class HelloWorldImpl implements HelloWorldService {
 			colorRegistry.save(c1);
 
 			// Entity retrieval works
-			assertTrue(colorRegistry.getById(c1.getId()).equals(c1));
+			assertTrue(colorRegistry.getById(c1.getPersistentId()).equals(c1));
 
 			assertTrue(colorRegistry.getAll().size() == 1);
 
 			// Entity deletion works
-			colorRegistry.deleteById(c1.getId());
+			colorRegistry.deleteById(c1.getPersistentId());
 
 			assertTrue(colorRegistry.getAll().isEmpty());
 
-			assertTrue(colorRegistry.getById(c1.getId()) == null);
+			assertTrue(colorRegistry.getById(c1.getPersistentId()) == null);
 		});
 	}
 

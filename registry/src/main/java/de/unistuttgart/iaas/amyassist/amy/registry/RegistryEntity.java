@@ -24,46 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.registry;
 
 /**
- * Location object interface
- * @author Benno Krauß
+ * Interface for an entity class for a registry
  */
-public interface Location extends RegistryEntity {
-
-    String getName();
-
-    void setName(String name);
-
-    String getZipCode();
-
-    void setZipCode(String zipCode);
-
-    String getCity();
-
-    void setCity(String city);
-
-    String getStreet();
-
-    void setStreet(String street);
-
-    int getHouseNumber();
-
-    void setHouseNumber(int houseNumber);
-
-    double getLongitude();
-
-    void setLongitude(double longitude);
-
-    double getLatitude();
-
-    void setLatitude(double latitude);
-
-    boolean isHome();
-
-    void setHome(boolean home);
-
-    boolean isWork();
-
-    void setWork(boolean work);
-
-    String getAddressString();
+public interface RegistryEntity {
+    int getPersistentId();
 }
