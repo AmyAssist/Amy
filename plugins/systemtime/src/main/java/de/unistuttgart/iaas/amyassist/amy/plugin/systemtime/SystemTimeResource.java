@@ -33,9 +33,9 @@ import javax.ws.rs.core.UriInfo;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Method;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.MethodType;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Types;
 
 /**
  * REST Resource for the system time
@@ -113,9 +113,10 @@ public class SystemTimeResource implements Resource{
 	@Produces(MediaType.APPLICATION_JSON)
 	public Method createGetTimeMethod() {
 		Method m = new Method();
+		m.setName("Time");
 		m.setDescription("Returns the current time");
 		m.setLink(this.info.getBaseUriBuilder().path(SystemTimeResource.class).path(SystemTimeResource.class, "getTime").build());
-		m.setType(MethodType.GET);
+		m.setType(Types.GET);
 		return m;
 	}
 
@@ -129,9 +130,10 @@ public class SystemTimeResource implements Resource{
 	@Produces(MediaType.APPLICATION_JSON)
 	public Method createGetDateMethod() {
 		Method m = new Method();
+		m.setName("Date");
 		m.setDescription("Returns the current date");
 		m.setLink(this.info.getBaseUriBuilder().path(SystemTimeResource.class).path(SystemTimeResource.class, "getDate").build());
-		m.setType(MethodType.GET);
+		m.setType(Types.GET);
 		return m;
 	}
 

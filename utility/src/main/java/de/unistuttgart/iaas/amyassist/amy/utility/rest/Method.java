@@ -33,9 +33,30 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Method extends Entity{
 
+	private String name;
 	private String description;
 	private String type;
 	private Parameter[] parameters;
+
+
+
+	/**
+	 * gets the name of the method
+	 * 
+	 * @return the name of the method
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * sets the name of the method
+	 * 
+	 * @param name the new name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	/**
 	 * gets the description
@@ -90,4 +111,5 @@ public class Method extends Entity{
 	public void setParameters(Parameter[] parameters) {
 		this.parameters = parameters;
 	}
+
 }

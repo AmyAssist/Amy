@@ -31,7 +31,9 @@ package de.unistuttgart.iaas.amyassist.amy.utility.rest;
 public class Parameter {
 
 	private String name;
-	private String type;
+	private String valueType;
+	private String paramType;
+	private boolean required;
 
 	/**
 	 * gets the name
@@ -52,20 +54,56 @@ public class Parameter {
 	}
 
 	/**
-	 * gets the type
+	 * gets the type of the parameter value
 	 * 
 	 * @return the type
 	 */
-	public String getType() {
-		return this.type;
+	public String getValueType() {
+		return this.valueType;
 	}
 
 	/**
-	 * sets the type
+	 * sets the type of the parameter value
 	 * 
-	 * @param type the new type
+	 * @param type the new type of the value
 	 */
-	public void setType(String type) {
-		this.type = type;
+	public void setValueType(String type) {
+		this.valueType = type;
+	}
+
+	/**
+	 * gets the type of the parameter
+	 * 
+	 * @return the type of the parameter
+	 */
+	public String getParamType() {
+		return this.paramType;
+	}
+
+	/**
+	 * sets the type of the parameter
+	 * 
+	 * @param paramType the new type
+	 */
+	public void setParamType(String paramType) {
+		this.paramType = paramType;
+	}
+
+	/**
+	 * returns if this parameter is required
+	 * 
+	 * @return true if the parameter is required, else false
+	 */
+	public boolean isRequired() {
+		return this.required;
+	}
+
+	/**
+	 * set if this parameter is required
+	 * 
+	 * @param required if the parameter is required
+	 */
+	public void setRequired(boolean required) {
+		this.required = required;
 	}
 }
