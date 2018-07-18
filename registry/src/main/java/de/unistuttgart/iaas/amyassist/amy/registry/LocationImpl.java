@@ -126,6 +126,7 @@ public class LocationImpl implements Location {
         isWork = work;
     }
 
+    @XmlTransient
     @Override
     public String getAddressString() {
         return String.format("%s %d, %s %s", getStreet(), getHouseNumber(), getZipCode(), getCity());
