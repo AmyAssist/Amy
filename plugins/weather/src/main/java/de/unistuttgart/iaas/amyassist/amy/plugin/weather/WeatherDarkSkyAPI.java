@@ -32,6 +32,9 @@ import com.github.dvdme.ForecastIOLib.ForecastIO;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 
 /**
  * Logic class to provide information about current and coming weather
@@ -43,25 +46,33 @@ public class WeatherDarkSkyAPI {
 	@Reference
 	private Properties configuration;
 
-	private static final String STUTTGART_COORDINATES_LAT = "48.745295";
-	private static final String STUTTGART_COORDINATES_LONG = "9.10502";
+	@Reference
+	private LocationRegistry locationRegistry;
+
+	@Reference
+	private IStorage storage;
+
+	private String coordinateLat;
+	private String coordinateLong;
 
 	private static final String API_SECRET_CONFIG_KEY = "DARKSKY_API_SECRET";
-	
+	private static final String WEATHER_LOCATION_ID_STRING = "WEATHER_LOCATION_ID";
+
 	private FIODaily dailyReports;
 	private Calendar lastRequest;
 
 	private FIODaily getDailyReports() {
-		if(this.dailyReports == null || checkTime()) {
+		if (this.dailyReports == null || checkTime()) {
+			loadLocation();
 			ForecastIO fio = new ForecastIO(this.configuration.getProperty(API_SECRET_CONFIG_KEY));
 			fio.setUnits(ForecastIO.UNITS_SI);
-			fio.getForecast(WeatherDarkSkyAPI.STUTTGART_COORDINATES_LAT, WeatherDarkSkyAPI.STUTTGART_COORDINATES_LONG);
-			
+			fio.getForecast(WeatherDarkSkyAPI.this.coordinateLat, WeatherDarkSkyAPI.this.coordinateLong);
+
 			this.dailyReports = new FIODaily(fio);
 			for (int i = 0; i < this.dailyReports.days(); i++) {
 				FIODataPoint report = this.dailyReports.getDay(i);
 				report.setTimezone(fio.getTimezone());
-			}			
+			}
 			this.lastRequest = Calendar.getInstance();
 		}
 
@@ -75,15 +86,15 @@ public class WeatherDarkSkyAPI {
 	 */
 	private boolean checkTime() {
 		Calendar now = Calendar.getInstance();
-		if(this.lastRequest != null) {
-			boolean sameDay = now.get(Calendar.YEAR) == this.lastRequest.get(Calendar.YEAR) 
+		if (this.lastRequest != null) {
+			boolean sameDay = now.get(Calendar.YEAR) == this.lastRequest.get(Calendar.YEAR)
 					&& now.get(Calendar.DAY_OF_YEAR) == this.lastRequest.get(Calendar.DAY_OF_YEAR);
-			if(sameDay) {
-				boolean withinHour = now.getTimeInMillis() - this.lastRequest.getTimeInMillis() < 60*60*1000;
-				if(withinHour) {
+			if (sameDay) {
+				boolean withinHour = now.getTimeInMillis() - this.lastRequest.getTimeInMillis() < 60 * 60 * 1000;
+				if (withinHour) {
 					return false;
-				}			
-			}			
+				}
+			}
 		}
 		return true;
 	}
@@ -116,8 +127,26 @@ public class WeatherDarkSkyAPI {
 	public WeatherReportWeek getReportWeek() {
 		return new WeatherReportWeek("This is the weather report for the week. ", this.getDailyReports());
 	}
-	
+
+	/**
+	 * set a new locationId
+	 * 
+	 * @param locationId
+	 *            id from the registry entry
+	 */
 	public void setLocation(int locationId) {
-		
+		this.storage.put(WEATHER_LOCATION_ID_STRING, String.valueOf(locationId));
+	}
+
+	/**
+	 * load the lat and long from registry
+	 */
+	private void loadLocation() {
+		if (this.storage.has(WEATHER_LOCATION_ID_STRING)) {
+			Location location = this.locationRegistry
+					.getById(Integer.parseInt(this.storage.get(WEATHER_LOCATION_ID_STRING)));
+			this.coordinateLat = String.valueOf(location.getLatitude());
+			this.coordinateLong = String.valueOf(location.getLongitude());
+		}
 	}
 }

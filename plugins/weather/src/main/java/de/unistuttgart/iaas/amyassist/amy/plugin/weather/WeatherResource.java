@@ -42,7 +42,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
  * @author Muhammed Kaya, Christian Bräuner
  */
 @Path("weather")
-public class WeatherResource implements Resource{
+public class WeatherResource implements Resource {
 
 	@Reference
 	private WeatherDarkSkyAPI weatherLogic;
@@ -82,21 +82,16 @@ public class WeatherResource implements Resource{
 	public WeatherReportWeek getWeatherWeek() {
 		return this.weatherLogic.getReportWeek();
 	}
-	
+
 	@PUT
 	@Path("setLocation/{locationId}")
 	public void setLocation(@PathParam("locationId") String locationId) {
 		try {
 			this.weatherLogic.setLocation(Integer.parseInt(locationId));
+		} catch (NumberFormatException e) {
+			throw new WebApplicationException("No route found.", Status.NOT_FOUND);
 		}
-			catch(NumberFormatException e) {
-				throw new WebApplicationException("No route found.", Status.NOT_FOUND);
-			}
-			
-		
-		
 	}
-	
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
