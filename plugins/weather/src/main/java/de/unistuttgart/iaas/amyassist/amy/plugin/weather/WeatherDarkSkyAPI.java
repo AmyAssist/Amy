@@ -62,6 +62,7 @@ public class WeatherDarkSkyAPI {
 				FIODataPoint report = this.dailyReports.getDay(i);
 				report.setTimezone(fio.getTimezone());
 			}			
+			this.lastRequest = Calendar.getInstance();
 		}
 
 		return this.dailyReports;
@@ -73,16 +74,17 @@ public class WeatherDarkSkyAPI {
 	 * @return true if the data is outdated, false if its actual
 	 */
 	private boolean checkTime() {
-		Calendar now = Calendar.getInstance();	
-		boolean sameDay = now.get(Calendar.YEAR) == this.lastRequest.get(Calendar.YEAR) 
-				&& now.get(Calendar.DAY_OF_YEAR) == this.lastRequest.get(Calendar.DAY_OF_YEAR);
-		if(sameDay) {
-			boolean withinHour = now.getTimeInMillis() - this.lastRequest.getTimeInMillis() < 60*60*1000;
-			if(withinHour) {
-				return false;
+		Calendar now = Calendar.getInstance();
+		if(this.lastRequest != null) {
+			boolean sameDay = now.get(Calendar.YEAR) == this.lastRequest.get(Calendar.YEAR) 
+					&& now.get(Calendar.DAY_OF_YEAR) == this.lastRequest.get(Calendar.DAY_OF_YEAR);
+			if(sameDay) {
+				boolean withinHour = now.getTimeInMillis() - this.lastRequest.getTimeInMillis() < 60*60*1000;
+				if(withinHour) {
+					return false;
+				}			
 			}			
 		}
-		this.lastRequest = now;
 		return true;
 	}
 
