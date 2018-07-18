@@ -36,7 +36,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 /**
  * Logic class to provide information about current and coming weather
  * 
- * @author Benno
+ * @author Benno, Lars Buttgereit
  */
 @Service
 public class WeatherDarkSkyAPI {
@@ -115,5 +115,9 @@ public class WeatherDarkSkyAPI {
 	 */
 	public WeatherReportWeek getReportWeek() {
 		return new WeatherReportWeek("This is the weather report for the week. ", this.getDailyReports());
+	}
+	
+	public void setLocation(int locationId) {
+		
 	}
 }
