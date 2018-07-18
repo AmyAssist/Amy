@@ -35,6 +35,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -129,10 +130,12 @@ public class AlarmClockLogicTest {
 		when(this.acStorage.getAlarmCounter()).thenReturn(10);
 		when(this.acStorage.hasAlarm(4)).thenReturn(true);
 		when(this.acStorage.hasAlarm(8)).thenReturn(true);
+		when(this.acStorage.getAlarm(4)).thenReturn(new Alarm(4, 4, 20, true));
+		when(this.acStorage.getAlarm(8)).thenReturn(new Alarm(8, 4, 20, true));
 
 		assertThat(this.acl.resetAlarms(), is("2 alarms deleted"));
 		verify(this.acStorage).putAlarmCounter(0);
-		verify(this.acStorage, times(10)).hasAlarm(ArgumentMatchers.anyInt());
+		verify(this.acStorage, times(12)).hasAlarm(ArgumentMatchers.anyInt());
 		verify(this.acStorage).deleteAlarm(4);
 		verify(this.acStorage).deleteAlarm(8);
 	}
@@ -155,10 +158,12 @@ public class AlarmClockLogicTest {
 		when(this.acStorage.getTimerCounter()).thenReturn(10);
 		when(this.acStorage.hasTimer(2)).thenReturn(true);
 		when(this.acStorage.hasTimer(6)).thenReturn(true);
+		when(this.acStorage.getTimer(2)).thenReturn(new Timer(2, Calendar.getInstance(), true));
+		when(this.acStorage.getTimer(6)).thenReturn(new Timer(6, Calendar.getInstance(), true));
 
 		assertThat(this.acl.resetTimers(), is("2 timers deleted"));
 		verify(this.acStorage).putTimerCounter(0);
-		verify(this.acStorage, times(10)).hasTimer(ArgumentMatchers.anyInt());
+		verify(this.acStorage, times(12)).hasTimer(ArgumentMatchers.anyInt());
 		verify(this.acStorage).deleteTimer(2);
 		verify(this.acStorage).deleteTimer(6);
 	}
@@ -179,8 +184,9 @@ public class AlarmClockLogicTest {
 	@Test
 	protected void testDeleteAlarm() {
 		when(this.acStorage.hasAlarm(2)).thenReturn(true);
+		when(this.acStorage.getAlarm(2)).thenReturn(new Alarm(2, 4, 20, true));
 		assertThat(this.acl.deleteAlarm(2), is("Alarm 2 deleted"));
-		verify(this.acStorage).hasAlarm(2);
+		verify(this.acStorage, times(2)).hasAlarm(2);
 		verify(this.acStorage).deleteAlarm(2);
 	}
 
@@ -200,8 +206,9 @@ public class AlarmClockLogicTest {
 	@Test
 	protected void testDeleteTimer() {
 		when(this.acStorage.hasTimer(2)).thenReturn(true);
+		when(this.acStorage.getTimer(2)).thenReturn(new Timer(2, Calendar.getInstance(), true));
 		assertThat(this.acl.deleteTimer(2), is("Timer 2 deleted"));
-		verify(this.acStorage).hasTimer(2);
+		verify(this.acStorage, times(2)).hasTimer(2);
 		verify(this.acStorage).deleteTimer(2);
 	}
 
