@@ -26,8 +26,10 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest;
 import java.time.ZonedDateTime;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.ZonedDateTimeAdapter;
 
 /**
  * Entity for navigation routes
@@ -40,6 +42,7 @@ public class Route extends Entity {
 	private String origin;
 	private String destination;
 	private String travelmode;
+	@XmlJavaTypeAdapter(ZonedDateTimeAdapter.class)
 	private ZonedDateTime time;
 	
 	/**

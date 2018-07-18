@@ -134,7 +134,7 @@ public class NavigationResource implements Resource {
 	 * @return true if origin and destination inputs are correct
 	 */
 	private boolean checkRoute(Route route) {
-		if (route.getOrigin() != null && !route.getOrigin().equals("") 
+		if (route != null && route.getOrigin() != null && !route.getOrigin().equals("") 
 				&& route.getDestination() != null && !route.getDestination().equals("")) {
 			return true;
 		}
