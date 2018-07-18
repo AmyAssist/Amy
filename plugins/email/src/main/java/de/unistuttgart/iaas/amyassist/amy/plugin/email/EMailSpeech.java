@@ -26,18 +26,15 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * Class that defines the speech commands for the email functionality and calls the logic methods
  * 
  * @author Patrick Singer, Felix Burk
  */
-
-@Service(EMailSpeech.class)
-@SpeechCommand({ "email", "mail" })
+@SpeechCommand
 public class EMailSpeech {
 
 	@Reference
