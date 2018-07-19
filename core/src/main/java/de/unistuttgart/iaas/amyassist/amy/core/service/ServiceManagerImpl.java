@@ -97,7 +97,7 @@ public class ServiceManagerImpl {
 	 */
 	public void register(Class<? extends RunnableService> cls) {
 		if (this.running)
-			throw new IllegalStateException();
+			throw new IllegalStateException("Service Manager is already running");
 		this.classes.add(cls);
 	}
 
@@ -106,7 +106,7 @@ public class ServiceManagerImpl {
 	 */
 	public void start() {
 		if (this.running)
-			throw new IllegalStateException();
+			throw new IllegalStateException("Service Manager is already running");
 		for (Class<? extends RunnableService> runnableService : this.classes) {
 			RunnableService service = this.serviceLocator.getService(runnableService);
 			this.runningServices.add(service);
@@ -120,7 +120,7 @@ public class ServiceManagerImpl {
 	 */
 	public void stop() {
 		if (!this.running)
-			throw new IllegalStateException();
+			throw new IllegalStateException("Service Manager is not running");
 		this.runningServices.forEach(RunnableService::stop);
 		this.runningServices.clear();
 		this.running = false;
