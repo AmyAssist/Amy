@@ -85,10 +85,7 @@ public class SystemTimeResource implements Resource {
 		ResourceEntity resource = new ResourceEntity();
 		resource.setName("SystemTime");
 		resource.setDescription("Plugin for requesting current time and date");
-		Method[] methods = new Method[2];
-		methods[0] = createGetTimeMethod();
-		methods[1] = createGetDateMethod();
-		resource.setMethods(methods);
+		resource.setMethods(this.getPluginMethods());
 		resource.setLink(this.info.getBaseUriBuilder().path(SystemTimeResource.class).build());
 		return resource;
 	}
@@ -100,7 +97,10 @@ public class SystemTimeResource implements Resource {
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
 	public Method[] getPluginMethods() {
-		return this.getPluginDescripion().getMethods();
+		Method[] methods = new Method[2];
+		methods[0] = createGetTimeMethod();
+		methods[1] = createGetDateMethod();
+		return methods;
 	}
 
 	/**

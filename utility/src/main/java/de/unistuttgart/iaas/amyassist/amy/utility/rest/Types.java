@@ -45,7 +45,11 @@ public class Types {
 	/**
 	 * Float
 	 */
-	public static final String FLOAT = "float";	
+	public static final String FLOAT = "float";
+	/**
+	 * a date in ISO-8601 format
+	 */
+	public static final String DATE = "ISO-8601-Date";
 	/**
 	 * GET
 	 */
@@ -55,8 +59,24 @@ public class Types {
 	 */
 	public static final String POST = "POST";
 	/**
+	 * PUT
+	 */
+	public static final String PUT = "PUT";
+	/**
 	 * DELETE
 	 */
 	public static final String DELETE = "DELETE";
-
+	/**
+	 * body
+	 */
+	public static final String BODY = "body";
+	/**
+	 * query
+	 */
+	public static final String QUERY = "query";
+	/**
+	 * path
+	 */
+	public static final String PATH = "path";
+	
 }
