@@ -23,23 +23,20 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.Properties;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.IOException;
+import java.util.Properties;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.when;
 
 /**
  * test class for {@link CORSFilter}
