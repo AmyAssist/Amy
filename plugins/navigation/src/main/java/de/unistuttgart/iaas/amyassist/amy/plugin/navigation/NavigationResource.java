@@ -190,7 +190,7 @@ public class NavigationResource implements Resource {
 		res.setDescription("A Plugin to use basic methods of navigation");
 		res.setMethods(this.getPluginMethods());
 		res.setLink(this.info.getBaseUriBuilder().path(NavigationResource.class).build());
-		return null;
+		return res;
 	}
 
 	/**
