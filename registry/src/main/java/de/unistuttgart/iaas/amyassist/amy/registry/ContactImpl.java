@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.registry;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
-
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -40,7 +38,7 @@ public class ContactImpl implements Contact {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(updatable = false, nullable = false)
-    private int id;
+    private int persistentId;
     private String firstName;
     private String lastName;
     private boolean important;
@@ -78,8 +76,8 @@ public class ContactImpl implements Contact {
         this.email = email;
     }
 
-    public int getId() {
-        return id;
+    public int getPersistentId() {
+        return persistentId;
     }
 
     /**
@@ -92,7 +90,7 @@ public class ContactImpl implements Contact {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Contact contact = (Contact) o;
-        return id == contact.getId() &&
+        return persistentId == contact.getPersistentId() &&
                 important == contact.isImportant() &&
                 Objects.equals(firstName, contact.getFirstName()) &&
                 Objects.equals(lastName, contact.getLastName()) &&
@@ -106,6 +104,6 @@ public class ContactImpl implements Contact {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, firstName, lastName, important, email);
+        return Objects.hash(persistentId, firstName, lastName, important, email);
     }
 }

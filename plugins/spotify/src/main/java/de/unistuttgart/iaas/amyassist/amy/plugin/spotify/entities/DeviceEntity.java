@@ -30,6 +30,7 @@ import javax.persistence.Id;
 import javax.persistence.PersistenceUnit;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
 
 /**
@@ -40,7 +41,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
 @XmlRootElement
 @javax.persistence.Entity
 @PersistenceUnit(unitName = "SpotifyDeviceRegistry")
-public class DeviceEntity extends Entity {
+public class DeviceEntity extends Entity implements RegistryEntity {
 
 	@Id
 	@GeneratedValue
