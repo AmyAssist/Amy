@@ -30,7 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +41,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MailEntity;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -143,20 +146,29 @@ class EMailRestTest {
 	 */
 	@Test
 	void testSendMail() {
-		String recipient = "example@mail.com";
-		String subject = "Mail From Amy";
-		String message = "Hello!";
-
-		Mockito.when(this.logic.sendMail(recipient, subject, message)).thenReturn("Message is sent!");
-		Response response = this.target.path("new").queryParam("recipient", recipient).queryParam("subject", subject)
-				.queryParam("message", message).request().post(null);
+		MailEntity mail = new MailEntity();
+		mail.setRecipient("example@mail.com");
+		mail.setSubject("Mail From Amy");
+		mail.setMessage("Hello!");
+		Entity<MailEntity> entity = Entity.entity(mail, MediaType.APPLICATION_JSON);
+		
+		Mockito.when(this.logic.sendMail(mail.getRecipient(), mail.getSubject(), mail.getMessage())).thenReturn("Message is sent!");
+		Response response = this.target.path("new").request().post(entity);
 		String actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Message is sent!"));
 		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).sendMail(recipient, subject, message);
+		Mockito.verify(this.logic).sendMail(mail.getRecipient(), mail.getSubject(), mail.getMessage());
 
-		Mockito.when(this.logic.sendMail("", "", "")).thenReturn("Message could not be sent");
 		response = this.target.path("new").request().post(null);
+		actualMsg = response.readEntity(String.class);
+		assertThat(actualMsg, is("Fill the missing fields."));
+		assertThat(response.getStatus(), is(409));
+		
+		mail.setRecipient("");
+		mail.setSubject("");
+		mail.setMessage("");
+		Mockito.when(this.logic.sendMail(mail.getRecipient(), mail.getSubject(), mail.getMessage())).thenReturn("Message could not be sent");
+		response = this.target.path("new").request().post(entity);
 		actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Message could not be sent."));
 		assertThat(response.getStatus(), is(409));

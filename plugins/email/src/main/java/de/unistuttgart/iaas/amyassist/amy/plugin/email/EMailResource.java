@@ -41,6 +41,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MailEntity;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Method;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Parameter;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
@@ -125,22 +126,17 @@ public class EMailResource implements Resource {
 	/**
 	 * Sends a message to some recipient
 	 * 
-	 * @param recipient
-	 *            the recipient
-	 * @param subject
-	 *            mail subject
-	 * @param message
-	 *            the mail body
+	 * @param mail
+	 *            the mail object with recipient, subject, message
 	 * @return success string
 	 */
 	@POST
 	@Path("new")
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String sendMail(@QueryParam("recipient") @DefaultValue("") String recipient,
-			@QueryParam("subject") @DefaultValue("") String subject,
-			@QueryParam("message") @DefaultValue("") String message) {
-		String response = this.logic.sendMail(recipient, subject, message);
+	public String sendMail(MailEntity mail) {
+		checkMail(mail);
+		String response = this.logic.sendMail(mail.getRecipient(), mail.getSubject(), mail.getMessage());
 		if (response.equals("Message could not be sent")) {
 			throw new WebApplicationException("Message could not be sent.", Status.CONFLICT);
 		}
@@ -179,6 +175,13 @@ public class EMailResource implements Resource {
 	@Path("close")
 	public void closeInbox() {
 		this.logic.closeInbox();
+	}
+	
+	private boolean checkMail(MailEntity mail) {
+		if (mail != null && mail.getRecipient() != null && mail.getSubject() != null && mail.getMessage() != null) {
+			return true;
+		}
+		throw new WebApplicationException("Fill the missing fields.", Status.CONFLICT);
 	}
 
 	/**
@@ -250,7 +253,7 @@ public class EMailResource implements Resource {
 		plains.setParameters(getPrintPlainTextParameters());
 		return plains;
 	}
-	
+
 	/**
 	 * returns the method describing the hasUnreadMessages method
 	 * 
@@ -268,7 +271,7 @@ public class EMailResource implements Resource {
 		unread.setType(Types.GET);
 		return unread;
 	}
-	
+
 	/**
 	 * returns the method describing the sendMail method
 	 * 
@@ -281,13 +284,13 @@ public class EMailResource implements Resource {
 		Method plains = new Method();
 		plains.setName("Send new mail");
 		plains.setDescription("Method to send a new mail");
-		plains.setLink(this.info.getBaseUriBuilder().path(EMailResource.class)
-				.path(EMailResource.class, "sendMail").build());
+		plains.setLink(
+				this.info.getBaseUriBuilder().path(EMailResource.class).path(EMailResource.class, "sendMail").build());
 		plains.setType(Types.POST);
-		plains.setParameters(getSendMailParameters());
+		plains.setParameters(getMailAsParameter());
 		return plains;
 	}
-	
+
 	/**
 	 * returns the method describing the getImportantMailAddresses method
 	 * 
@@ -318,12 +321,11 @@ public class EMailResource implements Resource {
 		Method init = new Method();
 		init.setName("Init");
 		init.setDescription("Used to access the inbox of the email account");
-		init.setLink(this.info.getBaseUriBuilder().path(EMailResource.class)
-				.path(EMailResource.class, "init").build());
+		init.setLink(this.info.getBaseUriBuilder().path(EMailResource.class).path(EMailResource.class, "init").build());
 		init.setType(Types.POST);
 		return init;
 	}
-	
+
 	/**
 	 * returns the method describing the closeInbox method
 	 * 
@@ -336,8 +338,8 @@ public class EMailResource implements Resource {
 		Method close = new Method();
 		close.setName("Close inbox");
 		close.setDescription("Method to send a new mail");
-		close.setLink(this.info.getBaseUriBuilder().path(EMailResource.class)
-				.path(EMailResource.class, "closeInbox").build());
+		close.setLink(this.info.getBaseUriBuilder().path(EMailResource.class).path(EMailResource.class, "closeInbox")
+				.build());
 		close.setType(Types.POST);
 		return close;
 	}
@@ -359,25 +361,25 @@ public class EMailResource implements Resource {
 		return params;
 	}
 
-	private Parameter[] getSendMailParameters() {
+	private Parameter[] getMailAsParameter() {
 		Parameter[] params = new Parameter[3];
 		// recipient
 		params[0] = new Parameter();
 		params[0].setName("Recipient");
 		params[0].setRequired(true);
-		params[0].setParamType(Types.PATH);
+		params[0].setParamType(Types.BODY);
 		params[0].setValueType(Types.STRING);
 		// subject
 		params[1] = new Parameter();
 		params[1].setName("Subject");
 		params[1].setRequired(true);
-		params[1].setParamType(Types.QUERY);
+		params[1].setParamType(Types.BODY);
 		params[1].setValueType(Types.STRING);
 		// message
 		params[2] = new Parameter();
 		params[2].setName("Message");
 		params[2].setRequired(true);
-		params[2].setParamType(Types.QUERY);
+		params[2].setParamType(Types.BODY);
 		params[2].setValueType(Types.STRING);
 		return params;
 	}
