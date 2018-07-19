@@ -21,26 +21,23 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
-
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
+package de.unistuttgart.iaas.amyassist.amy.core.service;
 
 /**
- * Interface between the SpeechRecognition System and the rest of the System
+ * A RunnableService is a Service that must be startet and is only operational in the running state. The RunnableService
+ * must be stoppable by calling the {@link #stop()} method. RunnableServices are Singletons.
  * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-public interface AudioUserInteraction extends RunnableService {
-
+public interface RunnableService {
 	/**
-	 * Start the Recognition System
+	 * Start the RunnableService. After start the Service operational
 	 */
-	@Override
 	void start();
 
 	/**
-	 * Stop the Recognition System
+	 * Stop the RunnableService. All Threads started with {@link #start()} must be stopped and all resources opened in
+	 * {@link #start()} must be closed.
 	 */
 	void stop();
-
 }

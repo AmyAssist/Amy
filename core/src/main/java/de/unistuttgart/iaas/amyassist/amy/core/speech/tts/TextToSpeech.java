@@ -38,9 +38,9 @@ import javax.sound.sampled.SourceDataLine;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import marytts.LocalMaryInterface;
 import marytts.exceptions.MaryConfigurationException;
 import marytts.exceptions.SynthesisException;
@@ -54,7 +54,7 @@ import marytts.modules.synthesis.Voice;
  * @author Tim Neumann, Kai Menzel
  */
 @Service(TextToSpeech.class)
-public class TextToSpeech implements Output, Runnable {
+public class TextToSpeech implements Output, Runnable, RunnableService {
 
 	private static final int WAIT_TIME_AFTER_SPEECH = 1000;
 	private static final int BYTE_BUFFER_SIZE = 1024;
@@ -97,6 +97,10 @@ public class TextToSpeech implements Output, Runnable {
 			this.logger.error("initialization error", e);
 			throw new IllegalStateException(e);
 		}
+	}
+
+	@Override
+	public void start() {
 		this.thread = new Thread(this, "TextToSpeech");
 		this.thread.start();
 	}
@@ -200,8 +204,8 @@ public class TextToSpeech implements Output, Runnable {
 		return text;
 	}
 
-	@PreDestroy
-	private void stop() {
+	@Override
+	public void stop() {
 		this.thread.interrupt();
 	}
 }

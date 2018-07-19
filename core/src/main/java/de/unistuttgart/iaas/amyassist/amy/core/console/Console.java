@@ -37,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerCLI;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TTSConsole;
 
@@ -47,7 +47,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TTSConsole;
  * @author Leon Kiefer
  */
 @Service(Console.class)
-public class Console implements SpeechIO {
+public class Console implements RunnableService, Runnable {
 	@Reference
 	private Logger logger;
 
@@ -59,6 +59,8 @@ public class Console implements SpeechIO {
 
 	@Reference
 	private SpeechInputHandler handler;
+
+	private Thread thread;
 
 	@Command
 	public String say(String... speechInput) {
@@ -72,9 +74,12 @@ public class Console implements SpeechIO {
 		return "";
 	}
 
-	/**
-	 * @see java.lang.Runnable#run()
-	 */
+	@Override
+	public void start() {
+		this.thread = new Thread(this, "Console");
+		this.thread.start();
+	}
+
 	@Override
 	public void run() {
 		try {
@@ -87,5 +92,10 @@ public class Console implements SpeechIO {
 			this.logger.error("Error while running the console", e);
 		}
 		this.core.stop();
+	}
+
+	@Override
+	public void stop() {
+		this.thread.interrupt();
 	}
 }
