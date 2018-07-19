@@ -67,6 +67,8 @@ public class Core {
 
 	private Properties config;
 
+	private Thread shutdownHook = new Thread(this::doStop, "ShutdownHook");
+
 	/**
 	 * Get's {@link #singleThreadScheduledExecutor singleThreadScheduledExecutor}
 	 * 
@@ -98,6 +100,7 @@ public class Core {
 		this.init();
 		this.serviceManager.start();
 		this.server.start();
+		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
 		this.logger.info("running");
 	}
 
@@ -152,6 +155,11 @@ public class Core {
 	 * stop all Threads and terminate the application. This is call form the {@link Console}
 	 */
 	public void stop() {
+		Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
+		this.doStop();
+	}
+
+	private void doStop() {
 		this.logger.info("stop");
 		this.server.shutdown();
 		this.serviceManager.stop();
