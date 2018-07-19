@@ -374,11 +374,11 @@ public class EMailResource implements Resource {
 		params[1].setParamType(Types.QUERY);
 		params[1].setValueType(Types.STRING);
 		// message
-		params[1] = new Parameter();
-		params[1].setName("Message");
-		params[1].setRequired(true);
-		params[1].setParamType(Types.QUERY);
-		params[1].setValueType(Types.STRING);
+		params[2] = new Parameter();
+		params[2].setName("Message");
+		params[2].setRequired(true);
+		params[2].setParamType(Types.QUERY);
+		params[2].setValueType(Types.STRING);
 		return params;
 	}
 
