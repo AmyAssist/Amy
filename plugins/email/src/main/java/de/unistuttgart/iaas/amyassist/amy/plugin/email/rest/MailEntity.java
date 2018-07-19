@@ -37,8 +37,20 @@ public class MailEntity {
 	private String subject;
 	private String message;
 
+	/**
+	 * Constructor
+	 */
 	public MailEntity() {
 		// Needed for JSON
+	}
+	
+	/**
+	 * Constructor
+	 */
+	public MailEntity(String recipient, String subject, String message) {
+		this.recipient = recipient;
+		this.subject = subject;
+		this.message = message;
 	}
 
 	/**

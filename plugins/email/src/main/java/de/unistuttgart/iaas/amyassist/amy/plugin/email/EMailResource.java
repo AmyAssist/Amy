@@ -176,7 +176,7 @@ public class EMailResource implements Resource {
 	public void closeInbox() {
 		this.logic.closeInbox();
 	}
-	
+
 	private boolean checkMail(MailEntity mail) {
 		if (mail != null && mail.getRecipient() != null && mail.getSubject() != null && mail.getMessage() != null) {
 			return true;
