@@ -21,26 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.service;
 
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Interface between the SpeechRecognition System and the rest of the System
+ * Test RunnableService to test the start and stop methods
  * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-public interface AudioUserInteraction extends RunnableService {
+@Service(TestRunnableService.class)
+public class TestRunnableService implements RunnableService {
 
-	/**
-	 * Start the Recognition System
-	 */
+	public boolean run = false;
+	public int count = 0;
+
 	@Override
-	void start();
+	public void start() {
+		this.run = true;
+		this.count++;
+	}
 
-	/**
-	 * Stop the Recognition System
-	 */
-	void stop();
-
+	@Override
+	public void stop() {
+		this.run = false;
+	}
 }
