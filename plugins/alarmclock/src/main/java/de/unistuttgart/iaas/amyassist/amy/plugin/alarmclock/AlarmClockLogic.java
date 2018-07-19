@@ -148,6 +148,7 @@ public class AlarmClockLogic {
 		for (int i = 1; i <= amount; i++) {
 			if (this.acStorage.hasAlarm(i)) {
 				counter++;
+				deactivateAlarm(i);
 				this.acStorage.deleteAlarm(i);
 			}
 		}
@@ -169,6 +170,7 @@ public class AlarmClockLogic {
 		for (int i = 1; i <= amount; i++) {
 			if (this.acStorage.hasTimer(i)) {
 				counter++;
+				deactivateTimer(i);
 				this.acStorage.deleteTimer(i);
 			}
 		}
@@ -184,6 +186,7 @@ public class AlarmClockLogic {
 	 */
 	protected String deleteAlarm(int alarmNumber) {
 		if (this.acStorage.hasAlarm(alarmNumber)) {
+			deactivateAlarm(alarmNumber);
 			this.acStorage.deleteAlarm(alarmNumber);
 			return "Alarm " + alarmNumber + " deleted";
 		}
@@ -198,6 +201,7 @@ public class AlarmClockLogic {
 	 */
 	protected String deleteTimer(int timerNumber) {
 		if (this.acStorage.hasTimer(timerNumber)) {
+			deactivateTimer(timerNumber);
 			this.acStorage.deleteTimer(timerNumber);
 			return "Timer " + timerNumber + " deleted";
 		}
