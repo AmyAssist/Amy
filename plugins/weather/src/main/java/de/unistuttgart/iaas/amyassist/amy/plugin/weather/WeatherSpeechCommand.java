@@ -26,6 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -35,6 +37,9 @@ public class WeatherSpeechCommand {
 
 	@Reference
 	WeatherDarkSkyAPI weatherAPI;
+
+	@Reference
+	LocationRegistry locationRegistry;
 
 	@Grammar("weather today")
 	public String weatherToday(String... words) {
@@ -82,5 +87,21 @@ public class WeatherSpeechCommand {
 			}
 			return "On Saturday, " + saturdayReport + " and on Sunday " + sundayReport;
 		}
+	}
+
+	@Grammar("set weather location (home|work)")
+	public String setLocation(String... words) {
+		Location location = null;
+		if (words[3].equals("home")) {
+			location = this.locationRegistry.getHome();
+		}
+		if (words[3].equals("work")) {
+			location = this.locationRegistry.getWork();
+		}
+		if (location != null) {
+			this.weatherAPI.setLocation(location.getPersistentId());
+			return "new Location ist " + location.getName();
+		}
+		return "new location not found";
 	}
 }
