@@ -23,10 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
@@ -38,7 +42,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
  * @author Muhammed Kaya, Christian Bräuner
  */
 @Path("weather")
-public class WeatherResource implements Resource{
+public class WeatherResource implements Resource {
 
 	@Reference
 	private WeatherDarkSkyAPI weatherLogic;
@@ -77,6 +81,17 @@ public class WeatherResource implements Resource{
 	@Produces(MediaType.APPLICATION_JSON)
 	public WeatherReportWeek getWeatherWeek() {
 		return this.weatherLogic.getReportWeek();
+	}
+
+	@PUT
+	@Path("setLocation")
+	@Consumes(MediaType.TEXT_PLAIN)
+	public void setLocation(String locationId) {
+		try {
+			this.weatherLogic.setLocation(Integer.parseInt(locationId));
+		} catch (NumberFormatException e) {
+			throw new WebApplicationException("No route found.", Status.NOT_FOUND);
+		}
 	}
 
 	/**

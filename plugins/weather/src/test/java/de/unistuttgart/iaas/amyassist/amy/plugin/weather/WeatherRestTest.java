@@ -26,8 +26,11 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -141,5 +144,12 @@ public class WeatherRestTest {
 		assertThat(response, status(200));
 		assertTrue(response.readEntity(String.class).contains(this.week.summary));
 	}
+	
+	@Test
+	void testSetLocation() {
+		Response response = this.target.path("setLocation").request().put(Entity.entity("1", MediaType.TEXT_PLAIN));
+		assertThat(response, status(204));
+		verify(this.logic).setLocation(1);
 
+	}
 }
