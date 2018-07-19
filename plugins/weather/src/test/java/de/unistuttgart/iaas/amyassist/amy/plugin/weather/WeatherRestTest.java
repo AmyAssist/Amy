@@ -25,8 +25,9 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
 import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -112,9 +113,7 @@ public class WeatherRestTest {
 	@Test
 	void testGetWeatherToday() {
 		Mockito.when(this.logic.getReportToday()).thenReturn(this.day);
-
 		Response response = this.target.path("today").request().get();
-
 		assertThat(response, status(200));
 		assertEquals(this.obj.toString(), response.readEntity(String.class));
 	}
@@ -125,9 +124,7 @@ public class WeatherRestTest {
 	@Test
 	void testGetWeatherTomorrow() {
 		Mockito.when(this.logic.getReportTomorrow()).thenReturn(this.day);
-
 		Response response = this.target.path("tomorrow").request().get();
-
 		assertThat(response, status(200));
 		assertEquals(this.obj.toString(), response.readEntity(String.class));
 	}
@@ -138,18 +135,23 @@ public class WeatherRestTest {
 	@Test
 	void testGetWeatherWeek() {
 		Mockito.when(this.logic.getReportWeek()).thenReturn(this.week);
-
 		Response response = this.target.path("week").request().get();
-
 		assertThat(response, status(200));
 		assertTrue(response.readEntity(String.class).contains(this.week.summary));
 	}
 	
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#setLocation(String)}.
+	 */
 	@Test
 	void testSetLocation() {
 		Response response = this.target.path("setLocation").request().put(Entity.entity("1", MediaType.TEXT_PLAIN));
 		assertThat(response, status(204));
-		verify(this.logic).setLocation(1);
-
+		Mockito.verify(this.logic).setLocation(1);
+		
+		response = this.target.path("setLocation").request().put(Entity.entity("a", MediaType.TEXT_PLAIN));
+		String actual = response.readEntity(String.class);
+		assertThat(response, status(404));
+		assertThat(actual, is("No location found."));
 	}
 }

@@ -41,7 +41,9 @@ import javax.ws.rs.core.Response.Status;
 import com.google.api.services.calendar.model.Event;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Method;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 /**
  * REST Resource for calendar
@@ -49,7 +51,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
  * @author Muhammed Kaya
  */
 @Path(CalendarResource.PATH)
-public class CalendarResource implements Resource{
+public class CalendarResource implements Resource {
 
 	/**
 	 * the resource path for this plugin
@@ -63,7 +65,7 @@ public class CalendarResource implements Resource{
 	 * Natural language response of Amy when the event list is empty.
 	 */
 	String noEventsFound = "No upcoming events found.";
-	
+
 	/**
 	 * Natural language response of Amy when the event list of today is empty.
 	 */
@@ -73,7 +75,7 @@ public class CalendarResource implements Resource{
 	 * Natural language response of Amy when the event list of tomorrow is empty.
 	 */
 	private String noEventsTomorrow = "There are no events tomorrow.";
-	
+
 	/**
 	 * Output of the logger
 	 */
@@ -195,6 +197,24 @@ public class CalendarResource implements Resource{
 		default:
 			return true;
 		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 */
+	@Override
+	public ResourceEntity getPluginDescripion() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginMethods()
+	 */
+	@Override
+	public Method[] getPluginMethods() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

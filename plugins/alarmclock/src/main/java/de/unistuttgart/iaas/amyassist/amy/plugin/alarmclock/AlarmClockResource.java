@@ -43,6 +43,7 @@ import javax.ws.rs.core.UriInfo;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Method;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
@@ -52,7 +53,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
  * @author Christian Bräuner
  */
 @Path(AlarmClockResource.PATH)
-public class AlarmClockResource implements Resource{
+public class AlarmClockResource implements Resource {
 
 	/**
 	 * the resource path for this plugin
@@ -193,6 +194,15 @@ public class AlarmClockResource implements Resource{
 	 */
 	@Override
 	public ResourceEntity getPluginDescripion() {
+		return null;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginMethods()
+	 */
+	@Override
+	public Method[] getPluginMethods() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

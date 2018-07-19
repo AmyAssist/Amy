@@ -42,8 +42,13 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.Types;
  * 
  * @author Muhammed Kaya
  */
-@Path("systemtime")
+@Path(SystemTimeResource.PATH)
 public class SystemTimeResource implements Resource {
+	
+	/**
+	 * the resource path for this plugin
+	 */
+	public static final String PATH = "systemtime";
 
 	@Reference
 	private SystemTimeLogic logic;
@@ -54,7 +59,7 @@ public class SystemTimeResource implements Resource {
 	/**
 	 * get the current system time
 	 * 
-	 * @return current time (hour minute second) in a string
+	 * @return current time as a String in ISO-8601 format
 	 */
 	@GET
 	@Path("time")
@@ -66,7 +71,7 @@ public class SystemTimeResource implements Resource {
 	/**
 	 * get the current system date
 	 * 
-	 * @return current date (day month year) in a string
+	 * @return current date as a String in ISO-8601 format
 	 */
 	@GET
 	@Path("date")
@@ -121,7 +126,7 @@ public class SystemTimeResource implements Resource {
 	}
 
 	/**
-	 * returns the options for the dat3e
+	 * returns the options for the date
 	 * 
 	 * @return a Method object containing all information
 	 */

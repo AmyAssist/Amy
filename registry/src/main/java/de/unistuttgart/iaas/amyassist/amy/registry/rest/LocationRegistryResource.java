@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.registry.rest;
 import de.unistuttgart.iaas.amyassist.amy.registry.Location;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationImpl;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Method;
 
 import javax.ws.rs.Path;
 
@@ -37,4 +38,13 @@ import javax.ws.rs.Path;
 @Path("registry/location")
 public class LocationRegistryResource extends AbstractRegistryResource
         <LocationRegistry, Location, LocationImpl, Integer> {
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginMethods()
+	 */
+	@Override
+	public Method[] getPluginMethods() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

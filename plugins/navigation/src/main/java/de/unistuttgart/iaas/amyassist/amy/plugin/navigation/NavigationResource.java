@@ -65,14 +65,15 @@ public class NavigationResource implements Resource {
 
 	@Reference
 	private DirectionApiLogic logic;
-	
+
 	@Context
 	private UriInfo info;
 
 	/**
-	 * Find the best route from A to B without a given departure time
+	 * Find the best route from A to B with or without a given departure time
 	 * 
-	 * @param route the route data given by the client
+	 * @param route
+	 *            the route data given by the client
 	 * @return a data structure with the best route and the transport type of the query
 	 */
 	@POST
@@ -84,8 +85,8 @@ public class NavigationResource implements Resource {
 		checkTravelMode(route.getTravelmode());
 		TravelMode mode = this.logic.getTravelMode(route.getTravelmode());
 		BestTransportResult bestRoute;
-		if(route.getTime() == null) {
-			bestRoute = this.logic.fromTo(route.getOrigin(), route.getDestination(), mode);			
+		if (route.getTime() == null) {
+			bestRoute = this.logic.fromTo(route.getOrigin(), route.getDestination(), mode);
 		} else {
 			bestRoute = this.logic.fromToWithDeparture(route.getOrigin(), route.getDestination(), mode,
 					convert(route.getTime()));
@@ -99,7 +100,8 @@ public class NavigationResource implements Resource {
 	/**
 	 * This method says when you have to go from one place to another place with the planned time
 	 * 
-	 * @param route the route data send by the client
+	 * @param route
+	 *            the route data send by the client
 	 * @return ZonedDateTime object with the latest start time
 	 */
 	@POST
@@ -110,8 +112,8 @@ public class NavigationResource implements Resource {
 		checkRoute(route);
 		checkTravelMode(route.getTravelmode());
 		TravelMode mode = this.logic.getTravelMode(route.getTravelmode());
-		ReadableInstant rtime = this.logic.whenIHaveToGo(route.getOrigin(), route.getDestination(), 
-				mode, convert(route.getTime()));
+		ReadableInstant rtime = this.logic.whenIHaveToGo(route.getOrigin(), route.getDestination(), mode,
+				convert(route.getTime()));
 		if (rtime != null) {
 			return ZonedDateTime.parse(rtime.toString());
 		}
@@ -121,7 +123,8 @@ public class NavigationResource implements Resource {
 	/**
 	 * this method finds the best transport type out of driving, transit and bicycling
 	 * 
-	 * @param route the route information send by the client
+	 * @param route
+	 *            the route information send by the client
 	 * @return data structure with the best route and the transport type
 	 */
 	@POST
@@ -141,11 +144,12 @@ public class NavigationResource implements Resource {
 	/**
 	 * checks if origin and destination inputs are correct
 	 * 
-	 * @param route the route to check
+	 * @param route
+	 *            the route to check
 	 * @return true if origin and destination inputs are correct
 	 */
 	private boolean checkRoute(Route route) {
-		if (route != null && route.getOrigin() != null && !route.getOrigin().equals("") 
+		if (route != null && route.getOrigin() != null && !route.getOrigin().equals("")
 				&& route.getDestination() != null && !route.getDestination().equals("")) {
 			return true;
 		}
@@ -221,7 +225,7 @@ public class NavigationResource implements Resource {
 		best.setDescription("Returns the best way of transport for a given route and a given arrival time");
 		best.setType(Types.POST);
 		best.setLink(this.info.getBaseUriBuilder().path(NavigationResource.class)
-				.path(NavigationResource.class,"getBestTransportInTime").build());
+				.path(NavigationResource.class, "getBestTransportInTime").build());
 		best.setParameters(getRouteAsParameter());
 		return best;
 	}
@@ -240,7 +244,7 @@ public class NavigationResource implements Resource {
 		when.setDescription("Returns the time you should leave for a given route and a given arrival time");
 		when.setType(Types.POST);
 		when.setLink(this.info.getBaseUriBuilder().path(NavigationResource.class)
-				.path(NavigationResource.class,"getBestTransportInTime").build());
+				.path(NavigationResource.class, "whenIHaveToGo").build());
 		when.setParameters(getRouteAsParameter());
 		return when;
 	}
@@ -259,33 +263,33 @@ public class NavigationResource implements Resource {
 		fromTo.setDescription("Returns the best route for a given origin and destination");
 		fromTo.setType(Types.POST);
 		fromTo.setLink(this.info.getBaseUriBuilder().path(NavigationResource.class)
-				.path(NavigationResource.class,"getBestTransportInTime").build());
+				.path(NavigationResource.class, "routeFromTo").build());
 		fromTo.setParameters(getRouteAsParameter());
 		fromTo.getParameters()[3].setRequired(false);
 		return fromTo;
 	}
-	
+
 	private Parameter[] getRouteAsParameter() {
 		Parameter[] params = new Parameter[4];
-		//Origin
+		// Origin
 		params[0] = new Parameter();
 		params[0].setName("Origin");
 		params[0].setRequired(true);
 		params[0].setParamType(Types.BODY);
 		params[0].setValueType(Types.STRING);
-		//Destination
+		// Destination
 		params[1] = new Parameter();
 		params[1].setName("Destination");
 		params[1].setRequired(true);
 		params[1].setParamType(Types.BODY);
 		params[1].setValueType(Types.STRING);
-		//Travelmode
+		// Travelmode
 		params[2] = new Parameter();
 		params[2].setName("Travelmode");
 		params[2].setRequired(true);
 		params[2].setParamType(Types.BODY);
 		params[2].setValueType(Types.STRING);
-		//Time
+		// Time
 		params[3] = new Parameter();
 		params[3].setName("Time");
 		params[3].setRequired(true);

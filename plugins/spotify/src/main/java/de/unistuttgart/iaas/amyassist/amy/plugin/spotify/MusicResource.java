@@ -45,6 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Method;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
@@ -54,7 +55,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
  * @author Muhammed Kaya, Christian Bräuner, Lars Buttgereit
  */
 @Path(MusicResource.PATH)
-public class MusicResource implements Resource{
+public class MusicResource implements Resource {
 
 	/**
 	 * the resource path for this plugin
@@ -66,7 +67,7 @@ public class MusicResource implements Resource{
 
 	@Reference
 	private StringGenerator stringGenerator;
-	
+
 	@Reference
 	private DeviceLogic deviceLogic;
 
@@ -428,12 +429,21 @@ public class MusicResource implements Resource{
 	@Path("setDeviceName")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public DeviceEntity setDeviceName(
-			@QueryParam("uri") @DefaultValue("") String uri, @QueryParam("newName") @DefaultValue("" )String newName) {
+	public DeviceEntity setDeviceName(@QueryParam("uri") @DefaultValue("") String uri,
+			@QueryParam("newName") @DefaultValue("") String newName) {
 		DeviceEntity device = this.deviceLogic.setNewDeviceName(uri, newName);
-		if(device != null) {
+		if (device != null) {
 			return device;
 		}
-		throw new  WebApplicationException("No device with this uri", Status.NOT_FOUND);
+		throw new WebApplicationException("No device with this uri", Status.NOT_FOUND);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginMethods()
+	 */
+	@Override
+	public Method[] getPluginMethods() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
