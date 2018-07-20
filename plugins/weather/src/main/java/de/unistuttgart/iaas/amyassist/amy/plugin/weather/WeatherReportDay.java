@@ -47,6 +47,7 @@ public class WeatherReportDay extends Entity{
 	private final String sunsetTime;
 	private final String weekday;
 	private final long timestamp;
+	private final String icon;
 
 	private static final String TRIM_QUOTES_REGEX = "^\"|\"$";
 	private static final int FRACTION_TO_PERCENT_FACTOR = 100;
@@ -70,6 +71,8 @@ public class WeatherReportDay extends Entity{
 		Date date = new Date(p.timestamp() * SECONDS_TO_MILLIS_FACTOR);
 		this.weekday = new SimpleDateFormat("EEEE").format(date);
 		this.timestamp = p.timestamp();
+
+		this.icon = trimQuotes(p.icon());
 	}
 
 	/**
@@ -150,5 +153,9 @@ public class WeatherReportDay extends Entity{
 
 	public long getTimestamp() {
 		return timestamp;
+	}
+
+	public String getIcon() {
+		return icon;
 	}
 }

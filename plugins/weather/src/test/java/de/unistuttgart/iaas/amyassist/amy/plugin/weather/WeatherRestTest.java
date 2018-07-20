@@ -83,6 +83,7 @@ public class WeatherRestTest {
 		Mockito.when(p.sunriseTime()).thenReturn("05:00:00");
 		Mockito.when(p.sunsetTime()).thenReturn("21:00:00");
 		Mockito.when(p.timestamp()).thenReturn((long) 12345);
+		Mockito.when(p.icon()).thenReturn("rainIcon");
 
 		this.day = new WeatherReportDay("This is the weather report for today.", p);
 
@@ -98,6 +99,7 @@ public class WeatherRestTest {
 		this.obj.add("sunsetTime", this.day.getSunsetTime());
 		this.obj.add("weekday", this.day.getWeekday());
 		this.obj.add("timestamp", this.day.getTimestamp());
+		this.obj.add("icon", this.day.getIcon());
 	}
 
 	private void createWeek() {
