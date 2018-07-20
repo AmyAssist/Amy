@@ -449,7 +449,8 @@ public class MusicResource implements Resource {
 		ResourceEntity resource = new ResourceEntity();
 		resource.setName("Spotify Plugin");
 		resource.setDescription(
-				"A Plugin to control a spotify client from a user. Provides player and search functions for music and playlists and to show and set devices to use");
+				"A Plugin to control a spotify client from a user. Provides player and search functions for music and"
+						+ " playlists and to show and set devices to use");
 		resource.setMethods(this.getPluginMethods());
 		resource.setLink(this.info.getBaseUriBuilder().path(MusicResource.class).build());
 		return resource;
@@ -462,21 +463,21 @@ public class MusicResource implements Resource {
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
 	public Method[] getPluginMethods() {
-		Method[] methods = new Method[13];
+		Method[] methods = new Method[14];
 		methods[0] = createFirstTimeInitMethod();
 		methods[1] = createInputAuthCodeMethod();
 		methods[2] = createGetDevicesMethod();
-		methods[2] = createSetDeviceMethod();
-		methods[3] = createSearchMethod();
-		methods[4] = createPlayMethod();
-		methods[5] = createResumeMethod();
-		methods[6] = createPauseMethod();
-		methods[7] = createSkipMethod();
-		methods[8] = createBackMethod();
-		methods[9] = createGetCurrentSongMethod();
-		methods[10] = createGetPlaylistsMethod();
-		methods[11] = createSetVolumeMethod();
-		methods[12] = createSetDeviceNameMethod();
+		methods[3] = createSetDeviceMethod();
+		methods[4] = createSearchMethod();
+		methods[5] = createPlayMethod();
+		methods[6] = createResumeMethod();
+		methods[7] = createPauseMethod();
+		methods[8] = createSkipMethod();
+		methods[9] = createBackMethod();
+		methods[10] = createGetCurrentSongMethod();
+		methods[11] = createGetPlaylistsMethod();
+		methods[12] = createSetVolumeMethod();
+		methods[13] = createSetDeviceNameMethod();
 		return methods;
 	}
 
@@ -723,7 +724,7 @@ public class MusicResource implements Resource {
 	 * 
 	 * @return the describing method object
 	 */
-	@Path("events/{number}")
+	@Path("setDeviceName")
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
 	public Method createSetDeviceNameMethod() {
@@ -746,11 +747,11 @@ public class MusicResource implements Resource {
 		params[0].setParamType(Types.QUERY);
 		params[0].setValueType(Types.STRING);
 		// clientSecret
-		params[0] = new Parameter();
-		params[0].setName("Client Secret");
-		params[0].setRequired(true);
-		params[0].setParamType(Types.QUERY);
-		params[0].setValueType(Types.STRING);
+		params[1] = new Parameter();
+		params[1].setName("Client Secret");
+		params[1].setRequired(true);
+		params[1].setParamType(Types.QUERY);
+		params[1].setValueType(Types.STRING);
 		return params;
 	}
 
