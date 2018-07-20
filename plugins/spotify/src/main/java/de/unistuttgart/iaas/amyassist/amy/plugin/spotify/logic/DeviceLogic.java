@@ -84,7 +84,7 @@ public class DeviceLogic {
 	public String setDevice(int deviceNumber) {
 		List<DeviceEntity> devices = getDevices();
 		if (devices.size() > deviceNumber) {
-			this.spotifyAPICalls.setCurrentDevice(devices.get(deviceNumber).getUri());
+			this.spotifyAPICalls.setCurrentDevice(devices.get(deviceNumber).getID());
 			return devices.get(deviceNumber).getName();
 		}
 		this.logger.warn("No device with this number was found");

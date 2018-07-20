@@ -23,19 +23,19 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
+
 /**
  * Interface between the SpeechRecognition System and the rest of the System
  * 
  * @author Kai Menzel
  */
-public interface AudioUserInteraction {
-	/**
-	 * Creates the Recognizer Objects
-	 */
-	void init();
+public interface AudioUserInteraction extends RunnableService {
+
 	/**
 	 * Start the Recognition System
 	 */
+	@Override
 	void start();
 
 	/**

@@ -202,10 +202,10 @@ class MusicRestTest {
 		DeviceEntity[] actualDevices = response.readEntity(DeviceEntity[].class);
 		assertThat(actualDevices[0].getType(), is("Smartphone"));
 		assertThat(actualDevices[0].getName(), is("Hello"));
-		assertThat(actualDevices[0].getUri(), is("abc123"));
+		assertThat(actualDevices[0].getID(), is("abc123"));
 		assertThat(actualDevices[1].getType(), is("Computer"));
 		assertThat(actualDevices[1].getName(), is("Goodbye"));
-		assertThat(actualDevices[1].getUri(), is("123abc"));
+		assertThat(actualDevices[1].getID(), is("123abc"));
 		assertThat(response.getStatus(), is(200));
 
 		List<DeviceEntity> emptyList = new ArrayList<>();

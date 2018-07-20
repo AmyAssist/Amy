@@ -21,49 +21,23 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.registry;
+package de.unistuttgart.iaas.amyassist.amy.core.service;
 
 /**
- * Location object interface
- * @author Benno Krauß
+ * A RunnableService is a Service that must be startet and is only operational in the running state. The RunnableService
+ * must be stoppable by calling the {@link #stop()} method. RunnableServices are Singletons.
+ * 
+ * @author Leon Kiefer
  */
-public interface Location extends RegistryEntity {
+public interface RunnableService {
+	/**
+	 * Start the RunnableService. After start the Service operational
+	 */
+	void start();
 
-    String getName();
-
-    void setName(String name);
-
-    String getZipCode();
-
-    void setZipCode(String zipCode);
-
-    String getCity();
-
-    void setCity(String city);
-
-    String getStreet();
-
-    void setStreet(String street);
-
-    int getHouseNumber();
-
-    void setHouseNumber(int houseNumber);
-
-    double getLongitude();
-
-    void setLongitude(double longitude);
-
-    double getLatitude();
-
-    void setLatitude(double latitude);
-
-    boolean isHome();
-
-    void setHome(boolean home);
-
-    boolean isWork();
-
-    void setWork(boolean work);
-
-    String getAddressString();
+	/**
+	 * Stop the RunnableService. All Threads started with {@link #start()} must be stopped and all resources opened in
+	 * {@link #start()} must be closed.
+	 */
+	void stop();
 }

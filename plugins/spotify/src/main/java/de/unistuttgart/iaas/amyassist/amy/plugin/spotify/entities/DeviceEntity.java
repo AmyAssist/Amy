@@ -30,6 +30,7 @@ import javax.persistence.Id;
 import javax.persistence.PersistenceUnit;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
 
 /**
@@ -40,11 +41,11 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
 @XmlRootElement
 @javax.persistence.Entity
 @PersistenceUnit(unitName = "SpotifyDeviceRegistry")
-public class DeviceEntity extends Entity {
+public class DeviceEntity extends Entity implements RegistryEntity {
 
 	@Id
 	@GeneratedValue
-	private int id;
+	private int persistentId;
 
 	/**
 	 * constructor for a Device
@@ -59,7 +60,7 @@ public class DeviceEntity extends Entity {
 	public DeviceEntity(String type, String name, String uri) {
 		this.type = type;
 		this.name = name;
-		this.uri = uri;
+		this.id = uri;
 	}
 
 	/**
@@ -75,7 +76,7 @@ public class DeviceEntity extends Entity {
 	/**
 	 * the ID of the device
 	 */
-	private String uri;
+	private String id;
 
 	/**
 	 * @return type
@@ -110,25 +111,25 @@ public class DeviceEntity extends Entity {
 	/**
 	 * @return uri
 	 */
-	public String getUri() {
-		return this.uri;
+	public String getID() {
+		return this.id;
 	}
 
 	/**
 	 * @param uri
 	 *            to set
 	 */
-	public void setUri(String uri) {
-		this.uri = uri;
+	public void setID(String uri) {
+		this.id = uri;
 	}
 
 	/**
-	 * Get's {@link #id id}
+	 * Get's {@link #persistentId id}
 	 * 
 	 * @return id
 	 */
-	public int getId() {
-		return this.id;
+	public int getPersistentId() {
+		return this.persistentId;
 	}
 
 	@Override
@@ -138,13 +139,13 @@ public class DeviceEntity extends Entity {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		DeviceEntity that = (DeviceEntity) o;
-		return this.id == that.id && this.name.equals(that.name) && this.type.equals(that.type)
-				&& this.uri.equals(that.uri);
+		return this.persistentId == that.persistentId && this.name.equals(that.name) && this.type.equals(that.type)
+				&& this.id.equals(that.id);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.id, this.name, this.type, this.uri);
+		return Objects.hash(this.persistentId, this.name, this.type, this.id);
 	}
 
 }

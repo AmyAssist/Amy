@@ -21,49 +21,31 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.registry;
+package de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api;
+
+import java.time.Instant;
 
 /**
- * Location object interface
- * @author Benno Krauß
+ * Service to schedule and execute concurrent tasks.
+ * 
+ * @author Leon Kiefer
  */
-public interface Location extends RegistryEntity {
+public interface TaskScheduler {
+	/**
+	 * Executes the given command at some time in the future.
+	 * 
+	 * @param runnable
+	 *            The runnable to run in the future
+	 */
+	void execute(Runnable runnable);
 
-    String getName();
-
-    void setName(String name);
-
-    String getZipCode();
-
-    void setZipCode(String zipCode);
-
-    String getCity();
-
-    void setCity(String city);
-
-    String getStreet();
-
-    void setStreet(String street);
-
-    int getHouseNumber();
-
-    void setHouseNumber(int houseNumber);
-
-    double getLongitude();
-
-    void setLongitude(double longitude);
-
-    double getLatitude();
-
-    void setLatitude(double latitude);
-
-    boolean isHome();
-
-    void setHome(boolean home);
-
-    boolean isWork();
-
-    void setWork(boolean work);
-
-    String getAddressString();
+	/**
+	 * Schedules the given task to execute at the given time
+	 * 
+	 * @param task
+	 *            the task to execute
+	 * @param instant
+	 *            The instant at which to execute that task
+	 */
+	void schedule(Runnable task, Instant instant);
 }

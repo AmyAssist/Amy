@@ -21,31 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api;
+package de.unistuttgart.iaas.amyassist.amy.core.service;
 
-import java.util.Date;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Service to schedule and execute concurrent tasks.
+ * Test RunnableService to test the start and stop methods
  * 
  * @author Leon Kiefer
  */
-public interface TaskSchedulerAPI {
-	/**
-	 * Executes the given command at some time in the future.
-	 * 
-	 * @param runnable
-	 *            The runnable to run in the future
-	 */
-	void execute(Runnable runnable);
+@Service(TestRunnableService.class)
+public class TestRunnableService implements RunnableService {
 
-	/**
-	 * Schedules the given task to execute at the given time
-	 * 
-	 * @param task
-	 *            the task to execute
-	 * @param date
-	 *            The date at which to execute that task
-	 */
-	void schedule(Runnable task, Date date);
+	public boolean run = false;
+	public int count = 0;
+
+	@Override
+	public void start() {
+		this.run = true;
+		this.count++;
+	}
+
+	@Override
+	public void stop() {
+		this.run = false;
+	}
 }
