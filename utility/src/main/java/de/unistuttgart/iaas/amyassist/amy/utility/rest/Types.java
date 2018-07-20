@@ -33,7 +33,7 @@ public class Types {
 	/**
 	 * Integer (32bit)
 	 */
-	public static final String INTEGER = "int32"; 
+	public static final String INTEGER = "int32";
 	/**
 	 * Long (64bit)
 	 */
@@ -46,6 +46,10 @@ public class Types {
 	 * Float
 	 */
 	public static final String FLOAT = "float";
+	/**
+	 * Float
+	 */
+	public static final String BOOLEAN = "boolean";
 	/**
 	 * a date in ISO-8601 format
 	 */
@@ -78,5 +82,5 @@ public class Types {
 	 * path
 	 */
 	public static final String PATH = "path";
-	
+
 }
