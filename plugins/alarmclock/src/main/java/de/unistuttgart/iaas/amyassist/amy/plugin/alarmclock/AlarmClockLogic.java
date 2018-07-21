@@ -23,12 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 
 /**
@@ -47,6 +49,9 @@ public class AlarmClockLogic {
 
 	@Reference
 	private TaskScheduler taskScheduler;
+
+	@Reference
+	private Environment environment;
 
 	/**
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
@@ -102,7 +107,11 @@ public class AlarmClockLogic {
 			Alarm alarm = new Alarm(counter, hour, minute, true);
 			this.acStorage.storeAlarm(alarm);
 			Runnable alarmRunnable = createAlarmRunnable(counter);
-			this.taskScheduler.schedule(alarmRunnable, alarm.getAlarmDate().toInstant());
+			ZonedDateTime with = this.environment.getCurrentDateTime().with(alarm.getAlarmTime());
+			if (with.isBefore(this.environment.getCurrentDateTime())) {
+				with = with.plusDays(1);
+			}
+			this.taskScheduler.schedule(alarmRunnable, with.toInstant());
 			return alarm;
 		}
 		throw new IllegalArgumentException();
