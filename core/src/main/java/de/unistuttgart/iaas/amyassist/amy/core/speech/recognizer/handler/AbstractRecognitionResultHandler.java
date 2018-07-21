@@ -87,8 +87,8 @@ public abstract class AbstractRecognitionResultHandler implements RecognitionRes
 	 * @return true if the result is an predefined one
 	 */
 	private boolean predefinedInputHandling(String result) {
-		if (this.srManager.isSoundPlaying()) {
-			if (result.equals(Constants.SHUT_UP)) {
+		if (result.equals(Constants.SHUT_UP)) {
+			if (this.srManager.isSoundPlaying()) {
 				this.srManager.stopOutput();
 			}
 			return true;
