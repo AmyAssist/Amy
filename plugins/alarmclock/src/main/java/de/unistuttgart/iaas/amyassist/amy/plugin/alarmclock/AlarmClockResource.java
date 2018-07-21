@@ -243,7 +243,7 @@ public class AlarmClockResource implements Resource {
 	 * 
 	 * @return the describing method object
 	 */
-	@Path("alarms/{pathid}")
+//	@Path("alarms/{pathid}") TODO Same path causes an error
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
 	public Method createGetAlarmMethod() {
@@ -312,7 +312,7 @@ public class AlarmClockResource implements Resource {
 		resetAlarms.setType(Types.POST);
 		return resetAlarms;
 	}
-	
+
 	private Parameter[] getGetAlarmParameters() {
 		Parameter[] params = new Parameter[1];
 		// pathid
@@ -323,7 +323,7 @@ public class AlarmClockResource implements Resource {
 		params[0].setValueType(Types.INTEGER);
 		return params;
 	}
-	
+
 	private Parameter[] getEditAlarmParameters() {
 		Parameter[] params = new Parameter[3];
 		// pathid
@@ -346,7 +346,7 @@ public class AlarmClockResource implements Resource {
 		params[2].setValueType(Types.BODY); // TODO timestamp type
 		return params;
 	}
-	
+
 	private Parameter[] getNewAlarmParameters() {
 		Parameter[] params = new Parameter[1];
 		// alarmTime
@@ -357,5 +357,5 @@ public class AlarmClockResource implements Resource {
 		params[0].setValueType(Types.BODY); // Same here
 		return params;
 	}
-	
+
 }

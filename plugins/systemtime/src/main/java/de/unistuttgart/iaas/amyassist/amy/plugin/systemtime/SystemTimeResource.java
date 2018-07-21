@@ -44,7 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.Types;
  */
 @Path(SystemTimeResource.PATH)
 public class SystemTimeResource implements Resource {
-	
+
 	/**
 	 * the resource path for this plugin
 	 */
@@ -55,7 +55,7 @@ public class SystemTimeResource implements Resource {
 
 	@Context
 	private UriInfo info;
-	
+
 	/**
 	 * get the current system time
 	 * 
@@ -94,7 +94,7 @@ public class SystemTimeResource implements Resource {
 		resource.setLink(this.info.getBaseUriBuilder().path(SystemTimeResource.class).build());
 		return resource;
 	}
-	
+
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginMethods()
 	 */
@@ -120,7 +120,8 @@ public class SystemTimeResource implements Resource {
 		Method m = new Method();
 		m.setName("Time");
 		m.setDescription("Returns the current time");
-		m.setLink(this.info.getBaseUriBuilder().path(SystemTimeResource.class).path(SystemTimeResource.class, "getTime").build());
+		m.setLink(this.info.getBaseUriBuilder().path(SystemTimeResource.class).path(SystemTimeResource.class, "getTime")
+				.build());
 		m.setType(Types.GET);
 		return m;
 	}
@@ -137,7 +138,8 @@ public class SystemTimeResource implements Resource {
 		Method m = new Method();
 		m.setName("Date");
 		m.setDescription("Returns the current date");
-		m.setLink(this.info.getBaseUriBuilder().path(SystemTimeResource.class).path(SystemTimeResource.class, "getDate").build());
+		m.setLink(this.info.getBaseUriBuilder().path(SystemTimeResource.class).path(SystemTimeResource.class, "getDate")
+				.build());
 		m.setType(Types.GET);
 		return m;
 	}
