@@ -135,7 +135,13 @@ public class PlayerLogic {
 	 */
 	public Map<String, String> play(int songNumber, SearchTypes type) {
 		if (songNumber < this.search.restoreUris(type).size()) {
-			this.spotifyAPICalls.playListFromUri(this.search.restoreUris(type).get(songNumber));
+			String uriToPlay = this.search.restoreUris(type).get(songNumber);
+			if (uriToPlay.contains("track")) {
+				this.spotifyAPICalls.playSongFromUri(uriToPlay);
+			} else {
+				this.spotifyAPICalls.playListFromUri(uriToPlay);
+			}
+
 		} else {
 			this.logger.warn("Item not found");
 		}

@@ -155,8 +155,8 @@ public class SpotifyAPICalls {
 			this.logger.warn("Client Secret and ID missing. Please insert the config file");
 			return null;
 		}
-		if (this.configLoader.getProperty(SPOTIFY_REFRSHTOKEN_KEY) != null) {
-			spotifyApi.setRefreshToken(this.configLoader.getProperty(SPOTIFY_REFRSHTOKEN_KEY));
+		if (this.storage.has(SPOTIFY_REFRSHTOKEN_KEY)) {
+			spotifyApi.setRefreshToken(this.storage.get(SPOTIFY_REFRSHTOKEN_KEY));
 		} else {
 			this.logger.warn("Please exec the Authorization first");
 			return spotifyApi;
@@ -208,7 +208,7 @@ public class SpotifyAPICalls {
 		AuthorizationCodeCredentials authCodeCredentials = exceptionHandlingWithResults(
 				authorizationCodeRequest::execute);
 		if (authCodeCredentials != null) {
-			this.configLoader.setProperty(SPOTIFY_REFRSHTOKEN_KEY, authCodeCredentials.getRefreshToken());
+			this.storage.put(SPOTIFY_REFRSHTOKEN_KEY, authCodeCredentials.getRefreshToken());
 			return true;
 		}
 		return false;
