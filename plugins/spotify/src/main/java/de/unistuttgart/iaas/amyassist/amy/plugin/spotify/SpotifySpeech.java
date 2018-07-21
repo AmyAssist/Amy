@@ -33,7 +33,6 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
 
-
 /**
  * this class handle the speech commands from the spotify plugin
  * 
@@ -47,7 +46,7 @@ public class SpotifySpeech {
 
 	@Reference
 	private PlayerLogic playerLogic;
-	
+
 	@Reference
 	private DeviceLogic deviceLogic;
 
@@ -61,7 +60,7 @@ public class SpotifySpeech {
 	 *            not used here
 	 * @return
 	 */
-	@Grammar("get devices")
+	@Grammar("get music devices")
 	public String getDevices(String... params) {
 		List<DeviceEntity> devices = this.deviceLogic.getDevices();
 		String output = "";
@@ -81,7 +80,7 @@ public class SpotifySpeech {
 	 * 
 	 * @return
 	 */
-	@Grammar("spotify set device #")
+	@Grammar("set music device #")
 	public String setDevice(String... params) {
 		if (2 < params.length) {
 			try {
@@ -98,7 +97,7 @@ public class SpotifySpeech {
 	 * 
 	 * @return
 	 */
-	@Grammar("[music|spotify] play [music]")
+	@Grammar("(music|spotify) play [music]")
 	public String playASong(String... params) {
 		return (this.playerLogic.play().toString());
 	}
@@ -115,7 +114,7 @@ public class SpotifySpeech {
 				this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.USER_PLAYLISTS));
 	}
 
-	@Grammar("resume")
+	@Grammar("resume the music")
 	public String resume(String... params) {
 		if (this.playerLogic.resume()) {
 			return "resume";
@@ -123,7 +122,7 @@ public class SpotifySpeech {
 		return ERROR_MESSAGE;
 	}
 
-	@Grammar("pause")
+	@Grammar("pause the music")
 	public String pause(String... params) {
 		if (this.playerLogic.pause()) {
 			return "pause";
@@ -131,7 +130,7 @@ public class SpotifySpeech {
 		return ERROR_MESSAGE;
 	}
 
-	@Grammar("skip")
+	@Grammar("skip a track")
 	public String skip(String... params) {
 		if (this.playerLogic.skip()) {
 			return "skip";
@@ -139,7 +138,7 @@ public class SpotifySpeech {
 		return ERROR_MESSAGE;
 	}
 
-	@Grammar("back")
+	@Grammar("go back a track")
 	public String back(String... params) {
 		if (this.playerLogic.back()) {
 			return "back";
@@ -147,7 +146,7 @@ public class SpotifySpeech {
 		return ERROR_MESSAGE;
 	}
 
-	@Grammar("volume (mute|max|up|down)")
+	@Grammar("set music volume (mute|max|up|down)")
 	public String volume(String... params) {
 		if (1 < params.length) {
 			return Integer.toString(this.playerLogic.setVolume(params[1]));
@@ -178,10 +177,4 @@ public class SpotifySpeech {
 		}
 		return output;
 	}
-
-	@Grammar("create login link")
-	public String createLoginLink(String... params) {
-		return this.playerLogic.firstTimeInit().toString();
-	}
-
 }
