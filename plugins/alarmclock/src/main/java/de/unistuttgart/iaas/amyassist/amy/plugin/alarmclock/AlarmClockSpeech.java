@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import java.util.Calendar;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -67,9 +67,9 @@ public class AlarmClockSpeech {
 		int[] alarmTime = extractAlarmTime(params);
 		try {
 			Alarm alarm = this.logic.setAlarm(alarmTime[0], alarmTime[1]);
-			Calendar time = alarm.getAlarmDate();
-			return "Alarm " + alarm.getId() + " set for " + time.get(Calendar.HOUR_OF_DAY) + ":"
-					+ time.get(Calendar.MINUTE);
+			LocalTime time = alarm.getAlarmTime();
+			return "Alarm " + alarm.getId() + " set for " + time.getHour() + ":"
+					+ time.getMinute();
 		} catch (IllegalArgumentException e) {
 			this.logException(e);
 			return PARAMSNOTVALID;
@@ -318,13 +318,13 @@ public class AlarmClockSpeech {
 	}
 
 	private String outputAlarm(Alarm alarm) {
-		Calendar ringDate = alarm.getAlarmDate();
+		LocalTime ringTime = alarm.getAlarmTime();
 		if (alarm.isActive())
-			return "Alarm " + alarm.getId() + " will ring at " + ringDate.get(Calendar.HOUR_OF_DAY) + ":"
-					+ ringDate.get(Calendar.MINUTE);
+			return "Alarm " + alarm.getId() + " will ring at " + ringTime.getHour() + ":"
+					+ ringTime.getMinute();
 
-		return "Alarm " + alarm.getId() + " is set for " + ringDate.get(Calendar.HOUR_OF_DAY) + ":"
-				+ ringDate.get(Calendar.MINUTE) + " but will not ring";
+		return "Alarm " + alarm.getId() + " is set for " + ringTime.getHour() + ":"
+				+ ringTime.getMinute() + " but will not ring";
 	}
 
 	private String outputTimer(Timer timer) {
