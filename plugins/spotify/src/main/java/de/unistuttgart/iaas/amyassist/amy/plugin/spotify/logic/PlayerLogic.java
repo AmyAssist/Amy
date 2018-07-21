@@ -269,4 +269,13 @@ public class PlayerLogic {
 		return -1;
 	}
 
+	/**
+	 * get actual volume from 0-100, -1 if no volume available
+	 * 
+	 * @return the volume
+	 */
+	public int getVolume() {
+		return this.spotifyAPICalls.getVolume();
+	}
+
 }

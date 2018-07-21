@@ -60,6 +60,8 @@ public class MusicResource implements Resource{
 	 * the resource path for this plugin
 	 */
 	public static final String PATH = "music";
+	
+	private static final String CHECK_PLAYER_STATE = "Check player state";
 
 	@Reference
 	private PlayerLogic logic;
@@ -277,7 +279,7 @@ public class MusicResource implements Resource{
 		if (this.logic.resume()) {
 			return "resume";
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -292,7 +294,7 @@ public class MusicResource implements Resource{
 		if (this.logic.pause()) {
 			return "pause";
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -307,7 +309,7 @@ public class MusicResource implements Resource{
 		if (this.logic.skip()) {
 			return "skip";
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -322,7 +324,7 @@ public class MusicResource implements Resource{
 		if (this.logic.back()) {
 			return "back";
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -413,7 +415,7 @@ public class MusicResource implements Resource{
 				return String.valueOf(volume);
 			}
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -444,4 +446,17 @@ public class MusicResource implements Resource{
 		}
 		throw new  WebApplicationException("No device with this uri", Status.NOT_FOUND);
 	}
+	
+	/**
+	 * get actual volume from 0-100, -1 if no volume available
+	 * 
+	 * @return the volume
+	 */
+	@GET
+	@Path("getVolume")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getVolume() {
+		return String.valueOf(this.logic.getVolume());
+	}
+
 }
