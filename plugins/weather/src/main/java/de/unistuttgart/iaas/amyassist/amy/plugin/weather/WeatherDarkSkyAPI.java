@@ -152,9 +152,10 @@ public class WeatherDarkSkyAPI {
 			if (location != null) {
 				this.coordinateLat = String.valueOf(location.getLatitude());
 				this.coordinateLong = String.valueOf(location.getLongitude());
+			} else {
+				this.coordinateLat = "48.745886";
+				this.coordinateLong = "9.107881";
 			}
-			this.coordinateLat = "48.745886";
-			this.coordinateLong = "9.107881";
 		}
 	}
 }
