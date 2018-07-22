@@ -9,4 +9,7 @@ public class GeocoderException extends Exception {
     public GeocoderException(String message) {
         super(message);
     }
+    public GeocoderException(Exception e) {
+        super(e.getMessage());
+    }
 }

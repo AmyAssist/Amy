@@ -8,6 +8,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import javafx.util.Pair;
+import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,7 +39,9 @@ public class Geocoder {
 
     @Reference
     public ConfigurationLoader configurationLoader;
-    private Properties config;
+
+    @Reference
+    Logger log;
 
     /**
      * Geocode an address
@@ -92,11 +95,12 @@ public class Geocoder {
         return value;
     }
 
-    private static String urlEncode(String s) {
+    private String urlEncode(String s) {
         try {
             return URLEncoder.encode(s, ENCODING_UTF8);
         } catch (UnsupportedEncodingException e) {
             // This will never happen because the encoding name is a constant and UTF-8 is ubiquitous
+            log.error("Fatal error in Geocoder: ", e);
             return null;
         }
     }
@@ -116,10 +120,11 @@ public class Geocoder {
      * @throws GeocoderException if any error occurs during the request
      */
     private static String httpGET(String requestURL) throws GeocoderException {
-        BufferedReader reader = null;
+
+        HttpURLConnection connection;
         try {
             URL request = new URL(requestURL);
-            HttpURLConnection connection = (HttpURLConnection)request.openConnection();
+            connection = (HttpURLConnection) request.openConnection();
 
             connection.setRequestMethod("GET");
             connection.setUseCaches(false);
@@ -134,8 +139,12 @@ public class Geocoder {
             if (responseCode > 299 || responseCode < 200) {
                 throw new GeocoderException("Invalid response code " + responseCode);
             }
+        } catch (IOException e) {
+            throw new GeocoderException(e);
+        }
 
-            reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), ENCODING_UTF8));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), ENCODING_UTF8))) {
+
             StringBuilder b = new StringBuilder();
             String s = "";
             while ((s = reader.readLine()) != null) {
@@ -144,15 +153,7 @@ public class Geocoder {
 
             return b.toString();
         } catch (IOException readingError) {
-            throw new GeocoderException(readingError.getMessage());
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e){
-                    // Ignore
-                }
-            }
+            throw new GeocoderException(readingError);
         }
     }
 }
