@@ -43,6 +43,10 @@ public class TimeFormatter {
 	@Reference
 	private Logger logger;
 
+	private int day;
+	private int month;
+	private int year;
+
 	/**
 	 * get a formated time. set the actual date and time to the given time of the same date.
 	 *
@@ -53,28 +57,53 @@ public class TimeFormatter {
 	 */
 	protected LocalDateTime formatTimes(String[] input) {
 		LocalDateTime currentTime = this.environment.getCurrentLocalDateTime();
-		int day = currentTime.getDayOfMonth();
-		int month = currentTime.getMonthValue();
-		int year = currentTime.getYear();
-
-		if (input != null && input.length == 3) {
-			if (input[0].equals("quarter")) {
-				if (input[1].equals("past") && (Integer.parseInt(input[2]) >= 0 && Integer.parseInt(input[2]) < 24)) {
-					return LocalDateTime.of(year, month, day, Integer.parseInt(input[2]), 15);
-				} else if (input[1].equals("to")
-						&& (Integer.parseInt(input[2]) >= 0 && Integer.parseInt(input[2]) < 24)) {
-					return LocalDateTime.of(year, month, day, Integer.parseInt(input[2]) - 1, 45);
+		this.day = currentTime.getDayOfMonth();
+		this.month = currentTime.getMonthValue();
+		this.year = currentTime.getYear();
+		if (input != null) {
+			if (input.length == 3 && !input[1].equals("x")) {
+				if (input[0].equals("quarter")) {
+					if (input[1].equals("past")
+							&& (Integer.parseInt(input[2]) >= 0 && Integer.parseInt(input[2]) < 24)) {
+						return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[2]), 15);
+					} else if (input[1].equals("to")
+							&& (Integer.parseInt(input[2]) >= 0 && Integer.parseInt(input[2]) < 24)) {
+						return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[2]) - 1, 45);
+					}
+				} else if (input[1].equals("o")
+						&& (Integer.parseInt(input[0]) >= 0 && Integer.parseInt(input[0]) < 24)) {
+					return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[0]), 0);
+				} else if (input[1].equals("past")
+						&& (Integer.parseInt(input[2]) >= 0 && Integer.parseInt(input[2]) < 24)
+						&& (Integer.parseInt(input[0]) >= 0 && Integer.parseInt(input[0]) < 60)) {
+					return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[2]),
+							Integer.parseInt(input[0]));
+				} else if (input[1].equals("to") && (Integer.parseInt(input[2]) >= 0 && Integer.parseInt(input[2]) < 24)
+						&& (Integer.parseInt(input[0]) >= 0 && Integer.parseInt(input[0]) < 60)) {
+					return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[2]) - 1,
+							60 - Integer.parseInt(input[0]));
 				}
-			} else if (input[1].equals("o") && (Integer.parseInt(input[0]) >= 0 && Integer.parseInt(input[0]) < 24)) {
-				return LocalDateTime.of(year, month, day, Integer.parseInt(input[0]), 0);
-			} else if (input[1].equals("past") && (Integer.parseInt(input[2]) >= 0 && Integer.parseInt(input[2]) < 24)
-					&& (Integer.parseInt(input[0]) >= 0 && Integer.parseInt(input[0]) < 60)) {
-				return LocalDateTime.of(year, month, day, Integer.parseInt(input[2]), Integer.parseInt(input[0]));
-			} else if (input[1].equals("to") && (Integer.parseInt(input[2]) >= 0 && Integer.parseInt(input[2]) < 24)
-					&& (Integer.parseInt(input[0]) >= 0 && Integer.parseInt(input[0]) < 60)) {
-				return LocalDateTime.of(year, month, day, Integer.parseInt(input[2]) - 1,
-						60 - Integer.parseInt(input[0]));
+			} else {
+				return formatGoogleTimeInput(input);
 			}
+		}
+		return null;
+	}
+
+	private LocalDateTime formatGoogleTimeInput(String[] input) {
+		if(input.length == 4) {
+			if(input[3].equals("am")) {
+				return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[0]),Integer.parseInt(input[2]));
+			}
+			else if(input[3].equals("pm")) {
+				return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[0]) + 12,Integer.parseInt(input[2]));
+			}
+			else {
+				return null;
+			}
+		}
+		else if (input.length == 3) {
+			return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[0]),Integer.parseInt(input[2]));
 		}
 		return null;
 	}
