@@ -143,7 +143,8 @@ public class Geocoder {
             throw new GeocoderException(e);
         }
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), ENCODING_UTF8))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),
+                ENCODING_UTF8))) {
 
             StringBuilder b = new StringBuilder();
             String s = "";
