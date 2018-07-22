@@ -34,6 +34,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -45,6 +47,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
@@ -68,11 +71,14 @@ public class AlarmClockLogicTest {
 
 	private IAlarmClockStorage acStorage;
 
+	private Environment env;
+
 	/**
 	 * Initializes the class variables before each test
 	 */
 	@BeforeEach
 	public void setup() {
+		env = this.framework.mockService(Environment.class);
 		this.scheduler = this.framework.mockService(TaskScheduler.class);
 		this.acStorage = this.framework.mockService(IAlarmClockStorage.class);
 		this.abs = this.framework.mockService(AlarmBeepService.class);
@@ -85,6 +91,7 @@ public class AlarmClockLogicTest {
 	@Test
 	public void testSetAlarm() {
 		when(this.acStorage.incrementAlarmCounter()).thenReturn(1);
+		when(this.env.getCurrentDateTime()).thenReturn(ZonedDateTime.of(2018, 2, 1, 4, 21, 55, 987, ZoneId.of("Z")));
 		this.acl.setAlarm(4, 20);
 		verify(this.acStorage).incrementAlarmCounter();
 		verify(this.acStorage).storeAlarm(ArgumentMatchers.any(Alarm.class));

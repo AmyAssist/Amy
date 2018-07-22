@@ -23,18 +23,21 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Calendar;
+import java.time.LocalTime;
 
 import org.junit.jupiter.api.Test;
 
 /**
  * Class to test the alarm class
  * 
- * @author Patrick Singer
+ * @author Patrick Singer, Leon Kiefer
  */
 public class AlarmTest {
 
@@ -43,21 +46,18 @@ public class AlarmTest {
 	 */
 	@Test
 	public void alarmTest() {
-		assertThrows(IllegalArgumentException.class, () -> new Alarm(-1, 15, 20, true));
-
 		Alarm a1 = new Alarm(5, 4, 20, false);
 		assertEquals(5, a1.getId());
 
-		Calendar c = Calendar.getInstance();
-		if (c.get(Calendar.HOUR_OF_DAY) > 4) {
-			c.add(Calendar.DAY_OF_MONTH, 1);
-		}
-		c.set(Calendar.HOUR_OF_DAY, 4);
-		c.set(Calendar.MINUTE, 20);
-		c.set(Calendar.SECOND, 0);
+		LocalTime of = LocalTime.of(4, 20);
 
-		assertEquals(c.getTimeInMillis(), a1.getAlarmDate().getTimeInMillis(), 1000);
-		assertEquals(false, a1.isActive());
+		assertThat(a1.getAlarmTime(), is(equalTo(of)));
+		assertThat(a1.isActive(), is(false));
+	}
+
+	@Test
+	public void testBadAlarmInput() {
+		assertThrows(IllegalArgumentException.class, () -> new Alarm(-1, 15, 20, true));
 	}
 
 	/**
@@ -77,9 +77,9 @@ public class AlarmTest {
 
 		Alarm a1 = Alarm.reconstructObject("10:4:20:false");
 		assertEquals(10, a1.getId());
-		assertEquals(4, a1.getAlarmDate().get(Calendar.HOUR_OF_DAY));
-		assertEquals(20, a1.getAlarmDate().get(Calendar.MINUTE));
-		assertEquals(0, a1.getAlarmDate().get(Calendar.SECOND));
+		assertEquals(4, a1.getAlarmTime().getHour());
+		assertEquals(20, a1.getAlarmTime().getMinute());
+		assertEquals(0, a1.getAlarmTime().getSecond());
 		assertEquals(false, a1.isActive());
 	}
 

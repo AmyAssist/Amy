@@ -254,7 +254,7 @@ class SpotifyAPICallsTest {
 	public void testGetSpotifyApiAllData() {
 		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
 		doReturn(CLIENT_SECRET).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
-		doReturn(REFRESH_TOKEN).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY);
+		this.storage.put(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY, REFRESH_TOKEN);
 		this.storage.put(SpotifyAPICalls.SPOTIFY_ACCESSTOKEN, ACCESS_TOKEN);
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.MINUTE, 20);
@@ -270,7 +270,7 @@ class SpotifyAPICallsTest {
 	public void testGetSpotifyApiWithoutAccessToken() {
 		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
 		doReturn(CLIENT_SECRET).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
-		doReturn(REFRESH_TOKEN).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY);
+		this.storage.put(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY, REFRESH_TOKEN);
 		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
 		assertThat(spotifyApi.getClientId(), equalTo(CLIENT_ID));
 		assertThat(spotifyApi.getClientSecret(), equalTo(CLIENT_SECRET));
@@ -282,7 +282,6 @@ class SpotifyAPICallsTest {
 	public void testGetSpotifyApiWithoutAccessTokenAndRefreshToken() {
 		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
 		doReturn(CLIENT_SECRET).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
-		doReturn(null).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY);
 		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
 		assertThat(spotifyApi.getClientId(), equalTo(CLIENT_ID));
 		assertThat(spotifyApi.getClientSecret(), equalTo(CLIENT_SECRET));

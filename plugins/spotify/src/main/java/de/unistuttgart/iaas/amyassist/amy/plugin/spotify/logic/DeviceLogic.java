@@ -119,4 +119,5 @@ public class DeviceLogic {
 		}
 		return null;
 	}
+
 }

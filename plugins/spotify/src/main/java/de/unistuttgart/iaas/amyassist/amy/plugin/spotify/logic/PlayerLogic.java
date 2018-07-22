@@ -135,7 +135,13 @@ public class PlayerLogic {
 	 */
 	public Map<String, String> play(int songNumber, SearchTypes type) {
 		if (songNumber < this.search.restoreUris(type).size()) {
-			this.spotifyAPICalls.playListFromUri(this.search.restoreUris(type).get(songNumber));
+			String uriToPlay = this.search.restoreUris(type).get(songNumber);
+			if (uriToPlay.contains("track")) {
+				this.spotifyAPICalls.playSongFromUri(uriToPlay);
+			} else {
+				this.spotifyAPICalls.playListFromUri(uriToPlay);
+			}
+
 		} else {
 			this.logger.warn("Item not found");
 		}
@@ -261,6 +267,15 @@ public class PlayerLogic {
 			return volume;
 		}
 		return -1;
+	}
+
+	/**
+	 * get actual volume from 0-100, -1 if no volume available
+	 * 
+	 * @return the volume
+	 */
+	public int getVolume() {
+		return this.spotifyAPICalls.getVolume();
 	}
 
 }
