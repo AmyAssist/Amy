@@ -828,7 +828,7 @@ public class MusicResource implements Resource {
 		params[2].setValueType(Types.STRING);
 		// limit
 		params[3] = new Parameter();
-		params[3].setName("Limit");
+		params[3].setName(LIMIT);
 		params[3].setRequired(true);
 		params[3].setParamType(Types.QUERY);
 		params[3].setValueType(Types.INTEGER);

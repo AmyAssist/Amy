@@ -26,8 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.registry.rest;
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactImpl;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Method;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 import javax.ws.rs.Path;
 
@@ -38,20 +36,4 @@ import javax.ws.rs.Path;
  */
 @Path("registry/contact/")
 public class ContactRegistryResource extends AbstractRegistryResource<ContactRegistry, Contact, ContactImpl, Integer> {
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
-	 */
-	@Override
-	public ResourceEntity getPluginDescripion() {
-		return new ResourceEntity();
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginMethods()
-	 */
-	@Override
-	public Method[] getPluginMethods() {
-		return new Method[0];
-	}
 }
