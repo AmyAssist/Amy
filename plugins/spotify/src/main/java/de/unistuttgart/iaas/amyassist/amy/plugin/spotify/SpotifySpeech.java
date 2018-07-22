@@ -148,8 +148,8 @@ public class SpotifySpeech {
 
 	@Grammar("set music volume (mute|max|up|down)")
 	public String volume(String... params) {
-		if (1 < params.length) {
-			return Integer.toString(this.playerLogic.setVolume(params[1]));
+		if (3 < params.length) {
+			return Integer.toString(this.playerLogic.setVolume(params[3]));
 		}
 		return "not enough arguments";
 	}
