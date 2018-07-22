@@ -243,7 +243,7 @@ public class AlarmClockResource implements Resource {
 	 * 
 	 * @return the describing method object
 	 */
-//	@Path("alarms/{pathid}") TODO Same path causes an error
+	// @Path("alarms/{pathid}") TODO Same path causes an error
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
 	public Method createGetAlarmMethod() {
@@ -337,7 +337,7 @@ public class AlarmClockResource implements Resource {
 		params[1].setName("Mode");
 		params[1].setRequired(true);
 		params[1].setParamType(Types.QUERY);
-		params[1].setValueType(Types.INTEGER);
+		params[1].setValueType(Types.STRING);
 		// alarmTime
 		params[2] = new Parameter();
 		params[2].setName("AlarmTime");

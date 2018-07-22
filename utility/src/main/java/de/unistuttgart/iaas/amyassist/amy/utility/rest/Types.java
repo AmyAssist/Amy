@@ -30,6 +30,9 @@ package de.unistuttgart.iaas.amyassist.amy.utility.rest;
  */
 public class Types {
 
+	private Types() {
+	}
+
 	/**
 	 * Integer (32bit)
 	 */

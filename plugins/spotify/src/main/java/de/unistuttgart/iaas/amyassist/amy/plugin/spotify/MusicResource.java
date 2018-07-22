@@ -82,6 +82,12 @@ public class MusicResource implements Resource {
 	private MusicEntity musicEntity;
 
 	/**
+	 * Constants
+	 */
+	private static final String CHECK_PLAYER_STATE = "Check player state";
+	private static final String LIMIT = "Limit";
+
+	/**
 	 * needed for the first init. Use the clientID and the clientSecret as query parameter form a spotify devloper
 	 * account or load the properties file in apikeys if there is one in the property location
 	 * 
@@ -278,7 +284,7 @@ public class MusicResource implements Resource {
 		if (this.logic.resume()) {
 			return "resume";
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -293,7 +299,7 @@ public class MusicResource implements Resource {
 		if (this.logic.pause()) {
 			return "pause";
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -308,7 +314,7 @@ public class MusicResource implements Resource {
 		if (this.logic.skip()) {
 			return "skip";
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -323,7 +329,7 @@ public class MusicResource implements Resource {
 		if (this.logic.back()) {
 			return "back";
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -414,7 +420,7 @@ public class MusicResource implements Resource {
 				return String.valueOf(volume);
 			}
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -793,7 +799,7 @@ public class MusicResource implements Resource {
 		params[1].setValueType(Types.STRING);
 		// limit
 		params[2] = new Parameter();
-		params[2].setName("Limit");
+		params[2].setName(LIMIT);
 		params[2].setRequired(true);
 		params[2].setParamType(Types.QUERY);
 		params[2].setValueType(Types.INTEGER);
@@ -839,7 +845,7 @@ public class MusicResource implements Resource {
 		params[0].setValueType(Types.STRING);
 		// limit
 		params[1] = new Parameter();
-		params[1].setName("Limit");
+		params[1].setName(LIMIT);
 		params[1].setRequired(true);
 		params[1].setParamType(Types.QUERY);
 		params[1].setValueType(Types.INTEGER);
