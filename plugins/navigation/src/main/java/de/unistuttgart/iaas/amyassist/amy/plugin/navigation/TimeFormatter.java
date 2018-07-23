@@ -91,19 +91,19 @@ public class TimeFormatter {
 	}
 
 	private LocalDateTime formatGoogleTimeInput(String[] input) {
-		if(input.length == 4) {
-			if(input[3].equals("am")) {
-				return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[0]),Integer.parseInt(input[2]));
-			}
-			else if(input[3].equals("pm")) {
-				return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[0]) + 12,Integer.parseInt(input[2]));
-			}
-			else {
+		if (input.length == 4) {
+			if (input[3].equals("am")) {
+				return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[0]),
+						Integer.parseInt(input[2]));
+			} else if (input[3].equals("pm")) {
+				return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[0]) + 12,
+						Integer.parseInt(input[2]));
+			} else {
 				return null;
 			}
-		}
-		else if (input.length == 3) {
-			return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[0]),Integer.parseInt(input[2]));
+		} else if (input.length == 3) {
+			return LocalDateTime.of(this.year, this.month, this.day, Integer.parseInt(input[0]),
+					Integer.parseInt(input[2]));
 		}
 		return null;
 	}
