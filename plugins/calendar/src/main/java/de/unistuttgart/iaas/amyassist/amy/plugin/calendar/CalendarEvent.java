@@ -27,6 +27,9 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
 
 /**
  * This creates an event object
@@ -36,7 +39,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class CalendarEvent {
 	private String id;
+	@XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
 	private LocalDateTime start;
+	@XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
 	private LocalDateTime end;
 	private String summary;
 	private String location;
