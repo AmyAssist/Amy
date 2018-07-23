@@ -90,6 +90,8 @@ public class WeatherRestTest {
 
 		this.obj = new JsonObject();
 		this.obj.add("link", this.day.getLink().toString());
+		String s = null; //needed due to some compile error
+		this.obj.add("methods", s);
 		this.obj.add("summary", this.day.getSummary());
 		this.obj.add("precip", this.day.isPrecip());
 		this.obj.add("precipProbability", this.day.getPrecipProbability());
