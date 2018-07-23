@@ -25,11 +25,14 @@ package de.unistuttgart.iaas.amyassist.amy.registry.rest;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.registry.IRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.RegistryException;
+import de.unistuttgart.iaas.amyassist.amy.registry.RegistryInvalidRequestException;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
@@ -57,7 +60,7 @@ public abstract class AbstractRegistryResource<R extends IRegistry<E>, E, I exte
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public List<E> getAll() {
-        return registry.getAll();
+        return handleErrors(() -> registry.getAll());
     }
 
     /**
@@ -69,7 +72,7 @@ public abstract class AbstractRegistryResource<R extends IRegistry<E>, E, I exte
     @Path("{id : \\d+}")
     @Produces(MediaType.APPLICATION_JSON)
     public E getById(@PathParam("id") P id) {
-        return registry.getById(id);
+        return handleErrors(() -> registry.getById(id));
     }
 
     /**
@@ -79,7 +82,10 @@ public abstract class AbstractRegistryResource<R extends IRegistry<E>, E, I exte
     @DELETE
     @Path("{id : \\d+}")
     public void deleteById(@PathParam("id") P id) {
-        registry.deleteById(id);
+        handleErrors(() -> {
+            registry.deleteById(id);
+            return null;
+        });
     }
 
     /**
@@ -92,12 +98,42 @@ public abstract class AbstractRegistryResource<R extends IRegistry<E>, E, I exte
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public E create(I l) {
-        registry.save(l);
-        return l;
+        return handleErrors(() -> {
+            registry.save(l);
+            return l;
+        });
     }
 
     @Override
     public ResourceEntity getPluginDescripion() {
         return null;
+    }
+
+    @FunctionalInterface
+    private interface RegistryLambda<T> {
+        /**
+         * Do some work. This may throw a registry exception
+         * @throws RegistryException any registry exception
+         * @return any value
+         */
+        T perform();
+    }
+
+    /**
+     * Perform registry operations in a safe manner. When a RegistryException is thrown,
+     * it'll be rethrown as an appropriate WebApplicationException
+     * @param lambda the block to be executed
+     * @param <T> the return type
+     * @return the block's return value
+     * @throws WebApplicationException any rethrown RegistryException
+     */
+    private <T> T handleErrors(RegistryLambda<T> lambda) {
+        try {
+            return lambda.perform();
+        } catch (RegistryInvalidRequestException e) {
+            throw new WebApplicationException(e.getMessage(), Response.Status.BAD_REQUEST);
+        } catch (RegistryException e) {
+            throw new WebApplicationException(e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
+        }
     }
 }
