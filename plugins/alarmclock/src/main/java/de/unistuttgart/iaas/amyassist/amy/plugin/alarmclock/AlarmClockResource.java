@@ -24,6 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -109,6 +111,7 @@ public class AlarmClockResource implements Resource {
 
 		Timestamp ts = new Timestamp(alarm);
 		ts.setLink(createAlarmPath(alarmnumber));
+		ts.setMethods(createSingleAlarmMethods(alarmnumber));
 		return ts;
 	}
 
@@ -211,12 +214,10 @@ public class AlarmClockResource implements Resource {
 	 */
 	@Override
 	public Method[] getPluginMethods() {
-		Method[] methods = new Method[5];
+		Method[] methods = new Method[3];
 		methods[0] = createGetAllAlarmsMethod();
-		methods[1] = createGetAlarmMethod();
-		methods[2] = createEditAlarmMethod();
-		methods[3] = createNewAlarmMethod();
-		methods[4] = createResetAlarmsMethod();
+		methods[1] = createNewAlarmMethod();
+		methods[2] = createResetAlarmsMethod();
 		return methods;
 	}
 
@@ -239,41 +240,34 @@ public class AlarmClockResource implements Resource {
 	}
 
 	/**
-	 * returns the method describing the getAlarm method
+	 * returns the method describing the methods of a single alarm instance
 	 * 
-	 * @return the describing method object
-	 */
-	// @Path("alarms/{pathid}") TODO Same path causes an error
-	@OPTIONS
-	@Produces(MediaType.APPLICATION_JSON)
-	public Method createGetAlarmMethod() {
-		Method getAlarm = new Method();
-		getAlarm.setName("Get Alarm");
-		getAlarm.setDescription("Returns a specific alarm");
-		getAlarm.setLink(this.info.getBaseUriBuilder().path(AlarmClockResource.class)
-				.path(AlarmClockResource.class, "getAlarm").build());
-		getAlarm.setType(Types.GET);
-		getAlarm.setParameters(getGetAlarmParameters());
-		return getAlarm;
-	}
-
-	/**
-	 * returns the method describing the editAlarm method
+	 * @param pathid id of the single alaram
 	 * 
 	 * @return the describing method object
 	 */
 	@Path("alarms/{pathid}")
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
-	public Method createEditAlarmMethod() {
+	public Method[] createSingleAlarmMethods(@PathParam("pathid") int pathid) {
+		Method[] methods = new Method[2];
+		Method getAlarm = new Method();
+		getAlarm.setName("Get Alarm");
+		getAlarm.setDescription("Returns a specific alarm");
+		getAlarm.setLink(this.info.getBaseUriBuilder().path(AlarmClockResource.class)
+				.path(AlarmClockResource.class, "getAlarm").build(pathid));
+		getAlarm.setType(Types.GET);
+		getAlarm.setParameters(getGetAlarmParameters());
 		Method editAlarm = new Method();
 		editAlarm.setName("Edit Alarm");
 		editAlarm.setDescription("Changes the properties of an alarm");
 		editAlarm.setLink(this.info.getBaseUriBuilder().path(AlarmClockResource.class)
-				.path(AlarmClockResource.class, "editAlarm").build());
+				.path(AlarmClockResource.class, "editAlarm").build(pathid));
 		editAlarm.setType(Types.POST);
 		editAlarm.setParameters(getEditAlarmParameters());
-		return editAlarm;
+		methods[0] = getAlarm;
+		methods[0] = editAlarm;
+		return methods;
 	}
 
 	/**
@@ -291,7 +285,7 @@ public class AlarmClockResource implements Resource {
 		newAlarm.setLink(this.info.getBaseUriBuilder().path(AlarmClockResource.class)
 				.path(AlarmClockResource.class, "newAlarm").build());
 		newAlarm.setType(Types.POST);
-		newAlarm.setParameters(getNewAlarmParameters());
+		newAlarm.setParameters(getTimestampAsParameter());
 		return newAlarm;
 	}
 
@@ -325,7 +319,7 @@ public class AlarmClockResource implements Resource {
 	}
 
 	private Parameter[] getEditAlarmParameters() {
-		Parameter[] params = new Parameter[3];
+		Parameter[] params = new Parameter[2];
 		// pathid
 		params[0] = new Parameter();
 		params[0].setName("PathID");
@@ -338,23 +332,29 @@ public class AlarmClockResource implements Resource {
 		params[1].setRequired(true);
 		params[1].setParamType(Types.QUERY);
 		params[1].setValueType(Types.STRING);
-		// alarmTime
-		params[2] = new Parameter();
-		params[2].setName("AlarmTime");
-		params[2].setRequired(true);
-		params[2].setParamType(Types.BODY);
-		params[2].setValueType(Types.BODY); // TODO timestamp type
-		return params;
+		
+		List<Parameter> parameter = new ArrayList<>();
+		parameter.addAll(Arrays.asList(params));
+		parameter.addAll(Arrays.asList(getTimestampAsParameter()));
+		return parameter.toArray(new Parameter[4]);
 	}
 
-	private Parameter[] getNewAlarmParameters() {
-		Parameter[] params = new Parameter[1];
-		// alarmTime
+	private Parameter[] getTimestampAsParameter() {
+		Parameter[] params = new Parameter[2];
+		// hour
 		params[0] = new Parameter();
-		params[0].setName("AlarmTime");
+		params[0].setName("hour");
 		params[0].setRequired(true);
 		params[0].setParamType(Types.BODY);
-		params[0].setValueType(Types.BODY); // Same here
+		params[0].setValueType(Types.INTEGER);
+		params[0].setDescription("Hour of the alarm");
+		// minute
+		params[1] = new Parameter();
+		params[1].setName("minute");
+		params[1].setRequired(true);
+		params[1].setParamType(Types.BODY);
+		params[1].setValueType(Types.INTEGER);
+		params[1].setDescription("Minute of the alarm");
 		return params;
 	}
 
