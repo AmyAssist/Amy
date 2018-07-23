@@ -133,7 +133,7 @@ public abstract class AbstractRegistryResource<R extends IRegistry<E>, E, I exte
         } catch (RegistryInvalidRequestException e) {
             throw new WebApplicationException(e.getMessage(), Response.Status.BAD_REQUEST);
         } catch (RegistryException e) {
-            throw new WebApplicationException(e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
+            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 }
