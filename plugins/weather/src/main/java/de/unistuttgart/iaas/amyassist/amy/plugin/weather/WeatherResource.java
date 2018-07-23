@@ -136,7 +136,7 @@ public class WeatherResource implements Resource {
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
 	public Method[] getPluginMethods() {
-		Method[] methods = new Method[3];
+		Method[] methods = new Method[4];
 		methods[0] = createGetWeatherTodayMethod();
 		methods[1] = createGetWeatherTomorrowMethod();
 		methods[2] = createGetWeatherWeekMethod();

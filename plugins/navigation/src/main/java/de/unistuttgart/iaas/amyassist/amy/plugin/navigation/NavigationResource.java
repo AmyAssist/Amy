@@ -227,6 +227,7 @@ public class NavigationResource implements Resource {
 		best.setLink(this.info.getBaseUriBuilder().path(NavigationResource.class)
 				.path(NavigationResource.class, "getBestTransportInTime").build());
 		best.setParameters(getRouteAsParameter());
+		best.getParameters()[3].setDescription("Time of arrival for the route");
 		return best;
 	}
 
@@ -246,6 +247,7 @@ public class NavigationResource implements Resource {
 		when.setLink(this.info.getBaseUriBuilder().path(NavigationResource.class)
 				.path(NavigationResource.class, "whenIHaveToGo").build());
 		when.setParameters(getRouteAsParameter());
+		when.getParameters()[3].setDescription("Time of arrival for the route");
 		return when;
 	}
 
@@ -266,6 +268,7 @@ public class NavigationResource implements Resource {
 				.path(NavigationResource.class, "routeFromTo").build());
 		fromTo.setParameters(getRouteAsParameter());
 		fromTo.getParameters()[3].setRequired(false);
+		fromTo.getParameters()[3].setDescription("Time of departure for the route");
 		return fromTo;
 	}
 

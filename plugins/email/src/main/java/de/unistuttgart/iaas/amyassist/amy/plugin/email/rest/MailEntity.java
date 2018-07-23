@@ -46,6 +46,10 @@ public class MailEntity {
 	
 	/**
 	 * Constructor
+	 * 
+	 * @param recipient the recipient of the mail
+	 * @param subject the subject of the mail
+	 * @param message the message of the mail
 	 */
 	public MailEntity(String recipient, String subject, String message) {
 		this.recipient = recipient;

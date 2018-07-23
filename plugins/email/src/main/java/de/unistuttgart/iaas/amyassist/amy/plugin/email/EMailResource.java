@@ -337,7 +337,7 @@ public class EMailResource implements Resource {
 	public Method createCloseInboxMethod() {
 		Method close = new Method();
 		close.setName("Close inbox");
-		close.setDescription("Method to send a new mail");
+		close.setDescription("Used to close the inbox");
 		close.setLink(this.info.getBaseUriBuilder().path(EMailResource.class).path(EMailResource.class, "closeInbox")
 				.build());
 		close.setType(Types.POST);

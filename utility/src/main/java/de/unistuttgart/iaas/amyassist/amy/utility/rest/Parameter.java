@@ -33,6 +33,7 @@ public class Parameter {
 	private String name;
 	private String valueType;
 	private String paramType;
+	private String description;
 	private boolean required;
 
 	/**
@@ -87,6 +88,24 @@ public class Parameter {
 	 */
 	public void setParamType(String paramType) {
 		this.paramType = paramType;
+	}
+
+	/**
+	 * gets the description
+	 * 
+	 * @return the description
+	 */
+	public String getDescription() {
+		return this.description;
+	}
+
+	/**
+	 * sets the description
+	 * 
+	 * @param description the new description
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	/**

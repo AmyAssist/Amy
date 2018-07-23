@@ -36,7 +36,7 @@ public class ResourceEntity extends Entity {
 	private String name;
 	private String description;
 
-	private Method[] methods;
+
 
 	/**
 	 * base construktor for the ResourceEntity
@@ -79,21 +79,5 @@ public class ResourceEntity extends Entity {
 		this.description = description;
 	}
 	
-	/**
-	 * returns the methodes of the resource
-	 * 
-	 * @return an array of methods
-	 */
-	public Method[] getMethods() {
-		return this.methods;
-	}
 
-	/**
-	 * sets the methods
-	 * 
-	 * @param methods the new methods
-	 */
-	public void setMethods(Method[] methods) {
-		this.methods = methods;
-	}
 }
