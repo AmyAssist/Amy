@@ -71,15 +71,13 @@ public class NavigationSpeech {
 	@Grammar("when i have to leave " + LOCATIONS + "to get" + LOCATIONS + "at " + TIME_STRING)
 	public String goToAt(String... strings) {
 		String[] rawTime;
-		if(strings.length == 13) {
+		if (strings.length == 13) {
 			String[] t = { strings[10], strings[11], strings[12] };
 			rawTime = t;
-		}
-		else if(strings.length == 14) {
-			String[] t = { strings[10], strings[11], strings[12] , strings[13]};
+		} else if (strings.length == 14) {
+			String[] t = { strings[10], strings[11], strings[12], strings[13] };
 			rawTime = t;
-		}
-		else {
+		} else {
 			return INVALID_INPUT;
 		}
 		if (this.registryConnection.getAddress(strings[5]) != null
@@ -107,15 +105,13 @@ public class NavigationSpeech {
 			+ " by ( bus | train | transit )")
 	public String goToAtBy(String... strings) {
 		String[] rawTime;
-		if(strings.length == 15) {
+		if (strings.length == 15) {
 			String[] t = { strings[10], strings[11], strings[12] };
 			rawTime = t;
-		}
-		else if(strings.length == 16) {
-			String[] t = { strings[10], strings[11], strings[12] , strings[13]};
+		} else if (strings.length == 16) {
+			String[] t = { strings[10], strings[11], strings[12], strings[13] };
 			rawTime = t;
-		}
-		else {
+		} else {
 			return INVALID_INPUT;
 		}
 		if (this.registryConnection.getAddress(strings[5]) != null
@@ -181,15 +177,13 @@ public class NavigationSpeech {
 	@Grammar("from " + LOCATIONS + " to " + LOCATIONS + " by (car | transport | bike) at " + TIME_STRING)
 	public String routeFromToWithTime(String... strings) {
 		String[] rawTime;
-		if(strings.length == 10) {
+		if (strings.length == 10) {
 			String[] t = { strings[7], strings[8], strings[9] };
 			rawTime = t;
-		}
-		else if(strings.length == 11) {
-			String[] t = { strings[7], strings[8], strings[9] , strings[10]};
+		} else if (strings.length == 11) {
+			String[] t = { strings[7], strings[8], strings[9], strings[10] };
 			rawTime = t;
-		}
-		else {
+		} else {
 			return INVALID_INPUT;
 		}
 		if (this.registryConnection.getAddress(strings[1]) != null
