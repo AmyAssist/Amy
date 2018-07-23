@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.util.Properties;
 
+import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl;
@@ -74,6 +75,7 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 		di.register(ContactRegistryImpl.class);
 		di.register(LocationRegistryImpl.class);
 		di.register(ServiceManagerImpl.class);
+		di.register(Geocoder.class);
 	}
 
 }
