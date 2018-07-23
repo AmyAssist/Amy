@@ -242,7 +242,7 @@ public class PlayerLogic {
 	 * @return a int from 0-100. This represent the Volume in percent. if the volume is unknown the return value is -1
 	 */
 	public int setVolume(String volumeString) {
-		int volume = this.currentVolume;
+		int volume = getVolume();
 		if (volume != -1) {
 			switch (volumeString) {
 			case "mute":
