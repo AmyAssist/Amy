@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.messagebus;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.messagebus.AbstractBusMessageExecutor;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
 
@@ -35,6 +33,11 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
  */
 public class SpotifyPluginMessageBusConnector extends AbstractBusMessageExecutor {
 
+	/**
+	 * 
+	 * @param l
+	 *            PlayerLogic
+	 */
 	public SpotifyPluginMessageBusConnector(PlayerLogic l) {
 		this.player = l;
 	}
