@@ -23,7 +23,11 @@
 
 package de.unistuttgart.iaas.amyassist.amy.registry;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
+import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.GeocoderException;
+import javafx.util.Pair;
 
 import javax.annotation.Nonnull;
 import javax.persistence.TypedQuery;
@@ -39,6 +43,10 @@ import java.util.List;
  */
 @Service(LocationRegistry.class)
 public class LocationRegistryImpl extends AbstractRegistry<Location> implements LocationRegistry {
+
+    @Reference
+    Geocoder geocoder;
+
     @Override
     protected String getPersistenceUnitName() {
         return "LocationRegistry";
@@ -59,7 +67,18 @@ public class LocationRegistryImpl extends AbstractRegistry<Location> implements 
             boolean hasWork = locs.stream().anyMatch(Location::isWork);
 
             if (hasHome && location.isHome() || hasWork && location.isWork()) {
-                throw new RegistryException("There can only be at most one work and one home entity");
+                throw new RegistryInvalidRequestException("There can only be at most one work and one home entity");
+            }
+        }
+
+        if (location.getLatitude() == 0 && location.getLongitude() == 0) {
+            // Extract coordinates from address by using geocoder API
+            try {
+                Pair<Double, Double> coordinates = geocoder.geocodeAddress(location.getAddressString());
+                location.setLatitude(coordinates.getKey());
+                location.setLongitude(coordinates.getValue());
+            } catch (GeocoderException e) {
+                throw new RegistryException("Could not geocode address: " + e.getMessage());
             }
         }
 
