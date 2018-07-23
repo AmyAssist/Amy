@@ -57,7 +57,14 @@ public class HelloWorldRest implements Resource {
 	@Context
 	private UriInfo info;
 
+	/**
+	 * returns hello world
+	 * 
+	 * @return hello world
+	 */
 	@GET
+	@Path("hello")
+	@Produces(MediaType.TEXT_PLAIN)
 	public String helloWorld() {
 		return this.helloWorld.helloWorld();
 	}
@@ -66,6 +73,8 @@ public class HelloWorldRest implements Resource {
 	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
 	 */
 	@Override
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	public ResourceEntity getPluginDescripion() {
 		ResourceEntity resource = new ResourceEntity();
 		resource.setName("HelloWorld Plugin");
@@ -80,6 +89,8 @@ public class HelloWorldRest implements Resource {
 	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginMethods()
 	 */
 	@Override
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
 	public Method[] getPluginMethods() {
 		Method[] methods = new Method[1];
 		methods[0] = createHelloWorldMethod();
