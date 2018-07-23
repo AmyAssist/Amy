@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -50,6 +51,8 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeMessag
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeProvider;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
+import io.swagger.v3.oas.integration.SwaggerConfiguration;
+import io.swagger.v3.oas.models.OpenAPI;
 
 /**
  * A class to create a http server
@@ -128,7 +131,14 @@ public class Server {
 
 		ResourceConfig resourceConfig = new ResourceConfig(classes);
 		resourceConfig.registerClasses(this.restResources);
-		resourceConfig.registerClasses(OpenApiResource.class);
+
+		OpenApiResource openApiResource = new OpenApiResource();
+		OpenAPI openapi = new OpenAPI().servers(
+				Collections.singletonList(new io.swagger.v3.oas.models.servers.Server().url(baseURI().toString())));
+		SwaggerConfiguration oasConfig = new SwaggerConfiguration().openAPI(openapi).prettyPrint(true);
+		openApiResource.openApiConfiguration(oasConfig);
+		resourceConfig.register(openApiResource);
+
 		resourceConfig.register(ThrowableExceptionMapper.class);
 		resourceConfig.register(ZonedDateTimeProvider.class);
 		resourceConfig.register(ZonedDateTimeMessageBodyWriter.class);
