@@ -97,7 +97,7 @@ public class EMailResource implements Resource {
 	@Path("plains{important : (/important)?}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String printPlainTextMessages(@PathParam("important") String important,
+	public String printPlainTextMessages(@PathParam("important") @DefaultValue("")String important,
 			@QueryParam("amount") @DefaultValue("5") int amount) {
 		String plains;
 		if (important.isEmpty()) {
