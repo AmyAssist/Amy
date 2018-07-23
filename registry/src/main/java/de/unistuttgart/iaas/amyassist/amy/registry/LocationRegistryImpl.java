@@ -67,7 +67,7 @@ public class LocationRegistryImpl extends AbstractRegistry<Location> implements 
             boolean hasWork = locs.stream().anyMatch(Location::isWork);
 
             if (hasHome && location.isHome() || hasWork && location.isWork()) {
-                throw new RegistryException("There can only be at most one work and one home entity");
+                throw new RegistryInvalidRequestException("There can only be at most one work and one home entity");
             }
         }
 
