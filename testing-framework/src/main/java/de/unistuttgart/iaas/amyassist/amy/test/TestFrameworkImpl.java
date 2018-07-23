@@ -87,7 +87,7 @@ public class TestFrameworkImpl implements TestFramework {
 	public void prepareServer() {
 		Properties serverConfig = new Properties();
 		serverConfig.setProperty(Server.PROPERTY_PORT, String.valueOf(TEST_SERVER_PORT));
-		serverConfig.setProperty(Server.PROPERTY_ROOT_PATH, "/");
+		serverConfig.setProperty(Server.PROPERTY_CONTEXT_PATH, "");
 		serverConfig.setProperty(Server.PROPERTY_LOCALHOST, "true");
 		ConfigurationLoader configLoader = this.registerService(ConfigurationLoader.class, TestConfiguration.class);
 		configLoader.store(Server.CONFIG_NAME, serverConfig);
