@@ -102,6 +102,7 @@ public class HelloWorldRest implements Resource {
 	 * 
 	 * @return the describing method object
 	 */
+	@Path("hello")
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
 	public Method createHelloWorldMethod() {
