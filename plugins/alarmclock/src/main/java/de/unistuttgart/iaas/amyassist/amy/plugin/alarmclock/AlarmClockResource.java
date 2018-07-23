@@ -254,6 +254,8 @@ public class AlarmClockResource implements Resource {
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
 	public Method[] createSingleAlarmMethods(@PathParam("pathid") int pathid) {
+		final String edit = "editAlarm";
+		final String mode = "mode";
 		Method[] methods = new Method[4];
 		Method getAlarm = new Method();
 		getAlarm.setName("Get Alarm");
@@ -266,28 +268,28 @@ public class AlarmClockResource implements Resource {
 		editAlarm.setName("Edit Alarm");
 		editAlarm.setDescription("Changes the properties of an alarm");
 		editAlarm.setLink(this.info.getBaseUriBuilder().path(AlarmClockResource.class)
-				.path(AlarmClockResource.class, "editAlarm").queryParam("mode", "edit").build(pathid));
+				.path(AlarmClockResource.class, edit).queryParam(mode, "edit").build(pathid));
 		editAlarm.setType(Types.POST);
 		editAlarm.setParameters(getEditAlarmParameters());
 		Method deleteAlarm = new Method();
 		deleteAlarm.setName("Delete Alarm");
 		deleteAlarm.setDescription("Deletes an alarm");
 		deleteAlarm.setLink(this.info.getBaseUriBuilder().path(AlarmClockResource.class)
-				.path(AlarmClockResource.class, "editAlarm").queryParam("mode", "delete").build(pathid));
+				.path(AlarmClockResource.class, edit).queryParam(mode, "delete").build(pathid));
 		deleteAlarm.setType(Types.POST);
 		deleteAlarm.setParameters(new Parameter[] {getPathIdAsParameter()});
 		Method acitvateAlarm = new Method();
 		acitvateAlarm.setName("Activate Alarm");
 		acitvateAlarm.setDescription("Activates an alarm");
 		acitvateAlarm.setLink(this.info.getBaseUriBuilder().path(AlarmClockResource.class)
-				.path(AlarmClockResource.class, "editAlarm").queryParam("mode", "activate").build(pathid));
+				.path(AlarmClockResource.class, edit).queryParam(mode, "activate").build(pathid));
 		acitvateAlarm.setType(Types.POST);
 		acitvateAlarm.setParameters(new Parameter[] {getPathIdAsParameter()});
 		Method deacitvateAlarm = new Method();
 		deacitvateAlarm.setName("Deactivate Alarm");
 		deacitvateAlarm.setDescription("Deactivates an alarm");
 		deacitvateAlarm.setLink(this.info.getBaseUriBuilder().path(AlarmClockResource.class)
-				.path(AlarmClockResource.class, "editAlarm").queryParam("mode", "deactivate").build(pathid));
+				.path(AlarmClockResource.class, edit).queryParam(mode, "deactivate").build(pathid));
 		deacitvateAlarm.setType(Types.POST);
 		deacitvateAlarm.setParameters(new Parameter[] {getPathIdAsParameter()});
 		methods[0] = getAlarm;
@@ -355,8 +357,6 @@ public class AlarmClockResource implements Resource {
 	
 	private Parameter getPathIdAsParameter() {
 		Parameter params = new Parameter();
-		// pathid
-		params = new Parameter();
 		params.setName("PathID");
 		params.setRequired(true);
 		params.setParamType(Types.PATH);

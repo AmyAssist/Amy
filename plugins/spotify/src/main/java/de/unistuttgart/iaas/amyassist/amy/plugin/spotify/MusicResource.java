@@ -853,7 +853,7 @@ public class MusicResource implements Resource {
 		params[0].setName("Music");
 		params[0].setRequired(false);
 		params[0].setParamType(Types.BODY);
-		params[0].setValueType(Types.BODY); // TODO music type
+		params[0].setValueType(Types.BODY);
 		// songNumber
 		params[1] = new Parameter();
 		params[1].setName("Song Number");

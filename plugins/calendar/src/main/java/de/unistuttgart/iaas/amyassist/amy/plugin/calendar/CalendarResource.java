@@ -386,7 +386,7 @@ public class CalendarResource implements Resource {
 		params[1].setName("Event");
 		params[1].setRequired(true);
 		params[1].setParamType(Types.BODY);
-		params[1].setValueType(Types.BODY); // TODO type for events
+		params[1].setValueType(Types.BODY);
 		// withDate
 		params[2] = new Parameter();
 		params[2].setName("Display Date?");
