@@ -27,11 +27,11 @@ import java.time.LocalDateTime;
 
 /**
  * This creates an event object
- * 
+ *
  * @author Florian Bauer
  */
 public class CalendarEvent {
-	private int id;
+	private String id;
 	private LocalDateTime start;
 	private LocalDateTime end;
 	private String summary;
@@ -41,14 +41,21 @@ public class CalendarEvent {
 
 	/**
 	 * @param id
+	 *            set id
 	 * @param start
+	 *            set start
 	 * @param end
+	 *            set end
 	 * @param summary
+	 *            set summary
 	 * @param location
+	 *            set location
 	 * @param description
+	 *            set description
 	 * @param allDay
+	 *            set if it is all day
 	 */
-	public CalendarEvent(int id, LocalDateTime start, LocalDateTime end, String summary, String location,
+	public CalendarEvent(String id, LocalDateTime start, LocalDateTime end, String summary, String location,
 			String description, boolean allDay) {
 		this.id = id;
 		this.start = start;
@@ -61,26 +68,26 @@ public class CalendarEvent {
 
 	/**
 	 * Get's {@link #id id}
-	 * 
+	 *
 	 * @return id
 	 */
-	public int getId() {
+	public String getId() {
 		return this.id;
 	}
 
 	/**
 	 * Set's {@link #id id}
-	 * 
+	 *
 	 * @param id
 	 *            id
 	 */
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
 	/**
 	 * Get's {@link #start start}
-	 * 
+	 *
 	 * @return start
 	 */
 	public LocalDateTime getStart() {
