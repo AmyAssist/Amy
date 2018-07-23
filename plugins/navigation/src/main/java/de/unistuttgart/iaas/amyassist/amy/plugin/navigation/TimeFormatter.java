@@ -90,6 +90,11 @@ public class TimeFormatter {
 		return null;
 	}
 
+	/**
+	 * foramt the time from the google speech from the web app
+	 * @param input
+	 * @return
+	 */
 	private LocalDateTime formatGoogleTimeInput(String[] input) {
 		if (input.length == 4) {
 			if (input[3].equals("am")) {
