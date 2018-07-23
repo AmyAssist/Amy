@@ -23,17 +23,17 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import java.util.Calendar;
+import java.time.LocalTime;
 
 /**
  * Class that defines timer attributes and behaviour
  * 
- * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
+ * @author Patrick Singer, Patrick Gebhardt, Florian Bauer, Leon Kiefer
  */
 public class Alarm {
 
 	private int id;
-	private Calendar alarmDate;
+	private LocalTime alarmTime;
 	private boolean active;
 
 	/**
@@ -68,8 +68,7 @@ public class Alarm {
 	 */
 	@Override
 	public String toString() {
-		return this.id + ":" + this.alarmDate.get(Calendar.HOUR_OF_DAY) + ":" + this.alarmDate.get(Calendar.MINUTE)
-				+ ":" + this.active;
+		return this.id + ":" + this.alarmTime.getHour() + ":" + this.alarmTime.getMinute() + ":" + this.active;
 	}
 
 	/**
@@ -97,14 +96,7 @@ public class Alarm {
 	 */
 	public final void setTime(int hour, int minute) {
 		if (timeValid(hour, minute)) {
-			Calendar date = Calendar.getInstance();
-			date.set(Calendar.HOUR_OF_DAY, hour);
-			date.set(Calendar.MINUTE, minute);
-			date.set(Calendar.SECOND, 0);
-			if (date.before(Calendar.getInstance()))
-				date.add(Calendar.DATE, 1);
-
-			this.alarmDate = date;
+			this.alarmTime = LocalTime.of(hour, minute);
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -143,8 +135,8 @@ public class Alarm {
 	/**
 	 * @return alarmDate
 	 */
-	public Calendar getAlarmDate() {
-		return this.alarmDate;
+	public LocalTime getAlarmTime() {
+		return this.alarmTime;
 	}
 
 	/**

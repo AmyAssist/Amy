@@ -21,26 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
-
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
+package de.unistuttgart.iaas.amyassist.amy.registry.geocoder;
 
 /**
- * Interface between the SpeechRecognition System and the rest of the System
- * 
- * @author Kai Menzel
+ * Exception from the geocoder
+ *
+ * @author Benno Krauß
  */
-public interface AudioUserInteraction extends RunnableService {
-
-	/**
-	 * Start the Recognition System
-	 */
-	@Override
-	void start();
-
-	/**
-	 * Stop the Recognition System
-	 */
-	void stop();
-
+public class GeocoderException extends Exception {
+    public GeocoderException(String message) {
+        super(message);
+    }
+    public GeocoderException(Exception e) {
+        super(e.getMessage());
+    }
 }

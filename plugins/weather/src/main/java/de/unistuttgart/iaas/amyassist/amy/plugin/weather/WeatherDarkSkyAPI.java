@@ -149,8 +149,13 @@ public class WeatherDarkSkyAPI {
 		if (this.storage.has(WEATHER_LOCATION_ID_STRING)) {
 			Location location = this.locationRegistry
 					.getById(Integer.parseInt(this.storage.get(WEATHER_LOCATION_ID_STRING)));
-			this.coordinateLat = String.valueOf(location.getLatitude());
-			this.coordinateLong = String.valueOf(location.getLongitude());
+			if (location != null) {
+				this.coordinateLat = String.valueOf(location.getLatitude());
+				this.coordinateLong = String.valueOf(location.getLongitude());
+			} else {
+				this.coordinateLat = "48.745886";
+				this.coordinateLong = "9.107881";
+			}
 		}
 	}
 }

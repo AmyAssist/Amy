@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -76,7 +76,7 @@ public class PluginManagerService implements PluginManager {
 	@Reference
 	private ConfigurationLoader configurationLoader;
 	@Reference
-	private DependencyInjection di;
+	private Configuration di;
 
 	@Reference
 	private CommandLineArgumentHandler cmaHandler;

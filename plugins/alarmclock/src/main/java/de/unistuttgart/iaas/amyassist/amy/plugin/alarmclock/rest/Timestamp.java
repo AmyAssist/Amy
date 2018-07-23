@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest;
 
-import java.util.Calendar;
+import java.time.LocalTime;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -98,9 +98,9 @@ public class Timestamp extends Entity {
 		if (alarm == null) {
 			throw new IllegalArgumentException();
 		}
-		Calendar date = alarm.getAlarmDate();
-		this.hour = date.get(Calendar.HOUR_OF_DAY);
-		this.minute = date.get(Calendar.MINUTE);
+		LocalTime date = alarm.getAlarmTime();
+		this.hour = date.getHour();
+		this.minute = date.getMinute();
 	}
 
 	/**
