@@ -24,12 +24,16 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This creates an event object
  *
- * @author Florian Bauer
+ * @author Florian Bauer, Muhammed Kaya
  */
+@XmlRootElement
 public class CalendarEvent {
 	private String id;
 	private LocalDateTime start;
@@ -38,6 +42,13 @@ public class CalendarEvent {
 	private String location;
 	private String description;
 	private boolean allDay;
+
+	/**
+	 * Constructor
+	 */
+	public CalendarEvent() {
+		// Needed for JSON
+	}
 
 	/**
 	 * @param id
@@ -197,6 +208,23 @@ public class CalendarEvent {
 	 */
 	public void setAllDay(boolean allDay) {
 		this.allDay = allDay;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		CalendarEvent that = (CalendarEvent) o;
+		return this.id.equals(that.id) && this.start.equals(that.start) && this.end.equals(that.end)
+				&& this.summary.equals(that.summary) && this.description.equals(that.description)
+				&& this.location.equals(that.location) && this.allDay == that.allDay;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.id, this.start, this.end, this.summary, this.description, this.location, this.allDay);
 	}
 
 }
