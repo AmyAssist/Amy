@@ -59,6 +59,7 @@
 		<module>plugins/systemtime</module>
 		<module>plugins/weather</module>
 		<module>plugins/navigation</module>
+		<module>amy-message-bus</module>
 	</modules>
 	<licenses>
 		<license>

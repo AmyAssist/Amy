@@ -31,7 +31,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +42,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
-import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import com.wrapper.spotify.model_objects.specification.Image;
 import com.wrapper.spotify.model_objects.specification.Paging;
@@ -52,7 +50,7 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.User;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.messagebus.Broker;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
@@ -87,10 +85,14 @@ class PlayerLogicTest {
 	@Mock
 	private Search search;
 
+	@Mock
+	private Broker broker;
+
 	@BeforeEach
 	public void init() {
 		this.spotifyAPICalls = this.testFramework.mockService(SpotifyAPICalls.class);
 		this.search = this.testFramework.mockService(Search.class);
+		this.broker = this.testFramework.mockService(Broker.class);
 		this.playerLogic = this.testFramework.setServiceUnderTest(PlayerLogic.class);
 		initDevices();
 		initCurrentTrack();
@@ -151,10 +153,6 @@ class PlayerLogicTest {
 		verify(this.spotifyAPICalls).createRefreshToken(ID2);
 		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
-
-	
-
-	
 
 	@Test
 	public void testSearch() {

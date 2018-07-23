@@ -36,6 +36,7 @@ import com.wrapper.spotify.model_objects.specification.Track;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.messagebus.Broker;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SearchTypes;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
@@ -54,6 +55,11 @@ public class PlayerLogic {
 	private Search search;
 	@Reference
 	private Logger logger;
+	@Reference
+	private Broker broker;
+
+	private boolean srListening = false;
+	private int currentVolume = 0;
 
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
@@ -233,18 +239,18 @@ public class PlayerLogic {
 		if (volume != -1) {
 			switch (volumeString) {
 			case "mute":
-				this.spotifyAPICalls.setVolume(VOLUME_MUTE_VALUE);
+				changeVolume(VOLUME_MUTE_VALUE);
 				return VOLUME_MUTE_VALUE;
 			case "max":
-				this.spotifyAPICalls.setVolume(VOLUME_MAX_VALUE);
+				changeVolume(VOLUME_MAX_VALUE);
 				return VOLUME_MAX_VALUE;
 			case "up":
 				volume = Math.min(VOLUME_MAX_VALUE, volume + VOLUME_UPDOWN_VALUE);
-				this.spotifyAPICalls.setVolume(volume);
+				changeVolume(volume);
 				return volume;
 			case "down":
 				volume = Math.max(VOLUME_MUTE_VALUE, volume - VOLUME_UPDOWN_VALUE);
-				this.spotifyAPICalls.setVolume(volume);
+				changeVolume(volume);
 				return volume;
 			default:
 				this.logger.warn("Incorrect volume command");
@@ -263,7 +269,7 @@ public class PlayerLogic {
 	 */
 	public int setVolume(int volume) {
 		if (volume >= VOLUME_MUTE_VALUE && volume <= VOLUME_MAX_VALUE) {
-			this.spotifyAPICalls.setVolume(volume);
+			changeVolume(volume);
 			return volume;
 		}
 		return -1;
@@ -276,6 +282,35 @@ public class PlayerLogic {
 	 */
 	public int getVolume() {
 		return this.spotifyAPICalls.getVolume();
+	}
+
+	/**
+	 * called when volume has to be changed
+	 * 
+	 * @param volume
+	 *            volume to be changed to
+	 */
+	private void changeVolume(int volume) {
+		this.currentVolume = volume;
+		if (!this.srListening) {
+			this.spotifyAPICalls.setVolume(volume);
+		}
+	}
+
+	/**
+	 * activate/Deactivate that the sr is currently active -> volume changes will be queued until sr is no longer
+	 * listening by using the srListening variabel
+	 * 
+	 * @param isSRListening
+	 *            State to change to
+	 */
+	public void setSRListening(boolean isSRListening) {
+		this.srListening = isSRListening;
+		if (isSRListening) {
+			changeVolume(0);
+		} else {
+			changeVolume(this.currentVolume);
+		}
 	}
 
 }
