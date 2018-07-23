@@ -232,8 +232,8 @@ public class CalendarLogic {
 	 *            LocalDateTime variable
 	 * @return the events of the chosen day as a List<Event>
 	 */
-	public List<Event> getEventsAt(LocalDateTime ldt) {
-		List<Event> items = new ArrayList<>();
+	public List<CalendarEvent> getEventsAt(LocalDateTime ldt) {
+		List<CalendarEvent> eventList = new ArrayList<>();
 		try {
 			LocalDateTime chosenDay = LocalDateTime.of(ldt.toLocalDate(), this.zero);
 			ZonedDateTime zdt = chosenDay.atZone(ZoneId.systemDefault());
@@ -243,11 +243,17 @@ public class CalendarLogic {
 			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
 			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
 					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
-			items = events.getItems();
+			List<Event> items = events.getItems();
+			for (Event event : items) {
+				CalendarEvent calendarEvent = new CalendarEvent(event.getId(), getLocalDateTimeStart(event),
+						getLocalDateTimeEnd(event), event.getSummary(), event.getLocation(), event.getDescription(),
+						isAllDay(event));
+				eventList.add(calendarEvent);
+			}
 		} catch (IOException e) {
 			this.logger.error(this.errorLogger, e);
 		}
-		return items;
+		return eventList;
 	}
 
 	/**
