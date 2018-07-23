@@ -43,8 +43,14 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.Types;
  * 
  * @author Leon Kiefer, Muhammed Kaya
  */
-@Path("helloworld")
+@Path(HelloWorldRest.PATH)
 public class HelloWorldRest implements Resource {
+	
+	/**
+	 * the resource path for this plugin
+	 */
+	public static final String PATH = "helloworld";
+	
 	@Reference
 	private HelloWorldService helloWorld;
 
@@ -92,7 +98,7 @@ public class HelloWorldRest implements Resource {
 		hello.setName("Hello World");
 		hello.setDescription("Returns hello with the number of requested requests");
 		hello.setLink(this.info.getBaseUriBuilder().path(HelloWorldRest.class)
-				.path(HelloWorldRest.class, "helloAlarm").build());
+				.path(HelloWorldRest.class, "helloWorld").build());
 		hello.setType(Types.GET);
 		return hello;
 	}
