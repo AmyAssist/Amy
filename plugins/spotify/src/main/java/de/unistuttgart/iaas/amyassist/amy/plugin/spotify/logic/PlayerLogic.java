@@ -242,7 +242,7 @@ public class PlayerLogic {
 	 * @return a int from 0-100. This represent the Volume in percent. if the volume is unknown the return value is -1
 	 */
 	public int setVolume(String volumeString) {
-		int volume = this.spotifyAPICalls.getVolume();
+		int volume = this.currentVolume;
 		if (volume != -1) {
 			switch (volumeString) {
 			case "mute":
@@ -301,13 +301,10 @@ public class PlayerLogic {
 	 *            volume to be changed to
 	 */
 	private void changeVolume(int volume) {
-		System.out.println("this.currentVolume="+this.currentVolume);
-		System.out.println("volume="+volume);
+		this.currentVolume = volume;
 		if (!this.srListening) {
 			this.spotifyAPICalls.setVolume(volume);
-		} else {
-			this.currentVolume = volume;
-		}
+		} 
 	}
 
 	/**
@@ -319,8 +316,7 @@ public class PlayerLogic {
 	 */
 	public void setSRListening(boolean isSRListening) {
 		if (isSRListening) {
-			this.currentVolume = getVolume();
-			changeVolume(0);
+			this.spotifyAPICalls.setVolume(0);
 			this.srListening = isSRListening;
 		} else {
 			this.srListening = isSRListening;
