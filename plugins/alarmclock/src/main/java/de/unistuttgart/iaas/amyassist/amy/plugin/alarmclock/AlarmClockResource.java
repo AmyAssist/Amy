@@ -199,6 +199,8 @@ public class AlarmClockResource implements Resource {
 	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
 	 */
 	@Override
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	public ResourceEntity getPluginDescripion() {
 		ResourceEntity resource = new ResourceEntity();
 		resource.setName("AlarmClock Plugin");
@@ -213,6 +215,8 @@ public class AlarmClockResource implements Resource {
 	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginMethods()
 	 */
 	@Override
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
 	public Method[] getPluginMethods() {
 		Method[] methods = new Method[3];
 		methods[0] = createGetAllAlarmsMethod();
