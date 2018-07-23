@@ -84,7 +84,8 @@ public class BrokerImpl implements Broker {
 		if (eventListener.containsKey(topic)) {
 			for (AbstractBusMessageExecutor eventExecuter : eventListener.get(topic)) {
 				eventExecuter.setEventCommand(message);
-				(new Thread(eventExecuter)).start();
+				eventExecuter.run();
+				//(new Thread(eventExecuter)).start();
 			}
 		}
 	}

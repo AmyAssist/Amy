@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.messagebus.SpotifyPluginMessageBusConnector;
 import org.slf4j.Logger;
 
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
@@ -64,6 +66,11 @@ public class PlayerLogic {
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
+
+	@PostConstruct
+	private void init() {
+		this.broker.subscribe("Volume", new SpotifyPluginMessageBusConnector(this));
+	}
 
 	/**
 	 * needed for the first init. need the clientID and the clientSecret form a spotify devloper account
@@ -281,6 +288,9 @@ public class PlayerLogic {
 	 * @return the volume
 	 */
 	public int getVolume() {
+		if (this.srListening) {
+			return this.currentVolume;
+		}
 		return this.spotifyAPICalls.getVolume();
 	}
 
@@ -291,9 +301,12 @@ public class PlayerLogic {
 	 *            volume to be changed to
 	 */
 	private void changeVolume(int volume) {
-		this.currentVolume = volume;
+		System.out.println("this.currentVolume="+this.currentVolume);
+		System.out.println("volume="+volume);
 		if (!this.srListening) {
 			this.spotifyAPICalls.setVolume(volume);
+		} else {
+			this.currentVolume = volume;
 		}
 	}
 
@@ -305,11 +318,13 @@ public class PlayerLogic {
 	 *            State to change to
 	 */
 	public void setSRListening(boolean isSRListening) {
-		this.srListening = isSRListening;
 		if (isSRListening) {
+			this.currentVolume = getVolume();
 			changeVolume(0);
+			this.srListening = isSRListening;
 		} else {
-			changeVolume(this.currentVolume);
+			this.srListening = isSRListening;
+			changeVolume(Math.max(0, Math.min(100, this.currentVolume)));
 		}
 	}
 
