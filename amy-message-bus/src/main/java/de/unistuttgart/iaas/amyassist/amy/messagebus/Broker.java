@@ -23,35 +23,36 @@
 
 package de.unistuttgart.iaas.amyassist.amy.messagebus;
 
+import java.util.function.Consumer;
+
+/**
+ * 
+ * @author Kai Menzel, Leon Kiefer
+ */
 public interface Broker {
 
 	/**
 	 * Subscribe to a topic
 	 * 
-	 * @param topic
-	 *            to subscribe to
-	 * @param eventExecuter
-	 *            Class that gets called shoud sth gets published on given Topic
+	 * @param topic   to subscribe to
+	 * @param handler the handler that gets called shoud sth gets published on given
+	 *                Topic
 	 */
-	void subscribe(String topic, AbstractBusMessageExecutor eventExecuter);
+	void subscribe(String topic, Consumer<String> handler);
 
 	/**
 	 * Unsubscribe to a topic
 	 * 
-	 * @param topic
-	 *            to unsubscribe to
-	 * @param eventExecuter
-	 *            class that will be unsubscribed to the Topic
+	 * @param topic   to unsubscribe to
+	 * @param handler the handler that will be unsubscribed to the Topic
 	 */
-	void unsubscribe(String topic, AbstractBusMessageExecutor eventExecuter);
+	void unsubscribe(String topic, Consumer<String> handler);
 
 	/**
 	 * Publish a message to a Topic
 	 * 
-	 * @param topic
-	 *            Topic of the Message
-	 * @param message
-	 *            containing the Information
+	 * @param topic   Topic of the Message
+	 * @param message containing the Information
 	 */
 	void publish(String topic, String message);
 }

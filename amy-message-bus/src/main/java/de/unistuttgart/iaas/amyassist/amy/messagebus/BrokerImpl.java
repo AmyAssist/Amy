@@ -27,28 +27,78 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
+/**
+ * 
+ * @author Kai Menzel, Leon Kiefer
+ */
 @Service
-public class BrokerImpl implements Broker {
+public class BrokerImpl implements Broker, Runnable {
 
-	Map<String, List<AbstractBusMessageExecutor>> eventListener = new HashMap<>();
+	@Reference
+	private Logger logger;
+
+	Map<String, List<Consumer<String>>> eventListener = new HashMap<>();
+
+	BlockingQueue<Event<String>> queue = new LinkedBlockingQueue<>();
+
+	private Thread thread;
+
+	@PostConstruct
+	private void start() {
+		this.thread = new Thread(this, "Broker");
+		this.thread.start();
+	}
+
+	@Override
+	public void run() {
+		while (!Thread.currentThread().isInterrupted()) {
+			try {
+				Event<String> event = this.queue.take();
+				if (eventListener.containsKey(event.getTopic())) {
+					List<Consumer<String>> list = eventListener.get(event.getTopic());
+					for (Consumer<String> eventExecuter : list) {
+						executeHandler(eventExecuter, event);
+					}
+				}
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				break;
+			}
+		}
+
+	}
+
+	private <T> void executeHandler(Consumer<T> handler, Event<T> event) {
+		try {
+			handler.accept(event.getData());
+		} catch (Exception e) {
+			logger.error("Error in event handler", e);
+		}
+	}
 
 	/**
 	 * Subscribe to a topic
 	 * 
-	 * @param topic
-	 *            to subscribe to
-	 * @param eventExecuter
-	 *            Class that gets called shoud sth gets published on given Topic
+	 * @param topic         to subscribe to
+	 * @param eventExecuter Class that gets called shoud sth gets published on given
+	 *                      Topic
 	 */
 	@Override
-	public void subscribe(String topic, AbstractBusMessageExecutor eventExecuter) {
+	public void subscribe(String topic, Consumer<String> eventExecuter) {
 		if (eventListener.containsKey(topic)) {
 			eventListener.get(topic).add(eventExecuter);
 		} else {
-			List<AbstractBusMessageExecutor> listeners = new LinkedList<>();
+			List<Consumer<String>> listeners = new LinkedList<>();
 			listeners.add(eventExecuter);
 			eventListener.put(topic, listeners);
 		}
@@ -58,13 +108,11 @@ public class BrokerImpl implements Broker {
 	/**
 	 * Unsubscribe to a topic
 	 * 
-	 * @param topic
-	 *            to unsubscribe to
-	 * @param eventExecuter
-	 *            class that will be unsubscribed to the Topic
+	 * @param topic         to unsubscribe to
+	 * @param eventExecuter class that will be unsubscribed to the Topic
 	 */
 	@Override
-	public void unsubscribe(String topic, AbstractBusMessageExecutor eventExecuter) {
+	public void unsubscribe(String topic, Consumer<String> eventExecuter) {
 		if (eventListener.containsKey(topic)) {
 			eventListener.get(topic).remove(eventExecuter);
 		}
@@ -74,20 +122,16 @@ public class BrokerImpl implements Broker {
 	/**
 	 * Publish a message to a Topic
 	 * 
-	 * @param topic
-	 *            Topic of the Message
-	 * @param message
-	 *            containing the Information
+	 * @param topic   Topic of the Message
+	 * @param message containing the Information
 	 */
 	@Override
 	public void publish(String topic, String message) {
-		if (eventListener.containsKey(topic)) {
-			for (AbstractBusMessageExecutor eventExecuter : eventListener.get(topic)) {
-				eventExecuter.setEventCommand(message);
-				eventExecuter.run();
-				//(new Thread(eventExecuter)).start();
-			}
-		}
+		queue.add(new Event<String>(topic, message));
+	}
+
+	public void stop() {
+		this.thread.interrupt();
 	}
 
 }

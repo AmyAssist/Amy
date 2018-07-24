@@ -28,14 +28,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.messagebus.SpotifyPluginMessageBusConnector;
 import org.slf4j.Logger;
 
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Track;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.messagebus.Broker;
@@ -69,7 +68,18 @@ public class PlayerLogic {
 
 	@PostConstruct
 	private void init() {
-		this.broker.subscribe("Volume", new SpotifyPluginMessageBusConnector(this));
+		this.broker.subscribe("Volume", message -> {
+			switch (message) {
+			case "Volume_Down":
+				this.setSRListening(true);
+				break;
+			case "Volume_Normal":
+				this.setSRListening(false);
+				break;
+			default:
+				break;
+			}
+		});
 	}
 
 	/**
@@ -304,7 +314,7 @@ public class PlayerLogic {
 		this.currentVolume = volume;
 		if (!this.srListening) {
 			this.spotifyAPICalls.setVolume(volume);
-		} 
+		}
 	}
 
 	/**
