@@ -144,7 +144,8 @@ public class Server {
 				.singletonList(new io.swagger.v3.oas.models.servers.Server()
 						.url(this.configurationLoader.load(CONFIG_NAME).getProperty(PROPERTY_SERVER_URL)));
 		openapi.servers(servers);
-		SwaggerConfiguration oasConfig = new SwaggerConfiguration().openAPI(openapi).prettyPrint(true);
+		SwaggerConfiguration oasConfig = new SwaggerConfiguration().openAPI(openapi).prettyPrint(true)
+				.scannerClass("io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner");
 		openApiResource.openApiConfiguration(oasConfig);
 		resourceConfig.register(openApiResource);
 
