@@ -46,6 +46,13 @@ public class TestConfiguration implements ConfigurationLoader {
 	}
 
 	@Override
+	public Properties load(String configurationName, Properties defaults) {
+		Properties properties = new Properties(defaults);
+		properties.putAll(this.load(configurationName));
+		return properties;
+	}
+
+	@Override
 	public void store(String configurationName, Properties properties) {
 		this.map.put(configurationName, properties);
 	}
