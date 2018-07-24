@@ -23,21 +23,20 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-
-import javax.ws.rs.core.Response;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -89,8 +88,8 @@ class CalendarRestTest {
 	 * 
 	 */
 	private void createEvent() {
-		this.event = new CalendarEvent("1", LocalDateTime.parse("2015-05-28T08:00:00"), LocalDateTime.parse("2015-05-28T10:00:00"), "summary", "work",
-			"meeting", false);
+		this.event = new CalendarEvent("1", LocalDateTime.parse("2015-05-28T08:00:00"),
+				LocalDateTime.parse("2015-05-28T10:00:00"), "summary", "work", "meeting", false);
 		this.eventList = new ArrayList<>();
 		this.eventList.add(this.event);
 	}
@@ -133,7 +132,7 @@ class CalendarRestTest {
 		String actual = response.readEntity(String.class);
 		assertThat(actual, is(this.eventToday));
 		assertThat(response.getStatus(), is(200));
-		
+
 		Mockito.when(this.logic.getEventsToday()).thenReturn(this.noEventsToday);
 		response = this.target.path("events/today").request().get();
 		actual = response.readEntity(String.class);
@@ -189,9 +188,10 @@ class CalendarRestTest {
 	void testGetEventsAt() {
 		Mockito.when(this.logic.getEventsAt(this.ldt)).thenReturn(this.eventList);
 		Response response = this.target.path("eventsAt/2015-05-28T08:00:00").request().get();
-		List<CalendarEvent> actualEvents = response.readEntity(List.class);
-//		assertThat(actualEvents, is(this.eventList));
 		assertThat(response.getStatus(), is(200));
+		List<CalendarEvent> actualEvents = response.readEntity(List.class);
+		// assertThat(actualEvents, is(this.eventList));
+
 		Mockito.verify(this.logic).getEventsAt(this.ldt);
 
 		Mockito.when(this.logic.getEventsAt(this.ldt)).thenReturn(new ArrayList<>());
