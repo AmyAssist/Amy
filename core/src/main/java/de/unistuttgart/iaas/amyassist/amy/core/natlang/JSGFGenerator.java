@@ -88,7 +88,10 @@ public class JSGFGenerator {
 		grammar.append("<number> = (one | two | three | four | five | six | seven |"
 				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
 				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
-				+ "fifty | sixty  | seventy | eighty | ninety )+; \n");
+				+ "fifty | sixty  | seventy | eighty | ninety )[one | two | three | four | five | six | seven | " 
+								+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
+								+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
+								+ "fifty | sixty  | seventy | eighty | ninety ]; \n");
 
 		grammar.append("\n//custom rules \n");
 
