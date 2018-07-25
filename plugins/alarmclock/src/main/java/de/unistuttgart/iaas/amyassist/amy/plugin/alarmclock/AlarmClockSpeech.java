@@ -136,35 +136,35 @@ public class AlarmClockSpeech {
 	 */
 	@Grammar("(set|create) timer (for|on) [# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")
 	public String setTimer(String[] params) {
+		Timer timer;
 		try {
 			if (params.length == 9) {
-				return this.logic
-						.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), Integer.parseInt(params[7]))
-						.toString();
+				timer = this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]),
+						Integer.parseInt(params[7]));
 			} else if (params.length == 7) {
 				if (params[4].contains("hour") && params[6].contains("minute")) {
-					return this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), 0).toString();
+					timer = this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), 0);
 				} else if (params[4].contains("hour") && params[6].contains("second")) {
-
-					return this.logic.setTimer(Integer.parseInt(params[3]), 0, Integer.parseInt(params[5])).toString();
+					timer = this.logic.setTimer(Integer.parseInt(params[3]), 0, Integer.parseInt(params[5]));
 				} else if (params[4].contains("minute") && params[6].contains("second")) {
-					return this.logic.setTimer(0, Integer.parseInt(params[3]), Integer.parseInt(params[5])).toString();
-
+					timer = this.logic.setTimer(0, Integer.parseInt(params[3]), Integer.parseInt(params[5]));
 				}
 			} else if (params.length == 5) {
 				if (params[4].contains("hour")) {
-					return this.logic.setTimer(Integer.parseInt(params[3]), 0, 0).toString();
+					timer = this.logic.setTimer(Integer.parseInt(params[3]), 0, 0);
 				} else if (params[4].contains("minute")) {
-					return this.logic.setTimer(0, Integer.parseInt(params[3]), 0).toString();
+					timer = this.logic.setTimer(0, Integer.parseInt(params[3]), 0);
 				} else if (params[4].contains("second")) {
-					return this.logic.setTimer(0, 0, Integer.parseInt(params[3])).toString();
+					timer = this.logic.setTimer(0, 0, Integer.parseInt(params[3]));
 				}
+			} else {
+				return "Speech Command not valid.";
 			}
 		} catch (IllegalArgumentException e) {
 			this.logException(e);
 			return PARAMSNOTVALID;
 		}
-		return "Speech Command not valid.";
+		return "Timer set";
 	}
 
 	/**
