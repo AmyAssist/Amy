@@ -40,28 +40,37 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.MusicEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 /**
  * Rest Resource for music
  * 
- * @author Muhammed Kaya, Christian Bräuner
+ * @author Muhammed Kaya, Christian Bräuner, Lars Buttgereit
  */
 @Path(MusicResource.PATH)
-public class MusicResource {
+public class MusicResource implements Resource{
 
 	/**
 	 * the resource path for this plugin
 	 */
 	public static final String PATH = "music";
+	
+	private static final String CHECK_PLAYER_STATE = "Check player state";
 
 	@Reference
 	private PlayerLogic logic;
 
 	@Reference
 	private StringGenerator stringGenerator;
+	
+	@Reference
+	private DeviceLogic deviceLogic;
 
 	private MusicEntity musicEntity;
 
@@ -80,7 +89,7 @@ public class MusicResource {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public URI firstTimeInit(@QueryParam("clientID") String clientID, @QueryParam("clientSecret") String clientSecret) {
-		if (clientID != null && clientSecret != null) {
+		if (clientID != null && clientSecret != null && !clientID.equals("") && !clientSecret.equals("")) {
 			URI uri = this.logic.firstTimeInit(clientID, clientSecret);
 			if (uri != null) {
 				return uri;
@@ -119,7 +128,7 @@ public class MusicResource {
 	@Path("getDevices")
 	@Produces(MediaType.APPLICATION_JSON)
 	public DeviceEntity[] getDevices() {
-		List<DeviceEntity> deviceList = this.logic.getDevices();
+		List<DeviceEntity> deviceList = this.deviceLogic.getDevices();
 		if (deviceList.isEmpty()) {
 			throw new WebApplicationException("Currently there are no devices available or connected", Status.CONFLICT);
 		}
@@ -145,13 +154,13 @@ public class MusicResource {
 	public String setDevice(@PathParam("deviceValue") String deviceValue) {
 		try {
 			int deviceNumber = Integer.parseInt(deviceValue);
-			String result = this.logic.setDevice(deviceNumber);
+			String result = this.deviceLogic.setDevice(deviceNumber);
 			if (result.equals("No device found")) {
 				throw new WebApplicationException("No device found", Status.NOT_FOUND);
 			}
 			return result;
 		} catch (NumberFormatException e) {
-			if (this.logic.setDevice(deviceValue)) {
+			if (this.deviceLogic.setDevice(deviceValue)) {
 				return "Device: '" + deviceValue + "' is selected now";
 			}
 			throw new WebApplicationException("Device: '" + deviceValue + "' is not available", Status.CONFLICT);
@@ -175,8 +184,8 @@ public class MusicResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Map<String, String>> search(@PathParam("searchText") String searchText,
 			@QueryParam("type") @DefaultValue("track") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
-		List<Map<String, String>> actualSearchResult;
-		switch (type) {
+		List<Map<String, String>> actualSearchResult = null;
+		switch (type.toLowerCase()) {
 		case SpotifyConstants.TYPE_ARTIST:
 			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_ARTIST, limit);
 			break;
@@ -187,8 +196,10 @@ public class MusicResource {
 			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_ALBUM, limit);
 			break;
 		case SpotifyConstants.TYPE_TRACK:
-		default:
 			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_TRACK, limit);
+			break;
+		default:
+			
 			break;
 		}
 		if (actualSearchResult != null) {
@@ -216,7 +227,7 @@ public class MusicResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String play(MusicEntity music, @QueryParam("songNumber") @DefaultValue("0") int songNumber,
 			@QueryParam("type") @DefaultValue("") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
-		switch (type) {
+		switch (type.toLowerCase()) {
 		case "user":
 			Map<String, String> userPlaylist = this.logic.play(songNumber, SearchTypes.USER_PLAYLISTS);
 			if (userPlaylist.isEmpty()) {
@@ -229,6 +240,12 @@ public class MusicResource {
 				throw new WebApplicationException("There is no featured playlist available.", Status.CONFLICT);
 			}
 			return this.stringGenerator.generateSearchOutputString(featuredPlaylist);
+		case "search":
+			Map<String, String> searchResult = this.logic.play(songNumber, SearchTypes.NORMAL_SEARCH);
+			if (searchResult.isEmpty()) {
+				throw new WebApplicationException("There is no featured playlist available.", Status.CONFLICT);
+			}
+			return this.stringGenerator.generateSearchOutputString(searchResult);
 		case SpotifyConstants.TYPE_TRACK:
 			if (music != null) {
 				List<Map<String, String>> searchList = this.logic.search(music.toString(), SpotifyConstants.TYPE_TRACK,
@@ -262,7 +279,7 @@ public class MusicResource {
 		if (this.logic.resume()) {
 			return "resume";
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -277,7 +294,7 @@ public class MusicResource {
 		if (this.logic.pause()) {
 			return "pause";
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -292,7 +309,7 @@ public class MusicResource {
 		if (this.logic.skip()) {
 			return "skip";
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -307,7 +324,7 @@ public class MusicResource {
 		if (this.logic.back()) {
 			return "back";
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
 	}
 
 	/**
@@ -398,7 +415,48 @@ public class MusicResource {
 				return String.valueOf(volume);
 			}
 		}
-		throw new WebApplicationException("Check player state", Status.CONFLICT);
+		throw new WebApplicationException(CHECK_PLAYER_STATE, Status.CONFLICT);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 */
+	@Override
+	public ResourceEntity getPluginDescripion() {
+		return null;
+	}
+
+	/**
+	 * set the new name of the given device
+	 * 
+	 * @param deviceUri
+	 *            the Uri from the device to change
+	 * @param newName
+	 * @return the deviceEntity with the new name or null if the Uri is not found in the registry
+	 */
+	@POST
+	@Path("setDeviceName")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public DeviceEntity setDeviceName(
+			@QueryParam("uri") @DefaultValue("") String uri, @QueryParam("newName") @DefaultValue("" )String newName) {
+		DeviceEntity device = this.deviceLogic.setNewDeviceName(uri, newName);
+		if(device != null) {
+			return device;
+		}
+		throw new  WebApplicationException("No device with this uri", Status.NOT_FOUND);
+	}
+	
+	/**
+	 * get actual volume from 0-100, -1 if no volume available
+	 * 
+	 * @return the volume
+	 */
+	@GET
+	@Path("getVolume")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getVolume() {
+		return String.valueOf(this.logic.getVolume());
 	}
 
 }

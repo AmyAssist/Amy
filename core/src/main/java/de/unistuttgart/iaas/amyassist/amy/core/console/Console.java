@@ -37,8 +37,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerCLI;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TTSConsole;
 
 /**
  * The Console reads input from the command line and pass it to the TextParser
@@ -46,7 +47,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
  * @author Leon Kiefer
  */
 @Service(Console.class)
-public class Console implements SpeechIO {
+public class Console implements RunnableService, Runnable {
 	@Reference
 	private Logger logger;
 
@@ -56,7 +57,10 @@ public class Console implements SpeechIO {
 	@Reference
 	private Core core;
 
+	@Reference
 	private SpeechInputHandler handler;
+
+	private Thread thread;
 
 	@Command
 	public String say(String... speechInput) {
@@ -70,14 +74,18 @@ public class Console implements SpeechIO {
 		return "";
 	}
 
-	/**
-	 * @see java.lang.Runnable#run()
-	 */
+	@Override
+	public void start() {
+		this.thread = new Thread(this, "Console");
+		this.thread.start();
+	}
+
 	@Override
 	public void run() {
 		try {
 			Shell shell = ShellFactory.createConsoleShell("amy", "", this);
 			shell.addMainHandler(this.serviceLocator.createAndInitialize(PluginManagerCLI.class), "");
+			shell.addMainHandler(this.serviceLocator.createAndInitialize(TTSConsole.class), "");
 			shell.addMainHandler(new CommandLineArgumentHandlerService(), "");
 			shell.commandLoop();
 		} catch (IOException e) {
@@ -86,11 +94,8 @@ public class Console implements SpeechIO {
 		this.core.stop();
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechIO#setSpeechInputHandler(de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler)
-	 */
 	@Override
-	public void setSpeechInputHandler(SpeechInputHandler handler) {
-		this.handler = handler;
+	public void stop() {
+		this.thread.interrupt();
 	}
 }

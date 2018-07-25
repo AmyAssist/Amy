@@ -23,13 +23,15 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskSchedulerAPI;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 
 /**
  * This class implements the logic for all the functions that our alarm clock and timer are capable of
@@ -46,7 +48,10 @@ public class AlarmClockLogic {
 	private IAlarmClockStorage acStorage;
 
 	@Reference
-	private TaskSchedulerAPI taskScheduler;
+	private TaskScheduler taskScheduler;
+
+	@Reference
+	private Environment environment;
 
 	/**
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
@@ -102,7 +107,11 @@ public class AlarmClockLogic {
 			Alarm alarm = new Alarm(counter, hour, minute, true);
 			this.acStorage.storeAlarm(alarm);
 			Runnable alarmRunnable = createAlarmRunnable(counter);
-			this.taskScheduler.schedule(alarmRunnable, alarm.getAlarmDate().getTime());
+			ZonedDateTime with = this.environment.getCurrentDateTime().with(alarm.getAlarmTime());
+			if (with.isBefore(this.environment.getCurrentDateTime())) {
+				with = with.plusDays(1);
+			}
+			this.taskScheduler.schedule(alarmRunnable, with.toInstant());
 			return alarm;
 		}
 		throw new IllegalArgumentException();
@@ -127,7 +136,7 @@ public class AlarmClockLogic {
 			Timer timer = new Timer(counter, hours, minutes, seconds, true);
 			this.acStorage.storeTimer(timer);
 			Runnable timerRunnable = createTimerRunnable(counter);
-			this.taskScheduler.schedule(timerRunnable, timer.getTimerDate().getTime());
+			this.taskScheduler.schedule(timerRunnable, timer.getTimerDate().toInstant());
 			return timer;
 		}
 		throw new IllegalArgumentException();
@@ -148,6 +157,7 @@ public class AlarmClockLogic {
 		for (int i = 1; i <= amount; i++) {
 			if (this.acStorage.hasAlarm(i)) {
 				counter++;
+				deactivateAlarm(i);
 				this.acStorage.deleteAlarm(i);
 			}
 		}
@@ -169,6 +179,7 @@ public class AlarmClockLogic {
 		for (int i = 1; i <= amount; i++) {
 			if (this.acStorage.hasTimer(i)) {
 				counter++;
+				deactivateTimer(i);
 				this.acStorage.deleteTimer(i);
 			}
 		}
@@ -184,6 +195,7 @@ public class AlarmClockLogic {
 	 */
 	protected String deleteAlarm(int alarmNumber) {
 		if (this.acStorage.hasAlarm(alarmNumber)) {
+			deactivateAlarm(alarmNumber);
 			this.acStorage.deleteAlarm(alarmNumber);
 			return "Alarm " + alarmNumber + " deleted";
 		}
@@ -198,6 +210,7 @@ public class AlarmClockLogic {
 	 */
 	protected String deleteTimer(int timerNumber) {
 		if (this.acStorage.hasTimer(timerNumber)) {
+			deactivateTimer(timerNumber);
 			this.acStorage.deleteTimer(timerNumber);
 			return "Timer " + timerNumber + " deleted";
 		}
@@ -263,26 +276,6 @@ public class AlarmClockLogic {
 				return "Alarm " + alarmNumber + " activated";
 			}
 			return "Alarm " + alarmNumber + " is already active";
-		}
-		throw new NoSuchElementException();
-	}
-
-	/**
-	 * Activates an existing timer, so it will ring.
-	 * 
-	 * @param timerNumber
-	 *            number of the timer
-	 * @return timerNumber
-	 */
-	protected String activateTimer(int timerNumber) {
-		if (this.acStorage.hasTimer(timerNumber)) {
-			Timer timer = this.acStorage.getTimer(timerNumber);
-			if (!timer.isActive()) {
-				timer.setActive(true);
-				this.acStorage.storeTimer(timer);
-				return "Timer " + timerNumber + " activated";
-			}
-			return "Timer " + timerNumber + " is already active";
 		}
 		throw new NoSuchElementException();
 	}
@@ -365,16 +358,5 @@ public class AlarmClockLogic {
 			return alarm;
 		}
 		throw new NoSuchElementException();
-	}
-
-	/**
-	 * Returns the remaining timer delay in hours, minutes and seconds
-	 * 
-	 * @param timerNumber
-	 *            id of the timer
-	 * @return remaining timer delay
-	 */
-	protected int[] getRemainingTimerDelay(int timerNumber) {
-		return this.acStorage.getTimer(timerNumber).getRemainingTime();
 	}
 }

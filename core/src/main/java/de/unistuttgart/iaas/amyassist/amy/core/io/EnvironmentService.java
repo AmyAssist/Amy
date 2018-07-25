@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.io;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -47,5 +49,15 @@ public class EnvironmentService implements Environment {
 	@Override
 	public Path getWorkingDirectory() {
 		return this.workingDirectory;
+	}
+
+	@Override
+	public LocalDateTime getCurrentLocalDateTime() {
+		return LocalDateTime.now();
+	}
+
+	@Override
+	public ZonedDateTime getCurrentDateTime() {
+		return ZonedDateTime.now();
 	}
 }

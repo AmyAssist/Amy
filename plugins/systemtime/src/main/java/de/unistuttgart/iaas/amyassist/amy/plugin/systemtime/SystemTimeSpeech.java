@@ -24,46 +24,28 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * A plugin which tells time and date
  * 
  * @author Florian Bauer, Patrick Gebhardt
  */
-@Service
-@SpeechCommand({ "what is", "tell me" })
+@SpeechCommand
 public class SystemTimeSpeech {
 
 	@Reference
 	private SystemTimeLogic logic;
 
 	/**
-	 * A method to convert the integer day to an ordinal (from 1 to 31)
-	 * 
-	 * @param i
-	 *            the day as integer
-	 * @return the day as ordinal, e.g. 1st
-	 */
-	public static String ordinal(int i) {
-		String[] ordinals = { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
-		if (10 < i && i < 14) {
-			return i + "th";
-		} else {
-			return i + ordinals[i % 10];
-		}
-	}
-
-	/**
 	 * A method which returns the current time
 	 * 
 	 * @return current time (hour minute) in a string, e.g. it is 10:30
 	 */
-	@Grammar("the time")
+	@Grammar("(what is|tell me) the time")
 	public String time(String[] s) {
-		return "it is " + this.logic.getHour() + ":" + this.logic.getMinute();
+		return "it is " + this.logic.getTime();
 	}
 
 	/**
@@ -71,9 +53,9 @@ public class SystemTimeSpeech {
 	 * 
 	 * @return current date (day month year) in a string, e.g. it is the 20th of june
 	 */
-	@Grammar("the date")
+	@Grammar("(what is|tell me) the date")
 	public String date(String[] s) {
-		return "it is the " + ordinal(Integer.parseInt(this.logic.getDay())) + " of " + this.logic.getMonth();
+		return "it is the " + this.logic.getDate();
 	}
 
 	/**
@@ -81,7 +63,7 @@ public class SystemTimeSpeech {
 	 * 
 	 * @return current year in a string, e.g. it is 2018
 	 */
-	@Grammar("the year")
+	@Grammar("(what is|tell me) the year")
 	public String year(String[] s) {
 		return "it is " + this.logic.getYear();
 	}

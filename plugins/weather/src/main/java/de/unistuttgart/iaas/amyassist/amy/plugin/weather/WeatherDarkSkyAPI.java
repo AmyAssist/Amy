@@ -23,49 +23,139 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
+import java.util.Calendar;
 import java.util.Properties;
 
 import com.github.dvdme.ForecastIOLib.FIODaily;
 import com.github.dvdme.ForecastIOLib.FIODataPoint;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 
+/**
+ * Logic class to provide information about current and coming weather
+ * 
+ * @author Benno, Lars Buttgereit
+ */
 @Service
 public class WeatherDarkSkyAPI {
 	@Reference
 	private Properties configuration;
 
-	private static final String STUTTGART_COORDINATES_LAT = "48.745295";
-	private static final String STUTTGART_COORDINATES_LONG = "9.10502";
+	@Reference
+	private LocationRegistry locationRegistry;
+
+	@Reference
+	private IStorage storage;
+
+	private boolean locationChanged = true;
+
+	private String coordinateLat = "48.745886";
+	private String coordinateLong = "9.107881";
 
 	private static final String API_SECRET_CONFIG_KEY = "DARKSKY_API_SECRET";
+	private static final String WEATHER_LOCATION_ID_STRING = "WEATHER_LOCATION_ID";
+
+	private FIODaily dailyReports;
+	private Calendar lastRequest;
 
 	private FIODaily getDailyReports() {
-		ForecastIO fio = new ForecastIO(this.configuration.getProperty(API_SECRET_CONFIG_KEY));
-		fio.setUnits(ForecastIO.UNITS_SI);
-		fio.getForecast(WeatherDarkSkyAPI.STUTTGART_COORDINATES_LAT, WeatherDarkSkyAPI.STUTTGART_COORDINATES_LONG);
+		if (this.dailyReports == null || checkTime() || this.locationChanged) {
+			loadLocation();
+			ForecastIO fio = new ForecastIO(this.configuration.getProperty(API_SECRET_CONFIG_KEY));
+			fio.setUnits(ForecastIO.UNITS_SI);
+			fio.getForecast(this.coordinateLat, this.coordinateLong);
 
-		FIODaily dailyReports = new FIODaily(fio);
-		for (int i = 0; i < dailyReports.days(); i++) {
-			FIODataPoint report = dailyReports.getDay(i);
-			report.setTimezone(fio.getTimezone());
+			this.dailyReports = new FIODaily(fio);
+			for (int i = 0; i < this.dailyReports.days(); i++) {
+				FIODataPoint report = this.dailyReports.getDay(i);
+				report.setTimezone(fio.getTimezone());
+			}
+			this.lastRequest = Calendar.getInstance();
+			this.locationChanged = false;
 		}
 
-		return dailyReports;
+		return this.dailyReports;
 	}
 
+	/**
+	 * checks if the time of the last request is still actual and on the same day
+	 * 
+	 * @return true if the data is outdated, false if its actual
+	 */
+	private boolean checkTime() {
+		Calendar now = Calendar.getInstance();
+		if (this.lastRequest != null) {
+			boolean sameDay = now.get(Calendar.YEAR) == this.lastRequest.get(Calendar.YEAR)
+					&& now.get(Calendar.DAY_OF_YEAR) == this.lastRequest.get(Calendar.DAY_OF_YEAR);
+			if (sameDay) {
+				boolean withinHour = now.getTimeInMillis() - this.lastRequest.getTimeInMillis() < 60 * 60 * 1000;
+				if (withinHour) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * get the weather forecast for today
+	 * 
+	 * @return todays weather forecast
+	 */
 	public WeatherReportDay getReportToday() {
 		FIODaily d = this.getDailyReports();
 		return new WeatherReportDay("This is the weather report for today.", d.getDay(0));
 	}
 
+	/**
+	 * get the weather forecast for tomorrow
+	 * 
+	 * @return tomorrows weather forecast
+	 */
 	public WeatherReportDay getReportTomorrow() {
 		FIODaily d = this.getDailyReports();
 		return new WeatherReportDay("This is the weather report for tomorrow.", d.getDay(1));
 	}
 
+	/**
+	 * get the weather forecast for the week
+	 * 
+	 * @return this weeks weather forecast
+	 */
 	public WeatherReportWeek getReportWeek() {
 		return new WeatherReportWeek("This is the weather report for the week. ", this.getDailyReports());
+	}
+
+	/**
+	 * set a new locationId
+	 * 
+	 * @param locationId
+	 *            id from the registry entry
+	 */
+	public void setLocation(int locationId) {
+		this.locationChanged = true;
+		this.storage.put(WEATHER_LOCATION_ID_STRING, String.valueOf(locationId));
+	}
+
+	/**
+	 * load the lat and long from registry
+	 */
+	private void loadLocation() {
+		if (this.storage.has(WEATHER_LOCATION_ID_STRING)) {
+			Location location = this.locationRegistry
+					.getById(Integer.parseInt(this.storage.get(WEATHER_LOCATION_ID_STRING)));
+			if (location != null) {
+				this.coordinateLat = String.valueOf(location.getLatitude());
+				this.coordinateLong = String.valueOf(location.getLongitude());
+			} else {
+				this.coordinateLat = "48.745886";
+				this.coordinateLong = "9.107881";
+			}
+		}
 	}
 }

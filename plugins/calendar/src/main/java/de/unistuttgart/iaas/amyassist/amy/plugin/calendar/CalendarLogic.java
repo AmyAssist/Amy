@@ -24,16 +24,17 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 
@@ -43,6 +44,7 @@ import com.google.api.services.calendar.model.Events;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
  * This class is for the Calendar Authentication and Logic, parts of the Code are from
@@ -57,10 +59,15 @@ public class CalendarLogic {
 	private CalendarService calendarService;
 	@Reference
 	private Logger logger;
+	@Reference
+	private Environment environment;
 
 	private enum OutputCase {
 		STARTINPAST, STARTINFUTURE, ALLDAYLONG, SINGLEDAY
 	}
+
+	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+	private LocalTime zero = LocalTime.of(0, 0, 0, 0);
 
 	/**
 	 * Output of the logger
@@ -123,32 +130,20 @@ public class CalendarLogic {
 	public String getEventsToday() {
 		List<String> eventList = new ArrayList<>();
 		try {
-			LocalDateTime now = LocalDateTime.now();
+			LocalDateTime now = this.environment.getCurrentLocalDateTime();
+			LocalDate nextDay = now.plusDays(1).toLocalDate();
+			LocalDateTime endOfDay = LocalDateTime.of(nextDay, this.zero);
+			ZonedDateTime zdt = endOfDay.atZone(ZoneId.systemDefault());
+			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
 			DateTime setup = new DateTime(System.currentTimeMillis());
 			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
+					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return this.noEventsFound;
 			}
-			LocalDate startDate;
-			LocalDate nowDate = now.toLocalDate();
-			LocalDate endDate;
 			for (Event event : items) {
-				if (event.getStart().getDate() != null) {
-					startDate = LocalDate.parse(event.getStart().getDate().toString());
-					endDate = LocalDate.parse(event.getEnd().getDate().toString()).minusDays(1);
-				} else {
-					startDate = LocalDate.parse(event.getStart().getDateTime().toString().substring(0, 10));
-					endDate = LocalDate.parse(event.getEnd().getDateTime().toString().substring(0, 10));
-				}
-				if (nowDate.isAfter(startDate) || nowDate.equals(startDate)) {
-					if (nowDate.isBefore(endDate) || nowDate.equals(endDate)) {
-						eventList.add(this.checkDay(now, event, false));
-					}
-				} else {
-					break;
-				}
+				eventList.add(this.checkDay(now, event, false));
 			}
 			if (eventList.isEmpty()) {
 				return "There are no events today.";
@@ -168,36 +163,22 @@ public class CalendarLogic {
 	public String getEventsTomorrow() {
 		List<String> eventList = new ArrayList<>();
 		try {
-			LocalDateTime now = LocalDateTime.now();
-			LocalTime zero = LocalTime.of(0, 0, 0, 0);
+			LocalDateTime now = this.environment.getCurrentLocalDateTime();
 			LocalDate nextDay = now.plusDays(1).toLocalDate();
-			now = LocalDateTime.of(nextDay, zero);
+			now = LocalDateTime.of(nextDay, this.zero);
 			ZonedDateTime zdt = now.atZone(ZoneId.systemDefault());
 			DateTime setup = new DateTime(zdt.toInstant().toEpochMilli());
+			LocalDateTime endOfTomorrow = now.plusDays(1);
+			zdt = endOfTomorrow.atZone(ZoneId.systemDefault());
+			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
 			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
+					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
 			List<Event> items = events.getItems();
 			if (items.isEmpty()) {
 				return this.noEventsFound;
 			}
-			LocalDate startDate;
-			LocalDate nowDate = now.toLocalDate();
-			LocalDate endDate;
 			for (Event event : items) {
-				if (event.getStart().getDate() != null) {
-					startDate = LocalDate.parse(event.getStart().getDate().toString());
-					endDate = LocalDate.parse(event.getEnd().getDate().toString()).minusDays(1);
-				} else {
-					startDate = LocalDate.parse(event.getStart().getDateTime().toString().substring(0, 10));
-					endDate = LocalDate.parse(event.getEnd().getDateTime().toString().substring(0, 10));
-				}
-				if (nowDate.isAfter(startDate) || nowDate.equals(startDate)) {
-					if (nowDate.isBefore(endDate) || nowDate.equals(endDate)) {
-						eventList.add(this.checkDay(now, event, false));
-					}
-				} else {
-					break;
-				}
+				eventList.add(this.checkDay(now, event, false));
 			}
 			if (eventList.isEmpty()) {
 				return "There are no events tomorrow.";
@@ -207,6 +188,72 @@ public class CalendarLogic {
 			this.logger.error(this.errorLogger, e);
 			return this.errorOutput;
 		}
+	}
+
+	/**
+	 * This method contains the logic to show the calendar events on a specific date as natural language output
+	 *
+	 * @param ldt
+	 *            LocalDateTime variable
+	 * @return the events of the chosen day
+	 */
+	public String getEventsAtAsString(LocalDateTime ldt) {
+		List<String> eventList = new ArrayList<>();
+		try {
+			LocalDateTime chosenDay = LocalDateTime.of(ldt.toLocalDate(), this.zero);
+			ZonedDateTime zdt = chosenDay.atZone(ZoneId.systemDefault());
+			DateTime setup = new DateTime(zdt.toInstant().toEpochMilli());
+			LocalDateTime nextDay = chosenDay.plusDays(1);
+			zdt = nextDay.atZone(ZoneId.systemDefault());
+			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
+			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
+					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
+			List<Event> items = events.getItems();
+			if (items.isEmpty()) {
+				return this.noEventsFound;
+			}
+			for (Event event : items) {
+				eventList.add(this.checkDay(chosenDay, event, false));
+			}
+			if (eventList.isEmpty()) {
+				return "There are no events on the " + getDate(chosenDay) + ".";
+			}
+			return "You have following events on the " + getDate(chosenDay) + ":\n" + String.join("\n", eventList);
+		} catch (IOException e) {
+			this.logger.error(this.errorLogger, e);
+			return this.errorOutput;
+		}
+	}
+
+	/**
+	 * This method contains the logic to show the calendar events on a specific date as a list of Events
+	 *
+	 * @param ldt
+	 *            LocalDateTime variable
+	 * @return the events of the chosen day as a List<Event>
+	 */
+	public List<CalendarEvent> getEventsAt(LocalDateTime ldt) {
+		List<CalendarEvent> eventList = new ArrayList<>();
+		try {
+			LocalDateTime chosenDay = LocalDateTime.of(ldt.toLocalDate(), this.zero);
+			ZonedDateTime zdt = chosenDay.atZone(ZoneId.systemDefault());
+			DateTime setup = new DateTime(zdt.toInstant().toEpochMilli());
+			LocalDateTime nextDay = chosenDay.plusDays(1);
+			zdt = nextDay.atZone(ZoneId.systemDefault());
+			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
+			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
+					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
+			List<Event> items = events.getItems();
+			for (Event event : items) {
+				CalendarEvent calendarEvent = new CalendarEvent(event.getId(), getLocalDateTimeStart(event),
+						getLocalDateTimeEnd(event), event.getSummary(), event.getLocation(), event.getDescription(),
+						isAllDay(event));
+				eventList.add(calendarEvent);
+			}
+		} catch (IOException e) {
+			this.logger.error(this.errorLogger, e);
+		}
+		return eventList;
 	}
 
 	/**
@@ -221,37 +268,17 @@ public class CalendarLogic {
 	 * @return the event as natural language text
 	 */
 	public String checkDay(LocalDateTime dayToCheck, Event event, boolean withDate) {
-		SimpleDateFormat sdf = new SimpleDateFormat("XXX");
-		String timeZone = sdf.format(Date.from(dayToCheck.atZone(ZoneId.systemDefault()).toInstant()));
-		LocalDateTime startDateTime;
-		LocalDateTime endDateTime;
-		LocalDate startDate;
-		LocalDate checkDate;
-		LocalDate endDate;
-		OutputCase outputCase = OutputCase.SINGLEDAY;
-		boolean withTime;
+		LocalDateTime startDateTime = getLocalDateTimeStart(event);
+		LocalDateTime endDateTime = getLocalDateTimeEnd(event);
+		LocalDate startDate = getLocalDateStart(event);
+		LocalDate checkDate = dayToCheck.toLocalDate();
+		LocalDate endDate = getLocalDateEnd(event);
+		OutputCase outputCase;
+		boolean withTime = !isAllDay(event);
 		boolean withStartDate = withDate;
 		boolean withEndDate = withDate;
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-		// check if the day has a timestamp or only a date
-		if (event.getStart().getDate() != null) {
-			startDateTime = LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000" + timeZone,
-					formatter);
-			endDateTime = LocalDateTime
-					.parse(event.getEnd().getDate().toString() + "T23:59:59.999" + timeZone, formatter).minusDays(1);
-			withTime = false;
-		} else {
-			startDateTime = ZonedDateTime.parse(event.getStart().getDateTime().toString())
-					.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-			endDateTime = ZonedDateTime.parse(event.getEnd().getDateTime().toString())
-					.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-			withTime = true;
-		}
-		startDate = startDateTime.toLocalDate();
-		checkDate = dayToCheck.toLocalDate();
-		endDate = endDateTime.toLocalDate();
 		// check if the beginning and the end of the event is on another day as the current day
-		if (dayToCheck.isAfter(startDateTime) && dayToCheck.isBefore(endDateTime)) {
+		if (dayToCheck.isAfter(startDateTime)) {
 			// event already started
 			outputCase = OutputCase.STARTINPAST;
 			if (checkDate.isAfter(startDate) && checkDate.isBefore(endDate)) {
@@ -260,43 +287,18 @@ public class CalendarLogic {
 				withEndDate = true;
 			} else if (checkDate.isEqual(startDate)) {
 				// event started at dayToCheck
-				if (checkDate.isEqual(endDate)) {
-					// event will also finish at dayToCheck
-					if (withTime) {
-						// event has specific time stamps
-						outputCase = OutputCase.SINGLEDAY;
-						withStartDate = withDate;
-					} else {
-						// event is defined as all day long and has no specific time stamps
-						outputCase = OutputCase.ALLDAYLONG;
-						withStartDate = withDate;
-					}
-				} else {
-					// event will finish on a different date
-					withStartDate = withDate;
-					withEndDate = true;
-				}
+				outputCase = eventType(checkDate, endDate, event, OutputCase.STARTINPAST);
+				// event will finish on a different date
+				withEndDate = !checkDate.isEqual(endDate);
 			} else {
 				// event ends on dayToCheck
 				withStartDate = true;
 			}
-		} else if (dayToCheck.isBefore(startDateTime)) {
+		} else {
 			// event will start in future
-			outputCase = OutputCase.STARTINFUTURE;
-			if (checkDate.isEqual(startDate)) {
-				// event will start at dayToCheck
-				withStartDate = withDate;
-				if (checkDate.isEqual(endDate)) {
-					// event will also finish at the same day
-					outputCase = OutputCase.SINGLEDAY;
-				} else {
-					// event will finish on an other day in the future
-					withEndDate = true;
-				}
-			} else {
-				// event will start on different date in the future
-				withStartDate = true;
-			}
+			outputCase = eventType(startDate, endDate, event, OutputCase.STARTINFUTURE);
+			// event will finish on an other day in the future
+			withEndDate = !startDate.isEqual(endDate);
 		}
 
 		return eventToString(startDateTime, endDateTime, event, withStartDate, withEndDate, withTime, outputCase);
@@ -324,25 +326,11 @@ public class CalendarLogic {
 	public String eventToString(LocalDateTime startDate, LocalDateTime endDate, Event event, boolean withStartDate,
 			boolean withEndDate, boolean withTime, OutputCase outputCase) {
 		String eventData = event.getSummary();
-		String eventStartDate = "";
-		String eventEndDate = "";
+		String eventStartDate = dateOutput(startDate, withStartDate, withTime);
+		String eventEndDate = dateOutput(endDate, withEndDate, withTime);
 		String eventStartTime = "";
 		String eventEndTime = "";
 		DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm");
-		if (withStartDate) {
-			eventStartDate = " the " + ordinal(startDate.getDayOfMonth()) + " of "
-					+ startDate.getMonth().toString().toLowerCase();
-			if (withTime) {
-				eventStartDate += " at";
-			}
-		}
-		if (withEndDate) {
-			eventEndDate = " the " + ordinal(endDate.getDayOfMonth()) + " of "
-					+ endDate.getMonth().toString().toLowerCase();
-			if (withTime) {
-				eventEndDate += " at";
-			}
-		}
 		if (withTime) {
 			eventStartTime = " " + time.format(startDate);
 			eventEndTime = " " + time.format(endDate);
@@ -362,14 +350,14 @@ public class CalendarLogic {
 			break;
 		case ALLDAYLONG:
 			if (withStartDate) {
-				eventStartDate = " on the " + ordinal(startDate.getDayOfMonth()) + " of " + startDate.getMonth();
+				eventStartDate = " on the " + getDate(startDate);
 			}
 			eventData += eventStartDate + " all day long. \n";
 			break;
 		case SINGLEDAY:
 			if (withStartDate) {
-				eventData += " on the " + ordinal(startDate.getDayOfMonth()) + " of " + startDate.getMonth() + " at "
-						+ time.format(startDate) + " until " + time.format(endDate) + ". \n";
+				eventData += " on the " + getDate(startDate) + " at " + time.format(startDate) + " until "
+						+ time.format(endDate) + ". \n";
 			} else {
 				eventData += " from " + time.format(startDate) + " until " + time.format(endDate) + ". \n";
 			}
@@ -381,6 +369,116 @@ public class CalendarLogic {
 		}
 
 		return eventData;
+	}
+
+	/**
+	 * @param date
+	 *            the date as LocalDateTime
+	 * @param withDate
+	 *            if the date should be displayed
+	 * @param withTime
+	 *            if there is a time following the date
+	 * @return the date String part of Amys natural language output
+	 */
+	public String dateOutput(LocalDateTime date, boolean withDate, boolean withTime) {
+		String output = "";
+		if (withDate) {
+			output = " the " + getDate(date);
+			if (withTime) {
+				output += " at";
+			}
+		}
+		return output;
+	}
+
+	/**
+	 * @param date1
+	 *            the first date
+	 * @param date2
+	 *            the second date
+	 * @param event
+	 *            the current event
+	 * @param defaultCase
+	 *            the default OutputCase
+	 * @return which OutputCase is needed
+	 */
+	public static OutputCase eventType(ChronoLocalDate date1, ChronoLocalDate date2, Event event,
+			OutputCase defaultCase) {
+		if (date1.isEqual(date2)) {
+			if (isAllDay(event)) {
+				return OutputCase.ALLDAYLONG;
+			}
+			return OutputCase.SINGLEDAY;
+		}
+		return defaultCase;
+	}
+
+	/**
+	 * @param event
+	 *            google calendar event
+	 * @return if the event has no time stamps (all day event) or not
+	 */
+	public static boolean isAllDay(Event event) {
+		return event.getStart().getDate() != null;
+	}
+
+	/**
+	 * @param event
+	 *            google calendar event
+	 * @return the start of the event as LocalDate
+	 */
+	public static LocalDate getLocalDateStart(Event event) {
+		if (isAllDay(event)) {
+			return LocalDate.parse(event.getStart().getDate().toString());
+		}
+		return LocalDate.parse(event.getStart().getDateTime().toString().substring(0, 10));
+	}
+
+	/**
+	 * @param event
+	 *            google calendar event
+	 * @return the end of the event as LocalDate
+	 */
+	public static LocalDate getLocalDateEnd(Event event) {
+		if (isAllDay(event)) {
+			return LocalDate.parse(event.getEnd().getDate().toString()).minusDays(1);
+		}
+		return LocalDate.parse(event.getEnd().getDateTime().toString().substring(0, 10));
+	}
+
+	/**
+	 * @param event
+	 *            google calendar event
+	 * @return the start of the event as LocalDateTime
+	 */
+	public LocalDateTime getLocalDateTimeStart(Event event) {
+		if (isAllDay(event)) {
+			return LocalDateTime.parse(event.getStart().getDate().toString() + "T00:00:00.000", formatter);
+		}
+		return ZonedDateTime.parse(event.getStart().getDateTime().toString())
+				.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+	}
+
+	/**
+	 * @param event
+	 *            google calendar event
+	 * @return the end of the event as LocalDateTime
+	 */
+	public LocalDateTime getLocalDateTimeEnd(Event event) {
+		if (isAllDay(event)) {
+			return LocalDateTime.parse(event.getEnd().getDate().toString() + "T23:59:59.999", formatter).minusDays(1);
+		}
+		return ZonedDateTime.parse(event.getEnd().getDateTime().toString()).withZoneSameInstant(ZoneId.systemDefault())
+				.toLocalDateTime();
+	}
+
+	/**
+	 * @param date
+	 *            a date as LocalDate
+	 * @return String in Natural Language of the date, e.g. "12th of May"
+	 */
+	public String getDate(LocalDateTime date) {
+		return ordinal(date.getDayOfMonth()) + " of " + date.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
 	}
 
 	/**

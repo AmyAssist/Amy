@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.net.URI;
+
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.Alarm;
@@ -36,24 +38,24 @@ class TimestampTest {
 		Timestamp ts = new Timestamp();
 		assertEquals(0, ts.getHour());
 		assertEquals(0, ts.getMinute());
-		assertEquals("", ts.getLink());
+		assertEquals("", ts.getLink().toString());
 		
 		ts = new Timestamp(15, 20);
 		assertEquals(15, ts.getHour());
 		assertEquals(20, ts.getMinute());
-		assertEquals("", ts.getLink());
+		assertEquals("", ts.getLink().toString());
 		
 		ts = new Timestamp("16:55");
 		assertEquals(16, ts.getHour());
 		assertEquals(55, ts.getMinute());
-		assertEquals("", ts.getLink());
+		assertEquals("", ts.getLink().toString());
 		
 		Alarm alarm = new Alarm(2, 5, 17, true);
 		ts = new Timestamp(alarm);
-		ts.setLink("/" + alarm.getId());
+		ts.setLink(URI.create("/2"));
 		assertEquals(5, ts.getHour());
 		assertEquals(17, ts.getMinute());
-		assertEquals("/2", ts.getLink());
+		assertEquals("/2", ts.getLink().toString());
 		
 		try {
 			alarm = null;

@@ -125,9 +125,9 @@ class DependencyInjectionTest {
 		TestLogger logger = TestLoggerFactory.getTestLogger(ServiceProvider.class);
 
 		this.dependencyInjection.register(ServiceWithDuplicateDependency.class);
-
-		assertThat(logger.getLoggingEvents(), contains(warn("The Service {} have a duplicate dependeny on {}",
-				ServiceWithDuplicateDependency.class.getName(), Service6.class.getName())));
+		ServiceWithDuplicateDependency service = this.dependencyInjection
+				.getService(ServiceWithDuplicateDependency.class);
+		assertThat(service, is(notNullValue()));
 	}
 
 	@Test()

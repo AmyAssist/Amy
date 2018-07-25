@@ -119,7 +119,9 @@ public class SpeechRecognizer implements Runnable {
 			 * If Thread is not Interrupted, get and use SpeechRecognitionResult
 			 */
 			if (speechResult != null) {
-				makeDecision(speechResult.getHypothesis());
+				String speechRecognitionResult = speechResult.getHypothesis();
+				this.logger.debug("Result: {}", speechRecognitionResult);
+				makeDecision(speechRecognitionResult);
 			}
 		}
 

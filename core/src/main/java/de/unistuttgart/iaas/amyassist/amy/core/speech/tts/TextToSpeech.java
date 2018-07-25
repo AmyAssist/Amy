@@ -24,90 +24,171 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
+import javax.annotation.Nonnull;
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import marytts.LocalMaryInterface;
 import marytts.exceptions.MaryConfigurationException;
 import marytts.exceptions.SynthesisException;
+import marytts.modules.synthesis.Voice;
 
 /**
- * Class Based on MaryTTS: https://github.com/marytts/marytts. Class that gives out a String input as Speech. First
- * setup() the TTS to make the output later Faster. Before running as thread set the String-To-Say with setOutputString
+ * This class outputs Strings as Voice using MaryTTS.
+ * 
+ * @see <a href="https://github.com/marytts/marytts">MaryTTS</a>
  * 
  * @author Tim Neumann, Kai Menzel
  */
 @Service(TextToSpeech.class)
-public class TextToSpeech implements Output {
+public class TextToSpeech implements Output, Runnable, RunnableService {
+
+	private static final int WAIT_TIME_AFTER_SPEECH = 1000;
+	private static final int BYTE_BUFFER_SIZE = 1024;
+	private static final int QUEUE_SIZE = 10;
 
 	@Reference
 	private Logger logger;
-
+	@Nonnull
 	private LocalMaryInterface mary;
+	@Nonnull
+	private SourceDataLine outputLine;
+	@Nonnull
+	private BlockingQueue<String> queue;
 
-	private Clip outputClip;
+	private volatile boolean isTalking = false;
+	private volatile boolean stop = false;
+
+	private Thread thread;
 
 	@PostConstruct
 	private void init() {
+		this.queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
 		try {
 			this.mary = new LocalMaryInterface();
-			this.mary.setVoice("dfki-poppy-hsmm");
-		} catch (MaryConfigurationException e) {
+
+			Voice voice = Voice.getVoice("dfki-poppy-hsmm");
+			this.mary.setVoice(voice.getName());
+
+			// We need to do this, because the audio format depends on the voice of mary
+			AudioFormat audioFormat = voice.dbAudioFormat();
+
+			if (!AudioSystem.isLineSupported(new DataLine.Info(SourceDataLine.class, audioFormat))) {
+				this.logger.error("The Audio System does not support the required ");
+			} else {
+				this.outputLine = AudioSystem.getSourceDataLine(audioFormat);
+				this.outputLine.open(audioFormat);
+				this.outputLine.start();
+			}
+		} catch (MaryConfigurationException | LineUnavailableException e) {
 			this.logger.error("initialization error", e);
 			throw new IllegalStateException(e);
 		}
 	}
 
-	// -----------------------------------------------------------------------------------------------
-
-	/**
-	 * outputs Speech translated from given String
-	 * 
-	 * @param listener
-	 *            Listener for the Output-Clip
-	 * @param s
-	 *            String that shall be said
-	 */
-	private void speak(LineListener listener, String s) {
-		stopOutput();
-		try {
-			AudioFormat format = this.mary.generateAudio(s).getFormat();
-			DataLine.Info info = new DataLine.Info(Clip.class, format);
-			this.outputClip = (Clip) AudioSystem.getLine(info);
-			this.outputClip.addLineListener(listener);
-			this.outputClip.open(this.mary.generateAudio(s));
-			this.outputClip.start();
-		} catch (SynthesisException | LineUnavailableException | IOException e) {
-			this.logger.error("output error", e);
-		}
-
+	@Override
+	public void start() {
+		this.thread = new Thread(this, "TextToSpeech");
+		this.thread.start();
 	}
+
+	@Override
+	public void run() {
+		try {
+			while (!Thread.currentThread().isInterrupted()) {
+				String s = this.queue.take();
+				this.isTalking = true;
+				this.writeAudio(s);
+				Thread.sleep(WAIT_TIME_AFTER_SPEECH);
+				this.isTalking = false;
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		} finally {
+			this.logger.info("Text to speech stopped");
+		}
+	}
+
+	private void writeAudio(String s) {
+		try (AudioInputStream a = this.mary.generateAudio(s)) {
+			moveBytes(a, this.outputLine);
+		} catch (SynthesisException e) {
+			this.logger.error("output error", e);
+		} catch (IOException e) {
+			this.logger.error("Error from MaryTTS InputStream", e);
+		}
+	}
+
+	private void moveBytes(AudioInputStream ais, SourceDataLine sdl) throws IOException {
+		byte[] buffer = new byte[BYTE_BUFFER_SIZE];
+		int readBytes = 0;
+
+		while (!this.stop && !Thread.currentThread().isInterrupted() && readBytes >= 0) {
+			readBytes = ais.read(buffer, 0, BYTE_BUFFER_SIZE);
+
+			if (readBytes > 0) {
+				sdl.write(buffer, 0, readBytes);
+			}
+		}
+	}
+
+	// -----------------------------------------------------------------------------------------------
 
 	/**
 	 * Method to Voice and Log output the input String
 	 * 
-	 * @param listener
-	 *            Listener for the Voice Output Clip
 	 * @param s
 	 *            String that shall be said
 	 */
 	@Override
-	public void output(LineListener listener, String s) {
+	public synchronized void output(String s) {
 		this.logger.info("saying: {}", s);
-		speak(listener, preProcessing(s));
+		this.stop = false;
+		this.speak(this.preProcessing(s));
 	}
 
-	// -----------------------------------------------------------------------------------------------
+	/**
+	 * This method stops the output immediately.
+	 * 
+	 * The thread, will continue to live for a bit by sleeping. Therefore {@link #isCurrentlyOutputting()} will also
+	 * keep returning true for a moment. This is to make sure there is a small break between outputs.
+	 */
+	@Override
+	public synchronized void stopOutput() {
+		this.queue.clear();
+		this.stop = true;
+	}
+
+	@Override
+	public boolean isCurrentlyOutputting() {
+		return this.isTalking;
+	}
+
+	/**
+	 * outputs Speech translated from given String
+	 * 
+	 * @param s
+	 *            String that shall be said
+	 */
+	private void speak(String s) {
+		boolean offer = this.queue.offer(s);
+		if (!offer) {
+			this.logger.warn("the text '{}' could not be outputted by the TTS, because the queue is full", s);
+		}
+	}
 
 	/**
 	 * cleans String of SubString Mary can't pronounce
@@ -123,25 +204,8 @@ public class TextToSpeech implements Output {
 		return text;
 	}
 
-	/**
-	 * Method to close the outputClip
-	 */
 	@Override
-	public void stopOutput() {
-		if (this.outputClip != null) {
-			this.outputClip.stop();
-		}
+	public void stop() {
+		this.thread.interrupt();
 	}
-
-	// -----------------------------------------------------------------------------------------------
-
-	/**
-	 * Get's {@link #outputClip outputClip}
-	 * 
-	 * @return outputClip
-	 */
-	public Clip getOutputClip() {
-		return this.outputClip;
-	}
-
 }

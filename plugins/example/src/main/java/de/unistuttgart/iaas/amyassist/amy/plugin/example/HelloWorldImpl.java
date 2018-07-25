@@ -23,8 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.Contact;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.registry.ContactRegistry;
+import de.unistuttgart.iaas.amyassist.amy.plugin.example.registry.ColorEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.example.registry.ColorRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.*;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -37,7 +38,7 @@ import java.util.List;
 /**
  * Does the logic of the Hello World plugin
  * 
- * @author Tim Neumann
+ * @author Tim Neumann, Benno Krauß
  */
 @Service
 public class HelloWorldImpl implements HelloWorldService {
@@ -54,6 +55,12 @@ public class HelloWorldImpl implements HelloWorldService {
 
 	@Reference
 	private ContactRegistry contacts;
+
+	@Reference
+	private LocationRegistry locationRegistry;
+
+	@Reference
+	private ColorRegistry colorRegistry;
 
 	@Override
 	public String helloWorld() {
@@ -118,7 +125,8 @@ public class HelloWorldImpl implements HelloWorldService {
 	 */
 	@Override
 	public String testContactRegistry() {
-		try {
+		return performTest(() -> {
+			// Test creation
 			Contact personA = contacts.createNewEntity();
 			personA.setEmail("a@b.c");
 			personA.setFirstName("Max");
@@ -131,31 +139,126 @@ public class HelloWorldImpl implements HelloWorldService {
 			personB.setLastName("Musterfrau");
 			personB.setImportant(true);
 
-			assertTrue(personA.getId() == 0);
+			assertTrue(personA.getPersistentId() == 0);
 
 			contacts.save(personA);
 			contacts.save(personB);
 
-			assertTrue(personA.getId() != personB.getId());
+			// Make sure primary keys are set
+			assertTrue(personA.getPersistentId() != personB.getPersistentId());
 
+			// Make sure getAll works
 			List<Contact> list = contacts.getAll();
 			assertTrue(list.contains(personA));
 			assertTrue(list.contains(personB));
 
-			int personAId = personA.getId();
+			// Test update functionality
+			personA.setEmail("x@y.z");
+			contacts.save(personA);
+			assertTrue(contacts.getById(personA.getPersistentId()).equals(personA));
 
-			Contact personA2 = contacts.getById(personA.getId());
+			int personAId = personA.getPersistentId();
+
+			// Test retrieval
+			Contact personA2 = contacts.getById(personA.getPersistentId());
 			assertTrue(personA.equals(personA2));
 
-			contacts.deleteById(personA.getId());
-			contacts.deleteById(personB.getId());
+			// Test deletion
+			contacts.deleteById(personA.getPersistentId());
+			contacts.deleteById(personB.getPersistentId());
 
 			Contact c3 = contacts.getById(personAId);
 			assertTrue(c3 == null);
-			return "Tests successful";
+		});
+	}
+
+	@Override
+	public String testLocationRegistry() {
+		return performTest(() -> {
+			// Test that there are no locations to begin with
+			List<Location> pois = locationRegistry.getAll();
+			assertTrue(pois.isEmpty());
+
+			// Test creation of a location
+			Location work = locationRegistry.createNewEntity();
+			work.setCity("Stuttgart");
+			work.setZipCode("70563");
+			work.setStreet("Universitätsstraße");
+			work.setHouseNumber(38);
+			work.setLongitude(9.106600);
+			work.setLatitude(48.745172);
+			work.setWork(true);
+			work.setName("Uni");
+
+			// Test getAddressString method
+			assertTrue(work.getAddressString().equals("Universitätsstraße 38, 70563 Stuttgart"));
+
+			// Test entity saving
+			locationRegistry.save(work);
+
+			assertTrue(locationRegistry.getById(work.getPersistentId()).equals(work));
+
+			// Test getWork method
+			assertTrue(locationRegistry.getWork().equals(work));
+
+			// Test exclusivity of work attribute
+			Location city = locationRegistry.createNewEntity();
+			city.setWork(true);
+
+			try {
+				locationRegistry.save(city);
+				throw new TestException("Saving second 'work'-location didn't produce exception");
+			} catch (RegistryException e) {
+				// Test successful
+			}
+
+			// Test deletion
+			locationRegistry.deleteById(work.getPersistentId());
+
+			assertTrue(locationRegistry.getWork() == null);
+		});
+	}
+
+	@Override
+	public String testCustomRegistry() {
+		return performTest(() -> {
+			// Probe if color registry is empty
+			assertTrue(colorRegistry.getAll().isEmpty());
+
+			// Create new entity, save entity
+			ColorEntity c1 = colorRegistry.createNewEntity();
+			c1.setRedComponent(0.1f);
+			c1.setGreenComponent(0.1f);
+			c1.setBlueComponent(0.1f);
+
+			colorRegistry.save(c1);
+
+			// Entity retrieval works
+			assertTrue(colorRegistry.getById(c1.getPersistentId()).equals(c1));
+
+			assertTrue(colorRegistry.getAll().size() == 1);
+
+			// Entity deletion works
+			colorRegistry.deleteById(c1.getPersistentId());
+
+			assertTrue(colorRegistry.getAll().isEmpty());
+
+			assertTrue(colorRegistry.getById(c1.getPersistentId()) == null);
+		});
+	}
+
+	@FunctionalInterface
+	private interface Test {
+		void test() throws HelloWorldImpl.TestException;
+	}
+
+	private String performTest(Test test) {
+		try {
+			test.test();
+			return "Test successful";
 		} catch (TestException e) {
-			logger.warn("Registry test failed: ", e);
-			return "Tests failed: " + e.getLocalizedMessage();
+			logger.warn("Test failed: ",e);
+			return "Tests failed: " + e.getMessage();
 		}
 	}
 

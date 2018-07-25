@@ -155,8 +155,8 @@ public class SpotifyAPICalls {
 			this.logger.warn("Client Secret and ID missing. Please insert the config file");
 			return null;
 		}
-		if (this.configLoader.getProperty(SPOTIFY_REFRSHTOKEN_KEY) != null) {
-			spotifyApi.setRefreshToken(this.configLoader.getProperty(SPOTIFY_REFRSHTOKEN_KEY));
+		if (this.storage.has(SPOTIFY_REFRSHTOKEN_KEY)) {
+			spotifyApi.setRefreshToken(this.storage.get(SPOTIFY_REFRSHTOKEN_KEY));
 		} else {
 			this.logger.warn("Please exec the Authorization first");
 			return spotifyApi;
@@ -208,7 +208,7 @@ public class SpotifyAPICalls {
 		AuthorizationCodeCredentials authCodeCredentials = exceptionHandlingWithResults(
 				authorizationCodeRequest::execute);
 		if (authCodeCredentials != null) {
-			this.configLoader.setProperty(SPOTIFY_REFRSHTOKEN_KEY, authCodeCredentials.getRefreshToken());
+			this.storage.put(SPOTIFY_REFRSHTOKEN_KEY, authCodeCredentials.getRefreshToken());
 			return true;
 		}
 		return false;
@@ -322,7 +322,7 @@ public class SpotifyAPICalls {
 	 *            from a song
 	 * @return true if no problem occur else false
 	 */
-	protected boolean playSongFromUri(String uri) {
+	public boolean playSongFromUri(String uri) {
 		if (checkPlayerState()) {
 			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = getSpotifyApi().startResumeUsersPlayback()
 					.device_id(this.deviceID).uris(new JsonParser().parse("[\"" + uri + "\"]").getAsJsonArray())
@@ -339,7 +339,7 @@ public class SpotifyAPICalls {
 	 *            uro from a playlist or album
 	 * @return true if no problem occur else false
 	 */
-	protected boolean playListFromUri(String uri) {
+	public boolean playListFromUri(String uri) {
 		if (checkPlayerState()) {
 			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = getSpotifyApi().startResumeUsersPlayback()
 					.context_uri(uri).device_id(this.deviceID).build();
@@ -411,7 +411,7 @@ public class SpotifyAPICalls {
 	 *            int between 0 and 100
 	 * @return if setVolume success then return true, else false
 	 */
-	protected boolean setVolume(int volume) {
+	public boolean setVolume(int volume) {
 		if (checkPlayerState()) {
 			SetVolumeForUsersPlaybackRequest setVolumeForUsersPlaybackRequest = getSpotifyApi()
 					.setVolumeForUsersPlayback(volume).device_id(this.deviceID).build();

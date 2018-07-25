@@ -28,8 +28,10 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import com.github.dvdme.ForecastIOLib.FIODaily;
 
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
+
 @XmlRootElement
-public class WeatherReportWeek {
+public class WeatherReportWeek extends Entity{
 
 	@XmlTransient
 	public final String preamble;

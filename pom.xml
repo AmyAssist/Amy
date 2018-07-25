@@ -5,7 +5,7 @@
 	<packaging>pom</packaging>
 	<groupId>de.unistuttgart.iaas.amyassist</groupId>
 	<artifactId>amy</artifactId>
-	<version>0.3.0</version>
+	<version>0.4.0</version>
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
 	<properties>
@@ -16,12 +16,16 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Amy versions to depend on -->
-		<amy.di.api.version>0.3.0</amy.di.api.version>
-		<amy.di.version>0.3.0</amy.di.version>
-		<amy.api.version>0.3.0</amy.api.version>
-		<amy.http-server.version>0.3.0</amy.http-server.version>
-		<amy.testing-framework.version>0.3.0</amy.testing-framework.version>
-		<amy.core.version>0.3.0</amy.core.version>
+		<amy.di.api.version>0.4.0</amy.di.api.version>
+		<amy.di.version>0.4.0</amy.di.version>
+		<amy.api.version>0.4.0</amy.api.version>
+		<amy.plugin-manager-api.version>0.4.0</amy.plugin-manager-api.version>
+		<amy.http-server.version>0.4.0</amy.http-server.version>
+		<amy.testing-framework.version>0.4.0</amy.testing-framework.version>
+		<amy.core.version>0.4.0</amy.core.version>
+		<amy.rest-resources.version>0.4.0</amy.rest-resources.version>
+		<amy.utility.version>0.4.0</amy.utility.version>
+		<amy.registry.version>0.4.0</amy.registry.version>
 
 		<!-- External dependency versions. Only project wide or core dependencies 
 			here -->
@@ -34,11 +38,14 @@
 		<javax.ws.rs.version>2.1</javax.ws.rs.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<httpcore.version>4.4.9</httpcore.version>
+		<swagger.version>2.0.2</swagger.version>
 	</properties>
 	<modules>
 		<module>di-api</module>
 		<module>di</module>
 		<module>api</module>
+		<module>utility</module>
+		<module>registry</module>
 		<module>http-server</module>
 		<module>testing-framework</module>
 		<module>core</module>
@@ -139,6 +146,16 @@
 				<groupId>de.unistuttgart.iaas.amyassist</groupId>
 				<artifactId>amy-api</artifactId>
 				<version>${amy.api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<artifactId>amy-utility</artifactId>
+				<version>${amy.utility.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<artifactId>amy-plugin-manager-api</artifactId>
+				<version>${amy.plugin-manager-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.ws.rs</groupId>

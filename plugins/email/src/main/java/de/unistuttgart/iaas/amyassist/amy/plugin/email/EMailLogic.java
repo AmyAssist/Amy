@@ -24,9 +24,12 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
+import javax.mail.Address;
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
 import javax.mail.Folder;
@@ -48,6 +51,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
+import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 
 /**
  * Logic class for the email functionality, that defines all the behavior
@@ -58,16 +63,18 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class EMailLogic {
 
 	private Session session;
-	
+
 	/**
-	 * the inbox object containing all messages
-	 * this is not private because we need to change 
-	 * the inbox in the unit tests
+	 * the inbox object containing all messages this is not private because we need to change the inbox in the unit
+	 * tests
 	 */
 	Folder inbox;
 
 	@Reference
 	private Properties configLoader;
+
+	@Reference
+	private ContactRegistry contactRegistry;
 
 	/**
 	 * user name key for properties file
@@ -103,8 +110,8 @@ public class EMailLogic {
 	 * Prints the plain text from all the mails in the inbox
 	 * 
 	 * @param amount
-	 *            the amount of emails that should be returned
-	 * @return most recent emails
+	 *            the amount of messages that should be returned, put -1 here if you want to have all messages returned
+	 * @return most recent messages
 	 * 
 	 */
 	public String printPlainTextMessages(int amount) {
@@ -115,7 +122,7 @@ public class EMailLogic {
 			try {
 				messages = this.inbox.getMessages();
 				for (Message m : messages) {
-					if (count <= amount) {
+					if (amount == -1 || count <= amount) {
 						b.append(concatenateMessage(m));
 					}
 					count++;
@@ -124,9 +131,41 @@ public class EMailLogic {
 				this.logger.error("couldn't fetch messages from inbox", e);
 				return "";
 			}
-
 		}
 		return b.toString();
+	}
+
+	/**
+	 * Prints the plain text from messages from important people
+	 * 
+	 * @param amount
+	 *            the amount of messages that should be returned, put -1 here if you want to have all important messages
+	 *            returned
+	 * 
+	 * @return important messages
+	 */
+	public String printImportantMessages(int amount) {
+		StringBuilder sb = new StringBuilder();
+		int count = 1;
+		if (this.inbox != null) {
+			Message[] messages;
+			List<String> importantMailAddresses = getImportantMailAddresses();
+			try {
+				messages = this.inbox.getMessages();
+				for (Message m : messages) {
+					Address a = m.getFrom()[0];
+					if (a instanceof InternetAddress
+							&& importantMailAddresses.contains(((InternetAddress) a).getAddress())
+							&& (amount == -1 || count <= amount)) {
+						sb.append(concatenateMessage(m));
+					}
+				}
+			} catch (MessagingException e) {
+				this.logger.error("couldn't fetch messages from inbox", e);
+				return "";
+			}
+		}
+		return sb.toString();
 	}
 
 	/**
@@ -213,6 +252,21 @@ public class EMailLogic {
 		}
 
 		return "Message sent!";
+	}
+
+	/**
+	 * Checks if the given email belongs to an important person
+	 * 
+	 * @return true if email belongs to important person, if not, false
+	 */
+	public List<String> getImportantMailAddresses() {
+		List<String> importantMails = new ArrayList<>();
+		List<Contact> contacts = this.contactRegistry.getAll();
+		for (Contact c : contacts) {
+			if (c.isImportant())
+				importantMails.add(c.getEmail());
+		}
+		return importantMails;
 	}
 
 	/**
