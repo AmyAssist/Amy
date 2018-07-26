@@ -39,7 +39,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCrea
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
-import de.unistuttgart.iaas.amyassist.amy.messagebus.Broker;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 
 /**
  * Class that manages the Recognizers belonging to a given AudioInputStream
@@ -54,7 +54,7 @@ public abstract class AbstractSpeechRecognizerManager
 	private SpeechInputHandler inputHandler;
 	private Output output;
 	private String mainGrammarName;
-	private Broker broker;
+	private MessageHub messageHub;
 
 	private SpeechRecognizer mainRecognizer;
 	private Map<String, SpeechRecognizer> recognizerList = new HashMap<>();
@@ -76,16 +76,16 @@ public abstract class AbstractSpeechRecognizerManager
 	 *            Output Object where to Output the result of the Recognizer
 	 * @param grammarData
 	 *            DataSet of all GrammarObjects
-	 * @param broker
-	 *            Message Broker
+	 * @param messageHub
+	 *            MessageHub
 	 * 
 	 */
 	public AbstractSpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
-			GrammarObjectsCreator grammarData, Broker broker) {
+			GrammarObjectsCreator grammarData, MessageHub messageHub) {
 		this.inputHandler = inputHandler;
 		this.output = output;
 		this.mainGrammarName = grammarData.getMainGrammar().getName();
-		this.broker = broker;
+		this.messageHub = messageHub;
 
 		createRecognizers(grammarData, ais);
 
@@ -189,9 +189,9 @@ public abstract class AbstractSpeechRecognizerManager
 		if (this.srListening != listening) {
 			this.srListening = listening;
 			if (listening) {
-				this.broker.publish("Volume", "Volume_Down");
+				this.messageHub.publish("Volume", "Volume_Down");
 			} else {
-				this.broker.publish("Volume", "Volume_Normal");
+				this.messageHub.publish("Volume", "Volume_Normal");
 			}
 		}
 	}

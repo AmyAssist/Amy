@@ -1,14 +1,14 @@
-package de.unistuttgart.iaas.amyassist.amy.messagebus;
+package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
 /**
  * 
  * @author Leon Kiefer
  */
-public class Event<T> {
+public class Message<T> {
 	private final String topic;
 	private final T data;
 
-	public Event(String topic, T data) {
+	public Message(String topic, T data) {
 		this.topic = topic;
 		this.data = data;
 	}

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagebus;
+package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
 import java.util.function.Consumer;
 
@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  * 
  * @author Kai Menzel, Leon Kiefer
  */
-public interface Broker {
+public interface MessageHub {
 
 	/**
 	 * Subscribe to a topic

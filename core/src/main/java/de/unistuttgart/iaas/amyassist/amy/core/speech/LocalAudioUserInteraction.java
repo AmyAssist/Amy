@@ -39,7 +39,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCrea
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.LocalSpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
-import de.unistuttgart.iaas.amyassist.amy.messagebus.Broker;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 
 /**
  * Manager of the Local Speech Recognition System
@@ -62,14 +62,14 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	private GrammarObjectsCreator grammarData;
 	
 	@Reference
-	private Broker broker;
+	private MessageHub messageHub;
 
 	private SpeechRecognizerManager localRecognition;
 
 	@PostConstruct
 	private void init() {
 		this.localRecognition = new LocalSpeechRecognizerManager(createNewAudioInputStream(), this.inputHandler,
-				this.tts, this.grammarData, this.broker);
+				this.tts, this.grammarData, this.messageHub);
 	}
 
 	@Override

@@ -37,7 +37,7 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.messagebus.Broker;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SearchTypes;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
@@ -57,7 +57,7 @@ public class PlayerLogic {
 	@Reference
 	private Logger logger;
 	@Reference
-	private Broker broker;
+	private MessageHub messageHub;
 
 	private boolean srListening = false;
 	private int currentVolume = 0;
@@ -68,7 +68,7 @@ public class PlayerLogic {
 
 	@PostConstruct
 	private void init() {
-		this.broker.subscribe("Volume", message -> {
+		this.messageHub.subscribe("Volume", message -> {
 			switch (message) {
 			case "Volume_Down":
 				this.setSRListening(true);

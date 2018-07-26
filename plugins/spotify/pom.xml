@@ -21,10 +21,5 @@
 			<artifactId>spotify-web-api-java</artifactId>
 			<version>${spotify-web-api.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-message-bus</artifactId>
-			<version>0.4.0-Snapshot</version>
-		</dependency>
 	</dependencies>
 </project>

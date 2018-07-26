@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagebus;
+package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -42,20 +42,20 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * @author Kai Menzel, Leon Kiefer
  */
 @Service
-public class BrokerImpl implements Broker, Runnable {
+public class MessageHubService implements MessageHub, Runnable {
 
 	@Reference
 	private Logger logger;
 
 	Map<String, List<Consumer<String>>> eventListener = new HashMap<>();
 
-	BlockingQueue<Event<String>> queue = new LinkedBlockingQueue<>();
+	BlockingQueue<Message<String>> queue = new LinkedBlockingQueue<>();
 
 	private Thread thread;
 
 	@PostConstruct
 	private void start() {
-		this.thread = new Thread(this, "Broker");
+		this.thread = new Thread(this, "MessageHub");
 		this.thread.start();
 	}
 
@@ -63,7 +63,7 @@ public class BrokerImpl implements Broker, Runnable {
 	public void run() {
 		while (!Thread.currentThread().isInterrupted()) {
 			try {
-				Event<String> event = this.queue.take();
+				Message<String> event = this.queue.take();
 				if (eventListener.containsKey(event.getTopic())) {
 					List<Consumer<String>> list = eventListener.get(event.getTopic());
 					for (Consumer<String> eventExecuter : list) {
@@ -78,7 +78,7 @@ public class BrokerImpl implements Broker, Runnable {
 
 	}
 
-	private <T> void executeHandler(Consumer<T> handler, Event<T> event) {
+	private <T> void executeHandler(Consumer<T> handler, Message<T> event) {
 		try {
 			handler.accept(event.getData());
 		} catch (Exception e) {
@@ -127,7 +127,7 @@ public class BrokerImpl implements Broker, Runnable {
 	 */
 	@Override
 	public void publish(String topic, String message) {
-		queue.add(new Event<String>(topic, message));
+		queue.add(new Message<String>(topic, message));
 	}
 
 	public void stop() {

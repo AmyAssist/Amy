@@ -57,6 +57,11 @@
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-message-hub</artifactId>
+			<version>${amy.message-hub.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-api</artifactId>
 		</dependency>
 		<dependency>
@@ -156,11 +161,6 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-message-bus</artifactId>
-			<version>0.4.0-Snapshot</version>
 		</dependency>
 	</dependencies>
 	<build>

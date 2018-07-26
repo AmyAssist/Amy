@@ -5,9 +5,9 @@
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.4.0-Snapshot</version>
+		<version>0.5.0-Snapshot</version>
 	</parent>
-	<artifactId>amy-message-bus</artifactId>
+	<artifactId>amy-message-hub</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
@@ -16,6 +16,10 @@
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-di-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-message-hub-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
