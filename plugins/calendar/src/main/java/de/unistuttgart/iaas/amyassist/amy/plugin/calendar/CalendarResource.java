@@ -27,18 +27,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-
-import com.google.api.services.calendar.model.Event;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
@@ -62,7 +57,7 @@ public class CalendarResource {
 	 * Natural language response of Amy when the event list is empty.
 	 */
 	String noEventsFound = "No upcoming events found.";
-	
+
 	/**
 	 * Natural language response of Amy when the event list of today is empty.
 	 */
@@ -72,7 +67,7 @@ public class CalendarResource {
 	 * Natural language response of Amy when the event list of tomorrow is empty.
 	 */
 	private String noEventsTomorrow = "There are no events tomorrow.";
-	
+
 	/**
 	 * Output of the logger
 	 */
@@ -85,7 +80,7 @@ public class CalendarResource {
 	 *            number of events the user wants to get
 	 * @return event summary
 	 */
-	@POST
+	@GET
 	@Path("events/{number}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
@@ -130,7 +125,7 @@ public class CalendarResource {
 	 *            LocalDateTime variable
 	 * @return the events of the chosen day as a List<Event>
 	 */
-	@POST
+	@GET
 	@Path("eventsAtString/{ldt}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
@@ -149,36 +144,16 @@ public class CalendarResource {
 	 *            LocalDateTime variable
 	 * @return the events of the chosen day
 	 */
-	@POST
+	@GET
 	@Path("eventsAt/{ldt}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Event> getEventsAt(@PathParam("ldt") LocalDateTime ldt) {
-		List<Event> events = this.logic.getEventsAt(ldt);
+	public List<CalendarEvent> getEventsAt(@PathParam("ldt") LocalDateTime ldt) {
+		List<CalendarEvent> events = this.logic.getEventsAt(ldt);
 		if (!events.isEmpty()) {
 			return events;
 		}
 		throw new WebApplicationException(this.errorLogger, Status.CONFLICT);
-	}
-
-	/**
-	 * This method checks if and how an event is to be displayed in the output.
-	 *
-	 * @param dayToCheck
-	 *            the day from which we want to know how the current event belongs to it
-	 * @param event
-	 *            the current chosen event
-	 * @param withDate
-	 *            if the date should be displayed (or only the time)
-	 * @return the event as natural language text
-	 */
-	@POST
-	@Path("checkDay/{dayToCheck}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String checkDay(@PathParam("dayToCheck") LocalDateTime dayToCheck, Event event,
-			@QueryParam("withDate") @DefaultValue("true") boolean withDate) {
-		return this.logic.checkDay(dayToCheck, event, withDate);
 	}
 
 	private boolean checkEvents(String events) {

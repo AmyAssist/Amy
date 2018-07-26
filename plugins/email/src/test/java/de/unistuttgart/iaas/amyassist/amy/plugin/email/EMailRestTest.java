@@ -104,8 +104,8 @@ class EMailRestTest {
 
 		response = this.target.path("plains").queryParam("amount", "4").request().post(null);
 		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Could not fetch messages from inbox."));
-		assertThat(response.getStatus(), is(409));
+		assertThat(actualMsg, is("No messages found"));
+		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).printPlainTextMessages(4);
 
 		response = this.target.path("plains").request().post(null);
