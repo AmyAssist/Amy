@@ -30,6 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
@@ -46,6 +48,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.LocalDateTimeMessageBodyWriter;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.LocalDateTimeProvider;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeMessageBodyWriter;
@@ -60,8 +63,8 @@ import io.swagger.v3.oas.models.OpenAPI;
  * 
  * @author Christian Bräuner, Leon Kiefer, Tim Neumann
  */
-@Service
-public class Server {
+@Service(Server.class)
+public class Server implements RunnableService {
 	/** The name of the config used by this class */
 	public static final String CONFIG_NAME = "server.config";
 	/** The name of the property, which specifies the port */
@@ -124,13 +127,18 @@ public class Server {
 		return UriBuilder.fromPath(contextPath).scheme("http").host(IP_GLOBAL).port(port).build();
 	}
 
+	@Override
+	public void start() {
+		this.startWithResources();
+	}
+
 	/**
 	 * creates and starts the HttpServer
 	 * 
 	 * @param classes
 	 *            the resource classes
 	 */
-	public void start(Class<?>... classes) {
+	public void startWithResources(Class<?>... classes) {
 		if (this.httpServer != null)
 			throw new IllegalStateException("The Server is already started");
 		this.logger.info("start the server");
@@ -169,16 +177,18 @@ public class Server {
 		} catch (IOException e) {
 			throw new IllegalStateException("The Server is can not be started", e);
 		}
+		this.logger.info("started the server");
 	}
 
 	/**
 	 * shutdown the server if the server is running
 	 */
-	public void shutdown() {
+	@Override
+	public void stop() {
 		if (this.httpServer == null)
 			throw new IllegalStateException("The Server is not running");
 		this.logger.info("shutdown the server");
-		this.httpServer.shutdownNow();
+		this.httpServer.shutdown();
 		this.httpServer = null;
 	}
 

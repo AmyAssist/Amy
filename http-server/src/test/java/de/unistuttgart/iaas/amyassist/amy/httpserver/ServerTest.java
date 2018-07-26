@@ -66,8 +66,8 @@ class ServerTest {
 	void test() {
 		assertTimeout(ofSeconds(2), () -> {
 			Server server = this.dependencyInjection.createAndInitialize(Server.class);
-			server.start(TestRestResource.class);
-			server.shutdown();
+			server.startWithResources(TestRestResource.class);
+			server.stop();
 		}, "The Server start and shotdown takes longer then 2 Seconds");
 
 	}
@@ -76,10 +76,10 @@ class ServerTest {
 	void testCantStartServerTwice() {
 		Server server = this.dependencyInjection.createAndInitialize(Server.class);
 		String message = assertThrows(IllegalStateException.class, () -> {
-			server.start(TestRestResource.class);
-			server.start(TestRestResource.class);
+			server.startWithResources(TestRestResource.class);
+			server.startWithResources(TestRestResource.class);
 		}, "The Server dont throw an IllegalStateException if its started twice").getMessage();
-		server.shutdown();
+		server.stop();
 		assertThat(message, equalTo("The Server is already started"));
 	}
 
@@ -88,7 +88,7 @@ class ServerTest {
 		Server server = this.dependencyInjection.createAndInitialize(Server.class);
 		server.register(TestRestResource.class);
 		server.start();
-		server.shutdown();
+		server.stop();
 	}
 
 	@Test

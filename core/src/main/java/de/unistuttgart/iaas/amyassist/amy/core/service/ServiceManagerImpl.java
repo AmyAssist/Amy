@@ -27,12 +27,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -58,22 +62,34 @@ public class ServiceManagerImpl {
 
 	private boolean running = false;
 
-	@PostConstruct
-	private void init() {
+	/**
+	 * Loads Services using the deployment descriptor file
+	 * META-INF/de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService
+	 */
+	public void loadServices() {
 		ClassLoader classLoader = this.getClass().getClassLoader();
-		try (InputStream resourceAsStream = classLoader.getResourceAsStream(SERVICE_DEPLOYMENT_DESCRIPTOR);
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8))) {
-			String className;
-			while ((className = reader.readLine()) != null) {
-				if (className.isEmpty() || className.startsWith("#")) {
-					continue;
-				}
-				this.register(className, classLoader);
-			}
+		Enumeration<URL> resources;
+		try {
+			resources = classLoader.getResources(SERVICE_DEPLOYMENT_DESCRIPTOR);
 		} catch (IOException e) {
 			throw new IllegalStateException("Could not read the Service deployment descriptor", e);
 		}
+		while (resources.hasMoreElements()) {
+			try (InputStream resourceAsStream = resources.nextElement().openStream();
+					BufferedReader reader = new BufferedReader(
+							new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8))) {
+				String className;
+				while ((className = reader.readLine()) != null) {
+					if (className.isEmpty() || className.startsWith("#")) {
+						continue;
+					}
+					this.register(className, classLoader);
+				}
+			} catch (IOException e) {
+				throw new IllegalStateException("Could not read the Service deployment descriptor", e);
+			}
+		}
+
 	}
 
 	private void register(String className, ClassLoader classLoader) {

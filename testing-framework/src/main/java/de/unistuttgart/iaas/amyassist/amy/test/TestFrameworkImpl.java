@@ -109,7 +109,7 @@ public class TestFrameworkImpl implements TestFramework {
 	public void before() {
 		if (!this.restResources.isEmpty()) {
 			this.prepareServer();
-			this.server.start(this.restResources.toArray(new Class<?>[this.restResources.size()]));
+			this.server.startWithResources(this.restResources.toArray(new Class<?>[this.restResources.size()]));
 		}
 	}
 
@@ -118,7 +118,7 @@ public class TestFrameworkImpl implements TestFramework {
 	 */
 	public void after() {
 		if (this.server != null) {
-			this.server.shutdown();
+			this.server.stop();
 		}
 	}
 

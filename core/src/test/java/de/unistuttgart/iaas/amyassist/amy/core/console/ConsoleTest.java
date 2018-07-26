@@ -26,13 +26,16 @@ package de.unistuttgart.iaas.amyassist.amy.core.console;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.Core;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -48,13 +51,23 @@ class ConsoleTest {
 
 	@Reference
 	private TestFramework testFramework;
+	private Properties properties;
+
+	@BeforeEach
+	void init() {
+		this.testFramework.mockService(Core.class);
+		ConfigurationLoader configurationLoader = this.testFramework.mockService(ConfigurationLoader.class);
+		this.properties = new Properties();
+		Mockito.when(configurationLoader.load("core.config")).thenReturn(this.properties);
+	}
 
 	@Test
 	void test() {
 		final String[] testInput = { "Hello", "world", "say", "hello" };
 		final String expected = "hello1";
-		this.testFramework.mockService(Core.class);
+
 		SpeechInputHandler handler = this.testFramework.mockService(SpeechInputHandler.class);
+
 		CompletableFuture<String> completableFuture = new CompletableFuture<>();
 		completableFuture.complete(expected);
 		Mockito.when(handler.handle("Hello world say hello")).thenReturn(completableFuture);
