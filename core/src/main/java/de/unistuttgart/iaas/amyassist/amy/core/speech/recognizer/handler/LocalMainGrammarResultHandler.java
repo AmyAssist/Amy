@@ -50,19 +50,25 @@ public class LocalMainGrammarResultHandler extends AbstractRecognitionResultHand
 	 */
 	@Override
 	protected boolean environmentSpecificInputHandling(String result, SpeechRecognitionResultManager srManager) {
-		if (result.equals(Constants.WAKE_UP)) {
-			srManager.handleListeningState(true);
-			srManager.voiceOutput("waking up");
-			return true;
-		} else if (srManager.isListening()) {
-			if (result.equals(Constants.GO_SLEEP)) {
-				srManager.handleListeningState(false);
-				srManager.voiceOutput("now sleeping");
-				return true;
+		switch (result) {
+		case Constants.WAKE_UP:
+			if (!srManager.isListening() && !srManager.isSingleCommandListening()) {
+				srManager.handleListeningState(true);
 			}
-			return false;
+			return true;
+		case Constants.SINGLE_WAKE_UP:
+			if (!srManager.isListening() && !srManager.isSingleCommandListening()) {
+				srManager.setSingleListening(true);
+			}
+			return true;
+		case Constants.GO_SLEEP:
+			if (srManager.isListening()) {
+				srManager.handleListeningState(false);
+			}
+			return true;
+		default:
+			return !(srManager.isListening() || srManager.isSingleCommandListening());
 		}
-		return true;
 	}
 
 }

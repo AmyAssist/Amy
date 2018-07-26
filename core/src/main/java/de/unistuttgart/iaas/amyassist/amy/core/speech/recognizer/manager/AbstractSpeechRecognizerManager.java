@@ -58,6 +58,7 @@ public abstract class AbstractSpeechRecognizerManager
 	private Map<String, SpeechRecognizer> recognizerList = new HashMap<>();
 
 	private boolean srListening = false;
+	private boolean srSingleListening = false;
 
 	private Thread currentRecognizer;
 
@@ -182,6 +183,11 @@ public abstract class AbstractSpeechRecognizerManager
 	@Override
 	public void handleListeningState(boolean listening) {
 		this.srListening = listening;
+		if (listening) {
+			this.voiceOutput("waking up");
+		} else {
+			this.voiceOutput("now sleeping");
+		}
 		/**
 		 * notify(listening);
 		 */
@@ -233,6 +239,30 @@ public abstract class AbstractSpeechRecognizerManager
 	@Override
 	public boolean isRecognitionThreadRunning() {
 		return this.recognitionThreadRunning;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#setSingleListening(boolean)
+	 */
+	@Override
+	public void setSingleListening(boolean singleCommand) {
+		this.srSingleListening = singleCommand;
+		if (singleCommand) {
+			this.voiceOutput("what do you want");
+		} else {
+			this.voiceOutput("don't bother me again");
+		}
+		/**
+		 * notify(listening);
+		 */
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isSingleCommandListening()
+	 */
+	@Override
+	public boolean isSingleCommandListening() {
+		return this.srSingleListening;
 	}
 
 }

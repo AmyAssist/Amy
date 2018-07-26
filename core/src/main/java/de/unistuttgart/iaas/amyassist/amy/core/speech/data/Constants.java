@@ -46,5 +46,9 @@ public class Constants {
 	 * Command String to stop current Voice Output of Amy
 	 */
 	public static final String SHUT_UP = "amy shut up";
+	/**
+	 * Command String to wake up amy for a single Command
+	 */
+	public static final String SINGLE_WAKE_UP = "hey amy";
 
 }

@@ -41,6 +41,7 @@ public class JSGFGenerator {
 
 	private String name;
 	private String wakeup;
+	private String singleWakeUp;
 	private String sleep;
 	private String shutdown;
 
@@ -51,14 +52,17 @@ public class JSGFGenerator {
 	 *            the name of the grammar file
 	 * @param wakeup
 	 *            the wakeup command
+	 * @param singleWakeUp
+	 *            wakeup command for a single command
 	 * @param sleep
 	 *            the sleep command
 	 * @param shutdown
 	 *            the shutdown command
 	 */
-	public JSGFGenerator(String name, String wakeup, String sleep, String shutdown) {
+	public JSGFGenerator(String name, String wakeup, String singleWakeUp, String sleep, String shutdown) {
 		this.name = name;
 		this.wakeup = wakeup;
+		this.singleWakeUp = singleWakeUp;
 		this.sleep = sleep;
 		this.shutdown = shutdown;
 
@@ -79,6 +83,7 @@ public class JSGFGenerator {
 
 		grammar.append("grammar " + this.name + ";\n");
 		publicRule(grammar, "wakeup", this.wakeup);
+		publicRule(grammar, "singlewakeup", this.singleWakeUp);
 		publicRule(grammar, "sleep", this.sleep);
 		publicRule(grammar, "shutdown", this.shutdown);
 
@@ -88,10 +93,10 @@ public class JSGFGenerator {
 		grammar.append("<number> = (one | two | three | four | five | six | seven |"
 				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
 				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
-				+ "fifty | sixty  | seventy | eighty | ninety )[one | two | three | four | five | six | seven | " 
-								+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
-								+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
-								+ "fifty | sixty  | seventy | eighty | ninety ]; \n");
+				+ "fifty | sixty  | seventy | eighty | ninety )[one | two | three | four | five | six | seven | "
+				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
+				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
+				+ "fifty | sixty  | seventy | eighty | ninety ]; \n");
 
 		grammar.append("\n//custom rules \n");
 
@@ -120,7 +125,6 @@ public class JSGFGenerator {
 		StringBuilder b = new StringBuilder();
 		StringBuilder rule = new StringBuilder();
 		publicRule(rule, ruleName, handleNode(b, node));
-
 
 		this.rules.add(rule.toString());
 		return rule.toString();

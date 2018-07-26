@@ -98,4 +98,19 @@ public interface SpeechRecognitionResultManager {
 	 */
 	boolean isRecognitionThreadRunning();
 
+	/**
+	 * Method to activate a Single Command Input
+	 * 
+	 * @param singleCommand
+	 *            true if singleCommand activated
+	 */
+	void setSingleListening(boolean singleCommand);
+
+	/**
+	 * Method to check if current Listening state is a SingleCommand
+	 * 
+	 * @return true if SingleCommand
+	 */
+	boolean isSingleCommandListening();
+
 }

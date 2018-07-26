@@ -74,6 +74,9 @@ public abstract class AbstractRecognitionResultHandler implements RecognitionRes
 	public void handle(String result) {
 		if (!predefinedInputHandling(result) && !checkGrammarSwitch(result)) {
 			this.srManager.handleCommand(result);
+			if (this.srManager.isSingleCommandListening()) {
+				this.srManager.setSingleListening(false);
+			}
 		}
 
 	}
