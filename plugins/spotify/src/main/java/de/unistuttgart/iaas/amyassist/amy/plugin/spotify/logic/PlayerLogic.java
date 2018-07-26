@@ -68,15 +68,16 @@ public class PlayerLogic {
 
 	@PostConstruct
 	private void init() {
-		this.messageHub.subscribe("Volume", message -> {
+		this.messageHub.subscribe("home/all/music/mute", message -> {
 			switch (message) {
-			case "Volume_Down":
+			case "true":
 				this.setSRListening(true);
 				break;
-			case "Volume_Normal":
+			case "false":
 				this.setSRListening(false);
 				break;
 			default:
+				this.logger.warn("unkown message {}", message);
 				break;
 			}
 		});

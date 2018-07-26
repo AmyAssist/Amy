@@ -89,7 +89,7 @@ public abstract class AbstractSpeechRecognizerManager
 
 		createRecognizers(grammarData, ais);
 
-		this.currentRecognizer = new Thread(this.mainRecognizer);
+		this.currentRecognizer = new Thread(this.mainRecognizer, "MainRecognizer");
 	}
 
 	private void createRecognizers(GrammarObjectsCreator grammarData, AudioInputStream ais) {
@@ -188,11 +188,7 @@ public abstract class AbstractSpeechRecognizerManager
 	public void handleListeningState(boolean listening) {
 		if (this.srListening != listening) {
 			this.srListening = listening;
-			if (listening) {
-				this.messageHub.publish("Volume", "Volume_Down");
-			} else {
-				this.messageHub.publish("Volume", "Volume_Normal");
-			}
+			this.messageHub.publish("home/all/music/mute", listening ? "true" : "false");
 		}
 	}
 

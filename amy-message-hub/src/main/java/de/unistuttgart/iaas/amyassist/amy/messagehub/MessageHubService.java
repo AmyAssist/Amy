@@ -47,9 +47,9 @@ public class MessageHubService implements MessageHub, Runnable {
 	@Reference
 	private Logger logger;
 
-	Map<String, List<Consumer<String>>> eventListener = new HashMap<>();
+	private Map<String, List<Consumer<String>>> eventListener = new HashMap<>();
 
-	BlockingQueue<Message<String>> queue = new LinkedBlockingQueue<>();
+	private BlockingQueue<Message<String>> queue = new LinkedBlockingQueue<>();
 
 	private Thread thread;
 
@@ -64,8 +64,8 @@ public class MessageHubService implements MessageHub, Runnable {
 		while (!Thread.currentThread().isInterrupted()) {
 			try {
 				Message<String> event = this.queue.take();
-				if (eventListener.containsKey(event.getTopic())) {
-					List<Consumer<String>> list = eventListener.get(event.getTopic());
+				if (this.eventListener.containsKey(event.getTopic())) {
+					List<Consumer<String>> list = this.eventListener.get(event.getTopic());
 					for (Consumer<String> eventExecuter : list) {
 						executeHandler(eventExecuter, event);
 					}
@@ -81,8 +81,8 @@ public class MessageHubService implements MessageHub, Runnable {
 	private <T> void executeHandler(Consumer<T> handler, Message<T> event) {
 		try {
 			handler.accept(event.getData());
-		} catch (Exception e) {
-			logger.error("Error in event handler", e);
+		} catch (RuntimeException e) {
+			this.logger.error("Error in event handler", e);
 		}
 	}
 
@@ -95,12 +95,12 @@ public class MessageHubService implements MessageHub, Runnable {
 	 */
 	@Override
 	public void subscribe(String topic, Consumer<String> eventExecuter) {
-		if (eventListener.containsKey(topic)) {
-			eventListener.get(topic).add(eventExecuter);
+		if (this.eventListener.containsKey(topic)) {
+			this.eventListener.get(topic).add(eventExecuter);
 		} else {
 			List<Consumer<String>> listeners = new LinkedList<>();
 			listeners.add(eventExecuter);
-			eventListener.put(topic, listeners);
+			this.eventListener.put(topic, listeners);
 		}
 
 	}
@@ -113,8 +113,8 @@ public class MessageHubService implements MessageHub, Runnable {
 	 */
 	@Override
 	public void unsubscribe(String topic, Consumer<String> eventExecuter) {
-		if (eventListener.containsKey(topic)) {
-			eventListener.get(topic).remove(eventExecuter);
+		if (this.eventListener.containsKey(topic)) {
+			this.eventListener.get(topic).remove(eventExecuter);
 		}
 
 	}
@@ -127,7 +127,7 @@ public class MessageHubService implements MessageHub, Runnable {
 	 */
 	@Override
 	public void publish(String topic, String message) {
-		queue.add(new Message<String>(topic, message));
+		this.queue.add(new Message<String>(topic, message));
 	}
 
 	public void stop() {

@@ -23,24 +23,18 @@
 
 package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
+
 /**
+ * Register the MessageHub in di
  * 
  * @author Leon Kiefer
  */
-public class Message<T> {
-	private final String topic;
-	private final T data;
+public class ServiceLoader implements ServiceProviderLoader {
 
-	public Message(String topic, T data) {
-		this.topic = topic;
-		this.data = data;
-	}
-
-	public String getTopic() {
-		return topic;
-	}
-
-	public T getData() {
-		return data;
+	@Override
+	public void load(Configuration configuration) {
+		configuration.register(MessageHubService.class);
 	}
 }
