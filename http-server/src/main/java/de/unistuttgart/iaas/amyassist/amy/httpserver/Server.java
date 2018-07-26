@@ -30,8 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
@@ -92,7 +90,7 @@ public class Server implements RunnableService {
 	 * The dependency injection instance, needed for binding the di to the server
 	 */
 	@Reference
-	ServiceLocator di;
+	private ServiceLocator di;
 
 	private Set<Class<?>> restResources = new HashSet<>();
 	private HttpServer httpServer;
