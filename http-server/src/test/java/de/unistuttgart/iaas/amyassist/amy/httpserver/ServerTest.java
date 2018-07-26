@@ -51,7 +51,7 @@ class ServerTest {
 	void setup() {
 		Properties serverConfig = new Properties();
 		serverConfig.setProperty(Server.PROPERTY_PORT, "50080");
-		serverConfig.setProperty(Server.PROPERTY_ROOT_PATH, "/test/");
+		serverConfig.setProperty(Server.PROPERTY_CONTEXT_PATH, "test");
 		serverConfig.setProperty(Server.PROPERTY_LOCALHOST, "true");
 
 		ConfigurationLoader configLoader = Mockito.mock(ConfigurationLoader.class);

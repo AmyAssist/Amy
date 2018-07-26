@@ -106,7 +106,7 @@ public class EMailResource implements Resource {
 			plains = this.logic.printImportantMessages(amount);
 		}
 		if (plains.equals("")) {
-			throw new WebApplicationException("Could not fetch messages from inbox.", Status.CONFLICT);
+			return "No messages found";
 		}
 		return plains;
 	}

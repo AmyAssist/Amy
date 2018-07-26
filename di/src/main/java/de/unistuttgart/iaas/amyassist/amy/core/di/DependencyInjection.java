@@ -46,7 +46,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvide
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ClassServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ClassServiceProviderWithoutDependencies;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingeltonServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
@@ -140,7 +140,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	@Override
 	public synchronized <T> void addExternalService(@Nonnull Class<T> serviceType, @Nonnull T externalService) {
-		this.register(serviceType, new SingeltonServiceProvider<>(externalService));
+		this.register(serviceType, new SingletonServiceProvider<>(externalService));
 	}
 
 	private boolean hasServiceOfType(ServiceDescription<?> serviceDescription) {

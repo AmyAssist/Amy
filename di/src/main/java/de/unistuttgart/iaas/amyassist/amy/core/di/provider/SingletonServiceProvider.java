@@ -40,7 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
  * @param <T>
  *            the type of the singleton
  */
-public class SingeltonServiceProvider<T> implements ServiceProvider<T> {
+public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 
 	private final T instance;
 
@@ -49,7 +49,7 @@ public class SingeltonServiceProvider<T> implements ServiceProvider<T> {
 	 * @param instance
 	 *            the singleton
 	 */
-	public SingeltonServiceProvider(@Nonnull T instance) {
+	public SingletonServiceProvider(@Nonnull T instance) {
 		this.instance = instance;
 	}
 

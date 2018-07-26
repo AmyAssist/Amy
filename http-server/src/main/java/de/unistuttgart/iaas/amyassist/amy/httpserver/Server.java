@@ -25,7 +25,9 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -50,6 +52,8 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeMessag
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeProvider;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
+import io.swagger.v3.oas.integration.SwaggerConfiguration;
+import io.swagger.v3.oas.models.OpenAPI;
 
 /**
  * A class to create a http server
@@ -61,11 +65,13 @@ public class Server {
 	/** The name of the config used by this class */
 	public static final String CONFIG_NAME = "server.config";
 	/** The name of the property, which specifies the port */
-	public static final String PROPERTY_PORT = "port";
+	public static final String PROPERTY_PORT = "server.socket.port";
 	/** The name of the property, which specifies the root path of the server */
-	public static final String PROPERTY_ROOT_PATH = "root_path";
+	public static final String PROPERTY_CONTEXT_PATH = "server.socket.contextPath";
 	/** The name of the property, which specifies whether the server should bind to local host only. */
 	public static final String PROPERTY_LOCALHOST = "local_host_only";
+	/** The name of the property, which specifies the url where the server is available. */
+	public static final String PROPERTY_SERVER_URL = "server.url";
 
 	/**
 	 * The ip used, when the server should only be accessible from localhost
@@ -94,15 +100,18 @@ public class Server {
 	/**
 	 * @return the URI of the server
 	 */
-	private URI baseURI() {
+	private URI socketURI() {
 		Properties conf = this.configurationLoader.load(CONFIG_NAME);
 		int port = Integer.parseInt(conf.getProperty(PROPERTY_PORT, "8080"));
-		String root = conf.getProperty(PROPERTY_ROOT_PATH);
+		String contextPath = conf.getProperty(PROPERTY_CONTEXT_PATH, "");
 		String local = conf.getProperty(PROPERTY_LOCALHOST);
 
-		if (root == null) {
-			this.logger.warn("Server config missing key {}.", PROPERTY_ROOT_PATH);
-			root = "rest";
+		if (contextPath.indexOf('/') != -1) {
+			// see GrizzlyWebContainerFactory.create()
+			this.logger.warn("Only first path segment will be used as context path, the rest will be ignored.");
+		}
+		if (contextPath.isEmpty()) {
+			contextPath = "/";
 		}
 
 		if (local == null) {
@@ -111,8 +120,8 @@ public class Server {
 		}
 
 		if (Boolean.parseBoolean(local))
-			return UriBuilder.fromPath(root).scheme("http").host(IP_LOCAL).port(port).build();
-		return UriBuilder.fromPath(root).scheme("http").host(IP_GLOBAL).port(port).build();
+			return UriBuilder.fromPath(contextPath).scheme("http").host(IP_LOCAL).port(port).build();
+		return UriBuilder.fromPath(contextPath).scheme("http").host(IP_GLOBAL).port(port).build();
 	}
 
 	/**
@@ -128,7 +137,18 @@ public class Server {
 
 		ResourceConfig resourceConfig = new ResourceConfig(classes);
 		resourceConfig.registerClasses(this.restResources);
-		resourceConfig.registerClasses(OpenApiResource.class);
+
+		OpenApiResource openApiResource = new OpenApiResource();
+		OpenAPI openapi = new OpenAPI();
+		List<io.swagger.v3.oas.models.servers.Server> servers = Collections
+				.singletonList(new io.swagger.v3.oas.models.servers.Server()
+						.url(this.configurationLoader.load(CONFIG_NAME).getProperty(PROPERTY_SERVER_URL)));
+		openapi.servers(servers);
+		SwaggerConfiguration oasConfig = new SwaggerConfiguration().openAPI(openapi).prettyPrint(true)
+				.scannerClass("io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner");
+		openApiResource.openApiConfiguration(oasConfig);
+		resourceConfig.register(openApiResource);
+
 		resourceConfig.register(ThrowableExceptionMapper.class);
 		resourceConfig.register(ZonedDateTimeProvider.class);
 		resourceConfig.register(ZonedDateTimeMessageBodyWriter.class);
@@ -143,8 +163,9 @@ public class Server {
 			}
 		});
 		try {
-			this.httpServer = GrizzlyWebContainerFactory.create(this.baseURI(), new ServletContainer(resourceConfig),
-					null, null);
+			URI socketURI = this.socketURI();
+			this.httpServer = GrizzlyWebContainerFactory.create(socketURI, new ServletContainer(resourceConfig), null,
+					null);
 		} catch (IOException e) {
 			throw new IllegalStateException("The Server is can not be started", e);
 		}
