@@ -21,23 +21,26 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.annotation;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.function.Consumer;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Declare a runtime dependency
- * 
- * @see Service
+ * Test Service for DI
  * 
  * @author Leon Kiefer
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Target(java.lang.annotation.ElementType.FIELD)
-public @interface Reference {
+@Service
+public class ServiceImplementingMultipleInterfaces implements Service7API, Consumer<String> {
+
+	@Override
+	public void accept(String t) {
+	}
+
+	@Override
+	public void foo() {
+	}
 
 }
