@@ -153,7 +153,7 @@ public class AlarmClockStorage implements IAlarmClockStorage {
 	 */
 	@PostConstruct
 	public void init() {
-		if (!this.storage.has("ALARMCOUNTER"))
+		if (!this.storage.has(ALARMCOUNTER))
 			this.storage.put(ALARMCOUNTER, "0");
 		if (!this.storage.has(TIMERCOUNTER))
 			this.storage.put(TIMERCOUNTER, "0");

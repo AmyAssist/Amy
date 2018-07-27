@@ -136,26 +136,32 @@ public class AlarmClockSpeech {
 	 */
 	@Grammar("(set|create) timer (for|on) [# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")
 	public String setTimer(String[] params) {
-		Timer timer;
+		int hours = 0;
+		int minutes = 0;
+		int seconds = 0;
 		try {
 			if (params.length == 9) {
-				timer = this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]),
-						Integer.parseInt(params[7]));
+				hours = Integer.parseInt(params[3]);
+				minutes = Integer.parseInt(params[5]);
+				seconds = Integer.parseInt(params[7]);
 			} else if (params.length == 7) {
 				if (params[4].contains("hour") && params[6].contains("minute")) {
-					timer = this.logic.setTimer(Integer.parseInt(params[3]), Integer.parseInt(params[5]), 0);
+					hours = Integer.parseInt(params[3]);
+					minutes = Integer.parseInt(params[5]);
 				} else if (params[4].contains("hour") && params[6].contains("second")) {
-					timer = this.logic.setTimer(Integer.parseInt(params[3]), 0, Integer.parseInt(params[5]));
+					hours = Integer.parseInt(params[3]);
+					seconds = Integer.parseInt(params[5]);
 				} else if (params[4].contains("minute") && params[6].contains("second")) {
-					timer = this.logic.setTimer(0, Integer.parseInt(params[3]), Integer.parseInt(params[5]));
+					minutes = Integer.parseInt(params[3]);
+					seconds = Integer.parseInt(params[5]);
 				}
 			} else if (params.length == 5) {
 				if (params[4].contains("hour")) {
-					timer = this.logic.setTimer(Integer.parseInt(params[3]), 0, 0);
+					hours = Integer.parseInt(params[3]);
 				} else if (params[4].contains("minute")) {
-					timer = this.logic.setTimer(0, Integer.parseInt(params[3]), 0);
+					minutes = Integer.parseInt(params[3]);
 				} else if (params[4].contains("second")) {
-					timer = this.logic.setTimer(0, 0, Integer.parseInt(params[3]));
+					seconds = Integer.parseInt(params[3]);
 				}
 			} else {
 				return "Speech Command not valid.";
@@ -164,7 +170,8 @@ public class AlarmClockSpeech {
 			this.logException(e);
 			return PARAMSNOTVALID;
 		}
-		return "Timer set";
+		Timer timer = this.logic.setTimer(hours, minutes, seconds);
+		return "Timer " + timer.getId() + " set";
 	}
 
 	/**
@@ -174,9 +181,9 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation
 	 * @return resetAlarms or resetTimers
 	 */
-	@Grammar("reset (alarms|timers)")
-	public String resetAlarms(String[] params) {
-		if (params[1].equals("alarms"))
+	@Grammar("reset [all] (alarms|timers)")
+	public String resetAlarmClockObjects(String[] params) {
+		if (params[1].equals("alarms") || (params.length == 3 && params[2].equals("alarms")))
 			return this.logic.resetAlarms();
 		return this.logic.resetTimers();
 	}
@@ -189,7 +196,7 @@ public class AlarmClockSpeech {
 	 * @return deleteAlarm or deleteTimer
 	 */
 	@Grammar("delete (alarm|timer) #")
-	public String deleteAlarm(String[] params) {
+	public String deleteAlarmClockObject(String[] params) {
 		try {
 			if (params[1].equals("alarm"))
 				return this.logic.deleteAlarm(Integer.parseInt(params[2]));
@@ -208,11 +215,12 @@ public class AlarmClockSpeech {
 	 * @return deactivateAlarm or deactivateTimer
 	 */
 	@Grammar("deactivate (alarm|timer) #")
-	public String deactivateAlarm(String[] params) {
+	public String deactivateAlarmClockObject(String[] params) {
 		try {
 			if (params[1].equals("alarm"))
 				return this.logic.deactivateAlarm(Integer.parseInt(params[2]));
-			return this.logic.deactivateTimer(Integer.parseInt(params[2]));
+			this.logic.deleteTimer(Integer.parseInt(params[2]));
+			return "Timer " + params[2] + " deactivated";
 		} catch (NoSuchElementException e) {
 			this.logException(e);
 			return ELEMENTNOTFOUND;
@@ -244,7 +252,7 @@ public class AlarmClockSpeech {
 	 * @return getAlarm or getTimer
 	 */
 	@Grammar("get (alarm|timer) #")
-	public String getAlarm(String[] params) {
+	public String getAlarmClockObject(String[] params) {
 		try {
 			if (params[1].equals("alarm")) {
 				Alarm alarm = this.logic.getAlarm(Integer.parseInt(params[2]));
@@ -266,9 +274,12 @@ public class AlarmClockSpeech {
 	 * @return getAllAlarms or getAllTimers
 	 */
 	@Grammar("get all (alarms|timers)")
-	public String getAllAlarms(String[] params) {
+	public String getAllAlarmClockObjects(String[] params) {
 		if (params[2].equals("alarms")) {
 			List<Alarm> alarms = this.logic.getAllAlarms();
+			if (alarms.isEmpty()) {
+				return "No alarms found";
+			}
 			String[] stringAlarms = new String[alarms.size()];
 			for (int i = 0; i < alarms.size(); i++) {
 				stringAlarms[i] = outputAlarm(alarms.get(i));
@@ -276,6 +287,9 @@ public class AlarmClockSpeech {
 			return String.join("\n", stringAlarms);
 		}
 		List<Timer> timers = this.logic.getAllTimers();
+		if (timers.isEmpty()) {
+			return "No timers found";
+		}
 		String[] stringTimers = new String[timers.size()];
 		for (int i = 0; i < timers.size(); i++) {
 			stringTimers[i] = outputTimer(timers.get(i));
@@ -325,7 +339,7 @@ public class AlarmClockSpeech {
 		this.logger.error("Exception Thrown!", e);
 	}
 
-	private String outputAlarm(Alarm alarm) {
+	private static String outputAlarm(Alarm alarm) {
 		LocalTime ringTime = alarm.getAlarmTime();
 		if (alarm.isActive())
 			return "Alarm " + alarm.getId() + " will ring at " + ringTime.getHour() + ":" + ringTime.getMinute();
@@ -334,18 +348,19 @@ public class AlarmClockSpeech {
 				+ " but will not ring";
 	}
 
-	private String outputTimer(Timer timer) {
+	private static String outputTimer(Timer timer) {
 		int[] timeDiff = timer.getRemainingTime();
+		int timerNumber = timer.getId();
 		if (timeDiff[0] < 0 || timeDiff[1] < 0 || timeDiff[2] < 0) {
-			return "Timer will not ring!";
+			return "Timer " + timerNumber + " is ringing right now.";
 		}
 		if (timeDiff[0] == 0) {
 			if (timeDiff[1] == 0) {
-				return "Timer rings in " + timeDiff[2] + " seconds";
+				return "Timer " + timerNumber + " will ring in " + timeDiff[2] + " seconds";
 			}
-			return "Timer rings in " + timeDiff[1] + " minutes and " + timeDiff[2] + " seconds";
+			return "Timer " + timerNumber + " will ring in " + timeDiff[1] + " minutes and " + timeDiff[2] + " seconds";
 		}
-		return "Timer rings in " + timeDiff[0] + " hours and " + timeDiff[1] + " minutes and " + timeDiff[2]
-				+ " seconds";
+		return "Timer " + timerNumber + " will ring in " + timeDiff[0] + " hours and " + timeDiff[1] + " minutes and "
+				+ timeDiff[2] + " seconds";
 	}
 }
