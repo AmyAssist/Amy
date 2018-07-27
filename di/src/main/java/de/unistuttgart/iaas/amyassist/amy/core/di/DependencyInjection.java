@@ -92,16 +92,16 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	}
 
 	@Override
-	public synchronized <T> void register(Class<T> serviceType, ServiceProvider<T> serviceFunction) {
-		this.register(Util.serviceDescriptionFor(serviceType), serviceFunction);
+	public synchronized <T> void register(Class<T> serviceType, ServiceProvider<T> serviceProvider) {
+		this.register(Util.serviceDescriptionFor(serviceType), serviceProvider);
 	}
 
 	@Override
 	public synchronized <T> void register(ServiceDescription<T> serviceDescription,
-			ServiceProvider<T> serviceFunction) {
+			ServiceProvider<T> serviceProvider) {
 		if (this.hasServiceOfType(serviceDescription))
 			throw new DuplicateServiceException();
-		this.register.put(serviceDescription, serviceFunction);
+		this.register.put(serviceDescription, serviceProvider);
 	}
 
 	@Override
@@ -109,28 +109,30 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		Service annotation = cls.getAnnotation(Service.class);
 		if (annotation == null)
 			throw new ClassIsNotAServiceException(cls);
-		Class<?>[] serviceTypes = annotation.value();
-		if (serviceTypes.length == 0) {
-			serviceTypes = cls.getInterfaces();
-		}
-		if (serviceTypes.length == 0) {
-			serviceTypes = new Class[1];
-			serviceTypes[0] = cls;
-		}
-
-		for (Class<?> serviceType : serviceTypes) {
-			if (this.hasServiceOfType(Util.serviceDescriptionFor(serviceType))) {
-				throw new DuplicateServiceException();
-			}
-			if (!serviceType.isAssignableFrom(cls)) {
-				throw new IllegalArgumentException();
+		Class<?> serviceType = annotation.value();
+		if (serviceType.equals(Void.class)) {
+			Class<?>[] interfaces = cls.getInterfaces();
+			if (interfaces.length == 1) {
+				serviceType = interfaces[0];
+			} else if (interfaces.length == 0) {
+				serviceType = cls;
+			} else {
+				throw new IllegalArgumentException("The type of the service implementation " + cls.getName()
+						+ " is ambiguous, because the type is not given by the annotation and multiple interfaces are implemented."
+						+ " Please specify which type this service should have.");
 			}
 		}
 
-		for (Class<?> serviceType : serviceTypes) {
-			ServiceProvider<?> p = new ClassServiceProvider<>(cls);
-			this.register.put(Util.serviceDescriptionFor(serviceType), p);
+		if (this.hasServiceOfType(Util.serviceDescriptionFor(serviceType))) {
+			throw new DuplicateServiceException();
 		}
+		if (!serviceType.isAssignableFrom(cls)) {
+			throw new IllegalArgumentException(
+					"The specified service type " + serviceType.getName() + " is not assignable from " + cls.getName());
+		}
+
+		ServiceProvider<?> p = new ClassServiceProvider<>(cls);
+		this.register.put(Util.serviceDescriptionFor(serviceType), p);
 	}
 
 	@Override
@@ -265,8 +267,9 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(classOfInstance, Reference.class);
 		for (Field field : dependencyFields) {
 			Class<?> dependency = field.getType();
+			Class<?> declaredClass = field.getDeclaringClass();
 			Object object = this.getService(dependency,
-					ConsumerFactory.build(classOfInstance, Util.serviceDescriptionFor(field)));
+					ConsumerFactory.build(declaredClass, Util.serviceDescriptionFor(field)));
 			Util.inject(instance, object, field);
 		}
 	}
