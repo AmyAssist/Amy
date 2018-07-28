@@ -27,7 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -132,21 +131,18 @@ class PlayerLogicTest {
 		verify(this.spotifyAPICalls).setClientID(ID2);
 		verify(this.spotifyAPICalls).setClientSecret(ID2);
 		verify(this.spotifyAPICalls).authorizationCodeUri();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testFirstTimeInit() {
 		this.playerLogic.firstTimeInit();
 		verify(this.spotifyAPICalls).authorizationCodeUri();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testInputAuthCode() {
 		this.playerLogic.inputAuthCode(ID2);
 		verify(this.spotifyAPICalls).createRefreshToken(ID2);
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
@@ -186,35 +182,30 @@ class PlayerLogicTest {
 	@Test
 	public void testPlaySongFromASearchEmptyResult() {
 		this.playerLogic.play(0, SearchTypes.USER_PLAYLISTS);
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testResume() {
 		this.playerLogic.resume();
 		verify(this.spotifyAPICalls).resume();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testPause() {
 		this.playerLogic.pause();
 		verify(this.spotifyAPICalls).pause();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testSkip() {
 		this.playerLogic.skip();
 		verify(this.spotifyAPICalls).skip();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testBack() {
 		this.playerLogic.back();
 		verify(this.spotifyAPICalls).back();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
@@ -238,7 +229,6 @@ class PlayerLogicTest {
 		assertThat(this.playerLogic.setVolume("mute"), equalTo(0));
 		verify(this.spotifyAPICalls).setVolume(0);
 		verify(this.spotifyAPICalls).getVolume();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
@@ -247,7 +237,6 @@ class PlayerLogicTest {
 		assertThat(this.playerLogic.setVolume("max"), equalTo(100));
 		verify(this.spotifyAPICalls).setVolume(100);
 		verify(this.spotifyAPICalls).getVolume();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
@@ -256,7 +245,6 @@ class PlayerLogicTest {
 		assertThat(this.playerLogic.setVolume("up"), equalTo(100));
 		verify(this.spotifyAPICalls).setVolume(100);
 		verify(this.spotifyAPICalls).getVolume();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
@@ -265,7 +253,6 @@ class PlayerLogicTest {
 		assertThat(this.playerLogic.setVolume("down"), equalTo(0));
 		verify(this.spotifyAPICalls).setVolume(0);
 		verify(this.spotifyAPICalls).getVolume();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
@@ -274,7 +261,6 @@ class PlayerLogicTest {
 		assertThat(this.playerLogic.setVolume("up"), equalTo(100));
 		verify(this.spotifyAPICalls).setVolume(100);
 		verify(this.spotifyAPICalls).getVolume();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
@@ -283,15 +269,12 @@ class PlayerLogicTest {
 		assertThat(this.playerLogic.setVolume("down"), equalTo(0));
 		verify(this.spotifyAPICalls).setVolume(0);
 		verify(this.spotifyAPICalls).getVolume();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testSetVolumeStringWrongString() {
 		when(this.spotifyAPICalls.getVolume()).thenReturn(50);
 		assertThat(this.playerLogic.setVolume("downM"), equalTo(-1));
-		verify(this.spotifyAPICalls).getVolume();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
@@ -299,25 +282,21 @@ class PlayerLogicTest {
 		when(this.spotifyAPICalls.getVolume()).thenReturn(-1);
 		assertThat(this.playerLogic.setVolume("up"), equalTo(-1));
 		verify(this.spotifyAPICalls).getVolume();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testVolumeIntOutOfRangeNegative() {
 		assertThat(this.playerLogic.setVolume(-2), equalTo(-1));
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testVolumeIntOutOfRangePositve() {
 		assertThat(this.playerLogic.setVolume(101), equalTo(-1));
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testVolumeInt() {
 		assertThat(this.playerLogic.setVolume(1), equalTo(1));
 		verify(this.spotifyAPICalls).setVolume(1);
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 }
