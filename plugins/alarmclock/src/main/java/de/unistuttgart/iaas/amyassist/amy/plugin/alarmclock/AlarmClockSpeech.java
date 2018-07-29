@@ -49,10 +49,11 @@ public class AlarmClockSpeech {
 
 	private static final String ELEMENTNOTFOUND = "Element not found";
 	private static final String PARAMSNOTVALID = "Parameters not valid.";
+	private static final String SETALARMGRAMMAR = "(set|create) alarm (at|for|on)" + "( ( # x # )" + "| ( # oh # )"
+			+ "| ( (#|quarter|half) (past|to) # )" + "| ( # oh clock ) )" + "[am|pm]";
 
 	private static final int MINUTESINHOUR = 60;
 	private static final int MINUTESQUARTERHOUR = 15;
-	private static final int HALFDAYINHOURS = 12;
 
 	/**
 	 * Creates new alarm
@@ -62,7 +63,7 @@ public class AlarmClockSpeech {
 	 * 
 	 * @return info if creation was successful
 	 */
-	@Grammar("(set|create) alarm (at|for|on) (( (#|quarter|half) (past|to) # [am|pm] | # oh # [am|pm]) | # x # [pm|am])")
+	@Grammar(SETALARMGRAMMAR)
 	public String setAlarm(String[] params) {
 		int[] alarmTime = extractAlarmTime(params);
 		try {
@@ -73,58 +74,6 @@ public class AlarmClockSpeech {
 			this.logException(e);
 			return PARAMSNOTVALID;
 		}
-	}
-
-	/**
-	 * Handles the speech command to set an alarm and calls the method to create it
-	 * 
-	 * @param params
-	 *            words in the grammar annotation {@link #setAlarm(String[] params)}
-	 * @return info if creation was successful
-	 */
-
-	private int[] extractAlarmTime(String[] params) {
-		int alarmHour = -1;
-		int alarmMinute = -1;
-		int minuteAddition = 0;
-		int hourAddition = 0;
-		// alternative time from the google speech recognition
-		if (params[4].equals("x")) {
-			if (params.length == 7 && params[6].equals("pm")) {
-				alarmHour = Integer.parseInt(params[3]) + 12;
-			} else {
-				alarmHour = Integer.parseInt(params[3]);
-			}
-			alarmMinute = Integer.parseInt(params[5]);
-		} else {
-			if (params.length == 7 && params[6].equals("pm"))
-				hourAddition = HALFDAYINHOURS;
-
-			if (params[4].equals("oh")) {
-				// second option in "or"
-				alarmHour = Integer.parseInt(params[3]) + hourAddition;
-				alarmMinute = Integer.parseInt(params[5]);
-			} else {
-				// first option in "or"
-				if (params[3].equals("quarter"))
-					minuteAddition = MINUTESQUARTERHOUR;
-				else if (params[3].equals("half"))
-					minuteAddition = 2 * MINUTESQUARTERHOUR;
-				else
-					minuteAddition = Integer.parseInt(params[3]);
-
-				if (params[4].equals("past")) {
-					alarmHour = Integer.parseInt(params[5]) + hourAddition;
-					if (alarmHour == 24)
-						alarmHour = 0;
-					alarmMinute = minuteAddition;
-				} else {
-					alarmHour = Integer.parseInt(params[5]) + hourAddition - 1;
-					alarmMinute = MINUTESINHOUR - minuteAddition;
-				}
-			}
-		}
-		return new int[] { alarmHour, alarmMinute };
 	}
 
 	/**
@@ -309,9 +258,8 @@ public class AlarmClockSpeech {
 		try {
 			if (Integer.parseInt(params[4]) > 23 || Integer.parseInt(params[6]) > 59)
 				return "Not a valid time of day.";
-			return this.logic
-					.editAlarm(Integer.parseInt(params[2]), Integer.parseInt(params[4]), Integer.parseInt(params[6]))
-					.toString();
+			return outputAlarm(this.logic.editAlarm(Integer.parseInt(params[2]), Integer.parseInt(params[4]),
+					Integer.parseInt(params[6])));
 		} catch (NoSuchElementException e) {
 			this.logException(e);
 			return ELEMENTNOTFOUND;
@@ -337,6 +285,62 @@ public class AlarmClockSpeech {
 
 	private void logException(Exception e) {
 		this.logger.error("Exception Thrown!", e);
+	}
+
+	/**
+	 * Extracts the alarm time of the speech command given to the setAlarm function Parsing is based on following
+	 * grammar: {@link #SETALARMGRAMMAR}
+	 * 
+	 * @param params
+	 *            words in the grammar annotation {@link #setAlarm(String[] params)}
+	 * @return array with hour and minute of the alarm
+	 */
+	private static int[] extractAlarmTime(String[] params) {
+		int[] alarmTime = new int[] { -1, -1 };
+
+		if (params[4].equals("x")) {
+			// google notation
+			alarmTime[0] = Integer.parseInt(params[3]);
+			alarmTime[1] = Integer.parseInt(params[5]);
+
+		} else if (params[4].equals("oh")) {
+			if (params[5].equals("clock")) {
+				// whole hour notation
+				alarmTime[0] = Integer.parseInt(params[3]);
+				alarmTime[1] = 0;
+			} else {
+				// "oh" notation
+				alarmTime[0] = Integer.parseInt(params[3]);
+				alarmTime[1] = Integer.parseInt(params[5]);
+			}
+
+		} else {
+			// past/to notation
+			int minuteAddition = 0;
+
+			if (params[3].equals("quarter"))
+				minuteAddition = MINUTESQUARTERHOUR;
+			else if (params[3].equals("half"))
+				minuteAddition = 2 * MINUTESQUARTERHOUR;
+			else
+				minuteAddition = Integer.parseInt(params[3]);
+
+			if (params[4].equals("past")) {
+				alarmTime[0] = Integer.parseInt(params[5]);
+				alarmTime[1] = minuteAddition;
+			} else {
+				alarmTime[0] = Integer.parseInt(params[5]) - 1;
+				alarmTime[1] = MINUTESINHOUR - minuteAddition;
+			}
+		}
+		// pm hour addition
+		if (params.length == 7 && params[6].equals("pm")) {
+			alarmTime[0] = alarmTime[0] + 12;
+			if (alarmTime[0] == 24) {
+				alarmTime[0] = 0;
+			}
+		}
+		return alarmTime;
 	}
 
 	private static String outputAlarm(Alarm alarm) {
