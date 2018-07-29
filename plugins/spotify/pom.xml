@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
 		<artifactId>amy-plugin</artifactId>
-		<version>0.4.0-Snapshot</version>
+		<version>0.5.0-Snapshot</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<properties>
