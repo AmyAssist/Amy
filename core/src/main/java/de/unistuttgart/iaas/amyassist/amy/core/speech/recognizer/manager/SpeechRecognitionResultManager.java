@@ -38,14 +38,14 @@ public interface SpeechRecognitionResultManager {
 	 * @param srListening
 	 *            true if SpeechRecognition is Currently Listening
 	 */
-	void handleListeningState(boolean srListening);
+	void handleMultiCallListeningState(boolean srListening);
 
 	/**
 	 * Method to check if the SpeechRecognition is Currently Listening
 	 * 
 	 * @return true if SR System is Listening
 	 */
-	boolean isListening();
+	boolean isMultiCallActive();
 
 	/**
 	 * Switch to the given Grammar
@@ -69,7 +69,7 @@ public interface SpeechRecognitionResultManager {
 	 * @param outputString
 	 *            String to voice
 	 */
-	void voiceOutput(String outputString);
+	void output(String outputString);
 
 	/**
 	 * stop the voice output
@@ -104,13 +104,13 @@ public interface SpeechRecognitionResultManager {
 	 * @param singleCommand
 	 *            true if singleCommand activated
 	 */
-	void setSingleListening(boolean singleCommand);
+	void handleSingleCallListeningState(boolean singleCommand);
 
 	/**
 	 * Method to check if current Listening state is a SingleCommand
 	 * 
 	 * @return true if SingleCommand
 	 */
-	boolean isSingleCommandListening();
+	boolean isSingleCallActive();
 
 }

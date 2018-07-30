@@ -51,23 +51,25 @@ public class LocalMainGrammarResultHandler extends AbstractRecognitionResultHand
 	@Override
 	protected boolean environmentSpecificInputHandling(String result, SpeechRecognitionResultManager srManager) {
 		switch (result) {
-		case Constants.WAKE_UP:
-			if (!srManager.isListening() && !srManager.isSingleCommandListening()) {
-				srManager.handleListeningState(true);
+		case Constants.MULTI_CALL_START:
+			if (!srManager.isMultiCallActive() && !srManager.isSingleCallActive()) {
+				srManager.handleMultiCallListeningState(true);
 			}
 			return true;
-		case Constants.SINGLE_WAKE_UP:
-			if (!srManager.isListening() && !srManager.isSingleCommandListening()) {
-				srManager.setSingleListening(true);
+		case Constants.SINGLE_CALL_START:
+			if (!srManager.isMultiCallActive() && !srManager.isSingleCallActive()) {
+				srManager.handleSingleCallListeningState(true);
 			}
 			return true;
-		case Constants.GO_SLEEP:
-			if (srManager.isListening()) {
-				srManager.handleListeningState(false);
+		case Constants.MULTI_CALL_STOP:
+			if (srManager.isMultiCallActive()) {
+				srManager.handleMultiCallListeningState(false);
+			} else if (srManager.isSingleCallActive()) {
+				srManager.handleSingleCallListeningState(false);
 			}
 			return true;
 		default:
-			return !(srManager.isListening() || srManager.isSingleCommandListening());
+			return !(srManager.isMultiCallActive() || srManager.isSingleCallActive());
 		}
 	}
 

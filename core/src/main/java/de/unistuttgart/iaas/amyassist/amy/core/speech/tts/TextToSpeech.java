@@ -34,6 +34,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.slf4j.Logger;
 
@@ -123,13 +124,25 @@ public class TextToSpeech implements Output, Runnable, RunnableService {
 	}
 
 	private void writeAudio(String s) {
-		try (AudioInputStream a = this.mary.generateAudio(s)) {
-			moveBytes(a, this.outputLine);
-		} catch (SynthesisException e) {
-			this.logger.error("output error", e);
-		} catch (IOException e) {
-			this.logger.error("Error from MaryTTS InputStream", e);
+		if (s.endsWith(".wav")) {
+			try (AudioInputStream a = AudioSystem
+					.getAudioInputStream(this.getClass().getClassLoader().getResource(s))) {
+				moveBytes(a, this.outputLine);
+			} catch (UnsupportedAudioFileException e) {
+				this.logger.error("Beep output error", e);
+			} catch (IOException e) {
+				this.logger.error("Error from Beep Sound", e);
+			}
+		} else {
+			try (AudioInputStream a = this.mary.generateAudio(s)) {
+				moveBytes(a, this.outputLine);
+			} catch (SynthesisException e) {
+				this.logger.error("Voice output error", e);
+			} catch (IOException e) {
+				this.logger.error("Error from MaryTTS InputStream", e);
+			}
 		}
+
 	}
 
 	private void moveBytes(AudioInputStream ais, SourceDataLine sdl) throws IOException {
@@ -155,7 +168,9 @@ public class TextToSpeech implements Output, Runnable, RunnableService {
 	 */
 	@Override
 	public synchronized void output(String s) {
-		this.logger.info("saying: {}", s);
+		if (!s.endsWith(".wav")) {
+			this.logger.info("saying: {}", s);
+		}
 		this.stop = false;
 		this.speak(this.preProcessing(s));
 	}

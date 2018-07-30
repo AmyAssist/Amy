@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
@@ -57,8 +58,8 @@ public abstract class AbstractSpeechRecognizerManager
 	private SpeechRecognizer mainRecognizer;
 	private Map<String, SpeechRecognizer> recognizerList = new HashMap<>();
 
-	private boolean srListening = false;
-	private boolean srSingleListening = false;
+	private boolean multiCallActive = false;
+	private boolean singleCallActive = false;
 
 	private Thread currentRecognizer;
 
@@ -144,10 +145,10 @@ public abstract class AbstractSpeechRecognizerManager
 	public void handleCommand(String result) {
 		Future<String> handle = this.inputHandler.handle(result);
 		try {
-			voiceOutput(handle.get());
+			output(handle.get());
 		} catch (ExecutionException e) {
 			if (e.getCause() != null && e.getCause().getClass().equals(IllegalArgumentException.class)) {
-				voiceOutput("unknown command");
+				output("unknown command");
 			} else {
 				this.logger.error("unknown error", e);
 			}
@@ -178,15 +179,15 @@ public abstract class AbstractSpeechRecognizerManager
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#handleListeningState(boolean)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#handleMultiCallListeningState(boolean)
 	 */
 	@Override
-	public void handleListeningState(boolean listening) {
-		this.srListening = listening;
+	public void handleMultiCallListeningState(boolean listening) {
+		this.multiCallActive = listening;
 		if (listening) {
-			this.voiceOutput("waking up");
+			this.output("waking up");
 		} else {
-			this.voiceOutput("now sleeping");
+			this.output("now sleeping");
 		}
 		/**
 		 * notify(listening);
@@ -194,18 +195,42 @@ public abstract class AbstractSpeechRecognizerManager
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isListening()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isMultiCallActive()
 	 */
 	@Override
-	public boolean isListening() {
-		return this.srListening;
+	public boolean isMultiCallActive() {
+		return this.multiCallActive;
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#voiceOutput(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#handleSingleCallListeningState(boolean)
 	 */
 	@Override
-	public void voiceOutput(String outputString) {
+	public void handleSingleCallListeningState(boolean singleCommand) {
+		this.singleCallActive = singleCommand;
+		if (singleCommand) {
+			this.output(Sounds.SINGLE_CALL_START_BEEP.getFileAsString());
+		} else {
+			this.output(Sounds.SINGLE_CALL_STOP_BEEP.getFileAsString());
+		}
+		/**
+		 * notify(listening);
+		 */
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isSingleCallActive()
+	 */
+	@Override
+	public boolean isSingleCallActive() {
+		return this.singleCallActive;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#output(java.lang.String)
+	 */
+	@Override
+	public void output(String outputString) {
 		this.output.output(outputString);
 	}
 
@@ -239,30 +264,6 @@ public abstract class AbstractSpeechRecognizerManager
 	@Override
 	public boolean isRecognitionThreadRunning() {
 		return this.recognitionThreadRunning;
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#setSingleListening(boolean)
-	 */
-	@Override
-	public void setSingleListening(boolean singleCommand) {
-		this.srSingleListening = singleCommand;
-		if (singleCommand) {
-			this.voiceOutput("what do you want");
-		} else {
-			this.voiceOutput("don't bother me again");
-		}
-		/**
-		 * notify(listening);
-		 */
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isSingleCommandListening()
-	 */
-	@Override
-	public boolean isSingleCommandListening() {
-		return this.srSingleListening;
 	}
 
 }
