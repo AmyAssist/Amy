@@ -33,17 +33,6 @@ import javax.annotation.Nonnull;
 public interface ServiceLocator {
 
 	/**
-	 * Instantiate the given class if it can. The object created in this way will not be managed by the DI.
-	 * 
-	 * @param serviceClass
-	 *            the implementation of a service
-	 * @return the created instance of the given class
-	 * @param <T>
-	 *            the type of the implementation class
-	 */
-	<T> T create(Class<T> serviceClass);
-
-	/**
 	 * Instantiate the given class if it can, inject dependencies and post-constructs the object. The object created in
 	 * this way will not be managed by the DI.
 	 * 

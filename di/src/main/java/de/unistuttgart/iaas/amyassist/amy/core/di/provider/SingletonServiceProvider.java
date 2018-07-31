@@ -68,4 +68,9 @@ public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 	public Set<String> getRequiredContextIdentifiers() {
 		return Collections.emptySet();
 	}
+
+	@Override
+	public void dispose(T service) {
+		// singleton can not be disposed
+	}
 }

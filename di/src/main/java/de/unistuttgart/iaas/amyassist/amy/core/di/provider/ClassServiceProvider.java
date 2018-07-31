@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -48,8 +49,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  * @param <T>
  *            type of the provided service
  */
-public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependencies<T> {
-
+public class ClassServiceProvider<T> implements ServiceProvider<T> {
+	private Class<? extends T> cls;
 	/**
 	 * A register which contains all dependencies
 	 */
@@ -58,16 +59,34 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 	private Set<String> requiredContextIdentifiers = new HashSet<>();
 	private final NTuple<String> contextType;
 	private final NTuple<ContextInjectionPoint> contextInjectionPoints;
-	private Map<NTuple<?>, T> serviceInstances = new HashMap<>();
+	private Map<NTuple<?>, ServiceHandle<T>> serviceInstances = new HashMap<>();
 
-	@Override
-	public Set<String> getRequiredContextIdentifiers() {
-		return Collections.unmodifiableSet(this.requiredContextIdentifiers);
-	}
+	/**
+	 * The container of Services to be used to pass Services around the DI.
+	 * 
+	 * @author Leon Kiefer
+	 * @param <T>
+	 *            the type of the service
+	 */
+	static class ServiceHandle<T> {
+		@Nonnull
+		private T service;
 
-	@Override
-	public Set<ServiceConsumer<?>> getDependencies() {
-		return Collections.unmodifiableSet(this.dependencies);
+		public ServiceHandle(T service) {
+			this.service = service;
+		}
+
+		/**
+		 * Get the service
+		 * 
+		 * @return the service of this service handle
+		 */
+		@Nonnull
+		T getService() {
+			return this.service;
+		}
+
+		int refcount = 0;
 	}
 
 	/**
@@ -76,7 +95,11 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 	 *            the service implementation class
 	 */
 	public ClassServiceProvider(@Nonnull Class<? extends T> cls) {
-		super(cls);
+		if (!Util.isValidServiceClass(cls))
+			throw new IllegalArgumentException(
+					"There is a problem with the class " + cls.getName() + ". It can't be used as a Service");
+		this.cls = cls;
+
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(cls, Reference.class);
 		for (Field field : dependencyFields) {
 			InjectionPoint injectionPoint = new InjectionPoint(field);
@@ -110,12 +133,15 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 	public T getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
 		NTuple<?> contextTuple = this.getContextTuple(context);
 		if (this.serviceInstances.containsKey(contextTuple)) {
-			return this.serviceInstances.get(contextTuple);
+			ClassServiceProvider.ServiceHandle<T> serviceData = this.serviceInstances.get(contextTuple);
+			serviceData.refcount++;
+			return serviceData.getService();
 		}
 
-		T createdService = this.createService(resolvedDependencies, contextTuple);
-		this.serviceInstances.put(contextTuple, createdService);
-		return createdService;
+		ServiceHandle<T> serviceData = new ServiceHandle<>(this.createService(resolvedDependencies, contextTuple));
+		serviceData.refcount = 1;
+		this.serviceInstances.put(contextTuple, serviceData);
+		return serviceData.getService();
 	}
 
 	/**
@@ -139,5 +165,44 @@ public class ClassServiceProvider<T> extends ClassServiceProviderWithoutDependen
 
 		Util.postConstruct(serviceInstance);
 		return serviceInstance;
+	}
+
+	private T createService() {
+		try {
+			return this.cls.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new IllegalStateException("The constructor of " + this.cls.getName() + " should have been checked",
+					e);
+		}
+	}
+
+	@Override
+	public Set<String> getRequiredContextIdentifiers() {
+		return Collections.unmodifiableSet(this.requiredContextIdentifiers);
+	}
+
+	@Override
+	public Set<ServiceConsumer<?>> getDependencies() {
+		return Collections.unmodifiableSet(this.dependencies);
+	}
+
+	@Override
+	public void dispose(T service) {
+		for (Entry<NTuple<?>, ServiceHandle<T>> e : this.serviceInstances.entrySet()) {
+			ServiceHandle<T> serviceData = e.getValue();
+			if (serviceData.getService() == service) {
+				serviceData.refcount--;
+				if (serviceData.refcount == 0) {
+					this.destroy(e.getKey());
+				}
+				return;
+			}
+		}
+		throw new IllegalArgumentException();
+	}
+
+	private void destroy(NTuple<?> contextTuple) {
+		ServiceHandle<T> remove = this.serviceInstances.remove(contextTuple);
+		Util.preDestroy(remove);
 	}
 }

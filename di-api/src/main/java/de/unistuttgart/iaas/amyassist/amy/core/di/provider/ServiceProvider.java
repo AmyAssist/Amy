@@ -33,6 +33,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 
 /**
+ * A Service Provider is responsible for Providing Services of a type. The Service Provider manages the dependencies and
+ * the Services he has provided. If the does not exist it creates a new one and is responsible for disposing this
+ * service.
  * 
  * @author Leon Kiefer
  *
@@ -62,5 +65,15 @@ public interface ServiceProvider<T> {
 	 */
 	@Nonnull
 	Set<String> getRequiredContextIdentifiers();
+
+	/**
+	 * Dispose a Service that was provided by this ServiceProvider.
+	 * 
+	 * @param service
+	 *            the Service that should be disposed
+	 * @throws IllegalArgumentException
+	 *             if the given Service was not provided by this ServiceProvider.
+	 */
+	void dispose(T service);
 
 }

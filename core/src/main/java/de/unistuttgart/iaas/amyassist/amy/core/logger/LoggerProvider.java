@@ -43,29 +43,25 @@ public class LoggerProvider implements ServiceProvider<Logger> {
 
 	private static final String CONTEXT_IDENTIFIER = "class";
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider#getService(java.util.Map, java.util.Map)
-	 */
 	@Override
 	public Logger getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
 		Class<?> cls = (Class<?>) context.get(CONTEXT_IDENTIFIER);
 		return LoggerFactory.getLogger(cls);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider#getDependencies()
-	 */
 	@Override
 	public Set<ServiceConsumer<?>> getDependencies() {
 		return Collections.emptySet();
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider#getRequiredContextIdentifiers()
-	 */
 	@Override
 	public Set<String> getRequiredContextIdentifiers() {
 		return Collections.singleton(CONTEXT_IDENTIFIER);
+	}
+
+	@Override
+	public void dispose(Logger service) {
+		// Logger MUST NOT be disposed
 	}
 
 }

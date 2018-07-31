@@ -44,8 +44,7 @@ public class LoggerProvider implements ServiceProvider<Logger> {
 	private static final String CONTEXT_IDENTIFIER = "class";
 
 	@Override
-	public Logger getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
-			Map<String, ?> context) {
+	public Logger getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
 		Class<?> cls = (Class<?>) context.get(CONTEXT_IDENTIFIER);
 		return LoggerFactory.getLogger(cls);
 	}
@@ -58,5 +57,10 @@ public class LoggerProvider implements ServiceProvider<Logger> {
 	@Override
 	public Set<String> getRequiredContextIdentifiers() {
 		return Collections.singleton(CONTEXT_IDENTIFIER);
+	}
+
+	@Override
+	public void dispose(Logger service) {
+		// nothing to do here
 	}
 }

@@ -153,15 +153,6 @@ class DependencyInjectionTest {
 	}
 
 	@Test()
-	void testCreateService() {
-		Service2 s2 = this.dependencyInjection.create(Service2.class);
-		assertThat(s2.getService3(), nullValue());
-
-		Service1 service1 = this.dependencyInjection.create(Service1.class);
-		assertThat(service1.init, is(0));
-	}
-
-	@Test()
 	void testCreateNotAService() {
 		NotAService2 nas = this.dependencyInjection.createAndInitialize(NotAService2.class);
 		assertThat(nas.getInit(), is(1));
@@ -175,7 +166,7 @@ class DependencyInjectionTest {
 	@Test()
 	void testCreateIllegalAccessException() {
 		String message = assertThrows(IllegalArgumentException.class,
-				() -> this.dependencyInjection.create(Service8.class)).getMessage();
+				() -> this.dependencyInjection.createAndInitialize(Service8.class)).getMessage();
 
 		assertThat(message, equalTo(
 				"There is a problem with the class " + Service8.class.getName() + ". It can't be used as a Service"));

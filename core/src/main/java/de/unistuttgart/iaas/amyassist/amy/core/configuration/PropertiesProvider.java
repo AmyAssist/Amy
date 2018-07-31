@@ -52,8 +52,7 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 	@Override
 	public Properties getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
 			Map<String, ?> context) {
-		ConfigurationLoader configurationLoader = (ConfigurationLoader) resolvedDependencies
-				.get(this.consumer).build();
+		ConfigurationLoader configurationLoader = (ConfigurationLoader) resolvedDependencies.get(this.consumer).build();
 		IPlugin plugin = (IPlugin) context.get(Context.PLUGIN);
 		String uniqueName = plugin.getUniqueName();
 		return configurationLoader.load(uniqueName);
@@ -67,5 +66,10 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 	@Override
 	public Set<String> getRequiredContextIdentifiers() {
 		return Collections.singleton(Context.PLUGIN);
+	}
+
+	@Override
+	public void dispose(Properties properties) {
+		// TODO maybe save the properties
 	}
 }
