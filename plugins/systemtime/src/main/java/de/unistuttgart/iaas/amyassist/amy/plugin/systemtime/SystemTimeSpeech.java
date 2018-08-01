@@ -45,7 +45,10 @@ public class SystemTimeSpeech {
 	 */
 	@Grammar("(what is|tell me) the time")
 	public String time(String[] s) {
-		return "it is " + this.logic.getTime().substring(0, 5);
+		if (this.logic.getTime() != null && this.logic.getTime().length() > 4) {
+			return "it is " + this.logic.getTime().substring(0, 5);
+		}
+		return "couldn't find correct time, this is what I found: " + this.logic.getTime();
 	}
 
 	/**
