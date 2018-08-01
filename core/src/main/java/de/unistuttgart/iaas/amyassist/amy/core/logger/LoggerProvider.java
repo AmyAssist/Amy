@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandleImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 
 /**
@@ -44,9 +46,10 @@ public class LoggerProvider implements ServiceProvider<Logger> {
 	private static final String CONTEXT_IDENTIFIER = "class";
 
 	@Override
-	public Logger getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
+	public ServiceHandle<Logger> getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
+			Map<String, ?> context) {
 		Class<?> cls = (Class<?>) context.get(CONTEXT_IDENTIFIER);
-		return LoggerFactory.getLogger(cls);
+		return new ServiceHandleImpl<>(LoggerFactory.getLogger(cls));
 	}
 
 	@Override
@@ -60,7 +63,7 @@ public class LoggerProvider implements ServiceProvider<Logger> {
 	}
 
 	@Override
-	public void dispose(Logger service) {
+	public void dispose(ServiceHandle<Logger> service) {
 		// Logger MUST NOT be disposed
 	}
 

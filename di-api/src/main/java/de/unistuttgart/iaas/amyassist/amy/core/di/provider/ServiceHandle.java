@@ -21,21 +21,24 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
+import javax.annotation.Nonnull;
 
 /**
- * The interface of all ServiceFactories
+ * The container of Services to be used to pass Services around the DI. This is an abstraction of the service instance
+ * in the dependency injection.
  * 
  * @author Leon Kiefer
+ * @param <T>
+ *            the type of the service
  */
-public interface ServiceFactory<T> {
+public interface ServiceHandle<T> {
 	/**
-	 * Build the Service after all configuration is done. This doesn't mean a new instance is created. Multiple calls of
-	 * this method must return the same instance. So after calling this method the configuration can't be changed.
+	 * Get the service instance
 	 * 
-	 * @return the service handle of the Service
+	 * @return the service instance of this service handle
 	 */
-	ServiceHandle<T> build();
+	@Nonnull
+	T getService();
 }

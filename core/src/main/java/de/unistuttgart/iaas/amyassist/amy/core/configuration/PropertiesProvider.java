@@ -32,6 +32,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandleImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
@@ -50,12 +52,12 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 	}
 
 	@Override
-	public Properties getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
+	public ServiceHandle<Properties> getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
 			Map<String, ?> context) {
 		ConfigurationLoader configurationLoader = (ConfigurationLoader) resolvedDependencies.get(this.consumer).build();
 		IPlugin plugin = (IPlugin) context.get(Context.PLUGIN);
 		String uniqueName = plugin.getUniqueName();
-		return configurationLoader.load(uniqueName);
+		return new ServiceHandleImpl<>(configurationLoader.load(uniqueName));
 	}
 
 	@Override
@@ -69,7 +71,7 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 	}
 
 	@Override
-	public void dispose(Properties properties) {
+	public void dispose(ServiceHandle<Properties> properties) {
 		// TODO maybe save the properties
 	}
 }

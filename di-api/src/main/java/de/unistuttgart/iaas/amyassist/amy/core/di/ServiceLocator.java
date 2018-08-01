@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import javax.annotation.Nonnull;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
+
 /**
  * ServiceLocator is the registry for Services.
  * 
@@ -62,11 +64,11 @@ public interface ServiceLocator {
 	 * 
 	 * @param serviceDescription
 	 *            the Description of the service
-	 * @return an instance of the described service if a service provider is found
+	 * @return an service handle for the described service if a service provider is found
 	 * @param <T>
 	 *            the type of the service
 	 */
-	<T> T getService(ServiceDescription<T> serviceDescription);
+	<T> ServiceHandle<T> getService(ServiceDescription<T> serviceDescription);
 
 	/**
 	 * This will analyze the given object and inject into its fields. The object given will not be managed by the DI.

@@ -21,21 +21,30 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
+package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
 /**
- * The interface of all ServiceFactories
+ * The implementation of the ServiceHandle
  * 
  * @author Leon Kiefer
  */
-public interface ServiceFactory<T> {
+public class ServiceHandleImpl<T> implements ServiceHandle<T> {
+
+	private final T service;
+
 	/**
-	 * Build the Service after all configuration is done. This doesn't mean a new instance is created. Multiple calls of
-	 * this method must return the same instance. So after calling this method the configuration can't be changed.
+	 * Create a new ServiceHandle with a given service instance
 	 * 
-	 * @return the service handle of the Service
+	 * @param service
+	 *            the service instance for this ServiceHandle
 	 */
-	ServiceHandle<T> build();
+	public ServiceHandleImpl(T service) {
+		this.service = service;
+	}
+
+	@Override
+	public T getService() {
+		return this.service;
+	}
+
 }

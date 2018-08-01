@@ -51,7 +51,8 @@ public interface ServiceProvider<T> {
 	 * @return the service of this ServiceProvider for the given context
 	 */
 	@Nonnull
-	T getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context);
+	ServiceHandle<T> getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
+			@Nullable Map<String, ?> context);
 
 	/**
 	 * 
@@ -74,6 +75,6 @@ public interface ServiceProvider<T> {
 	 * @throws IllegalArgumentException
 	 *             if the given Service was not provided by this ServiceProvider.
 	 */
-	void dispose(T service);
+	void dispose(ServiceHandle<T> service);
 
 }

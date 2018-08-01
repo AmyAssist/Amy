@@ -62,34 +62,6 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	private Map<NTuple<?>, ServiceHandle<T>> serviceInstances = new HashMap<>();
 
 	/**
-	 * The container of Services to be used to pass Services around the DI.
-	 * 
-	 * @author Leon Kiefer
-	 * @param <T>
-	 *            the type of the service
-	 */
-	static class ServiceHandle<T> {
-		@Nonnull
-		private T service;
-
-		public ServiceHandle(T service) {
-			this.service = service;
-		}
-
-		/**
-		 * Get the service
-		 * 
-		 * @return the service of this service handle
-		 */
-		@Nonnull
-		T getService() {
-			return this.service;
-		}
-
-		int refcount = 0;
-	}
-
-	/**
 	 * 
 	 * @param cls
 	 *            the service implementation class
@@ -130,18 +102,16 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public T getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
+	public ServiceHandle<T> getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
+			Map<String, ?> context) {
 		NTuple<?> contextTuple = this.getContextTuple(context);
 		if (this.serviceInstances.containsKey(contextTuple)) {
-			ClassServiceProvider.ServiceHandle<T> serviceData = this.serviceInstances.get(contextTuple);
-			serviceData.refcount++;
-			return serviceData.getService();
+			return this.serviceInstances.get(contextTuple);
 		}
 
-		ServiceHandle<T> serviceData = new ServiceHandle<>(this.createService(resolvedDependencies, contextTuple));
-		serviceData.refcount = 1;
+		ServiceHandle<T> serviceData = new ServiceHandleImpl<>(this.createService(resolvedDependencies, contextTuple));
 		this.serviceInstances.put(contextTuple, serviceData);
-		return serviceData.getService();
+		return serviceData;
 	}
 
 	/**
@@ -156,7 +126,8 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 		T serviceInstance = this.createService();
 		for (InjectionPoint injectionPoint : this.injectionPoints) {
 			ServiceFactory<?> serviceFactory = resolvedDependencies.get(injectionPoint.getServiceConsumer());
-			injectionPoint.inject(serviceInstance, serviceFactory.build());
+			ServiceHandle<?> serviceHandle = serviceFactory.build();
+			injectionPoint.inject(serviceInstance, serviceHandle.getService());
 		}
 		for (int i = 0; i < this.contextInjectionPoints.n; i++) {
 			ContextInjectionPoint contextInjectionPoint = this.contextInjectionPoints.get(i);
@@ -187,15 +158,14 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public void dispose(T service) {
-		for (Entry<NTuple<?>, ServiceHandle<T>> e : this.serviceInstances.entrySet()) {
-			ServiceHandle<T> serviceData = e.getValue();
-			if (serviceData.getService() == service) {
-				serviceData.refcount--;
-				if (serviceData.refcount == 0) {
+	public void dispose(ServiceHandle<T> service) {
+		if (this.serviceInstances.containsValue(service)) {
+			for (Entry<NTuple<?>, ServiceHandle<T>> e : this.serviceInstances.entrySet()) {
+				ServiceHandle<T> serviceData = e.getValue();
+				if (serviceData == service) {
 					this.destroy(e.getKey());
+					return;
 				}
-				return;
 			}
 		}
 		throw new IllegalArgumentException();

@@ -54,9 +54,9 @@ public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public T getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
+	public ServiceHandle<T> getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
 			@Nullable Map<String, ?> context) {
-		return this.instance;
+		return new ServiceHandleImpl<>(this.instance);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public void dispose(T service) {
+	public void dispose(ServiceHandle<T> service) {
 		// singleton can not be disposed
 	}
 }

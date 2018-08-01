@@ -44,6 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.ClassProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ClassServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
@@ -150,27 +151,28 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	@Override
 	public <T> T getService(Class<T> serviceType) {
-		return this.getService(Util.serviceDescriptionFor(serviceType));
+		return this.getService(Util.serviceDescriptionFor(serviceType)).getService();
 	}
 
 	/**
 	 * @see ServiceLocator#getService(Class)
 	 */
-	public <T> T getService(Class<T> serviceType, @Nullable ServiceConsumer consumer) {
-		return this.getService(Util.serviceDescriptionFor(serviceType), consumer);
+	public <T> T getService(Class<T> serviceType, @Nullable ServiceConsumer<T> consumer) {
+		return this.getService(Util.serviceDescriptionFor(serviceType), consumer).getService();
 	}
 
 	/**
 	 * @see ServiceLocator#getService(ServiceDescription)
 	 */
-	public <T> T getService(ServiceDescription<T> serviceDescription, @Nullable ServiceConsumer consumer) {
+	public <T> ServiceHandle<T> getService(ServiceDescription<T> serviceDescription,
+			@Nullable ServiceConsumer consumer) {
 		ServiceProvider<T> provider = this.getServiceProvider(serviceDescription);
 		ServiceFactory<T> factory = this.resolve(provider, consumer);
 		return factory.build();
 	}
 
 	@Override
-	public <T> T getService(ServiceDescription<T> serviceDescription) {
+	public <T> ServiceHandle<T> getService(ServiceDescription<T> serviceDescription) {
 		return this.getService(serviceDescription, null);
 	}
 
@@ -265,12 +267,16 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		Class<? extends Object> classOfInstance = instance.getClass();
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(classOfInstance, Reference.class);
 		for (Field field : dependencyFields) {
-			Class<?> dependency = field.getType();
-			Class<?> declaredClass = field.getDeclaringClass();
-			Object object = this.getService(dependency,
-					ConsumerFactory.build(declaredClass, Util.serviceDescriptionFor(field)));
+			ServiceDescription<?> serviceDescription = Util.serviceDescriptionFor(field);
+			Object object = typeSaveInject(field, serviceDescription);
 			Util.inject(instance, object, field);
 		}
+	}
+
+	private <T> T typeSaveInject(@Nonnull Field field, @Nonnull ServiceDescription<T> serviceDescription) {
+		Class<T> dependency = serviceDescription.getServiceType();
+		Class<?> declaredClass = field.getDeclaringClass();
+		return this.getService(dependency, ConsumerFactory.build(declaredClass, serviceDescription));
 	}
 
 	@Override
@@ -317,7 +323,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		ServiceProvider<T> provider = new ClassServiceProvider<>(serviceClass);
 		ServiceFactory<T> serviceFactory = this.resolve(provider);
 
-		return serviceFactory.build();
+		return serviceFactory.build().getService();
 	}
 
 	@Override
