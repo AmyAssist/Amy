@@ -118,16 +118,4 @@ public class EMailSpeech {
 		}
 		return message;
 	}
-
-	/**
-	 * Sends an example email
-	 * 
-	 * @param params
-	 *            words in the grammar annotation
-	 * @return confirmation
-	 */
-	@Grammar("send example mail")
-	public String sendExampleMail(String... params) {
-		return this.logic.sendMail("amy.speechassist@gmail.com", "Mail From Amy", "Hello!");
-	}
 }

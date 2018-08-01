@@ -40,9 +40,7 @@ import javax.mail.Part;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
-import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
@@ -225,39 +223,9 @@ public class EMailLogic {
 	}
 
 	/**
-	 * sends a message to some recipient
+	 * Get all important mails from the registry
 	 * 
-	 * @param recipient
-	 *            the recipient
-	 * @param subject
-	 *            mail subject
-	 * @param message
-	 *            the mail body
-	 * @return success string
-	 */
-	public String sendMail(String recipient, String subject, String message) {
-		Message msg = new MimeMessage(this.session);
-
-		InternetAddress addressTo;
-		try {
-			addressTo = new InternetAddress(recipient);
-			msg.setRecipient(Message.RecipientType.TO, addressTo);
-
-			msg.setSubject(subject);
-			msg.setContent(message, "text/plain");
-			Transport.send(msg);
-		} catch (MessagingException e) {
-			this.logger.error("messaging exception while sending mail", e);
-			return "Message could not be sent";
-		}
-
-		return "Message sent!";
-	}
-
-	/**
-	 * Checks if the given email belongs to an important person
-	 * 
-	 * @return true if email belongs to important person, if not, false
+	 * @return List of important mails saved in the registry
 	 */
 	public List<String> getImportantMailAddresses() {
 		List<String> importantMails = new ArrayList<>();

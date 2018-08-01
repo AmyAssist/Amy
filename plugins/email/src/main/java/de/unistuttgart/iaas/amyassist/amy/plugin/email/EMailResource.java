@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -111,47 +109,6 @@ public class EMailResource implements Resource {
 	@Produces(MediaType.TEXT_PLAIN)
 	public boolean hasUnreadMessages() {
 		return this.logic.hasUnreadMessages();
-	}
-
-	/**
-	 * Sends a message to some recipient
-	 * 
-	 * @param recipient
-	 *            the recipient
-	 * @param subject
-	 *            mail subject
-	 * @param message
-	 *            the mail body
-	 * @return success string
-	 */
-	@POST
-	@Path("new")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String sendMail(@QueryParam("recipient") @DefaultValue("") String recipient,
-			@QueryParam("subject") @DefaultValue("") String subject,
-			@QueryParam("message") @DefaultValue("") String message) {
-		String response = this.logic.sendMail(recipient, subject, message);
-		if (response.equals("Message could not be sent")) {
-			throw new WebApplicationException("Message could not be sent.", Status.CONFLICT);
-		}
-		return response;
-	}
-
-	/**
-	 * Checks if the given email belongs to an important person
-	 * 
-	 * @return if found, a List with important Mail Addresses
-	 */
-	@GET
-	@Path("addresses")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> getImportantMailAddresses() {
-		List<String> addressesList = this.logic.getImportantMailAddresses();
-		if (addressesList.isEmpty()) {
-			throw new WebApplicationException("No important mail addresses were found.", Status.CONFLICT);
-		}
-		return addressesList;
 	}
 
 	/**
