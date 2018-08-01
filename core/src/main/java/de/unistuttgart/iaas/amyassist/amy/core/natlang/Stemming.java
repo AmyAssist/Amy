@@ -32,47 +32,174 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 public class Stemming {
 	private String[] inputWords;
 	private String output;
-	private char[] currentWord;
-	
-	
-	public Stemming() {
-		
+	private String currentWord;
+
+	/**
+	 * decide if the character at the possiton of the current word is a consonant
+	 * @param pos
+	 * @return true if a consonant, else false
+	 */
+	private boolean isConsonant(int pos) {
+		switch (this.currentWord.charAt(pos)) {
+		case 'a':
+		case 'e':
+		case 'i':
+		case 'o':
+		case 'u':
+			return false;
+		case 'y':
+			if (pos == 0) {
+				return true;
+			}
+			return !isConsonant(pos - 1);
+		default:
+			return true;
+		}
 	}
 
-	private boolean isConsonant(int pos) {
-		return false;
+	/**
+	 * this method calculates the amount of sequences of vocals and consonants. [C] (VC)^n [V] n is the amount of the sequences
+	 * @param to the last character from the substring to calculate. For example you need only the amount of sequences from the stem 
+	 * @return 
+	 */
+	private int amountOfSequences(int to) {
+		int sequences = 0;
+		int currentPos = 0;
+
+		while (isConsonant(currentPos)) {
+			if (currentPos >= to) {
+				return sequences;
+			}
+			currentPos++;
+		}
+
+		while (true) {
+			while (!isConsonant(currentPos)) {
+				if (currentPos >= to) {
+					return sequences;
+				}
+				currentPos++;
+			}
+			while (isConsonant(currentPos)) {
+				if (currentPos >= to) {
+					sequences++;
+					return sequences;
+				}
+				currentPos++;
+			}
+			sequences++;
+		}
 	}
-	
-	private int numberOfSequences() {
+
+	/**
+	 * when the word ends with the given string return the end of the stem, else -1
+	 * 
+	 * @param ending
+	 * @return the index of the last character from the stem
+	 */
+	private int stemEnd(String ending) {
+		if (this.currentWord.endsWith(ending)) {
+			return this.currentWord.length() - ending.length() - 1;
+		}
 		return -1;
 	}
-	
-	private boolean vowelInStem() {
-		return false;
-	}
-	
-	private boolean cvc(int pos) {
+
+	/**
+	 * checks if the stem has a vocal
+	 * 
+	 * @param endOfStem
+	 *            from the current word
+	 * @return true if a vocal is in the stem, else false
+	 */
+	private boolean vowelInStem(int endOfStem) {
+		for (int i = 0; i <= endOfStem; i++) {
+			if (!isConsonant(i)) {
+				return true;
+			}
+		}
 		return false;
 	}
 
-	private boolean doubleConsonant(int pos) {
-		return false;
+	private boolean endWithDoubleConsonant() {
+		return isConsonant(this.currentWord.length() - 1) && this.currentWord
+				.charAt(this.currentWord.length() - 1) == this.currentWord.charAt(this.currentWord.length() - 2);
 	}
-	
-	private void step1() {
-		
-	}
-	
-	public String stem(String input) {
-		if(input != null) {
-		this.inputWords = input.split("\\s+");
-		this.output = "";
-		for(int i = 0; i < this.inputWords.length; i++) {
-			this.currentWord = this.inputWords[i].toCharArray();
-			step1();
-			this.output = this.output.concat(new String(this.currentWord));	
+
+	private boolean cvc(int endOfStem) {
+		if (endOfStem < 2 || !isConsonant(endOfStem) || isConsonant(endOfStem - 1) || !isConsonant(endOfStem - 2)) {
+			return false;
 		}
-		return this.output;
+		char lastConsonant = this.currentWord.charAt(endOfStem);
+		if (lastConsonant == 'w' || lastConsonant == 'x' || lastConsonant == 'y') {
+			return false;
+		}
+		return true;
+	}
+
+	private boolean stemEndsWith(int endOfStem, String stemEndding) {
+		String stem = this.currentWord.substring(0, endOfStem);
+		return stem.endsWith(stemEndding);
+	}
+
+	private void step1() {
+		step1a();
+		step1b();
+	}
+
+	private void step1a() {
+		if (stemEnd("sses") > -1) {
+			this.currentWord = this.currentWord.substring(0, stemEnd("sses") + 1).concat("ss");
+		} else if (stemEnd("ies") > -1) {
+			this.currentWord = this.currentWord.substring(0, stemEnd("ies") + 1).concat("i");
+		} else if (!(stemEnd("ss") > -1) && stemEnd("s") > -1 && this.currentWord.length() > 2) {
+			this.currentWord = this.currentWord.substring(0, stemEnd("s") + 1).concat("");
+		}
+	}
+
+	private void step1b() {
+		if (stemEnd("eed") > -1 && amountOfSequences(stemEnd("eed")) > 0) {
+			this.currentWord = this.currentWord.substring(0, stemEnd("eed") + 1).concat("ee");
+			return;
+		} else if (!(stemEnd("eed") > -1) && stemEnd("ed") > -1 && vowelInStem(stemEnd("ed"))) {
+			this.currentWord = this.currentWord.substring(0, stemEnd("ed") + 1).concat("");
+		} else if (stemEnd("ing") > -1 && vowelInStem(stemEnd("ing"))) {
+			this.currentWord = this.currentWord.substring(0, stemEnd("ing") + 1).concat("");
+		} else {
+			return;
+		}
+		if (this.currentWord.endsWith("at") || this.currentWord.endsWith("bl") || this.currentWord.endsWith("iz")) {
+			this.currentWord = this.currentWord.concat("e");
+		} else if (endWithDoubleConsonant() && !(this.currentWord.endsWith("l") || this.currentWord.endsWith("z")
+				|| this.currentWord.endsWith("s"))) {
+			this.currentWord = this.currentWord.substring(0, this.currentWord.length() - 1);
+		} else if (amountOfSequences(this.currentWord.length() - 1) > 1 && endWithDoubleConsonant()
+				&& this.currentWord.charAt(this.currentWord.length() - 1) == 'l') {
+			this.currentWord = this.currentWord.substring(0, this.currentWord.length() - 1);
+		} else if (amountOfSequences(this.currentWord.length() - 1) == 1 && cvc(this.currentWord.length() - 1)) {
+			this.currentWord = this.currentWord.concat("e");
+		}
+	}
+
+	private void step5() {
+		if (this.currentWord.endsWith("e") && amountOfSequences(this.currentWord.length() - 2) == 1
+				&& !cvc(this.currentWord.length() - 2)) {
+			this.currentWord = this.currentWord.substring(0, this.currentWord.length() - 1);
+		} else if (this.currentWord.endsWith("e") && amountOfSequences(this.currentWord.length() - 2) > 1) {
+			this.currentWord = this.currentWord.substring(0, this.currentWord.length() - 1);
+		}
+	}
+
+	public String stem(String input) {
+		if (input != null) {
+			this.inputWords = input.split("\\s+");
+			this.output = "";
+			for (String word : this.inputWords) {
+				this.currentWord = word.toLowerCase();
+				step1();
+				step5();
+				this.output = this.output.concat(this.currentWord);
+			}
+			return this.output;
 		}
 		return "";
 	}

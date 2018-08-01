@@ -48,58 +48,59 @@ class TestStemming {
 	}
 
 	@Test
-	void testSSES_SS() {
+	void testSSES() {
 		assertThat(this.stemming.stem("caresses"), equalTo("caress"));
 	}
 
 	@Test
-	void testIES_I() {
+	void testIES() {
 		assertThat(this.stemming.stem("ponies"), equalTo("poni"));
 	}
 
 	@Test
-	void testss_SS() {
+	void testSS() {
 		assertThat(this.stemming.stem("caress"), equalTo("caress"));
 	}
 
 	@Test
-	void testS_() {
+	void testS() {
 		assertThat(this.stemming.stem("cats"), equalTo("cat"));
 	}
 
 	@Test
-	void testEED_EE() {
+	void testEED() {
 		assertThat(this.stemming.stem("feed"), equalTo("feed"));
-		assertThat(this.stemming.stem("agreed"), equalTo("agree"));
+		assertThat(this.stemming.stem("agreed"), equalTo("agre"));
+		assertThat(this.stemming.stem("agree"), equalTo("agre"));
 	}
-	
+
 	@Test
-	void testED_() {
+	void testED() {
 		assertThat(this.stemming.stem("plastered"), equalTo("plaster"));
 		assertThat(this.stemming.stem("bled"), equalTo("bled"));
 	}
-	
+
 	@Test
-	void testING_() {
+	void testING() {
 		assertThat(this.stemming.stem("motoring"), equalTo("motor"));
 		assertThat(this.stemming.stem("sing"), equalTo("sing"));
 	}
-	
+
 	@Test
-	void testAT_ATE() {
-		assertThat(this.stemming.stem("conflated"), equalTo("conflate"));
+	void testAT() {
+		assertThat(this.stemming.stem("conflated"), equalTo("conflat"));
 	}
-	
+
 	@Test
-	void testBL_BLE() {
-		assertThat(this.stemming.stem("troubled"), equalTo("trouble"));
+	void testBL() {
+		assertThat(this.stemming.stem("troubled"), equalTo("troubl"));
 	}
-	
+
 	@Test
-	void testIZ_IZE() {
+	void testIZ() {
 		assertThat(this.stemming.stem("sized"), equalTo("size"));
 	}
-	
+
 	@Test
 	void testDoubleConsonant() {
 		assertThat(this.stemming.stem("hopping"), equalTo("hop"));
@@ -108,18 +109,14 @@ class TestStemming {
 		assertThat(this.stemming.stem("hissing"), equalTo("hiss"));
 		assertThat(this.stemming.stem("fizzed"), equalTo("fizz"));
 		assertThat(this.stemming.stem("hissing"), equalTo("hiss"));
+		assertThat(this.stemming.stem("controlled"), equalTo("control"));
+		assertThat(this.stemming.stem("rolled"), equalTo("roll"));
 	}
-	
+
 	@Test
 	void testcvc_E() {
 		assertThat(this.stemming.stem("failing"), equalTo("fail"));
 		assertThat(this.stemming.stem("filing"), equalTo("file"));
-	}
-	
-	@Test
-	void testY_I() {
-		assertThat(this.stemming.stem("happy"), equalTo("happi"));
-		assertThat(this.stemming.stem("sky"), equalTo("sky"));
 	}
 
 	@Test
@@ -130,11 +127,13 @@ class TestStemming {
 						"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/stemmingTest/output.txt"))) {
 			String inputLine;
 			String outputLine;
+			int i = 0;
 			do {
+				i++;
 				inputLine = inputReader.readLine();
 				outputLine = outputReader.readLine();
-				if (inputLine != null || outputLine != null) {
-					assertThat(this.stemming.stem(inputLine), equalTo(outputLine));
+				if (inputLine != null && outputLine != null) {
+					assertThat(this.stemming.stem(inputLine) + i, equalTo(outputLine + i));
 				}
 			} while (inputLine != null || outputLine != null);
 		} catch (IOException e) {
