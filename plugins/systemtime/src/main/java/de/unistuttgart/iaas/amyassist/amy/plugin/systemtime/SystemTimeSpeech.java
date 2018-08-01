@@ -40,17 +40,17 @@ public class SystemTimeSpeech {
 
 	/**
 	 * A method which returns the current time
-	 * 
+	 *
 	 * @return current time (hour minute) in a string, e.g. it is 10:30
 	 */
 	@Grammar("(what is|tell me) the time")
 	public String time(String[] s) {
-		return "it is " + this.logic.getTime();
+		return "it is " + this.logic.getTime().substring(0, 5);
 	}
 
 	/**
 	 * A method which returns the current date
-	 * 
+	 *
 	 * @return current date (day month year) in a string, e.g. it is the 20th of june
 	 */
 	@Grammar("(what is|tell me) the date")
