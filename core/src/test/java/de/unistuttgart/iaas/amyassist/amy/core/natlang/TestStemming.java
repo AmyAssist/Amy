@@ -34,7 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test class for stemming
+ * Test class for the stemming class
  * 
  * @author Lars Buttgereit
  */

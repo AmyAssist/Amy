@@ -25,7 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 /**
  * This class implements the porter stemming algorithm see for more information:
- * https://tartarus.org/martin/PorterStemmer/
+ * https://tartarus.org/martin/PorterStemmer/def.txt
  * 
  * @author Lars Buttgereit
  */
@@ -35,8 +35,10 @@ public class Stemming {
 	private String currentWord;
 
 	/**
-	 * decide if the character at the possiton of the current word is a consonant
+	 * decide if the character at the position of the current word is a consonant
+	 * 
 	 * @param pos
+	 *            the position of the current word
 	 * @return true if a consonant, else false
 	 */
 	private boolean isConsonant(int pos) {
@@ -58,9 +60,13 @@ public class Stemming {
 	}
 
 	/**
-	 * this method calculates the amount of sequences of vocals and consonants. [C] (VC)^n [V] n is the amount of the sequences
-	 * @param to the last character from the substring to calculate. For example you need only the amount of sequences from the stem 
-	 * @return 
+	 * this method calculates the amount of sequences of vocals and consonants. [C] (VC)^n [V] n is the amount of the
+	 * sequences
+	 * 
+	 * @param to
+	 *            the last character from the substring to calculate. For example you need only the amount of sequences
+	 *            from the stem
+	 * @return the amount of sequences
 	 */
 	private int amountOfSequences(int to) {
 		int sequences = 0;
@@ -95,6 +101,7 @@ public class Stemming {
 	 * when the word ends with the given string return the end of the stem, else -1
 	 * 
 	 * @param ending
+	 *            the chracters after the stem
 	 * @return the index of the last character from the stem
 	 */
 	private int stemEnd(String ending) {
@@ -120,12 +127,24 @@ public class Stemming {
 		return false;
 	}
 
+	/**
+	 * checks if the end of the word has two consonants
+	 * 
+	 * @return ture if the word has two consonants at the end else false
+	 */
 	private boolean endWithDoubleConsonant() {
 		return isConsonant(this.currentWord.length() - 1) && this.currentWord
 				.charAt(this.currentWord.length() - 1) == this.currentWord.charAt(this.currentWord.length() - 2);
 	}
 
-	private boolean cvc(int endOfStem) {
+	/**
+	 * verified if the stem as the form consonant-vocal-consonant and the third character is no w, x or y
+	 * 
+	 * @param endOfStem
+	 *            the end of the stem from the current word
+	 * @return true if the cvc condition is fulfilled, else false
+	 */
+	private boolean cvcStem(int endOfStem) {
 		if (endOfStem < 2 || !isConsonant(endOfStem) || isConsonant(endOfStem - 1) || !isConsonant(endOfStem - 2)) {
 			return false;
 		}
@@ -136,16 +155,17 @@ public class Stemming {
 		return true;
 	}
 
-	private boolean stemEndsWith(int endOfStem, String stemEndding) {
-		String stem = this.currentWord.substring(0, endOfStem);
-		return stem.endsWith(stemEndding);
-	}
-
+	/**
+	 * execute the step 1 from the porter stemmer algorithm
+	 */
 	private void step1() {
 		step1a();
 		step1b();
 	}
 
+	/**
+	 * execute the step 1a from the porter stemmer algorithm
+	 */
 	private void step1a() {
 		if (stemEnd("sses") > -1) {
 			this.currentWord = this.currentWord.substring(0, stemEnd("sses") + 1).concat("ss");
@@ -156,6 +176,9 @@ public class Stemming {
 		}
 	}
 
+	/**
+	 * execute the step 1b from the porter stemmer algorithm
+	 */
 	private void step1b() {
 		if (stemEnd("eed") > -1 && amountOfSequences(stemEnd("eed")) > 0) {
 			this.currentWord = this.currentWord.substring(0, stemEnd("eed") + 1).concat("ee");
@@ -175,20 +198,31 @@ public class Stemming {
 		} else if (amountOfSequences(this.currentWord.length() - 1) > 1 && endWithDoubleConsonant()
 				&& this.currentWord.charAt(this.currentWord.length() - 1) == 'l') {
 			this.currentWord = this.currentWord.substring(0, this.currentWord.length() - 1);
-		} else if (amountOfSequences(this.currentWord.length() - 1) == 1 && cvc(this.currentWord.length() - 1)) {
+		} else if (amountOfSequences(this.currentWord.length() - 1) == 1 && cvcStem(this.currentWord.length() - 1)) {
 			this.currentWord = this.currentWord.concat("e");
 		}
 	}
 
+	/**
+	 * execute the step 5 from the porter stemmer algorithm without (m > 1 and *d and *L)
+	 */
 	private void step5() {
-		if (this.currentWord.endsWith("e") && amountOfSequences(this.currentWord.length() - 2) == 1
-				&& !cvc(this.currentWord.length() - 2)) {
-			this.currentWord = this.currentWord.substring(0, this.currentWord.length() - 1);
-		} else if (this.currentWord.endsWith("e") && amountOfSequences(this.currentWord.length() - 2) > 1) {
-			this.currentWord = this.currentWord.substring(0, this.currentWord.length() - 1);
+		int wordLength = this.currentWord.length();
+		if (this.currentWord.endsWith("e") && ((amountOfSequences(wordLength - 2) == 1 && !cvcStem(wordLength - 2))
+				|| amountOfSequences(wordLength - 2) > 1)) {
+			this.currentWord = this.currentWord.substring(0, wordLength - 1);
 		}
 	}
 
+	/**
+	 * this method stem the input string. Only step 1 and step 5 are implemented. The other are not necessary for our
+	 * project. detailed info for the different steps can you read here:
+	 * https://tartarus.org/martin/PorterStemmer/def.txt
+	 * 
+	 * @param input
+	 *            a string with one or more words
+	 * @return the stemmed string out of the input string
+	 */
 	public String stem(String input) {
 		if (input != null) {
 			this.inputWords = input.split("\\s+");
