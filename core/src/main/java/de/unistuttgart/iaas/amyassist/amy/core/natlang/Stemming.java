@@ -30,8 +30,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
  * @author Lars Buttgereit
  */
 public class Stemming {
-	private String[] inputWords;
-	private String output;
 	private String currentWord;
 
 	/**
@@ -149,10 +147,8 @@ public class Stemming {
 			return false;
 		}
 		char lastConsonant = this.currentWord.charAt(endOfStem);
-		if (lastConsonant == 'w' || lastConsonant == 'x' || lastConsonant == 'y') {
-			return false;
-		}
-		return true;
+		return !(lastConsonant == 'w' || lastConsonant == 'x' || lastConsonant == 'y');
+
 	}
 
 	/**
@@ -171,7 +167,7 @@ public class Stemming {
 			this.currentWord = this.currentWord.substring(0, stemEnd("sses") + 1).concat("ss");
 		} else if (stemEnd("ies") > -1) {
 			this.currentWord = this.currentWord.substring(0, stemEnd("ies") + 1).concat("i");
-		} else if (!(stemEnd("ss") > -1) && stemEnd("s") > -1 && this.currentWord.length() > 2) {
+		} else if ((stemEnd("ss") <= -1) && stemEnd("s") > -1 && this.currentWord.length() > 2) {
 			this.currentWord = this.currentWord.substring(0, stemEnd("s") + 1).concat("");
 		}
 	}
@@ -183,7 +179,7 @@ public class Stemming {
 		if (stemEnd("eed") > -1 && amountOfSequences(stemEnd("eed")) > 0) {
 			this.currentWord = this.currentWord.substring(0, stemEnd("eed") + 1).concat("ee");
 			return;
-		} else if (!(stemEnd("eed") > -1) && stemEnd("ed") > -1 && vowelInStem(stemEnd("ed"))) {
+		} else if ((stemEnd("eed") <= -1) && stemEnd("ed") > -1 && vowelInStem(stemEnd("ed"))) {
 			this.currentWord = this.currentWord.substring(0, stemEnd("ed") + 1).concat("");
 		} else if (stemEnd("ing") > -1 && vowelInStem(stemEnd("ing"))) {
 			this.currentWord = this.currentWord.substring(0, stemEnd("ing") + 1).concat("");
@@ -225,15 +221,15 @@ public class Stemming {
 	 */
 	public String stem(String input) {
 		if (input != null) {
-			this.inputWords = input.split("\\s+");
-			this.output = "";
-			for (String word : this.inputWords) {
+			String[] inputWords = input.split("\\s+");
+			String output = "";
+			for (String word : inputWords) {
 				this.currentWord = word.toLowerCase();
 				step1();
 				step5();
-				this.output = this.output.concat(this.currentWord);
+				output = output.concat(this.currentWord);
 			}
-			return this.output;
+			return output;
 		}
 		return "";
 	}
