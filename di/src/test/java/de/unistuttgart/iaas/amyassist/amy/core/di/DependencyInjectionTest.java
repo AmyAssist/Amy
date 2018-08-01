@@ -208,6 +208,17 @@ class DependencyInjectionTest {
 	}
 
 	@Test()
+	void testRegisterServiceTypeFromInterface() {
+		this.dependencyInjection.register(Service7Impl.class);
+		assertThat(this.dependencyInjection.getService(Service7API.class), is(notNullValue()));
+	}
+
+	@Test()
+	void testRegisterServiceTypeFromMultipleInterfaces() {
+		assertThrows(IllegalArgumentException.class, () -> this.dependencyInjection.register(ServiceImplementingMultipleInterfaces.class));
+	}
+
+	@Test()
 	void testCreateAndInitialize() {
 		Service1 service1 = this.dependencyInjection.createAndInitialize(Service1.class);
 		assertThat(service1, notNullValue());
