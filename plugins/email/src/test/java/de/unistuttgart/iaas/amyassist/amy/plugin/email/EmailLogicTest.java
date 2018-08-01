@@ -133,17 +133,6 @@ public class EmailLogicTest {
 	}
 
 	/**
-	 * tests sending a message, problem: we can't really check if a message is sent because we are not logged in to the
-	 * amy google account
-	 * 
-	 * thats why this is not an optimal test
-	 */
-	@Test
-	public void testSendMessage() {
-		assertThat(emailLogic.sendMail("amy.speechassist@gmail.com", "test", "testBody"), equalTo("Message sent!"));
-	}
-
-	/**
 	 * cleans up the mailbox
 	 */
 	@AfterAll

@@ -223,9 +223,9 @@ public class EMailLogic {
 	}
 
 	/**
-	 * Get all important mails from the registry
+	 * Get all important mail addresses from the registry
 	 * 
-	 * @return List of important mails saved in the registry
+	 * @return List of important mail addresses saved in the registry
 	 */
 	public List<String> getImportantMailAddresses() {
 		List<String> importantMails = new ArrayList<>();

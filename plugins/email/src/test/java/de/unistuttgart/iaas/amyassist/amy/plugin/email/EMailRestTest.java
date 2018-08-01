@@ -27,9 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
@@ -135,57 +132,6 @@ class EMailRestTest {
 		assertThat(actual, is(true));
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).hasUnreadMessages();
-	}
-
-	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailResource#sendMail(java.lang.String, java.lang.String, java.lang.String)}.
-	 */
-	@Test
-	void testSendMail() {
-		String recipient = "example@mail.com";
-		String subject = "Mail From Amy";
-		String message = "Hello!";
-
-		Mockito.when(this.logic.sendMail(recipient, subject, message)).thenReturn("Message is sent!");
-		Response response = this.target.path("new").queryParam("recipient", recipient).queryParam("subject", subject)
-				.queryParam("message", message).request().post(null);
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Message is sent!"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).sendMail(recipient, subject, message);
-
-		Mockito.when(this.logic.sendMail("", "", "")).thenReturn("Message could not be sent");
-		response = this.target.path("new").request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Message could not be sent."));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic).sendMail("", "", "");
-	}
-
-	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailResource#getImportantMailAddresses()}.
-	 */
-	@Test
-	void testGetImportantMailAddresses() {
-		List<String> emptyList = new ArrayList<>();
-		List<String> addressesList = new ArrayList<>();
-		addressesList.add("Amy");
-		addressesList.add("Horst");
-
-		Mockito.when(this.logic.getImportantMailAddresses()).thenReturn(addressesList);
-		Response response = this.target.path("addresses").request().get();
-		List<String> actual = response.readEntity(List.class);
-		assertThat(actual, is(addressesList));
-		assertThat(response.getStatus(), is(200));
-
-		Mockito.when(this.logic.getImportantMailAddresses()).thenReturn(emptyList);
-		response = this.target.path("addresses").request().get();
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("No important mail addresses were found."));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic, Mockito.times(2)).getImportantMailAddresses();
 	}
 
 	/**
