@@ -56,9 +56,9 @@ public class AGFNodeTest {
 		this.nodesToTest.add(new AGFParser(new AGFLexer("test [x|y] testi")).parseWholeExpression());
 		this.nodesToTest.add(new AGFParser(new AGFLexer("test [x|testi]")).parseWholeExpression());
 		this.nodesToTest.add(new AGFParser(
-				new AGFLexer("(set|create) timer (for|on) [# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")).parseWholeExpression());
+				new AGFLexer("(set|create) timer (for|on) [{num} (hour|hours)] [{num} (minute|minutes)] [{num} (second|seconds)]")).parseWholeExpression());
 		this.nodesToTest.add(new AGFParser(
-				new AGFLexer("(set|create) timer (for|on) [# (hour|hours)] [# (minute|minutes)] [# (second|second)]")).parseWholeExpression());
+				new AGFLexer("(set|create) timer (for|on) [{num} (hour|hours)] [{num} (minute|minutes)] [{num} (second|second)]")).parseWholeExpression());
 
 	}
 	

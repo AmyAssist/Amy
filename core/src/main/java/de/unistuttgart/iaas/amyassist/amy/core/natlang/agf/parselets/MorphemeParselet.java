@@ -29,7 +29,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFTokenType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.Parser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.MorphemeNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.RuleNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.WordNode;
 
 /**
@@ -55,7 +55,8 @@ public class MorphemeParselet implements IAGFParselet {
 		
 		//first one was already consumed by the parser
 		//the following ones have to be consumed "by hand"
-		while(parser.match(AGFTokenType.RULE) || parser.match(AGFTokenType.WORD)) {
+		while(parser.match(AGFTokenType.OPENCBR) ||
+				parser.match(AGFTokenType.CLOSECBR) || parser.match(AGFTokenType.WORD)) {
 			AGFToken t = parser.consume();
 			parseMorph(morph, t, parser);
 		}
@@ -76,15 +77,20 @@ public class MorphemeParselet implements IAGFParselet {
 	private void parseMorph(MorphemeNode morph, AGFToken token, Parser parser) {
 		if(token.type == AGFTokenType.WORD) {
 			morph.addChild(new WordNode(token.content));
-		}else if(token.type == AGFTokenType.RULE) {
-			//is the next token a rule too? 
-			//this is not allowed!
-			if(!parser.match(AGFTokenType.RULE)) {
-				morph.addChild(new RuleNode(token.content));
-			}else {
-				throw new AGFParseException("numbers cannot be followed by another number");
+		}else if(token.type == AGFTokenType.OPENCBR) {
+			parser.consume();
+			EntityNode entity = new EntityNode("");
+			if(parser.match(AGFTokenType.WORD)) {
+				AGFToken word = parser.consume();
+				entity.addChild(new WordNode(word.content));
+				
+				if(parser.consume().type != AGFTokenType.CLOSECBR) {
+					throw new AGFParseException("} missing or entity name contains a whitespace");
+				}
 			}
+			morph.addChild(entity);
 		}
+		
 		
 	}
 	

@@ -47,7 +47,7 @@ public enum AGFNodeType {
 	/**
 	 * rule
 	 */
-	RULE,
+	ENTITY,
 	/**
 	 * word
 	 */

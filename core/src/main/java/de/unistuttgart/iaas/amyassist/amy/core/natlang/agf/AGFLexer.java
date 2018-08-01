@@ -78,8 +78,10 @@ public class AGFLexer implements Iterator<AGFToken> {
     				return new AGFToken(AGFTokenType.OPENSBR);
     			case ']':
     				return new AGFToken(AGFTokenType.CLOSESBR);
-    			case '#':
-    				return new AGFToken(AGFTokenType.RULE);
+    			case '{':
+    				return new AGFToken(AGFTokenType.OPENCBR);
+    			case '}':
+    				return new AGFToken(AGFTokenType.CLOSECBR);
     			//only allow normal SPACE codepoint 32, U+0020
     			case 32: 
     				return this.next();

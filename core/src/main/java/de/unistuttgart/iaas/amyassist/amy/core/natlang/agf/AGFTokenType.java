@@ -29,10 +29,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
  */
 public enum AGFTokenType {
 	/**
-	 * Rule
-	 */
-	RULE,
-	/**
 	 * a word
 	 */
 	WORD,
@@ -52,6 +48,14 @@ public enum AGFTokenType {
 	 * close square bracket ]
 	 */
 	CLOSESBR,
+	/**
+	 * open curly bracket {
+	 */
+	OPENCBR,
+	/**
+	 * close curly bracket }
+	 */
+	CLOSECBR,
 	/**
 	 * or |
 	 */

@@ -124,17 +124,6 @@ public class AGFLexerTest {
 	}
 	
 	/**
-	 * tests if rules are identified
-	 */
-	@Test
-	public void rules() {
-		List<AGFToken> toCheck = getListFromLexer("#");
-		assertThat(toCheck.get(0).type, equalTo(AGFTokenType.RULE));
-		assertThat(toCheck.get(0).content, equalTo("#"));
-
-	}
-	
-	/**
 	 * check all ascii characters not compliant with AGF throw an exception
 	 */
 	@Test
@@ -143,11 +132,12 @@ public class AGFLexerTest {
 		char c = 0;
 		for(c = 0; c <= 127; c++) {
 			ascii.add(String.valueOf(c));
-		}		
+		}
+		
+		//remove characters okay to use
 		for(c = 'a'; c <= 'z'; c++) {
 			ascii.remove(String.valueOf(c));
 		}
-		//remove characters okay to use
 		for(c = 'A'; c <= 'Z'; c++) {
 			ascii.remove(String.valueOf(c));
 		}
@@ -157,7 +147,8 @@ public class AGFLexerTest {
 		ascii.remove("[");
 		ascii.remove("]");
 		ascii.remove("|");
-		ascii.remove("#");
+		ascii.remove("{");
+		ascii.remove("}");
 		//normal whitespace
 		ascii.remove(32);
 		

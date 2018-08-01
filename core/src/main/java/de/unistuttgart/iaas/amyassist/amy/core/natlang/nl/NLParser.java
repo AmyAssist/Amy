@@ -143,7 +143,7 @@ public class NLParser implements INLParser {
 			break;
 		case WORD:
 			return match(agf);
-		case RULE:
+		case ENTITY:
 			return matchType(WordTokenType.NUMBER);
 		default:
 			return false;

@@ -49,8 +49,8 @@ public class AGFParser extends Parser {
 	public AGFParser(Iterator<AGFToken> tokens) {
 		super(tokens);
 		
-		super.register(AGFTokenType.RULE, new MorphemeParselet());
 		super.register(AGFTokenType.WORD, new MorphemeParselet());
+		super.register(AGFTokenType.OPENCBR, new MorphemeParselet());
 		super.register(AGFTokenType.OPENBR, new ORGroupParselet());
 		super.register(AGFTokenType.OPENSBR, new OptionalGroupParselet());
 

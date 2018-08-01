@@ -28,14 +28,14 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
  * 
  * @author Felix Burk
  */
-public class RuleNode extends AGFNode {
+public class EntityNode extends AGFNode {
 
 	/**
 	 * constructor
 	 * 
 	 * @param content of node
 	 */
-	public RuleNode(String content) {
+	public EntityNode(String content) {
 		super(content);
 	}
 	
@@ -45,27 +45,8 @@ public class RuleNode extends AGFNode {
 	 */
 	@Override
 	public AGFNodeType getType() {
-		return AGFNodeType.RULE;
+		return AGFNodeType.ENTITY;
 	}
 
-	/**
-	 * special print self method, because this node my never have children
-	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode#printSelf(java.lang.String, int)
-	 */
-	@Override
-	public String printSelf(String name, int indent) {
-		StringBuilder b = new StringBuilder();
-		b.append("+" + name);
-		b.append("\n");
-
-		for (int i = 0; i < indent; i++) {
-			b.append("|");
-			b.append("   ");
-		}
-		b.append("|---" + "<content> " + this.getContent());
-		b.append("\n");
-		return b.toString();
-	}
 
 }

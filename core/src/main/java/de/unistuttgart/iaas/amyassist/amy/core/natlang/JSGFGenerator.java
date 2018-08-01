@@ -141,7 +141,7 @@ public class JSGFGenerator {
 			case WORD:
 				b.append(" " + node.getContent());
 				break;
-			case RULE:
+			case ENTITY:
 				b.append(" <number>");
 				break;
 			case ORG:

@@ -46,8 +46,28 @@ public class AGFParserTest {
 	public void testBracketGroups() {
 		bracketGroup('(', ')', AGFNodeType.ORG);
 		bracketGroup('[', ']', AGFNodeType.OPG);
+		testEntities();
 	}
 	
+	/**
+	 * 
+	 */
+	private void testEntities() {
+		AGFParser parser = new AGFParser(new AGFLexer("set timer on {x"));
+		//assertThrows(AGFParseException.class, () -> parser.parseWholeExpression());
+
+		AGFParser parser2 = new AGFParser(new AGFLexer("set {timer} on x"));
+		AGFNode node = parser2.parseWholeExpression();
+		System.out.println(node.printSelf());
+		AGFNode morph = node.getChilds().get(0);
+		assertEquals(morph.getType(), AGFNodeType.MORPH);
+		assertEquals(morph.getChilds().get(1).getType(), AGFNodeType.ENTITY);
+		assertEquals(morph.getChilds().get(1).getChilds().get(0), AGFNodeType.WORD);
+
+
+
+	}
+
 	/**
 	 * tests groups surrounded by characters
 	 * @param brO open bracket character

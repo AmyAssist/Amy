@@ -41,7 +41,7 @@ public class JSGFGeneratorTest {
 	 */
 	@Test
 	public void testDigit() {
-		AGFParser parser = new AGFParser(new AGFLexer("set timer on # minutes"));
+		AGFParser parser = new AGFParser(new AGFLexer("set timer on {num} minutes"));
 		AGFNode node = parser.parseWholeExpression();
 		AGFParser parser2 = new AGFParser(new AGFLexer("set timer on x minutes"));
 		AGFNode node2 = parser2.parseWholeExpression();
@@ -59,7 +59,7 @@ public class JSGFGeneratorTest {
 	 */
 	@Test
 	public void testBigSyntax() {
-		AGFParser parser = new AGFParser(new AGFLexer("set timer on (x|(wa|d)) [# [x] hours] [# minutes] [# seconds] test"));
+		AGFParser parser = new AGFParser(new AGFLexer("set timer on (x|(wa|d)) [{num} [x] hours] [{num} minutes] [{num} seconds] test"));
 	
 		AGFNode node = parser.parseWholeExpression();
 				

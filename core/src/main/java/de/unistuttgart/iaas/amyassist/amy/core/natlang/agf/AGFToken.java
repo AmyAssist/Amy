@@ -67,11 +67,14 @@ public class AGFToken {
 		case CLOSESBR:
 			this.content = "]";
 			break;
+		case OPENCBR:
+			this.content = "{";
+			break;
+		case CLOSECBR:
+			this.content = "}";
+			break;
 		case OR:
 			this.content = "|";
-			break;
-		case RULE:
-			this.content = "#";
 			break;
 		default:
 			throw new AGFLexerException("type could not be set because there is no matching content");
