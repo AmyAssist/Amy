@@ -34,12 +34,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.output.OutputImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
 import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
@@ -127,7 +127,7 @@ public class Core {
 
 		this.di.getService(GrammarObjectsCreator.class).completeSetup();
 		this.serviceManager.register(LocalAudioUserInteraction.class);
-		this.serviceManager.register(TextToSpeech.class);
+		this.serviceManager.register(OutputImpl.class);
 	}
 
 	private void initConsole() {

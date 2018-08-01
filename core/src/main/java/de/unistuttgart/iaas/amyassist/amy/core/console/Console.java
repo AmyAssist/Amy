@@ -36,10 +36,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.Core;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.output.TTSConsole;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerCLI;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TTSConsole;
 
 /**
  * The Console reads input from the command line and pass it to the TextParser

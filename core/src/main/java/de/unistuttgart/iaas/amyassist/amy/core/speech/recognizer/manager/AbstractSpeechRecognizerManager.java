@@ -33,13 +33,13 @@ import javax.sound.sampled.AudioInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
 
 /**
  * Class that manages the Recognizers belonging to a given AudioInputStream
@@ -145,10 +145,10 @@ public abstract class AbstractSpeechRecognizerManager
 	public void handleCommand(String result) {
 		Future<String> handle = this.inputHandler.handle(result);
 		try {
-			output(handle.get());
+			voiceOutput(handle.get());
 		} catch (ExecutionException e) {
 			if (e.getCause() != null && e.getCause().getClass().equals(IllegalArgumentException.class)) {
-				output("unknown command");
+				voiceOutput("unknown command");
 			} else {
 				this.logger.error("unknown error", e);
 			}
@@ -185,9 +185,9 @@ public abstract class AbstractSpeechRecognizerManager
 	public void handleMultiCallListeningState(boolean listening) {
 		this.multiCallActive = listening;
 		if (listening) {
-			this.output("waking up");
+			this.voiceOutput("waking up");
 		} else {
-			this.output("now sleeping");
+			this.voiceOutput("now sleeping");
 		}
 		/**
 		 * notify(listening);
@@ -209,9 +209,9 @@ public abstract class AbstractSpeechRecognizerManager
 	public void handleSingleCallListeningState(boolean singleCommand) {
 		this.singleCallActive = singleCommand;
 		if (singleCommand) {
-			this.output(Sounds.SINGLE_CALL_START_BEEP.getFileAsString());
+			this.soundOutput(Sounds.SINGLE_CALL_START_BEEP);
 		} else {
-			this.output(Sounds.SINGLE_CALL_STOP_BEEP.getFileAsString());
+			this.soundOutput(Sounds.SINGLE_CALL_STOP_BEEP);
 		}
 		/**
 		 * notify(listening);
@@ -227,11 +227,19 @@ public abstract class AbstractSpeechRecognizerManager
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#output(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#voiceOutput(java.lang.String)
 	 */
 	@Override
-	public void output(String outputString) {
-		this.output.output(outputString);
+	public void voiceOutput(String outputString) {
+		this.output.voiceOutput(outputString);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#soundOutput(Sounds)
+	 */
+	@Override
+	public void soundOutput(Sounds sound) {
+		this.output.soundOutput(sound);
 	}
 
 	/**

@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager;
 
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 
 /**
@@ -69,7 +70,15 @@ public interface SpeechRecognitionResultManager {
 	 * @param outputString
 	 *            String to voice
 	 */
-	void output(String outputString);
+	void voiceOutput(String outputString);
+
+	/**
+	 * Play Sound
+	 * 
+	 * @param sound
+	 *            to play
+	 */
+	void soundOutput(Sounds sound);
 
 	/**
 	 * stop the voice output

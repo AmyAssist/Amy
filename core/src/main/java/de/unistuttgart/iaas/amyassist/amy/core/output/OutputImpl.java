@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+package de.unistuttgart.iaas.amyassist.amy.core.output;
 
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -41,21 +41,17 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.output.tts.TextToSpeech;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import marytts.LocalMaryInterface;
-import marytts.exceptions.MaryConfigurationException;
-import marytts.exceptions.SynthesisException;
-import marytts.modules.synthesis.Voice;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 
 /**
- * This class outputs Strings as Voice using MaryTTS.
- * 
- * @see <a href="https://github.com/marytts/marytts">MaryTTS</a>
+ * This class outputs
  * 
  * @author Tim Neumann, Kai Menzel
  */
-@Service(TextToSpeech.class)
-public class TextToSpeech implements Output, Runnable, RunnableService {
+@Service(OutputImpl.class)
+public class OutputImpl implements Output, Runnable, RunnableService {
 
 	private static final int WAIT_TIME_AFTER_SPEECH = 1000;
 	private static final int BYTE_BUFFER_SIZE = 1024;
@@ -63,12 +59,12 @@ public class TextToSpeech implements Output, Runnable, RunnableService {
 
 	@Reference
 	private Logger logger;
-	@Nonnull
-	private LocalMaryInterface mary;
+	@Reference
+	private TextToSpeech tts;
 	@Nonnull
 	private SourceDataLine outputLine;
 	@Nonnull
-	private BlockingQueue<String> queue;
+	private BlockingQueue<OutputObject> queue;
 
 	private volatile boolean isTalking = false;
 	private volatile boolean stop = false;
@@ -79,13 +75,9 @@ public class TextToSpeech implements Output, Runnable, RunnableService {
 	private void init() {
 		this.queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
 		try {
-			this.mary = new LocalMaryInterface();
-
-			Voice voice = Voice.getVoice("dfki-poppy-hsmm");
-			this.mary.setVoice(voice.getName());
 
 			// We need to do this, because the audio format depends on the voice of mary
-			AudioFormat audioFormat = voice.dbAudioFormat();
+			AudioFormat audioFormat = this.tts.getMaryAudioFormat();
 
 			if (!AudioSystem.isLineSupported(new DataLine.Info(SourceDataLine.class, audioFormat))) {
 				this.logger.error("The Audio System does not support the required ");
@@ -94,7 +86,7 @@ public class TextToSpeech implements Output, Runnable, RunnableService {
 				this.outputLine.open(audioFormat);
 				this.outputLine.start();
 			}
-		} catch (MaryConfigurationException | LineUnavailableException e) {
+		} catch (LineUnavailableException e) {
 			this.logger.error("initialization error", e);
 			throw new IllegalStateException(e);
 		}
@@ -110,9 +102,9 @@ public class TextToSpeech implements Output, Runnable, RunnableService {
 	public void run() {
 		try {
 			while (!Thread.currentThread().isInterrupted()) {
-				String s = this.queue.take();
+				OutputObject output = this.queue.take();
 				this.isTalking = true;
-				this.writeAudio(s);
+				this.writeAudio(output);
 				Thread.sleep(WAIT_TIME_AFTER_SPEECH);
 				this.isTalking = false;
 			}
@@ -123,24 +115,31 @@ public class TextToSpeech implements Output, Runnable, RunnableService {
 		}
 	}
 
-	private void writeAudio(String s) {
-		if (s.endsWith(".wav")) {
-			try (AudioInputStream a = AudioSystem
-					.getAudioInputStream(this.getClass().getClassLoader().getResource(s))) {
-				moveBytes(a, this.outputLine);
-			} catch (UnsupportedAudioFileException e) {
-				this.logger.error("Beep output error", e);
-			} catch (IOException e) {
-				this.logger.error("Error from Beep Sound", e);
-			}
-		} else {
-			try (AudioInputStream a = this.mary.generateAudio(s)) {
-				moveBytes(a, this.outputLine);
-			} catch (SynthesisException e) {
-				this.logger.error("Voice output error", e);
+	private void writeAudio(OutputObject output) {
+		switch (output.getType()) {
+		case VOICE:
+			try {
+				try {
+					moveBytes(this.tts.getMaryAudio(output.getMessage()), this.outputLine);					
+				}catch (NullPointerException e) {
+					this.logger.error("TextToSpeech missing", e);
+				}
 			} catch (IOException e) {
 				this.logger.error("Error from MaryTTS InputStream", e);
 			}
+			break;
+		case SOUND:
+			try {
+				moveBytes(AudioSystem.getAudioInputStream(
+						this.getClass().getClassLoader().getResource(output.getMessage())), this.outputLine);
+			} catch (IOException e) {
+				this.logger.error("Error from Beep Sound", e);
+			} catch (UnsupportedAudioFileException e) {
+				this.logger.error("Beep output error", e);
+			}
+			break;
+		default:
+			break;
 		}
 
 	}
@@ -167,12 +166,19 @@ public class TextToSpeech implements Output, Runnable, RunnableService {
 	 *            String that shall be said
 	 */
 	@Override
-	public synchronized void output(String s) {
-		if (!s.endsWith(".wav")) {
-			this.logger.info("saying: {}", s);
-		}
+	public synchronized void voiceOutput(String s) {
+		this.logger.info("saying: {}", s);
 		this.stop = false;
-		this.speak(this.preProcessing(s));
+		this.speak(new OutputObject(OutputType.VOICE, preProcessing(s)));
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.output.Output#soundOutput(de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds)
+	 */
+	@Override
+	public void soundOutput(Sounds sound) {
+		this.stop = false;
+		this.speak(new OutputObject(OutputType.SOUND, sound.getFileAsString()));
 	}
 
 	/**
@@ -195,13 +201,13 @@ public class TextToSpeech implements Output, Runnable, RunnableService {
 	/**
 	 * outputs Speech translated from given String
 	 * 
-	 * @param s
+	 * @param output
 	 *            String that shall be said
 	 */
-	private void speak(String s) {
-		boolean offer = this.queue.offer(s);
+	private void speak(OutputObject output) {
+		boolean offer = this.queue.offer(output);
 		if (!offer) {
-			this.logger.warn("the text '{}' could not be outputted by the TTS, because the queue is full", s);
+			this.logger.warn("the text '{}' could not be outputted by the TTS, because the queue is full", output);
 		}
 	}
 
@@ -223,4 +229,5 @@ public class TextToSpeech implements Output, Runnable, RunnableService {
 	public void stop() {
 		this.thread.interrupt();
 	}
+
 }

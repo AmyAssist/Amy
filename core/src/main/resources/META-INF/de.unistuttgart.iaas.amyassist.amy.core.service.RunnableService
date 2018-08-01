@@ -1,2 +1,2 @@
-de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech
+de.unistuttgart.iaas.amyassist.amy.core.output.OutputImpl
 de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction

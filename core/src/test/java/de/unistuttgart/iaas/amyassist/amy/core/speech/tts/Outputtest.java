@@ -23,28 +23,37 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.output.Output;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+
 /**
- * Interface for the TextToSpeech
+ * Test Class for the Text To Speech Output class
  * 
  * @author Kai Menzel
  */
-public interface Output {
+@ExtendWith(FrameworkExtension.class)
+class Outputtest {
+
+	@Reference
+	private TestFramework framework;
+
+	private Output tts;
 
 	/**
-	 * Method to Voice and Log output the input String
-	 * 
-	 * @param s
-	 *            String that shall be said
+	 * test Logging
 	 */
-	void output(String s);
+	@Test
+	void test() {
+		this.tts = this.framework.setServiceUnderTest(Output.class);
+		assertThat(this.tts == null, equalTo(false));
+	}
 
-	/**
-	 * stop the OutputClip
-	 */
-	void stopOutput();
-
-	/**
-	 * @return whether this output is currently outputting information.
-	 */
-	boolean isCurrentlyOutputting();
 }

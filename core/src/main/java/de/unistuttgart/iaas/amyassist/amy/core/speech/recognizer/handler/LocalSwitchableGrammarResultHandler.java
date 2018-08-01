@@ -52,7 +52,7 @@ public class LocalSwitchableGrammarResultHandler extends AbstractRecognitionResu
 	protected boolean environmentSpecificInputHandling(String result, SpeechRecognitionResultManager srManager) {
 		if (result.equals(Constants.MULTI_CALL_STOP)) {
 			srManager.handleMultiCallListeningState(false);
-			srManager.output("now sleeping");
+			srManager.voiceOutput("now sleeping");
 			srManager.handleGrammarSwitch(null);
 			return true;
 		}
