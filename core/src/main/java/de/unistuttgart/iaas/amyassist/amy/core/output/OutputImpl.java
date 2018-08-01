@@ -119,11 +119,9 @@ public class OutputImpl implements Output, Runnable, RunnableService {
 		switch (output.getType()) {
 		case VOICE:
 			try {
-				try {
-					moveBytes(this.tts.getMaryAudio(output.getMessage()), this.outputLine);					
-				}catch (NullPointerException e) {
-					this.logger.error("TextToSpeech missing", e);
-				}
+				moveBytes(this.tts.getMaryAudio(output.getMessage()), this.outputLine);
+			} catch (NullPointerException e) {
+				this.logger.error("TextToSpeech missing", e);
 			} catch (IOException e) {
 				this.logger.error("Error from MaryTTS InputStream", e);
 			}
