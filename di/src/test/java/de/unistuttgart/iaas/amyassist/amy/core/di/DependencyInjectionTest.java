@@ -26,7 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static uk.org.lidalia.slf4jtest.LoggingEvent.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

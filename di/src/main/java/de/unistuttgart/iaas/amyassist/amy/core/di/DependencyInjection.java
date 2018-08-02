@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNullableByDefault;
 
@@ -61,7 +62,9 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	/**
 	 * A register which maps a service description to it's service provider.
 	 */
-	protected Map<ServiceDescription<?>, ServiceProvider<?>> register;
+	protected final Map<ServiceDescription<?>, ServiceProvider<?>> register;
+
+	private final Map<ServicePoolKey<?>, ServiceHandle<?>> servicePool;
 
 	protected Map<String, StaticProvider<?>> staticProviders;
 
@@ -70,6 +73,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	 */
 	public DependencyInjection() {
 		this.register = new HashMap<>();
+		this.servicePool = new HashMap<>();
 		this.staticProviders = new HashMap<>();
 
 		this.registerContextProvider("class", new ClassProvider());
@@ -154,13 +158,58 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	@Override
 	public <T> ServiceHandle<T> getService(ServiceDescription<T> serviceDescription) {
 		ServiceProvider<T> provider = this.getServiceProvider(serviceDescription);
-		return provider.getService(this, null);
+		ServiceImplementationDescription<T> serviceImplementationDescription = provider
+				.getServiceImplementationDescription(this, new ServiceConsumer<T>() {
+
+					@Override
+					public Class<?> getConsumerClass() {
+						return null;
+					}
+
+					@Override
+					public ServiceDescription<T> getServiceDescription() {
+						return serviceDescription;
+					}
+				});
+		return this.lookUpOrCreateService(provider, serviceImplementationDescription);
 	}
 
 	@Override
 	public <T> ServiceHandle<T> getService(@Nonnull ServiceConsumer<T> serviceConsumer) {
 		ServiceProvider<T> provider = this.getServiceProvider(serviceConsumer.getServiceDescription());
-		return provider.getService(this, serviceConsumer);
+		ServiceImplementationDescription<T> serviceImplementationDescription = provider
+				.getServiceImplementationDescription(this, serviceConsumer);
+		return this.lookUpOrCreateService(provider, serviceImplementationDescription);
+	}
+
+	@CheckForNull
+	private <T> ServiceHandle<T> lookUpService(@Nonnull ServiceProvider<T> serviceProvider,
+			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
+		Map<String, Object> context = serviceImplementationDescription.getContext();
+
+		ServicePoolKey<?> servicePoolKey = new ServicePoolKey<>(serviceProvider, new HashMap<>(context));
+
+		if (!this.servicePool.containsKey(servicePoolKey)) {
+			return null;
+		}
+		return (ServiceHandle<T>) this.servicePool.get(servicePoolKey);
+	}
+
+	private <T> ServiceHandle<T> createService(@Nonnull ServiceProvider<T> serviceProvider,
+			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
+		ServiceHandle<T> service = serviceProvider.getService(this, serviceImplementationDescription);
+		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription.getContext());
+		this.servicePool.put(key, service);
+		return service;
+	}
+
+	private <T> ServiceHandle<T> lookUpOrCreateService(@Nonnull ServiceProvider<T> serviceProvider,
+			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
+		ServiceHandle<T> lookUpService = this.lookUpService(serviceProvider, serviceImplementationDescription);
+		if (lookUpService == null) {
+			lookUpService = this.createService(serviceProvider, serviceImplementationDescription);
+		}
+		return lookUpService;
 	}
 
 	@Override
@@ -208,8 +257,21 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	@Override
 	public <T> T createAndInitialize(@Nonnull Class<T> serviceClass) {
-		ServiceProvider<T> provider = new ClassServiceProvider<>(serviceClass);
-		return provider.getService(this, null).getService();
+		if (!Util.isValidServiceClass(serviceClass)) {
+			throw new IllegalArgumentException(
+					"There is a problem with the class " + serviceClass.getName() + ". It can't be used as a Service");
+		}
+		T newInstance;
+		try {
+			newInstance = serviceClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new IllegalStateException(
+					"The constructor of " + serviceClass.getName() + " should have been checked", e);
+		}
+		this.inject(newInstance);
+		this.postConstruct(newInstance);
+
+		return newInstance;
 	}
 
 	@Override

@@ -23,8 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 
@@ -40,14 +42,33 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
  */
 public interface ServiceProvider<T> {
 	/**
+	 * Refine the ServiceDescription of a ServiceConsumer. The ServiceProvider can decide if it can provide the
+	 * requested service. If this ServiceProvider can provide the service, it returns the
+	 * ServiceImplementationDescription for the Service. The ServiceImplementationDescription contains all information
+	 * needed to create the requested Service for the Consumer.
+	 * 
+	 * @param locator
+	 *            the ServiceLocator which can be used to lookup ContextProvider
+	 * @param serviceConsumer
+	 *            the consumer of the Service. This can be used to extract context information.
+	 * @return the ServiceImplementationDescription for the Service this Provider can provide or null if this provider
+	 *         can not provide the requested Service.
+	 */
+	@CheckForNull
+	ServiceImplementationDescription<T> getServiceImplementationDescription(@Nonnull ServiceLocator locator,
+			@Nonnull ServiceConsumer<T> serviceConsumer);
+
+	/**
 	 * @param locator
 	 *            the ServiceLocator to lookup services
-	 * @param consumer
-	 *            the consumer of the Service. This can be used to extract context information.
+	 * @param serviceImplementationDescription
+	 *            the description of the Service which must be created
+	 * 
 	 * @return the service of this ServiceProvider for the given context
 	 */
 	@Nonnull
-	ServiceHandle<T> getService(ServiceLocator locator, ServiceConsumer<T> consumer);
+	ServiceHandle<T> getService(@Nonnull ServiceLocator locator,
+			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription);
 
 	/**
 	 * Dispose a Service that was provided by this ServiceProvider.

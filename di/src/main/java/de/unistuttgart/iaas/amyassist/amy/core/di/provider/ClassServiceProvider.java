@@ -27,13 +27,13 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -54,7 +54,6 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	private Set<InjectionPoint> injectionPoints = new HashSet<>();
 	private final NTuple<String> contextType;
 	private final NTuple<ContextInjectionPoint> contextInjectionPoints;
-	private Map<NTuple<?>, ServiceHandle<T>> serviceInstances = new HashMap<>();
 
 	/**
 	 * 
@@ -84,22 +83,27 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 		}
 	}
 
-	private NTuple<?> getContextTuple(ServiceLocator locator, ServiceConsumer<T> consumer) {
-		return this.contextType.map(locator::getContextProvider)
-				.map(provider -> provider.getContext(consumer.getConsumerClass()));
+	@Override
+	public ServiceImplementationDescription<T> getServiceImplementationDescription(ServiceLocator locator,
+			ServiceConsumer<T> serviceConsumer) {
+		HashMap<String, Object> map = new HashMap<>();
+		for (int i = 0; i < this.contextType.n; i++) {
+			String key = this.contextType.get(i);
+			map.put(key, locator.getContextProvider(key).getContext(serviceConsumer.getConsumerClass()));
+		}
+		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(), map);
+	}
+
+	private NTuple<?> getContextTuple(Map<String, Object> context) {
+		return this.contextType.map(context::get);
 	}
 
 	@Override
-	public ServiceHandle<T> getService(ServiceLocator locator, ServiceConsumer<T> consumer) {
+	public ServiceHandle<T> getService(ServiceLocator locator,
+			ServiceImplementationDescription<T> serviceImplementationDescription) {
+		NTuple<?> contextTuple = this.getContextTuple(serviceImplementationDescription.getContext());
 
-		NTuple<?> contextTuple = this.getContextTuple(locator, consumer);
-		if (this.serviceInstances.containsKey(contextTuple)) {
-			return this.serviceInstances.get(contextTuple);
-		}
-
-		ServiceHandle<T> serviceData = new ServiceHandleImpl<>(this.createService(locator, contextTuple));
-		this.serviceInstances.put(contextTuple, serviceData);
-		return serviceData;
+		return new ServiceHandleImpl<>(this.createService(locator, contextTuple));
 	}
 
 	/**
@@ -137,20 +141,7 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 
 	@Override
 	public void dispose(ServiceHandle<T> service) {
-		if (this.serviceInstances.containsValue(service)) {
-			for (Entry<NTuple<?>, ServiceHandle<T>> e : this.serviceInstances.entrySet()) {
-				ServiceHandle<T> serviceData = e.getValue();
-				if (serviceData == service) {
-					this.destroy(e.getKey());
-					return;
-				}
-			}
-		}
-		throw new IllegalArgumentException();
+		Util.preDestroy(service.getService());
 	}
 
-	private void destroy(NTuple<?> contextTuple) {
-		ServiceHandle<T> remove = this.serviceInstances.remove(contextTuple);
-		Util.preDestroy(remove);
-	}
 }

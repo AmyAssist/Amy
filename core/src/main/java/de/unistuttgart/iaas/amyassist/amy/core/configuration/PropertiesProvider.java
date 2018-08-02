@@ -23,13 +23,16 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
+import java.util.Collections;
 import java.util.Properties;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandleImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceImplementationDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 
@@ -39,11 +42,20 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
  * @author Leon Kiefer
  */
 public class PropertiesProvider implements ServiceProvider<Properties> {
+	@Override
+	public ServiceImplementationDescription<Properties> getServiceImplementationDescription(ServiceLocator locator,
+			ServiceConsumer<Properties> serviceConsumer) {
+		IPlugin plugin = (IPlugin) locator.getContextProvider(Context.PLUGIN)
+				.getContext(serviceConsumer.getConsumerClass());
+		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
+				Collections.singletonMap(Context.PLUGIN, plugin));
+	}
 
 	@Override
-	public ServiceHandle<Properties> getService(ServiceLocator locator, ServiceConsumer<Properties> consumer) {
+	public ServiceHandle<Properties> getService(ServiceLocator locator,
+			ServiceImplementationDescription<Properties> serviceImplementationDescription) {
 		ConfigurationLoader configurationLoader = locator.getService(ConfigurationLoader.class);
-		IPlugin plugin = (IPlugin) locator.getContextProvider(Context.PLUGIN).getContext(consumer.getConsumerClass());
+		IPlugin plugin = (IPlugin) serviceImplementationDescription.getContext().get(Context.PLUGIN);
 		String uniqueName = plugin.getUniqueName();
 		return new ServiceHandleImpl<>(configurationLoader.load(uniqueName));
 	}
@@ -52,4 +64,5 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 	public void dispose(ServiceHandle<Properties> properties) {
 		// TODO maybe save the properties
 	}
+
 }
