@@ -23,13 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
-import java.util.Map;
-import java.util.Set;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 
 /**
@@ -44,28 +40,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
  */
 public interface ServiceProvider<T> {
 	/**
-	 * @param resolvedDependencies
-	 *            a map of ServiceFactories for each dependency
-	 * @param context
-	 *            a map of the static context information
+	 * @param locator
+	 *            the ServiceLocator to lookup services
+	 * @param consumer
+	 *            the consumer of the Service. This can be used to extract context information.
 	 * @return the service of this ServiceProvider for the given context
 	 */
 	@Nonnull
-	ServiceHandle<T> getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
-			@Nullable Map<String, ?> context);
-
-	/**
-	 * 
-	 * @return the dependencies
-	 */
-	@Nonnull
-	Set<ServiceConsumer<?>> getDependencies();
-
-	/**
-	 * @return the requiredContextProviderTypes
-	 */
-	@Nonnull
-	Set<String> getRequiredContextIdentifiers();
+	ServiceHandle<T> getService(ServiceLocator locator, ServiceConsumer<T> consumer);
 
 	/**
 	 * Dispose a Service that was provided by this ServiceProvider.

@@ -26,7 +26,9 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 import java.lang.annotation.Annotation;
 
 /**
- * Abstract description of a Service
+ * Abstract description of a Service. This describes the service from the Consumer point of view. It describes the type
+ * of the Service and the qualifiers of the Service. This Description is independent of the implementation of the
+ * Service. This description can be used to get the described Service from a ServiceLocator.
  * 
  * @author Leon Kiefer
  * @param <T>

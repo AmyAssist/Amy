@@ -23,14 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.logger;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandleImpl;
@@ -43,23 +39,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
  */
 public class LoggerProvider implements ServiceProvider<Logger> {
 
-	private static final String CONTEXT_IDENTIFIER = "class";
-
 	@Override
-	public ServiceHandle<Logger> getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
-			Map<String, ?> context) {
-		Class<?> cls = (Class<?>) context.get(CONTEXT_IDENTIFIER);
+	public ServiceHandle<Logger> getService(ServiceLocator locator, ServiceConsumer<Logger> consumer) {
+		Class<?> cls = consumer.getConsumerClass();
 		return new ServiceHandleImpl<>(LoggerFactory.getLogger(cls));
-	}
-
-	@Override
-	public Set<ServiceConsumer<?>> getDependencies() {
-		return Collections.emptySet();
-	}
-
-	@Override
-	public Set<String> getRequiredContextIdentifiers() {
-		return Collections.singleton(CONTEXT_IDENTIFIER);
 	}
 
 	@Override

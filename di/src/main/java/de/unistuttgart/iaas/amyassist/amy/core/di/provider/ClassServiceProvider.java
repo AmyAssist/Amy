@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,7 +34,7 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
@@ -51,12 +50,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  */
 public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	private Class<? extends T> cls;
-	/**
-	 * A register which contains all dependencies
-	 */
-	private Set<ServiceConsumer<?>> dependencies = new HashSet<>();
+
 	private Set<InjectionPoint> injectionPoints = new HashSet<>();
-	private Set<String> requiredContextIdentifiers = new HashSet<>();
 	private final NTuple<String> contextType;
 	private final NTuple<ContextInjectionPoint> contextInjectionPoints;
 	private Map<NTuple<?>, ServiceHandle<T>> serviceInstances = new HashMap<>();
@@ -74,11 +69,7 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(cls, Reference.class);
 		for (Field field : dependencyFields) {
-			InjectionPoint injectionPoint = new InjectionPoint(field);
-			this.injectionPoints.add(injectionPoint);
-
-			ServiceConsumer<?> serviceConsumer = injectionPoint.getServiceConsumer();
-			this.dependencies.add(serviceConsumer);
+			this.injectionPoints.add(new InjectionPoint(field));
 		}
 
 		Field[] contextFields = FieldUtils.getFieldsWithAnnotation(cls, Context.class);
@@ -87,29 +78,26 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 		int i = 0;
 		for (Field field : contextFields) {
 			ContextInjectionPoint injectionPoint = new ContextInjectionPoint(field);
-			this.requiredContextIdentifiers.add(injectionPoint.getContextIdentifier());
 			this.contextType.set(i, injectionPoint.getContextIdentifier());
 			this.contextInjectionPoints.set(i, injectionPoint);
 			i++;
 		}
 	}
 
-	private NTuple<?> getContextTuple(Map<String, ?> context) {
-		if (context == null) {
-			return new NTuple<>(this.contextType.n);
-		}
-		return this.contextType.map(context::get);
+	private NTuple<?> getContextTuple(ServiceLocator locator, ServiceConsumer<T> consumer) {
+		return this.contextType.map(locator::getContextProvider)
+				.map(provider -> provider.getContext(consumer.getConsumerClass()));
 	}
 
 	@Override
-	public ServiceHandle<T> getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
-			Map<String, ?> context) {
-		NTuple<?> contextTuple = this.getContextTuple(context);
+	public ServiceHandle<T> getService(ServiceLocator locator, ServiceConsumer<T> consumer) {
+
+		NTuple<?> contextTuple = this.getContextTuple(locator, consumer);
 		if (this.serviceInstances.containsKey(contextTuple)) {
 			return this.serviceInstances.get(contextTuple);
 		}
 
-		ServiceHandle<T> serviceData = new ServiceHandleImpl<>(this.createService(resolvedDependencies, contextTuple));
+		ServiceHandle<T> serviceData = new ServiceHandleImpl<>(this.createService(locator, contextTuple));
 		this.serviceInstances.put(contextTuple, serviceData);
 		return serviceData;
 	}
@@ -117,16 +105,16 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	/**
 	 * Create a new Service instance with the given resolved dependencies and context
 	 * 
-	 * @param resolvedDependencies
+	 * @param locator
 	 * @param contextTuple
 	 *            the context
 	 * @return a newly created service instance
 	 */
-	private T createService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies, NTuple<?> contextTuple) {
+	private T createService(ServiceLocator locator, NTuple<?> contextTuple) {
 		T serviceInstance = this.createService();
 		for (InjectionPoint injectionPoint : this.injectionPoints) {
-			ServiceFactory<?> serviceFactory = resolvedDependencies.get(injectionPoint.getServiceConsumer());
-			ServiceHandle<?> serviceHandle = serviceFactory.build();
+			ServiceConsumer<?> serviceConsumer = injectionPoint.getServiceConsumer();
+			ServiceHandle<?> serviceHandle = locator.getService(serviceConsumer);
 			injectionPoint.inject(serviceInstance, serviceHandle.getService());
 		}
 		for (int i = 0; i < this.contextInjectionPoints.n; i++) {
@@ -145,16 +133,6 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 			throw new IllegalStateException("The constructor of " + this.cls.getName() + " should have been checked",
 					e);
 		}
-	}
-
-	@Override
-	public Set<String> getRequiredContextIdentifiers() {
-		return Collections.unmodifiableSet(this.requiredContextIdentifiers);
-	}
-
-	@Override
-	public Set<ServiceConsumer<?>> getDependencies() {
-		return Collections.unmodifiableSet(this.dependencies);
 	}
 
 	@Override

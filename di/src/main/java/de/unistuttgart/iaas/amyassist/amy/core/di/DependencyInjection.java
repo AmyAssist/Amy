@@ -24,15 +24,12 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import java.lang.reflect.Field;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNullableByDefault;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -154,112 +151,16 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		return this.getService(Util.serviceDescriptionFor(serviceType)).getService();
 	}
 
-	/**
-	 * @see ServiceLocator#getService(Class)
-	 */
-	public <T> T getService(Class<T> serviceType, @Nullable ServiceConsumer<T> consumer) {
-		return this.getService(Util.serviceDescriptionFor(serviceType), consumer).getService();
-	}
-
-	/**
-	 * @see ServiceLocator#getService(ServiceDescription)
-	 */
-	public <T> ServiceHandle<T> getService(ServiceDescription<T> serviceDescription,
-			@Nullable ServiceConsumer consumer) {
+	@Override
+	public <T> ServiceHandle<T> getService(ServiceDescription<T> serviceDescription) {
 		ServiceProvider<T> provider = this.getServiceProvider(serviceDescription);
-		ServiceFactory<T> factory = this.resolve(provider, consumer);
-		return factory.build();
+		return provider.getService(this, null);
 	}
 
 	@Override
-	public <T> ServiceHandle<T> getService(ServiceDescription<T> serviceDescription) {
-		return this.getService(serviceDescription, null);
-	}
-
-	/**
-	 * Resolve the dependencies of the ServiceProvider and creates a factory for the Service.
-	 * 
-	 * @param <T>
-	 *            The type of the service
-	 * @param serviceProvider
-	 *            The Service Provider.
-	 * @return The factory for a Service of the ServiceProvider.
-	 */
-	private <T> ServiceFactory<T> resolve(@Nonnull ServiceProvider<T> serviceProvider) {
-		return this.resolve(serviceProvider, null);
-	}
-
-	/**
-	 * Resolve the dependencies of the ServiceProvider and creates a factory for the Service.
-	 * 
-	 * @param <T>
-	 *            The type of the service
-	 * @param serviceProvider
-	 *            The Service Provider.
-	 * @param consumer
-	 *            the consumer of the resolved service
-	 * @return The factory for a Service of the ServiceProvider.
-	 */
-	private <T> ServiceFactory<T> resolve(@Nonnull ServiceProvider<T> serviceProvider,
-			@Nullable ServiceConsumer<T> consumer) {
-		return this.resolve(serviceProvider, new ArrayDeque<>(), consumer);
-	}
-
-	/**
-	 * Resolve the dependencies of the ServiceProvider and creates a factory for the Service. considering the stack of
-	 * dependencies, for which this ServiceProvider is needed.
-	 * 
-	 * @param <T>
-	 *            The type of the service
-	 * @param serviceProvider
-	 *            The Service Provider.
-	 * @param stack
-	 *            The stack of classes, for which this class is needed.
-	 * @param consumer
-	 *            the consumer of the resolved service
-	 * @return The factory for a Service of the ServiceProvider.
-	 */
-	private <T> ServiceFactory<T> resolve(@Nonnull ServiceProvider<T> serviceProvider,
-			@Nonnull Deque<ServiceProvider<?>> stack, @Nullable ServiceConsumer<T> consumer) {
-		if (stack.contains(serviceProvider)) {
-			throw new IllegalStateException("circular dependencies");
-		}
-		stack.push(serviceProvider);
-
-		ServiceProviderServiceFactory<T> serviceProviderServiceFactory = new ServiceProviderServiceFactory<>(
-				serviceProvider);
-		for (ServiceConsumer<?> dependency : serviceProvider.getDependencies()) {
-			typeSaveResolve(dependency, stack, serviceProviderServiceFactory);
-		}
-
-		for (String requiredContextProviderType : serviceProvider.getRequiredContextIdentifiers()) {
-			StaticProvider<?> contextProvider = this.getContextProvider(requiredContextProviderType);
-			serviceProviderServiceFactory.setContextProvider(requiredContextProviderType, contextProvider);
-		}
-		serviceProviderServiceFactory.setConsumer(consumer);
-		stack.pop();
-		return serviceProviderServiceFactory;
-
-	}
-
-	/**
-	 * This method is needed because the type system in Java can't express type equality in local blocks without a fixed
-	 * type on method level.
-	 * 
-	 * @param <T>
-	 *            local type
-	 * @param dependency
-	 *            the Service consumer that need the service
-	 * @param stack
-	 *            the stack of transitive dependency to this ServiceConsumer
-	 * @param serviceProviderServiceFactory
-	 *            the ServiceFactory to resolve the dependency of
-	 */
-	private <T> void typeSaveResolve(@Nonnull ServiceConsumer<T> dependency, @Nonnull Deque<ServiceProvider<?>> stack,
-			@Nonnull ServiceProviderServiceFactory<?> serviceProviderServiceFactory) {
-		ServiceProvider<T> provider = this.getServiceProvider(dependency.getServiceDescription());
-		ServiceFactory<?> dependencyFactory = this.resolve(provider, stack, dependency);
-		serviceProviderServiceFactory.resolved(dependency, dependencyFactory);
+	public <T> ServiceHandle<T> getService(@Nonnull ServiceConsumer<T> serviceConsumer) {
+		ServiceProvider<T> provider = this.getServiceProvider(serviceConsumer.getServiceDescription());
+		return provider.getService(this, serviceConsumer);
 	}
 
 	@Override
@@ -268,15 +169,10 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(classOfInstance, Reference.class);
 		for (Field field : dependencyFields) {
 			ServiceDescription<?> serviceDescription = Util.serviceDescriptionFor(field);
-			Object object = typeSaveInject(field, serviceDescription);
+			Class<?> declaredClass = field.getDeclaringClass();
+			Object object = this.getService(ConsumerFactory.build(declaredClass, serviceDescription)).getService();
 			Util.inject(instance, object, field);
 		}
-	}
-
-	private <T> T typeSaveInject(@Nonnull Field field, @Nonnull ServiceDescription<T> serviceDescription) {
-		Class<T> dependency = serviceDescription.getServiceType();
-		Class<?> declaredClass = field.getDeclaringClass();
-		return this.getService(dependency, ConsumerFactory.build(declaredClass, serviceDescription));
 	}
 
 	@Override
@@ -303,16 +199,8 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		return (ServiceProvider<T>) this.register.get(serviceDescription);
 	}
 
-	/**
-	 * Getter for the Context provider for the given identifier
-	 * 
-	 * @param contextProviderType
-	 *            the context identifier
-	 * @return the static ContextProvider
-	 * @throws NoSuchElementException
-	 *             if there is no ContextProvider for the given identifier
-	 */
-	private StaticProvider<?> getContextProvider(@Nonnull String contextProviderType) {
+	@Override
+	public StaticProvider<?> getContextProvider(@Nonnull String contextProviderType) {
 		if (!this.staticProviders.containsKey(contextProviderType))
 			throw new NoSuchElementException(contextProviderType);
 		return this.staticProviders.get(contextProviderType);
@@ -321,9 +209,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	@Override
 	public <T> T createAndInitialize(@Nonnull Class<T> serviceClass) {
 		ServiceProvider<T> provider = new ClassServiceProvider<>(serviceClass);
-		ServiceFactory<T> serviceFactory = this.resolve(provider);
-
-		return serviceFactory.build().getService();
+		return provider.getService(this, null).getService();
 	}
 
 	@Override
@@ -335,4 +221,5 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	public void shutdown() {
 		// TODO manage the lifecycle
 	}
+
 }

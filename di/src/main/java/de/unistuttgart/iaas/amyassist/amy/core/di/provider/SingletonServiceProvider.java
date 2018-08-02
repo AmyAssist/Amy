@@ -23,14 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 
 /**
@@ -54,19 +49,8 @@ public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public ServiceHandle<T> getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
-			@Nullable Map<String, ?> context) {
+	public ServiceHandle<T> getService(ServiceLocator locator, ServiceConsumer<T> consumer) {
 		return new ServiceHandleImpl<>(this.instance);
-	}
-
-	@Override
-	public Set<ServiceConsumer<?>> getDependencies() {
-		return Collections.emptySet();
-	}
-
-	@Override
-	public Set<String> getRequiredContextIdentifiers() {
-		return Collections.emptySet();
 	}
 
 	@Override
