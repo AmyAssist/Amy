@@ -54,7 +54,7 @@ public class LoggerProvider implements ServiceProvider<Logger> {
 	}
 
 	@Override
-	public ServiceHandle<Logger> getService(ServiceLocator locator,
+	public ServiceHandle<Logger> createService(ServiceLocator locator,
 			ServiceImplementationDescription<Logger> serviceImplementationDescription) {
 
 		Class<?> cls = (Class<?>) serviceImplementationDescription.getContext().get(KEY);

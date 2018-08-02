@@ -52,7 +52,7 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 	}
 
 	@Override
-	public ServiceHandle<Properties> getService(ServiceLocator locator,
+	public ServiceHandle<Properties> createService(ServiceLocator locator,
 			ServiceImplementationDescription<Properties> serviceImplementationDescription) {
 		ConfigurationLoader configurationLoader = locator.getService(ConfigurationLoader.class);
 		IPlugin plugin = (IPlugin) serviceImplementationDescription.getContext().get(Context.PLUGIN);

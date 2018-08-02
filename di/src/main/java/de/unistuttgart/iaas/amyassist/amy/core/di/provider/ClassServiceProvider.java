@@ -38,7 +38,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.util.NTuple;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
@@ -49,11 +48,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  *            type of the provided service
  */
 public class ClassServiceProvider<T> implements ServiceProvider<T> {
-	private Class<? extends T> cls;
+	@Nonnull
+	private final Class<? extends T> cls;
 
-	private Set<InjectionPoint> injectionPoints = new HashSet<>();
-	private final NTuple<String> contextType;
-	private final NTuple<ContextInjectionPoint> contextInjectionPoints;
+	private final Set<InjectionPoint> injectionPoints = new HashSet<>();
+	private final Set<ContextInjectionPoint> contextInjectionPoints = new HashSet<>();
 
 	/**
 	 * 
@@ -72,14 +71,8 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 		}
 
 		Field[] contextFields = FieldUtils.getFieldsWithAnnotation(cls, Context.class);
-		this.contextType = new NTuple<>(contextFields.length);
-		this.contextInjectionPoints = new NTuple<>(contextFields.length);
-		int i = 0;
 		for (Field field : contextFields) {
-			ContextInjectionPoint injectionPoint = new ContextInjectionPoint(field);
-			this.contextType.set(i, injectionPoint.getContextIdentifier());
-			this.contextInjectionPoints.set(i, injectionPoint);
-			i++;
+			this.contextInjectionPoints.add(new ContextInjectionPoint(field));
 		}
 	}
 
@@ -87,47 +80,32 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	public ServiceImplementationDescription<T> getServiceImplementationDescription(ServiceLocator locator,
 			ServiceConsumer<T> serviceConsumer) {
 		HashMap<String, Object> map = new HashMap<>();
-		for (int i = 0; i < this.contextType.n; i++) {
-			String key = this.contextType.get(i);
+		for (ContextInjectionPoint c : this.contextInjectionPoints) {
+			String key = c.getContextIdentifier();
 			map.put(key, locator.getContextProvider(key).getContext(serviceConsumer.getConsumerClass()));
 		}
+
 		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(), map);
 	}
 
-	private NTuple<?> getContextTuple(Map<String, Object> context) {
-		return this.contextType.map(context::get);
-	}
-
 	@Override
-	public ServiceHandle<T> getService(ServiceLocator locator,
+	public ServiceHandle<T> createService(ServiceLocator locator,
 			ServiceImplementationDescription<T> serviceImplementationDescription) {
-		NTuple<?> contextTuple = this.getContextTuple(serviceImplementationDescription.getContext());
 
-		return new ServiceHandleImpl<>(this.createService(locator, contextTuple));
-	}
-
-	/**
-	 * Create a new Service instance with the given resolved dependencies and context
-	 * 
-	 * @param locator
-	 * @param contextTuple
-	 *            the context
-	 * @return a newly created service instance
-	 */
-	private T createService(ServiceLocator locator, NTuple<?> contextTuple) {
 		T serviceInstance = this.createService();
 		for (InjectionPoint injectionPoint : this.injectionPoints) {
 			ServiceConsumer<?> serviceConsumer = injectionPoint.getServiceConsumer();
 			ServiceHandle<?> serviceHandle = locator.getService(serviceConsumer);
 			injectionPoint.inject(serviceInstance, serviceHandle.getService());
 		}
-		for (int i = 0; i < this.contextInjectionPoints.n; i++) {
-			ContextInjectionPoint contextInjectionPoint = this.contextInjectionPoints.get(i);
-			contextInjectionPoint.inject(serviceInstance, contextTuple.get(i));
+
+		Map<String, Object> context = serviceImplementationDescription.getContext();
+		for (ContextInjectionPoint contextInjectionPoint : this.contextInjectionPoints) {
+			contextInjectionPoint.inject(serviceInstance, context.get(contextInjectionPoint.getContextIdentifier()));
 		}
 
 		Util.postConstruct(serviceInstance);
-		return serviceInstance;
+		return new ServiceHandleImpl<>(serviceInstance);
 	}
 
 	private T createService() {

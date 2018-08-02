@@ -59,15 +59,18 @@ public interface ServiceProvider<T> {
 			@Nonnull ServiceConsumer<T> serviceConsumer);
 
 	/**
+	 * Create a new Service from the given ServiceImplementationDescription. Using the ServiceLocator to lookup
+	 * dependencies.
+	 * 
 	 * @param locator
 	 *            the ServiceLocator to lookup services
 	 * @param serviceImplementationDescription
 	 *            the description of the Service which must be created
 	 * 
-	 * @return the service of this ServiceProvider for the given context
+	 * @return the created service of this ServiceProvider for the given ServiceImplementationDescription
 	 */
 	@Nonnull
-	ServiceHandle<T> getService(@Nonnull ServiceLocator locator,
+	ServiceHandle<T> createService(@Nonnull ServiceLocator locator,
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription);
 
 	/**

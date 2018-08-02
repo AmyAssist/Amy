@@ -197,7 +197,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	private <T> ServiceHandle<T> createService(@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
-		ServiceHandle<T> service = serviceProvider.getService(this, serviceImplementationDescription);
+		ServiceHandle<T> service = serviceProvider.createService(this, serviceImplementationDescription);
 		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription.getContext());
 		this.servicePool.put(key, service);
 		return service;
