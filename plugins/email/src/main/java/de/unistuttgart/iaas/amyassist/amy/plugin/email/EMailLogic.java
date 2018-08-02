@@ -115,20 +115,16 @@ public class EMailLogic {
 	public String printPlainTextMessages(int amount) {
 		StringBuilder b = new StringBuilder();
 		int count = 1;
-		if (this.inbox != null) {
-			Message[] messages;
-			try {
-				messages = this.inbox.getMessages();
-				for (Message m : messages) {
-					if (amount == -1 || count <= amount) {
-						b.append(concatenateMessage(m));
-					}
-					count++;
-				}
-			} catch (MessagingException e) {
-				this.logger.error("couldn't fetch messages from inbox", e);
-				return "";
+		try {
+			List<MessageDTO> messages = this.getAllMails();
+			for (MessageDTO m : messages) {
+				// do stuff
+				// b.append(concatenateMessage(m));
 			}
+		} catch (Exception e) {
+			this.logger.error("couldn't fetch messages from inbox", e);
+			return "";
+
 		}
 		return b.toString();
 	}
@@ -145,25 +141,66 @@ public class EMailLogic {
 	public String printImportantMessages(int amount) {
 		StringBuilder sb = new StringBuilder();
 		int count = 1;
+		try {
+			List<MessageDTO> messages = this.getAllMails();
+			for (MessageDTO m : messages) {
+				if (m.isImportant()) {
+					// sb.append(concatenateMessage(m));
+				}
+			}
+		} catch (Exception e) {
+			this.logger.error("couldn't fetch messages from inbox", e);
+			return "";
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Get all mails in the inbox
+	 * 
+	 * @return all mails in the inbox in a list, because lists are better to work with than arrays
+	 * @throws Exception
+	 *             when something goes wrong
+	 */
+	public List<MessageDTO> getAllMails() throws Exception {
 		if (this.inbox != null) {
+			List<MessageDTO> messagesToSend = new ArrayList<>();
 			Message[] messages;
-			List<String> importantMailAddresses = getImportantMailAddresses();
+			List<String> importantMailAddresses = this.getImportantMailAddresses();
 			try {
 				messages = this.inbox.getMessages();
 				for (Message m : messages) {
-					Address a = m.getFrom()[0];
-					if (a instanceof InternetAddress
-							&& importantMailAddresses.contains(((InternetAddress) a).getAddress())
-							&& (amount == -1 || count <= amount)) {
-						sb.append(concatenateMessage(m));
+					// gather info for MessageDTO object
+					String from;
+					String content;
+					boolean important = false;
+
+					Address senderAddress = m.getFrom()[0];
+					if (senderAddress instanceof InternetAddress) {
+						from = ((InternetAddress) senderAddress).getAddress();
+						if (importantMailAddresses.contains(from)) {
+							important = true;
+						}
+					} else {
+						// TODO: handle
+						throw new Exception("Message sender has no mail address");
 					}
+					if (m.isMimeType("text/plain")) {
+						content = m.getContent().toString();
+					} else {
+						// TODO: handle
+						content = "Content is not plain-text";
+					}
+					messagesToSend.add(new MessageDTO(from, m.getSubject(), content, important));
 				}
+				return messagesToSend;
 			} catch (MessagingException e) {
-				this.logger.error("couldn't fetch messages from inbox", e);
-				return "";
+				this.logger.error("Couldn't fetch messages");
+				return null;
 			}
 		}
-		return sb.toString();
+		// TODO: handle
+		throw new Exception("Inbox is null!");
 	}
 
 	/**
@@ -206,8 +243,8 @@ public class EMailLogic {
 		try {
 			if (message.isMimeType("text/plain")) {
 				sb.append("\nContent: " + message.getContent().toString());
-				// still broken, probably wrong message part appended to string builder - Felix B
 			} else if (message.getContent() instanceof Multipart) {
+				// still broken, probably wrong message part appended to string builder - Felix B
 				sb.append("\nVerarbeite multipart/* Nachricht");
 				Multipart mp = (Multipart) message.getContent();
 				// // Der erste Part ist immer die Hauptnachricht
