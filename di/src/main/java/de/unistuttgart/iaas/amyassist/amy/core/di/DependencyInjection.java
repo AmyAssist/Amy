@@ -24,10 +24,10 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -62,9 +62,11 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	/**
 	 * A register which maps a service description to it's service provider.
 	 */
-	protected final Map<ServiceDescription<?>, ServiceProvider<?>> register;
+	private final Map<ServiceDescription<?>, ServiceProvider<?>> register;
 
 	private final Map<ServicePoolKey<?>, ServiceHandle<?>> servicePool;
+
+	private final Map<ServicePoolKey<?>, ServiceCreationInfo> serviceCreationInfo;
 
 	protected Map<String, StaticProvider<?>> staticProviders;
 
@@ -72,9 +74,10 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	 * Creates a new Dependency Injection
 	 */
 	public DependencyInjection() {
-		this.register = new HashMap<>();
-		this.servicePool = new HashMap<>();
-		this.staticProviders = new HashMap<>();
+		this.register = new ConcurrentHashMap<>();
+		this.servicePool = new ConcurrentHashMap<>();
+		this.serviceCreationInfo = new ConcurrentHashMap<>();
+		this.staticProviders = new ConcurrentHashMap<>();
 
 		this.registerContextProvider("class", new ClassProvider());
 		this.addExternalService(ServiceLocator.class, this);
@@ -93,20 +96,21 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	}
 
 	@Override
-	public synchronized <T> void register(Class<T> serviceType, ServiceProvider<T> serviceProvider) {
+	public <T> void register(Class<T> serviceType, ServiceProvider<T> serviceProvider) {
 		this.register(Util.serviceDescriptionFor(serviceType), serviceProvider);
 	}
 
 	@Override
-	public synchronized <T> void register(ServiceDescription<T> serviceDescription,
-			ServiceProvider<T> serviceProvider) {
-		if (this.hasServiceOfType(serviceDescription))
-			throw new DuplicateServiceException();
-		this.register.put(serviceDescription, serviceProvider);
+	public <T> void register(ServiceDescription<T> serviceDescription, ServiceProvider<T> serviceProvider) {
+		synchronized (this.register) {
+			if (this.hasServiceOfType(serviceDescription))
+				throw new DuplicateServiceException();
+			this.register.put(serviceDescription, serviceProvider);
+		}
 	}
 
 	@Override
-	public synchronized void register(@Nonnull Class<?> cls) {
+	public void register(@Nonnull Class<?> cls) {
 		Service annotation = cls.getAnnotation(Service.class);
 		if (annotation == null)
 			throw new ClassIsNotAServiceException(cls);
@@ -124,25 +128,27 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 			}
 		}
 
-		if (this.hasServiceOfType(Util.serviceDescriptionFor(serviceType))) {
-			throw new DuplicateServiceException();
-		}
 		if (!serviceType.isAssignableFrom(cls)) {
 			throw new IllegalArgumentException(
 					"The specified service type " + serviceType.getName() + " is not assignable from " + cls.getName());
 		}
+		synchronized (this.register) {
+			if (this.hasServiceOfType(Util.serviceDescriptionFor(serviceType))) {
+				throw new DuplicateServiceException();
+			}
 
-		ServiceProvider<?> p = new ClassServiceProvider<>(cls);
-		this.register.put(Util.serviceDescriptionFor(serviceType), p);
+			ServiceProvider<?> p = new ClassServiceProvider<>(cls);
+			this.register.put(Util.serviceDescriptionFor(serviceType), p);
+		}
 	}
 
 	@Override
-	public synchronized void registerContextProvider(String key, StaticProvider<?> staticProvider) {
+	public void registerContextProvider(String key, StaticProvider<?> staticProvider) {
 		this.staticProviders.put(key, staticProvider);
 	}
 
 	@Override
-	public synchronized <T> void addExternalService(@Nonnull Class<T> serviceType, @Nonnull T externalService) {
+	public <T> void addExternalService(@Nonnull Class<T> serviceType, @Nonnull T externalService) {
 		this.register(serviceType, new SingletonServiceProvider<>(externalService));
 	}
 
@@ -171,6 +177,9 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 						return serviceDescription;
 					}
 				});
+		if (serviceImplementationDescription == null) {
+			throw new ServiceNotFoundException(serviceDescription);
+		}
 		return this.lookUpOrCreateService(provider, serviceImplementationDescription);
 	}
 
@@ -179,6 +188,9 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		ServiceProvider<T> provider = this.getServiceProvider(serviceConsumer.getServiceDescription());
 		ServiceImplementationDescription<T> serviceImplementationDescription = provider
 				.getServiceImplementationDescription(this, serviceConsumer);
+		if (serviceImplementationDescription == null) {
+			throw new ServiceNotFoundException(serviceConsumer.getServiceDescription());
+		}
 		return this.lookUpOrCreateService(provider, serviceImplementationDescription);
 	}
 
@@ -187,7 +199,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
 		Map<String, Object> context = serviceImplementationDescription.getContext();
 
-		ServicePoolKey<?> servicePoolKey = new ServicePoolKey<>(serviceProvider, new HashMap<>(context));
+		ServicePoolKey<?> servicePoolKey = new ServicePoolKey<>(serviceProvider, context);
 
 		if (!this.servicePool.containsKey(servicePoolKey)) {
 			return null;
@@ -195,19 +207,35 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		return (ServiceHandle<T>) this.servicePool.get(servicePoolKey);
 	}
 
-	private <T> ServiceHandle<T> createService(@Nonnull ServiceProvider<T> serviceProvider,
+	private <T> void createService(@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
-		ServiceHandle<T> service = serviceProvider.createService(this, serviceImplementationDescription);
 		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription.getContext());
+		synchronized (this.servicePool) {
+			if (this.serviceCreationInfo.containsKey(key)) {
+				ServiceCreationInfo serviceCreationInfo = this.serviceCreationInfo.get(key);
+				if (Thread.currentThread().equals(serviceCreationInfo.thread)) {
+					throw new IllegalStateException("circular dependencies");
+				}
+				throw new IllegalStateException("other Thread is creating a Service that i should create!");
+			}
+			this.serviceCreationInfo.put(key, new ServiceCreationInfo(Thread.currentThread()));
+		}
+
+		ServiceHandle<T> service = serviceProvider.createService(this, serviceImplementationDescription);
+
 		this.servicePool.put(key, service);
-		return service;
 	}
 
 	private <T> ServiceHandle<T> lookUpOrCreateService(@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
 		ServiceHandle<T> lookUpService = this.lookUpService(serviceProvider, serviceImplementationDescription);
 		if (lookUpService == null) {
-			lookUpService = this.createService(serviceProvider, serviceImplementationDescription);
+			this.createService(serviceProvider, serviceImplementationDescription);
+			lookUpService = this.lookUpService(serviceProvider, serviceImplementationDescription);
+		}
+
+		if (lookUpService == null) {
+			throw new IllegalStateException();
 		}
 		return lookUpService;
 	}
@@ -243,9 +271,11 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	@Nonnull
 	@SuppressWarnings("unchecked")
 	private <T> ServiceProvider<T> getServiceProvider(ServiceDescription<T> serviceDescription) {
-		if (!this.register.containsKey(serviceDescription))
-			throw new ServiceNotFoundException(serviceDescription);
-		return (ServiceProvider<T>) this.register.get(serviceDescription);
+		synchronized (this.register) {
+			if (!this.register.containsKey(serviceDescription))
+				throw new ServiceNotFoundException(serviceDescription);
+			return (ServiceProvider<T>) this.register.get(serviceDescription);
+		}
 	}
 
 	@Override

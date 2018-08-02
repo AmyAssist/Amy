@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -53,7 +54,7 @@ public final class ServicePoolKey<T> {
 	 */
 	public ServicePoolKey(@Nonnull ServiceProvider<T> serviceProvider, Map<String, Object> context) {
 		this.serviceProvider = serviceProvider;
-		this.context = context;
+		this.context = new HashMap<>(context);
 	}
 
 	@Override
