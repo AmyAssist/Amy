@@ -49,6 +49,8 @@ public class NLParser implements INLParser {
 
 	private int currentIndex;
 
+	private Stemming stemmer = new Stemming();
+
 	/**
 	 * 
 	 * @param grammars
@@ -72,30 +74,28 @@ public class NLParser implements INLParser {
 	}
 
 	/**
-	 * sorts childs of or groups and optional groups by size 
-	 * size meaning number of words inside the sentences seperated by '|'
+	 * sorts childs of or groups and optional groups by size size meaning number of words inside the sentences seperated
+	 * by '|'
 	 * 
-	 * this prevents problems like [very | very very] very
-	 * not beeing recognized with the input very very very
-	 * because this parser is greedy and picks the first matching sentence 
-	 * it finds. If we just order the sentences in or and optional groups
-	 * by number of leafes (meaning words/rules)
-	 * we will be fine
+	 * this prevents problems like [very | very very] very not beeing recognized with the input very very very because
+	 * this parser is greedy and picks the first matching sentence it finds. If we just order the sentences in or and
+	 * optional groups by number of leafes (meaning words/rules) we will be fine
 	 * 
-	 * @param node to sort
+	 * @param node
+	 *            to sort
 	 * @return sorted node
 	 */
 	public AGFNode sortChildsOfOrAndOp(AGFNode node) {
-		
-		if(node.getType().equals(AGFNodeType.OPG) || node.getType().equals(AGFNodeType.ORG)) {
+
+		if (node.getType().equals(AGFNodeType.OPG) || node.getType().equals(AGFNodeType.ORG)) {
 			Collections.sort(node.getChilds(), (n1, n2) -> Integer.compare(n1.countLeafes(), n2.countLeafes()));
 			Collections.reverse(node.getChilds());
 		}
 
-		for(AGFNode child : node.getChilds()) {
+		for (AGFNode child : node.getChilds()) {
 			sortChildsOfOrAndOp(child);
 		}
-		
+
 		return node;
 	}
 
@@ -178,7 +178,7 @@ public class NLParser implements INLParser {
 	private boolean match(AGFNode toMatch) {
 		WordToken token = lookAhead(0);
 
-		if (token != null && toMatch.getContent().equals(token.getContent())) {
+		if (token != null && this.stemmer.stem(toMatch.getContent()).equals(this.stemmer.stem(token.getContent()))) {
 			consume();
 			return true;
 		}

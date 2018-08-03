@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -32,6 +32,8 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.Stemming;
 
 /**
  * Test class for the stemming class
@@ -120,26 +122,22 @@ class TestStemming {
 	}
 
 	@Test
-	void testWithManyWords() {
-		try (BufferedReader inputReader = new BufferedReader(new FileReader(
+	void testWithManyWords() throws IOException {
+		BufferedReader inputReader = new BufferedReader(new FileReader(
 				"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/stemmingTest/input.txt"));
-				BufferedReader outputReader = new BufferedReader(new FileReader(
-						"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/stemmingTest/output.txt"))) {
-			String inputLine;
-			String outputLine;
-			int i = 0;
-			do {
-				i++;
-				inputLine = inputReader.readLine();
-				outputLine = outputReader.readLine();
-				if (inputLine != null && outputLine != null) {
-					assertThat(this.stemming.stem(inputLine) + i, equalTo(outputLine + i));
-				}
-			} while (inputLine != null || outputLine != null);
-		} catch (IOException e) {
-			e.printStackTrace();
-
+		BufferedReader outputReader = new BufferedReader(new FileReader(
+				"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/stemmingTest/output.txt"));
+		String inputLine = "";
+		String outputLine = "";
+		while (inputLine != null || outputLine != null) {
+			inputLine = inputReader.readLine();
+			outputLine = outputReader.readLine();
+			if (inputLine != null && outputLine != null) {
+				assertThat(this.stemming.stem(inputLine), equalTo(outputLine));
+			}
 		}
+		inputReader.close();
+		outputReader.close();
 	}
 
 }
