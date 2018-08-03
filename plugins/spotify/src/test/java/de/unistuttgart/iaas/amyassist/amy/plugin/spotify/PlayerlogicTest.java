@@ -80,13 +80,13 @@ class PlayerLogicTest {
 
 	private Search search;
 
-	private MessageHub broker;
+	private MessageHub messageHub;
 
 	@BeforeEach
 	public void init() {
 		this.spotifyAPICalls = this.testFramework.mockService(SpotifyAPICalls.class);
 		this.search = this.testFramework.mockService(Search.class);
-		this.broker = this.testFramework.mockService(MessageHub.class);
+		this.messageHub = this.testFramework.mockService(MessageHub.class);
 		this.playerLogic = this.testFramework.setServiceUnderTest(PlayerLogic.class);
 		initDevices();
 		initCurrentTrack();

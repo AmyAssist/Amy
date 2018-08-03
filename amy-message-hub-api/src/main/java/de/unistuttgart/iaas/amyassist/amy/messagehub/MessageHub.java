@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub;
 import java.util.function.Consumer;
 
 /**
+ * The MessageHub is a programatic API to publish and subsribe to topics.
  * 
  * @author Kai Menzel, Leon Kiefer
  */
@@ -34,25 +35,30 @@ public interface MessageHub {
 	/**
 	 * Subscribe to a topic
 	 * 
-	 * @param topic   to subscribe to
-	 * @param handler the handler that gets called shoud sth gets published on given
-	 *                Topic
+	 * @param topic
+	 *            to subscribe to
+	 * @param handler
+	 *            the handler that gets called shoud sth gets published on given Topic
 	 */
 	void subscribe(String topic, Consumer<String> handler);
 
 	/**
 	 * Unsubscribe to a topic
 	 * 
-	 * @param topic   to unsubscribe to
-	 * @param handler the handler that will be unsubscribed to the Topic
+	 * @param topic
+	 *            to unsubscribe to
+	 * @param handler
+	 *            the handler that will be unsubscribed to the Topic
 	 */
 	void unsubscribe(String topic, Consumer<String> handler);
 
 	/**
 	 * Publish a message to a Topic
 	 * 
-	 * @param topic   Topic of the Message
-	 * @param message containing the Information
+	 * @param topic
+	 *            Topic of the Message
+	 * @param message
+	 *            containing the Information
 	 */
 	void publish(String topic, String message);
 }

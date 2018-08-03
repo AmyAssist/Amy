@@ -38,6 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
+ * The implementation of the MessageHub api interface as Runnable Service
  * 
  * @author Kai Menzel, Leon Kiefer
  */
@@ -89,9 +90,10 @@ public class MessageHubService implements MessageHub, Runnable {
 	/**
 	 * Subscribe to a topic
 	 * 
-	 * @param topic         to subscribe to
-	 * @param eventExecuter Class that gets called shoud sth gets published on given
-	 *                      Topic
+	 * @param topic
+	 *            to subscribe to
+	 * @param eventExecuter
+	 *            Class that gets called shoud sth gets published on given Topic
 	 */
 	@Override
 	public void subscribe(String topic, Consumer<String> eventExecuter) {
@@ -108,8 +110,10 @@ public class MessageHubService implements MessageHub, Runnable {
 	/**
 	 * Unsubscribe to a topic
 	 * 
-	 * @param topic         to unsubscribe to
-	 * @param eventExecuter class that will be unsubscribed to the Topic
+	 * @param topic
+	 *            to unsubscribe to
+	 * @param eventExecuter
+	 *            class that will be unsubscribed to the Topic
 	 */
 	@Override
 	public void unsubscribe(String topic, Consumer<String> eventExecuter) {
@@ -122,8 +126,10 @@ public class MessageHubService implements MessageHub, Runnable {
 	/**
 	 * Publish a message to a Topic
 	 * 
-	 * @param topic   Topic of the Message
-	 * @param message containing the Information
+	 * @param topic
+	 *            Topic of the Message
+	 * @param message
+	 *            containing the Information
 	 */
 	@Override
 	public void publish(String topic, String message) {
