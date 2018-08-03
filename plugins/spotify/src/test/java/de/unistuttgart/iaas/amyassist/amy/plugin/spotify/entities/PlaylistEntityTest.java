@@ -28,70 +28,81 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 
 /**
+ * Test class for the PlaylistEntity
  * 
  * @author Lars Buttgereit
  */
-@ExtendWith(FrameworkExtension.class )
 class PlaylistEntityTest {
 
 	private PlaylistEntity playlist;
 	private MusicEntity[] musicEntity;
-	
+
 	@BeforeEach
-	public void init() {
+	void init() {
 		this.musicEntity = new MusicEntity[0];
-		this.playlist = new PlaylistEntity("Hello", musicEntity, "abc123", "image.de");
+		this.playlist = new PlaylistEntity("Hello", this.musicEntity, "abc123", "image.de");
 	}
-	
+
 	@Test
-	public void testGetName() {
+	void testGetName() {
 		assertThat(this.playlist.getName(), equalTo("Hello"));
 	}
+
 	@Test
-	public void testGetSongs() {
+	void testGetSongs() {
 		assertThat(this.playlist.getSongs(), equalTo(musicEntity));
 	}
+
 	@Test
-	public void testGetUri() {
+	void testGetUri() {
 		assertThat(this.playlist.getUri(), equalTo("abc123"));
 	}
+
 	@Test
-	public void testGetImageUrl() {
+	void testGetImageUrl() {
 		assertThat(this.playlist.getImageUrl(), equalTo("image.de"));
 	}
-	
+
 	@Test
-	public void testSetName() {
+	void testSetName() {
 		this.playlist.setName("name");
 		assertThat(this.playlist.getName(), equalTo("name"));
 	}
+
 	@Test
-	public void testSetSongs() {
+	void testSetSongs() {
 		MusicEntity[] musicE = new MusicEntity[1];
 		this.playlist.setSongs(musicE);
 		assertThat(this.playlist.getSongs(), equalTo(musicE));
 	}
+
 	@Test
-	public void testSetUri() {
+	void testSetUri() {
 		this.playlist.setUri("123abc");
 		assertThat(this.playlist.getUri(), equalTo("123abc"));
 	}
+
 	@Test
-	public void testSetImageUrl() {
+	void testSetImageUrl() {
 		this.playlist.setImageUrl("testimage.de");
 		assertThat(this.playlist.getImageUrl(), equalTo("testimage.de"));
 	}
-	
+
 	@Test
-	public void testToString() {
+	void testToString() {
 		assertThat(this.playlist.toString(), equalTo("Hello"));
+		this.playlist = new PlaylistEntity();
+		assertThat(this.playlist.toString(), equalTo("No playlist data available"));
 	}
 
+	@Test
+	void testToStringWithCreator() {
+		this.playlist.setPlaylistCreator("Hans");
+		assertThat(this.playlist.toString(), equalTo("Hello created by: Hans"));
+	}
 }

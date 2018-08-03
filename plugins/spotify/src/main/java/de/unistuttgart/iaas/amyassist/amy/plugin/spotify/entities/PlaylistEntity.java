@@ -23,10 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
-
 /**
  * Playlist entity for JSON
  * 
@@ -125,9 +121,12 @@ public class PlaylistEntity extends Item {
 	@Override
 	public String toString() {
 		StringBuilder stringbuilder = new StringBuilder();
-		if (this.playlistCreator != null) {
-			return stringbuilder.append(getName()).append(" from ").append(this.playlistCreator).toString();
+		if (getName() != null) {
+			if (this.playlistCreator != null) {
+				return stringbuilder.append(getName()).append(" created by: ").append(this.playlistCreator).toString();
+			}
+			return stringbuilder.append(getName()).toString();
 		}
-		return stringbuilder.append(getName()).toString();
+		return "No playlist data available";
 	}
 }

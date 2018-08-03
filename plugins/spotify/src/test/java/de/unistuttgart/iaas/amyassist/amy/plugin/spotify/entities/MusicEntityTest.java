@@ -27,17 +27,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 
 /**
  * Test class for MusicEntity
  * 
  * @author Muhammed Kaya
  */
-@ExtendWith(FrameworkExtension.class)
 class MusicEntityTest {
 
 	private MusicEntity musicEntity;
