@@ -187,7 +187,7 @@ public class HelloWorldImpl implements HelloWorldService {
 			work.setHouseNumber(38);
 			work.setLongitude(9.106600);
 			work.setLatitude(48.745172);
-			work.setWork(true);
+			work.setTag(AbstractTaggableRegistry.WORK);
 			work.setName("Uni");
 
 			// Test getAddressString method
@@ -200,17 +200,6 @@ public class HelloWorldImpl implements HelloWorldService {
 
 			// Test getWork method
 			assertTrue(locationRegistry.getWork().equals(work));
-
-			// Test exclusivity of work attribute
-			Location city = locationRegistry.createNewEntity();
-			city.setWork(true);
-
-			try {
-				locationRegistry.save(city);
-				throw new TestException("Saving second 'work'-location didn't produce exception");
-			} catch (RegistryException e) {
-				// Test successful
-			}
 
 			// Test deletion
 			locationRegistry.deleteById(work.getPersistentId());
