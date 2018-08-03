@@ -24,23 +24,42 @@
 package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
 /**
+ * This is a internal used representation of a Message. It contains the topic and the data of a message.
  * 
  * @author Leon Kiefer
+ * @param <T>
+ *            the type of the message payload
  */
 public class Message<T> {
 	private final String topic;
 	private final T data;
 
+	/**
+	 * @param topic
+	 *            the topic the message was published
+	 * @param data
+	 *            the payload of the message
+	 */
 	public Message(String topic, T data) {
 		this.topic = topic;
 		this.data = data;
 	}
 
+	/**
+	 * Get the topic.
+	 * 
+	 * @return the topic of the message
+	 */
 	public String getTopic() {
-		return topic;
+		return this.topic;
 	}
 
+	/**
+	 * Get the data.
+	 * 
+	 * @return the payload of the message
+	 */
 	public T getData() {
-		return data;
+		return this.data;
 	}
 }
