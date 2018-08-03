@@ -149,9 +149,6 @@ public class AlarmClockLogic {
 	 */
 	protected String resetAlarms() {
 		int amount = this.acStorage.getAlarmCounter();
-		if (amount == 0) {
-			return "No alarms found";
-		}
 		this.acStorage.putAlarmCounter(0);
 		int counter = 0;
 		for (int i = 1; i <= amount; i++) {
@@ -160,6 +157,9 @@ public class AlarmClockLogic {
 				deactivateAlarm(i);
 				this.acStorage.deleteAlarm(i);
 			}
+		}
+		if (counter == 0) {
+			return "No alarms found";
 		}
 		return counter + " alarms deleted";
 	}
@@ -171,9 +171,6 @@ public class AlarmClockLogic {
 	 */
 	protected String resetTimers() {
 		int amount = this.acStorage.getTimerCounter();
-		if (amount == 0) {
-			return "No timers found";
-		}
 		this.acStorage.putTimerCounter(0);
 		int counter = 0;
 		for (int i = 1; i <= amount; i++) {
@@ -182,6 +179,9 @@ public class AlarmClockLogic {
 				deactivateTimer(i);
 				this.acStorage.deleteTimer(i);
 			}
+		}
+		if (counter == 0) {
+			return "No timers found";
 		}
 		return counter + " timers deleted";
 	}
@@ -203,6 +203,7 @@ public class AlarmClockLogic {
 	}
 
 	/**
+	 * Deactivates and deletes the timer with the given timer id
 	 * 
 	 * @param timerNumber
 	 *            timerNumber in the storage
@@ -314,8 +315,8 @@ public class AlarmClockLogic {
 	 */
 	protected List<Alarm> getAllAlarms() {
 		List<Alarm> allAlarms = new ArrayList<>();
-		int alarms = this.acStorage.getAlarmCounter();
-		for (int i = 1; i <= alarms; i++) {
+		int amount = this.acStorage.getAlarmCounter();
+		for (int i = 1; i <= amount; i++) {
 			if (this.acStorage.hasAlarm(i)) {
 				allAlarms.add(this.acStorage.getAlarm(i));
 			}
@@ -330,8 +331,8 @@ public class AlarmClockLogic {
 	 */
 	protected List<Timer> getAllTimers() {
 		List<Timer> allTimers = new ArrayList<>();
-		int timers = this.acStorage.getTimerCounter();
-		for (int i = 1; i <= timers; i++) {
+		int amount = this.acStorage.getTimerCounter();
+		for (int i = 1; i <= amount; i++) {
 			if (this.acStorage.hasTimer(i)) {
 				allTimers.add(this.acStorage.getTimer(i));
 			}

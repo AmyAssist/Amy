@@ -153,7 +153,7 @@ public class AlarmClockLogicTest {
 	@Test
 	public void testResetAlarmsNoAlarms() {
 		assertThat(this.acl.resetAlarms(), is("No alarms found"));
-		verify(this.acStorage, never()).putAlarmCounter(0);
+		verify(this.acStorage).putAlarmCounter(0);
 		verify(this.acStorage, never()).deleteAlarm(ArgumentMatchers.anyInt());
 	}
 
@@ -181,7 +181,7 @@ public class AlarmClockLogicTest {
 	@Test
 	protected void testResetTimersNoTimers() {
 		assertThat(this.acl.resetTimers(), is("No timers found"));
-		verify(this.acStorage, never()).putTimerCounter(0);
+		verify(this.acStorage).putTimerCounter(0);
 		verify(this.acStorage, never()).deleteAlarm(ArgumentMatchers.anyInt());
 	}
 
