@@ -46,5 +46,5 @@ public interface ITaggableRegistry<T> extends IRegistry<T> {
      * @param tagValue the tag of the requested entities
      * @return all entities or an empty list
      */
-    @Nonnull List<? extends T> getEntitiesWithTag(String tagValue);
+    @Nonnull List<T> getEntitiesWithTag(String tagValue);
 }

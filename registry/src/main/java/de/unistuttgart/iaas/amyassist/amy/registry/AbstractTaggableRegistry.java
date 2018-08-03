@@ -23,62 +23,75 @@
 
 package de.unistuttgart.iaas.amyassist.amy.registry;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.List;
 
 /**
  * A registry with a taggable entity class. Adds the ability to search for entities with a specific tag
- * @author Benno Krauß
- * @param <T> entity class
+ * 
+ * @author Benno Krauß, Leon Kiefer
+ * @param <T>
+ *            entity class
  */
-public abstract class AbstractTaggableRegistry<T extends RegistryEntity & Taggable> extends AbstractRegistry<T> implements ITaggableRegistry<T> {
+public abstract class AbstractTaggableRegistry<T extends RegistryEntity & Taggable> extends AbstractRegistry<T>
+		implements ITaggableRegistry<T> {
 
-    /**
-     * Constants for common applications. Custom tag names are explicitly allowed
-     */
-    public static final String WORK = "work";
-    public static final String HOME = "home";
+	/**
+	 * Constants for common applications. Custom tag names are explicitly allowed
+	 */
+	public static final String WORK = "work";
+	public static final String HOME = "home";
 
-    /**
-     * Get at most one entity with tag tagValue
-     * @param tagValue the tag of the requested entity
-     * @return an entity or null
-     * @throws RegistryException if there is more than one entity with this tag
-     */
-    public T getEntityWithTag(String tagValue) {
-        List<? extends T> l = getEntitiesWithTag(tagValue);
+	/**
+	 * Get at most one entity with tag tagValue
+	 * 
+	 * @param tagValue
+	 *            the tag of the requested entity
+	 * @return an entity or null
+	 * @throws RegistryException
+	 *             if there is more than one entity with this tag
+	 */
+	@Override
+	public T getEntityWithTag(String tagValue) {
+		List<? extends T> l = getEntitiesWithTag(tagValue);
 
-        if (l.size() > 1) {
-            throw new RegistryException("More than one entity with tag value " + tagValue);
-        }
+		if (l.size() > 1) {
+			throw new RegistryException("More than one entity with tag value " + tagValue);
+		}
 
-        if (l.isEmpty()) {
-            return null;
-        }
+		if (l.isEmpty()) {
+			return null;
+		}
 
-        return l.get(0);
-    }
+		return l.get(0);
+	}
 
+	/**
+	 * Get all entities with tag tagValue
+	 * 
+	 * @param tagValue
+	 *            the tag of the requested entities
+	 * @return all entities or an empty list
+	 */
+	@Override
+	public @Nonnull List<T> getEntitiesWithTag(String tagValue) {
+		CriteriaQuery<? extends T> selectFrom = this.selectFrom(getEntityClass(), tagValue);
+		TypedQuery<? extends T> typedQuery = this.entityManager.createQuery(selectFrom);
 
-    /**
-     * Get all entities with tag tagValue
-     * @param tagValue the tag of the requested entities
-     * @return all entities or an empty list
-     */
-    @SuppressWarnings("unchecked")
-    public @Nonnull List<? extends T> getEntitiesWithTag(String tagValue) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<T> query = (CriteriaQuery<T>)builder.createQuery(getEntityClass());
-        Root<? extends T> root = query.from(getEntityClass());
+		return new ArrayList<>(typedQuery.getResultList());
+	}
 
-        query.select(root).where(builder.equal(root.get("tag"), tagValue));
+	private <X> CriteriaQuery<X> selectFrom(Class<X> entityClass, String tagValue) {
+		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+		CriteriaQuery<X> query = builder.createQuery(entityClass);
+		Root<X> root = query.from(entityClass);
 
-        TypedQuery<? extends T> typedQuery = entityManager.createQuery(query);
-
-        return typedQuery.getResultList();
-    }
+		return query.select(root).where(builder.equal(root.get("tag"), tagValue));
+	}
 }
