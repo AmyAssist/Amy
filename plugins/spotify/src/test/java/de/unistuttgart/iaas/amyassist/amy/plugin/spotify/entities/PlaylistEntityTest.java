@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.rest;
+package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,7 +36,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 
 /**
  * 
- * @author Lars Buttgereut
+ * @author Lars Buttgereit
  */
 @ExtendWith(FrameworkExtension.class )
 class PlaylistEntityTest {
@@ -91,7 +91,7 @@ class PlaylistEntityTest {
 	
 	@Test
 	public void testToString() {
-		assertThat(this.playlist.toString(), equalTo("name of the playlist is: Hello"));
+		assertThat(this.playlist.toString(), equalTo("Hello"));
 	}
 
 }

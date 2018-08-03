@@ -353,7 +353,7 @@ class MusicRestTest {
 		Mockito.when(this.logic.play()).thenReturn(this.featuredPlaylists.get(0));
 		response = this.target.path("play").request().post(null);
 		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("name of the playlist is: featuredPlaylist"));
+		assertThat(actualMsg, is("featuredPlaylist"));
 		assertThat(response.getStatus(), is(200));
 		Mockito.verify(this.logic).play();
 

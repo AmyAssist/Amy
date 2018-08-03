@@ -58,6 +58,7 @@ public class Search {
 	@Reference
 	private IStorage storage;
 
+	
 	private static final String SPOTIFY_URI_STORAGE = "spotify_uri_";
 	/**
 	 * search limit for a few search queries
@@ -314,11 +315,11 @@ public class Search {
 	 *            to write to right position
 	 */
 	private void writeUrisToStorage(List<PlaylistEntity> playlists, SearchTypes type) {
-		deleteUrisFromStroage(type);
+	/*	deleteUrisFromStroage(type);
 		for (int i = 0; i < playlists.size(); i++) {
 			this.storage.put(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)),
 					playlists.get(i).getUri());
-		}
+		}*/
 	}
 
 	private void writeUrisToStorageMap(List<Map<String, String>> playlists, SearchTypes type) {
@@ -336,12 +337,12 @@ public class Search {
 	 *            of the query items to delete
 	 */
 	private void deleteUrisFromStroage(SearchTypes type) {
-		int i = 0;
+	/*	int i = 0;
 		while (this.storage
 				.has(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)))) {
 			this.storage.delete(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)));
 			i++;
-		}
+		}*/
 	}
 
 	/**
@@ -353,13 +354,13 @@ public class Search {
 	 */
 	public List<String> restoreUris(SearchTypes type) {
 		List<String> result = new ArrayList<>();
-		int i = 0;
+		/*int i = 0;
 		while (this.storage
 				.has(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)))) {
 			result.add(this.storage
 					.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))));
 			i++;
-		}
+		}*/
 		return result;
 	}
 }
