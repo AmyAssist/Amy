@@ -146,6 +146,7 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public void handleCommand(String result) {
+		this.logger.info("I understood: {}", result);
 		Future<String> handle = this.inputHandler.handle(result);
 		try {
 			voiceOutput(handle.get());

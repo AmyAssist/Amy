@@ -34,21 +34,19 @@ public class ServiceNotFoundException extends RuntimeException {
 	 * 
 	 */
 	private static final long serialVersionUID = 2441944380474159637L;
-	private final Class<?> serviceType;
+	private final String message;
 
 	/**
 	 * @param serviceDescription
 	 */
 	public ServiceNotFoundException(ServiceDescription<?> serviceDescription) {
-		this.serviceType = serviceDescription.getServiceType();
+		this.message = "The Service " + serviceDescription.getServiceType().getName() + " with "
+				+ serviceDescription.getAnnotations() + " is not registered in the DI or do not exists.";
 	}
 
-	/**
-	 * @see java.lang.Throwable#getMessage()
-	 */
 	@Override
 	public String getMessage() {
-		return "The Service " + this.serviceType.getName() + " is not registered in the DI or do not exists.";
+		return this.message;
 	}
 
 }

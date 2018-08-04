@@ -21,31 +21,39 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.service;
 
-import java.lang.annotation.Annotation;
-import java.util.Set;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Abstract description of a Service. This describes the service from the Consumer point of view. It describes the type
- * of the Service and the qualifiers of the Service. This Description is independent of the implementation of the
- * Service. This description can be used to get the described Service from a ServiceLocator.
+ * Service implementation as runnable service
  * 
  * @author Leon Kiefer
- * @param <T>
- *            the type of the service
  */
-public interface ServiceDescription<T> {
-	/**
-	 * @return the type of the Service described by this Service Description
-	 */
-	Class<T> getServiceType();
+@Service(SimpleService.class)
+public class SimpleServiceImpl implements SimpleService, RunnableService {
+	public boolean run = false;
+	public int count = 0;
 
-	/**
-	 * The attributes of the Service
-	 * 
-	 * @return the annotations that qualify and distinguish the Service
-	 */
-	Set<Annotation> getAnnotations();
+	@Override
+	public void start() {
+		this.run = true;
+		this.count++;
+	}
+
+	@Override
+	public void stop() {
+		this.run = false;
+	}
+
+	@Override
+	public boolean getRun() {
+		return this.run;
+	}
+
+	@Override
+	public int getCount() {
+		return this.count;
+	}
 
 }

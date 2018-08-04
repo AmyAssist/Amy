@@ -53,16 +53,16 @@ public class SystemTimeLogic {
 	}
 
 	/**
-	 * 
-	 * @return current year as String (yyyy), e.g. 2018
+	 *
+	 * @return current year, e.g. 2018
 	 */
 	public int getYear() {
 		return this.getTimeStamp().getYear();
 	}
 
 	/**
-	 * 
-	 * @return current date as String (dd MM yy), e.g. 01 06 18
+	 *
+	 * @return current date as String, e.g. "1st of april"
 	 */
 	public String getDate() {
 		LocalDate localDate = this.getTimeStamp().toLocalDate();
@@ -89,8 +89,7 @@ public class SystemTimeLogic {
 		String[] ordinals = { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
 		if (10 < i && i < 14) {
 			return i + "th";
-		} else {
-			return i + ordinals[i % 10];
 		}
+		return i + ordinals[i % 10];
 	}
 }

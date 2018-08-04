@@ -23,29 +23,19 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.lang.annotation.Annotation;
-import java.util.Set;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Abstract description of a Service. This describes the service from the Consumer point of view. It describes the type
- * of the Service and the qualifiers of the Service. This Description is independent of the implementation of the
- * Service. This description can be used to get the described Service from a ServiceLocator.
+ * Test Service for DI
  * 
  * @author Leon Kiefer
- * @param <T>
- *            the type of the service
  */
-public interface ServiceDescription<T> {
-	/**
-	 * @return the type of the Service described by this Service Description
-	 */
-	Class<T> getServiceType();
+ @Service
+public class Service7Impl implements Service7API {
 
-	/**
-	 * The attributes of the Service
-	 * 
-	 * @return the annotations that qualify and distinguish the Service
-	 */
-	Set<Annotation> getAnnotations();
+	@Override
+	public void foo() {
+		int i = 1 + 1;
+	}
 
 }

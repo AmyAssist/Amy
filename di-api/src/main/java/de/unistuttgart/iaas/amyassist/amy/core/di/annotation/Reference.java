@@ -31,6 +31,8 @@ import java.lang.annotation.Target;
 /**
  * Declare a runtime dependency
  * 
+ * @see Service
+ * 
  * @author Leon Kiefer
  */
 @Retention(RetentionPolicy.RUNTIME)
