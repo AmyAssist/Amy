@@ -37,24 +37,46 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
  * @param <T>
  *            the type of the service
  */
-public final class ServicePoolKey<T> {
+final class ServicePoolKey<T> {
 
 	@Nonnull
-	private final ServiceProvider<T> serviceProvider;
+	final ServiceProvider<T> serviceProvider;
 	@Nonnull
-	private final Map<String, Object> context;
+	final Map<String, Object> context;
+	@Nonnull
+	final Class<T> serviceType;
+	@Nonnull
+	final Class<?> implementationClass;
 
 	/**
 	 * Create a new Key for a service from the given ServiceProvider with the given context. Keys with the same
-	 * ServiceProvider and context are equal.
+	 * ServiceProvider and context are equal. Also ServiceType and implementation class are required.
 	 * 
 	 * @param serviceProvider
 	 *            the service provider of the service this key is for
 	 * @param context
+	 * @param serviceType
+	 * @param implementationClass
 	 */
-	public ServicePoolKey(@Nonnull ServiceProvider<T> serviceProvider, Map<String, Object> context) {
+	public ServicePoolKey(@Nonnull ServiceProvider<T> serviceProvider, Map<String, Object> context,
+			@Nonnull Class<T> serviceType, @Nonnull Class<?> implementationClass) {
 		this.serviceProvider = serviceProvider;
 		this.context = new HashMap<>(context);
+		this.serviceType = serviceType;
+		this.implementationClass = implementationClass;
+	}
+
+	/**
+	 * Create a Key from a provider and a ServiceImplementation
+	 * 
+	 * @param serviceProvider
+	 * @param serviceImplementationDescription
+	 */
+	public ServicePoolKey(@Nonnull ServiceProvider<T> serviceProvider,
+			ServiceImplementationDescription<T> serviceImplementationDescription) {
+		this(serviceProvider, serviceImplementationDescription.getContext(),
+				serviceImplementationDescription.getServiceDescription().getServiceType(),
+				serviceImplementationDescription.getImplementationClass());
 	}
 
 	@Override
@@ -80,6 +102,12 @@ public final class ServicePoolKey<T> {
 		if (!this.context.equals(other.context))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Service type: " + this.serviceType.getName() + " ServiceProvider: " + this.serviceProvider
+				+ " Implementation class: " + this.implementationClass.getName() + " Context: " + this.context;
 	}
 
 }

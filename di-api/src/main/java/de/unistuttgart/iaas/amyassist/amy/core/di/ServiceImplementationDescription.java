@@ -38,4 +38,15 @@ public interface ServiceImplementationDescription<T> {
 
 	@Nonnull
 	Map<String, Object> getContext();
+
+	/**
+	 * The implementation class that is used to generate new instances of the service.
+	 * <p>
+	 * If the class returned is a Factory, then the factory is used to create instances. In this case the system will
+	 * get an instance of the factory and use it to create the instances
+	 * 
+	 * @return The class that directly implements the contract types, or the class that is the factory for an object
+	 *         that implements the contract types
+	 */
+	public Class<?> getImplementationClass();
 }

@@ -27,7 +27,9 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -62,7 +64,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	/**
 	 * A register which maps a service description to it's service provider.
 	 */
-	private final Map<ServiceDescription<?>, ServiceProvider<?>> register;
+	private final Map<ServiceKey<?>, ServiceProvider<?>> register;
 
 	private final Map<ServicePoolKey<?>, ServiceHandle<?>> servicePool;
 
@@ -97,15 +99,16 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	@Override
 	public <T> void register(Class<T> serviceType, ServiceProvider<T> serviceProvider) {
-		this.register(Util.serviceDescriptionFor(serviceType), serviceProvider);
+		this.register(new ServiceDescriptionImpl<>(serviceType), serviceProvider);
 	}
 
 	@Override
 	public <T> void register(ServiceDescription<T> serviceDescription, ServiceProvider<T> serviceProvider) {
+		ServiceKey<T> serviceKey = new ServiceKey<>(serviceDescription);
 		synchronized (this.register) {
-			if (this.hasServiceOfType(serviceDescription))
+			if (this.register.containsKey(serviceKey))
 				throw new DuplicateServiceException();
-			this.register.put(serviceDescription, serviceProvider);
+			this.register.put(serviceKey, serviceProvider);
 		}
 	}
 
@@ -128,18 +131,18 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 			}
 		}
 
+		this.registerClass(cls, serviceType);
+	}
+
+	private <T, X> void registerClass(@Nonnull Class<X> cls, @Nonnull Class<T> serviceType) {
 		if (!serviceType.isAssignableFrom(cls)) {
 			throw new IllegalArgumentException(
 					"The specified service type " + serviceType.getName() + " is not assignable from " + cls.getName());
 		}
-		synchronized (this.register) {
-			if (this.hasServiceOfType(Util.serviceDescriptionFor(serviceType))) {
-				throw new DuplicateServiceException();
-			}
+		Class<? extends T> implementationClass = (Class<? extends T>) cls;
 
-			ServiceProvider<?> p = new ClassServiceProvider<>(cls);
-			this.register.put(Util.serviceDescriptionFor(serviceType), p);
-		}
+		ServiceProvider<T> p = new ClassServiceProvider<>(implementationClass);
+		this.register(serviceType, p);
 	}
 
 	@Override
@@ -152,13 +155,9 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		this.register(serviceType, new SingletonServiceProvider<>(externalService));
 	}
 
-	private boolean hasServiceOfType(ServiceDescription<?> serviceDescription) {
-		return this.register.containsKey(serviceDescription);
-	}
-
 	@Override
 	public <T> T getService(Class<T> serviceType) {
-		return this.getService(Util.serviceDescriptionFor(serviceType)).getService();
+		return this.getService(new ServiceDescriptionImpl<>(serviceType)).getService();
 	}
 
 	@Override
@@ -197,9 +196,8 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	@CheckForNull
 	private <T> ServiceHandle<T> lookUpService(@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
-		Map<String, Object> context = serviceImplementationDescription.getContext();
 
-		ServicePoolKey<?> servicePoolKey = new ServicePoolKey<>(serviceProvider, context);
+		ServicePoolKey<?> servicePoolKey = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription);
 
 		if (!this.servicePool.containsKey(servicePoolKey)) {
 			return null;
@@ -209,7 +207,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	private <T> void createService(@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
-		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription.getContext());
+		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription);
 		synchronized (this.servicePool) {
 			if (this.serviceCreationInfo.containsKey(key)) {
 				ServiceCreationInfo serviceCreationInfo = this.serviceCreationInfo.get(key);
@@ -246,6 +244,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(classOfInstance, Reference.class);
 		for (Field field : dependencyFields) {
 			ServiceDescription<?> serviceDescription = Util.serviceDescriptionFor(field);
+			serviceDescription.getAnnotations().removeIf(annotation -> annotation instanceof Reference);
 			Class<?> declaredClass = field.getDeclaringClass();
 			Object object = this.getService(ConsumerFactory.build(declaredClass, serviceDescription)).getService();
 			Util.inject(instance, object, field);
@@ -271,10 +270,11 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	@Nonnull
 	@SuppressWarnings("unchecked")
 	private <T> ServiceProvider<T> getServiceProvider(ServiceDescription<T> serviceDescription) {
+		ServiceKey<T> serviceKey = new ServiceKey<>(serviceDescription);
 		synchronized (this.register) {
-			if (!this.register.containsKey(serviceDescription))
+			if (!this.register.containsKey(serviceKey))
 				throw new ServiceNotFoundException(serviceDescription);
-			return (ServiceProvider<T>) this.register.get(serviceDescription);
+			return (ServiceProvider<T>) this.register.get(serviceKey);
 		}
 	}
 

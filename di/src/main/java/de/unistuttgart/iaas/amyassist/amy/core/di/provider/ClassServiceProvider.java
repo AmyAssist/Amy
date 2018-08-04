@@ -85,7 +85,7 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 			map.put(key, locator.getContextProvider(key).getContext(serviceConsumer.getConsumerClass()));
 		}
 
-		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(), map);
+		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(), map, this.cls);
 	}
 
 	@Override

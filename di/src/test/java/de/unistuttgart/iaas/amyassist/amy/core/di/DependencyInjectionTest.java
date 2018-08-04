@@ -94,7 +94,7 @@ class DependencyInjectionTest {
 				() -> this.dependencyInjection.getService(Service6.class)).getMessage();
 
 		assertThat(message, equalTo(
-				"The Service " + Service7API.class.getName() + " is not registered in the DI or do not exists."));
+				"The Service " + Service7API.class.getName() + " with [] is not registered in the DI or do not exists."));
 	}
 
 	@Test()

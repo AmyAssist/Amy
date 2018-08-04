@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import java.lang.annotation.Annotation;
+import java.util.Set;
 
 /**
  * Abstract description of a Service. This describes the service from the Consumer point of view. It describes the type
@@ -45,5 +46,6 @@ public interface ServiceDescription<T> {
 	 * 
 	 * @return the annotations that qualify and distinguish the Service
 	 */
-	Annotation[] getAnnotations();
+	Set<Annotation> getAnnotations();
+
 }

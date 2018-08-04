@@ -50,7 +50,7 @@ public class LoggerProvider implements ServiceProvider<Logger> {
 			ServiceConsumer<Logger> serviceConsumer) {
 		Class<?> cls = serviceConsumer.getConsumerClass();
 		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
-				Collections.singletonMap(KEY, cls));
+				Collections.singletonMap(KEY, cls), LoggerFactory.class);
 	}
 
 	@Override
