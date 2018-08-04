@@ -25,12 +25,10 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.util.Properties;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
@@ -43,9 +41,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService
 import de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskSchedulerImpl;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistryImpl;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistryImpl;
+import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
 
 /**
  * Register the Services of Core
@@ -61,9 +59,7 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 
 		di.register(GrammarObjectsCreator.class);
 		di.register(TaskSchedulerImpl.class);
-		di.register(Server.class);
 		di.register(ConfigurationImpl.class);
-		di.register(Console.class);
 		di.register(NLProcessingManagerImpl.class);
 		di.register(ConfigurationLoaderImpl.class);
 		di.register(PluginLoader.class);

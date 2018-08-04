@@ -87,7 +87,7 @@ public class TestFrameworkImpl implements TestFramework {
 	public void prepareServer() {
 		Properties serverConfig = new Properties();
 		serverConfig.setProperty(Server.PROPERTY_PORT, String.valueOf(TEST_SERVER_PORT));
-		serverConfig.setProperty(Server.PROPERTY_ROOT_PATH, "/");
+		serverConfig.setProperty(Server.PROPERTY_CONTEXT_PATH, "");
 		serverConfig.setProperty(Server.PROPERTY_LOCALHOST, "true");
 		ConfigurationLoader configLoader = this.registerService(ConfigurationLoader.class, TestConfiguration.class);
 		configLoader.store(Server.CONFIG_NAME, serverConfig);
@@ -109,7 +109,7 @@ public class TestFrameworkImpl implements TestFramework {
 	public void before() {
 		if (!this.restResources.isEmpty()) {
 			this.prepareServer();
-			this.server.start(this.restResources.toArray(new Class<?>[this.restResources.size()]));
+			this.server.startWithResources(this.restResources.toArray(new Class<?>[this.restResources.size()]));
 		}
 	}
 
@@ -118,7 +118,7 @@ public class TestFrameworkImpl implements TestFramework {
 	 */
 	public void after() {
 		if (this.server != null) {
-			this.server.shutdown();
+			this.server.stop();
 		}
 	}
 
