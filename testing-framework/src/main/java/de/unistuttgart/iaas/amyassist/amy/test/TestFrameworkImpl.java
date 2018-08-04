@@ -34,7 +34,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 
 import org.mockito.Mockito;
-import org.slf4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
