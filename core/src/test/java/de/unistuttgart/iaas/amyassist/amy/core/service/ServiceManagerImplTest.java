@@ -75,4 +75,21 @@ class ServiceManagerImplTest {
 		assertThrows(IllegalStateException.class, () -> this.runnableServiceExtension.start());
 	}
 
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl#start()}.
+	 */
+	@Test
+	void testStartRunnableServiceFromInterface() {
+
+		this.di.register(SimpleServiceImpl.class);
+		this.runnableServiceExtension.deploy();
+		this.runnableServiceExtension.start();
+
+		SimpleService service = this.di.getService(SimpleService.class);
+		assertThat(service.getRun(), is(true));
+		this.runnableServiceExtension.stop();
+		assertThat(service.getRun(), is(false));
+		assertThat(service.getCount(), is(1));
+	}
+
 }

@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
@@ -35,8 +36,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.persistence.storage.DatabaseStora
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService;
 import de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskSchedulerImpl;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistryImpl;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistryImpl;
 import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
@@ -68,6 +72,12 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 		di.register(LocationRegistryImpl.class);
 		di.register(ServiceManagerImpl.class);
 		di.register(Geocoder.class);
+
+		di.register(Console.class);
+		di.register(TextToSpeech.class);
+		di.register(LocalAudioUserInteraction.class);
+
+		di.register(Server.class);
 	}
 
 }
