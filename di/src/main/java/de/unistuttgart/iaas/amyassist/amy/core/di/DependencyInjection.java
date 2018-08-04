@@ -24,9 +24,12 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.CheckForNull;
@@ -41,6 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.ClassProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.extension.Extension;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ClassServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
@@ -70,18 +74,25 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	protected Map<String, StaticProvider<?>> staticProviders;
 
+	private final Set<Extension> extensions;
+
 	/**
 	 * Creates a new Dependency Injection
+	 * 
+	 * @param extensions
+	 *            for the dependency injection
 	 */
-	public DependencyInjection() {
+	public DependencyInjection(Extension... extensions) {
 		this.register = new ConcurrentHashMap<>();
 		this.servicePool = new ConcurrentHashMap<>();
 		this.serviceCreationInfos = new ConcurrentHashMap<>();
 		this.staticProviders = new ConcurrentHashMap<>();
+		this.extensions = new HashSet<>(Arrays.asList(extensions));
 
 		this.registerContextProvider("class", new ClassProvider());
 		this.addExternalService(ServiceLocator.class, this);
 		this.addExternalService(Configuration.class, this);
+		this.extensions.forEach(ext -> ext.postConstruct(this));
 	}
 
 	/**
@@ -134,8 +145,10 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 					"The specified service type " + serviceType.getName() + " is not assignable from " + cls.getName());
 		}
 		Class<? extends T> implementationClass = (Class<? extends T>) cls;
-
-		this.register(new ClassServiceProvider<>(serviceType, implementationClass));
+		ClassServiceProvider<T> classServiceProvider = new ClassServiceProvider<>(serviceType, implementationClass);
+		this.register(classServiceProvider);
+		this.extensions
+				.forEach(ext -> ext.onRegister(classServiceProvider.getServiceDescription(), implementationClass));
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	@Nonnull
 	private final Class<? extends T> cls;
 	@Nonnull
-	private final Class<T> serviceType;
+	private final ServiceDescription<T> serviceDescription;
 
 	private final Set<InjectionPoint> injectionPoints = new HashSet<>();
 	private final Set<ContextInjectionPoint> contextInjectionPoints = new HashSet<>();
@@ -66,7 +66,16 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	 *            the service implementation class
 	 */
 	public ClassServiceProvider(@Nonnull Class<T> serviceType, @Nonnull Class<? extends T> cls) {
-		this.serviceType = serviceType;
+		this(new ServiceDescriptionImpl<>(serviceType), cls);
+	}
+
+	/**
+	 * 
+	 * @param serviceDescription
+	 * @param cls
+	 */
+	public ClassServiceProvider(@Nonnull ServiceDescription<T> serviceDescription, @Nonnull Class<? extends T> cls) {
+		this.serviceDescription = serviceDescription;
 		if (!Util.isValidServiceClass(cls))
 			throw new IllegalArgumentException(
 					"There is a problem with the class " + cls.getName() + ". It can't be used as a Service");
@@ -85,7 +94,7 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 
 	@Override
 	public ServiceDescription<T> getServiceDescription() {
-		return new ServiceDescriptionImpl<>(this.serviceType);
+		return this.serviceDescription;
 	}
 
 	@Override

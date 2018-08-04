@@ -23,17 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -46,72 +39,24 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 @Service
 public class ServiceManagerImpl {
 
-	private static final String SERVICE_DEPLOYMENT_DESCRIPTOR = "META-INF/" + RunnableService.class.getName();
-
-	@Reference
-	private Configuration configuration;
-
 	@Reference
 	private ServiceLocator serviceLocator;
 
-	private Set<Class<? extends RunnableService>> classes = new HashSet<>();
+	private Set<ServiceDescription<?>> serviceDescriptions = new HashSet<>();
 	private Set<RunnableService> runningServices = new HashSet<>();
 
 	private boolean running = false;
 
 	/**
-	 * Loads Services using the deployment descriptor file
-	 * META-INF/de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService
-	 */
-	public void loadServices() {
-		ClassLoader classLoader = this.getClass().getClassLoader();
-		Enumeration<URL> resources;
-		try {
-			resources = classLoader.getResources(SERVICE_DEPLOYMENT_DESCRIPTOR);
-		} catch (IOException e) {
-			throw new IllegalStateException("Could not read the Service deployment descriptor", e);
-		}
-		while (resources.hasMoreElements()) {
-			try (InputStream resourceAsStream = resources.nextElement().openStream();
-					BufferedReader reader = new BufferedReader(
-							new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8))) {
-				String className;
-				while ((className = reader.readLine()) != null) {
-					if (className.isEmpty() || className.startsWith("#")) {
-						continue;
-					}
-					this.register(className, classLoader);
-				}
-			} catch (IOException e) {
-				throw new IllegalStateException("Could not read the Service deployment descriptor", e);
-			}
-		}
-
-	}
-
-	private void register(String className, ClassLoader classLoader) {
-		try {
-			Class<?> cls = Class.forName(className, true, classLoader);
-			if (!RunnableService.class.isAssignableFrom(cls)) {
-				throw new IllegalArgumentException(className + " is not a RunnableService");
-			}
-			this.configuration.register(cls);
-			this.register((Class<? extends RunnableService>) cls);
-		} catch (ClassNotFoundException e) {
-			throw new IllegalArgumentException(e);
-		}
-	}
-
-	/**
 	 * Register a RunnableService to be started and stopped by this ServiceManager
 	 * 
-	 * @param cls
-	 *            the RunnableService class
+	 * @param serviceDescription
+	 *            the serviceDescription of the RunnableService
 	 */
-	public void register(Class<? extends RunnableService> cls) {
+	public void register(ServiceDescription<?> serviceDescription) {
 		if (this.running)
 			throw new IllegalStateException("Service Manager is already running");
-		this.classes.add(cls);
+		this.serviceDescriptions.add(serviceDescription);
 	}
 
 	/**
@@ -120,8 +65,8 @@ public class ServiceManagerImpl {
 	public void start() {
 		if (this.running)
 			throw new IllegalStateException("Service Manager is already running");
-		for (Class<? extends RunnableService> runnableService : this.classes) {
-			RunnableService service = this.serviceLocator.getService(runnableService);
+		for (ServiceDescription<?> runnableService : this.serviceDescriptions) {
+			RunnableService service = (RunnableService) this.serviceLocator.getService(runnableService).getService();
 			this.runningServices.add(service);
 		}
 		this.runningServices.forEach(RunnableService::start);
