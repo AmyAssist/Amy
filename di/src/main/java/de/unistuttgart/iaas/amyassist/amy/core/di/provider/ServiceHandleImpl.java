@@ -21,31 +21,30 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
-
-import java.lang.annotation.Annotation;
-import java.util.Set;
+package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
 /**
- * Abstract description of a Service. This describes the service from the Consumer point of view. It describes the type
- * of the Service and the qualifiers of the Service. This Description is independent of the implementation of the
- * Service. This description can be used to get the described Service from a ServiceLocator.
+ * The implementation of the ServiceHandle
  * 
  * @author Leon Kiefer
- * @param <T>
- *            the type of the service
  */
-public interface ServiceDescription<T> {
-	/**
-	 * @return the type of the Service described by this Service Description
-	 */
-	Class<T> getServiceType();
+public class ServiceHandleImpl<T> implements ServiceHandle<T> {
+
+	private final T service;
 
 	/**
-	 * The attributes of the Service
+	 * Create a new ServiceHandle with a given service instance
 	 * 
-	 * @return the annotations that qualify and distinguish the Service
+	 * @param service
+	 *            the service instance for this ServiceHandle
 	 */
-	Set<Annotation> getAnnotations();
+	public ServiceHandleImpl(T service) {
+		this.service = service;
+	}
+
+	@Override
+	public T getService() {
+		return this.service;
+	}
 
 }

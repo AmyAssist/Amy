@@ -28,6 +28,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -208,10 +210,6 @@ public class Util {
 		}
 	}
 
-	public static <T> ServiceDescription<T> serviceDescriptionFor(Class<T> serviceType) {
-		return new ServiceDescriptionImpl<>(serviceType, serviceType.getAnnotations());
-	}
-
 	/**
 	 * @param field
 	 * @return
@@ -219,7 +217,7 @@ public class Util {
 	public static ServiceDescription<?> serviceDescriptionFor(Field field) {
 		Class<?> serviceType = field.getType();
 		Annotation[] annotations = field.getAnnotations();
-		return new ServiceDescriptionImpl<>(serviceType, annotations);
+		return new ServiceDescriptionImpl<>(serviceType, new HashSet<>(Arrays.asList(annotations)));
 	}
 
 }

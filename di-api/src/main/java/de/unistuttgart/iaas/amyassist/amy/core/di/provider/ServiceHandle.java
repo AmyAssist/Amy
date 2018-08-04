@@ -21,31 +21,24 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
-import java.lang.annotation.Annotation;
-import java.util.Set;
+import javax.annotation.Nonnull;
 
 /**
- * Abstract description of a Service. This describes the service from the Consumer point of view. It describes the type
- * of the Service and the qualifiers of the Service. This Description is independent of the implementation of the
- * Service. This description can be used to get the described Service from a ServiceLocator.
+ * The container of Services to be used to pass Services around the DI. This is an abstraction of the service instance
+ * in the dependency injection.
  * 
  * @author Leon Kiefer
  * @param <T>
  *            the type of the service
  */
-public interface ServiceDescription<T> {
+public interface ServiceHandle<T> {
 	/**
-	 * @return the type of the Service described by this Service Description
-	 */
-	Class<T> getServiceType();
-
-	/**
-	 * The attributes of the Service
+	 * Get the service instance
 	 * 
-	 * @return the annotations that qualify and distinguish the Service
+	 * @return the service instance of this service handle
 	 */
-	Set<Annotation> getAnnotations();
-
+	@Nonnull
+	T getService();
 }

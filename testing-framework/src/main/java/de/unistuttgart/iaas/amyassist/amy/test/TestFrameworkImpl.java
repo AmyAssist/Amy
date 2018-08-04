@@ -34,7 +34,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 
 import org.mockito.Mockito;
-import org.slf4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
@@ -78,7 +77,7 @@ public class TestFrameworkImpl implements TestFramework {
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
 		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
 		this.dependencyInjection.register(Server.class);
-		this.dependencyInjection.register(Logger.class, new LoggerProvider());
+		this.dependencyInjection.register(new LoggerProvider());
 	}
 
 	/**
