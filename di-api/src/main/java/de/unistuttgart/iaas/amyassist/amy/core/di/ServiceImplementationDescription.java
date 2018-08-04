@@ -38,13 +38,20 @@ import javax.annotation.Nonnull;
  */
 public interface ServiceImplementationDescription<T> {
 	/**
-	 * The Service description independent of this implementation specific description. It is used to find a matching ServiceProvider.
+	 * The Service description independent of this implementation specific description. It is used to find a matching
+	 * ServiceProvider.
 	 * 
 	 * @return the ServiceDescription
 	 */
 	@Nonnull
 	ServiceDescription<T> getServiceDescription();
 
+	/**
+	 * The context in which the service is provided. The keys of the mapping are defined by the ServiceProvider and the
+	 * values distinguish between different context.
+	 * 
+	 * @return the context of the described service
+	 */
 	@Nonnull
 	Map<String, Object> getContext();
 

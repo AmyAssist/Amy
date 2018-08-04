@@ -42,6 +42,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
  *            service type
  */
 public interface ServiceProvider<T> {
+	/**
+	 * The description of services this Service Provider can provide. This is used to find this ServiceProvider when a
+	 * service is requested.
+	 * 
+	 * @return the service description
+	 */
 	@Nonnull
 	ServiceDescription<T> getServiceDescription();
 
