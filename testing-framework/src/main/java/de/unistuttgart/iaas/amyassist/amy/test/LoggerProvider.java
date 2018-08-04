@@ -28,6 +28,8 @@ import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
@@ -44,6 +46,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 public class LoggerProvider implements ServiceProvider<Logger> {
 
 	private static final String KEY = "class";
+
+	@Override
+	public ServiceDescription<Logger> getServiceDescription() {
+		return new ServiceDescriptionImpl<>(Logger.class);
+	}
 
 	@Override
 	public ServiceImplementationDescription<Logger> getServiceImplementationDescription(ServiceLocator locator,

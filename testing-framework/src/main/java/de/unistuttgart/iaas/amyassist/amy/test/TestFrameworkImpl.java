@@ -78,7 +78,7 @@ public class TestFrameworkImpl implements TestFramework {
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
 		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
 		this.dependencyInjection.register(Server.class);
-		this.dependencyInjection.register(Logger.class, new LoggerProvider());
+		this.dependencyInjection.register(new LoggerProvider());
 	}
 
 	/**

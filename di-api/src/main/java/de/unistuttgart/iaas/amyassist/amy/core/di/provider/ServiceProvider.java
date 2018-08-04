@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
@@ -41,6 +42,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
  *            service type
  */
 public interface ServiceProvider<T> {
+	@Nonnull
+	ServiceDescription<T> getServiceDescription();
+
 	/**
 	 * Refine the ServiceDescription of a ServiceConsumer. The ServiceProvider can decide if it can provide the
 	 * requested service. If this ServiceProvider can provide the service, it returns the

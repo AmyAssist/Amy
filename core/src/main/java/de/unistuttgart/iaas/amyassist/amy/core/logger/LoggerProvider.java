@@ -29,6 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
@@ -43,6 +45,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
  * @author Leon Kiefer
  */
 public class LoggerProvider implements ServiceProvider<Logger> {
+
+	@Override
+	public ServiceDescription<Logger> getServiceDescription() {
+		return new ServiceDescriptionImpl<>(Logger.class);
+	}
 
 	@Override
 	public ServiceImplementationDescription<Logger> getServiceImplementationDescription(ServiceLocator locator,

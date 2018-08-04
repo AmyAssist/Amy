@@ -23,10 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.util.Properties;
-
-import org.slf4j.Logger;
-
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
@@ -54,8 +50,8 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 
 	@Override
 	public void load(Configuration di) {
-		di.register(Logger.class, new LoggerProvider());
-		di.register(Properties.class, new PropertiesProvider());
+		di.register(new LoggerProvider());
+		di.register(new PropertiesProvider());
 
 		di.register(GrammarObjectsCreator.class);
 		di.register(TaskSchedulerImpl.class);

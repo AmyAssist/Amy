@@ -27,9 +27,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -68,7 +66,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	private final Map<ServicePoolKey<?>, ServiceHandle<?>> servicePool;
 
-	private final Map<ServicePoolKey<?>, ServiceCreationInfo> serviceCreationInfo;
+	private final Map<ServicePoolKey<?>, ServiceCreationInfo> serviceCreationInfos;
 
 	protected Map<String, StaticProvider<?>> staticProviders;
 
@@ -78,7 +76,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	public DependencyInjection() {
 		this.register = new ConcurrentHashMap<>();
 		this.servicePool = new ConcurrentHashMap<>();
-		this.serviceCreationInfo = new ConcurrentHashMap<>();
+		this.serviceCreationInfos = new ConcurrentHashMap<>();
 		this.staticProviders = new ConcurrentHashMap<>();
 
 		this.registerContextProvider("class", new ClassProvider());
@@ -98,12 +96,8 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	}
 
 	@Override
-	public <T> void register(Class<T> serviceType, ServiceProvider<T> serviceProvider) {
-		this.register(new ServiceDescriptionImpl<>(serviceType), serviceProvider);
-	}
-
-	@Override
-	public <T> void register(ServiceDescription<T> serviceDescription, ServiceProvider<T> serviceProvider) {
+	public <T> void register(@Nonnull ServiceProvider<T> serviceProvider) {
+		ServiceDescription<T> serviceDescription = serviceProvider.getServiceDescription();
 		ServiceKey<T> serviceKey = new ServiceKey<>(serviceDescription);
 		synchronized (this.register) {
 			if (this.register.containsKey(serviceKey))
@@ -141,8 +135,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		}
 		Class<? extends T> implementationClass = (Class<? extends T>) cls;
 
-		ServiceProvider<T> p = new ClassServiceProvider<>(implementationClass);
-		this.register(serviceType, p);
+		this.register(new ClassServiceProvider<>(serviceType, implementationClass));
 	}
 
 	@Override
@@ -152,7 +145,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	@Override
 	public <T> void addExternalService(@Nonnull Class<T> serviceType, @Nonnull T externalService) {
-		this.register(serviceType, new SingletonServiceProvider<>(externalService));
+		this.register(new SingletonServiceProvider<>(serviceType, externalService));
 	}
 
 	@Override
@@ -209,14 +202,14 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
 		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription);
 		synchronized (this.servicePool) {
-			if (this.serviceCreationInfo.containsKey(key)) {
-				ServiceCreationInfo serviceCreationInfo = this.serviceCreationInfo.get(key);
+			if (this.serviceCreationInfos.containsKey(key)) {
+				ServiceCreationInfo serviceCreationInfo = this.serviceCreationInfos.get(key);
 				if (Thread.currentThread().equals(serviceCreationInfo.thread)) {
 					throw new IllegalStateException("circular dependencies");
 				}
 				throw new IllegalStateException("other Thread is creating a Service that i should create!");
 			}
-			this.serviceCreationInfo.put(key, new ServiceCreationInfo(Thread.currentThread()));
+			this.serviceCreationInfos.put(key, new ServiceCreationInfo(Thread.currentThread()));
 		}
 
 		ServiceHandle<T> service = serviceProvider.createService(this, serviceImplementationDescription);

@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.Properties;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
@@ -42,6 +44,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
  * @author Leon Kiefer
  */
 public class PropertiesProvider implements ServiceProvider<Properties> {
+	@Override
+	public ServiceDescription<Properties> getServiceDescription() {
+		return new ServiceDescriptionImpl<>(Properties.class);
+	}
+
 	@Override
 	public ServiceImplementationDescription<Properties> getServiceImplementationDescription(ServiceLocator locator,
 			ServiceConsumer<Properties> serviceConsumer) {

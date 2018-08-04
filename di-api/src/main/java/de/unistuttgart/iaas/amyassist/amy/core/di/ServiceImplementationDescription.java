@@ -28,11 +28,20 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 /**
- * TODO: Description
+ * Information about the implementation of a Service and the context in which the service is provided. This Descriptor
+ * is created from The ServiceProvider which should provide the Service. The Informations is needed by the Dependency
+ * Injection to manage the Service instance.
  * 
  * @author Leon Kiefer
+ * @param <T>
+ *            the type of the service
  */
 public interface ServiceImplementationDescription<T> {
+	/**
+	 * The Service description independent of this implementation specific description. It is used to find a matching ServiceProvider.
+	 * 
+	 * @return the ServiceDescription
+	 */
 	@Nonnull
 	ServiceDescription<T> getServiceDescription();
 
@@ -48,5 +57,6 @@ public interface ServiceImplementationDescription<T> {
 	 * @return The class that directly implements the contract types, or the class that is the factory for an object
 	 *         that implements the contract types
 	 */
+	@Nonnull
 	public Class<?> getImplementationClass();
 }

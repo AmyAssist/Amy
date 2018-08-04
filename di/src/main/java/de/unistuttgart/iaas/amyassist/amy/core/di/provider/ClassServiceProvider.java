@@ -33,6 +33,8 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
@@ -50,16 +52,21 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	@Nonnull
 	private final Class<? extends T> cls;
+	@Nonnull
+	private final Class<T> serviceType;
 
 	private final Set<InjectionPoint> injectionPoints = new HashSet<>();
 	private final Set<ContextInjectionPoint> contextInjectionPoints = new HashSet<>();
 
 	/**
 	 * 
+	 * @param serviceType
+	 *            the type of the service that should be provided
 	 * @param cls
 	 *            the service implementation class
 	 */
-	public ClassServiceProvider(@Nonnull Class<? extends T> cls) {
+	public ClassServiceProvider(@Nonnull Class<T> serviceType, @Nonnull Class<? extends T> cls) {
+		this.serviceType = serviceType;
 		if (!Util.isValidServiceClass(cls))
 			throw new IllegalArgumentException(
 					"There is a problem with the class " + cls.getName() + ". It can't be used as a Service");
@@ -74,6 +81,11 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 		for (Field field : contextFields) {
 			this.contextInjectionPoints.add(new ContextInjectionPoint(field));
 		}
+	}
+
+	@Override
+	public ServiceDescription<T> getServiceDescription() {
+		return new ServiceDescriptionImpl<>(this.serviceType);
 	}
 
 	@Override

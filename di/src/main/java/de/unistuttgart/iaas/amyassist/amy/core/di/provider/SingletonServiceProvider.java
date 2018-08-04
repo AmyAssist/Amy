@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
 import javax.annotation.Nonnull;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
@@ -39,14 +41,24 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 
 	private final T instance;
+	private final Class<T> serviceType;
 
 	/**
+	 * Create a new Singleton Service provider which provides the given service instance as service of the given type.
 	 * 
+	 * @param serviceType
+	 *            the type of the singleton
 	 * @param instance
 	 *            the singleton
 	 */
-	public SingletonServiceProvider(@Nonnull T instance) {
+	public SingletonServiceProvider(@Nonnull Class<T> serviceType, @Nonnull T instance) {
+		this.serviceType = serviceType;
 		this.instance = instance;
+	}
+
+	@Override
+	public ServiceDescription<T> getServiceDescription() {
+		return new ServiceDescriptionImpl<>(this.serviceType);
 	}
 
 	@Override
@@ -66,4 +78,5 @@ public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 	public void dispose(ServiceHandle<T> service) {
 		// singleton can not be disposed
 	}
+
 }
