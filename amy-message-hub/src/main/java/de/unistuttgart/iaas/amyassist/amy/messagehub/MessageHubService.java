@@ -23,39 +23,39 @@
 
 package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 
 /**
  * The implementation of the MessageHub api interface as Runnable Service
  * 
  * @author Kai Menzel, Leon Kiefer
  */
-@Service
-public class MessageHubService implements MessageHub, Runnable {
+@Service(MessageHub.class)
+public class MessageHubService implements MessageHub, Runnable, RunnableService {
 
 	@Reference
 	private Logger logger;
 
-	private Map<String, List<Consumer<String>>> eventListener = new HashMap<>();
+	private Map<String, List<Consumer<String>>> eventListener = new ConcurrentHashMap<>();
 
 	private BlockingQueue<Message<String>> queue = new LinkedBlockingQueue<>();
 
 	private Thread thread;
 
-	@PostConstruct
-	private void start() {
+	@Override
+	public void start() {
 		this.thread = new Thread(this, "MessageHub");
 		this.thread.start();
 	}
@@ -133,9 +133,10 @@ public class MessageHubService implements MessageHub, Runnable {
 	 */
 	@Override
 	public void publish(String topic, String message) {
-		this.queue.add(new Message<String>(topic, message));
+		this.queue.add(new Message<>(topic, message));
 	}
 
+	@Override
 	public void stop() {
 		this.thread.interrupt();
 	}
