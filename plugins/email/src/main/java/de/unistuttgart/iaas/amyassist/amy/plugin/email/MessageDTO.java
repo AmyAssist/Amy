@@ -23,9 +23,15 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
 
 /**
  * This class defines a message object which is used for handling mails, it represents a single e-mail
@@ -38,7 +44,10 @@ public class MessageDTO extends Entity {
 	private String from;
 	private String subject;
 	private String content;
-	// private Date sentDate;
+
+	@XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
+	private LocalDateTime sentDate;
+
 	private boolean important;
 
 	/**
@@ -56,14 +65,38 @@ public class MessageDTO extends Entity {
 	 *            subject of the messages
 	 * @param content
 	 *            the content of the message
+	 * @param sentDate
+	 *            the time the mail was sent
 	 * @param important
 	 *            is message from important sender
 	 */
-	public MessageDTO(String from, String subject, String content, boolean important) {
+	public MessageDTO(String from, String subject, String content, LocalDateTime sentDate, boolean important) {
 		this.from = from;
 		this.subject = subject;
 		this.content = content;
-		// this.sentDate = sentDate;
+		this.sentDate = sentDate;
+		this.important = important;
+	}
+
+	/**
+	 * Constructor for a message
+	 * 
+	 * @param from
+	 *            the mail address of the sender
+	 * @param subject
+	 *            subject of the messages
+	 * @param content
+	 *            the content of the message
+	 * @param sentDate
+	 *            the time the mail was sent
+	 * @param important
+	 *            is message from important sender
+	 */
+	public MessageDTO(String from, String subject, String content, Date sentDate, boolean important) {
+		this.from = from;
+		this.subject = subject;
+		this.content = content;
+		this.sentDate = sentDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 		this.important = important;
 	}
 
@@ -77,6 +110,10 @@ public class MessageDTO extends Entity {
 
 	public String getContent() {
 		return this.content;
+	}
+
+	public LocalDateTime getSentDate() {
+		return this.sentDate;
 	}
 
 	/**

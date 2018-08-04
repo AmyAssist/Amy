@@ -191,8 +191,9 @@ public class EMailLogic {
 						// TODO: handle
 						content = "Content is not plain-text";
 					}
-					messagesToSend.add(new MessageDTO(from, m.getSubject(), content, important));
+					messagesToSend.add(new MessageDTO(from, m.getSubject(), content, m.getSentDate(), important));
 				}
+				messagesToSend.sort((m1, m2) -> m2.getSentDate().compareTo(m1.getSentDate()));
 				return messagesToSend;
 			} catch (MessagingException e) {
 				this.logger.error("Couldn't fetch messages");
