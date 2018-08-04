@@ -23,7 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.audio;
 
+import java.io.IOException;
+
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A representation of a queued audio ouput
@@ -31,53 +37,46 @@ import javax.sound.sampled.AudioInputStream;
  * @author Tim Neumann
  */
 public class AudioOutput {
-	private boolean global;
-	private boolean finished;
 	private AudioInputStream ais;
+
+	private Logger logger = LoggerFactory.getLogger(AudioOutput.class);
 
 	/**
 	 * Creates a audio output, with the input stream
 	 * 
 	 * @param inputStream
-	 *            The audio input stream for this output. This can't be null.
-	 * @param pGlobal
-	 *            Whether this output is global
+	 *            The audio input stream for this output. This can't be null. *
 	 * @throws IllegalArgumentException
 	 *             When the ais is null.
 	 */
-	public AudioOutput(AudioInputStream inputStream, boolean pGlobal) {
+	public AudioOutput(AudioInputStream inputStream) {
 		if (inputStream == null)
 			throw new IllegalArgumentException("InputStream can't be null.");
 		this.ais = inputStream;
-		this.global = pGlobal;
-		this.finished = false;
-	}
-
-	/**
-	 * @return Whether this is a global audio output
-	 */
-	public boolean isGlobal() {
-		return this.global;
 	}
 
 	/**
 	 * @return The audio input stream associated with this output.
 	 */
-	public AudioInputStream getInpuStream() {
+	public AudioInputStream getInputStream() {
 		return this.ais;
 	}
 
 	/**
-	 * @return Whether this audio output is finished.
+	 * @return The {@link AudioFormat} of this AudioOutput
 	 */
-	public boolean isFinished() {
-		return this.finished;
+	public AudioFormat getFormat() {
+		return this.ais.getFormat();
 	}
 
 	/**
-	 * Marks this audio output as finished.
+	 * Tries to close the input stream
 	 */
-	public void setFinished() {
-		this.finished = true;
+	public void tryToCloseStream() {
+		try {
+			this.ais.close();
+		} catch (IOException e) {
+			this.logger.debug("IO Exception when closing stream", e);
+		}
 	}
 }

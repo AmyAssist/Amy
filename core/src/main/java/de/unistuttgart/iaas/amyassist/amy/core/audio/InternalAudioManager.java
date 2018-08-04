@@ -23,33 +23,32 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.audio;
 
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.TargetDataLine;
+import java.util.UUID;
+
+import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment;
 
 /**
- * An Audio Environment, which does the AudioIO.
+ * The interface for a internal audio manager. This interface is a more potent version of the {@link AudioManager} and
+ * should only be seen by the core.
  * 
  * @author Tim Neumann
  */
-public interface AudioEnvironment {
+public interface InternalAudioManager extends AudioManager {
 	/**
-	 * Get the microphone input line for this audio environment.
+	 * Registers an audio environment in the audio manager.
 	 * 
-	 * @return The {@link TargetDataLine} which carries the signal from the microphone of this AudioEnvironment.
+	 * @param environment
+	 *            The audio environment to register.
+	 * @throws IllegalStateException
+	 *             When an audio environment with the same identifier is already registered.
 	 */
-	TargetDataLine getMicrophoneInputLine();
+	public void registerAudioEnvironment(AudioEnvironment environment);
 
 	/**
-	 * Get the speaker output line for this audio environment.
+	 * Removes the audio environment described by the given identifier from the audio manager.
 	 * 
-	 * @return The {@link SourceDataLine} to which audio that should be played can be written.
+	 * @param environmentIdentifier
+	 *            The identifier of the audio environment to remove.
 	 */
-	SourceDataLine getSpeakerOutputLine();
-
-	/**
-	 * Get the audio environment identifier of this audio environment.
-	 * 
-	 * @return The identifier of this audio environment
-	 */
-	AudioEnvironmentIdetifier getAudioEnvironmentIdentifier();
+	public void unregisterAudioEnvironment(UUID environmentIdentifier);
 }

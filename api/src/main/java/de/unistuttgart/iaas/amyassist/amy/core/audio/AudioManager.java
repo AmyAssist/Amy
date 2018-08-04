@@ -24,7 +24,9 @@
 package de.unistuttgart.iaas.amyassist.amy.core.audio;
 
 import java.util.List;
+import java.util.UUID;
 
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
 /**
@@ -33,26 +35,6 @@ import javax.sound.sampled.AudioInputStream;
  * @author Tim Neumann
  */
 public interface AudioManager {
-	/**
-	 * Queues the playback of the given audio input stream on all audio environments, that are configured to play global
-	 * audio.
-	 * 
-	 * The output behavior is applied to all effected audio environments.
-	 * 
-	 * For example if the Output Behavior is {@link OutputBehavior#QUEUE QUEUE} the global output has to wait until all
-	 * previous outputs on all effected audio environments are done. If the Output Behavior is
-	 * {@link OutputBehavior#INTERRUPT_CURRENT INTERRUPT_CURRENT} or {@link OutputBehavior#INTERRUPT_ALL INTERRUPT_ALL}
-	 * it interrupts all effected audio environments
-	 * 
-	 * Additionally due to technical restrictions a interruption of any of the effected audio environments will cause
-	 * the complete global output on all environments to be interrupted.
-	 * 
-	 * @param audioToPlay
-	 *            The audio to play.
-	 * @param behavior
-	 *            How to behave if there is some output already.
-	 */
-	void playAudioGlobaly(AudioInputStream audioToPlay, OutputBehavior behavior);
 
 	/**
 	 * Queues the playback of the given audio input stream on the audio environment specified by the given identifier
@@ -64,7 +46,7 @@ public interface AudioManager {
 	 * @param behavior
 	 *            How to behave if there is some output already.
 	 */
-	void playAudio(AudioEnvironmentIdetifier identifier, AudioInputStream audioToPlay, OutputBehavior behavior);
+	void playAudio(UUID identifier, AudioInputStream audioToPlay, OutputBehavior behavior);
 
 	/**
 	 * Interrupts the audio output on the audio environment specified by the given identifier.
@@ -74,12 +56,12 @@ public interface AudioManager {
 	 * @param identifier
 	 *            The identifier of the audio environment to interrupt.
 	 */
-	void interruptAudio(AudioEnvironmentIdetifier identifier);
+	void interruptAudio(UUID identifier);
 
 	/**
-	 * @return A list of {@link AudioEnvironmentIdetifier}s, each being the identifier of a registered audio environment
+	 * @return A list of {@link UUID}s, each being the identifier of a registered audio environment
 	 */
-	List<AudioEnvironmentIdetifier> getAllRegisteredAudioEnvironments();
+	List<UUID> getAllRegisteredAudioEnvironments();
 
 	/**
 	 * Checks whether the audio environment described by the given identifier is currently outputting any audio.
@@ -88,16 +70,28 @@ public interface AudioManager {
 	 *            The identifier of the audio environment to check
 	 * @return Whether the audio environment is currently outputting.
 	 */
-	boolean isAudioEnvironmentCurrentlyOutputting(AudioEnvironmentIdetifier identifier);
+	boolean isAudioEnvironmentCurrentlyOutputting(UUID identifier);
 
 	/**
-	 * Get's a AudioInputStream with the microphone input from the audio environment described by the given identifier.
+	 * Get's a AudioInputStream with the audio input from the audio environment described by the given identifier.
+	 * 
+	 * For example the microphone input.
 	 * 
 	 * @param identifier
 	 *            The identifier of the audio environment to get the input Stream from.
 	 * @return The audio input stream of the audio environment.
 	 */
-	AudioInputStream getInputStreamOfAudioEnvironment(AudioEnvironmentIdetifier identifier);
+	AudioInputStream getInputStreamOfAudioEnvironment(UUID identifier);
+
+	/**
+	 * @return The default audio format used for output(e.g. speaker).
+	 */
+	AudioFormat getDefaultOutputAudioFormat();
+
+	/**
+	 * @return The default audio format used for input(e.g. microphone).
+	 */
+	AudioFormat getDefaultInputAudioFormat();
 
 	/**
 	 * The possible behaviors of a output, if there is currently another output
