@@ -66,7 +66,7 @@ public class Services {
 					if (className.isEmpty() || className.startsWith("#")) {
 						continue;
 					}
-					classes.add(this.loadClass(className, classLoader));
+					classes.add(this.getClass(className, classLoader));
 				}
 			} catch (IOException e) {
 				throw new IllegalStateException("Could not read the Service deployment descriptor", e);
@@ -77,14 +77,14 @@ public class Services {
 
 	/**
 	 * @param className
-	 *            the name of the class to load
+	 *            the name of the class
 	 * @param classLoader
 	 *            the classLoader to load the class from
-	 * @return the class with the given name loaded with the classLoader
+	 * @return the class with the given name from the classLoader
 	 * @throws IllegalArgumentException
 	 *             if the class could not be loaded
 	 */
-	private Class<?> loadClass(String className, ClassLoader classLoader) {
+	private Class<?> getClass(String className, ClassLoader classLoader) {
 		try {
 			return Class.forName(className, true, classLoader);
 		} catch (ClassNotFoundException e) {
