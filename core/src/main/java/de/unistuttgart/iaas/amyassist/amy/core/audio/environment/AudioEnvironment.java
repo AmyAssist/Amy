@@ -70,8 +70,10 @@ public abstract class AudioEnvironment {
 	public AudioEnvironment() {
 		this.outputQueue = new LinkedBlockingDeque<>();
 		this.inputStreams = new ArrayList<>();
-		this.outputThread = new Thread(new EnvironmentOutputWorker(this));
-		this.inputThread = new Thread(new EnvironmentInputWorker(this));
+		this.outputThread = new Thread(new EnvironmentOutputWorker(this),
+				"AE<" + this.getAudioEnvironmentIdentifier().toString() + ">OutputThread");
+		this.inputThread = new Thread(new EnvironmentInputWorker(this),
+				"AE<" + this.getAudioEnvironmentIdentifier().toString() + ">InputThread");
 
 		this.outputCancellationState = new CancellationState();
 		this.currentlyOutputting = false;
@@ -91,8 +93,10 @@ public abstract class AudioEnvironment {
 	 * 
 	 * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the
 	 *         stream has been reached.
+	 * @throws InterruptedException
+	 *             When the Thread is interrupted while waiting for input
 	 */
-	protected abstract int readFromInput(byte[] buffer, int off, int len);
+	protected abstract int readFromInput(byte[] buffer, int off, int len) throws InterruptedException;
 
 	/**
 	 * Write to the output of this audio environment. For example to a speaker.
@@ -179,7 +183,7 @@ public abstract class AudioEnvironment {
 	 */
 	public void playAudio(AudioOutput audioToPlay, AudioManager.OutputBehavior behavior) {
 
-		if (!audioToPlay.getFormat().equals(getOutputFormat()))
+		if (!audioToPlay.getFormat().matches(getOutputFormat()))
 			throw new IllegalArgumentException("AudioToPlay has the wrong AudioFormat.");
 
 		switch (behavior) {

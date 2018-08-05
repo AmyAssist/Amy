@@ -61,7 +61,7 @@ public class LocalAudioEnvironment extends AudioEnvironment {
 	 */
 	@Override
 	public UUID getAudioEnvironmentIdentifier() {
-		return UUID.randomUUID();
+		return new UUID(LocalAudioEnvironment.class.hashCode(), LocalAudioEnvironment.class.hashCode());
 	}
 
 	/**

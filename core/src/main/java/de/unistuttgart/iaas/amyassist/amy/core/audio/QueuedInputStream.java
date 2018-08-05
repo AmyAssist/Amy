@@ -50,6 +50,11 @@ public class QueuedInputStream extends InputStream {
 	private boolean closed;
 
 	/**
+	 * Whether this stream has come to an end.
+	 */
+	private boolean ended;
+
+	/**
 	 * Initializes this queued input stream
 	 */
 	public QueuedInputStream() {
@@ -61,8 +66,14 @@ public class QueuedInputStream extends InputStream {
 	public int read() throws IOException {
 		if (this.closed)
 			throw new IOException("Stream closed.");
+		if (this.ended)
+			return -1;
 		try {
-			return this.queue.take();
+			int i = this.queue.take();
+			if (i == -1) {
+				this.ended = true;
+			}
+			return i;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new InterruptedIOException();

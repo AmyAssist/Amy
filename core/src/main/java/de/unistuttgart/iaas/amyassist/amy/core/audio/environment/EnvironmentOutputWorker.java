@@ -42,7 +42,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironmen
 public class EnvironmentOutputWorker implements Runnable {
 
 	/** The size of buffer used */
-	private static final int BYTE_BUFFER_SIZE = 1024;
+	protected static final int BYTE_BUFFER_SIZE = 1024;
 	/** The parent audio environment */
 	private AudioEnvironment ae;
 
