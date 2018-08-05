@@ -50,19 +50,27 @@ public class LocalMainGrammarResultHandler extends AbstractRecognitionResultHand
 	 */
 	@Override
 	protected boolean environmentSpecificInputHandling(String result, SpeechRecognitionResultManager srManager) {
-		if (result.equals(Constants.WAKE_UP)) {
-			srManager.handleListeningState(true);
-			srManager.voiceOutput("waking up");
-			return true;
-		} else if (srManager.isListening()) {
-			if (result.equals(Constants.GO_SLEEP)) {
-				srManager.handleListeningState(false);
-				srManager.voiceOutput("now sleeping");
-				return true;
+		switch (result) {
+		case Constants.MULTI_CALL_START:
+			if (!srManager.isMultiCallActive() && !srManager.isSingleCallActive()) {
+				srManager.handleMultiCallListeningState(true);
 			}
-			return false;
+			return true;
+		case Constants.SINGLE_CALL_START:
+			if (!srManager.isMultiCallActive() && !srManager.isSingleCallActive()) {
+				srManager.handleSingleCallListeningState(true);
+			}
+			return true;
+		case Constants.MULTI_CALL_STOP:
+			if (srManager.isMultiCallActive()) {
+				srManager.handleMultiCallListeningState(false);
+			} else if (srManager.isSingleCallActive()) {
+				srManager.handleSingleCallListeningState(false);
+			}
+			return true;
+		default:
+			return !(srManager.isMultiCallActive() || srManager.isSingleCallActive());
 		}
-		return true;
 	}
 
 }

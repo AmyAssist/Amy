@@ -21,31 +21,41 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.data;
 
 /**
- * A exception of the dependency injection, signaling, that a service is already registered
+ * Class that holds System Sounds
  * 
- * @author Leon Kiefer
+ * @author Kai Menzel
  */
-public class DuplicateServiceException extends RuntimeException {
+public enum Sounds {
+	/**
+	 * Beep that gets Played to Signal the single call start
+	 */
+	SINGLE_CALL_START_BEEP("single_call_start_beep.wav"),
+	/**
+	 * Beep that gets Played to Signal the single call stop
+	 */
+	SINGLE_CALL_STOP_BEEP("single_call_stop_beep.wav");
+
+	private String fileName = "de/unistuttgart/iaas/amyassist/amy/core/speech/data/sounds/";
 
 	/**
-	 * Generated serial version UID
+	 * Create Sound
+	 * 
+	 * @param fileName
+	 *            Filename
 	 */
-	private static final long serialVersionUID = -4001860407694050099L;
-	private final String serviceDescription;
-
-	/**
-	 * @param serviceDescription
-	 *            the serviceDescription of the duplicate Service
-	 */
-	public DuplicateServiceException(ServiceDescription<?> serviceDescription) {
-		this.serviceDescription = serviceDescription.toString();
+	Sounds(String fileName) {
+		this.fileName = this.fileName.concat(fileName);
 	}
 
-	@Override
-	public String getMessage() {
-		return this.serviceDescription;
+	/**
+	 * return Maven Resource Path as String
+	 * 
+	 * @return Path-String from MavenResource to file
+	 */
+	public String getFileAsString() {
+		return this.fileName;
 	}
 }
