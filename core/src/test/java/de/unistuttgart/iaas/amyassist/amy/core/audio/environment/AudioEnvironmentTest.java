@@ -36,11 +36,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -66,22 +62,6 @@ class AudioEnvironmentTest {
 	 * @throws java.lang.Exception
 	 *             When anything goes wrong
 	 */
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 *             When anything goes wrong
-	 */
-	@AfterAll
-	static void tearDownAfterClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 *             When anything goes wrong
-	 */
 	@BeforeEach
 	void setUp() throws Exception {
 		long seed = (long) (Math.random() * Integer.MAX_VALUE);
@@ -91,15 +71,6 @@ class AudioEnvironmentTest {
 		this.oq = new LinkedBlockingQueue<>();
 		this.ae = new TestingEnvironment(getAudioFormat(), this.iq, this.oq);
 		this.ae.start();
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 *             When anything goes wrong
-	 */
-	@AfterEach
-	void tearDown() throws Exception {
-		this.ae.stop();
 	}
 
 	/**
@@ -177,192 +148,6 @@ class AudioEnvironmentTest {
 		Thread.sleep(10);
 
 		Assertions.assertTrue(qis.isClosed(), "Input stream was not closed.");
-	}
-
-	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#playAudio(de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput, de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager.OutputBehavior)}.
-	 * with when audio being played and the behavior is queue.
-	 * 
-	 * @throws InterruptedException
-	 *             When Test get's interrupted
-	 */
-	@SuppressWarnings("resource")
-	@Test
-	void testPlayAudioQueue() throws InterruptedException {
-		QueuedInputStream qis1 = new QueuedInputStream();
-		QueuedInputStream qis2 = new QueuedInputStream();
-		AudioOutput ao1 = new AudioOutput(new AudioInputStream(qis1, getAudioFormat(), AudioSystem.NOT_SPECIFIED));
-		AudioOutput ao2 = new AudioOutput(new AudioInputStream(qis2, getAudioFormat(), AudioSystem.NOT_SPECIFIED));
-		this.ae.playAudio(ao1, AudioManager.OutputBehavior.QUEUE);
-
-		byte[] bytes1 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes2 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes3 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes4 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes5 = new byte[50 * getAudioFormat().getFrameSize()];
-
-		this.rng.nextBytes(bytes1);
-		this.rng.nextBytes(bytes2);
-		this.rng.nextBytes(bytes3);
-		this.rng.nextBytes(bytes4);
-		this.rng.nextBytes(bytes5);
-
-		putBytesIntoQis(qis1, bytes1, false);
-
-		this.ae.playAudio(ao2, AudioManager.OutputBehavior.QUEUE);
-
-		putBytesIntoQis(qis1, bytes2, false);
-
-		putBytesIntoQis(qis2, bytes4, false);
-
-		putBytesIntoQis(qis1, bytes3, true);
-
-		putBytesIntoQis(qis2, bytes5, true);
-
-		byte[] bytes = ArrayUtils.addAll(bytes1, bytes2);
-		bytes = ArrayUtils.addAll(bytes, bytes3);
-		bytes = ArrayUtils.addAll(bytes, bytes4);
-		bytes = ArrayUtils.addAll(bytes, bytes5);
-
-		for (int i = 0; i < bytes.length; i++) {
-			Byte b = this.oq.take();
-			byte bR = b.byteValue();
-			Assertions.assertEquals(bytes[i], bR, "Wrong byte at index " + i);
-		}
-
-		Thread.sleep(10);
-
-		Assertions.assertTrue(qis1.isClosed(), "Input stream 1 was not closed.");
-		Assertions.assertTrue(qis2.isClosed(), "Input stream 2 was not closed.");
-	}
-
-	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#playAudio(de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput, de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager.OutputBehavior)}.
-	 * with when audio being played and audio is in the queue and the behavior is queue.
-	 * 
-	 * @throws InterruptedException
-	 *             When Test get's interrupted
-	 */
-	@SuppressWarnings("resource")
-	@Test
-	void testPlayAudioQueue2() throws InterruptedException {
-		QueuedInputStream qis1 = new QueuedInputStream();
-		QueuedInputStream qis2 = new QueuedInputStream();
-		QueuedInputStream qis3 = new QueuedInputStream();
-		AudioOutput ao1 = new AudioOutput(new AudioInputStream(qis1, getAudioFormat(), AudioSystem.NOT_SPECIFIED));
-		AudioOutput ao2 = new AudioOutput(new AudioInputStream(qis2, getAudioFormat(), AudioSystem.NOT_SPECIFIED));
-		AudioOutput ao3 = new AudioOutput(new AudioInputStream(qis3, getAudioFormat(), AudioSystem.NOT_SPECIFIED));
-
-		byte[] bytes1 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes2 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes3 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes4 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes5 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes6 = new byte[50 * getAudioFormat().getFrameSize()];
-
-		this.rng.nextBytes(bytes1);
-		this.rng.nextBytes(bytes2);
-		this.rng.nextBytes(bytes3);
-		this.rng.nextBytes(bytes4);
-		this.rng.nextBytes(bytes5);
-		this.rng.nextBytes(bytes6);
-
-		putBytesIntoQis(qis1, bytes1, false);
-		putBytesIntoQis(qis1, bytes2, true);
-		putBytesIntoQis(qis2, bytes3, false);
-		putBytesIntoQis(qis2, bytes4, true);
-		putBytesIntoQis(qis3, bytes5, false);
-		putBytesIntoQis(qis3, bytes6, true);
-
-		this.ae.playAudio(ao1, AudioManager.OutputBehavior.QUEUE);
-		this.ae.playAudio(ao2, AudioManager.OutputBehavior.QUEUE);
-		this.ae.playAudio(ao3, AudioManager.OutputBehavior.QUEUE);
-
-		byte[] bytes = ArrayUtils.addAll(bytes1, bytes2);
-		bytes = ArrayUtils.addAll(bytes, bytes3);
-		bytes = ArrayUtils.addAll(bytes, bytes4);
-		bytes = ArrayUtils.addAll(bytes, bytes5);
-		bytes = ArrayUtils.addAll(bytes, bytes6);
-
-		for (int i = 0; i < bytes.length; i++) {
-			Byte b = this.oq.take();
-			byte bR = b.byteValue();
-			Assertions.assertEquals(bytes[i], bR, "Wrong byte at index " + i);
-		}
-
-		Thread.sleep(10);
-
-		Assertions.assertTrue(qis1.isClosed(), "Input stream 1 was not closed.");
-		Assertions.assertTrue(qis2.isClosed(), "Input stream 2 was not closed.");
-		Assertions.assertTrue(qis3.isClosed(), "Input stream 3 was not closed.");
-	}
-
-	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#playAudio(de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput, de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager.OutputBehavior)}.
-	 * with when audio being played and audio is in the queue and the behavior is queue_priority.
-	 * 
-	 * @throws InterruptedException
-	 *             When Test get's interrupted
-	 */
-	@SuppressWarnings("resource")
-	@Test
-	void testPlayAudioPrioQueue() throws InterruptedException {
-		QueuedInputStream qis1 = new QueuedInputStream();
-		QueuedInputStream qis2 = new QueuedInputStream();
-		QueuedInputStream qis3 = new QueuedInputStream();
-		AudioOutput ao1 = new AudioOutput(new AudioInputStream(qis1, getAudioFormat(), AudioSystem.NOT_SPECIFIED));
-		AudioOutput ao2 = new AudioOutput(new AudioInputStream(qis2, getAudioFormat(), AudioSystem.NOT_SPECIFIED));
-		AudioOutput ao3 = new AudioOutput(new AudioInputStream(qis3, getAudioFormat(), AudioSystem.NOT_SPECIFIED));
-
-		byte[] bytes1 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes2 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes3 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes4 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes5 = new byte[50 * getAudioFormat().getFrameSize()];
-		byte[] bytes6 = new byte[50 * getAudioFormat().getFrameSize()];
-
-		this.rng.nextBytes(bytes1);
-		this.rng.nextBytes(bytes2);
-		this.rng.nextBytes(bytes3);
-		this.rng.nextBytes(bytes4);
-		this.rng.nextBytes(bytes5);
-		this.rng.nextBytes(bytes6);
-
-		this.ae.playAudio(ao1, AudioManager.OutputBehavior.QUEUE);
-		this.ae.playAudio(ao2, AudioManager.OutputBehavior.QUEUE);
-
-		Thread.sleep(10); // Needed, so that ao3 is not added before ao1 has started to play.
-
-		putBytesIntoQis(qis1, bytes1, false);
-
-		this.ae.playAudio(ao3, AudioManager.OutputBehavior.QUEUE_PRIORITY);
-
-		putBytesIntoQis(qis1, bytes2, true);
-		putBytesIntoQis(qis3, bytes3, false);
-		putBytesIntoQis(qis3, bytes4, true);
-		putBytesIntoQis(qis2, bytes5, false);
-		putBytesIntoQis(qis2, bytes6, true);
-
-		byte[] bytes = ArrayUtils.addAll(bytes1, bytes2);
-		bytes = ArrayUtils.addAll(bytes, bytes3);
-		bytes = ArrayUtils.addAll(bytes, bytes4);
-		bytes = ArrayUtils.addAll(bytes, bytes5);
-		bytes = ArrayUtils.addAll(bytes, bytes6);
-
-		for (int i = 0; i < bytes.length; i++) {
-			Byte b = this.oq.take();
-			byte bR = b.byteValue();
-			Assertions.assertEquals(bytes[i], bR, "Wrong byte at index " + i);
-		}
-
-		Thread.sleep(10);
-
-		Assertions.assertTrue(qis1.isClosed(), "Input stream 1 was not closed.");
-		Assertions.assertTrue(qis2.isClosed(), "Input stream 2 was not closed.");
-		Assertions.assertTrue(qis3.isClosed(), "Input stream 3 was not closed.");
 	}
 
 	private void putBytesIntoQis(QueuedInputStream qis, byte[] bytes, boolean endStream) {
