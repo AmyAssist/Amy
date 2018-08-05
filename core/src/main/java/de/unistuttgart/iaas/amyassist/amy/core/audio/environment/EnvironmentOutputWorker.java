@@ -31,8 +31,8 @@ import javax.sound.sampled.AudioInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager.OutputBehavior;
 import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment.CancellationState;
 
 /**
  * A worker doing to audio output for a audio environment
@@ -45,6 +45,12 @@ public class EnvironmentOutputWorker implements Runnable {
 	protected static final int BYTE_BUFFER_SIZE = 1024;
 	/** The parent audio environment */
 	private AudioEnvironment ae;
+	/** Whether this worker should cancel the current output. */
+	private boolean shouldCancel = false;
+	/** Whether the stream should be discarded. */
+	private boolean discardStream = false;
+	/** Whether the worker is currently outputting. */
+	private boolean currentlyOutputting = false;
 
 	private Logger logger = LoggerFactory.getLogger(EnvironmentOutputWorker.class);
 
@@ -58,21 +64,51 @@ public class EnvironmentOutputWorker implements Runnable {
 		this.ae = owner;
 	}
 
+	/**
+	 * Cancels the current output of this worker without stopping to worker.
+	 * 
+	 * @param pDiscardStream
+	 *            Whether the stream that was being played should be discarded. If false this results in the stream
+	 *            being added to the front of the queue again.
+	 */
+	public void cancel(boolean pDiscardStream) {
+		if (!this.shouldCancel) {
+			// Set discard stream first. Because as soon as cancel is set to true. The value of discard stream can be
+			// used.
+			this.discardStream = pDiscardStream;
+			this.shouldCancel = true;
+		}
+	}
+
+	/**
+	 * Get's {@link #currentlyOutputting currentlyOutputting}
+	 * 
+	 * @return currentlyOutputting
+	 */
+	public boolean isCurrentlyOutputting() {
+		return this.currentlyOutputting;
+	}
+
 	@Override
 	public void run() {
 		AudioOutput currentStream = null;
 		boolean needToCloseStream = true;
 		while (!Thread.currentThread().isInterrupted()) {
 			try {
-				currentStream = this.ae.getOutputQueue().take();
+				currentStream = this.ae.takeHeadOfOutputQueue();
 				needToCloseStream = true;
 				// If cancel was called while waiting for new input we don't want to cancel immediately.
-				this.ae.resetCancellationState();
+				// We don't need to reset discard stream because it is not going to be used until cancel is called
+				// again.
+				this.shouldCancel = false;
 
 				boolean finished = doOutputWork(currentStream.getInputStream());
-				if (this.ae.getOutputCancellationState().isShouldCancel()
-						&& !this.ae.getOutputCancellationState().isDiscardStream() && !finished) {
-					this.ae.getOutputQueue().addFirst(currentStream);
+				/*
+				 * Do not need to check for should cancel. Because if not finished, there is only one way to get here:
+				 * By canceling.
+				 */
+				if (!finished && !this.discardStream) {
+					this.ae.playAudio(currentStream, OutputBehavior.QUEUE_PRIORITY);
 					needToCloseStream = false;
 				}
 			} catch (InterruptedException e1) {
@@ -82,6 +118,7 @@ public class EnvironmentOutputWorker implements Runnable {
 			} catch (IOException e) {
 				this.logger.warn("IO Exception in audio worker.", e);
 			} finally {
+				this.currentlyOutputting = false;
 				if (needToCloseStream && currentStream != null) {
 					currentStream.tryToCloseStream();
 				}
@@ -109,10 +146,9 @@ public class EnvironmentOutputWorker implements Runnable {
 	protected boolean doOutputWork(AudioInputStream stream) throws IOException, InterruptedException {
 		byte[] buffer = new byte[BYTE_BUFFER_SIZE];
 		int readBytes = 0;
-		CancellationState currentState = this.ae.getOutputCancellationState();
 
-		this.ae.setCurrentlyOutputting(true);
-		while (readBytes >= 0 && !currentState.isShouldCancel()) {
+		this.currentlyOutputting = true;
+		while (readBytes >= 0 && !this.shouldCancel) {
 			if (Thread.currentThread().isInterrupted())
 				throw new InterruptedException();
 
@@ -121,9 +157,8 @@ public class EnvironmentOutputWorker implements Runnable {
 			if (readBytes > 0) {
 				this.ae.writeToOutput(buffer, 0, readBytes);
 			}
-			currentState = this.ae.getOutputCancellationState();
 		}
-		this.ae.setCurrentlyOutputting(false);
+		this.currentlyOutputting = false;
 		return (readBytes < 0);
 	}
 

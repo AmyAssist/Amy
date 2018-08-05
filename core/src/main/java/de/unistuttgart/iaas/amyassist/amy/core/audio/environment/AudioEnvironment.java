@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.audio.environment;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
@@ -55,14 +56,15 @@ public abstract class AudioEnvironment {
 	private BlockingDeque<AudioOutput> outputQueue;
 	/** The list of streams to copy the input from this audio environment to. */
 	private List<QueuedInputStream> inputStreams;
-	/** The Thread used to transfer the output */
+
+	/** The worker used to transfer the output */
+	private EnvironmentOutputWorker outputWorker;
+	/** The Thread of the {@link #outputWorker} */
 	private Thread outputThread;
-	/** The Thread used to transfer the input */
+	/** The worker used to transfer the input */
+	private EnvironmentInputWorker inputWorker;
+	/** The Thread of the {@link #inputWorker} */
 	private Thread inputThread;
-	/** The current output cancellation state */
-	private volatile CancellationState outputCancellationState;
-	/** Whether this environment is currently outputting */
-	private volatile boolean currentlyOutputting;
 
 	/**
 	 * Initializes the audio environment
@@ -70,13 +72,15 @@ public abstract class AudioEnvironment {
 	public AudioEnvironment() {
 		this.outputQueue = new LinkedBlockingDeque<>();
 		this.inputStreams = new ArrayList<>();
-		this.outputThread = new Thread(new EnvironmentOutputWorker(this),
-				"AE<" + this.getAudioEnvironmentIdentifier().toString() + ">OutputThread");
-		this.inputThread = new Thread(new EnvironmentInputWorker(this),
-				"AE<" + this.getAudioEnvironmentIdentifier().toString() + ">InputThread");
 
-		this.outputCancellationState = new CancellationState();
-		this.currentlyOutputting = false;
+		this.outputWorker = new EnvironmentOutputWorker(this);
+		this.inputWorker = new EnvironmentInputWorker(this);
+
+		String ae_id = this.getAudioEnvironmentIdentifier().toString();
+
+		this.outputThread = new Thread(this.outputWorker, "AE<" + ae_id + ">OutputThread");
+		this.inputThread = new Thread(this.inputWorker, "AE<" + ae_id + ">InputThread");
+
 	}
 
 	/**
@@ -133,40 +137,10 @@ public abstract class AudioEnvironment {
 	public abstract UUID getAudioEnvironmentIdentifier();
 
 	/**
-	 * Get's the current output cancellation state
-	 * 
-	 * @return The output state
-	 */
-	protected synchronized CancellationState getOutputCancellationState() {
-		return this.outputCancellationState;
-	}
-
-	/**
-	 * Reset's the current output cancellation state. This should only be called from the output thread.
-	 */
-	protected synchronized void resetCancellationState() {
-		this.outputCancellationState = new CancellationState();
-	}
-
-	/**
-	 * Set's the current output cancellation state to cancel if it not already is.
-	 * 
-	 * This will result of a cancellation of the current output
-	 * 
-	 * @param discardStream
-	 *            Whether to discard the input stream when canceling
-	 */
-	protected synchronized void cancel(boolean discardStream) {
-		if (!this.outputCancellationState.isShouldCancel()) {
-			this.outputCancellationState = new CancellationState(discardStream);
-		}
-	}
-
-	/**
 	 * Stops the current output.
 	 */
 	public void stopOutput() {
-		this.cancel(true);
+		this.outputWorker.cancel(true);
 	}
 
 	/**
@@ -186,28 +160,30 @@ public abstract class AudioEnvironment {
 		if (!audioToPlay.getFormat().matches(getOutputFormat()))
 			throw new IllegalArgumentException("AudioToPlay has the wrong AudioFormat.");
 
-		switch (behavior) {
-		case INTERRUPT_ALL:
-			this.outputQueue.clear();
-			this.cancel(true);
-			this.outputQueue.addFirst(audioToPlay);
-			break;
-		case INTERRUPT_CURRENT:
-			this.cancel(true);
-			this.outputQueue.addFirst(audioToPlay);
-			break;
-		case QUEUE:
-			this.outputQueue.add(audioToPlay);
-			break;
-		case QUEUE_PRIORITY:
-			this.outputQueue.addFirst(audioToPlay);
-			break;
-		case SUSPEND:
-			this.cancel(false);
-			this.outputQueue.addFirst(audioToPlay);
-			break;
-		default:
-			throw new IllegalStateException("Unknown behavior");
+		synchronized (this.outputQueue) {
+			switch (behavior) {
+			case INTERRUPT_ALL:
+				this.outputQueue.clear();
+				this.outputWorker.cancel(true);
+				this.outputQueue.addFirst(audioToPlay);
+				break;
+			case INTERRUPT_CURRENT:
+				this.outputWorker.cancel(true);
+				this.outputQueue.addFirst(audioToPlay);
+				break;
+			case QUEUE:
+				this.outputQueue.add(audioToPlay);
+				break;
+			case QUEUE_PRIORITY:
+				this.outputQueue.addFirst(audioToPlay);
+				break;
+			case SUSPEND:
+				this.outputWorker.cancel(false);
+				this.outputQueue.addFirst(audioToPlay);
+				break;
+			default:
+				throw new IllegalStateException("Unknown behavior");
+			}
 		}
 	}
 
@@ -236,7 +212,7 @@ public abstract class AudioEnvironment {
 	}
 
 	/**
-	 * Stops this audio environment
+	 * Stops this audio environment. If this audio environment is already stopped, does nothing.
 	 */
 	public void stop() {
 		this.outputThread.interrupt();
@@ -251,22 +227,10 @@ public abstract class AudioEnvironment {
 	}
 
 	/**
-	 * Get's {@link #currentlyOutputting currentlyOutputting}
-	 * 
-	 * @return currentlyOutputting
+	 * @return Whether this environment is currently outputting.
 	 */
 	public boolean isCurrentlyOutputting() {
-		return this.currentlyOutputting;
-	}
-
-	/**
-	 * Set's {@link #currentlyOutputting currentlyOutputting}
-	 * 
-	 * @param currentlyOutputting
-	 *            currentlyOutputting
-	 */
-	protected void setCurrentlyOutputting(boolean currentlyOutputting) {
-		this.currentlyOutputting = currentlyOutputting;
+		return this.outputWorker.isCurrentlyOutputting();
 	}
 
 	/**
@@ -274,66 +238,20 @@ public abstract class AudioEnvironment {
 	 * 
 	 * @return inputStreams
 	 */
-	protected List<QueuedInputStream> getInputStreams() {
+	protected Collection<QueuedInputStream> getInputStreams() {
 		return this.inputStreams;
 	}
 
 	/**
-	 * Get's {@link #outputQueue outputQueue}
+	 * Takes the head of the {@link #outputQueue outputQueue}.
 	 * 
-	 * @return outputQueue
-	 */
-	protected BlockingDeque<AudioOutput> getOutputQueue() {
-		return this.outputQueue;
-	}
-
-	/**
-	 * The possible states regarding the cancellation of the output a environment can be in.
+	 * This method will block if no element is in the queue.
 	 * 
-	 * @author Tim Neumann
+	 * @return The next AudioOutput.
+	 * @throws InterruptedException
+	 *             When the Thread is interrupted while waiting for the next element.
 	 */
-	protected class CancellationState {
-		/** Whether the output should be cancelled */
-		private final boolean shouldCancel;
-		/** Whether the stream should be discarded */
-		private final boolean discardStream;
-
-		/**
-		 * Initializes a running state
-		 */
-		public CancellationState() {
-			this.shouldCancel = false;
-			this.discardStream = false;
-		}
-
-		/**
-		 * Initializes a cancel state
-		 * 
-		 * @param pDiscardStream
-		 *            whether the stream should be discarded after cancellation
-		 */
-		public CancellationState(boolean pDiscardStream) {
-			this.shouldCancel = true;
-			this.discardStream = pDiscardStream;
-		}
-
-		/**
-		 * Get's {@link #shouldCancel shouldCancel}
-		 * 
-		 * @return shouldCancel
-		 */
-		public boolean isShouldCancel() {
-			return this.shouldCancel;
-		}
-
-		/**
-		 * Get's {@link #discardStream discardStream}
-		 * 
-		 * @return discardStream
-		 */
-		public boolean isDiscardStream() {
-			return this.discardStream;
-		}
-
+	protected AudioOutput takeHeadOfOutputQueue() throws InterruptedException {
+		return this.outputQueue.take();
 	}
 }

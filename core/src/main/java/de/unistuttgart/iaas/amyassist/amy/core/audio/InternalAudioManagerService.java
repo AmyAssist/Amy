@@ -24,11 +24,11 @@
 package de.unistuttgart.iaas.amyassist.amy.core.audio;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -72,7 +72,7 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 	private void init() {
 		loadAndCheckProperties();
 
-		this.registry = new HashMap<>();
+		this.registry = new ConcurrentHashMap<>();
 
 		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_LOCAL_AUDIO))) {
 			try {
@@ -97,22 +97,24 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 	public void registerAudioEnvironment(AudioEnvironment environment) {
 		UUID aei = environment.getAudioEnvironmentIdentifier();
 
-		if (this.registry.containsKey(aei))
-			throw new IllegalStateException("An audio environment with the same identifier is already registered!");
-		this.registry.put(aei, environment);
-
 		if (this.running) {
 			environment.start();
+		}
+
+		synchronized (this.registry) {
+			if (this.registry.containsKey(aei))
+				throw new IllegalStateException("An audio environment with the same identifier is already registered!");
+			this.registry.put(aei, environment);
 		}
 	}
 
 	@Override
 	public void unregisterAudioEnvironment(UUID identifier) {
-		AudioEnvironment ae = this.registry.remove(identifier);
-		if (ae == null) {
-			this.logger.debug("Audio Enviroment to be unregistered is not registered: {}", identifier);
-		} else {
-			if (this.running) {
+		synchronized (this.registry) {
+			AudioEnvironment ae = this.registry.remove(identifier);
+			if (ae == null) {
+				this.logger.debug("Audio Enviroment to be unregistered is not registered: {}", identifier);
+			} else {
 				ae.stop();
 			}
 		}
@@ -138,7 +140,9 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 
 	@Override
 	public List<UUID> getAllRegisteredAudioEnvironments() {
-		return new ArrayList<>(this.registry.keySet());
+		synchronized (this.registry) {
+			return new ArrayList<>(this.registry.keySet());
+		}
 	}
 
 	@Override
@@ -155,17 +159,21 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 
 	@Override
 	public void start() {
-		for (AudioEnvironment ae : this.registry.values()) {
-			ae.start();
+		synchronized (this.registry) {
+			for (AudioEnvironment ae : this.registry.values()) {
+				ae.start();
+			}
+			this.running = true;
 		}
-		this.running = true;
 	}
 
 	@Override
 	public void stop() {
-		this.running = false;
-		for (AudioEnvironment ae : this.registry.values()) {
-			ae.stop();
+		synchronized (this.registry) {
+			this.running = false;
+			for (AudioEnvironment ae : this.registry.values()) {
+				ae.stop();
+			}
 		}
 	}
 
@@ -196,9 +204,11 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 	 * @return The environment
 	 */
 	private AudioEnvironment safelyGetEnv(UUID identifier) {
-		if (!this.registry.containsKey(identifier))
-			throw new IllegalArgumentException("This audio environment is not registered in this audio manager.");
-		return this.registry.get(identifier);
+		synchronized (this.registry) {
+			if (!this.registry.containsKey(identifier))
+				throw new IllegalArgumentException("This audio environment is not registered in this audio manager.");
+			return this.registry.get(identifier);
+		}
 	}
 
 	@Override
