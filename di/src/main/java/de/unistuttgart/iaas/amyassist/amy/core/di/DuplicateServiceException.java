@@ -34,7 +34,7 @@ public class DuplicateServiceException extends RuntimeException {
 	 * Generated serial version UID
 	 */
 	private static final long serialVersionUID = -4001860407694050099L;
-	private String serviceDescription;
+	private final String serviceDescription;
 
 	/**
 	 * @param serviceDescription
