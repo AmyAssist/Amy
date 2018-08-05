@@ -31,6 +31,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManagerImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.output.OutputImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.output.tts.TextToSpeechImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.PersistenceService;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.storage.DatabaseStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
@@ -38,7 +40,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService
 import de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskSchedulerImpl;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistryImpl;
@@ -57,6 +58,7 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 		di.register(new LoggerProvider());
 		di.register(new PropertiesProvider());
 
+		di.register(TextToSpeechImpl.class);
 		di.register(GrammarObjectsCreator.class);
 		di.register(TaskSchedulerImpl.class);
 		di.register(ConfigurationImpl.class);
@@ -74,7 +76,7 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 		di.register(Geocoder.class);
 
 		di.register(Console.class);
-		di.register(TextToSpeech.class);
+		di.register(OutputImpl.class);
 		di.register(LocalAudioUserInteraction.class);
 
 		di.register(Server.class);

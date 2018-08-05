@@ -21,34 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.data;
+package de.unistuttgart.iaas.amyassist.amy.core.output;
 
 /**
- * Class for important Constants for the SpeechRecognition Holds variabel if Recognition System is currently active
+ * Class that defines the Output Type
  * 
- * @author Leon Kiefer
+ * @author Kai Menzel
  */
-public class Constants {
-
-	private Constants() {
-		// hide constructor
-	}
-
+public enum OutputType {
 	/**
-	 * Command String to wake up amy's SpeechRecogniton System
+	 * Sound File Type, the Message will be Path to file
 	 */
-	public static final String MULTI_CALL_START = "amy wake up";
+	SOUND,
 	/**
-	 * Command String to set the SpeechRecognition inactive, to stop listening to input until waked again
+	 * Voice Output Type, the Message will be voiced by Amy
 	 */
-	public static final String MULTI_CALL_STOP = "go to sleep";
-	/**
-	 * Command String to stop current Voice Output of Amy
-	 */
-	public static final String SHUT_UP = "amy shut up";
-	/**
-	 * Command String to wake up amy for a single Command
-	 */
-	public static final String SINGLE_CALL_START = "amy listen";
-
+	VOICE;
 }

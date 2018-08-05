@@ -21,34 +21,46 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.data;
+package de.unistuttgart.iaas.amyassist.amy.core.output;
 
 /**
- * Class for important Constants for the SpeechRecognition Holds variabel if Recognition System is currently active
+ * Object Time the Output Interface Uses
  * 
- * @author Leon Kiefer
+ * @author Kai Menzel
  */
-public class Constants {
+public class OutputObject {
 
-	private Constants() {
-		// hide constructor
+	private OutputType type;
+	private String message;
+
+	/**
+	 * @param type
+	 *            of the output-message
+	 * @param message
+	 *            to say or path to sound
+	 * 
+	 */
+	public OutputObject(OutputType type, String message) {
+		this.type = type;
+		this.message = message;
 	}
 
 	/**
-	 * Command String to wake up amy's SpeechRecogniton System
+	 * return Type of OutputObject
+	 * 
+	 * @return OutputType
 	 */
-	public static final String MULTI_CALL_START = "amy wake up";
+	public OutputType getType() {
+		return this.type;
+	}
+
 	/**
-	 * Command String to set the SpeechRecognition inactive, to stop listening to input until waked again
+	 * return Path to Sound file or voice Message
+	 * 
+	 * @return Path to Sound file or message to voice
 	 */
-	public static final String MULTI_CALL_STOP = "go to sleep";
-	/**
-	 * Command String to stop current Voice Output of Amy
-	 */
-	public static final String SHUT_UP = "amy shut up";
-	/**
-	 * Command String to wake up amy for a single Command
-	 */
-	public static final String SINGLE_CALL_START = "amy listen";
+	public String getMessage() {
+		return this.message;
+	}
 
 }

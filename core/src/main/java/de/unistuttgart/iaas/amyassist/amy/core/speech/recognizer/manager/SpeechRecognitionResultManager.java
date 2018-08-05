@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager;
 
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 
 /**
@@ -38,14 +39,14 @@ public interface SpeechRecognitionResultManager {
 	 * @param srListening
 	 *            true if SpeechRecognition is Currently Listening
 	 */
-	void handleListeningState(boolean srListening);
+	void handleMultiCallListeningState(boolean srListening);
 
 	/**
 	 * Method to check if the SpeechRecognition is Currently Listening
 	 * 
 	 * @return true if SR System is Listening
 	 */
-	boolean isListening();
+	boolean isMultiCallActive();
 
 	/**
 	 * Switch to the given Grammar
@@ -70,6 +71,14 @@ public interface SpeechRecognitionResultManager {
 	 *            String to voice
 	 */
 	void voiceOutput(String outputString);
+
+	/**
+	 * Play Sound
+	 * 
+	 * @param sound
+	 *            to play
+	 */
+	void soundOutput(Sounds sound);
 
 	/**
 	 * stop the voice output
@@ -97,5 +106,20 @@ public interface SpeechRecognitionResultManager {
 	 * @return if the Recognition Thread should be running
 	 */
 	boolean isRecognitionThreadRunning();
+
+	/**
+	 * Method to activate a Single Command Input
+	 * 
+	 * @param singleCommand
+	 *            true if singleCommand activated
+	 */
+	void handleSingleCallListeningState(boolean singleCommand);
+
+	/**
+	 * Method to check if current Listening state is a SingleCommand
+	 * 
+	 * @return true if SingleCommand
+	 */
+	boolean isSingleCallActive();
 
 }

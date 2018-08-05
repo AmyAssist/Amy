@@ -21,34 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.data;
+package de.unistuttgart.iaas.amyassist.amy.core.output.tts;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 
 /**
- * Class for important Constants for the SpeechRecognition Holds variabel if Recognition System is currently active
+ * Class that uses MaryTTS to turn a String to a Voice Output
  * 
- * @author Leon Kiefer
+ * @see <a href="https://github.com/marytts/marytts">MaryTTS</a>
+ * 
+ * @author Kai Menzel
  */
-public class Constants {
-
-	private Constants() {
-		// hide constructor
-	}
+public interface TextToSpeech {
 
 	/**
-	 * Command String to wake up amy's SpeechRecogniton System
+	 * Method that returns an AudioInputStream to given String
+	 * 
+	 * @param s
+	 *            String to voice
+	 * @return AudioInputStream of String
 	 */
-	public static final String MULTI_CALL_START = "amy wake up";
-	/**
-	 * Command String to set the SpeechRecognition inactive, to stop listening to input until waked again
-	 */
-	public static final String MULTI_CALL_STOP = "go to sleep";
-	/**
-	 * Command String to stop current Voice Output of Amy
-	 */
-	public static final String SHUT_UP = "amy shut up";
-	/**
-	 * Command String to wake up amy for a single Command
-	 */
-	public static final String SINGLE_CALL_START = "amy listen";
+	AudioInputStream getMaryAudio(String s);
 
+	/**
+	 * Method to get Mary's AudioFormat
+	 * 
+	 * @return AudioFormat of Mary (16kHz, Mono)
+	 */
+	AudioFormat getMaryAudioFormat();
 }
