@@ -1,0 +1,3 @@
+de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistryImpl
+de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistryImpl
+de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder
