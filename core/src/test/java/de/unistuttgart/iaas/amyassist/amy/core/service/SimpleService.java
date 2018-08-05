@@ -21,33 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
-
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
-import java.util.stream.Stream;
-
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
+package de.unistuttgart.iaas.amyassist.amy.core.service;
 
 /**
- * Test the equals method of ServiceDescriptionImpl
+ * Service interface
  * 
  * @author Leon Kiefer
  */
-class ServiceDescriptionImplTest {
+public interface SimpleService {
+	boolean getRun();
 
-	@ParameterizedTest
-	@MethodSource("values")
-	void testNotEquals(Object obj) {
-		assertThat(Util.serviceDescriptionFor(Service7API.class), is(not(equalTo(obj))));
-	}
-
-	static Stream<Object> values() {
-		return Stream.of(null, new Object(), Util.serviceDescriptionFor(Service1.class));
-	}
-
+	int getCount();
 }

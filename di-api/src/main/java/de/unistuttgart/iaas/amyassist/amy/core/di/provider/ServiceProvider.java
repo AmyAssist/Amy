@@ -23,16 +23,18 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
-import java.util.Map;
-import java.util.Set;
-
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 
 /**
+ * A Service Provider is responsible for Providing Services of a type. The Service Provider manages the dependencies and
+ * the Services he has provided. If the does not exist it creates a new one and is responsible for disposing this
+ * service.
  * 
  * @author Leon Kiefer
  *
@@ -41,26 +43,54 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
  */
 public interface ServiceProvider<T> {
 	/**
-	 * @param resolvedDependencies
-	 *            a map of ServiceFactories for each dependency
-	 * @param context
-	 *            a map of the static context information
-	 * @return the service of this ServiceProvider for the given context
-	 */
-	@Nonnull
-	T getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies, @Nullable Map<String, ?> context);
-
-	/**
+	 * The description of services this Service Provider can provide. This is used to find this ServiceProvider when a
+	 * service is requested.
 	 * 
-	 * @return the dependencies
+	 * @return the service description
 	 */
 	@Nonnull
-	Set<ServiceConsumer<?>> getDependencies();
+	ServiceDescription<T> getServiceDescription();
 
 	/**
-	 * @return the requiredContextProviderTypes
+	 * Refine the ServiceDescription of a ServiceConsumer. The ServiceProvider can decide if it can provide the
+	 * requested service. If this ServiceProvider can provide the service, it returns the
+	 * ServiceImplementationDescription for the Service. The ServiceImplementationDescription contains all information
+	 * needed to create the requested Service for the Consumer.
+	 * 
+	 * @param locator
+	 *            the ServiceLocator which can be used to lookup ContextProvider
+	 * @param serviceConsumer
+	 *            the consumer of the Service. This can be used to extract context information.
+	 * @return the ServiceImplementationDescription for the Service this Provider can provide or null if this provider
+	 *         can not provide the requested Service.
+	 */
+	@CheckForNull
+	ServiceImplementationDescription<T> getServiceImplementationDescription(@Nonnull ServiceLocator locator,
+			@Nonnull ServiceConsumer<T> serviceConsumer);
+
+	/**
+	 * Create a new Service from the given ServiceImplementationDescription. Using the ServiceLocator to lookup
+	 * dependencies.
+	 * 
+	 * @param locator
+	 *            the ServiceLocator to lookup services
+	 * @param serviceImplementationDescription
+	 *            the description of the Service which must be created
+	 * 
+	 * @return the created service of this ServiceProvider for the given ServiceImplementationDescription
 	 */
 	@Nonnull
-	Set<String> getRequiredContextIdentifiers();
+	ServiceHandle<T> createService(@Nonnull ServiceLocator locator,
+			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription);
+
+	/**
+	 * Dispose a Service that was provided by this ServiceProvider.
+	 * 
+	 * @param service
+	 *            the Service that should be disposed
+	 * @throws IllegalArgumentException
+	 *             if the given Service was not provided by this ServiceProvider.
+	 */
+	void dispose(ServiceHandle<T> service);
 
 }

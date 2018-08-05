@@ -23,29 +23,19 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.lang.annotation.Annotation;
-import java.util.Set;
-
 /**
- * Abstract description of a Service. This describes the service from the Consumer point of view. It describes the type
- * of the Service and the qualifiers of the Service. This Description is independent of the implementation of the
- * Service. This description can be used to get the described Service from a ServiceLocator.
+ * Information about the creation process of a Service
  * 
  * @author Leon Kiefer
- * @param <T>
- *            the type of the service
  */
-public interface ServiceDescription<T> {
+class ServiceCreationInfo {
 	/**
-	 * @return the type of the Service described by this Service Description
+	 * The Thread creating the Service
 	 */
-	Class<T> getServiceType();
+	final Thread thread;
 
-	/**
-	 * The attributes of the Service
-	 * 
-	 * @return the annotations that qualify and distinguish the Service
-	 */
-	Set<Annotation> getAnnotations();
+	public ServiceCreationInfo(Thread thread) {
+		this.thread = thread;
+	}
 
 }

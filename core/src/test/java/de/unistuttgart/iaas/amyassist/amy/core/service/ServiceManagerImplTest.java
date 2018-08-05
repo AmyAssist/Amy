@@ -24,37 +24,28 @@
 package de.unistuttgart.iaas.amyassist.amy.core.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 
 /**
  * Tests for {@link de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl}.
  * 
  * @author Leon Kiefer
  */
-@ExtendWith(FrameworkExtension.class)
 class ServiceManagerImplTest {
-	@Reference
-	private TestFramework testFramework;
-	@Reference
-	private Configuration configuration;
-	@Reference
-	private ServiceLocator serviceLocator;
-	private ServiceManagerImpl serviceManagerImpl;
+	private DependencyInjection di;
+	private RunnableServiceExtension runnableServiceExtension;
 
 	@BeforeEach
 	public void setup() {
-		this.serviceManagerImpl = this.testFramework.setServiceUnderTest(ServiceManagerImpl.class);
+		this.runnableServiceExtension = new RunnableServiceExtension();
+		this.di = new DependencyInjection(this.runnableServiceExtension);
+		this.di.register(ServiceManagerImpl.class);
 	}
 
 	/**
@@ -62,12 +53,14 @@ class ServiceManagerImplTest {
 	 */
 	@Test
 	void testStart() {
-		this.configuration.register(TestRunnableService.class);
-		this.serviceManagerImpl.register(TestRunnableService.class);
-		this.serviceManagerImpl.start();
-		TestRunnableService service = this.serviceLocator.getService(TestRunnableService.class);
+
+		this.di.register(TestRunnableService.class);
+		this.runnableServiceExtension.deploy();
+		this.runnableServiceExtension.start();
+
+		TestRunnableService service = this.di.getService(TestRunnableService.class);
 		assertThat(service.run, is(true));
-		this.serviceManagerImpl.stop();
+		this.runnableServiceExtension.stop();
 		assertThat(service.run, is(false));
 		assertThat(service.count, is(1));
 	}
@@ -77,8 +70,26 @@ class ServiceManagerImplTest {
 	 */
 	@Test
 	void testStartDouble() {
-		this.serviceManagerImpl.start();
-		assertThrows(IllegalStateException.class, () -> this.serviceManagerImpl.start());
+		this.runnableServiceExtension.deploy();
+		this.runnableServiceExtension.start();
+		assertThrows(IllegalStateException.class, () -> this.runnableServiceExtension.start());
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl#start()}.
+	 */
+	@Test
+	void testStartRunnableServiceFromInterface() {
+
+		this.di.register(SimpleServiceImpl.class);
+		this.runnableServiceExtension.deploy();
+		this.runnableServiceExtension.start();
+
+		SimpleService service = this.di.getService(SimpleService.class);
+		assertThat(service.getRun(), is(true));
+		this.runnableServiceExtension.stop();
+		assertThat(service.getRun(), is(false));
+		assertThat(service.getCount(), is(1));
 	}
 
 }
