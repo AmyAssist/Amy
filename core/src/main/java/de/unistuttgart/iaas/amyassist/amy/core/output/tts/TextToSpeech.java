@@ -21,31 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.output.tts;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 
 /**
- * A exception of the dependency injection, signaling, that a service is already registered
+ * Class that uses MaryTTS to turn a String to a Voice Output
  * 
- * @author Leon Kiefer
+ * @see <a href="https://github.com/marytts/marytts">MaryTTS</a>
+ * 
+ * @author Kai Menzel
  */
-public class DuplicateServiceException extends RuntimeException {
+public interface TextToSpeech {
 
 	/**
-	 * Generated serial version UID
+	 * Method that returns an AudioInputStream to given String
+	 * 
+	 * @param s
+	 *            String to voice
+	 * @return AudioInputStream of String
 	 */
-	private static final long serialVersionUID = -4001860407694050099L;
-	private final String serviceDescription;
+	AudioInputStream getMaryAudio(String s);
 
 	/**
-	 * @param serviceDescription
-	 *            the serviceDescription of the duplicate Service
+	 * Method to get Mary's AudioFormat
+	 * 
+	 * @return AudioFormat of Mary (16kHz, Mono)
 	 */
-	public DuplicateServiceException(ServiceDescription<?> serviceDescription) {
-		this.serviceDescription = serviceDescription.toString();
-	}
-
-	@Override
-	public String getMessage() {
-		return this.serviceDescription;
-	}
+	AudioFormat getMaryAudioFormat();
 }

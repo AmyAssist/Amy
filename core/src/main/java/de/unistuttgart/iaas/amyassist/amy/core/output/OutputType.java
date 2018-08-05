@@ -21,31 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.output;
 
 /**
- * A exception of the dependency injection, signaling, that a service is already registered
+ * Class that defines the Output Type
  * 
- * @author Leon Kiefer
+ * @author Kai Menzel
  */
-public class DuplicateServiceException extends RuntimeException {
-
+public enum OutputType {
 	/**
-	 * Generated serial version UID
+	 * Sound File Type, the Message will be Path to file
 	 */
-	private static final long serialVersionUID = -4001860407694050099L;
-	private final String serviceDescription;
-
+	SOUND,
 	/**
-	 * @param serviceDescription
-	 *            the serviceDescription of the duplicate Service
+	 * Voice Output Type, the Message will be voiced by Amy
 	 */
-	public DuplicateServiceException(ServiceDescription<?> serviceDescription) {
-		this.serviceDescription = serviceDescription.toString();
-	}
-
-	@Override
-	public String getMessage() {
-		return this.serviceDescription;
-	}
+	VOICE;
 }
