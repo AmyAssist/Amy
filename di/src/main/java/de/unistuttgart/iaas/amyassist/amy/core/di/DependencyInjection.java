@@ -112,7 +112,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		ServiceKey<T> serviceKey = new ServiceKey<>(serviceDescription);
 		synchronized (this.register) {
 			if (this.register.containsKey(serviceKey))
-				throw new DuplicateServiceException();
+				throw new DuplicateServiceException(serviceDescription);
 			this.register.put(serviceKey, serviceProvider);
 		}
 	}

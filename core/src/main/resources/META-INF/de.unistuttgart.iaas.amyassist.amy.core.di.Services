@@ -1,0 +1,16 @@
+de.unistuttgart.iaas.amyassist.amy.core.ConfigurationImpl
+de.unistuttgart.iaas.amyassist.amy.core.NaturalLanaguageInputHandlerService
+de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl
+de.unistuttgart.iaas.amyassist.amy.core.console.Console
+de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService
+de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManagerImpl
+de.unistuttgart.iaas.amyassist.amy.core.output.OutputImpl
+de.unistuttgart.iaas.amyassist.amy.core.output.tts.TextToSpeechImpl
+de.unistuttgart.iaas.amyassist.amy.core.persistence.PersistenceService
+de.unistuttgart.iaas.amyassist.amy.core.persistence.storage.DatabaseStorage
+de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader
+de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService
+de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl
+de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction
+de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator
+de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskSchedulerImpl
