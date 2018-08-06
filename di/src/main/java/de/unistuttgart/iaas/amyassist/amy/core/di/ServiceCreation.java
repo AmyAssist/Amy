@@ -41,7 +41,8 @@ class ServiceCreation<T> {
 	private final Set<ServiceCreation<?>> dependents = new HashSet<>();
 
 	/**
-	 * Check if the given ServiceCreation is transitive dependent on this. This check is importent to prevent
+	 * Check if the given ServiceCreation is transitive dependent on this. This check is important to prevent circles in
+	 * the data structure.
 	 * 
 	 * @param serviceCreation
 	 *            the given ServiceCreation
