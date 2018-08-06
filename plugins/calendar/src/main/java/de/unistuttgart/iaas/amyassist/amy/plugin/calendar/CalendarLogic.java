@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.Events;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -89,6 +90,48 @@ public class CalendarLogic {
 	 * The way the events are ordered in the list.
 	 */
 	String orderBy = "startTime";
+
+	public void setEvent(String summary, String location, String description, LocalDateTime startTime,
+			LocalDateTime endTime, boolean allDay, boolean recurring, boolean daily, int interval, int count,
+			LocalDate until) {
+		Event event = new Event().setSummary(summary).setLocation(location).setDescription(description);
+
+		EventDateTime start = new EventDateTime();
+		EventDateTime end = new EventDateTime();
+		ZonedDateTime startZDT = startTime.atZone(ZoneId.systemDefault());
+		DateTime startDT = new DateTime(startZDT.toInstant().toEpochMilli());
+		ZonedDateTime endZDT = endTime.atZone(ZoneId.systemDefault());
+		DateTime endDT = new DateTime(endZDT.toInstant().toEpochMilli());
+		if (allDay) {
+			start.setDate(startDT);
+			end.setDate(endDT);
+		} else {
+			start.setDateTime(startDT);
+			end.setDateTime(endDT);
+		}
+		start.setTimeZone(ZoneId.systemDefault().toString());
+		end.setTimeZone(ZoneId.systemDefault().toString());
+
+		if (recurring) {
+			String recurrenceOptions = "RRULE:";
+			if (daily) {
+				recurrenceOptions += "FREQ=DAILY";
+			} else {
+				recurrenceOptions += "FREQ=WEEKLY";
+			}
+			if (interval > 0) {
+				recurrenceOptions += ";INTERVAL=" + interval;
+			}
+			if (count > 0) {
+				recurrenceOptions += ";COUNT=" + count;
+			}
+			if (until != null) {
+				recurrenceOptions += ";UNTIL:" + until.toString().replace("-", "");
+			}
+
+		}
+
+	}
 
 	/**
 	 * This method lists the next events from the calendar
