@@ -57,8 +57,7 @@ public abstract class AbstractTaggableRegistry<T extends RegistryEntity & Taggab
 	 * @throws RegistryException
 	 *             if there is more than one entity with this tag
 	 */
-	@Override
-	public T getEntityWithTag(String tagValue) {
+	private T getEntityWithTag(String tagValue) {
 		List<? extends T> l = getEntitiesWithTag(tagValue);
 
 		if (l.size() > 1) {

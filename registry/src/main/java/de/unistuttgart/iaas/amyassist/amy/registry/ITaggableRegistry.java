@@ -34,14 +34,6 @@ import java.util.List;
 public interface ITaggableRegistry<T> extends IRegistry<T> {
 
     /**
-     * Get at most one entity with tag tagValue
-     * @param tagValue the tag of the requested entity
-     * @return an entity or null
-     * @throws RegistryException if there is more than one entity with this tag
-     */
-    T getEntityWithTag(String tagValue);
-
-    /**
      * Get all entities with tag tagValue
      * @param tagValue the tag of the requested entities
      * @return all entities or an empty list
