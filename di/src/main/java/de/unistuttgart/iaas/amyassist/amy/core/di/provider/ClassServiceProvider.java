@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ContextLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
@@ -98,7 +99,7 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public ServiceImplementationDescription<T> getServiceImplementationDescription(SimpleServiceLocator locator,
+	public ServiceImplementationDescription<T> getServiceImplementationDescription(ContextLocator locator,
 			ServiceConsumer<T> serviceConsumer) {
 		HashMap<String, Object> map = new HashMap<>();
 		for (ContextInjectionPoint c : this.contextInjectionPoints) {

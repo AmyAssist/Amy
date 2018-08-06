@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ContextLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
@@ -59,14 +60,14 @@ public interface ServiceProvider<T> {
 	 * needed to create the requested Service for the Consumer.
 	 * 
 	 * @param locator
-	 *            the ServiceLocator which can be used to lookup ContextProvider
+	 *            the ContextLocator which can be used to lookup ContextProvider
 	 * @param serviceConsumer
 	 *            the consumer of the Service. This can be used to extract context information.
 	 * @return the ServiceImplementationDescription for the Service this Provider can provide or null if this provider
 	 *         can not provide the requested Service.
 	 */
 	@CheckForNull
-	ServiceImplementationDescription<T> getServiceImplementationDescription(@Nonnull SimpleServiceLocator locator,
+	ServiceImplementationDescription<T> getServiceImplementationDescription(@Nonnull ContextLocator locator,
 			@Nonnull ServiceConsumer<T> serviceConsumer);
 
 	/**

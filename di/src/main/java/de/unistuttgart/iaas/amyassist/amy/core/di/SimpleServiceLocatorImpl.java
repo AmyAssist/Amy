@@ -51,10 +51,4 @@ public class SimpleServiceLocatorImpl implements SimpleServiceLocator {
 	public <T> ServiceHandle<T> getService(ServiceConsumer<T> serviceConsumer) {
 		return this.dependencyInjection.getService(this.serviceCreationInfo, serviceConsumer);
 	}
-
-	@Override
-	public StaticProvider<?> getContextProvider(String contextProviderType) {
-		return this.dependencyInjection.getContextProvider(contextProviderType);
-	}
-
 }

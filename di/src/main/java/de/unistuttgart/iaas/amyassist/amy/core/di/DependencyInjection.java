@@ -65,7 +65,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  * @author Leon Kiefer, Tim Neumann
  */
 @ParametersAreNullableByDefault
-public class DependencyInjection implements ServiceLocator, Configuration {
+public class DependencyInjection implements ServiceLocator, ContextLocator, Configuration {
 	/**
 	 * A register which maps a service description to it's service provider.
 	 */
