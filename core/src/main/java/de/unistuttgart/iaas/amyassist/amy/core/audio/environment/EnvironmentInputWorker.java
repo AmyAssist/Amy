@@ -119,7 +119,7 @@ public class EnvironmentInputWorker implements Runnable {
 		 */
 		int lowestSize = BYTE_BUFFER_SIZE;
 
-		while (atLeastOneFull) {
+		do {
 			List<QueuedInputStream> toRemove = new ArrayList<>();
 			atLeastOneFull = false;
 			for (QueuedInputStream qis : this.ae.getInputStreams()) {
@@ -158,7 +158,7 @@ public class EnvironmentInputWorker implements Runnable {
 			}
 
 			this.ae.getInputStreams().removeAll(toRemove);
-		}
+		} while (atLeastOneFull);
 	}
 
 }

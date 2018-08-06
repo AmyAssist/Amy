@@ -97,13 +97,12 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 	public void registerAudioEnvironment(AudioEnvironment environment) {
 		UUID aei = environment.getAudioEnvironmentIdentifier();
 
-		if (this.running) {
-			environment.start();
-		}
-
 		synchronized (this.registry) {
 			if (this.registry.containsKey(aei))
 				throw new IllegalStateException("An audio environment with the same identifier is already registered!");
+			if (this.running) {
+				environment.start();
+			}
 			this.registry.put(aei, environment);
 		}
 	}
@@ -186,12 +185,12 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 	 */
 	private OutputBehavior checkBehavior(OutputBehavior behavior) {
 		OutputBehavior ret = behavior;
-		if (!this.running) {
-			if (behavior != OutputBehavior.QUEUE_PRIORITY && behavior != OutputBehavior.QUEUE) {
-				ret = OutputBehavior.QUEUE;
-				this.logger.warn("Audio manager not started yet. Switching behaviour to QUEUE.");
-			}
+
+		if (!this.running && behavior != OutputBehavior.QUEUE_PRIORITY && behavior != OutputBehavior.QUEUE) {
+			ret = OutputBehavior.QUEUE;
+			this.logger.warn("Audio manager not started yet. Switching behaviour to QUEUE.");
 		}
+
 		return ret;
 	}
 

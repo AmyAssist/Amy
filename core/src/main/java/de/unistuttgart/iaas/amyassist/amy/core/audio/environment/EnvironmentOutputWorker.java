@@ -111,9 +111,7 @@ public class EnvironmentOutputWorker implements Runnable {
 					this.ae.playAudio(currentStream, OutputBehavior.QUEUE_PRIORITY);
 					needToCloseStream = false;
 				}
-			} catch (InterruptedException e1) {
-				Thread.currentThread().interrupt();
-			} catch (InterruptedIOException e2) {
+			} catch (InterruptedException | InterruptedIOException e1) {
 				Thread.currentThread().interrupt();
 			} catch (IOException e) {
 				this.logger.warn("IO Exception in audio worker.", e);

@@ -75,12 +75,6 @@ public abstract class AudioEnvironment {
 
 		this.outputWorker = new EnvironmentOutputWorker(this);
 		this.inputWorker = new EnvironmentInputWorker(this);
-
-		String ae_id = this.getAudioEnvironmentIdentifier().toString();
-
-		this.outputThread = new Thread(this.outputWorker, "AE<" + ae_id + ">OutputThread");
-		this.inputThread = new Thread(this.inputWorker, "AE<" + ae_id + ">InputThread");
-
 	}
 
 	/**
@@ -207,6 +201,11 @@ public abstract class AudioEnvironment {
 	 * Starts this audio environment
 	 */
 	public void start() {
+		String aeId = this.getAudioEnvironmentIdentifier().toString();
+
+		this.outputThread = new Thread(this.outputWorker, "AE<" + aeId + ">OutputThread");
+		this.inputThread = new Thread(this.inputWorker, "AE<" + aeId + ">InputThread");
+
 		this.outputThread.start();
 		this.inputThread.start();
 	}
