@@ -197,7 +197,7 @@ public class PluginManagerService implements PluginManager {
 	private void processPlugin(IPlugin plugin) {
 		for (Class<?> cls : plugin.getClasses()) {
 			if (cls.isAnnotationPresent(SpeechCommand.class)) {
-				this.nlProcessingManager.register(cls);
+				this.nlProcessingManager.register(cls, plugin.getAIMContent());
 			}
 			if (cls.isAnnotationPresent(Service.class)) {
 				this.di.register(cls);

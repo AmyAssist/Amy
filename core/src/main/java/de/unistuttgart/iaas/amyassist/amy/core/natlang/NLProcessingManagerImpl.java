@@ -23,13 +23,26 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.slf4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.google.common.collect.Lists;
 
@@ -41,6 +54,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
@@ -70,13 +84,35 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private final List<AGFNode> registeredNodeList = new ArrayList<>();
 
 	@Override
-	public void register(Class<?> naturalLanguageInterpreter) {
+	public void register(Class<?> naturalLanguageInterpreter, List<String> aimContents) {
 		if (!naturalLanguageInterpreter
 				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand.class)) {
 			throw new IllegalArgumentException("annotation is not present in " 
 				+ naturalLanguageInterpreter.getSimpleName());
 		}
 		Set<Method> grammars = NLIAnnotationReader.getValidNLIMethods(naturalLanguageInterpreter);
+		
+		Set<Method> intentMethods = NLIAnnotationReader.getValidIntentMethods(naturalLanguageInterpreter);
+		
+		HashMap<String, Node> aimIntents = new HashMap<>();
+		for(String s : aimContents) {
+			NodeList tmpList = extractIntents(s);
+			for(int i=0; i < tmpList.getLength(); i++) {
+				aimIntents.put(tmpList.item(i).getAttributes().getNamedItem("ref").getTextContent(), tmpList.item(i));
+			}
+		}		
+		
+		HashMap<Node, Method> aimToMethod = new HashMap<>();
+		Iterator<Method> i = intentMethods.iterator();
+		while(i.hasNext()) {
+			Method method = i.next();
+			String s = naturalLanguageInterpreter.getName() + "." + method.getAnnotation(Intent.class).value();
+			if(aimIntents.containsKey(s)) {
+				aimToMethod.put(aimIntents.get(s), method);
+			}else {
+				this.logger.error("no matching intent found in xml for {}", s);
+			}
+		}
 
 		for (Method e : grammars) {
 			PartialNLI partialNLI = this.generatePartialNLI(naturalLanguageInterpreter, e);
@@ -118,5 +154,27 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		String[] arguments = Lists.transform(tokens, WordToken::getContent).toArray(new String[tokens.size()]);
 		Object object = this.serviceLocator.createAndInitialize(partialNLI.getPartialNLIClass());
 		return partialNLI.call(object, arguments);
+	}
+	
+	/**
+	 * extracts <Intent> tags from amy interaction model xmls
+	 * 
+	 * @param s amy interaction model content
+	 * @return list of nodes with <Intent> tag
+	 */
+	private NodeList extractIntents(String s) {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		try {
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			
+			ByteArrayInputStream input = new ByteArrayInputStream(s.getBytes("UTF-8"));
+			Document doc = builder.parse(input);
+			Element root = doc.getDocumentElement();
+			return root.getElementsByTagName("Intent");
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			this.logger.error("error parsing xml " + e.getMessage());
+		}
+		return null;
+		
 	}
 }

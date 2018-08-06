@@ -33,6 +33,8 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
+
 
 /**
  * This class is responsible to read the annotations of a given class
@@ -54,9 +56,29 @@ public class NLIAnnotationReader {
 	 * @throws IllegalArgumentException
 	 *             if a method annotated with {@link Grammar} is not a valid NLIMethod
 	 */
+	@Deprecated
 	public static Set<Method> getValidNLIMethods(Class<?> cls) {
 		Set<Method> validMethods = new HashSet<>();
 		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Grammar.class);
+		for (Method method : methodsWithAnnotation) {
+			assertValid(method);
+			validMethods.add(method);
+		}
+		return validMethods;
+	}
+	
+	/**
+	 * Get's the methods annotated with {@link Intent}
+	 * 
+	 * @param cls
+	 *            The class of which to get the grammars
+	 * @return a List of grammars
+	 * @throws IllegalArgumentException
+	 *             if a method annotated with {@link Grammar} is not a valid NLIMethod
+	 */
+	public static Set<Method> getValidIntentMethods(Class<?> cls) {
+		Set<Method> validMethods = new HashSet<>();
+		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Intent.class);
 		for (Method method : methodsWithAnnotation) {
 			assertValid(method);
 			validMethods.add(method);
