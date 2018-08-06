@@ -132,7 +132,7 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 	}
 
 	@Override
-	public void interruptAudio(UUID identifier) {
+	public void stopAudioOutput(UUID identifier) {
 		AudioEnvironment ae = safelyGetEnv(identifier);
 		ae.stopOutput();
 	}

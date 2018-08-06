@@ -49,14 +49,14 @@ public interface AudioManager {
 	void playAudio(UUID identifier, AudioInputStream audioToPlay, OutputBehavior behavior);
 
 	/**
-	 * Interrupts the audio output on the audio environment specified by the given identifier.
+	 * Stops all audio output on the audio environment specified by the given identifier.
 	 * 
-	 * If the environment is currently outputting a global audio, this will interrupt the output on all environments.
+	 * This includes all queued output.
 	 * 
 	 * @param identifier
 	 *            The identifier of the audio environment to interrupt.
 	 */
-	void interruptAudio(UUID identifier);
+	void stopAudioOutput(UUID identifier);
 
 	/**
 	 * @return A list of {@link UUID}s, each being the identifier of a registered audio environment

@@ -70,13 +70,18 @@ public class AudioOutput {
 	}
 
 	/**
-	 * Tries to close the input stream
+	 * Tries to close the input stream. If it is not possible to close the stream, the coresponding exception is logged
+	 * and false is returned.
+	 * 
+	 * @return Whether closing was successful.
 	 */
-	public void tryToCloseStream() {
+	public boolean tryToCloseStream() {
 		try {
 			this.ais.close();
+			return true;
 		} catch (IOException e) {
 			this.logger.debug("IO Exception when closing stream", e);
+			return false;
 		}
 	}
 }

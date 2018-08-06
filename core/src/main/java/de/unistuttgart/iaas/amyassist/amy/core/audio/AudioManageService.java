@@ -49,8 +49,8 @@ public class AudioManageService implements AudioManager {
 	}
 
 	@Override
-	public void interruptAudio(UUID identifier) {
-		this.iam.interruptAudio(identifier);
+	public void stopAudioOutput(UUID identifier) {
+		this.iam.stopAudioOutput(identifier);
 	}
 
 	@Override
