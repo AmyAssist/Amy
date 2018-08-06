@@ -25,20 +25,21 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 
 /**
- * TODO: Description
+ * SimpleServiceLocator is used in {@link ServiceProvider} to get dependencies. The normal extended {@link ServiceLocator} interface
+ * should not be used in ServiceProviders.
  * 
  * @author Leon Kiefer
  */
 public interface SimpleServiceLocator {
 	/**
-	 * Get the service for the given service consumer. First the service Description for the service consumer is looked
-	 * up and then, this method lookup the service provider registered for the service description and use it to return
-	 * a service handle for the service consumer.
+	 * Get a service for the given service consumer. This Method track the caller to prevent the service get created
+	 * twice and to run in a dependency circle.
 	 * 
 	 * @param serviceConsumer
-	 *            a service consumer for which we need to find the service
+	 *            the service consumer of the dependency
 	 * @return a service handle for the given service consumer if a service provider is found
 	 * @param <T>
 	 *            the type of the service

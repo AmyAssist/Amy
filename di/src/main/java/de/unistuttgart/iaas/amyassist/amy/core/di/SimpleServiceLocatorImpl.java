@@ -24,13 +24,12 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 
 /**
- * TODO: Description
+ * A Facade for the ServiceLocator to track the creation process of services and dependent services
  * 
- * @author
+ * @author Leon Kiefer
  */
 public class SimpleServiceLocatorImpl implements SimpleServiceLocator {
 
@@ -41,8 +40,7 @@ public class SimpleServiceLocatorImpl implements SimpleServiceLocator {
 	 * @param dependencyInjection
 	 * @param serviceCreationInfo
 	 */
-	public SimpleServiceLocatorImpl(DependencyInjection dependencyInjection,
-			ServiceCreation<?> serviceCreationInfo) {
+	public SimpleServiceLocatorImpl(DependencyInjection dependencyInjection, ServiceCreation<?> serviceCreationInfo) {
 		this.dependencyInjection = dependencyInjection;
 		this.serviceCreationInfo = serviceCreationInfo;
 	}

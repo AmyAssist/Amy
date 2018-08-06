@@ -33,6 +33,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
  * Information about the creation process of a Service
  * 
  * @author Leon Kiefer
+ * @param <T>
+ *            the type of the created service
  */
 class ServiceCreation<T> {
 	CompletableFuture<ServiceHandle<T>> completableFuture;
@@ -42,6 +44,7 @@ class ServiceCreation<T> {
 	 * Check if the given ServiceCreation is transitive dependent on this. This check is importent to prevent
 	 * 
 	 * @param serviceCreation
+	 *            the given ServiceCreation
 	 * @return true if the given serviceCreation depends on this
 	 */
 	boolean isDependent(ServiceCreation<?> serviceCreation) {

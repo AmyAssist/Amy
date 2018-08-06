@@ -1,11 +1,3 @@
-package de.unistuttgart.iaas.amyassist.amy.core.di;
-
-import java.util.NoSuchElementException;
-
-import javax.annotation.Nonnull;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
-
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
@@ -28,6 +20,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvide
  *
  * For more information see notice.md
  */
+
+package de.unistuttgart.iaas.amyassist.amy.core.di;
+
+import java.util.NoSuchElementException;
+
+import javax.annotation.Nonnull;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 
 /**
  * A locator for context provider used by ServiceProvider to receive the context of ServiceConsumers.
