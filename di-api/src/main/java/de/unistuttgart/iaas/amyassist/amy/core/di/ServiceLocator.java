@@ -23,12 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.util.NoSuchElementException;
-
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 
 /**
@@ -36,7 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
  * 
  * @author Leon Kiefer
  */
-public interface ServiceLocator {
+public interface ServiceLocator extends SimpleServiceLocator {
 
 	/**
 	 * Instantiate the given class if it can, inject dependencies and post-constructs the object. The object created in
@@ -75,30 +71,6 @@ public interface ServiceLocator {
 	 *            the type of the service
 	 */
 	<T> ServiceHandle<T> getService(ServiceDescription<T> serviceDescription);
-
-	/**
-	 * Get the service for the given service consumer. First the service Description for the service consumer is looked
-	 * up and then, this method lookup the service provider registered for the service description and use it to return
-	 * a service handle for the service consumer.
-	 * 
-	 * @param serviceConsumer
-	 *            a service consumer for which we need to find the service
-	 * @return a service handle for the given service consumer if a service provider is found
-	 * @param <T>
-	 *            the type of the service
-	 */
-	<T> ServiceHandle<T> getService(ServiceConsumer<T> serviceConsumer);
-
-	/**
-	 * Getter for the Context provider for the given identifier
-	 * 
-	 * @param contextProviderType
-	 *            the context identifier
-	 * @return the static ContextProvider
-	 * @throws NoSuchElementException
-	 *             if there is no ContextProvider for the given identifier
-	 */
-	StaticProvider<?> getContextProvider(@Nonnull String contextProviderType);
 
 	/**
 	 * This will analyze the given object and inject into its fields. The object given will not be managed by the DI.

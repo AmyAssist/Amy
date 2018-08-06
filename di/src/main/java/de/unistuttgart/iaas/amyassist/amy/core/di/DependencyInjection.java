@@ -30,7 +30,10 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -70,7 +73,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	private final Map<ServicePoolKey<?>, ServiceHandle<?>> servicePool;
 
-	private final Map<ServicePoolKey<?>, ServiceCreationInfo> serviceCreationInfos;
+	private final Map<ServicePoolKey<?>, ServiceCreationInfo<?>> serviceCreationInfos;
 
 	protected Map<String, StaticProvider<?>> staticProviders;
 
@@ -185,7 +188,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		if (serviceImplementationDescription == null) {
 			throw new ServiceNotFoundException(serviceDescription);
 		}
-		return this.lookUpOrCreateService(provider, serviceImplementationDescription);
+		return this.lookUpOrCreateService(new ServiceCreationInfo<>(new CompletableFuture<>()), provider, serviceImplementationDescription);
 	}
 
 	@Override
@@ -196,11 +199,13 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		if (serviceImplementationDescription == null) {
 			throw new ServiceNotFoundException(serviceConsumer.getServiceDescription());
 		}
-		return this.lookUpOrCreateService(provider, serviceImplementationDescription);
+		return this.lookUpOrCreateService(new ServiceCreationInfo<>(new CompletableFuture<>()), provider,
+				serviceImplementationDescription);
 	}
 
 	@CheckForNull
-	private <T> ServiceHandle<T> lookUpService(@Nonnull ServiceProvider<T> serviceProvider,
+	private <T> ServiceHandle<T> lookUpService(@Nonnull ServiceCreationInfo<?> dependentServiceCreationInfo,
+			@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
 
 		ServicePoolKey<?> servicePoolKey = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription);
@@ -211,35 +216,44 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		return (ServiceHandle<T>) this.servicePool.get(servicePoolKey);
 	}
 
-	private <T> void createService(@Nonnull ServiceProvider<T> serviceProvider,
+	private <T> Future<ServiceHandle<T>> createService(@Nonnull ServiceCreationInfo<?> dependentServiceCreationInfo,
+			@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
 		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription);
 		synchronized (this.servicePool) {
 			if (this.serviceCreationInfos.containsKey(key)) {
-				ServiceCreationInfo serviceCreationInfo = this.serviceCreationInfos.get(key);
-				if (Thread.currentThread().equals(serviceCreationInfo.thread)) {
-					throw new IllegalStateException("circular dependencies");
-				}
-				throw new IllegalStateException("other Thread is creating a Service that i should create!");
+				ServiceCreationInfo<T> serviceCreationInfo = (ServiceCreationInfo<T>) this.serviceCreationInfos
+						.get(key);
+				//throw new IllegalStateException("circular dependencies");
+				serviceCreationInfo.dependents.add(dependentServiceCreationInfo);
+
+				return serviceCreationInfo.completableFuture;
 			}
-			this.serviceCreationInfos.put(key, new ServiceCreationInfo(Thread.currentThread()));
+			CompletableFuture<ServiceHandle<T>> completableFuture = CompletableFuture.supplyAsync(() -> serviceProvider
+					.createService(new SimpleServiceLocatorImpl(this), serviceImplementationDescription));
+			completableFuture.thenAccept(service -> this.servicePool.put(key, service));
+			this.serviceCreationInfos.put(key, new ServiceCreationInfo<>(completableFuture));
+			return completableFuture;
+
 		}
-
-		ServiceHandle<T> service = serviceProvider.createService(this, serviceImplementationDescription);
-
-		this.servicePool.put(key, service);
 	}
 
-	private <T> ServiceHandle<T> lookUpOrCreateService(@Nonnull ServiceProvider<T> serviceProvider,
+	private <T> ServiceHandle<T> lookUpOrCreateService(@Nonnull ServiceCreationInfo<?> dependentServiceCreationInfo,
+			@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
-		ServiceHandle<T> lookUpService = this.lookUpService(serviceProvider, serviceImplementationDescription);
+		ServiceHandle<T> lookUpService = this.lookUpService(dependentServiceCreationInfo, serviceProvider,
+				serviceImplementationDescription);
 		if (lookUpService == null) {
-			this.createService(serviceProvider, serviceImplementationDescription);
-			lookUpService = this.lookUpService(serviceProvider, serviceImplementationDescription);
-		}
-
-		if (lookUpService == null) {
-			throw new IllegalStateException();
+			Future<ServiceHandle<T>> createService = this.createService(dependentServiceCreationInfo, serviceProvider,
+					serviceImplementationDescription);
+			try {
+				lookUpService = createService.get();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException(e);
+			} catch (ExecutionException e) {
+				throw new IllegalStateException(e);
+			}
 		}
 		return lookUpService;
 	}

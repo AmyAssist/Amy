@@ -23,27 +23,32 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 
 /**
- * Information about the creation process of a Service
- * 
- * @author Leon Kiefer
+ * TODO: Description
+ * @author
  */
-class ServiceCreationInfo<T> {
-	final CompletableFuture<ServiceHandle<T>> completableFuture;
-	final Set<ServiceCreationInfo<?>> dependents = new HashSet<>();
+public class SimpleServiceLocatorImpl implements SimpleServiceLocator {
 
+	private DependencyInjection dependencyInjection;
 
 	/**
-	 * @param completableFuture
+	 * @param dependencyInjection
 	 */
-	public ServiceCreationInfo(CompletableFuture<ServiceHandle<T>> completableFuture) {
-		this.completableFuture = completableFuture;
+	public SimpleServiceLocatorImpl(DependencyInjection dependencyInjection) {
+		this.dependencyInjection = dependencyInjection;
+	}
+
+	@Override
+	public <T> ServiceHandle<T> getService(ServiceConsumer<T> serviceConsumer) {
+		return this.dependencyInjection.getService(serviceConsumer);
+	}
+	@Override
+	public StaticProvider<?> getContextProvider(String contextProviderType) {
+		return this.dependencyInjection.getContextProvider(contextProviderType);
 	}
 
 }

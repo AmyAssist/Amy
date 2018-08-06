@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.SimpleServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 
 /**
@@ -62,14 +62,14 @@ public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public ServiceImplementationDescription<T> getServiceImplementationDescription(ServiceLocator locator,
+	public ServiceImplementationDescription<T> getServiceImplementationDescription(SimpleServiceLocator locator,
 			ServiceConsumer<T> serviceConsumer) {
 		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
 				this.instance.getClass());
 	}
 
 	@Override
-	public ServiceHandle<T> createService(ServiceLocator locator,
+	public ServiceHandle<T> createService(SimpleServiceLocator locator,
 			ServiceImplementationDescription<T> serviceImplementationDescription) {
 		return new ServiceHandleImpl<>(this.instance);
 	}
