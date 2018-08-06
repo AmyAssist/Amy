@@ -159,12 +159,12 @@ class PlayerLogicTest {
 	@Test
 	public void testSearch() {
 		this.playerLogic.search(DEVICE_NAME1, "track", 1);
-		verify(search).searchList(DEVICE_NAME1, "track", 1);
+		verify(search).searchforTracks(DEVICE_NAME1, "track", 1);
 	}
 
 	@Test
 	public void testPlayEmptyList() {
-		when(search.getFeaturedPlaylists(5)).thenReturn(new ArrayList<>());
+		when(search.searchFeaturedPlaylists(5)).thenReturn(new ArrayList<>());
 		assertThat(this.playerLogic.play(), equalTo(null));
 
 	}
@@ -172,7 +172,7 @@ class PlayerLogicTest {
 	@Test
 	public void testPlayNotEmptyList() {
 		initPlaylists();
-		when(this.search.getFeaturedPlaylists(5)).thenReturn(playlistsOwnFormat);
+		when(this.search.searchFeaturedPlaylists(5)).thenReturn(playlistsOwnFormat);
 		when(this.spotifyAPICalls.playListFromUri(any())).thenReturn(true);
 		assertThat(this.playerLogic.play().getUri(), equalTo(ID2));
 		verify(this.spotifyAPICalls).playListFromUri(ID2);
@@ -227,7 +227,7 @@ class PlayerLogicTest {
 	@Test
 	public void testGetCurrentSong() {
 		when(this.spotifyAPICalls.getCurrentSong()).thenReturn(currentlyPlayingContext);
-		when(search.createTrackOutput(any())).thenCallRealMethod();
+		when(search.createTrackData(any())).thenCallRealMethod();
 		Map<String, String> result1 = this.playerLogic.getCurrentSong();
 		assertThat(result1.get(SpotifyConstants.ITEM_NAME), equalTo("Flames"));
 		assertThat(result1.get(SpotifyConstants.ITEM_TYPE), equalTo("track"));

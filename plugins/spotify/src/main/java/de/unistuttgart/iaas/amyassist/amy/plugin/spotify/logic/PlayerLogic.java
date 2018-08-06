@@ -39,6 +39,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SearchTypes;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
 
 /**
  * This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music
@@ -104,9 +105,9 @@ public class PlayerLogic {
 	 *            how many results maximal searched for
 	 * @return one output String with all results
 	 */
-	public List<Map<String, String>> search(String searchText, String type, int limit) {
-		return this.search.searchList(searchText, type, limit);
-	}
+/*	public List<Map<String, String>> search(String searchText, String type, int limit) {
+		return this.search.searchforTracks(searchText, type, limit);
+	}*/
 
 	/**
 	 * this play method play a featured playlist from spotify
@@ -115,7 +116,7 @@ public class PlayerLogic {
 	 */
 	public PlaylistEntity play() {
 		List<PlaylistEntity> playLists;
-		playLists = this.search.getFeaturedPlaylists(5);
+		playLists = this.search.searchFeaturedPlaylists(5);
 		if (!playLists.isEmpty() && 1 < playLists.size()
 				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).getUri())) {
 			return playLists.get(1);
@@ -189,13 +190,13 @@ public class PlayerLogic {
 	 * 
 	 * @return a hashMap with the keys name and artist
 	 */
-	public Map<String, String> getCurrentSong() {
+	public TrackEntity getCurrentSong() {
 		CurrentlyPlayingContext currentlyPlayingContext = this.spotifyAPICalls.getCurrentSong();
 		if (currentlyPlayingContext != null) {
 			Track[] track = { currentlyPlayingContext.getItem() };
-			return this.search.createTrackOutput(new Paging.Builder<Track>().setItems(track).build()).get(0);
+			return this.search.createTrackData(new Paging.Builder<Track>().setItems(track).build()).get(0);
 		}
-		return new HashMap<>();
+		return null;
 
 	}
 
@@ -207,7 +208,7 @@ public class PlayerLogic {
 	 * @return a list from Playlists
 	 */
 	public List<PlaylistEntity> getOwnPlaylists(int limit) {
-		return this.search.getOwnPlaylists(limit);
+		return this.search.searchOwnPlaylists(limit);
 	}
 
 	/**
@@ -218,7 +219,7 @@ public class PlayerLogic {
 	 * @return a list from Playlists
 	 */
 	public List<PlaylistEntity> getFeaturedPlaylists(int limit) {
-		return this.search.getFeaturedPlaylists(limit);
+		return this.search.searchFeaturedPlaylists(limit);
 	}
 
 	/**

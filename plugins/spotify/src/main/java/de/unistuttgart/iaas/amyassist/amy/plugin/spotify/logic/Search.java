@@ -24,9 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
@@ -42,8 +40,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SearchTypes;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyConstants;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
 
 /**
  * This class create search query to the spotify web api and parse the results in a String or in a Hashmap with
@@ -58,235 +58,236 @@ public class Search {
 	@Reference
 	private IStorage storage;
 
-	
-	private static final String SPOTIFY_URI_STORAGE = "spotify_uri_";
+	private List<TrackEntity> trackSearchResults = new ArrayList<>();
+	private List<AlbumEntity> albumSearchResults = new ArrayList<>();
+	private List<ArtistEntity> artistSearchResults = new ArrayList<>();
+	private List<PlaylistEntity> playlistSearchResults = new ArrayList<>();
+
+	private List<PlaylistEntity> featuredPlaylists = new ArrayList<>();
+	private List<PlaylistEntity> ownPlaylists = new ArrayList<>();
+
 	/**
 	 * search limit for a few search queries
 	 */
 	public static final int SEARCH_LIMIT = 10;
 
 	/**
-	 * create a search query and output a list with search results
+	 * create a search query and output a list with search results from type track
 	 * 
 	 * @param searchItem
-	 *            tesxt to search
-	 * @param type
-	 *            what is searched for (track, artist, album, playlist)
+	 *            text to search
 	 * @param limit
 	 *            max length of the result list
-	 * @return a list with search result entries. every entry has a Map with different attributes. e.g. artist, ...
-	 *         every entry has a uri to the song an the type (track, artist, album, palylist)
+	 * @return a list with tracks
 	 */
-	public List<Map<String, String>> searchList(String searchItem, String type, int limit) {
-		List<Map<String, String>> result = new ArrayList<>();
-		if (typeCheck(type)) {
-			SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, type, limit);
+	public List<TrackEntity> searchforTracks(String searchItem, int limit) {
+			SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "track", limit);
 			if (searchResult != null) {
-				result = createMap(searchResult, type);
+				this.trackSearchResults =  createTrackData(searchResult.getTracks());
 			}
-		}
-		writeUrisToStorageMap(result, SearchTypes.NORMAL_SEARCH);
-		return result;
+			else {
+				this.trackSearchResults = new ArrayList<>();
+			}
+		return this.trackSearchResults;
+	}
+	
+	/**
+	 * create a search query and output a list with search results from type track
+	 * 
+	 * @param searchItem
+	 *            text to search
+	 * @param limit
+	 *            max length of the result list
+	 * @return a list with tracks
+	 */
+	public List<PlaylistEntity> searchforPlaylists(String searchItem, int limit) {
+			SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "playlist", limit);
+			if (searchResult != null) {
+				this.playlistSearchResults =  createPlaylistData(searchResult.getPlaylists().getItems());
+			}
+			else {
+				this.playlistSearchResults = new ArrayList<>();
+			}
+		return this.playlistSearchResults;
+	}
+	
+	/**
+	 * create a search query and output a list with search results from type track
+	 * 
+	 * @param searchItem
+	 *            text to search
+	 * @param limit
+	 *            max length of the result list
+	 * @return a list with tracks
+	 */
+	public List<AlbumEntity> searchforAlbum(String searchItem, int limit) {
+			SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "album", limit);
+			if (searchResult != null) {
+				this.albumSearchResults =  createAlbumData(searchResult.getAlbums());
+			}
+			else {
+				this.albumSearchResults = new ArrayList<>();
+			}
+		return this.albumSearchResults;
+	}
+	
+	/**
+	 * create a search query and output a list with search results from type track
+	 * 
+	 * @param searchItem
+	 *            text to search
+	 * @param limit
+	 *            max length of the result list
+	 * @return a list with tracks
+	 */
+	public List<ArtistEntity> searchforArtists(String searchItem, int limit) {
+			SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "artist", limit);
+			if (searchResult != null) {
+				this.artistSearchResults =  createArtistData(searchResult.getArtists());
+			}
+			else {
+				this.artistSearchResults = new ArrayList<>();
+			}
+		return this.artistSearchResults;
 	}
 
 	/**
+	 * create a List with tracks out of the search results from spotify
 	 * 
 	 * @param searchResult
 	 *            the search result from a query
-	 * @param type
-	 *            artist, track, album or palylist
-	 * @return a list with search result entries. every entry has a Map with different attributes. e.g. artist, ...
-	 *         every entry has a uri to the song an the type (track, artist, album, palylist)
+	 * @return a list with track entities
 	 */
-	public List<Map<String, String>> createMap(SearchResult searchResult, String type) {
-		List<Map<String, String>> resultList = new ArrayList<>();
-		if (searchResult != null) {
-			switch (type.toLowerCase()) {
-			case SpotifyConstants.TYPE_TRACK:
-				return createTrackOutput(searchResult.getTracks());
-			case SpotifyConstants.TYPE_PLAYLIST:
-				return createPlaylistOutput(searchResult.getPlaylists());
-			case SpotifyConstants.TYPE_ARTIST:
-				return createArtistOutput(searchResult.getArtists());
-			case SpotifyConstants.TYPE_ALBUM:
-				return createAlbumOutput(searchResult.getAlbums());
-			default:
-				return resultList;
-			}
-		}
-		return resultList;
-	}
-
-	/**
-	 * create a List with all items in a Paging Object when the type is a track
-	 * 
-	 * @param searchResult
-	 *            the search result from a query
-	 * @return a list with search result entries. every entry has a Map with different attributes. e.g. artist, ...
-	 *         every entry has a uri to the song an the type track
-	 */
-	public List<Map<String, String>> createTrackOutput(Paging<Track> searchResult) {
-		HashMap<String, String> entry;
-		List<Map<String, String>> result = new ArrayList<>();
+	protected List<TrackEntity> createTrackData(Paging<Track> searchResult) {
+		TrackEntity trackEntity;
+		List<TrackEntity> result = new ArrayList<>();
 		if (searchResult != null) {
 			for (Track track : searchResult.getItems()) {
-				entry = new HashMap<>();
-				if (track.getName() != null) {
-					entry.put(SpotifyConstants.ITEM_NAME, track.getName());
+				trackEntity = new TrackEntity();
+				trackEntity.setName(track.getName());
+
+				String[] artistNames = new String[track.getArtists().length];
+				for (int i = 0; i < track.getArtists().length; i++) {
+					artistNames[i] = track.getArtists()[i].getName();
 				}
-				String artistName = "";
-				for (int j = 0; j < track.getArtists().length - 1; j++) {
-					artistName = artistName.concat(track.getArtists()[j].getName()).concat(", ");
-				}
-				if (0 < track.getArtists().length) {
-					artistName = artistName.concat(track.getArtists()[track.getArtists().length - 1].getName());
-				}
-				entry.put(SpotifyConstants.ARTIST_NAME, artistName);
-				entry.put(SpotifyConstants.ITEM_URI, track.getUri());
-				entry.put(SpotifyConstants.ITEM_TYPE, SpotifyConstants.TYPE_TRACK);
-				result.add(entry);
+				trackEntity.setArtists(artistNames);
+				trackEntity.setUri(track.getUri());
+				trackEntity.setDurationInMs(track.getDurationMs());
+				result.add(trackEntity);
 			}
 		}
 		return result;
 	}
 
 	/**
-	 * create a List with all SearchResults when the type is a album
+	 * create a List with all SearchResults when the type is album
 	 * 
 	 * @param searchResult
 	 *            the search result from a query
-	 * @return a list with search result entries. every entry has a Map with different attributes. e.g. artist, ...
-	 *         every entry has a uri to the song an the type album
+	 * @return a list with album entities 
 	 */
-	public List<Map<String, String>> createAlbumOutput(Paging<AlbumSimplified> searchResult) {
-		HashMap<String, String> entry;
-		List<Map<String, String>> result = new ArrayList<>();
+	protected List<AlbumEntity> createAlbumData(Paging<AlbumSimplified> searchResult) {
+		AlbumEntity albumEntity;
+		List<AlbumEntity> result = new ArrayList<>();
 		if (searchResult != null) {
 			for (AlbumSimplified album : searchResult.getItems()) {
-				entry = new HashMap<>();
-				if (album.getName() != null) {
-					entry.put(SpotifyConstants.ITEM_NAME, album.getName());
+				albumEntity = new AlbumEntity();
+				albumEntity.setName(album.getName());
+				String[] artistNames = new String[album.getArtists().length];
+				for (int i = 0; i < album.getArtists().length; i++) {
+					artistNames[i] = album.getArtists()[i].getName();
 				}
-				String artists = "";
-				for (int j = 0; j < album.getArtists().length - 1; j++) {
-					artists = artists.concat(album.getArtists()[j].getName()).concat(", ");
+				if (album.getImages() != null && album.getImages().length > 0) {
+					albumEntity.setImageUrl(album.getImages()[0].getUrl());
 				}
-				if (0 < album.getArtists().length) {
-					artists = artists.concat(album.getArtists()[album.getArtists().length - 1].getName());
-				}
-				entry.put(SpotifyConstants.ARTIST_NAME, artists);
-				entry.put(SpotifyConstants.ITEM_URI, album.getUri());
-				entry.put(SpotifyConstants.ITEM_TYPE, SpotifyConstants.TYPE_ALBUM);
-				result.add(entry);
+				albumEntity.setArtists(artistNames);
+				albumEntity.setUri(album.getUri());
+				result.add(albumEntity);
 			}
 		}
 		return result;
 	}
 
 	/**
-	 * create a List with all SearchResults when the type is a artist
+	 * create a List with all SearchResults when the type is artist
 	 * 
 	 * @param searchResult
 	 *            the search result from a query
-	 * @return a list with search result entries. every entry has a Map with different attributes. e.g. artist, ...
-	 *         every entry has a uri to the song an the type artist
+	 * @return a list with artist entities
 	 */
-	public List<Map<String, String>> createArtistOutput(Paging<Artist> searchResult) {
-		HashMap<String, String> entry;
-		List<Map<String, String>> result = new ArrayList<>();
+	protected List<ArtistEntity> createArtistData(Paging<Artist> searchResult) {
+		List<ArtistEntity> result = new ArrayList<>();
+		ArtistEntity artistEntity;
 		if (searchResult != null) {
 			for (Artist artist : searchResult.getItems()) {
-				entry = new HashMap<>();
-				if (artist.getName() != null) {
-					entry.put(SpotifyConstants.ITEM_NAME, artist.getName());
-				}
-				String genre = "";
-				for (int j = 0; j < artist.getGenres().length - 1; j++) {
-					genre = genre.concat(artist.getGenres()[j]).concat(", ");
-				}
-				if (0 < artist.getGenres().length) {
-					genre = genre.concat(artist.getGenres()[artist.getGenres().length - 1]);
-				}
-				entry.put(SpotifyConstants.GENRE, genre);
-				entry.put(SpotifyConstants.ITEM_URI, artist.getUri());
-				entry.put(SpotifyConstants.ITEM_TYPE, SpotifyConstants.TYPE_ARTIST);
-				result.add(entry);
+				artistEntity = new ArtistEntity();
+				artistEntity.setName(artist.getName());
+				artistEntity.setGenre(artist.getGenres());
+				artistEntity.setUri(artist.getUri());
+				result.add(artistEntity);
 			}
 		}
 		return result;
 	}
 
 	/**
-	 * create a List with all SearchResults when the type is a playlist
+	 * create a List with all SearchResults when the type is playlist
 	 * 
-	 * @param searchResult
+	 * @param playlists searchResult
 	 *            the search result from a query
-	 * @return a list with search result entries. every entry has a Map with different attributes. e.g. artist, ...
-	 *         every entry has a uri to the song an the type playlist
+	 * @return a list with playlist entities
 	 */
-	public List<Map<String, String>> createPlaylistOutput(Paging<PlaylistSimplified> searchResult) {
-		HashMap<String, String> entry;
-		List<Map<String, String>> result = new ArrayList<>();
-		if (searchResult != null) {
-			for (PlaylistSimplified playlist : searchResult.getItems()) {
-				entry = new HashMap<>();
-				if (playlist.getName() != null) {
-					entry.put(SpotifyConstants.ITEM_NAME, playlist.getName());
-				}
-
-				if (playlist.getOwner().getDisplayName() != null) {
-					entry.put(SpotifyConstants.ARTIST_NAME, playlist.getOwner().getDisplayName());
-				}
-				entry.put(SpotifyConstants.ITEM_URI, playlist.getUri());
-				entry.put(SpotifyConstants.ITEM_TYPE, SpotifyConstants.TYPE_PLAYLIST);
-				result.add(entry);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * get a list from user created or followed playlists
-	 * 
-	 * @param limit
-	 *            limit of returned playlists
-	 * @return a list from Playlists
-	 */
-	public List<PlaylistEntity> getOwnPlaylists(int limit) {
-		Paging<PlaylistSimplified> playlists = this.spotifyAPICalls.getOwnPlaylists(limit);
-		return generatePlaylistsOutput(playlists.getItems(), SearchTypes.USER_PLAYLISTS);
-	}
-
-	/**
-	 * get a list from featured playlists
-	 * 
-	 * @param limit
-	 *            limit of returned playlists
-	 * @return a list from Playlists
-	 */
-	public List<PlaylistEntity> getFeaturedPlaylists(int limit) {
-		FeaturedPlaylists playlists = this.spotifyAPICalls.getFeaturedPlaylists(limit);
-		if (playlists != null) {
-			return generatePlaylistsOutput(playlists.getPlaylists().getItems(), SearchTypes.FEATURED_PLAYLISTS);
-		}
-		return new ArrayList<>();
-	}
-
-	private List<PlaylistEntity> generatePlaylistsOutput(PlaylistSimplified[] playlists, SearchTypes type) {
+	protected List<PlaylistEntity> createPlaylistData(PlaylistSimplified[] playlists) {
 		ArrayList<PlaylistEntity> result = new ArrayList<>();
 		if (playlists != null) {
 			for (PlaylistSimplified playlist : playlists) {
+				PlaylistEntity playlistEntity = new PlaylistEntity();
 				if (playlist.getImages() != null && playlist.getImages().length > 0) {
-					result.add(new PlaylistEntity(playlist.getName(), null, playlist.getUri(),
-							playlist.getImages()[0].getUrl()));
-				} else {
-					result.add(new PlaylistEntity(playlist.getName(), null, playlist.getUri(), null));
+					playlistEntity.setImageUrl(playlist.getImages()[0].getUrl());
 				}
-
+				if (playlist.getOwner() != null && playlist.getOwner().getDisplayName() != null) {
+					playlistEntity.setPlaylistCreator(playlist.getOwner().getDisplayName());
+				}
+				playlistEntity.setUri(playlist.getUri());
+				playlistEntity.setName(playlist.getName());
+				result.add(playlistEntity);
 			}
 		}
-		writeUrisToStorage(result, type);
 		return result;
+	}
+
+	/**
+	 * search the playlists that from the user created or followed
+	 * 
+	 * @param limit
+	 *            limit of returned playlists
+	 * @return a list from Playlists
+	 */
+	public List<PlaylistEntity> searchOwnPlaylists(int limit) {
+		Paging<PlaylistSimplified> playlists = this.spotifyAPICalls.getOwnPlaylists(limit);
+		if (playlists != null) {
+			this.ownPlaylists = createPlaylistData(playlists.getItems());
+		} else {
+			this.ownPlaylists = new ArrayList<>();
+		}
+		return this.ownPlaylists;
+	}
+
+	/**
+	 * search for featured playlists
+	 * 
+	 * @param limit
+	 *            limit of returned playlists
+	 * @return a list from Playlists
+	 */
+	public List<PlaylistEntity> searchFeaturedPlaylists(int limit) {
+		FeaturedPlaylists playlists = this.spotifyAPICalls.getFeaturedPlaylists(limit);
+		if (playlists != null) {
+			this.featuredPlaylists = createPlaylistData(playlists.getPlaylists().getItems());
+		} else {
+			this.featuredPlaylists = new ArrayList<>();
+		}
+		return this.featuredPlaylists;
 	}
 
 	/**
@@ -306,6 +307,60 @@ public class Search {
 	}
 
 	/**
+	 * Get's {@link #trackSearchResults trackSearchResults}
+	 * 
+	 * @return trackSearchResults
+	 */
+	public List<TrackEntity> getTrackSearchResults() {
+		return this.trackSearchResults;
+	}
+
+	/**
+	 * Get's {@link #albumSearchResults albumSearchResults}
+	 * 
+	 * @return albumSearchResults
+	 */
+	public List<AlbumEntity> getAlbumSearchResults() {
+		return this.albumSearchResults;
+	}
+
+	/**
+	 * Get's {@link #artistSearchResults artistSearchResults}
+	 * 
+	 * @return artistSearchResults
+	 */
+	public List<ArtistEntity> getArtistSearchResults() {
+		return this.artistSearchResults;
+	}
+
+	/**
+	 * Get's {@link #playlistSearchResults playlistSearchResults}
+	 * 
+	 * @return playlistSearchResults
+	 */
+	public List<PlaylistEntity> getPlaylistSearchResults() {
+		return this.playlistSearchResults;
+	}
+
+	/**
+	 * Get's {@link #featuredPlaylists featuredPlaylists}
+	 * 
+	 * @return featuredPlaylists
+	 */
+	public List<PlaylistEntity> getFeaturedPlaylists() {
+		return this.featuredPlaylists;
+	}
+
+	/**
+	 * Get's {@link #ownPlaylists ownPlaylists}
+	 * 
+	 * @return ownPlaylists
+	 */
+	public List<PlaylistEntity> getOwnPlaylists() {
+		return this.ownPlaylists;
+	}
+
+	/**
 	 * write all Uris from a list of Playlists to the storage. type is needed to store different search queries. For
 	 * example getOwnPlaylists() or getFeaturedPlaylists()
 	 * 
@@ -314,36 +369,8 @@ public class Search {
 	 * @param type
 	 *            to write to right position
 	 */
-	private void writeUrisToStorage(List<PlaylistEntity> playlists, SearchTypes type) {
-	/*	deleteUrisFromStroage(type);
-		for (int i = 0; i < playlists.size(); i++) {
-			this.storage.put(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)),
-					playlists.get(i).getUri());
-		}*/
-	}
 
-	private void writeUrisToStorageMap(List<Map<String, String>> playlists, SearchTypes type) {
-		deleteUrisFromStroage(type);
-		for (int i = 0; i < playlists.size(); i++) {
-			this.storage.put(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)),
-					playlists.get(i).get(SpotifyConstants.ITEM_URI));
-		}
-	}
 
-	/**
-	 * delete all saved uris from the storage of the given query
-	 * 
-	 * @param type
-	 *            of the query items to delete
-	 */
-	private void deleteUrisFromStroage(SearchTypes type) {
-	/*	int i = 0;
-		while (this.storage
-				.has(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)))) {
-			this.storage.delete(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)));
-			i++;
-		}*/
-	}
 
 	/**
 	 * restore all uris from a search
@@ -354,13 +381,12 @@ public class Search {
 	 */
 	public List<String> restoreUris(SearchTypes type) {
 		List<String> result = new ArrayList<>();
-		/*int i = 0;
-		while (this.storage
-				.has(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)))) {
-			result.add(this.storage
-					.get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i))));
-			i++;
-		}*/
+		/*
+		 * int i = 0; while (this.storage
+		 * .has(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)))) {
+		 * result.add(this.storage
+		 * .get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)))); i++; }
+		 */
 		return result;
 	}
 }
