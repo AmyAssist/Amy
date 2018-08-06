@@ -44,7 +44,7 @@ public class EnvironmentInputWorker implements Runnable {
 	/** The maximum amount of time to wait for a input stream to consume new data in ms. */
 	private static final int MAX_INPUT_WAIT_TIME = 10;
 	/** The parent audio environment */
-	private AudioEnvironment ae;
+	private AbstractAudioEnvironment ae;
 
 	private Logger logger = LoggerFactory.getLogger(EnvironmentInputWorker.class);
 
@@ -54,7 +54,7 @@ public class EnvironmentInputWorker implements Runnable {
 	 * @param owner
 	 *            The audio environment owning this worker
 	 */
-	public EnvironmentInputWorker(AudioEnvironment owner) {
+	public EnvironmentInputWorker(AbstractAudioEnvironment owner) {
 		this.ae = owner;
 	}
 

@@ -38,6 +38,7 @@ import javax.sound.sampled.LineUnavailableException;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment;
+import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment;
 import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.LocalAudioEnvironment;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
@@ -64,7 +65,7 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 
 	private Properties config;
 
-	private Map<UUID, AudioEnvironment> registry;
+	private Map<UUID, AbstractAudioEnvironment> registry;
 
 	private boolean running = false;
 
@@ -94,7 +95,7 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 	}
 
 	@Override
-	public void registerAudioEnvironment(AudioEnvironment environment) {
+	public void registerAudioEnvironment(AbstractAudioEnvironment environment) {
 		UUID aei = environment.getAudioEnvironmentIdentifier();
 
 		synchronized (this.registry) {

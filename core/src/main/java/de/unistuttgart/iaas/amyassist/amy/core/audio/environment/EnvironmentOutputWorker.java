@@ -44,7 +44,7 @@ public class EnvironmentOutputWorker implements Runnable {
 	/** The size of buffer used */
 	protected static final int BYTE_BUFFER_SIZE = 1024;
 	/** The parent audio environment */
-	private AudioEnvironment ae;
+	private AbstractAudioEnvironment ae;
 	/** Whether this worker should cancel the current output. */
 	private boolean shouldCancel = false;
 	/** Whether the stream should be discarded. */
@@ -60,7 +60,7 @@ public class EnvironmentOutputWorker implements Runnable {
 	 * @param owner
 	 *            The audio environment owning this worker
 	 */
-	public EnvironmentOutputWorker(AudioEnvironment owner) {
+	public EnvironmentOutputWorker(AbstractAudioEnvironment owner) {
 		this.ae = owner;
 	}
 

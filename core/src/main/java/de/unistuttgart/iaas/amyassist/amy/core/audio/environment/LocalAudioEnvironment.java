@@ -36,7 +36,7 @@ import javax.sound.sampled.TargetDataLine;
  * 
  * @author Tim Neumann
  */
-public class LocalAudioEnvironment extends AudioEnvironment {
+public class LocalAudioEnvironment extends AbstractAudioEnvironment {
 
 	private SourceDataLine sdl;
 	private TargetDataLine tdl;
@@ -57,7 +57,7 @@ public class LocalAudioEnvironment extends AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#getAudioEnvironmentIdentifier()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#getAudioEnvironmentIdentifier()
 	 */
 	@Override
 	public UUID getAudioEnvironmentIdentifier() {
@@ -65,7 +65,7 @@ public class LocalAudioEnvironment extends AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#readFromInput(byte[], int, int)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#readFromInput(byte[], int, int)
 	 */
 	@Override
 	protected int readFromInput(byte[] buffer, int off, int len) {
@@ -73,7 +73,7 @@ public class LocalAudioEnvironment extends AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#writeToOutput(byte[], int, int)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#writeToOutput(byte[], int, int)
 	 */
 	@Override
 	protected void writeToOutput(byte[] buffer, int off, int len) {
@@ -81,7 +81,7 @@ public class LocalAudioEnvironment extends AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#getOutputFormat()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#getOutputFormat()
 	 */
 	@Override
 	public AudioFormat getOutputFormat() {
@@ -89,7 +89,7 @@ public class LocalAudioEnvironment extends AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#getInputFormat()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#getInputFormat()
 	 */
 	@Override
 	public AudioFormat getInputFormat() {
@@ -97,7 +97,7 @@ public class LocalAudioEnvironment extends AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#start()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#start()
 	 */
 	@Override
 	public void start() {
@@ -115,7 +115,7 @@ public class LocalAudioEnvironment extends AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#stop()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#stop()
 	 */
 	@Override
 	public void stop() {
