@@ -81,13 +81,13 @@ public abstract class AbstractTaggableRegistry<T extends RegistryEntity & Taggab
 	 */
 	@Override
 	public @Nonnull List<T> getEntitiesWithTag(String tagValue) {
-		CriteriaQuery<? extends T> selectFrom = this.selectFrom(getEntityClass(), tagValue);
+		CriteriaQuery<? extends T> selectFrom = this.createTagQuery(getEntityClass(), tagValue);
 		TypedQuery<? extends T> typedQuery = this.entityManager.createQuery(selectFrom);
 
 		return new ArrayList<>(typedQuery.getResultList());
 	}
 
-	private <X> CriteriaQuery<X> selectFrom(Class<X> entityClass, String tagValue) {
+	private <X> CriteriaQuery<X> createTagQuery(Class<X> entityClass, String tagValue) {
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		CriteriaQuery<X> query = builder.createQuery(entityClass);
 		Root<X> root = query.from(entityClass);
