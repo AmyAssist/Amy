@@ -43,9 +43,6 @@ public class ChooseLanguage {
 	public ChooseLanguage(String language) {
 		switch (language.toLowerCase()) {
 		case "en":
-			this.stemmer = new EnglishStemmer();
-			this.numberConversion = new EnglishNumberConversion();
-			break;
 		default:
 			this.stemmer = new EnglishStemmer();
 			this.numberConversion = new EnglishNumberConversion();
