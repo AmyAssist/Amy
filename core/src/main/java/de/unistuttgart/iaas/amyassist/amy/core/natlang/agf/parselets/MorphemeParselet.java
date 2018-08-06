@@ -78,17 +78,18 @@ public class MorphemeParselet implements IAGFParselet {
 		if(token.type == AGFTokenType.WORD) {
 			morph.addChild(new WordNode(token.content));
 		}else if(token.type == AGFTokenType.OPENCBR) {
-			parser.consume();
-			EntityNode entity = new EntityNode("");
 			if(parser.match(AGFTokenType.WORD)) {
 				AGFToken word = parser.consume();
-				entity.addChild(new WordNode(word.content));
-				
+				EntityNode entity = new EntityNode(word.content);
+
 				if(parser.consume().type != AGFTokenType.CLOSECBR) {
 					throw new AGFParseException("} missing or entity name contains a whitespace");
 				}
+				morph.addChild(entity);
+
+			}else {
+				throw new AGFParseException("} missing or entity name contains a whitespace");
 			}
-			morph.addChild(entity);
 		}
 		
 		

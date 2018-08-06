@@ -77,17 +77,17 @@ public class NLParserTest {
 	}
 
 	private static List<AGFNode> grammars = Arrays.asList(
-			new AGFParser(new AGFLexer("test [# (minutes|minute)]")).parseWholeExpression(),
+			new AGFParser(new AGFLexer("test [{time} (minutes|minute)]")).parseWholeExpression(),
 			new AGFParser(new AGFLexer("weather [today]")).parseWholeExpression(),
-			new AGFParser(new AGFLexer("delete (alarm|timer) #")).parseWholeExpression(),
-			new AGFParser(new AGFLexer("when (does|is) timer # (ringing|ring)")).parseWholeExpression(),
+			new AGFParser(new AGFLexer("delete (alarm|timer) {time}")).parseWholeExpression(),
+			new AGFParser(new AGFLexer("when (does|is) timer {time} (ringing|ring)")).parseWholeExpression(),
 			new AGFParser(new AGFLexer("spotify play")).parseWholeExpression(),
 			new AGFParser(new AGFLexer("alarm clock (set|create) timer (for|on) "
-					+ "[# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")).parseWholeExpression());
+					+ "[{time} (hour|hours)] [{time} (minute|minutes)] [{time} (second|seconds)]")).parseWholeExpression());
 	
 	/**
 	 * this methods tests the grammar 
-	 * "alarm clock (set|create) timer (for|on) [# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]"
+	 * "alarm clock (set|create) timer (for|on) [{time} (hour|hours)] [{time} (minute|minutes)] [{time} (second|seconds)]"
 	 * which needs traces back
 	 * 
 	 * for example: natlang input = "alarm clock create timer on 10 hours 11 seconds"
@@ -98,7 +98,7 @@ public class NLParserTest {
 	@Test
 	public void testGrammarWithTraceBack() {
 		AGFNode node = new AGFParser(new AGFLexer("alarm clock (set|create) timer (for|on) "
-				+ "[# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")).parseWholeExpression();
+				+ "[{time} (hour|hours)] [{time} (minute|minutes)] [{time} (second|seconds)]")).parseWholeExpression();
 		List<AGFNode> list = new ArrayList<>();
 		list.add(node);
 		NLParser nlParser = new NLParser(list);
@@ -118,7 +118,7 @@ public class NLParserTest {
 	 */
 	@Test
 	public void testNestedGroups() {
-		AGFNode node = new AGFParser(new AGFLexer("this [text make (no|[hello] (#|nothing|nothing nothing [else|to do]))] sense")).parseWholeExpression();
+		AGFNode node = new AGFParser(new AGFLexer("this [text make (no|[hello] ({time}|nothing|nothing nothing [else|to do]))] sense")).parseWholeExpression();
 		List<AGFNode> list = new ArrayList<>();
 		list.add(node);
 		NLParser nlParser = new NLParser(list);

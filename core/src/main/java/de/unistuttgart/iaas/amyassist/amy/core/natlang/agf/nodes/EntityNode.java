@@ -47,6 +47,21 @@ public class EntityNode extends AGFNode {
 	public AGFNodeType getType() {
 		return AGFNodeType.ENTITY;
 	}
+	
+	@Override
+	public String printSelf(String name, int indent) {
+		StringBuilder b = new StringBuilder();
+		b.append("+" + name);
+		b.append("\n");
+
+		for (int i = 0; i < indent; i++) {
+			b.append("|");
+			b.append("   ");
+		}
+		b.append("|---" + "<content> " + this.getContent());
+		b.append("\n");
+		return b.toString();
+	}
 
 
 }
