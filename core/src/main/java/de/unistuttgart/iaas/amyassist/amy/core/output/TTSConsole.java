@@ -21,33 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.output;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
-import java.util.stream.Stream;
-
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
+import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * Test the equals method of ServiceDescriptionImpl
+ * Console Tool to test the TextToSpeech service
  * 
  * @author Leon Kiefer
  */
-class ServiceDescriptionImplTest {
+public class TTSConsole {
+	@Reference
+	private OutputImpl output;
 
-	@ParameterizedTest
-	@MethodSource("values")
-	void testNotEquals(Object obj) {
-		assertThat(Util.serviceDescriptionFor(Service7API.class), is(not(equalTo(obj))));
+	@Command(name = "TextToSpeech", abbrev = "tts", description = "Let the TextToSpeech Service output text as speech")
+	public void textToSpeech(String... text) {
+		this.output.voiceOutput(String.join(" ", text));
 	}
 
-	static Stream<Object> values() {
-		return Stream.of(null, new Object(), Util.serviceDescriptionFor(Service1.class));
+	@Command(name = "StopTextToSpeech", abbrev = "tts:stop",
+			description = "stop the current and all queued output of the TextToSpeech Service")
+	public void stopTextToSpeech() {
+		this.output.stopOutput();
 	}
-
 }

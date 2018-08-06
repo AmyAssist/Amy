@@ -28,6 +28,8 @@ import java.lang.reflect.Field;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
@@ -48,7 +50,9 @@ class InjectionPoint {
 	 */
 	public InjectionPoint(Field field) {
 		this.field = field;
-		this.serviceConsumer = ConsumerFactory.build(field.getDeclaringClass(), Util.serviceDescriptionFor(this.field));
+		ServiceDescription<?> serviceDescription = Util.serviceDescriptionFor(this.field);
+		serviceDescription.getAnnotations().removeIf(annotation -> annotation instanceof Reference);
+		this.serviceConsumer = ConsumerFactory.build(field.getDeclaringClass(), serviceDescription);
 	}
 
 	/**

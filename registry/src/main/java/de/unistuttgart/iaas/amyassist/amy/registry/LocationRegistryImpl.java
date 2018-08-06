@@ -23,18 +23,20 @@
 
 package de.unistuttgart.iaas.amyassist.amy.registry;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
-import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.GeocoderException;
-import javafx.util.Pair;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.List;
+
+import org.apache.commons.lang3.tuple.Pair;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
+import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.GeocoderException;
 
 /**
  * Location registry implementation

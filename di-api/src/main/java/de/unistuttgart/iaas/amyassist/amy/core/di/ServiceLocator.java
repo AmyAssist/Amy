@@ -23,7 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import java.util.NoSuchElementException;
+
 import javax.annotation.Nonnull;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 
 /**
  * ServiceLocator is the registry for Services.
@@ -31,17 +37,6 @@ import javax.annotation.Nonnull;
  * @author Leon Kiefer
  */
 public interface ServiceLocator {
-
-	/**
-	 * Instantiate the given class if it can. The object created in this way will not be managed by the DI.
-	 * 
-	 * @param serviceClass
-	 *            the implementation of a service
-	 * @return the created instance of the given class
-	 * @param <T>
-	 *            the type of the implementation class
-	 */
-	<T> T create(Class<T> serviceClass);
 
 	/**
 	 * Instantiate the given class if it can, inject dependencies and post-constructs the object. The object created in
@@ -68,16 +63,42 @@ public interface ServiceLocator {
 	<T> T getService(Class<T> serviceType);
 
 	/**
-	 * Get the service with the given description. This method lookup the service provider registered for the the given
-	 * service description and use it to return a object of the given type.
+	 * Get the service with the given description. This method lookup the service provider registered for the given
+	 * service description and use it to return a service handle for the Service of the given type.
+	 * 
+	 * In this case the service consumer is unknown.
 	 * 
 	 * @param serviceDescription
 	 *            the Description of the service
-	 * @return an instance of the described service if a service provider is found
+	 * @return a service handle for the described service if a service provider is found
 	 * @param <T>
 	 *            the type of the service
 	 */
-	<T> T getService(ServiceDescription<T> serviceDescription);
+	<T> ServiceHandle<T> getService(ServiceDescription<T> serviceDescription);
+
+	/**
+	 * Get the service for the given service consumer. First the service Description for the service consumer is looked
+	 * up and then, this method lookup the service provider registered for the service description and use it to return
+	 * a service handle for the service consumer.
+	 * 
+	 * @param serviceConsumer
+	 *            a service consumer for which we need to find the service
+	 * @return a service handle for the given service consumer if a service provider is found
+	 * @param <T>
+	 *            the type of the service
+	 */
+	<T> ServiceHandle<T> getService(ServiceConsumer<T> serviceConsumer);
+
+	/**
+	 * Getter for the Context provider for the given identifier
+	 * 
+	 * @param contextProviderType
+	 *            the context identifier
+	 * @return the static ContextProvider
+	 * @throws NoSuchElementException
+	 *             if there is no ContextProvider for the given identifier
+	 */
+	StaticProvider<?> getContextProvider(@Nonnull String contextProviderType);
 
 	/**
 	 * This will analyze the given object and inject into its fields. The object given will not be managed by the DI.
@@ -107,4 +128,5 @@ public interface ServiceLocator {
 	 * preDestroy shall have their preDestroy called.
 	 */
 	void shutdown();
+
 }

@@ -105,8 +105,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	@Override
 	public String getGrammarFileString(String grammarName) {
-		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.WAKE_UP, Constants.GO_SLEEP,
-				Constants.SHUT_UP);
+		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.MULTI_CALL_START, Constants.SINGLE_CALL_START,
+				Constants.MULTI_CALL_STOP, Constants.SHUT_UP);
 		for (PartialNLI partialNLI : this.register) {
 			generator.addRule(partialNLI.getGrammar(), UUID.randomUUID().toString());
 		}
