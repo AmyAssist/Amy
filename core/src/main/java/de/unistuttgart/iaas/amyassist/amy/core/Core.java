@@ -34,7 +34,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableServiceExtension;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
@@ -50,14 +50,23 @@ public class Core {
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
-	private ServiceManagerImpl serviceManager;
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
-	private DependencyInjection di = new DependencyInjection();
+	private final DependencyInjection di;
 
 	private CommandLineArgumentHandlerService cmaHandler;
 
 	private Thread shutdownHook = new Thread(this::doStop, "ShutdownHook");
+
+	private RunnableServiceExtension runnableServiceExtension;
+
+	/**
+	 * 
+	 */
+	public Core() {
+		this.runnableServiceExtension = new RunnableServiceExtension();
+		this.di = new DependencyInjection(this.runnableServiceExtension);
+	}
 
 	/**
 	 * Get's {@link #singleThreadScheduledExecutor singleThreadScheduledExecutor}
@@ -109,8 +118,7 @@ public class Core {
 	 * Initializes the core
 	 */
 	private void init() {
-		this.serviceManager = this.di.getService(ServiceManagerImpl.class);
-		this.serviceManager.loadServices();
+		// nothing in init stage
 	}
 
 	private void loadPlugins() {
@@ -120,6 +128,8 @@ public class Core {
 	}
 
 	private void deploy() {
+		this.runnableServiceExtension.deploy();
+
 		this.di.getService(GrammarObjectsCreator.class).completeSetup();
 
 		Server server = this.di.getService(Server.class);
@@ -129,7 +139,7 @@ public class Core {
 	}
 
 	private void start() {
-		this.serviceManager.start();
+		this.runnableServiceExtension.start();
 		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
 	}
 
@@ -143,7 +153,7 @@ public class Core {
 
 	private void doStop() {
 		this.logger.info("stop");
-		this.serviceManager.stop();
+		this.runnableServiceExtension.stop();
 		this.singleThreadScheduledExecutor.shutdownNow();
 		this.di.shutdown();
 		this.logger.info("stopped");

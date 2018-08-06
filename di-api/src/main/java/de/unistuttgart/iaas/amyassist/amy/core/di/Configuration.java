@@ -48,7 +48,7 @@ public interface Configuration {
 	void registerContextProvider(String key, StaticProvider<?> staticProvider);
 
 	/**
-	 * Registers a service
+	 * Registers a service implementation
 	 * 
 	 * @param cls
 	 *            The service to register.
@@ -58,21 +58,11 @@ public interface Configuration {
 	/**
 	 * Registers a service provider
 	 * 
-	 * @param serviceDescription
-	 *            The description of service
-	 * @param serviceFunction
+	 * @param serviceProvider
 	 *            The instance of the service provider
+	 * @param <T>
+	 *            the type of the Service this ServiceProvider provides
 	 */
-	<T> void register(ServiceDescription<T> serviceDescription, ServiceProvider<T> serviceFunction);
-
-	/**
-	 * Registers a service provider
-	 * 
-	 * @param serviceType
-	 *            The type of this service
-	 * @param serviceFunction
-	 *            The instance of the service provider
-	 */
-	<T> void register(Class<T> serviceType, ServiceProvider<T> serviceFunction);
+	<T> void register(@Nonnull ServiceProvider<T> serviceProvider);
 
 }

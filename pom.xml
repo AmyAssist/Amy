@@ -39,6 +39,7 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<httpcore.version>4.4.9</httpcore.version>
 		<swagger.version>2.0.2</swagger.version>
+		<commons-lang3.version>3.7</commons-lang3.version>
 	</properties>
 	<modules>
 		<module>di-api</module>

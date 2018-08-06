@@ -29,6 +29,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-utility</artifactId>
 			<version>${amy.utility.version}</version>
