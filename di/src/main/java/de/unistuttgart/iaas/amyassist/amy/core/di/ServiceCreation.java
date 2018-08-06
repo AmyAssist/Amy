@@ -34,16 +34,40 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
  * 
  * @author Leon Kiefer
  */
-class ServiceCreationInfo<T> {
-	final CompletableFuture<ServiceHandle<T>> completableFuture;
-	final Set<ServiceCreationInfo<?>> dependents = new HashSet<>();
-
+class ServiceCreation<T> {
+	CompletableFuture<ServiceHandle<T>> completableFuture;
+	private final Set<ServiceCreation<?>> dependents = new HashSet<>();
 
 	/**
-	 * @param completableFuture
+	 * Check if the given ServiceCreation is transitive dependent on this. This check is importent to prevent
+	 * 
+	 * @param serviceCreation
+	 * @return true if the given serviceCreation depends on this
 	 */
-	public ServiceCreationInfo(CompletableFuture<ServiceHandle<T>> completableFuture) {
-		this.completableFuture = completableFuture;
+	boolean isDependent(ServiceCreation<?> serviceCreation) {
+		if (this.dependents.contains(serviceCreation)) {
+			return true;
+		}
+		for (ServiceCreation<?> dependent : this.dependents) {
+			if (dependent.isDependent(serviceCreation)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Add a other ServiceCreationInfo as a dependent ServiceCreationInfo to this.
+	 * 
+	 * @param dependent
+	 *            the ServiceCreationInfo that depends on this ServiceCreationInfo
+	 */
+	void addDependent(ServiceCreation<?> dependent) {
+		if (dependent.isDependent(this)) {
+			throw new IllegalStateException("circular dependencies");
+		}
+
+		this.dependents.add(dependent);
 	}
 
 }

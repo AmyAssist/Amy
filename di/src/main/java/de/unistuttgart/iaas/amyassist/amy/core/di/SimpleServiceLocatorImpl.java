@@ -29,23 +29,29 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 
 /**
  * TODO: Description
+ * 
  * @author
  */
 public class SimpleServiceLocatorImpl implements SimpleServiceLocator {
 
 	private DependencyInjection dependencyInjection;
+	private ServiceCreation<?> serviceCreationInfo;
 
 	/**
 	 * @param dependencyInjection
+	 * @param serviceCreationInfo
 	 */
-	public SimpleServiceLocatorImpl(DependencyInjection dependencyInjection) {
+	public SimpleServiceLocatorImpl(DependencyInjection dependencyInjection,
+			ServiceCreation<?> serviceCreationInfo) {
 		this.dependencyInjection = dependencyInjection;
+		this.serviceCreationInfo = serviceCreationInfo;
 	}
 
 	@Override
 	public <T> ServiceHandle<T> getService(ServiceConsumer<T> serviceConsumer) {
-		return this.dependencyInjection.getService(serviceConsumer);
+		return this.dependencyInjection.getService(this.serviceCreationInfo, serviceConsumer);
 	}
+
 	@Override
 	public StaticProvider<?> getContextProvider(String contextProviderType) {
 		return this.dependencyInjection.getContextProvider(contextProviderType);

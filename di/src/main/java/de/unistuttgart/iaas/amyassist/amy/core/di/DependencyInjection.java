@@ -73,7 +73,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	private final Map<ServicePoolKey<?>, ServiceHandle<?>> servicePool;
 
-	private final Map<ServicePoolKey<?>, ServiceCreationInfo<?>> serviceCreationInfos;
+	private final Map<ServicePoolKey<?>, ServiceCreation<?>> serviceCreationInfos;
 
 	protected Map<String, StaticProvider<?>> staticProviders;
 
@@ -188,24 +188,34 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		if (serviceImplementationDescription == null) {
 			throw new ServiceNotFoundException(serviceDescription);
 		}
-		return this.lookUpOrCreateService(new ServiceCreationInfo<>(new CompletableFuture<>()), provider, serviceImplementationDescription);
+		return this.lookUpOrCreateService(new ServiceCreation<>(), provider, serviceImplementationDescription);
 	}
 
 	@Override
 	public <T> ServiceHandle<T> getService(@Nonnull ServiceConsumer<T> serviceConsumer) {
+		return this.getService(new ServiceCreation<>(), serviceConsumer);
+	}
+
+	/**
+	 * @param <T>
+	 * @param dependentServiceCreation
+	 * @param serviceConsumer
+	 * @return
+	 */
+	<T> ServiceHandle<T> getService(@Nonnull ServiceCreation<?> dependentServiceCreation,
+			@Nonnull ServiceConsumer<T> serviceConsumer) {
 		ServiceProvider<T> provider = this.getServiceProvider(serviceConsumer.getServiceDescription());
 		ServiceImplementationDescription<T> serviceImplementationDescription = provider
 				.getServiceImplementationDescription(this, serviceConsumer);
 		if (serviceImplementationDescription == null) {
 			throw new ServiceNotFoundException(serviceConsumer.getServiceDescription());
 		}
-		return this.lookUpOrCreateService(new ServiceCreationInfo<>(new CompletableFuture<>()), provider,
-				serviceImplementationDescription);
+		return this.lookUpOrCreateService(dependentServiceCreation, provider, serviceImplementationDescription);
 	}
 
+	@SuppressWarnings("unchecked")
 	@CheckForNull
-	private <T> ServiceHandle<T> lookUpService(@Nonnull ServiceCreationInfo<?> dependentServiceCreationInfo,
-			@Nonnull ServiceProvider<T> serviceProvider,
+	private <T> ServiceHandle<T> lookUpService(@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
 
 		ServicePoolKey<?> servicePoolKey = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription);
@@ -216,33 +226,37 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		return (ServiceHandle<T>) this.servicePool.get(servicePoolKey);
 	}
 
-	private <T> Future<ServiceHandle<T>> createService(@Nonnull ServiceCreationInfo<?> dependentServiceCreationInfo,
+	@SuppressWarnings("unchecked")
+	private <T> Future<ServiceHandle<T>> createService(@Nonnull ServiceCreation<?> dependentServiceCreation,
 			@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
 		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription);
 		synchronized (this.servicePool) {
+			ServiceCreation<T> serviceCreation;
 			if (this.serviceCreationInfos.containsKey(key)) {
-				ServiceCreationInfo<T> serviceCreationInfo = (ServiceCreationInfo<T>) this.serviceCreationInfos
-						.get(key);
-				//throw new IllegalStateException("circular dependencies");
-				serviceCreationInfo.dependents.add(dependentServiceCreationInfo);
+				serviceCreation = (ServiceCreation<T>) this.serviceCreationInfos.get(key);
+			} else {
+				serviceCreation = new ServiceCreation<>();
 
-				return serviceCreationInfo.completableFuture;
+				serviceCreation.completableFuture = CompletableFuture.supplyAsync(() -> {
+					ServiceHandle<T> service = serviceProvider.createService(
+							new SimpleServiceLocatorImpl(this, serviceCreation), serviceImplementationDescription);
+					this.servicePool.put(key, service);
+					return service;
+				});
+
+				this.serviceCreationInfos.put(key, serviceCreation);
 			}
-			CompletableFuture<ServiceHandle<T>> completableFuture = CompletableFuture.supplyAsync(() -> serviceProvider
-					.createService(new SimpleServiceLocatorImpl(this), serviceImplementationDescription));
-			completableFuture.thenAccept(service -> this.servicePool.put(key, service));
-			this.serviceCreationInfos.put(key, new ServiceCreationInfo<>(completableFuture));
-			return completableFuture;
+			serviceCreation.addDependent(dependentServiceCreation);
 
+			return serviceCreation.completableFuture;
 		}
 	}
 
-	private <T> ServiceHandle<T> lookUpOrCreateService(@Nonnull ServiceCreationInfo<?> dependentServiceCreationInfo,
+	private <T> ServiceHandle<T> lookUpOrCreateService(@Nonnull ServiceCreation<?> dependentServiceCreationInfo,
 			@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
-		ServiceHandle<T> lookUpService = this.lookUpService(dependentServiceCreationInfo, serviceProvider,
-				serviceImplementationDescription);
+		ServiceHandle<T> lookUpService = this.lookUpService(serviceProvider, serviceImplementationDescription);
 		if (lookUpService == null) {
 			Future<ServiceHandle<T>> createService = this.createService(dependentServiceCreationInfo, serviceProvider,
 					serviceImplementationDescription);
@@ -252,7 +266,10 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 				Thread.currentThread().interrupt();
 				throw new IllegalStateException(e);
 			} catch (ExecutionException e) {
-				throw new IllegalStateException(e);
+				if (e.getCause() instanceof RuntimeException) {
+					throw (RuntimeException) e.getCause();
+				}
+				throw new IllegalStateException("Checked exception thrown", e);
 			}
 		}
 		return lookUpService;
