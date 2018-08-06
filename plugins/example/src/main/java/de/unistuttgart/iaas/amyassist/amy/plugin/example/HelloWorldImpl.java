@@ -187,7 +187,7 @@ public class HelloWorldImpl implements HelloWorldService {
 			work.setHouseNumber(38);
 			work.setLongitude(9.106600);
 			work.setLatitude(48.745172);
-			work.setTag(AbstractTaggableRegistry.WORK);
+			work.setTag(Tags.WORK);
 			work.setName("Uni");
 
 			// Test getAddressString method

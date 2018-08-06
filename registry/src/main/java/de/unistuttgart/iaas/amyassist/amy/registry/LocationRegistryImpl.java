@@ -76,7 +76,7 @@ public class LocationRegistryImpl extends AbstractTaggableRegistry<Location> imp
      * @throws RegistryException if there is more than one home entity
      */
     public Location getHome() {
-        return getEntityWithTag(AbstractTaggableRegistry.HOME);
+        return getEntityWithTag(Tags.HOME);
     }
 
     /**
@@ -85,6 +85,6 @@ public class LocationRegistryImpl extends AbstractTaggableRegistry<Location> imp
      * @throws RegistryException if there is more than one work entity
      */
     public Location getWork() {
-        return getEntityWithTag(AbstractTaggableRegistry.WORK);
+        return getEntityWithTag(Tags.WORK);
     }
 }

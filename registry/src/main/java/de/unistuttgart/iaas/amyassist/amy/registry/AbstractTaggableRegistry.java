@@ -43,12 +43,6 @@ public abstract class AbstractTaggableRegistry<T extends RegistryEntity & Taggab
 		implements ITaggableRegistry<T> {
 
 	/**
-	 * Constants for common applications. Custom tag names are explicitly allowed
-	 */
-	public static final String WORK = "work";
-	public static final String HOME = "home";
-
-	/**
 	 * Get at most one entity with tag tagValue
 	 * 
 	 * @param tagValue
