@@ -25,7 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.audio;
 
 import java.util.UUID;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment;
+import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment;
 
 /**
  * The interface for a internal audio manager. This interface is a more potent version of the {@link AudioManager} and
@@ -42,7 +42,7 @@ public interface InternalAudioManager extends AudioManager {
 	 * @throws IllegalStateException
 	 *             When an audio environment with the same identifier is already registered.
 	 */
-	public void registerAudioEnvironment(AbstractAudioEnvironment environment);
+	public void registerAudioEnvironment(AudioEnvironment environment);
 
 	/**
 	 * Removes the audio environment described by the given identifier from the audio manager.
