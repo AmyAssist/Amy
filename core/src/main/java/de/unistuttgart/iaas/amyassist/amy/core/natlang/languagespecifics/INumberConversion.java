@@ -21,22 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
+
+import java.util.Map;
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 
 /**
- * Interface for stemmer implementation for different languages
+ * This interface provide methods for the number conversion
  * 
  * @author Lars Buttgereit
  */
-public interface IStemmer {
+public interface INumberConversion {
 
 	/**
-	 * this method stem the input string.
+	 * calculates the number from a string of words.
 	 * 
-	 * @param input
-	 *            a string with one or more words
-	 * @return the stemmed string out of the input string
+	 * 
+	 * @param subList
+	 *            the sublist containing the list of word representations
+	 * @return the calculated number
 	 */
-	String stem(String input);
+	int calcNumber(Iterable<WordToken> subList);
 
+	/**
+	 * Get's {@link #wordToNumber wordToNumber}
+	 * 
+	 * @return wordToNumber
+	 */
+	Map<String, Integer> getWordToNumber();
 }

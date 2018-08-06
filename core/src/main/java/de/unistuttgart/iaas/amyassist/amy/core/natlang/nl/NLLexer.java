@@ -32,8 +32,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.INumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.EnglishNumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.INumberConversion;
 
 /**
  * Lexer for language input from speechs

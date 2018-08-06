@@ -41,8 +41,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.EnglishNumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.EnglishStemmer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishStemmer;
 
 /**
  * test method for NL Parser, uses predefined grammars and nl

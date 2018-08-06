@@ -21,10 +21,10 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.EnglishNumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.EnglishStemmer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishStemmer;
 
 /**
  * 
@@ -33,28 +33,39 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.Engl
 public class ChooseLanguage {
 	private IStemmer stemmer;
 	private INumberConversion numberConversion;
-	
+
 	/**
 	 * constructor for choose language
-	 * @param language which language should be used (language code after ISO 639-1)
+	 * 
+	 * @param language
+	 *            which language should be used (language code after ISO 639-1)
 	 */
-	public ChooseLanguage (String language) {
-		if(language.toLowerCase().equals("en")) {
+	public ChooseLanguage(String language) {
+		switch (language.toLowerCase()) {
+		case "en":
 			this.stemmer = new EnglishStemmer();
 			this.numberConversion = new EnglishNumberConversion();
+			break;
+		default:
+			this.stemmer = new EnglishStemmer();
+			this.numberConversion = new EnglishNumberConversion();
+			break;
 		}
 	}
-	
+
 	/**
 	 * Get's {@link #stemmer stemmer}
-	 * @return  stemmer
+	 * 
+	 * @return stemmer
 	 */
 	public IStemmer getStemmer() {
 		return this.stemmer;
 	}
+
 	/**
 	 * Get's {@link #numberConversion numberConversion}
-	 * @return  numberConversion
+	 * 
+	 * @return numberConversion
 	 */
 	public INumberConversion getNumberConversion() {
 		return this.numberConversion;

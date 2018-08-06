@@ -33,8 +33,8 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.IStemmer;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.EnglishStemmer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.IStemmer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishStemmer;
 
 /**
  * Test class for the stemming class

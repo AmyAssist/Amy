@@ -29,7 +29,7 @@ import java.util.List;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParseException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.IStemmer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.IStemmer;
 
 /**
  * NLParser implementation, matches NL input to AGFNodes

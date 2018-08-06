@@ -28,9 +28,9 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.ChooseLanguage;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.EnglishNumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.EnglishStemmer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishStemmer;
 
 /**
  * Test class for ChooseLanguage

@@ -43,7 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.ChooseLanguage;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
@@ -72,12 +72,10 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	private final List<AGFNode> registeredNodeList = new ArrayList<>();
 
-	private ChooseLanguage language;
-
 	@Reference
 	private ConfigurationLoader configurationLoader;
 	private static final String CONFIG_NAME = "core.config";
-	private static final String PROPERTY_ENABLE_STEMMER = "enableConsole";
+	private static final String PROPERTY_ENABLE_STEMMER = "enableStemmer";
 	private static final String PROBERTY_LANGUAGE = "chooseLanguage";
 
 	@Override
@@ -117,12 +115,12 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Override
 	public String process(String naturalLanguageText) {
 		Properties properties = this.configurationLoader.load(CONFIG_NAME);
-		boolean stemmerEnabled = Boolean.valueOf(properties.getProperty(PROPERTY_ENABLE_STEMMER, "true"));
-		this.language = new ChooseLanguage(properties.getProperty(PROBERTY_LANGUAGE, "EN"));
+		boolean stemmerEnabled = Boolean.parseBoolean(properties.getProperty(PROPERTY_ENABLE_STEMMER, "true"));
+		ChooseLanguage language = new ChooseLanguage(properties.getProperty(PROBERTY_LANGUAGE, "EN"));
 		this.logger.debug("input {}", naturalLanguageText);
-		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
+		NLLexer nlLexer = new NLLexer(language.getNumberConversion());
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
-		INLParser nlParser = new NLParser(this.registeredNodeList, this.language.getStemmer(), stemmerEnabled);
+		INLParser nlParser = new NLParser(this.registeredNodeList, language.getStemmer(), stemmerEnabled);
 		int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 		PartialNLI partialNLI = this.register.get(matchingNodeIndex);
 		String[] arguments = Lists.transform(tokens, WordToken::getContent).toArray(new String[tokens.size()]);

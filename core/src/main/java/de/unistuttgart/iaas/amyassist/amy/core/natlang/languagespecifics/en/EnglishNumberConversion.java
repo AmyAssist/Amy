@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.INumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.INumberConversion;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 
 /**

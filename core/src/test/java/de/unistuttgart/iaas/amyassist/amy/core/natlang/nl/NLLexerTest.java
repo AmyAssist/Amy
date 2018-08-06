@@ -41,7 +41,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.google.common.collect.Lists;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.EnglishNumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
 
 /**
  * Test for NL Lexer
