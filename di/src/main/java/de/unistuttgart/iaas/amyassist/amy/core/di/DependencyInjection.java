@@ -27,7 +27,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -65,7 +64,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  * @author Leon Kiefer, Tim Neumann
  */
 @ParametersAreNullableByDefault
-public class DependencyInjection implements ServiceLocator, ContextLocator, Configuration {
+public class DependencyInjection implements ServiceLocator, Configuration {
 	/**
 	 * A register which maps a service description to it's service provider.
 	 */
@@ -75,7 +74,7 @@ public class DependencyInjection implements ServiceLocator, ContextLocator, Conf
 
 	private final Map<ServicePoolKey<?>, ServiceCreation<?>> serviceCreationInfos;
 
-	protected Map<String, StaticProvider<?>> staticProviders;
+	private final ContextLocatorImpl contextLocator;
 
 	private final Set<Extension> extensions;
 
@@ -89,7 +88,7 @@ public class DependencyInjection implements ServiceLocator, ContextLocator, Conf
 		this.register = new ConcurrentHashMap<>();
 		this.servicePool = new ConcurrentHashMap<>();
 		this.serviceCreationInfos = new ConcurrentHashMap<>();
-		this.staticProviders = new ConcurrentHashMap<>();
+		this.contextLocator = new ContextLocatorImpl();
 		this.extensions = new HashSet<>(Arrays.asList(extensions));
 
 		this.registerContextProvider("class", new ClassProvider());
@@ -156,7 +155,7 @@ public class DependencyInjection implements ServiceLocator, ContextLocator, Conf
 
 	@Override
 	public void registerContextProvider(String key, StaticProvider<?> staticProvider) {
-		this.staticProviders.put(key, staticProvider);
+		this.contextLocator.registerContextProvider(key, staticProvider);
 	}
 
 	@Override
@@ -173,7 +172,7 @@ public class DependencyInjection implements ServiceLocator, ContextLocator, Conf
 	public <T> ServiceHandle<T> getService(ServiceDescription<T> serviceDescription) {
 		ServiceProvider<T> provider = this.getServiceProvider(serviceDescription);
 		ServiceImplementationDescription<T> serviceImplementationDescription = provider
-				.getServiceImplementationDescription(this, new ServiceConsumer<T>() {
+				.getServiceImplementationDescription(this.contextLocator, new ServiceConsumer<T>() {
 
 					@Override
 					public Class<?> getConsumerClass() {
@@ -197,16 +196,19 @@ public class DependencyInjection implements ServiceLocator, ContextLocator, Conf
 	}
 
 	/**
-	 * @param <T>
+	 * Get the service with the tracking of the dependency hierarchy.
+	 * 
 	 * @param dependentServiceCreation
 	 * @param serviceConsumer
-	 * @return
+	 * @param <T>
+	 *            the type of the service
+	 * @return the service handle of the service
 	 */
 	<T> ServiceHandle<T> getService(@Nonnull ServiceCreation<?> dependentServiceCreation,
 			@Nonnull ServiceConsumer<T> serviceConsumer) {
 		ServiceProvider<T> provider = this.getServiceProvider(serviceConsumer.getServiceDescription());
 		ServiceImplementationDescription<T> serviceImplementationDescription = provider
-				.getServiceImplementationDescription(this, serviceConsumer);
+				.getServiceImplementationDescription(this.contextLocator, serviceConsumer);
 		if (serviceImplementationDescription == null) {
 			throw new ServiceNotFoundException(serviceConsumer.getServiceDescription());
 		}
@@ -313,13 +315,6 @@ public class DependencyInjection implements ServiceLocator, ContextLocator, Conf
 				throw new ServiceNotFoundException(serviceDescription);
 			return (ServiceProvider<T>) this.register.get(serviceKey);
 		}
-	}
-
-	@Override
-	public StaticProvider<?> getContextProvider(@Nonnull String contextProviderType) {
-		if (!this.staticProviders.containsKey(contextProviderType))
-			throw new NoSuchElementException(contextProviderType);
-		return this.staticProviders.get(contextProviderType);
 	}
 
 	@Override
