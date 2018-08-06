@@ -64,6 +64,11 @@ public class Plugin implements IPlugin {
 	 * The list of all classes of this plugin
 	 */
 	private List<Class<?>> classes = new ArrayList<>();
+	
+	/**
+	 * list of the content of all amy interaction xml files
+	 */
+	private List<String> aimContent = new ArrayList<>();
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getFile()
@@ -189,6 +194,23 @@ public class Plugin implements IPlugin {
 	 */
 	protected void setManifest(Manifest manifest) {
 		this.manifest = manifest;
+	}
+	
+	/**
+	 * Set's content of amy interaction models
+	 * 
+	 * @param aimContent content of amy interaction models
+	 */
+	protected void setAIMContent(List<String> aimContent) {
+		this.aimContent = aimContent;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getAIMContent()
+	 */
+	@Override
+	public List<String> getAIMContent() {
+		return this.aimContent;
 	}
 
 }

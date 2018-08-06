@@ -76,6 +76,9 @@ class PluginManagerTest {
 		when(environment.getWorkingDirectory()).thenReturn(this.tempDir);
 
 		Files.createDirectory(this.tempDir.resolve("plugins"));
+		
+		Files.createFile(this.tempDir
+				.resolve("plugins").resolve("testxml.xml"));
 
 		CommandLineArgumentHandler cmaHandler = this.testFramework.mockService(CommandLineArgumentHandler.class);
 		when(cmaHandler.getPluginPaths()).thenReturn(null);
@@ -98,6 +101,11 @@ class PluginManagerTest {
 
 		this.serviceUnderTest.loadPlugins();
 		assertThrows(IllegalStateException.class, () -> this.serviceUnderTest.loadPlugins());
+	}
+	
+	@Test
+	void testGetXML() {
+
 	}
 
 	@Test

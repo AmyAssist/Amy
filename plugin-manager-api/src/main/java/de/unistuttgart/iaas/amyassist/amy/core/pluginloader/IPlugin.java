@@ -99,5 +99,14 @@ public interface IPlugin {
 	 * @return manifest
 	 */
 	Manifest getManifest();
+	
+	/**
+	 * Get's the content of all amy interaction model xmls
+	 * 
+	 * @return list of strings with the content of the xml
+	 */
+	List<String> getAIMContent();
+	
+	
 
 }

@@ -23,7 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -37,6 +40,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PreDestroy;
 
@@ -83,13 +88,15 @@ public class PluginLoader {
 			// We need that classLoader to stay open.
 			@SuppressWarnings("resource")
 			URLClassLoader childLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
-
+			
 			Manifest mf = jar.getManifest();
 			if (mf == null) {
 				this.logger.error("Can't find manifest for plugin {}", path);
 			}
 
 			ArrayList<Class<?>> classes = new ArrayList<>();
+			
+			List<String> aimContent = new ArrayList<>();
 
 			while (jarEntries.hasMoreElements()) {
 				JarEntry jarEntry = jarEntries.nextElement();
@@ -101,9 +108,17 @@ public class PluginLoader {
 						Class<?> c = Class.forName(className, true, childLoader);
 						classes.add(c);
 					}
+				}else if (jarEntry.getName().endsWith(".aim.xml")){
+					InputStream stream = childLoader.getResourceAsStream(jarEntry.getName());
+					
+					try(BufferedReader reader = new BufferedReader(new InputStreamReader(stream))){
+						aimContent.add(reader.lines().collect(Collectors.joining()));
+						reader.close();
+					}
 				}
 			}
 
+			plugin.setAIMContent(aimContent);
 			plugin.setClassLoader(childLoader);
 			plugin.setManifest(mf);
 			plugin.setClasses(classes);

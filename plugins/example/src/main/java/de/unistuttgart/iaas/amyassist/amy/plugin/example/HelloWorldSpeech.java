@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
 
@@ -49,32 +50,32 @@ public class HelloWorldSpeech {
 	 *            [Not used] The parameters of the sentence.
 	 * @return The response of the system
 	 */
-	@Grammar("say hello")
+	@Intent("say")
 	public String say(String... params) {
 		return this.helloWorld.helloWorld();
 	}
 
-	@Grammar("say hello # times")
+	@Intent("sayHelloXTimes")
 	public String sayHelloXTimes(String... params) {
 		return this.helloWorld.helloWorldXTimes(Integer.parseInt(params[2]));
 	}
 
-	@Grammar("get contacts")
+	@Intent("getContacts")
 	public String getContacts(String... params) {
 		return this.helloWorld.demonstrateContactRegistry();
 	}
 
-	@Grammar("test contacts registry")
+	@Intent("testContacts")
 	public String testContacts(String... params) {
 		return this.helloWorld.testContactRegistry();
 	}
 
-	@Grammar("test location registry")
+	@Intent("testLocation")
 	public String testLocation(String... params) {
 		return this.helloWorld.testLocationRegistry();
 	}
 
-	@Grammar("test custom registry")
+	@Intent("testCustom")
 	public String testCustom(String... params) {
 		return this.helloWorld.testCustomRegistry();
 	}

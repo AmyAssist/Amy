@@ -21,26 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
 
-import java.util.List;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The Plugin Manager provides a list of all Plugins
+ * The definition of a grammar annotation.
  * 
  * @author Leon Kiefer
  */
-public interface PluginManager {
-
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Target(java.lang.annotation.ElementType.METHOD)
+public @interface Intent {
 	/**
-	 * load the plugins
+	 * The string inside this annotation has to be in
+	 * Amy Grammar Format (AGF), a description and examples
+	 * can be found in the amy-assist wiki 
+	 * https://github.com/AmyAssist/Amy/wiki/Annotations
+	 *  
+	 * @return the grammar in AGF - Amy Grammar Format
 	 */
-	void loadPlugins();
-
-	/**
-	 * @return list of plugins
-	 * @see PluginLoader#getPlugins()
-	 */
-	List<IPlugin> getPlugins();
-
+	String value();
 }

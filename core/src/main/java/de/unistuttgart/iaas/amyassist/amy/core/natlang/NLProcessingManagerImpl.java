@@ -87,6 +87,10 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	private PartialNLI generatePartialNLI(Class<?> natuaralLanguageInterpreter, Method method) {
 		String grammar = method.getAnnotation(Grammar.class).value();
+		
+		//TODO quick workaround for legacy # REMOVE THIS
+		grammar = grammar.replaceAll("#", "{test}");
+		
 		AGFParser agfParser = new AGFParser(new AGFLexer(grammar));
 		AGFNode parseWholeExpression = agfParser.parseWholeExpression();
 		return new PartialNLI(method, parseWholeExpression, natuaralLanguageInterpreter);

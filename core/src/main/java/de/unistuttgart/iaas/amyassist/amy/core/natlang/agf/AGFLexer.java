@@ -97,8 +97,9 @@ public class AGFLexer implements Iterator<AGFToken> {
 						return new AGFToken(AGFTokenType.WORD, currentWord.toString());
     				}
     				throw new AGFLexerException("wrong character " + c);
+    			
     				
-			} 		
+			}
 		}
 		throw new NoSuchElementException();
 
