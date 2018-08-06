@@ -24,38 +24,21 @@
 package de.unistuttgart.iaas.amyassist.amy.registry;
 
 /**
- * Location object interface
+ * Tags utility class
+ * Contains some standardized tag constants
  * @author Benno Krauß
  */
-public interface Location extends RegistryEntity, Taggable {
+public class Tags {
 
-    String getName();
+    /**
+     * This class is not meant to be instanciated
+     */
+    private Tags() {
+    }
 
-    void setName(String name);
-
-    String getZipCode();
-
-    void setZipCode(String zipCode);
-
-    String getCity();
-
-    void setCity(String city);
-
-    String getStreet();
-
-    void setStreet(String street);
-
-    int getHouseNumber();
-
-    void setHouseNumber(int houseNumber);
-
-    double getLongitude();
-
-    void setLongitude(double longitude);
-
-    double getLatitude();
-
-    void setLatitude(double latitude);
-
-    String getAddressString();
+    /**
+     * Constants for common applications. Custom tag names are explicitly allowed
+     */
+    public static final String WORK = "work";
+    public static final String HOME = "home";
 }
