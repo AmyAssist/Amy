@@ -29,6 +29,7 @@ import java.util.List;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParseException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.IStemmer;
 
 /**
  * NLParser implementation, matches NL input to AGFNodes
@@ -49,15 +50,23 @@ public class NLParser implements INLParser {
 
 	private int currentIndex;
 
-	private Stemming stemmer = new Stemming();
+	private IStemmer stemmer;
+
+	private boolean stemmingIsEnabled;
 
 	/**
 	 * 
 	 * @param grammars
 	 *            all possible grammars to match
+	 * @param stemmer
+	 *            which stemmer should be used
+	 * @param stemmingIsEnabled
+	 *            true if stemmer should be active, else false
 	 */
-	public NLParser(List<AGFNode> grammars) {
+	public NLParser(List<AGFNode> grammars, IStemmer stemmer, boolean stemmingIsEnabled) {
 		this.grammars = grammars;
+		this.stemmer = stemmer;
+		this.stemmingIsEnabled = stemmingIsEnabled;
 	}
 
 	@Override
@@ -177,14 +186,16 @@ public class NLParser implements INLParser {
 	 */
 	private boolean match(AGFNode toMatch) {
 		WordToken token = lookAhead(0);
-
-		if (token != null && this.stemmer.stem(toMatch.getContent()).equals(this.stemmer.stem(token.getContent()))) {
+		if (this.stemmingIsEnabled && token != null
+				&& this.stemmer.stem(toMatch.getContent()).equals(this.stemmer.stem(token.getContent()))) {
 			consume();
 			return true;
 		}
-
+		if (!this.stemmingIsEnabled && token != null && toMatch.getContent().equals(token.getContent())) {
+			consume();
+			return true;
+		}
 		return false;
-
 	}
 
 	/**

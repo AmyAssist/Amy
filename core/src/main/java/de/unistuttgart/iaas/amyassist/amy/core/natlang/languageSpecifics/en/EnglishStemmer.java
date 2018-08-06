@@ -21,15 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en;
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.IStemmer;
 
 /**
  * This class implements the porter stemming algorithm see for more information:
  * https://tartarus.org/martin/PorterStemmer/def.txt
+ * Only English is supported
  * 
  * @author Lars Buttgereit
  */
-public class Stemming {
+public class EnglishStemmer implements IStemmer {
 	private String currentWord;
 
 	/**
@@ -209,7 +212,7 @@ public class Stemming {
 			this.currentWord = this.currentWord.substring(0, wordLength - 1);
 		}
 	}
-
+	
 	/**
 	 * this method stem the input string. Only step 1 and step 5 are implemented. The other are not necessary for our
 	 * project. detailed info for the different steps can you read here:
@@ -219,6 +222,7 @@ public class Stemming {
 	 *            a string with one or more words
 	 * @return the stemmed string out of the input string
 	 */
+	@Override
 	public String stem(String input) {
 		if (input != null) {
 			String[] inputWords = input.split("\\s+");

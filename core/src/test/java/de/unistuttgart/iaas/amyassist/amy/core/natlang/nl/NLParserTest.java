@@ -38,10 +38,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.LanguageSpecifics;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.EnglishNumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.EnglishStemmer;
 
 /**
  * test method for NL Parser, uses predefined grammars and nl
@@ -50,14 +51,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
  */
 public class NLParserTest {
 	
-	private LanguageSpecifics lang;
+	private EnglishNumberConversion lang;
 	
 	/**
 	 * handles language specifics setup
 	 */
 	@BeforeEach
 	public void setup() {
-		this.lang = new LanguageSpecifics();
+		this.lang = new EnglishNumberConversion();
 	}
 
 	/**
@@ -101,7 +102,7 @@ public class NLParserTest {
 				+ "[# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")).parseWholeExpression();
 		List<AGFNode> list = new ArrayList<>();
 		list.add(node);
-		NLParser nlParser = new NLParser(list);
+		NLParser nlParser = new NLParser(list, new EnglishStemmer(), false);
 		NLLexer lex = new NLLexer(this.lang);
 		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 10 hours 1 minute 11 seconds")), equalTo(node));
 		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 10 hours 11 seconds")), equalTo(node));
@@ -121,7 +122,7 @@ public class NLParserTest {
 		AGFNode node = new AGFParser(new AGFLexer("this [text make (no|[hello] (#|nothing|nothing nothing [else|to do]))] sense")).parseWholeExpression();
 		List<AGFNode> list = new ArrayList<>();
 		list.add(node);
-		NLParser nlParser = new NLParser(list);
+		NLParser nlParser = new NLParser(list, new EnglishStemmer(), false);
 		NLLexer lex = new NLLexer(this.lang);
 		assertThat(nlParser.matchingNode(lex.tokenize("this text make hello nothing nothing else sense")), equalTo(node));
 	}
@@ -134,7 +135,7 @@ public class NLParserTest {
 		AGFNode node = new AGFParser(new AGFLexer("this grammar is [very |very very] bad")).parseWholeExpression();
 		List<AGFNode> list = new ArrayList<>();
 		list.add(node);
-		NLParser nlParser = new NLParser(list);
+		NLParser nlParser = new NLParser(list, new EnglishStemmer(), false);
 		NLLexer lex = new NLLexer(this.lang);
 
 		assertThat(nlParser.matchingNode(lex.tokenize("this grammar is very very bad")), equalTo(node));
@@ -150,7 +151,7 @@ public class NLParserTest {
 		AGFNode node = new AGFParser(new AGFLexer("this grammar is (very |very very) bad")).parseWholeExpression();
 		List<AGFNode> list = new ArrayList<>();
 		list.add(node);
-		NLParser nlParser = new NLParser(list);
+		NLParser nlParser = new NLParser(list, new EnglishStemmer(), false);
 		NLLexer lex = new NLLexer(this.lang);
 
 		assertThat(nlParser.matchingNode(lex.tokenize("this grammar is very very bad")), equalTo(node));
@@ -165,7 +166,7 @@ public class NLParserTest {
 	@ParameterizedTest
 	@MethodSource("testData")
 	public void testParser(Pair<String, AGFNode> testcase) {
-		NLParser nlParser = new NLParser(grammars);
+		NLParser nlParser = new NLParser(grammars, new EnglishStemmer(), false);
 		NLLexer lex = new NLLexer(this.lang);
 
 		List<WordToken> tokenize = lex.tokenize(testcase.getLeft());
@@ -188,7 +189,7 @@ public class NLParserTest {
 	@ParameterizedTest
 	@MethodSource("testWrongData")
 	public void testWrongGrammar(String natLang) {
-		NLParser nlParser = new NLParser(grammars);
+		NLParser nlParser = new NLParser(grammars, new EnglishStemmer(), false);
 		NLLexer lex = new NLLexer(this.lang);
 		List<WordToken> tokenize = lex.tokenize(natLang);
 

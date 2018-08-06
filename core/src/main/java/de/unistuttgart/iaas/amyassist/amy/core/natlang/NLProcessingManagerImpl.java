@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.Lists;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -41,6 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
@@ -69,12 +72,20 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	private final List<AGFNode> registeredNodeList = new ArrayList<>();
 
+	private ChooseLanguage language;
+
+	@Reference
+	private ConfigurationLoader configurationLoader;
+	private static final String CONFIG_NAME = "core.config";
+	private static final String PROPERTY_ENABLE_STEMMER = "enableConsole";
+	private static final String PROBERTY_LANGUAGE = "chooseLanguage";
+
 	@Override
 	public void register(Class<?> naturalLanguageInterpreter) {
 		if (!naturalLanguageInterpreter
 				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand.class)) {
-			throw new IllegalArgumentException("annotation is not present in " 
-				+ naturalLanguageInterpreter.getSimpleName());
+			throw new IllegalArgumentException(
+					"annotation is not present in " + naturalLanguageInterpreter.getSimpleName());
 		}
 		Set<Method> grammars = NLIAnnotationReader.getValidNLIMethods(naturalLanguageInterpreter);
 
@@ -104,11 +115,14 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	@Override
-	public String process(String naturalLanguageText, LanguageSpecifics lang) {
+	public String process(String naturalLanguageText) {
+		Properties properties = this.configurationLoader.load(CONFIG_NAME);
+		boolean stemmerEnabled = Boolean.valueOf(properties.getProperty(PROPERTY_ENABLE_STEMMER, "true"));
+		this.language = new ChooseLanguage(properties.getProperty(PROBERTY_LANGUAGE, "EN"));
 		this.logger.debug("input {}", naturalLanguageText);
-		NLLexer nlLexer = new NLLexer(lang);
+		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
-		INLParser nlParser = new NLParser(this.registeredNodeList);
+		INLParser nlParser = new NLParser(this.registeredNodeList, this.language.getStemmer(), stemmerEnabled);
 		int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 		PartialNLI partialNLI = this.register.get(matchingNodeIndex);
 		String[] arguments = Lists.transform(tokens, WordToken::getContent).toArray(new String[tokens.size()]);

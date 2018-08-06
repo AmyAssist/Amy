@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecific;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -33,20 +33,21 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.Stemming;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.IStemmer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecifics.en.EnglishStemmer;
 
 /**
  * Test class for the stemming class
  * 
  * @author Lars Buttgereit
  */
-class TestStemming {
+class TestEnglishStemmer {
 
-	private Stemming stemming;
+	private IStemmer stemming;
 
 	@BeforeEach
 	void init() {
-		this.stemming = new Stemming();
+		this.stemming = new EnglishStemmer();
 	}
 
 	@Test
