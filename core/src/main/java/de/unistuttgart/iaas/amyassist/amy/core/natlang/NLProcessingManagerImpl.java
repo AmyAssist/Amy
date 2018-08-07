@@ -26,7 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
@@ -80,10 +79,11 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private static final String PROBERTY_LANGUAGE = "chooseLanguage";
 	private boolean stemmerEnabled;
 	private String languageString;
-	
+
 	@PostConstruct
 	private void setup() {
-		this.stemmerEnabled = Boolean.parseBoolean(this.configurationLoader.load(CONFIG_NAME).getProperty(PROPERTY_ENABLE_STEMMER, "true"));
+		this.stemmerEnabled = Boolean
+				.parseBoolean(this.configurationLoader.load(CONFIG_NAME).getProperty(PROPERTY_ENABLE_STEMMER, "true"));
 		this.languageString = this.configurationLoader.load(CONFIG_NAME).getProperty(PROBERTY_LANGUAGE, "EN");
 	}
 
