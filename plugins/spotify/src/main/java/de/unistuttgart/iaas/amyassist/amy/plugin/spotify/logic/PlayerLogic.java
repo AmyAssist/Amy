@@ -59,9 +59,6 @@ public class PlayerLogic {
 	@Reference
 	private MessageHub messageHub;
 
-	private boolean muted = false;
-	private int mutedVolume = 0;
-
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
@@ -71,10 +68,10 @@ public class PlayerLogic {
 		this.messageHub.subscribe("home/all/music/mute", message -> {
 			switch (message) {
 			case "true":
-				this.mute(true);
+				this.pause();
 				break;
 			case "false":
-				this.mute(false);
+				this.resume();
 				break;
 			default:
 				this.logger.warn("unkown message {}", message);
@@ -283,7 +280,6 @@ public class PlayerLogic {
 	 */
 	public int setVolume(int volume) {
 		if (volume >= VOLUME_MUTE_VALUE && volume <= VOLUME_MAX_VALUE) {
-			this.muted = false;
 			this.spotifyAPICalls.setVolume(volume);
 			return volume;
 		}
@@ -297,24 +293,6 @@ public class PlayerLogic {
 	 */
 	public int getVolume() {
 		return this.spotifyAPICalls.getVolume();
-	}
-
-	/**
-	 * Mute the current audio or restore the volume.
-	 * 
-	 * @param mute
-	 *            state to change to
-	 */
-	public void mute(boolean mute) {
-		if (this.muted != mute) {
-			if (mute) {
-				this.mutedVolume = this.getVolume();
-				this.setVolume(0);
-			} else {
-				this.setVolume(this.mutedVolume);
-			}
-			this.muted = mute;
-		}
 	}
 
 }
