@@ -50,7 +50,6 @@ public enum Grammar {
 	GOOGLE;
 
 	private Path path;
-	private File file;
 
 	/**
 	 * Setter
@@ -60,7 +59,6 @@ public enum Grammar {
 	 */
 	public void setPath(Path path) {
 		this.path = path;
-		this.file = path.toFile();
 	}
 
 	/**
@@ -78,6 +76,6 @@ public enum Grammar {
 	 * @return File Object of the Path to the Grammar File
 	 */
 	public File getFile() {
-		return this.file;
+		return this.path.toFile();
 	}
 }

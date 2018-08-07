@@ -33,7 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * @author TODO
  */
 @Service
-public class CreateTempGrammar {
+public class TempGrammarFactory {
 	private Path path = Grammar.TEMP.getPath();
 	
 	//TODO write the Temp Grammar
