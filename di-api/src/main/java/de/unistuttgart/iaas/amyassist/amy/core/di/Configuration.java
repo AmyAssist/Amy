@@ -42,13 +42,23 @@ public interface Configuration {
 	 *            The type of this service
 	 * @param externalService
 	 *            The instance of this service
+	 * @deprecated use a SingletonServiceProvider directly
 	 */
+	@Deprecated
 	<T> void addExternalService(@Nonnull Class<T> serviceType, @Nonnull T externalService);
 
+	/**
+	 * Register a StaticContextProvider to be used later by ServiceProviders
+	 * 
+	 * @param key
+	 *            the string key which is used to later find that staticProvider
+	 * @param staticProvider
+	 *            the StaticProvider that should be registered
+	 */
 	void registerContextProvider(String key, StaticProvider<?> staticProvider);
 
 	/**
-	 * Registers a service
+	 * Registers a service implementation
 	 * 
 	 * @param cls
 	 *            The service to register.
@@ -58,21 +68,11 @@ public interface Configuration {
 	/**
 	 * Registers a service provider
 	 * 
-	 * @param serviceDescription
-	 *            The description of service
-	 * @param serviceFunction
+	 * @param serviceProvider
 	 *            The instance of the service provider
+	 * @param <T>
+	 *            the type of the Service this ServiceProvider provides
 	 */
-	<T> void register(ServiceDescription<T> serviceDescription, ServiceProvider<T> serviceFunction);
-
-	/**
-	 * Registers a service provider
-	 * 
-	 * @param serviceType
-	 *            The type of this service
-	 * @param serviceFunction
-	 *            The instance of the service provider
-	 */
-	<T> void register(Class<T> serviceType, ServiceProvider<T> serviceFunction);
+	<T> void register(@Nonnull ServiceProvider<T> serviceProvider);
 
 }

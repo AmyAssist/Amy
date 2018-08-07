@@ -34,12 +34,12 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.output.OutputImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.RuntimeExceptionRecognizerCantBeCreated;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.LocalSpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 
 /**
  * Manager of the Local Speech Recognition System
@@ -56,17 +56,20 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	private SpeechInputHandler inputHandler;
 
 	@Reference
-	private TextToSpeech tts;
+	private OutputImpl tts;
 
 	@Reference
 	private GrammarObjectsCreator grammarData;
+
+	@Reference
+	private MessageHub messageHub;
 
 	private SpeechRecognizerManager localRecognition;
 
 	@PostConstruct
 	private void init() {
 		this.localRecognition = new LocalSpeechRecognizerManager(createNewAudioInputStream(), this.inputHandler,
-				this.tts, this.grammarData);
+				this.tts, this.grammarData, this.messageHub);
 	}
 
 	@Override
