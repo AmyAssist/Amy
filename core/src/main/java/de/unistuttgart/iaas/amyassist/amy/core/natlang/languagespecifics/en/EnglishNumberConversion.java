@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,25 +32,24 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.INumberConversion;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 
 /**
- * This class is loading language specific words from *.natlang files
- * 
- * like numbers
+ * This class is loading language specific numbers
  * 
  * @author Felix Burk
  */
-public class LanguageSpecifics {
+public class EnglishNumberConversion implements INumberConversion {
 	/**
 	 * maps a string containing a word representation of a number to it's integer counterpart
 	 */
-	public final Map<String, Integer> wordToNumber;
+	private final Map<String, Integer> wordToNumber;
 
 	/**
 	 * this class handels all language specific details such as numbers
 	 */
-	public LanguageSpecifics() {
+	public EnglishNumberConversion() {
 		this.wordToNumber = this.readNumbersFromFile();
 	}
 
@@ -65,6 +64,7 @@ public class LanguageSpecifics {
 	 *            the sublist containing the list of word representations
 	 * @return the calculated number
 	 */
+	@Override
 	public int calcNumber(Iterable<WordToken> subList) {
 		int finalNumber = 0;
 		int partialNumber = 0;
@@ -90,7 +90,8 @@ public class LanguageSpecifics {
 	}
 
 	/**
-	 * read numbers of a language from a *.natlang file in /resources/langs/numbers/*.natlang
+	 * read numbers of a language from a *.natlang file in
+	 * /resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/languageSpecifics/en
 	 *
 	 * @return List of all numbers in the language
 	 */
@@ -106,15 +107,14 @@ public class LanguageSpecifics {
 		try (InputStreamReader inputStreamReader = new InputStreamReader(grammarFile, "UTF-8");
 				BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
 
-			// every line contains the number seperated by ',' and ending with ';'			
+			// every line contains the number seperated by ',' and ending with ';'
 			Stream<String> lines = bufferedReader.lines();
-			
-			Stream<String> matchingLines = lines.filter(l->l.matches("[a-zA-Z]+:[0-9]*,"));
 
-			
+			Stream<String> matchingLines = lines.filter(l -> l.matches("[a-zA-Z]+:[0-9]*,"));
+
 			Iterator<String> iter = matchingLines.iterator();
-						
-			while(iter.hasNext()) {
+
+			while (iter.hasNext()) {
 				String curr = iter.next();
 				curr = curr.substring(0, curr.indexOf(','));
 				String[] split = curr.split(":");
@@ -124,7 +124,7 @@ public class LanguageSpecifics {
 					throw new IllegalStateException("numbers file is in wrong format");
 				}
 			}
-			
+
 			lines.close();
 			matchingLines.close();
 
@@ -150,4 +150,13 @@ public class LanguageSpecifics {
 		}
 	}
 
+	/**
+	 * Get's {@link #wordToNumber wordToNumber}
+	 * 
+	 * @return wordToNumber
+	 */
+	@Override
+	public Map<String, Integer> getWordToNumber() {
+		return this.wordToNumber;
+	}
 }
