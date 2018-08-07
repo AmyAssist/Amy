@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output.tts;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -43,6 +43,17 @@ public interface TextToSpeech {
 	 * @return AudioInputStream of String
 	 */
 	AudioInputStream getMaryAudio(String s);
+
+	/**
+	 * Get the synthetic voice data for the given string.
+	 * 
+	 * @param s
+	 *            The string to synthesize
+	 * @param pause
+	 *            How long of a pause should be integrated after the synthetic voice in milliseconds.
+	 * @return The {@link AudioInputStream} containing the speech data.
+	 */
+	AudioInputStream getMaryAudio(String s, int pause);
 
 	/**
 	 * Method to get Mary's AudioFormat

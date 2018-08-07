@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.output.Output;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 

@@ -21,10 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
 import asg.cliche.Command;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 
 /**
  * Console Tool to test the TextToSpeech service
@@ -33,7 +34,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  */
 public class TTSConsole {
 	@Reference
-	private OutputImpl output;
+	private Output output;
 
 	@Command(name = "TextToSpeech", abbrev = "tts", description = "Let the TextToSpeech Service output text as speech")
 	public void textToSpeech(String... text) {

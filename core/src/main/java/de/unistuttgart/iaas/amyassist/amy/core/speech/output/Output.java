@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.output;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 

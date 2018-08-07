@@ -33,11 +33,11 @@ import javax.sound.sampled.AudioInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
 
@@ -232,7 +232,7 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public void voiceOutput(String outputString) {
-		this.output.voiceOutput(outputString);
+		this.output.voiceOutput(outputString); // TODO:
 	}
 
 	/**
@@ -240,7 +240,7 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public void soundOutput(Sounds sound) {
-		this.output.soundOutput(sound);
+		this.output.soundOutput(sound);// TODO:
 	}
 
 	/**
@@ -248,7 +248,7 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public void stopOutput() {
-		this.output.stopOutput();
+		this.output.stopOutput();// TODO:
 	}
 
 	/**
@@ -256,7 +256,7 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public boolean isSoundPlaying() {
-		return this.output.isCurrentlyOutputting();
+		return this.output.isCurrentlyOutputting();// TODO:
 	}
 
 	/**
