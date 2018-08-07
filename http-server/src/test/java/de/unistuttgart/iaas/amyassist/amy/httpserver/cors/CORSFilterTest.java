@@ -23,20 +23,22 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.Properties;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.core.MultivaluedMap;
-import java.io.IOException;
-import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 
 /**
  * test class for {@link CORSFilter}
@@ -53,14 +55,14 @@ class CORSFilterTest {
 	@Test
 	public void testRequestFilter() {
 		try {
-			ConfigurationLoader configurationLoader = Mockito.mock(ConfigurationLoader.class);
+			ConfigurationManager configurationManager = Mockito.mock(ConfigurationManager.class);
 
 			Properties properties = new Properties();
 			properties.setProperty("origins", ALLOWED_FOREIGN_ORIGIN + "|" + ALLOWED_FOREIGN_ORIGIN_2);
-			when(configurationLoader.load("cors.config")).thenReturn(properties);
+			when(configurationManager.getConfiguration("cors.config")).thenReturn(properties);
 
 			CORSFilter filter = new CORSFilter();
-			filter.configurationLoader = configurationLoader;
+			filter.configurationManager = configurationManager;
 			ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
 			Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(null);
 

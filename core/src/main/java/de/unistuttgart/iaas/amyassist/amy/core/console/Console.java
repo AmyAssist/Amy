@@ -33,7 +33,7 @@ import asg.cliche.Shell;
 import asg.cliche.ShellFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandlerService;
 import de.unistuttgart.iaas.amyassist.amy.core.Core;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -63,7 +63,7 @@ public class Console implements RunnableService, Runnable {
 	private Core core;
 
 	@Reference
-	private ConfigurationLoader configurationLoader;
+	private ConfigurationManager configurationmanager;
 
 	private boolean enable;
 
@@ -86,8 +86,8 @@ public class Console implements RunnableService, Runnable {
 
 	@PostConstruct
 	private void init() {
-		this.enable = Boolean
-				.valueOf(this.configurationLoader.load(CONFIG_NAME).getProperty(PROPERTY_ENABLE_CONSOLE, "true"));
+		this.enable = Boolean.valueOf(this.configurationmanager.getConfigurationWithDefaults(CONFIG_NAME)
+				.getProperty(PROPERTY_ENABLE_CONSOLE, "true"));
 	}
 
 	@Override

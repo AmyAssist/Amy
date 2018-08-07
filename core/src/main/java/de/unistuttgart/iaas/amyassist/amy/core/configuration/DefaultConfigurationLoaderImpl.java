@@ -21,40 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.test;
+package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Simple in-memory ConfigurationLoader implementation for tests
+ * TODO: Description
  * 
  * @author Leon Kiefer
  */
 @Service
-public class TestConfiguration implements ConfigurationLoader {
-
-	private Map<String, Properties> map = new HashMap<>();
+public class DefaultConfigurationLoaderImpl implements DefaultConfigurationLoader {
+	@Reference
+	private InternalDefaultConfigurationLoader internalDefaultConfigurationLoader;
+	@Context(de.unistuttgart.iaas.amyassist.amy.core.di.Context.CLASSLOADER)
+	private ClassLoader classLoader;
 
 	@Override
 	public Properties load(String configurationName) {
-		return this.map.get(configurationName);
-	}
-
-	@Override
-	public Properties load(String configurationName, Properties defaults) {
-		Properties properties = new Properties(defaults);
-		properties.putAll(this.load(configurationName));
-		return properties;
-	}
-
-	@Override
-	public void store(String configurationName, Properties properties) {
-		this.map.put(configurationName, properties);
+		return this.internalDefaultConfigurationLoader.load(this.classLoader, configurationName);
 	}
 
 }

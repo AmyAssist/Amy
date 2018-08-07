@@ -21,22 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
 /**
- * Context key constants
+ * Exception that is thrown if a specific configuration was not found but must be loaded.
  * 
  * @author Leon Kiefer
  */
-public final class Context {
-	private Context() {
-		// hide constructor
-	}
+public class ConfigurationNotFoundException extends RuntimeException {
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider
+	 * 
 	 */
-	public static final String PLUGIN = "plugin";
-	public static final String CLASS = "class";
-	public static final String CLASSLOADER = "classLoader";
+	private static final long serialVersionUID = -6884409079204932996L;
+
+	/**
+	 * Create a new exception with a message.
+	 * 
+	 * @param message
+	 *            the string message
+	 */
+	public ConfigurationNotFoundException(String message) {
+		super(message);
+	}
+
 }

@@ -27,6 +27,7 @@ import java.util.Set;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Services;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
@@ -45,6 +46,8 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 
 		di.register(new LoggerProvider());
 		di.register(new PropertiesProvider());
+
+		di.registerContextProvider(Context.CLASSLOADER, Class::getClassLoader);
 	}
 
 }

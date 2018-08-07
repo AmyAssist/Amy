@@ -21,22 +21,24 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.configuration;
+
+import java.util.Properties;
 
 /**
- * Context key constants
+ * Load a default configuration from the classpath. Changes can't be stored with this ConfigurationLoader.
  * 
  * @author Leon Kiefer
  */
-public final class Context {
-	private Context() {
-		// hide constructor
-	}
-
+public interface DefaultConfigurationLoader {
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider
+	 * Load the configuration from the jars META-INF directory.
+	 * 
+	 * @param configurationName
+	 *            the name of the config file, without the .properties in META-INF/
+	 * @return the loaded Properties or empty Properties if no such file was found
+	 * @throws ConfigurationNotFoundException
+	 *             if the default configuration is not on the classpath
 	 */
-	public static final String PLUGIN = "plugin";
-	public static final String CLASS = "class";
-	public static final String CLASSLOADER = "classLoader";
+	Properties load(String configurationName);
 }

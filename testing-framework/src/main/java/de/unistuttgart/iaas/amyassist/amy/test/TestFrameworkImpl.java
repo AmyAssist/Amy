@@ -37,6 +37,7 @@ import org.mockito.Mockito;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceNotFoundException;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -88,8 +89,9 @@ public class TestFrameworkImpl implements TestFramework {
 		serverConfig.setProperty(Server.PROPERTY_PORT, String.valueOf(TEST_SERVER_PORT));
 		serverConfig.setProperty(Server.PROPERTY_CONTEXT_PATH, "");
 		serverConfig.setProperty(Server.PROPERTY_LOCALHOST, "true");
-		ConfigurationLoader configLoader = this.registerService(ConfigurationLoader.class, TestConfiguration.class);
-		configLoader.store(Server.CONFIG_NAME, serverConfig);
+
+		ConfigurationManager configLoader = this.mockService(ConfigurationManager.class);
+		Mockito.when(configLoader.getConfigurationWithDefaults(Server.CONFIG_NAME)).thenReturn(serverConfig);
 		this.server = this.dependencyInjection.getService(Server.class);
 	}
 
