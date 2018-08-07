@@ -232,7 +232,7 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public void voiceOutput(String outputString) {
-		this.output.voiceOutput(outputString); // TODO:
+		this.output.voiceOutput(outputString);
 	}
 
 	/**
@@ -240,7 +240,7 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public void soundOutput(Sounds sound) {
-		this.output.soundOutput(sound);// TODO:
+		this.output.soundOutput(sound);
 	}
 
 	/**
@@ -248,7 +248,7 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public void stopOutput() {
-		this.output.stopOutput();// TODO:
+		this.output.stopOutput();
 	}
 
 	/**
@@ -256,7 +256,7 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public boolean isSoundPlaying() {
-		return this.output.isCurrentlyOutputting();// TODO:
+		return this.output.isCurrentlyOutputting();
 	}
 
 	/**

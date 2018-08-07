@@ -44,7 +44,7 @@ public enum Sounds {
 	 */
 	SINGLE_CALL_STOP_BEEP("single_call_stop_beep.wav");
 
-	private static final String directory = "de/unistuttgart/iaas/amyassist/amy/core/speech/data/sounds/";
+	private static final String DIRECTORY = "de/unistuttgart/iaas/amyassist/amy/core/speech/data/sounds/";
 	private String path;
 
 	/**
@@ -54,7 +54,7 @@ public enum Sounds {
 	 *            The file name of the sound
 	 */
 	Sounds(String fileName) {
-		this.path = Sounds.directory.concat(fileName);
+		this.path = Sounds.DIRECTORY.concat(fileName);
 	}
 
 	/**

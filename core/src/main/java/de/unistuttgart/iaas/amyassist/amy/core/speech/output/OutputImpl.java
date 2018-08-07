@@ -54,7 +54,7 @@ public class OutputImpl implements Output {
 
 	private void outputAudioStream(AudioInputStream ais) {
 		List<UUID> registeredAudioEnvs = this.am.getAllRegisteredAudioEnvironments();
-		if (registeredAudioEnvs.size() > 0) {
+		if (!registeredAudioEnvs.isEmpty()) {
 			this.am.playAudio(registeredAudioEnvs.iterator().next(), ais, AudioManager.OutputBehavior.QUEUE);
 		}
 	}
@@ -97,7 +97,7 @@ public class OutputImpl implements Output {
 	@Override
 	public boolean isCurrentlyOutputting() {
 		List<UUID> registeredAudioEnvs = this.am.getAllRegisteredAudioEnvironments();
-		if (registeredAudioEnvs.size() > 0)
+		if (!registeredAudioEnvs.isEmpty())
 			return this.am.isAudioEnvironmentCurrentlyOutputting(registeredAudioEnvs.iterator().next());
 		return false;
 	}

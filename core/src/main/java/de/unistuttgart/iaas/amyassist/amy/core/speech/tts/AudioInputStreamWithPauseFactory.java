@@ -60,7 +60,8 @@ public class AudioInputStreamWithPauseFactory {
 	private int calcNewNumFrames(int pause, AudioFormat format) {
 		double pauseInSeconds = pause / 1000.0;
 		long frames = Math.round(format.getFrameRate() * pauseInSeconds);
-		if (frames > Integer.MAX_VALUE || frames < 0) // If negative we had an overflow.
+		// If negative we had an overflow.
+		if (frames > Integer.MAX_VALUE || frames < 0)
 			return Integer.MAX_VALUE;
 		return (int) frames;
 	}

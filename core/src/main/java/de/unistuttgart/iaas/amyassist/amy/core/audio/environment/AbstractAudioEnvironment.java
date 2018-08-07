@@ -28,11 +28,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
@@ -111,24 +109,6 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 	protected abstract void writeToOutput(byte[] buffer, int off, int len);
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#getOutputFormat()
-	 */
-	@Override
-	public abstract AudioFormat getOutputFormat();
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#getInputFormat()
-	 */
-	@Override
-	public abstract AudioFormat getInputFormat();
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#getAudioEnvironmentIdentifier()
-	 */
-	@Override
-	public abstract UUID getAudioEnvironmentIdentifier();
-
-	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#stopOutput()
 	 */
 	@Override
@@ -137,7 +117,8 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#playAudio(de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput, de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager.OutputBehavior)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#playAudio(de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput,
+	 *      de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager.OutputBehavior)
 	 */
 	@Override
 	public void playAudio(AudioOutput audioToPlay, AudioManager.OutputBehavior behavior) {
