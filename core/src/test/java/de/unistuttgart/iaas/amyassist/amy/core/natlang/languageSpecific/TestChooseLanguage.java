@@ -21,39 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecific;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.output.Output;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishStemmer;
 
 /**
- * Test Class for the Text To Speech Output class
+ * Test class for ChooseLanguage
  * 
- * @author Kai Menzel
+ * @author Lars Buttgereit
  */
-@ExtendWith(FrameworkExtension.class)
-class Outputtest {
-
-	@Reference
-	private TestFramework framework;
-
-	private Output tts;
-
-	/**
-	 * test Logging
-	 */
+public class TestChooseLanguage {
+	
 	@Test
-	void test() {
-		this.tts = this.framework.setServiceUnderTest(Output.class);
-		assertThat(this.tts == null, equalTo(false));
+	void testChooseEnglish() {
+		ChooseLanguage chooseLanguage = new ChooseLanguage("en");
+		assertThat(chooseLanguage.getNumberConversion().getClass().getName(), equalTo(EnglishNumberConversion.class.getName()));
+		assertThat(chooseLanguage.getStemmer().getClass().getName(), equalTo(EnglishStemmer.class.getName()));
 	}
-
 }
