@@ -58,6 +58,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParserException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
@@ -149,11 +150,16 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		NLLexer nlLexer = new NLLexer(lang);
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
 		INLParser nlParser = new NLParser(this.registeredNodeList);
-		int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
-		PartialNLI partialNLI = this.register.get(matchingNodeIndex);
-		String[] arguments = Lists.transform(tokens, WordToken::getContent).toArray(new String[tokens.size()]);
-		Object object = this.serviceLocator.createAndInitialize(partialNLI.getPartialNLIClass());
-		return partialNLI.call(object, arguments);
+		try {
+			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
+			PartialNLI partialNLI = this.register.get(matchingNodeIndex);
+			String[] arguments = Lists.transform(tokens, WordToken::getContent).toArray(new String[tokens.size()]);
+			Object object = this.serviceLocator.createAndInitialize(partialNLI.getPartialNLIClass());
+			return partialNLI.call(object, arguments);
+		}catch(NLParserException e) {
+			return "I did not understand that";
+		}
+		
 	}
 	
 	/**

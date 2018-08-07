@@ -146,7 +146,7 @@ public class PluginLoader {
 			this.logger.warn("Can't get version of plugin {}", name);
 		}
 
-		this.logger.info("loaded plugin {} with {} classes", name, plugin.getClasses().size());
+		this.logger.info("loaded plugin {} with {} classes and {} aims", name, plugin.getClasses().size(), plugin.getAIMContent().size());
 		this.plugins.put(plugin.getUniqueName(), plugin);
 	}
 
