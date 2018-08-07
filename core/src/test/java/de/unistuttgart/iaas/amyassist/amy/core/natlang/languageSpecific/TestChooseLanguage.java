@@ -23,11 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecific;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
@@ -39,11 +38,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.Engl
  * @author Lars Buttgereit
  */
 public class TestChooseLanguage {
-	
+
 	@Test
 	void testChooseEnglish() {
 		ChooseLanguage chooseLanguage = new ChooseLanguage("en");
-		assertThat(chooseLanguage.getNumberConversion().getClass().getName(), equalTo(EnglishNumberConversion.class.getName()));
+		assertThat(chooseLanguage.getNumberConversion().getClass().getName(),
+				equalTo(EnglishNumberConversion.class.getName()));
 		assertThat(chooseLanguage.getStemmer().getClass().getName(), equalTo(EnglishStemmer.class.getName()));
 	}
 
