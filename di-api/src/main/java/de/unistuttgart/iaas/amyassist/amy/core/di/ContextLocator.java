@@ -21,38 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import java.util.NoSuchElementException;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 
 /**
- * Test Class for the Text To Speech Output class
+ * A locator for context provider used by ServiceProvider to receive the context of ServiceConsumers.
  * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-@ExtendWith(FrameworkExtension.class)
-class TextToSpeechTest {
-
-	@Reference
-	private TestFramework framework;
-
-	private Output tts;
-
+public interface ContextLocator {
 	/**
-	 * test Logging
+	 * Getter for the Context provider for the given identifier
+	 * 
+	 * @param contextProviderType
+	 *            the context identifier
+	 * @return the static ContextProvider
+	 * @throws NoSuchElementException
+	 *             if there is no ContextProvider for the given identifier
 	 */
-	@Test
-	void test() {
-		this.tts = this.framework.setServiceUnderTest(TextToSpeech.class);
-		assertThat(this.tts == null, equalTo(false));
-	}
-
+	StaticProvider<?> getContextProvider(@Nonnull String contextProviderType);
 }

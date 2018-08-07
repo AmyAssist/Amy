@@ -73,8 +73,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	public void register(Class<?> naturalLanguageInterpreter) {
 		if (!naturalLanguageInterpreter
 				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand.class)) {
-			throw new IllegalArgumentException("annotation is not present in " 
-				+ naturalLanguageInterpreter.getSimpleName());
+			throw new IllegalArgumentException(
+					"annotation is not present in " + naturalLanguageInterpreter.getSimpleName());
 		}
 		Set<Method> grammars = NLIAnnotationReader.getValidNLIMethods(naturalLanguageInterpreter);
 
@@ -94,8 +94,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	@Override
 	public String getGrammarFileString(String grammarName) {
-		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.WAKE_UP, Constants.GO_SLEEP,
-				Constants.SHUT_UP);
+		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.MULTI_CALL_START, Constants.SINGLE_CALL_START,
+				Constants.MULTI_CALL_STOP, Constants.SHUT_UP);
 		for (PartialNLI partialNLI : this.register) {
 			generator.addRule(partialNLI.getGrammar(), UUID.randomUUID().toString());
 		}

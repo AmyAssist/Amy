@@ -21,30 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+package de.unistuttgart.iaas.amyassist.amy.registry;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
- * Interface for the TextToSpeech
- * 
- * @author Kai Menzel
+ * Interface for a registry with a taggable entity class
+ * @author Benno Krauß
+ * @param <T> entity class
  */
-public interface Output {
+public interface ITaggableRegistry<T> extends IRegistry<T> {
 
-	/**
-	 * Method to Voice and Log output the input String
-	 * 
-	 * @param s
-	 *            String that shall be said
-	 */
-	void output(String s);
-
-	/**
-	 * stop the OutputClip
-	 */
-	void stopOutput();
-
-	/**
-	 * @return whether this output is currently outputting information.
-	 */
-	boolean isCurrentlyOutputting();
+    /**
+     * Get all entities with tag tagValue
+     * @param tagValue the tag of the requested entities
+     * @return all entities or an empty list
+     */
+    @Nonnull List<T> getEntitiesWithTag(String tagValue);
 }

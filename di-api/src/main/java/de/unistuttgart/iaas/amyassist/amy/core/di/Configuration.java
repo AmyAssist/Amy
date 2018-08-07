@@ -42,9 +42,19 @@ public interface Configuration {
 	 *            The type of this service
 	 * @param externalService
 	 *            The instance of this service
+	 * @deprecated use a SingletonServiceProvider directly
 	 */
+	@Deprecated
 	<T> void addExternalService(@Nonnull Class<T> serviceType, @Nonnull T externalService);
 
+	/**
+	 * Register a StaticContextProvider to be used later by ServiceProviders
+	 * 
+	 * @param key
+	 *            the string key which is used to later find that staticProvider
+	 * @param staticProvider
+	 *            the StaticProvider that should be registered
+	 */
 	void registerContextProvider(String key, StaticProvider<?> staticProvider);
 
 	/**

@@ -25,13 +25,14 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager;
 
 import javax.sound.sampled.AudioInputStream;
 
+import de.unistuttgart.iaas.amyassist.amy.core.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RemoteResultHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+
 
 /**
  * Class that manages the Recognizers belonging to a given AudioInputStream
