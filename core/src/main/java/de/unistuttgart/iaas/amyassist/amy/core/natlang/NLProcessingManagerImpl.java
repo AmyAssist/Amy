@@ -33,6 +33,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -53,6 +56,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
@@ -103,13 +107,16 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			}
 		}		
 		
-		HashMap<Node, Method> aimToMethod = new HashMap<>();
+		HashMap<AIMIntent, Method> aimToMethod = new HashMap<>();
 		Iterator<Method> i = intentMethods.iterator();
 		while(i.hasNext()) {
 			Method method = i.next();
 			String s = naturalLanguageInterpreter.getName() + "." + method.getAnnotation(Intent.class).value();
 			if(aimIntents.containsKey(s)) {
-				aimToMethod.put(aimIntents.get(s), method);
+				AIMIntent intent = unmarshal(aimIntents.get(s));
+				if(intent != null) {
+					aimToMethod.put(unmarshal(aimIntents.get(s)), method);
+				}
 			}else {
 				this.logger.error("no matching intent found in xml for {}", s);
 			}
@@ -120,6 +127,23 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			this.register.add(partialNLI);
 			this.registeredNodeList.add(partialNLI.getGrammar());
 		}
+	}
+
+	/**
+	 * @param node
+	 * @return
+	 */
+	private AIMIntent unmarshal(Node node) {
+		try {
+			JAXBContext jc = JAXBContext.newInstance(AIMIntent.class);
+			Unmarshaller unmarshaller = jc.createUnmarshaller();
+			AIMIntent intentS = (AIMIntent) unmarshaller.unmarshal(node);
+			return intentS;
+		} catch (JAXBException e1) {
+			e1.printStackTrace();
+			this.logger.error("JAXBException Intent with ref {} could not be parsed", node.getAttributes().getNamedItem("ref").getTextContent());
+		}
+		return null;
 	}
 
 	private PartialNLI generatePartialNLI(Class<?> natuaralLanguageInterpreter, Method method) {

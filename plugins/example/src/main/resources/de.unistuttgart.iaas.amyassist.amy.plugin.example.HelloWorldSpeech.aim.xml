@@ -7,7 +7,15 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
-		<gram> say hello {Amy.number} </gram>
+		<gram> say hello {number} </gram>
+		<EntityTemplates>
+			<EntityTemplate id="number" type="int" />
+		</EntityTemplates>
+
+		<Prompt entityTemplateId="number">
+			<text> how many times should i say hello? </text>
+			<gram> {number} [times] </gram>
+		</Prompt>
 	</Intent>
 
 	<Intent
