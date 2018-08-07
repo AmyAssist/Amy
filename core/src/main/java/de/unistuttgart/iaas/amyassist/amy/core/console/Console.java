@@ -33,13 +33,15 @@ import asg.cliche.Shell;
 import asg.cliche.ShellFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandlerService;
 import de.unistuttgart.iaas.amyassist.amy.core.Core;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.output.TTSConsole;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerCLI;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TTSConsole;
 
 /**
  * The Console reads input from the command line and pass it to the TextParser
@@ -48,6 +50,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TTSConsole;
  */
 @Service(Console.class)
 public class Console implements RunnableService, Runnable {
+	private static final String CONFIG_NAME = "core.config";
+	private static final String PROPERTY_ENABLE_CONSOLE = "enableConsole";
+
 	@Reference
 	private Logger logger;
 
@@ -56,6 +61,11 @@ public class Console implements RunnableService, Runnable {
 
 	@Reference
 	private Core core;
+
+	@Reference
+	private ConfigurationLoader configurationLoader;
+
+	private boolean enable;
 
 	@Reference
 	private SpeechInputHandler handler;
@@ -74,10 +84,18 @@ public class Console implements RunnableService, Runnable {
 		return "";
 	}
 
+	@PostConstruct
+	private void init() {
+		this.enable = Boolean
+				.valueOf(this.configurationLoader.load(CONFIG_NAME).getProperty(PROPERTY_ENABLE_CONSOLE, "true"));
+	}
+
 	@Override
 	public void start() {
-		this.thread = new Thread(this, "Console");
-		this.thread.start();
+		if (this.enable) {
+			this.thread = new Thread(this, "Console");
+			this.thread.start();
+		}
 	}
 
 	@Override
@@ -96,6 +114,8 @@ public class Console implements RunnableService, Runnable {
 
 	@Override
 	public void stop() {
-		this.thread.interrupt();
+		if (this.enable) {
+			this.thread.interrupt();
+		}
 	}
 }

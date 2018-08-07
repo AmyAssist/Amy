@@ -43,6 +43,7 @@ public class ContactImpl implements Contact {
     private String lastName;
     private boolean important;
     private String email;
+    private String tag;
 
     public String getFirstName() {
         return firstName;
@@ -80,9 +81,19 @@ public class ContactImpl implements Contact {
         return persistentId;
     }
 
+    @Override
+    public String getTag() {
+        return tag;
+    }
+
+    @Override
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
     /**
      * Generated equals implementation
-     * @param o
+     * @param o object to be compared
      * @return areEqual
      */
     @Override
@@ -94,16 +105,17 @@ public class ContactImpl implements Contact {
                 important == contact.isImportant() &&
                 Objects.equals(firstName, contact.getFirstName()) &&
                 Objects.equals(lastName, contact.getLastName()) &&
-                Objects.equals(email, contact.getEmail());
+                Objects.equals(email, contact.getEmail()) &&
+                Objects.equals(tag, contact.getTag());
     }
 
     /**
      * Generated hashCode implementation
-     * @return
+     * @return hash value
      */
     @Override
     public int hashCode() {
 
-        return Objects.hash(persistentId, firstName, lastName, important, email);
+        return Objects.hash(persistentId, firstName, lastName, important, email, tag);
     }
 }

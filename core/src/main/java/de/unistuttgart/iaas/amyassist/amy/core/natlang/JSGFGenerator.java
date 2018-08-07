@@ -40,27 +40,32 @@ public class JSGFGenerator {
 	List<String> rules;
 
 	private String name;
-	private String wakeup;
-	private String sleep;
-	private String shutdown;
+	private String multiCallStart;
+	private String singleCallStart;
+	private String multiCallStop;
+	private String voiceOutputStopCommand;
 
 	/**
 	 * constructor, generates a JSGF file
 	 * 
 	 * @param name
 	 *            the name of the grammar file
-	 * @param wakeup
+	 * @param multiCallStart
 	 *            the wakeup command
-	 * @param sleep
+	 * @param singleCallStart
+	 *            wakeup command for a single command
+	 * @param multiCallStop
 	 *            the sleep command
-	 * @param shutdown
-	 *            the shutdown command
+	 * @param voiceOutputStopCommand
+	 *            the shut up command
 	 */
-	public JSGFGenerator(String name, String wakeup, String sleep, String shutdown) {
+	public JSGFGenerator(String name, String multiCallStart, String singleCallStart, String multiCallStop,
+			String voiceOutputStopCommand) {
 		this.name = name;
-		this.wakeup = wakeup;
-		this.sleep = sleep;
-		this.shutdown = shutdown;
+		this.multiCallStart = multiCallStart;
+		this.singleCallStart = singleCallStart;
+		this.multiCallStop = multiCallStop;
+		this.voiceOutputStopCommand = voiceOutputStopCommand;
 
 		this.rules = new ArrayList<>();
 	}
@@ -78,9 +83,10 @@ public class JSGFGenerator {
 		grammar.append("#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n" + " */\n" + "\n");
 
 		grammar.append("grammar " + this.name + ";\n");
-		publicRule(grammar, "wakeup", this.wakeup);
-		publicRule(grammar, "sleep", this.sleep);
-		publicRule(grammar, "shutdown", this.shutdown);
+		publicRule(grammar, "wakeup", this.multiCallStart);
+		publicRule(grammar, "singlewakeup", this.singleCallStart);
+		publicRule(grammar, "sleep", this.multiCallStop);
+		publicRule(grammar, "shutdown", this.voiceOutputStopCommand);
 
 		grammar.append("\n//pre defined rules \n");
 
@@ -88,7 +94,10 @@ public class JSGFGenerator {
 		grammar.append("<number> = (one | two | three | four | five | six | seven |"
 				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
 				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
-				+ "fifty | sixty  | seventy | eighty | ninety )+; \n");
+				+ "fifty | sixty  | seventy | eighty | ninety )[one | two | three | four | five | six | seven | "
+				+ "nine | ten | eleven | twelve | thirteen | fourteen | fifteen | "
+				+ "sixteen | seventeen | eighteen | nineteen | twenty | thirty | forty | "
+				+ "fifty | sixty  | seventy | eighty | ninety ]; \n");
 
 		grammar.append("\n//custom rules \n");
 
@@ -117,7 +126,6 @@ public class JSGFGenerator {
 		StringBuilder b = new StringBuilder();
 		StringBuilder rule = new StringBuilder();
 		publicRule(rule, ruleName, handleNode(b, node));
-
 
 		this.rules.add(rule.toString());
 		return rule.toString();

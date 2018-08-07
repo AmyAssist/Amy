@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.4.0-Snapshot</version>
+		<version>0.5.0-Snapshot</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<properties>
@@ -176,6 +176,10 @@
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>de.unistuttgart.iaas.amyassist.amy.core.Main</mainClass>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService</resource>
 								</transformer>
 							</transformers>
 						</configuration>

@@ -23,23 +23,19 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableServiceExtension;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
 import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
@@ -51,23 +47,26 @@ import de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource;
  * @author Tim Neumann, Leon Kiefer
  */
 public class Core {
-	private static final String CONFIG_NAME = "core.config";
-	private static final String PROPERTY_ENABLE_CONSOLE = "enableConsole";
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
-	private ServiceManagerImpl serviceManager;
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
-	private DependencyInjection di = new DependencyInjection();
-
-	private Server server;
+	private final DependencyInjection di;
 
 	private CommandLineArgumentHandlerService cmaHandler;
 
-	private Properties config;
-
 	private Thread shutdownHook = new Thread(this::doStop, "ShutdownHook");
+
+	private RunnableServiceExtension runnableServiceExtension;
+
+	/**
+	 * 
+	 */
+	public Core() {
+		this.runnableServiceExtension = new RunnableServiceExtension();
+		this.di = new DependencyInjection(this.runnableServiceExtension);
+	}
 
 	/**
 	 * Get's {@link #singleThreadScheduledExecutor singleThreadScheduledExecutor}
@@ -97,48 +96,12 @@ public class Core {
 	 */
 	private void run() {
 		this.logger.info("run");
-		this.init();
-		this.serviceManager.start();
-		this.server.start();
-		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
-		this.logger.info("running");
-	}
-
-	/**
-	 * Initializes the core
-	 */
-	private void init() {
 		this.registerAllCoreServices();
-		ConfigurationLoader configLoader = this.di.getService(ConfigurationLoader.class);
-		this.config = configLoader.load(CONFIG_NAME);
-
-		this.serviceManager = this.di.getService(ServiceManagerImpl.class);
-
-		this.server = this.di.getService(Server.class);
-		this.server.register(HomeResource.class);
-		this.server.register(LocationRegistryResource.class);
-		this.server.register(ContactRegistryResource.class);
-
-		initConsole();
-
-		PluginManager pluginManager = this.di.getService(PluginManager.class);
-		pluginManager.loadPlugins();
-		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
-
-		this.di.getService(GrammarObjectsCreator.class).completeSetup();
-		this.serviceManager.register(LocalAudioUserInteraction.class);
-		this.serviceManager.register(TextToSpeech.class);
-	}
-
-	private void initConsole() {
-		String enableConsole = this.config.getProperty(PROPERTY_ENABLE_CONSOLE);
-		if (enableConsole == null) {
-			this.logger.warn("Core config missing key {}.", PROPERTY_ENABLE_CONSOLE);
-			enableConsole = "true";
-		}
-		if (enableConsole.equals("true")) {
-			this.serviceManager.register(Console.class);
-		}
+		this.init();
+		this.loadPlugins();
+		this.deploy();
+		this.start();
+		this.logger.info("running");
 	}
 
 	/**
@@ -152,6 +115,35 @@ public class Core {
 	}
 
 	/**
+	 * Initializes the core
+	 */
+	private void init() {
+		// nothing in init stage
+	}
+
+	private void loadPlugins() {
+		PluginManager pluginManager = this.di.getService(PluginManager.class);
+		pluginManager.loadPlugins();
+		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
+	}
+
+	private void deploy() {
+		this.runnableServiceExtension.deploy();
+
+		this.di.getService(GrammarObjectsCreator.class).completeSetup();
+
+		Server server = this.di.getService(Server.class);
+		server.register(HomeResource.class);
+		server.register(LocationRegistryResource.class);
+		server.register(ContactRegistryResource.class);
+	}
+
+	private void start() {
+		this.runnableServiceExtension.start();
+		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+	}
+
+	/**
 	 * stop all Threads and terminate the application. This is call form the {@link Console}
 	 */
 	public void stop() {
@@ -161,8 +153,7 @@ public class Core {
 
 	private void doStop() {
 		this.logger.info("stop");
-		this.server.shutdown();
-		this.serviceManager.stop();
+		this.runnableServiceExtension.stop();
 		this.singleThreadScheduledExecutor.shutdownNow();
 		this.di.shutdown();
 		this.logger.info("stopped");

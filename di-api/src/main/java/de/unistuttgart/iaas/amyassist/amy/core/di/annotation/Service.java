@@ -29,7 +29,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Register a class as a Service
+ * Register a class as a Service. This annotation marks classes to be loaded in the DI. You can also specify the type of
+ * the Service. Services MUST use {@link PostConstruct} instead of a constructor.
+ * 
+ * @see Reference
+ * @see PostConstruct
+ * @see PreDestroy
  * 
  * @author Leon Kiefer
  */
@@ -37,5 +42,14 @@ import java.lang.annotation.Target;
 @Documented
 @Target(java.lang.annotation.ElementType.TYPE)
 public @interface Service {
-	Class<?>[] value() default {};
+	/**
+	 * Optional the type of the Service. This is required if this Class implements multiple interfaces. Also required if
+	 * you want the class to be registered as service for the class type itself and not the interface it is
+	 * implementing. Also remember this is the type you reference this Service with {@link Reference}.
+	 * 
+	 * @see Reference
+	 * 
+	 * @return the type of the Service, this value SHOULD be an interface.
+	 */
+	Class<?> value() default Void.class;
 }

@@ -23,17 +23,30 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
+
 /**
- * The interface of all ServiceFactories
+ * A Facade for the ServiceLocator to track the creation process of services and dependent services
  * 
  * @author Leon Kiefer
  */
-public interface ServiceFactory<T> {
+public class SimpleServiceLocatorImpl implements SimpleServiceLocator {
+
+	private DependencyInjection dependencyInjection;
+	private ServiceCreation<?> serviceCreationInfo;
+
 	/**
-	 * Build the Service after all configuration is done. This doesn't mean a new instance is created. Multiple calls of
-	 * this method must return the same instance. So after calling this method the configuration can't be changed.
-	 * 
-	 * @return the instance of the Service
+	 * @param dependencyInjection
+	 * @param serviceCreationInfo
 	 */
-	T build();
+	public SimpleServiceLocatorImpl(DependencyInjection dependencyInjection, ServiceCreation<?> serviceCreationInfo) {
+		this.dependencyInjection = dependencyInjection;
+		this.serviceCreationInfo = serviceCreationInfo;
+	}
+
+	@Override
+	public <T> ServiceHandle<T> getService(ServiceConsumer<T> serviceConsumer) {
+		return this.dependencyInjection.getService(this.serviceCreationInfo, serviceConsumer);
+	}
 }

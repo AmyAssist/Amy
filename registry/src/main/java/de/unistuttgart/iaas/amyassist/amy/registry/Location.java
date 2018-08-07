@@ -27,7 +27,7 @@ package de.unistuttgart.iaas.amyassist.amy.registry;
  * Location object interface
  * @author Benno Krauß
  */
-public interface Location extends RegistryEntity {
+public interface Location extends RegistryEntity, Taggable {
 
     String getName();
 
@@ -56,14 +56,6 @@ public interface Location extends RegistryEntity {
     double getLatitude();
 
     void setLatitude(double latitude);
-
-    boolean isHome();
-
-    void setHome(boolean home);
-
-    boolean isWork();
-
-    void setWork(boolean work);
 
     String getAddressString();
 }

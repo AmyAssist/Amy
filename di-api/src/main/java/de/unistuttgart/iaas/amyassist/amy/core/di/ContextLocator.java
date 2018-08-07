@@ -21,30 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
+
+import java.util.NoSuchElementException;
+
+import javax.annotation.Nonnull;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 
 /**
- * Interface for the TextToSpeech
+ * A locator for context provider used by ServiceProvider to receive the context of ServiceConsumers.
  * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-public interface Output {
-
+public interface ContextLocator {
 	/**
-	 * Method to Voice and Log output the input String
+	 * Getter for the Context provider for the given identifier
 	 * 
-	 * @param s
-	 *            String that shall be said
+	 * @param contextProviderType
+	 *            the context identifier
+	 * @return the static ContextProvider
+	 * @throws NoSuchElementException
+	 *             if there is no ContextProvider for the given identifier
 	 */
-	void output(String s);
-
-	/**
-	 * stop the OutputClip
-	 */
-	void stopOutput();
-
-	/**
-	 * @return whether this output is currently outputting information.
-	 */
-	boolean isCurrentlyOutputting();
+	StaticProvider<?> getContextProvider(@Nonnull String contextProviderType);
 }

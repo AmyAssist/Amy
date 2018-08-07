@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.4.0-Snapshot</version>
+		<version>0.5.0-Snapshot</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-plugin-manager-api</artifactId>
-			<version>0.4.0-Snapshot</version>
+			<version>0.5.0-Snapshot</version>
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>

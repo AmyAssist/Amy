@@ -23,49 +23,22 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 
 /**
- * A ServiceProvider which provides only a single existing instance
+ * The container of Services to be used to pass Services around the DI. This is an abstraction of the service instance
+ * in the dependency injection.
  * 
  * @author Leon Kiefer
  * @param <T>
- *            the type of the singleton
+ *            the type of the service
  */
-public class SingeltonServiceProvider<T> implements ServiceProvider<T> {
-
-	private final T instance;
-
+public interface ServiceHandle<T> {
 	/**
+	 * Get the service instance
 	 * 
-	 * @param instance
-	 *            the singleton
+	 * @return the service instance of this service handle
 	 */
-	public SingeltonServiceProvider(@Nonnull T instance) {
-		this.instance = instance;
-	}
-
-	@Override
-	public T getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
-			@Nullable Map<String, ?> context) {
-		return this.instance;
-	}
-
-	@Override
-	public Set<ServiceConsumer<?>> getDependencies() {
-		return Collections.emptySet();
-	}
-
-	@Override
-	public Set<String> getRequiredContextIdentifiers() {
-		return Collections.emptySet();
-	}
+	@Nonnull
+	T getService();
 }

@@ -46,7 +46,7 @@ public class JSGFGeneratorTest {
 		AGFParser parser2 = new AGFParser(new AGFLexer("set timer on x minutes"));
 		AGFNode node2 = parser2.parseWholeExpression();
 		
-		JSGFGenerator gen = new JSGFGenerator("test", "test", "test", "test");
+		JSGFGenerator gen = new JSGFGenerator("test", "test", "test", "test", "test");
 		String s = gen.addRule(node, "testi");
 		gen.addRule(node2, "dwoa");
 		assertEquals(s.trim().replaceAll("\\s{2,}", " "), "public <testi> = ( set timer on <number> minutes );");
@@ -63,7 +63,7 @@ public class JSGFGeneratorTest {
 	
 		AGFNode node = parser.parseWholeExpression();
 				
-		JSGFGenerator gen = new JSGFGenerator("test", "test", "test", "test");
+		JSGFGenerator gen = new JSGFGenerator("test", "test", "test", "test", "test");
 		String s = gen.addRule(node, "test");
 		assertEquals(s.replaceAll("\\s*", "").trim(), "public <test> = ( set timer on (x|(wa|d)) [<number> [x] hours] [<number> minutes] [<number> seconds] test );".replaceAll("\\s*", ""));
 		

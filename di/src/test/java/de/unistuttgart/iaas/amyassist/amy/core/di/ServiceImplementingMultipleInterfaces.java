@@ -21,38 +21,26 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import java.util.function.Consumer;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Test Class for the Text To Speech Output class
+ * Test Service for DI
  * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-@ExtendWith(FrameworkExtension.class)
-class TextToSpeechTest {
+@Service
+public class ServiceImplementingMultipleInterfaces implements Service7API, Consumer<String> {
 
-	@Reference
-	private TestFramework framework;
+	@Override
+	public void accept(String t) {
+	}
 
-	private Output tts;
-
-	/**
-	 * test Logging
-	 */
-	@Test
-	void test() {
-		this.tts = this.framework.setServiceUnderTest(TextToSpeech.class);
-		assertThat(this.tts == null, equalTo(false));
+	@Override
+	public void foo() {
 	}
 
 }

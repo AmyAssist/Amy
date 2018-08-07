@@ -33,12 +33,13 @@ import javax.sound.sampled.AudioInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
 
 /**
  * Class that manages the Recognizers belonging to a given AudioInputStream
@@ -57,7 +58,8 @@ public abstract class AbstractSpeechRecognizerManager
 	private SpeechRecognizer mainRecognizer;
 	private Map<String, SpeechRecognizer> recognizerList = new HashMap<>();
 
-	private boolean srListening = false;
+	private boolean multiCallActive = false;
+	private boolean singleCallActive = false;
 
 	private Thread currentRecognizer;
 
@@ -141,6 +143,7 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public void handleCommand(String result) {
+		this.logger.info("I understood: {}", result);
 		Future<String> handle = this.inputHandler.handle(result);
 		try {
 			voiceOutput(handle.get());
@@ -177,22 +180,51 @@ public abstract class AbstractSpeechRecognizerManager
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#handleListeningState(boolean)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#handleMultiCallListeningState(boolean)
 	 */
 	@Override
-	public void handleListeningState(boolean listening) {
-		this.srListening = listening;
+	public void handleMultiCallListeningState(boolean listening) {
+		this.multiCallActive = listening;
+		if (listening) {
+			this.voiceOutput("waking up");
+		} else {
+			this.voiceOutput("now sleeping");
+		}
 		/**
 		 * notify(listening);
 		 */
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isListening()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isMultiCallActive()
 	 */
 	@Override
-	public boolean isListening() {
-		return this.srListening;
+	public boolean isMultiCallActive() {
+		return this.multiCallActive;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#handleSingleCallListeningState(boolean)
+	 */
+	@Override
+	public void handleSingleCallListeningState(boolean singleCommand) {
+		this.singleCallActive = singleCommand;
+		if (singleCommand) {
+			this.soundOutput(Sounds.SINGLE_CALL_START_BEEP);
+		} else {
+			this.soundOutput(Sounds.SINGLE_CALL_STOP_BEEP);
+		}
+		/**
+		 * notify(listening);
+		 */
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isSingleCallActive()
+	 */
+	@Override
+	public boolean isSingleCallActive() {
+		return this.singleCallActive;
 	}
 
 	/**
@@ -200,7 +232,15 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public void voiceOutput(String outputString) {
-		this.output.output(outputString);
+		this.output.voiceOutput(outputString);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#soundOutput(Sounds)
+	 */
+	@Override
+	public void soundOutput(Sounds sound) {
+		this.output.soundOutput(sound);
 	}
 
 	/**

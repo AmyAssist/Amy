@@ -27,14 +27,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
 import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.GeocoderException;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import java.util.List;
 
 /**
  * Location registry implementation
@@ -42,7 +37,7 @@ import java.util.List;
  * @author Benno Krauß
  */
 @Service(LocationRegistry.class)
-public class LocationRegistryImpl extends AbstractRegistry<Location> implements LocationRegistry {
+public class LocationRegistryImpl extends AbstractTaggableRegistry<Location> implements LocationRegistry {
 
     @Reference
     Geocoder geocoder;
@@ -61,16 +56,6 @@ public class LocationRegistryImpl extends AbstractRegistry<Location> implements 
     @Override
     public void save(Location location) {
 
-        if (location.isHome() || location.isWork()) {
-            List<? extends Location> locs = getAll();
-            boolean hasHome = locs.stream().anyMatch(Location::isHome);
-            boolean hasWork = locs.stream().anyMatch(Location::isWork);
-
-            if (hasHome && location.isHome() || hasWork && location.isWork()) {
-                throw new RegistryInvalidRequestException("There can only be at most one work and one home entity");
-            }
-        }
-
         if (location.getLatitude() == 0 && location.getLongitude() == 0) {
             // Extract coordinates from address by using geocoder API
             try {
@@ -86,39 +71,20 @@ public class LocationRegistryImpl extends AbstractRegistry<Location> implements 
     }
 
     /**
-     * Get at most one entity where the attribute is set to true
-     * @param attribute
-     * @return an entity of null
-     */
-    private LocationImpl getEntityWithBooleanAttribute(String attribute) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<LocationImpl> query = builder.createQuery(LocationImpl.class);
-        Root<LocationImpl> root = query.from(LocationImpl.class);
-        query.select(root).where(builder.equal(root.get(attribute), true));
-
-        TypedQuery<LocationImpl> typedQuery = entityManager.createQuery(query);
-
-        List<LocationImpl> homes = typedQuery.getResultList();
-        if (!homes.isEmpty()) {
-            return homes.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * Get the home location
      * @return entity or null
+     * @throws RegistryException if there is more than one home entity
      */
-    public LocationImpl getHome() {
-        return getEntityWithBooleanAttribute("isHome");
+    public Location getHome() {
+        return getEntityWithTag(Tags.HOME);
     }
 
     /**
      * Get the work location
      * @return entity or null
+     * @throws RegistryException if there is more than one work entity
      */
-    public LocationImpl getWork() {
-        return getEntityWithBooleanAttribute("isWork");
+    public Location getWork() {
+        return getEntityWithTag(Tags.WORK);
     }
 }
