@@ -23,19 +23,30 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
+
 /**
- * Information about the creation process of a Service
+ * A Facade for the ServiceLocator to track the creation process of services and dependent services
  * 
  * @author Leon Kiefer
  */
-class ServiceCreationInfo {
-	/**
-	 * The Thread creating the Service
-	 */
-	final Thread thread;
+public class SimpleServiceLocatorImpl implements SimpleServiceLocator {
 
-	public ServiceCreationInfo(Thread thread) {
-		this.thread = thread;
+	private DependencyInjection dependencyInjection;
+	private ServiceCreation<?> serviceCreationInfo;
+
+	/**
+	 * @param dependencyInjection
+	 * @param serviceCreationInfo
+	 */
+	public SimpleServiceLocatorImpl(DependencyInjection dependencyInjection, ServiceCreation<?> serviceCreationInfo) {
+		this.dependencyInjection = dependencyInjection;
+		this.serviceCreationInfo = serviceCreationInfo;
 	}
 
+	@Override
+	public <T> ServiceHandle<T> getService(ServiceConsumer<T> serviceConsumer) {
+		return this.dependencyInjection.getService(this.serviceCreationInfo, serviceConsumer);
+	}
 }
