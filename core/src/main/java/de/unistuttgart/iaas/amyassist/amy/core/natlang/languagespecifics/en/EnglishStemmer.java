@@ -27,8 +27,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.IStemme
 
 /**
  * This class implements the porter stemming algorithm see for more information:
- * https://tartarus.org/martin/PorterStemmer/def.txt
- * Only English is supported
+ * https://tartarus.org/martin/PorterStemmer/def.txt Only English is supported
  * 
  * @author Lars Buttgereit
  */
@@ -64,38 +63,25 @@ public class EnglishStemmer implements IStemmer {
 	 * this method calculates the amount of sequences of vocals and consonants. [C] (VC)^n [V] n is the amount of the
 	 * sequences
 	 * 
-	 * @param to
+	 * @param lastCharacter
 	 *            the last character from the substring to calculate. For example you need only the amount of sequences
 	 *            from the stem
 	 * @return the amount of sequences
 	 */
-	private int amountOfSequences(int to) {
-		int sequences = 0;
-		int currentPos = 0;
-
-		while (isConsonant(currentPos)) {
-			if (currentPos >= to) {
-				return sequences;
+	private int amountOfSequences(int lastCharacter) {
+		int changes = 0;
+		boolean wasConsonant = true;
+		boolean firstConsonants = true;
+		for (int i = 0; i < this.currentWord.substring(0, lastCharacter + 1).length(); i++) {
+			firstConsonants = (isConsonant(i) && firstConsonants) ;
+			if (isConsonant(i) != wasConsonant && !firstConsonants) {
+				wasConsonant = isConsonant(i);
+				changes++;
+			} else if (!firstConsonants) {
+				wasConsonant = isConsonant(i);
 			}
-			currentPos++;
 		}
-
-		while (true) {
-			while (!isConsonant(currentPos)) {
-				if (currentPos >= to) {
-					return sequences;
-				}
-				currentPos++;
-			}
-			while (isConsonant(currentPos)) {
-				if (currentPos >= to) {
-					sequences++;
-					return sequences;
-				}
-				currentPos++;
-			}
-			sequences++;
-		}
+		return changes / 2;
 	}
 
 	/**
@@ -212,7 +198,7 @@ public class EnglishStemmer implements IStemmer {
 			this.currentWord = this.currentWord.substring(0, wordLength - 1);
 		}
 	}
-	
+
 	/**
 	 * this method stem the input string. Only step 1 and step 5 are implemented. The other are not necessary for our
 	 * project. detailed info for the different steps can you read here:
