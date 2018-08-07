@@ -26,38 +26,29 @@ package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 import java.util.Properties;
 
 /**
- * The interface of a configuration loader
+ * High level abstraction over different ConfigurationLoaders.
  * 
- * @author Tim Neumann
+ * @author Leon Kiefer
  */
-public interface ConfigurationLoader {
-
+public interface ConfigurationManager {
 	/**
+	 * Get the configuration from the config dirs and don't use defaults.
 	 * 
 	 * @param configurationName
-	 *            the name of the config file, without the .properties
-	 * @return the loaded Properties or empty Properties if no such file was found
+	 *            the name of the configuration without the file ending .properties
+	 * @return the properties
 	 */
-	Properties load(String configurationName);
+	Properties getConfiguration(String configurationName);
 
 	/**
-	 * Load the Properties with default Properties given.
+	 * Get the configuration from the config dirs but fallback to the defaults.
 	 * 
 	 * @param configurationName
-	 *            the name of the config file, without the .properties
-	 * @param defaults
-	 *            the defaults used when no properties are given in the properties files
-	 * @return the loaded properties with the given defaults or the default properties if no properties file exists
+	 *            the name of the configuration without the file ending .properties
+	 * @return the configuration with the defaults from the default configuration
+	 * @throws ConfigurationNotFoundException
+	 *             if the default configuration cloud not be found
 	 */
-	Properties load(String configurationName, Properties defaults);
-
-	/**
-	 * 
-	 * @param configurationName
-	 *            the name of the config file, without the .properties
-	 * @param properties
-	 *            the Properties to be saved
-	 */
-	void store(String configurationName, Properties properties);
+	Properties getConfigurationWithDefaults(String configurationName);
 
 }
