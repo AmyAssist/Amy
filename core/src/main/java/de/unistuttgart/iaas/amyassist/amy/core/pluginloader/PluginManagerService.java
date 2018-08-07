@@ -47,7 +47,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 
 /**
  * Manages the plugin integration
@@ -67,8 +66,6 @@ public class PluginManagerService implements PluginManager {
 	@Reference
 	private PluginLoader pluginLoader;
 
-	@Reference
-	private Server server;
 	@Reference
 	private Persistence persistence;
 	@Reference
@@ -200,9 +197,6 @@ public class PluginManagerService implements PluginManager {
 			}
 			if (cls.isAnnotationPresent(Service.class)) {
 				this.di.register(cls);
-			}
-			if (cls.isAnnotationPresent(javax.ws.rs.Path.class)) {
-				this.server.register(cls);
 			}
 			if (cls.isAnnotationPresent(Entity.class)) {
 				this.persistence.register(cls);

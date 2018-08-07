@@ -44,6 +44,7 @@
 		<commons-lang3.version>3.7</commons-lang3.version>
 	</properties>
 	<modules>
+		<module>amy-master-node</module>
 		<module>di-api</module>
 		<module>di</module>
 		<module>api</module>

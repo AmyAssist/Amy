@@ -34,12 +34,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerServiceExtension;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableServiceExtension;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
-import de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource;
 
 /**
  * The central core of the application
@@ -60,12 +56,15 @@ public class Core {
 
 	private RunnableServiceExtension runnableServiceExtension;
 
+	private DeploymentContainerServiceExtension deploymentContainerServiceExtension;
+
 	/**
 	 * 
 	 */
 	public Core() {
 		this.runnableServiceExtension = new RunnableServiceExtension();
-		this.di = new DependencyInjection(this.runnableServiceExtension);
+		this.deploymentContainerServiceExtension = new DeploymentContainerServiceExtension();
+		this.di = new DependencyInjection(this.runnableServiceExtension, this.deploymentContainerServiceExtension);
 	}
 
 	/**
@@ -127,15 +126,12 @@ public class Core {
 		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
 	}
 
+	/**
+	 * The deploy stage comes after all plugins are loaded
+	 */
 	private void deploy() {
 		this.runnableServiceExtension.deploy();
-
-		this.di.getService(GrammarObjectsCreator.class).completeSetup();
-
-		Server server = this.di.getService(Server.class);
-		server.register(HomeResource.class);
-		server.register(LocationRegistryResource.class);
-		server.register(ContactRegistryResource.class);
+		this.deploymentContainerServiceExtension.deploy();
 	}
 
 	private void start() {
