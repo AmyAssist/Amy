@@ -30,13 +30,16 @@ import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -45,8 +48,11 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Method;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Parameter;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Types;
 
 /**
  * Rest Resource for music
@@ -54,25 +60,33 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
  * @author Muhammed Kaya, Christian Bräuner, Lars Buttgereit
  */
 @Path(MusicResource.PATH)
-public class MusicResource implements Resource{
+public class MusicResource implements Resource {
 
 	/**
 	 * the resource path for this plugin
 	 */
 	public static final String PATH = "music";
 	
-	private static final String CHECK_PLAYER_STATE = "Check player state";
 
 	@Reference
 	private PlayerLogic logic;
 
+	@Context
+	private UriInfo info;
+
 	@Reference
 	private StringGenerator stringGenerator;
-	
+
 	@Reference
 	private DeviceLogic deviceLogic;
 
 	private MusicEntity musicEntity;
+
+	/**
+	 * Constants
+	 */
+	private static final String CHECK_PLAYER_STATE = "Check player state";
+	private static final String LIMIT = "Limit";
 
 	/**
 	 * needed for the first init. Use the clientID and the clientSecret as query parameter form a spotify devloper
@@ -209,16 +223,16 @@ public class MusicResource implements Resource{
 	}
 
 	/**
-	 * plays the given music
+	 * This method plays the item that searched before. Use only after a search/refresh
 	 * 
+	 * @param music
+	 *            the music to be played
 	 * @param songNumber
 	 *            which song or playlist number should be played
 	 * @param type
 	 *            where to play: allowed parameters: user (playlist), featured (playlist), track
 	 * @param limit
 	 *            limit of returned tracks or playlists
-	 * @param music
-	 *            the music to be played
 	 * @return the playing music if there is one
 	 */
 	@POST
@@ -298,7 +312,7 @@ public class MusicResource implements Resource{
 	}
 
 	/**
-	 * skips the actual playback
+	 * goes one song forward in the playlist or album
 	 * 
 	 * @return HTTP Response with player status
 	 */
@@ -313,7 +327,7 @@ public class MusicResource implements Resource{
 	}
 
 	/**
-	 * pauses the actual playback
+	 * goes one song back in the playlist or album
 	 * 
 	 * @return HTTP Response with player status
 	 */
@@ -328,9 +342,9 @@ public class MusicResource implements Resource{
 	}
 
 	/**
-	 * returns the currently played music
+	 * returns the currently playing music
 	 * 
-	 * @return the currently played music
+	 * @return the currently playing music
 	 */
 	@GET
 	@Path("currentSong")
@@ -387,6 +401,18 @@ public class MusicResource implements Resource{
 	}
 
 	/**
+	 * get actual volume from 0-100, -1 if no volume available
+	 * 
+	 * @return the volume
+	 */
+	@GET
+	@Path("getVolume")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getVolume() {
+		return String.valueOf(this.logic.getVolume());
+	}
+	
+	/**
 	 * controls the volume of the player
 	 * 
 	 * @param volumeValue
@@ -419,44 +445,481 @@ public class MusicResource implements Resource{
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
-	 */
-	@Override
-	public ResourceEntity getPluginDescripion() {
-		return null;
-	}
-
-	/**
 	 * set the new name of the given device
 	 * 
-	 * @param deviceUri
-	 *            the Uri from the device to change
+	 * @param uri
+	 *            the uri from the device to change
 	 * @param newName
+	 *            the new name of the device
 	 * @return the deviceEntity with the new name or null if the Uri is not found in the registry
 	 */
 	@POST
 	@Path("setDeviceName")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public DeviceEntity setDeviceName(
-			@QueryParam("uri") @DefaultValue("") String uri, @QueryParam("newName") @DefaultValue("" )String newName) {
+	public DeviceEntity setDeviceName(@QueryParam("uri") @DefaultValue("") String uri,
+			@QueryParam("newName") @DefaultValue("") String newName) {
 		DeviceEntity device = this.deviceLogic.setNewDeviceName(uri, newName);
-		if(device != null) {
+		if (device != null) {
 			return device;
 		}
-		throw new  WebApplicationException("No device with this uri", Status.NOT_FOUND);
+		throw new WebApplicationException("No device with this uri", Status.NOT_FOUND);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 */
+	@Override
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResourceEntity getPluginDescripion() {
+		ResourceEntity resource = new ResourceEntity();
+		resource.setName("Spotify Plugin");
+		resource.setDescription(
+				"A Plugin to control a spotify client from a user. Provides player and search functions for music and"
+						+ " playlists and to show and set devices to use");
+		resource.setMethods(this.getPluginMethods());
+		resource.setLink(this.info.getBaseUriBuilder().path(MusicResource.class).build());
+		return resource;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginMethods()
+	 */
+	@Override
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method[] getPluginMethods() {
+		Method[] methods = new Method[15];
+		methods[0] = createFirstTimeInitMethod();
+		methods[1] = createInputAuthCodeMethod();
+		methods[2] = createGetDevicesMethod();
+		methods[3] = createSetDeviceMethod();
+		methods[4] = createSearchMethod();
+		methods[5] = createPlayMethod();
+		methods[6] = createResumeMethod();
+		methods[7] = createPauseMethod();
+		methods[8] = createSkipMethod();
+		methods[9] = createBackMethod();
+		methods[10] = createGetCurrentSongMethod();
+		methods[11] = createGetPlaylistsMethod();
+		methods[12] = createSetVolumeMethod();
+		methods[13] = createGetVolumeMethod();
+		methods[14] = createSetDeviceNameMethod();
+		return methods;
+	}
+
+	/**
+	 * returns the method describing the init method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("init")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createFirstTimeInitMethod() {
+		Method init = new Method();
+		init.setName("Initialize Account");
+		init.setDescription("Needed for the first init to access spotify functions");
+		init.setLink(this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "firstTimeInit")
+				.build());
+		init.setType(Types.POST);
+		init.setParameters(getFirstTimeInitParameters());
+		return init;
+	}
+
+	/**
+	 * returns the method describing the inputAuthCode method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("token/{authCode}")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createInputAuthCodeMethod() {
+		Method auth = new Method();
+		auth.setName("Refresh Token");
+		auth.setDescription("Needed to create the refresh token in the authorization object");
+		auth.setLink(this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "inputAuthCode")
+				.build());
+		auth.setType(Types.POST);
+		auth.setParameters(getInputAuthCodeParameters());
+		return auth;
+	}
+
+	/**
+	 * returns the method describing the getDevices method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("getDevices")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createGetDevicesMethod() {
+		Method getDev = new Method();
+		getDev.setName("Get Devices");
+		getDev.setDescription("Returns all devices that logged in at the moment");
+		getDev.setLink(this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "getDevices")
+				.build());
+		getDev.setType(Types.GET);
+		return getDev;
+	}
+
+	/**
+	 * returns the method describing the setDevice method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("setDevice/{deviceValue}")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createSetDeviceMethod() {
+		Method setDev = new Method();
+		setDev.setName("Set Device");
+		setDev.setDescription("Sets which of the connected devices to use");
+		setDev.setLink(
+				this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "setDevice").build());
+		setDev.setType(Types.POST);
+		setDev.setParameters(getSetDeviceParameters());
+		return setDev;
+	}
+
+	/**
+	 * returns the method describing the search method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("search/{searchText}")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createSearchMethod() {
+		Method search = new Method();
+		search.setName("Search");
+		search.setDescription("Used to search artist, track, playlist and album names");
+		search.setLink(
+				this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "search").build());
+		search.setType(Types.POST);
+		search.setParameters(getSearchParameters());
+		return search;
+	}
+
+	/**
+	 * returns the method describing the play method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("play")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createPlayMethod() {
+		Method play = new Method();
+		play.setName("Play");
+		play.setDescription("Used to play the item that searched before");
+		play.setLink(this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "play").build());
+		play.setType(Types.POST);
+		play.setParameters(getPlayParameters());
+		return play;
+	}
+
+	/**
+	 * returns the method describing the resume method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("resume")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createResumeMethod() {
+		Method resume = new Method();
+		resume.setName("Resume");
+		resume.setDescription("Used to resume the actual playback");
+		resume.setLink(
+				this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "resume").build());
+		resume.setType(Types.POST);
+		return resume;
+	}
+
+	/**
+	 * returns the method describing the pause method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("pause")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createPauseMethod() {
+		Method pause = new Method();
+		pause.setName("Pause");
+		pause.setDescription("Used to pause the actual playback");
+		pause.setLink(
+				this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "pause").build());
+		pause.setType(Types.POST);
+		return pause;
+	}
+
+	/**
+	 * returns the method describing the skip method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("skip")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createSkipMethod() {
+		Method skip = new Method();
+		skip.setName("Skip");
+		skip.setDescription("Used to go one song forward in the playlist or album");
+		skip.setLink(this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "skip").build());
+		skip.setType(Types.POST);
+		return skip;
+	}
+
+	/**
+	 * returns the method describing the back method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("back")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createBackMethod() {
+		Method back = new Method();
+		back.setName("Back");
+		back.setDescription("Used to go one song back in the playlist or album");
+		back.setLink(this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "back").build());
+		back.setType(Types.POST);
+		return back;
+	}
+
+	/**
+	 * returns the method describing the currentSong method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("currentSong")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createGetCurrentSongMethod() {
+		Method song = new Method();
+		song.setName("Currently playing Song");
+		song.setDescription("Used to give the actual playing song in the spotify client back");
+		song.setLink(this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "getCurrentSong")
+				.build());
+		song.setType(Types.GET);
+		return song;
+	}
+
+	/**
+	 * returns the method describing the getPlaylists method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("playlists/{type}")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createGetPlaylistsMethod() {
+		Method getList = new Method();
+		getList.setName("Get Playlists");
+		getList.setDescription("Used to get user or featured playlists");
+		getList.setLink(this.info.getBaseUriBuilder().path(MusicResource.class)
+				.path(MusicResource.class, "getPlaylists").build());
+		getList.setType(Types.POST);
+		getList.setParameters(getGetPlaylistsParameters());
+		return getList;
+	}
+
+	/**
+	 * returns the method describing the setVolume method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("volume/{volumeValue}")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createSetVolumeMethod() {
+		Method volume = new Method();
+		volume.setName("Set Volume");
+		volume.setDescription("Used to control the volume of the player");
+		volume.setLink(
+				this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "setVolume").build());
+		volume.setType(Types.POST);
+		volume.setParameters(getSetVolumeParameters());
+		return volume;
 	}
 	
 	/**
-	 * get actual volume from 0-100, -1 if no volume available
+	 * returns the method describing the getVolume method
 	 * 
-	 * @return the volume
+	 * @return the describing method object
 	 */
-	@GET
 	@Path("getVolume")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getVolume() {
-		return String.valueOf(this.logic.getVolume());
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createGetVolumeMethod() {
+		Method volume = new Method();
+		volume.setName("Get Volume");
+		volume.setDescription("Used to read the volume of the player");
+		volume.setLink(
+				this.info.getBaseUriBuilder().path(MusicResource.class).path(MusicResource.class, "getVolume").build());
+		volume.setType(Types.GET);
+		return volume;
 	}
+	
+	/**
+	 * returns the method describing the setDeviceName method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("setDeviceName")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createSetDeviceNameMethod() {
+		Method devName = new Method();
+		devName.setName("Set Device Name");
+		devName.setDescription("Used to set the a new name for a given device");
+		devName.setLink(this.info.getBaseUriBuilder().path(MusicResource.class)
+				.path(MusicResource.class, "setDeviceName").build());
+		devName.setType(Types.POST);
+		devName.setParameters(getSetDeviceNameParameters());
+		return devName;
+	}
+
+	private Parameter[] getFirstTimeInitParameters() {
+		Parameter[] params = new Parameter[2];
+		// clientID
+		params[0] = new Parameter();
+		params[0].setName("Client ID");
+		params[0].setRequired(true);
+		params[0].setParamType(Types.QUERY);
+		params[0].setValueType(Types.STRING);
+		// clientSecret
+		params[1] = new Parameter();
+		params[1].setName("Client Secret");
+		params[1].setRequired(true);
+		params[1].setParamType(Types.QUERY);
+		params[1].setValueType(Types.STRING);
+		return params;
+	}
+
+	private Parameter[] getInputAuthCodeParameters() {
+		Parameter[] params = new Parameter[1];
+		// authCode
+		params[0] = new Parameter();
+		params[0].setName("Authorization Code");
+		params[0].setRequired(true);
+		params[0].setParamType(Types.PATH);
+		params[0].setValueType(Types.STRING);
+		return params;
+	}
+
+	private Parameter[] getSetDeviceParameters() {
+		Parameter[] params = new Parameter[1];
+		// deviceValue
+		params[0] = new Parameter();
+		params[0].setName("Number or ID of Device");
+		params[0].setRequired(true);
+		params[0].setParamType(Types.PATH);
+		params[0].setValueType(Types.STRING);
+		return params;
+	}
+
+	private Parameter[] getSearchParameters() {
+		Parameter[] params = new Parameter[3];
+		// searchText
+		params[0] = new Parameter();
+		params[0].setName("SearchText");
+		params[0].setRequired(true);
+		params[0].setParamType(Types.PATH);
+		params[0].setValueType(Types.STRING);
+		// type
+		params[1] = new Parameter();
+		params[1].setName("Type");
+		params[1].setRequired(true);
+		params[1].setParamType(Types.QUERY);
+		params[1].setValueType(Types.STRING);
+		// limit
+		params[2] = new Parameter();
+		params[2].setName(LIMIT);
+		params[2].setRequired(true);
+		params[2].setParamType(Types.QUERY);
+		params[2].setValueType(Types.INTEGER);
+		return params;
+	}
+
+	private Parameter[] getPlayParameters() {
+		Parameter[] params = new Parameter[3];
+		// music
+		params[0] = new Parameter();
+		params[0].setName("Music");
+		params[0].setRequired(false);
+		params[0].setParamType(Types.BODY);
+		params[0].setValueType(Types.BODY);
+		// songNumber
+		params[1] = new Parameter();
+		params[1].setName("Song Number");
+		params[1].setRequired(true);
+		params[1].setParamType(Types.QUERY);
+		params[1].setValueType(Types.INTEGER);
+		// type
+		params[2] = new Parameter();
+		params[2].setName("Type");
+		params[2].setRequired(true);
+		params[2].setParamType(Types.QUERY);
+		params[2].setValueType(Types.STRING);
+		// limit
+		params[3] = new Parameter();
+		params[3].setName(LIMIT);
+		params[3].setRequired(true);
+		params[3].setParamType(Types.QUERY);
+		params[3].setValueType(Types.INTEGER);
+		return params;
+	}
+
+	private Parameter[] getGetPlaylistsParameters() {
+		Parameter[] params = new Parameter[2];
+		// type
+		params[0] = new Parameter();
+		params[0].setName("Type");
+		params[0].setRequired(true);
+		params[0].setParamType(Types.PATH);
+		params[0].setValueType(Types.STRING);
+		// limit
+		params[1] = new Parameter();
+		params[1].setName(LIMIT);
+		params[1].setRequired(true);
+		params[1].setParamType(Types.QUERY);
+		params[1].setValueType(Types.INTEGER);
+		return params;
+	}
+
+	private Parameter[] getSetVolumeParameters() {
+		Parameter[] params = new Parameter[1];
+		// volumeValue
+		params[0] = new Parameter();
+		params[0].setName("Volume");
+		params[0].setRequired(true);
+		params[0].setParamType(Types.PATH);
+		params[0].setValueType(Types.STRING);
+		return params;
+	}
+
+	private Parameter[] getSetDeviceNameParameters() {
+		Parameter[] params = new Parameter[2];
+		// uri
+		params[0] = new Parameter();
+		params[0].setName("URI");
+		params[0].setRequired(true);
+		params[0].setParamType(Types.QUERY);
+		params[0].setValueType(Types.STRING);
+		// newName
+		params[1] = new Parameter();
+		params[1].setName("New Name");
+		params[1].setRequired(true);
+		params[1].setParamType(Types.QUERY);
+		params[1].setValueType(Types.STRING);
+		return params;
+	}
+	
+
 
 }

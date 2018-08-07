@@ -24,16 +24,19 @@
 package de.unistuttgart.iaas.amyassist.amy.utility.rest;
 
 /**
- * possible parameter types for methods
+ * Constants for Types
  * 
  * @author Christian Bräuner
  */
-public class ParameterType {
-	
+public class Types {
+
+	private Types() {
+	}
+
 	/**
 	 * Integer (32bit)
 	 */
-	public static final String INTEGER = "int32"; 
+	public static final String INTEGER = "int32";
 	/**
 	 * Long (64bit)
 	 */
@@ -45,9 +48,42 @@ public class ParameterType {
 	/**
 	 * Float
 	 */
-	public static final String FLOAT = "float"; 
-	
-	private ParameterType() {
-		
-	}
+	public static final String FLOAT = "float";
+	/**
+	 * Float
+	 */
+	public static final String BOOLEAN = "boolean";
+	/**
+	 * a date in ISO-8601 format
+	 */
+	public static final String DATE = "ISO-8601-Date";
+	/**
+	 * GET
+	 */
+	public static final String GET = "GET";
+	/**
+	 * POST
+	 */
+	public static final String POST = "POST";
+	/**
+	 * PUT
+	 */
+	public static final String PUT = "PUT";
+	/**
+	 * DELETE
+	 */
+	public static final String DELETE = "DELETE";
+	/**
+	 * body
+	 */
+	public static final String BODY = "body";
+	/**
+	 * query
+	 */
+	public static final String QUERY = "query";
+	/**
+	 * path
+	 */
+	public static final String PATH = "path";
+
 }

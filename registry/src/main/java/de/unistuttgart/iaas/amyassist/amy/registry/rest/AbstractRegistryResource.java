@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.registry.rest;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.registry.IRegistry;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Method;
 import de.unistuttgart.iaas.amyassist.amy.registry.RegistryException;
 import de.unistuttgart.iaas.amyassist.amy.registry.RegistryInvalidRequestException;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
@@ -104,10 +105,21 @@ public abstract class AbstractRegistryResource<R extends IRegistry<E>, E, I exte
         });
     }
 
-    @Override
-    public ResourceEntity getPluginDescripion() {
-        return null;
-    }
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 */
+	@Override
+	public ResourceEntity getPluginDescripion() {
+		return new ResourceEntity();
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginMethods()
+	 */
+	@Override
+	public Method[] getPluginMethods() {
+		return new Method[0];
+	}
 
     @FunctionalInterface
     private interface RegistryLambda<T> {

@@ -23,34 +23,39 @@
 
 package de.unistuttgart.iaas.amyassist.amy.utility.rest;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * POJO-mapping of JSON method object
  * 
  * @author Christian Bräuner
  */
-public class Method {
+@XmlRootElement
+public class Method extends Entity{
 
-	private String link;
+	private String name;
 	private String description;
 	private String type;
 	private Parameter[] parameters;
 
+
+
 	/**
-	 * gets the link
+	 * gets the name of the method
 	 * 
-	 * @return the link
+	 * @return the name of the method
 	 */
-	public String getLink() {
-		return this.link;
+	public String getName() {
+		return this.name;
 	}
 
 	/**
-	 * sets the link
+	 * sets the name of the method
 	 * 
-	 * @param link the new link
+	 * @param name the new name
 	 */
-	public void setLink(String link) {
-		this.link = link;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
@@ -106,4 +111,5 @@ public class Method {
 	public void setParameters(Parameter[] parameters) {
 		this.parameters = parameters;
 	}
+
 }

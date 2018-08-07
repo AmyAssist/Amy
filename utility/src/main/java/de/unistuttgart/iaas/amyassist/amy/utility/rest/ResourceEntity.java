@@ -34,7 +34,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ResourceEntity extends Entity {
 	
 	private String name;
-	private Method[] methods;
+	private String description;
+
+
 
 	/**
 	 * base construktor for the ResourceEntity
@@ -62,20 +64,20 @@ public class ResourceEntity extends Entity {
 	}
 
 	/**
-	 * returns the methodes of the resource
-	 * 
-	 * @return an array of methods
+	 * gets the description
+	 * @return  the description
 	 */
-	public Method[] getMethods() {
-		return this.methods;
+	public String getDescription() {
+		return this.description;
 	}
-
+	
 	/**
-	 * sets the methods
-	 * 
-	 * @param methods the new methods
+	 * sets the description
+	 * @param description  the new description
 	 */
-	public void setMethods(Method[] methods) {
-		this.methods = methods;
+	public void setDescription(String description) {
+		this.description = description;
 	}
+	
+
 }

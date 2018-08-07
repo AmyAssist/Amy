@@ -37,4 +37,11 @@ public interface Resource {
 	 * @return the enitity representing the plugin
 	 */
 	public ResourceEntity getPluginDescripion();
+	
+	/**
+	 * returns all Methods of this plugin
+	 * 
+	 * @return all methods this plugin has
+	 */
+	public Method[] getPluginMethods();
 }

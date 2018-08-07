@@ -26,16 +26,23 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Method;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Parameter;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Types;
 
 /**
  * REST Resource for calendar
@@ -43,7 +50,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  * @author Muhammed Kaya
  */
 @Path(CalendarResource.PATH)
-public class CalendarResource {
+public class CalendarResource implements Resource {
 
 	/**
 	 * the resource path for this plugin
@@ -52,6 +59,9 @@ public class CalendarResource {
 
 	@Reference
 	private CalendarLogic logic;
+
+	@Context
+	private UriInfo info;
 
 	/**
 	 * Natural language response of Amy when the event list is empty.
@@ -82,7 +92,6 @@ public class CalendarResource {
 	 */
 	@GET
 	@Path("events/{number}")
-	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getEvents(@PathParam("number") int number) {
 		String events = this.logic.getEvents(number);
@@ -91,7 +100,7 @@ public class CalendarResource {
 	}
 
 	/**
-	 * This method contains the logic to show the calendar events today
+	 * This method shows the calendar events today
 	 *
 	 * @return the events of today
 	 */
@@ -105,7 +114,7 @@ public class CalendarResource {
 	}
 
 	/**
-	 * This method contains the logic to show the calendar events tomorrow
+	 * This method shows the calendar events tomorrow
 	 *
 	 * @return the events of tomorrow
 	 */
@@ -119,7 +128,7 @@ public class CalendarResource {
 	}
 
 	/**
-	 * This method contains the logic to show the calendar events on a specific date as a list of Events
+	 * This method shows the calendar events on a specific date as a list of Events
 	 *
 	 * @param ldt
 	 *            LocalDateTime variable
@@ -127,7 +136,6 @@ public class CalendarResource {
 	 */
 	@GET
 	@Path("eventsAtString/{ldt}")
-	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getEventsAtAsString(@PathParam("ldt") LocalDateTime ldt) {
 		String events = this.logic.getEventsAtAsString(ldt);
@@ -138,7 +146,7 @@ public class CalendarResource {
 	}
 
 	/**
-	 * This method contains the logic to show the calendar events on a specific date as natural language output
+	 * This method shows the calendar events on a specific date as a list with event objects
 	 *
 	 * @param ldt
 	 *            LocalDateTime variable
@@ -146,7 +154,6 @@ public class CalendarResource {
 	 */
 	@GET
 	@Path("eventsAt/{ldt}")
-	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<CalendarEvent> getEventsAt(@PathParam("ldt") LocalDateTime ldt) {
 		List<CalendarEvent> events = this.logic.getEventsAt(ldt);
@@ -169,6 +176,152 @@ public class CalendarResource {
 		default:
 			return true;
 		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 */
+	@Override
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResourceEntity getPluginDescripion() {
+		ResourceEntity resource = new ResourceEntity();
+		resource.setName("Calendar Plugin");
+		resource.setDescription("A Plugin to show upcoming events in the Google Calendar");
+		resource.setMethods(this.getPluginMethods());
+		resource.setLink(this.info.getBaseUriBuilder().path(CalendarResource.class).build());
+		return resource;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginMethods()
+	 */
+	@Override
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method[] getPluginMethods() {
+		Method[] methods = new Method[5];
+		methods[0] = createGetEventsMethod();
+		methods[1] = createGetEventsTodayMethod();
+		methods[2] = createGetEventsTomorrowMethod();
+		methods[3] = createGetEventsAtAsStringMethod();
+		methods[4] = createGetEventsAtMethod();
+		return methods;
+	}
+
+	/**
+	 * returns the method describing the getEvents method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("events/{number}")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createGetEventsMethod() {
+		Method events = new Method();
+		events.setName("Upcoming Events");
+		events.setDescription("Returns the upcoming events");
+		events.setLink(this.info.getBaseUriBuilder().path(CalendarResource.class)
+				.path(CalendarResource.class, "getEvents").build());
+		events.setType(Types.GET);
+		events.setParameters(getGetEventsParameters());
+		return events;
+	}
+
+	/**
+	 * returns the method describing the getEventsToday method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("events/today")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createGetEventsTodayMethod() {
+		Method today = new Method();
+		today.setName("Events of Today");
+		today.setDescription("Returns the upcoming events of today");
+		today.setLink(this.info.getBaseUriBuilder().path(CalendarResource.class)
+				.path(CalendarResource.class, "getEventsToday").build());
+		today.setType(Types.GET);
+		return today;
+	}
+
+	/**
+	 * returns the method describing the getEventsTomorrow method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("events/tomorrow")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createGetEventsTomorrowMethod() {
+		Method tomorrow = new Method();
+		tomorrow.setName("Events of Tomorrow");
+		tomorrow.setDescription("Returns the upcoming events of tomorrow");
+		tomorrow.setLink(this.info.getBaseUriBuilder().path(CalendarResource.class)
+				.path(CalendarResource.class, "getEventsTomorrow").build());
+		tomorrow.setType(Types.GET);
+		return tomorrow;
+	}
+
+	/**
+	 * returns the method describing the getEventsAtAsString method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("eventsAtString/{ldt}")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createGetEventsAtAsStringMethod() {
+		Method atString = new Method();
+		atString.setName("Events as String");
+		atString.setDescription("Returns events on a specific date as String");
+		atString.setLink(this.info.getBaseUriBuilder().path(CalendarResource.class)
+				.path(CalendarResource.class, "getEventsAtAsString").build());
+		atString.setType(Types.GET);
+		atString.setParameters(getGetEventsAtParameters());
+		return atString;
+	}
+
+	/**
+	 * returns the method describing the getEventsAt method
+	 * 
+	 * @return the describing method object
+	 */
+	@Path("eventsAt/{ldt}")
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	public Method createGetEventsAtMethod() {
+		Method at = new Method();
+		at.setName("Events as List");
+		at.setDescription("Returns events on a specific date as List containing events");
+		at.setLink(this.info.getBaseUriBuilder().path(CalendarResource.class)
+				.path(CalendarResource.class, "getEventsAt").build());
+		at.setType(Types.GET);
+		at.setParameters(getGetEventsAtParameters());
+		return at;
+	}
+
+	private Parameter[] getGetEventsParameters() {
+		Parameter[] params = new Parameter[1];
+		// number
+		params[0] = new Parameter();
+		params[0].setName("Number");
+		params[0].setRequired(false);
+		params[0].setParamType(Types.PATH);
+		params[0].setValueType(Types.INTEGER);
+		return params;
+	}
+
+	private Parameter[] getGetEventsAtParameters() {
+		Parameter[] params = new Parameter[1];
+		// ldt
+		params[0] = new Parameter();
+		params[0].setName("LocalDateTime");
+		params[0].setRequired(true);
+		params[0].setParamType(Types.PATH);
+		params[0].setValueType(Types.DATE);
+		return params;
 	}
 
 }

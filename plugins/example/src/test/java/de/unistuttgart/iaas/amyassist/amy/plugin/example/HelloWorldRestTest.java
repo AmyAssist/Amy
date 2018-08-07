@@ -64,7 +64,7 @@ class HelloWorldRestTest {
 		HelloWorldService mockService = this.testFramework.mockService(HelloWorldService.class);
 		Mockito.when(mockService.helloWorld()).thenReturn("hello100");
 
-		String responseMsg = this.target.request().get(String.class);
+		String responseMsg = this.target.path("hello").request().get(String.class);
 
 		assertThat(responseMsg, equalTo("hello100"));
 	}

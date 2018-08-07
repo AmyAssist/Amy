@@ -33,6 +33,7 @@ import java.net.URI;
 public abstract class Entity {
 
 	private URI link;
+	private Method[] methods;
 	
 	/**
 	 * gets the link of the entity
@@ -50,5 +51,23 @@ public abstract class Entity {
 	 */
 	public void setLink(URI link) {
 		this.link = link;
+	}
+	
+	/**
+	 * returns the methodes of the resource
+	 * 
+	 * @return an array of methods
+	 */
+	public Method[] getMethods() {
+		return this.methods;
+	}
+
+	/**
+	 * sets the methods
+	 * 
+	 * @param methods the new methods
+	 */
+	public void setMethods(Method[] methods) {
+		this.methods = methods;
 	}
 }
