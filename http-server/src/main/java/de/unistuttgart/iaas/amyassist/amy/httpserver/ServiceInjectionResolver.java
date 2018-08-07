@@ -23,7 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Set;
 
 import javax.inject.Singleton;
 
@@ -31,8 +33,10 @@ import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.ServiceHandle;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 
 /**
  * Add Support for @Reference dependency declarations in REST Resources.
@@ -71,7 +75,35 @@ public class ServiceInjectionResolver implements InjectionResolver<Reference> {
 	@Override
 	public Object resolve(Injectee arg0, ServiceHandle<?> arg1) {
 		Type requiredType = arg0.getRequiredType();
-		return this.serviceLocator.getService((Class<?>) requiredType);
+		return this.serviceLocator.getService(this.getServiceCosumer((Class<?>) requiredType, arg0.getInjecteeClass(),
+				arg0.getRequiredQualifiers())).getService();
+	}
+
+	private <T> ServiceConsumer<T> getServiceCosumer(Class<T> serviceType, Class<?> consumerClass,
+			Set<Annotation> qualifiers) {
+		return new ServiceConsumer<T>() {
+
+			@Override
+			public Class<?> getConsumerClass() {
+				return consumerClass;
+			}
+
+			@Override
+			public ServiceDescription<T> getServiceDescription() {
+				return new ServiceDescription<T>() {
+
+					@Override
+					public Class<T> getServiceType() {
+						return serviceType;
+					}
+
+					@Override
+					public Set<Annotation> getAnnotations() {
+						return qualifiers;
+					}
+				};
+			}
+		};
 	}
 
 }

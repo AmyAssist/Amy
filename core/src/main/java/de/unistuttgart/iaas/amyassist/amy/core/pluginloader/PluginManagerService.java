@@ -39,7 +39,7 @@ import javax.persistence.Entity;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -75,7 +75,7 @@ public class PluginManagerService implements PluginManager {
 	@Reference
 	private NLProcessingManager nlProcessingManager;
 	@Reference
-	private ConfigurationLoader configurationLoader;
+	private ConfigurationManager configurationManager;
 	@Reference
 	private Configuration di;
 
@@ -94,7 +94,7 @@ public class PluginManagerService implements PluginManager {
 
 	@PostConstruct
 	private void setup() {
-		this.config = this.configurationLoader.load(CONFIG_NAME);
+		this.config = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
 		this.projectDir = this.environment.getWorkingDirectory();
 	}
 
