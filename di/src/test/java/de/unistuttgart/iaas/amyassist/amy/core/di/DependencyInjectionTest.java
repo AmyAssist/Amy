@@ -23,9 +23,17 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.theInstance;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+
+import java.time.Duration;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,7 +84,9 @@ class DependencyInjectionTest {
 		this.dependencyInjection.register(Service4.class);
 		this.dependencyInjection.register(Service5.class);
 
-		assertThrows(RuntimeException.class, () -> this.dependencyInjection.getService(Service4.class));
+		assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
+			assertThrows(RuntimeException.class, () -> this.dependencyInjection.getService(Service4.class));
+		});
 	}
 
 	@Test()
@@ -93,8 +103,8 @@ class DependencyInjectionTest {
 		String message = assertThrows(ServiceNotFoundException.class,
 				() -> this.dependencyInjection.getService(Service6.class)).getMessage();
 
-		assertThat(message, equalTo(
-				"The Service " + Service7API.class.getName() + " with [] is not registered in the DI or do not exists."));
+		assertThat(message, equalTo("The Service " + Service7API.class.getName()
+				+ " with [] is not registered in the DI or do not exists."));
 	}
 
 	@Test()
@@ -205,7 +215,8 @@ class DependencyInjectionTest {
 
 	@Test()
 	void testRegisterServiceTypeFromMultipleInterfaces() {
-		assertThrows(IllegalArgumentException.class, () -> this.dependencyInjection.register(ServiceImplementingMultipleInterfaces.class));
+		assertThrows(IllegalArgumentException.class,
+				() -> this.dependencyInjection.register(ServiceImplementingMultipleInterfaces.class));
 	}
 
 	@Test()

@@ -36,9 +36,20 @@ public interface ConfigurationLoader {
 	 * 
 	 * @param configurationName
 	 *            the name of the config file, without the .properties
-	 * @return the loaded Properties or null if no such file was found
+	 * @return the loaded Properties or empty Properties if no such file was found
 	 */
 	Properties load(String configurationName);
+
+	/**
+	 * Load the Properties with default Properties given.
+	 * 
+	 * @param configurationName
+	 *            the name of the config file, without the .properties
+	 * @param defaults
+	 *            the defaults used when no properties are given in the properties files
+	 * @return the loaded properties with the given defaults or the default properties if no properties file exists
+	 */
+	Properties load(String configurationName, Properties defaults);
 
 	/**
 	 * 

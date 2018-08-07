@@ -21,33 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.test;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 
 /**
- * Simple in-memory ConfigurationLoader implementation for tests
+ * This interface provide methods for the number conversion
  * 
- * @author Leon Kiefer
+ * @author Lars Buttgereit
  */
-@Service
-public class TestConfiguration implements ConfigurationLoader {
+public interface INumberConversion {
 
-	private Map<String, Properties> map = new HashMap<>();
+	/**
+	 * calculates the number from a string of words.
+	 * 
+	 * 
+	 * @param subList
+	 *            the sublist containing the list of word representations
+	 * @return the calculated number
+	 */
+	int calcNumber(Iterable<WordToken> subList);
 
-	@Override
-	public Properties load(String configurationName) {
-		return this.map.get(configurationName);
-	}
-
-	@Override
-	public void store(String configurationName, Properties properties) {
-		this.map.put(configurationName, properties);
-	}
-
+	/**
+	 * Get's {@link #wordToNumber wordToNumber}
+	 * 
+	 * @return wordToNumber
+	 */
+	Map<String, Integer> getWordToNumber();
 }

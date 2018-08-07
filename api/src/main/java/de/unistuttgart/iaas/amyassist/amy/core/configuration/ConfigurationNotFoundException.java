@@ -21,21 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
 /**
- * Information about the creation process of a Service
+ * Exception that is thrown if a specific configuration was not found but must be loaded.
  * 
  * @author Leon Kiefer
  */
-class ServiceCreationInfo {
-	/**
-	 * The Thread creating the Service
-	 */
-	final Thread thread;
+public class ConfigurationNotFoundException extends RuntimeException {
 
-	public ServiceCreationInfo(Thread thread) {
-		this.thread = thread;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6884409079204932996L;
+
+	/**
+	 * Create a new exception with a message.
+	 * 
+	 * @param message
+	 *            the string message
+	 */
+	public ConfigurationNotFoundException(String message) {
+		super(message);
 	}
 
 }

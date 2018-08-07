@@ -43,6 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCrea
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.MainGrammarSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.TempGrammarSpeechResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 
 /**
  * Service that contains all SpeechRecognition corresponding data
@@ -63,6 +64,9 @@ public class SpeechRecognitionStateVariables {
 
 	@Reference
 	private SpeechInputHandler inputHandler;
+
+	@Reference
+	private MessageHub messageHub;
 
 	// State Data Variables
 	private ListeningState currentListeningState = ListeningState.NOT_LISTENING;
@@ -117,12 +121,17 @@ public class SpeechRecognitionStateVariables {
 	public void setListeningState(ListeningState state) {
 		switch (state) {
 		case MULTI_CALL_LISTENING:
+			this.messageHub.publish("home/all/music/mute", "true");
 			this.output.voiceOutput("waking up");
 			break;
+
 		case SINGLE_CALL_LISTENING:
+			this.messageHub.publish("home/all/music/mute", "true");
 			this.output.soundOutput(Sounds.SINGLE_CALL_START_BEEP);
 			break;
+
 		case NOT_LISTENING:
+			// Depends on Current Listening State
 			switch (this.currentListeningState) {
 			case MULTI_CALL_LISTENING:
 				this.output.voiceOutput("now sleeping");
@@ -133,7 +142,10 @@ public class SpeechRecognitionStateVariables {
 			default:
 				break;
 			}
+
+			this.messageHub.publish("home/all/music/mute", "false");
 			break;
+
 		default:
 			break;
 		}

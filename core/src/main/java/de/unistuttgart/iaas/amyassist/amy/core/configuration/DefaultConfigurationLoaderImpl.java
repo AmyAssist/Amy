@@ -21,39 +21,30 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import java.util.Properties;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.output.Output;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Test Class for the Text To Speech Output class
+ * Implementation of {@link DefaultConfigurationLoader} using the {@link InternalDefaultConfigurationLoader} and the
+ * ClassLoader from the Context.
  * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-@ExtendWith(FrameworkExtension.class)
-class Outputtest {
-
+@Service
+public class DefaultConfigurationLoaderImpl implements DefaultConfigurationLoader {
 	@Reference
-	private TestFramework framework;
+	private InternalDefaultConfigurationLoader internalDefaultConfigurationLoader;
+	@Context(de.unistuttgart.iaas.amyassist.amy.core.di.Context.CLASSLOADER)
+	private ClassLoader classLoader;
 
-	private Output tts;
-
-	/**
-	 * test Logging
-	 */
-	@Test
-	void test() {
-		this.tts = this.framework.setServiceUnderTest(Output.class);
-		assertThat(this.tts == null, equalTo(false));
+	@Override
+	public Properties load(String configurationName) {
+		return this.internalDefaultConfigurationLoader.load(this.classLoader, configurationName);
 	}
 
 }
