@@ -38,7 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * @author Tim Neumann
  */
 @Service(AudioManager.class)
-public class AudioManageService implements AudioManager {
+public class AudioManagerService implements AudioManager {
 
 	@Reference
 	private InternalAudioManager iam;
