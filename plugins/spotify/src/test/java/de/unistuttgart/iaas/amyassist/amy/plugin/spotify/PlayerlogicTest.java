@@ -27,23 +27,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
-import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import com.wrapper.spotify.model_objects.specification.Image;
 import com.wrapper.spotify.model_objects.specification.Paging;
@@ -52,14 +47,14 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.User;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
-@ExtendWith({ MockitoExtension.class, FrameworkExtension.class })
+@ExtendWith(FrameworkExtension.class)
 class PlayerLogicTest {
 
 	private static final String ID1 = "abc123";
@@ -81,16 +76,17 @@ class PlayerLogicTest {
 	private Paging<PlaylistSimplified> playlistsSpotifyFormat;
 	private List<PlaylistEntity> playlistsOwnFormat;
 
-	@Mock
 	private SpotifyAPICalls spotifyAPICalls;
 
-	@Mock
 	private Search search;
+
+	private MessageHub messageHub;
 
 	@BeforeEach
 	public void init() {
 		this.spotifyAPICalls = this.testFramework.mockService(SpotifyAPICalls.class);
 		this.search = this.testFramework.mockService(Search.class);
+		this.messageHub = this.testFramework.mockService(MessageHub.class);
 		this.playerLogic = this.testFramework.setServiceUnderTest(PlayerLogic.class);
 		initDevices();
 		initCurrentTrack();
@@ -135,26 +131,19 @@ class PlayerLogicTest {
 		verify(this.spotifyAPICalls).setClientID(ID2);
 		verify(this.spotifyAPICalls).setClientSecret(ID2);
 		verify(this.spotifyAPICalls).authorizationCodeUri();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testFirstTimeInit() {
 		this.playerLogic.firstTimeInit();
 		verify(this.spotifyAPICalls).authorizationCodeUri();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testInputAuthCode() {
 		this.playerLogic.inputAuthCode(ID2);
 		verify(this.spotifyAPICalls).createRefreshToken(ID2);
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
-
-	
-
-	
 
 	@Test
 	public void testSearch() {
@@ -193,35 +182,30 @@ class PlayerLogicTest {
 	@Test
 	public void testPlaySongFromASearchEmptyResult() {
 		this.playerLogic.play(0, SearchTypes.USER_PLAYLISTS);
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testResume() {
 		this.playerLogic.resume();
 		verify(this.spotifyAPICalls).resume();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testPause() {
 		this.playerLogic.pause();
 		verify(this.spotifyAPICalls).pause();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testSkip() {
 		this.playerLogic.skip();
 		verify(this.spotifyAPICalls).skip();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testBack() {
 		this.playerLogic.back();
 		verify(this.spotifyAPICalls).back();
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
@@ -244,7 +228,7 @@ class PlayerLogicTest {
 		when(this.spotifyAPICalls.getVolume()).thenReturn(50);
 		assertThat(this.playerLogic.setVolume("mute"), equalTo(0));
 		verify(this.spotifyAPICalls).setVolume(0);
-		verifyNoMoreInteractions(this.spotifyAPICalls);
+		verify(this.spotifyAPICalls).getVolume();
 	}
 
 	@Test
@@ -252,7 +236,7 @@ class PlayerLogicTest {
 		when(this.spotifyAPICalls.getVolume()).thenReturn(50);
 		assertThat(this.playerLogic.setVolume("max"), equalTo(100));
 		verify(this.spotifyAPICalls).setVolume(100);
-		verifyNoMoreInteractions(this.spotifyAPICalls);
+		verify(this.spotifyAPICalls).getVolume();
 	}
 
 	@Test
@@ -260,7 +244,7 @@ class PlayerLogicTest {
 		when(this.spotifyAPICalls.getVolume()).thenReturn(90);
 		assertThat(this.playerLogic.setVolume("up"), equalTo(100));
 		verify(this.spotifyAPICalls).setVolume(100);
-		verifyNoMoreInteractions(this.spotifyAPICalls);
+		verify(this.spotifyAPICalls).getVolume();
 	}
 
 	@Test
@@ -268,7 +252,7 @@ class PlayerLogicTest {
 		when(this.spotifyAPICalls.getVolume()).thenReturn(10);
 		assertThat(this.playerLogic.setVolume("down"), equalTo(0));
 		verify(this.spotifyAPICalls).setVolume(0);
-		verifyNoMoreInteractions(this.spotifyAPICalls);
+		verify(this.spotifyAPICalls).getVolume();
 	}
 
 	@Test
@@ -276,7 +260,7 @@ class PlayerLogicTest {
 		when(this.spotifyAPICalls.getVolume()).thenReturn(91);
 		assertThat(this.playerLogic.setVolume("up"), equalTo(100));
 		verify(this.spotifyAPICalls).setVolume(100);
-		verifyNoMoreInteractions(this.spotifyAPICalls);
+		verify(this.spotifyAPICalls).getVolume();
 	}
 
 	@Test
@@ -284,39 +268,35 @@ class PlayerLogicTest {
 		when(this.spotifyAPICalls.getVolume()).thenReturn(9);
 		assertThat(this.playerLogic.setVolume("down"), equalTo(0));
 		verify(this.spotifyAPICalls).setVolume(0);
-		verifyNoMoreInteractions(this.spotifyAPICalls);
+		verify(this.spotifyAPICalls).getVolume();
 	}
 
 	@Test
 	public void testSetVolumeStringWrongString() {
 		when(this.spotifyAPICalls.getVolume()).thenReturn(50);
 		assertThat(this.playerLogic.setVolume("downM"), equalTo(-1));
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testSetVolumeStringUnknownVolume() {
 		when(this.spotifyAPICalls.getVolume()).thenReturn(-1);
 		assertThat(this.playerLogic.setVolume("up"), equalTo(-1));
-		verifyNoMoreInteractions(this.spotifyAPICalls);
+		verify(this.spotifyAPICalls).getVolume();
 	}
 
 	@Test
 	public void testVolumeIntOutOfRangeNegative() {
 		assertThat(this.playerLogic.setVolume(-2), equalTo(-1));
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testVolumeIntOutOfRangePositve() {
 		assertThat(this.playerLogic.setVolume(101), equalTo(-1));
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
 	@Test
 	public void testVolumeInt() {
 		assertThat(this.playerLogic.setVolume(1), equalTo(1));
 		verify(this.spotifyAPICalls).setVolume(1);
-		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 }
