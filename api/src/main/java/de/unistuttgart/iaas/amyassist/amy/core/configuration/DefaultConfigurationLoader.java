@@ -26,38 +26,19 @@ package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 import java.util.Properties;
 
 /**
- * The interface of a configuration loader
+ * Load a default configuration from the classpath. Changes can't be stored with this ConfigurationLoader.
  * 
- * @author Tim Neumann
+ * @author Leon Kiefer
  */
-public interface ConfigurationLoader {
-
+public interface DefaultConfigurationLoader {
 	/**
+	 * Load the configuration from the jars META-INF directory.
 	 * 
 	 * @param configurationName
-	 *            the name of the config file, without the .properties
+	 *            the name of the config file, without the .properties in META-INF/
 	 * @return the loaded Properties or empty Properties if no such file was found
+	 * @throws ConfigurationNotFoundException
+	 *             if the default configuration is not on the classpath
 	 */
 	Properties load(String configurationName);
-
-	/**
-	 * Load the Properties with default Properties given.
-	 * 
-	 * @param configurationName
-	 *            the name of the config file, without the .properties
-	 * @param defaults
-	 *            the defaults used when no properties are given in the properties files
-	 * @return the loaded properties with the given defaults or the default properties if no properties file exists
-	 */
-	Properties load(String configurationName, Properties defaults);
-
-	/**
-	 * 
-	 * @param configurationName
-	 *            the name of the config file, without the .properties
-	 * @param properties
-	 *            the Properties to be saved
-	 */
-	void store(String configurationName, Properties properties);
-
 }
