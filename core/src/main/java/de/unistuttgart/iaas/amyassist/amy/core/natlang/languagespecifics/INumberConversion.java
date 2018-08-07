@@ -21,21 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
+
+import java.util.Map;
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 
 /**
- * Information about the creation process of a Service
+ * This interface provide methods for the number conversion
  * 
- * @author Leon Kiefer
+ * @author Lars Buttgereit
  */
-class ServiceCreationInfo {
+public interface INumberConversion {
+
 	/**
-	 * The Thread creating the Service
+	 * calculates the number from a string of words.
+	 * 
+	 * 
+	 * @param subList
+	 *            the sublist containing the list of word representations
+	 * @return the calculated number
 	 */
-	final Thread thread;
+	int calcNumber(Iterable<WordToken> subList);
 
-	public ServiceCreationInfo(Thread thread) {
-		this.thread = thread;
-	}
-
+	/**
+	 * Get's {@link #wordToNumber wordToNumber}
+	 * 
+	 * @return wordToNumber
+	 */
+	Map<String, Integer> getWordToNumber();
 }

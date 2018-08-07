@@ -32,6 +32,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.LocalMainGrammarResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.LocalSwitchableGrammarResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+
 
 /**
  * Class that manages the Recognizers belonging to the local AudioInputStream
@@ -51,11 +53,13 @@ public class LocalSpeechRecognizerManager extends AbstractSpeechRecognizerManage
 	 *            Output Object where to Output the result of the Recognizer
 	 * @param grammarData
 	 *            DataSet of all GrammarObjects
+	 * @param messageHub
+	 *            Message Hub
 	 * 
 	 */
 	public LocalSpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
-			GrammarObjectsCreator grammarData) {
-		super(ais, inputHandler, output, grammarData);
+			GrammarObjectsCreator grammarData, MessageHub messageHub) {
+		super(ais, inputHandler, output, grammarData, messageHub);
 	}
 
 	/**

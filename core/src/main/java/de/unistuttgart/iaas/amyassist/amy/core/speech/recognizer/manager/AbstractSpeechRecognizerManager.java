@@ -40,6 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCrea
 import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 
 /**
  * Class that manages the Recognizers belonging to a given AudioInputStream
@@ -54,6 +55,7 @@ public abstract class AbstractSpeechRecognizerManager
 	private SpeechInputHandler inputHandler;
 	private Output output;
 	private String mainGrammarName;
+	private MessageHub messageHub;
 
 	private SpeechRecognizer mainRecognizer;
 	private Map<String, SpeechRecognizer> recognizerList = new HashMap<>();
@@ -76,17 +78,20 @@ public abstract class AbstractSpeechRecognizerManager
 	 *            Output Object where to Output the result of the Recognizer
 	 * @param grammarData
 	 *            DataSet of all GrammarObjects
+	 * @param messageHub
+	 *            MessageHub
 	 * 
 	 */
 	public AbstractSpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
-			GrammarObjectsCreator grammarData) {
+			GrammarObjectsCreator grammarData, MessageHub messageHub) {
 		this.inputHandler = inputHandler;
 		this.output = output;
 		this.mainGrammarName = grammarData.getMainGrammar().getName();
+		this.messageHub = messageHub;
 
 		createRecognizers(grammarData, ais);
 
-		this.currentRecognizer = new Thread(this.mainRecognizer);
+		this.currentRecognizer = new Thread(this.mainRecognizer, "MainRecognizer");
 	}
 
 	private void createRecognizers(GrammarObjectsCreator grammarData, AudioInputStream ais) {
@@ -179,9 +184,6 @@ public abstract class AbstractSpeechRecognizerManager
 		this.currentRecognizer.start();
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#handleMultiCallListeningState(boolean)
-	 */
 	@Override
 	public void handleMultiCallListeningState(boolean listening) {
 		this.multiCallActive = listening;
@@ -190,22 +192,14 @@ public abstract class AbstractSpeechRecognizerManager
 		} else {
 			this.voiceOutput("now sleeping");
 		}
-		/**
-		 * notify(listening);
-		 */
+		this.messageHub.publish("home/all/music/mute", listening ? "true" : "false");
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isMultiCallActive()
-	 */
 	@Override
 	public boolean isMultiCallActive() {
 		return this.multiCallActive;
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#handleSingleCallListeningState(boolean)
-	 */
 	@Override
 	public void handleSingleCallListeningState(boolean singleCommand) {
 		this.singleCallActive = singleCommand;
@@ -214,9 +208,7 @@ public abstract class AbstractSpeechRecognizerManager
 		} else {
 			this.soundOutput(Sounds.SINGLE_CALL_STOP_BEEP);
 		}
-		/**
-		 * notify(listening);
-		 */
+		this.messageHub.publish("home/all/music/mute", singleCommand ? "true" : "false");
 	}
 
 	/**
