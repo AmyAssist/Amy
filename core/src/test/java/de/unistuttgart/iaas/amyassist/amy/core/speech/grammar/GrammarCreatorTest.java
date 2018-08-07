@@ -78,13 +78,6 @@ public class GrammarCreatorTest {
 		this.objectsCreator = this.framework.setServiceUnderTest(GrammarObjectsCreator.class);
 	}
 
-	@Test
-	public void test() {
-		this.objectsCreator.completeSetup();
-		assertThat(this.objectsCreator.getMainGrammar().getName(), equalTo(this.grammarName));
-		assertThat(this.objectsCreator.getMainGrammar().getFile(), equalTo(this.grammarFile.toFile()));
-		assertThat(this.objectsCreator.getSwitchableGrammars().isEmpty(), equalTo(true));
-	}
 
 	@AfterEach
 	void cleanUp() throws IOException {

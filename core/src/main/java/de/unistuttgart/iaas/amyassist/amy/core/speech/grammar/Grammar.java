@@ -25,83 +25,59 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.grammar;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * Grammar Object, that contains all important Information of a Grammar
+ * Enum that holds the mainGrammar and the tempGrammar
  * 
  * @author Kai Menzel
  */
-public class Grammar {
+public enum Grammar {
+	/**
+	 * No Grammar is Currently Active
+	 */
+	NONE,
+	/**
+	 * The Main Grammar Recognition is currently Active
+	 */
+	MAIN,
+	/**
+	 * The Temp Grammar Recognition is currently Active
+	 */
+	TEMP,
+	/**
+	 * The Google Speech Recognition is currently Active
+	 */
+	GOOGLE;
 
-	private String name;
 	private Path path;
-	private Map<String, Grammar> switchList = new HashMap<>();
+	private File file;
 
 	/**
-	 * @param name
-	 *            Name of the Grammar
-	 * @param path
-	 *            Path to the Grammar
+	 * Setter
 	 * 
-	 */
-	public Grammar(String name, Path path) {
-		this.name = name;
-		this.path = path;
-	}
-
-	/**
-	 * @param name
-	 *            Name of the Grammar
 	 * @param path
-	 *            Path to the Grammar
-	 * @param switchList
-	 *            List of all possible Grammars with their call String
+	 *            to Grammar
 	 */
-	public Grammar(String name, Path path, Map<String, Grammar> switchList) {
-		this.name = name;
+	public void setPath(Path path) {
 		this.path = path;
-		this.switchList = switchList;
-	}
-
-	/**
-	 * Add a new Grammar that can be switched to
-	 * 
-	 * @param switchCommand
-	 *            Command to say to switch to new Grammar
-	 * @param grammar
-	 *            Grammar to change to
-	 */
-	public void putChangeGrammar(String switchCommand, Grammar grammar) {
-		this.switchList.put(switchCommand, grammar);
+		this.file = path.toFile();
 	}
 
 	/**
 	 * Getter
 	 * 
-	 * @return name
+	 * @return Path Object of the Path to Grammar File
 	 */
-	public String getName() {
-		return this.name;
+	public Path getPath() {
+		return this.path;
 	}
 
 	/**
 	 * Getter
 	 * 
-	 * @return file
+	 * @return File Object of the Path to the Grammar File
 	 */
 	public File getFile() {
-		return this.path.toFile();
+		return this.file;
 	}
-
-	/**
-	 * Getter
-	 * 
-	 * @return switchList
-	 */
-	public Map<String, Grammar> getSwitchList() {
-		return this.switchList;
-	}
-
 }

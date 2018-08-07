@@ -21,32 +21,34 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler;
+package de.unistuttgart.iaas.amyassist.amy.core.speech;
+
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 
 /**
- * Interface for the Handler that handles SpeechRecognition System intern commands
+ * Interface of the Local Recognition System
  * 
  * @author Kai Menzel
  */
-public interface RecognitionResultHandler {
+public interface LocalSpeechInputTranslator extends RunnableService {
+	/**
+	 * start the Local Recognition System
+	 */
+	@Override
+	void start();
 
 	/**
-	 * Method to check if Recognition Thread is Running
+	 * stop the Local Recognition System
+	 */
+	@Override
+	void stop();
+
+	/**
+	 * Method that is called to change the current Grammar State
 	 * 
-	 * @return if the Recognition Thread should be running
+	 * @param grammar
+	 *            Main or Temp(first create Temp Grammar file)
 	 */
-	boolean isRecognitionThreadRunning();
-
-	/**
-	 * handle the SR output
-	 * 
-	 * @param result
-	 *            SR output String
-	 */
-	void handle(String result);
-
-	/**
-	 * called when SR thread is closing, start new if needed
-	 */
-	void initiateChange();
+	void changeGrammar(Grammar grammar);
 }

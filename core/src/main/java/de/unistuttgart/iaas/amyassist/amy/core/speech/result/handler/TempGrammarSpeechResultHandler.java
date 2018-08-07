@@ -21,39 +21,43 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.SpeechRecognitionStateVariables;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.SpeechRecognitionStateVariables.ListeningState;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager;
 
 /**
  * Handler that handles the local SpeechRecognition System intern commands for additional Grammars
  * 
  * @author Kai Menzel
  */
-public class LocalSwitchableGrammarResultHandler extends AbstractRecognitionResultHandler {
+public class TempGrammarSpeechResultHandler extends AbstractSpeechResultHandler {
 
 	/**
-	 * @param srManager
-	 *            Manager Object which handles this ResultHandler
-	 * @param grammar
-	 *            Grammar this ResultHandler handles
+	 * @param srVar
+	 *            Variables Class
 	 */
-	public LocalSwitchableGrammarResultHandler(SpeechRecognitionResultManager srManager, Grammar grammar) {
-		super(srManager, grammar);
+	public TempGrammarSpeechResultHandler(SpeechRecognitionStateVariables srVar) {
+		super(srVar);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.AbstractRecognitionResultHandler#environmentSpecificInputHandling(java.lang.String,
-	 *      de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager)
+	 * Handles the Environment Specific Actions that trigger before giving the input to the inputHandler. Mainly waking
+	 * up and going to Sleep
+	 * 
+	 * @param result
+	 *            Recognized String
+	 * @param srVar
+	 *            variables Class
+	 * @return true if the result is an predefined one
 	 */
 	@Override
-	protected boolean environmentSpecificInputHandling(String result, SpeechRecognitionResultManager srManager) {
+	protected boolean environmentSpecificInputHandling(String result, SpeechRecognitionStateVariables srVar) {
 		if (result.equals(Constants.MULTI_CALL_STOP)) {
-			srManager.handleMultiCallListeningState(false);
-			srManager.voiceOutput("now sleeping");
-			srManager.handleGrammarSwitch(null);
+			srVar.setListeningState(ListeningState.NOT_LISTENING);
+			srVar.setCurrentGrammar(Grammar.MAIN);
 			return true;
 		}
 		return false;

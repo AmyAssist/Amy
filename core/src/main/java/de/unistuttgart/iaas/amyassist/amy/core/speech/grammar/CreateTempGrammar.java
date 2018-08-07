@@ -21,23 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.grammar;
+
+import java.nio.file.Path;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Interface between the AudioUserInteraction and the many Recognizers belonging to one specific AudioInputStream
+ * Class that creates/updates the Temp Grammar
  * 
- * @author Kai Menzel
+ * @author TODO
  */
-public interface SpeechRecognizerManager {
-
-	/**
-	 * start the Recognition System
-	 */
-	void start();
-
-	/**
-	 * stop the Recognition System
-	 */
-	void stop();
-
+@Service
+public class CreateTempGrammar {
+	private Path path = Grammar.TEMP.getPath();
+	
+	//TODO write the Temp Grammar
 }

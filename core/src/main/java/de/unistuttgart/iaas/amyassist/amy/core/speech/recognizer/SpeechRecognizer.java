@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.RuntimeExceptionRecognizerCantBeCreated;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;
@@ -65,7 +65,7 @@ public class SpeechRecognizer implements Runnable {
 	/**
 	 * Handler who use the translated String for commanding the System
 	 */
-	private final RecognitionResultHandler resultHandler;
+	private final AbstractSpeechResultHandler resultHandler;
 
 	/**
 	 * The Recognizer which Handles the Recognition
@@ -84,7 +84,7 @@ public class SpeechRecognizer implements Runnable {
 	 * @param ais
 	 *            set custom AudioInputStream.
 	 */
-	public SpeechRecognizer(Grammar grammar, RecognitionResultHandler resultHandler, AudioInputStream ais) {
+	public SpeechRecognizer(Grammar grammar, AbstractSpeechResultHandler resultHandler, AudioInputStream ais) {
 		this.grammar = grammar;
 		this.resultHandler = resultHandler;
 		this.ais = ais;
@@ -110,7 +110,7 @@ public class SpeechRecognizer implements Runnable {
 
 		this.logger.info("[INFORMATION] :: Speech Recognition activated");
 
-		while (this.resultHandler.isRecognitionThreadRunning()) {
+		while (isRecognitionRunning()) {
 
 			// wait for input from the recognizer
 			SpeechResult speechResult = getSpeechResult();
@@ -120,13 +120,12 @@ public class SpeechRecognizer implements Runnable {
 			 */
 			if (speechResult != null) {
 				String speechRecognitionResult = speechResult.getHypothesis();
-				this.logger.debug("Result: {}", speechRecognitionResult);
+				this.logger.debug("I recognized: {}", speechRecognitionResult);
 				makeDecision(speechRecognitionResult);
 			}
 		}
 
 		this.recognizer.stopRecognition();
-		this.resultHandler.initiateChange();
 	}
 
 	// ===============================================================================================
@@ -142,7 +141,7 @@ public class SpeechRecognizer implements Runnable {
 			return;
 		}
 
-		if (this.resultHandler.isRecognitionThreadRunning()) {
+		if (isRecognitionRunning()) {
 			this.resultHandler.handle(result);
 		}
 	}
@@ -156,10 +155,14 @@ public class SpeechRecognizer implements Runnable {
 	 */
 	private SpeechResult getSpeechResult() {
 		SpeechResult speechResult = null;
-		while (speechResult == null && this.resultHandler.isRecognitionThreadRunning()) {
+		while (speechResult == null && isRecognitionRunning()) {
 			speechResult = this.recognizer.getResult();
 		}
 		return speechResult;
+	}
+
+	private boolean isRecognitionRunning() {
+		return (this.resultHandler.getCurrentGrammarState() == this.grammar);
 	}
 
 	// ===============================================================================================

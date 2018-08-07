@@ -28,8 +28,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -49,42 +47,32 @@ public class GrammarObjectsCreator {
 	@Reference
 	private NLProcessingManager nlProcessingManager;
 
-	private Grammar mainGrammar;
-	private List<Grammar> switchables = new ArrayList<>();
+	private String mainGrammarName = "mainGrammar";
+	private String tempGrammarName = "tempGrammar";
 
 	/**
 	 * Call this after all register and before process
 	 */
 	public void completeSetup() {
-		Path grammarFile = this.environment.getWorkingDirectory().resolve("resources")
-				.resolve("sphinx-grammars/grammar.gram");
+		Path grammarFolder = this.environment.getWorkingDirectory().resolve("resources").resolve("sphinx-grammars");
+		Path mainGrammarFile = grammarFolder.resolve(this.mainGrammarName + ".gram");
+		Path tempGrammarFile = grammarFolder.resolve(this.tempGrammarName + ".gram");
 
 		try {
-			Files.createDirectories(grammarFile.getParent());
+			Files.createDirectories(grammarFolder.getParent());
 		} catch (IOException e) {
 			throw new IllegalStateException("Can't create parent directories of the grammar file", e);
 		}
-		try (BufferedWriter bw = Files.newBufferedWriter(grammarFile, StandardOpenOption.CREATE,
+
+		try (BufferedWriter bw = Files.newBufferedWriter(mainGrammarFile, StandardOpenOption.CREATE,
 				StandardOpenOption.TRUNCATE_EXISTING)) {
-			bw.write(this.nlProcessingManager.getGrammarFileString("grammar"));
+			bw.write(this.nlProcessingManager.getGrammarFileString(this.mainGrammarName));
 		} catch (IOException e) {
 			throw new IllegalStateException("Can't write grammar file", e);
 		}
-		this.mainGrammar = new Grammar("grammar", grammarFile);
-	}
 
-	/**
-	 * @return the MainGrammar of the Recognition System
-	 */
-	public Grammar getMainGrammar() {
-		return this.mainGrammar;
-	}
-
-	/**
-	 * @return List of the Switchable Grammars
-	 */
-	public List<Grammar> getSwitchableGrammars() {
-		return this.switchables;
+		Grammar.MAIN.setPath(mainGrammarFile);
+		Grammar.TEMP.setPath(tempGrammarFile);
 	}
 
 }
