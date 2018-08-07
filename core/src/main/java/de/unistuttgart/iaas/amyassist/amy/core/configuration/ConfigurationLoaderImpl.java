@@ -50,6 +50,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 @Service
 public class ConfigurationLoaderImpl implements ConfigurationLoader {
 
+	private static final String FILE_ENDING = ".properties";
+
 	@Reference
 	private Logger logger;
 	@Reference
@@ -96,7 +98,7 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 	 */
 	private Path findPropertiesFile(String configurationName) {
 		for (int i = this.configDirs.size() - 1; i >= 0; i--) {
-			Path p = this.configDirs.get(i).resolve(configurationName + ".properties");
+			Path p = this.configDirs.get(i).resolve(configurationName + FILE_ENDING);
 			if (p.toFile().exists())
 				return p;
 		}
@@ -126,7 +128,7 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 	private Properties loadAll(String configurationName, Properties properties) {
 		Properties loaded = properties;
 		for (Path path : this.configDirs) {
-			path = path.resolve(configurationName + ".properties");
+			path = path.resolve(configurationName + FILE_ENDING);
 			if (path.toFile().exists()) {
 				loaded = new Properties(loaded);
 				try (InputStream reader = Files.newInputStream(path)) {
@@ -145,7 +147,7 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 
 		// No property file with this name was found, so create one in the highest priority config folder.
 		if (path == null) {
-			path = this.configDirs.get(this.configDirs.size() - 1).resolve(configurationName + ".properties");
+			path = this.configDirs.get(this.configDirs.size() - 1).resolve(configurationName + FILE_ENDING);
 		}
 
 		try (OutputStream outputStream = Files.newOutputStream(path)) {

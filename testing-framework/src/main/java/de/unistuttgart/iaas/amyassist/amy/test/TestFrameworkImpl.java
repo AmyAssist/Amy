@@ -36,7 +36,6 @@ import javax.ws.rs.core.UriBuilder;
 import org.mockito.Mockito;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceNotFoundException;

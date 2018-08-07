@@ -30,7 +30,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * TODO: Description
+ * Implementation of {@link ConfigurationManager} that uses the {@link ConfigurationLoader} and the
+ * {@link InternalDefaultConfigurationLoader}.
  * 
  * @author Leon Kiefer
  */
