@@ -23,39 +23,20 @@
 
 package de.unistuttgart.iaas.amyassist.amy.registry;
 
+import javax.annotation.Nonnull;
+import java.util.List;
+
 /**
- * Location object interface
+ * Interface for a registry with a taggable entity class
  * @author Benno Krauß
+ * @param <T> entity class
  */
-public interface Location extends RegistryEntity, Taggable {
+public interface ITaggableRegistry<T> extends IRegistry<T> {
 
-    String getName();
-
-    void setName(String name);
-
-    String getZipCode();
-
-    void setZipCode(String zipCode);
-
-    String getCity();
-
-    void setCity(String city);
-
-    String getStreet();
-
-    void setStreet(String street);
-
-    int getHouseNumber();
-
-    void setHouseNumber(int houseNumber);
-
-    double getLongitude();
-
-    void setLongitude(double longitude);
-
-    double getLatitude();
-
-    void setLatitude(double latitude);
-
-    String getAddressString();
+    /**
+     * Get all entities with tag tagValue
+     * @param tagValue the tag of the requested entities
+     * @return all entities or an empty list
+     */
+    @Nonnull List<T> getEntitiesWithTag(String tagValue);
 }

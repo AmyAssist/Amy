@@ -24,38 +24,19 @@
 package de.unistuttgart.iaas.amyassist.amy.registry;
 
 /**
- * Location object interface
- * @author Benno Krauß
+ * An interface for a taggable class
  */
-public interface Location extends RegistryEntity, Taggable {
+public interface Taggable {
 
-    String getName();
+    /**
+     * Get an instance's tag
+     * @return tag or null
+     */
+    String getTag();
 
-    void setName(String name);
-
-    String getZipCode();
-
-    void setZipCode(String zipCode);
-
-    String getCity();
-
-    void setCity(String city);
-
-    String getStreet();
-
-    void setStreet(String street);
-
-    int getHouseNumber();
-
-    void setHouseNumber(int houseNumber);
-
-    double getLongitude();
-
-    void setLongitude(double longitude);
-
-    double getLatitude();
-
-    void setLatitude(double latitude);
-
-    String getAddressString();
+    /**
+     * Set an instance's tag
+     * @param tag or null to delete tag
+     */
+    void setTag(String tag);
 }
