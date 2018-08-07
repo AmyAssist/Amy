@@ -59,8 +59,8 @@ public class PlayerLogic {
 	@Reference
 	private MessageHub messageHub;
 
-	private boolean srListening = false;
-	private int currentVolume = 0;
+	private boolean muted = false;
+	private int mutedVolume = 0;
 
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
@@ -71,10 +71,10 @@ public class PlayerLogic {
 		this.messageHub.subscribe("home/all/music/mute", message -> {
 			switch (message) {
 			case "true":
-				this.setSRListening(true);
+				this.mute(true);
 				break;
 			case "false":
-				this.setSRListening(false);
+				this.mute(false);
 				break;
 			default:
 				this.logger.warn("unkown message {}", message);
@@ -257,19 +257,15 @@ public class PlayerLogic {
 		if (volume != -1) {
 			switch (volumeString) {
 			case "mute":
-				changeVolume(VOLUME_MUTE_VALUE);
-				return VOLUME_MUTE_VALUE;
+				return setVolume(VOLUME_MUTE_VALUE);
 			case "max":
-				changeVolume(VOLUME_MAX_VALUE);
-				return VOLUME_MAX_VALUE;
+				return setVolume(VOLUME_MAX_VALUE);
 			case "up":
 				volume = Math.min(VOLUME_MAX_VALUE, volume + VOLUME_UPDOWN_VALUE);
-				changeVolume(volume);
-				return volume;
+				return setVolume(volume);
 			case "down":
 				volume = Math.max(VOLUME_MUTE_VALUE, volume - VOLUME_UPDOWN_VALUE);
-				changeVolume(volume);
-				return volume;
+				return setVolume(volume);
 			default:
 				this.logger.warn("Incorrect volume command");
 				return -1;
@@ -287,7 +283,8 @@ public class PlayerLogic {
 	 */
 	public int setVolume(int volume) {
 		if (volume >= VOLUME_MUTE_VALUE && volume <= VOLUME_MAX_VALUE) {
-			changeVolume(volume);
+			this.muted = false;
+			this.spotifyAPICalls.setVolume(volume);
 			return volume;
 		}
 		return -1;
@@ -299,39 +296,24 @@ public class PlayerLogic {
 	 * @return the volume
 	 */
 	public int getVolume() {
-		if (this.srListening) {
-			return this.currentVolume;
-		}
 		return this.spotifyAPICalls.getVolume();
 	}
 
 	/**
-	 * called when volume has to be changed
+	 * Mute the current audio or restore the volume.
 	 * 
-	 * @param volume
-	 *            volume to be changed to
+	 * @param mute
+	 *            state to change to
 	 */
-	private void changeVolume(int volume) {
-		this.currentVolume = volume;
-		if (!this.srListening) {
-			this.spotifyAPICalls.setVolume(volume);
-		}
-	}
-
-	/**
-	 * activate/Deactivate that the sr is currently active -> volume changes will be queued until sr is no longer
-	 * listening by using the srListening variabel
-	 * 
-	 * @param isSRListening
-	 *            State to change to
-	 */
-	public void setSRListening(boolean isSRListening) {
-		if (isSRListening) {
-			this.spotifyAPICalls.setVolume(0);
-			this.srListening = isSRListening;
-		} else {
-			this.srListening = isSRListening;
-			changeVolume(Math.max(0, Math.min(100, this.currentVolume)));
+	public void mute(boolean mute) {
+		if (this.muted != mute) {
+			if (mute) {
+				this.mutedVolume = this.getVolume();
+				this.setVolume(0);
+			} else {
+				this.setVolume(this.mutedVolume);
+			}
+			this.muted = mute;
 		}
 	}
 
