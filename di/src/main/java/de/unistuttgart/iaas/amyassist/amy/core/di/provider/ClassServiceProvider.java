@@ -33,10 +33,11 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ContextLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.SimpleServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
@@ -98,7 +99,7 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public ServiceImplementationDescription<T> getServiceImplementationDescription(ServiceLocator locator,
+	public ServiceImplementationDescription<T> getServiceImplementationDescription(ContextLocator locator,
 			ServiceConsumer<T> serviceConsumer) {
 		HashMap<String, Object> map = new HashMap<>();
 		for (ContextInjectionPoint c : this.contextInjectionPoints) {
@@ -110,7 +111,7 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public ServiceHandle<T> createService(ServiceLocator locator,
+	public ServiceHandle<T> createService(SimpleServiceLocator locator,
 			ServiceImplementationDescription<T> serviceImplementationDescription) {
 
 		T serviceInstance = this.createService();

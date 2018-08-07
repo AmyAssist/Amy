@@ -21,41 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.registry;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
+
+import java.util.NoSuchElementException;
+
+import javax.annotation.Nonnull;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 
 /**
- * Location object interface
- * @author Benno Krauß
+ * A locator for context provider used by ServiceProvider to receive the context of ServiceConsumers.
+ * 
+ * @author Leon Kiefer
  */
-public interface Location extends RegistryEntity, Taggable {
-
-    String getName();
-
-    void setName(String name);
-
-    String getZipCode();
-
-    void setZipCode(String zipCode);
-
-    String getCity();
-
-    void setCity(String city);
-
-    String getStreet();
-
-    void setStreet(String street);
-
-    int getHouseNumber();
-
-    void setHouseNumber(int houseNumber);
-
-    double getLongitude();
-
-    void setLongitude(double longitude);
-
-    double getLatitude();
-
-    void setLatitude(double latitude);
-
-    String getAddressString();
+public interface ContextLocator {
+	/**
+	 * Getter for the Context provider for the given identifier
+	 * 
+	 * @param contextProviderType
+	 *            the context identifier
+	 * @return the static ContextProvider
+	 * @throws NoSuchElementException
+	 *             if there is no ContextProvider for the given identifier
+	 */
+	StaticProvider<?> getContextProvider(@Nonnull String contextProviderType);
 }
