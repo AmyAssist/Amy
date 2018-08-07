@@ -221,6 +221,9 @@ public class Search {
 		if (searchResult != null) {
 			for (Artist artist : searchResult.getItems()) {
 				artistEntity = new ArtistEntity();
+				if (artist.getImages() != null && artist.getImages().length > 0) {
+					artistEntity.setImageUrl(artist.getImages()[0].getUrl());
+				}
 				artistEntity.setName(artist.getName());
 				artistEntity.setGenre(artist.getGenres());
 				artistEntity.setUri(artist.getUri());
