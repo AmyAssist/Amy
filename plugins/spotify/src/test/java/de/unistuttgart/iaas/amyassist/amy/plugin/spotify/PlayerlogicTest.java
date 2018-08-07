@@ -60,7 +60,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 @ExtendWith({ MockitoExtension.class, FrameworkExtension.class })
-class PlayerLogicTest {
+class PlayerlogicTest {
 
 	private static final String ID1 = "abc123";
 	private static final String ID2 = "123abc";
@@ -152,16 +152,6 @@ class PlayerLogicTest {
 		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
-	
-
-	
-
-	@Test
-	public void testSearch() {
-		this.playerLogic.search(DEVICE_NAME1, "track", 1);
-		verify(search).searchforTracks(DEVICE_NAME1, "track", 1);
-	}
-
 	@Test
 	public void testPlayEmptyList() {
 		when(search.searchFeaturedPlaylists(5)).thenReturn(new ArrayList<>());
@@ -178,7 +168,7 @@ class PlayerLogicTest {
 		verify(this.spotifyAPICalls).playListFromUri(ID2);
 	}
 
-	@Test
+	/*@Test
 	public void testPlaySongFromASearch() {
 		initPlaylists();
 		ArrayList<String> uri = new ArrayList<>();
@@ -186,13 +176,13 @@ class PlayerLogicTest {
 		uri.add(ID2);
 		when(this.search.restoreUris(SearchTypes.USER_PLAYLISTS)).thenReturn(uri);
 		when(this.spotifyAPICalls.playListFromUri(ID1)).thenReturn(false);
-		this.playerLogic.play(0, SearchTypes.USER_PLAYLISTS);
+		this.playerLogic.playPlaylist(0, SearchTypes.USER_PLAYLISTS);
 		verify(spotifyAPICalls).playListFromUri(ID1);
-	}
+	}*/
 
 	@Test
 	public void testPlaySongFromASearchEmptyResult() {
-		this.playerLogic.play(0, SearchTypes.USER_PLAYLISTS);
+		this.playerLogic.playPlaylist(0, SearchTypes.USER_PLAYLISTS);
 		verifyNoMoreInteractions(this.spotifyAPICalls);
 	}
 
@@ -222,21 +212,6 @@ class PlayerLogicTest {
 		this.playerLogic.back();
 		verify(this.spotifyAPICalls).back();
 		verifyNoMoreInteractions(this.spotifyAPICalls);
-	}
-
-	@Test
-	public void testGetCurrentSong() {
-		when(this.spotifyAPICalls.getCurrentSong()).thenReturn(currentlyPlayingContext);
-		when(search.createTrackData(any())).thenCallRealMethod();
-		Map<String, String> result1 = this.playerLogic.getCurrentSong();
-		assertThat(result1.get(SpotifyConstants.ITEM_NAME), equalTo("Flames"));
-		assertThat(result1.get(SpotifyConstants.ITEM_TYPE), equalTo("track"));
-		assertThat(result1.get(SpotifyConstants.ITEM_URI), equalTo(ID1));
-		assertThat(result1.get(SpotifyConstants.ARTIST_NAME), equalTo("David Guetta, Hans Dieter"));
-
-		when(this.spotifyAPICalls.getCurrentSong()).thenReturn(null);
-		Map<String, String> result2 = this.playerLogic.getCurrentSong();
-		assertThat(result2.isEmpty(), equalTo(true));
 	}
 
 	@Test

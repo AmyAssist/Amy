@@ -294,22 +294,6 @@ public class Search {
 	}
 
 	/**
-	 * check a string if is in the ModelObjectType true, else false
-	 * 
-	 * @param type
-	 *            artist, album, track or playlist
-	 * @return if the param type one of the for types then return true, else false
-	 */
-	public boolean typeCheck(String type) {
-		for (int i = 0; i < ModelObjectType.values().length; i++) {
-			if (ModelObjectType.values()[i].toString().equalsIgnoreCase(type)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
 	 * Get's {@link #trackSearchResults trackSearchResults}
 	 * 
 	 * @return trackSearchResults
@@ -361,35 +345,5 @@ public class Search {
 	 */
 	public List<PlaylistEntity> getOwnPlaylists() {
 		return this.ownPlaylists;
-	}
-
-	/**
-	 * write all Uris from a list of Playlists to the storage. type is needed to store different search queries. For
-	 * example getOwnPlaylists() or getFeaturedPlaylists()
-	 * 
-	 * @param playlists
-	 *            playlists to write uris
-	 * @param type
-	 *            to write to right position
-	 */
-
-
-
-	/**
-	 * restore all uris from a search
-	 * 
-	 * @param type
-	 *            to restore
-	 * @return a list of uris
-	 */
-	public List<String> restoreUris(SearchTypes type) {
-		List<String> result = new ArrayList<>();
-		/*
-		 * int i = 0; while (this.storage
-		 * .has(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)))) {
-		 * result.add(this.storage
-		 * .get(SPOTIFY_URI_STORAGE.concat(type.toString()).concat("_").concat(String.valueOf(i)))); i++; }
-		 */
-		return result;
 	}
 }

@@ -24,9 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 
@@ -95,21 +93,6 @@ public class PlayerLogic {
 	}
 
 	/**
-	 * this call the searchAnaything method in the Search class
-	 * 
-	 * @param searchText
-	 *            the text you want to search
-	 * @param type
-	 *            artist, track, playlist, album
-	 * @param limit
-	 *            how many results maximal searched for
-	 * @return one output String with all results
-	 */
-/*	public List<Map<String, String>> search(String searchText, String type, int limit) {
-		return this.search.searchforTracks(searchText, type, limit);
-	}*/
-
-	/**
 	 * this play method play a featured playlist from spotify
 	 * 
 	 * @return a Playlist object. can be null
@@ -134,19 +117,17 @@ public class PlayerLogic {
 	 *            to find the right search Results
 	 * @return a map with the song data
 	 */
-	public Map<String, String> play(int songNumber, SearchTypes type) {
-		if (songNumber < this.search.restoreUris(type).size()) {
-			String uriToPlay = this.search.restoreUris(type).get(songNumber);
-			if (uriToPlay.contains("track")) {
-				this.spotifyAPICalls.playSongFromUri(uriToPlay);
-			} else {
-				this.spotifyAPICalls.playListFromUri(uriToPlay);
-			}
-
-		} else {
-			this.logger.warn("Item not found");
+	public PlaylistEntity playPlaylist(int songNumber, SearchTypes type) {
+		if(type.equals(SearchTypes.FEATURED_PLAYLISTS) && this.search.getFeaturedPlaylists().size() > songNumber) {
+			this.spotifyAPICalls.playListFromUri(this.search.getFeaturedPlaylists().get(songNumber).getUri());
+			return this.search.getFeaturedPlaylists().get(songNumber);
 		}
-		return new HashMap<>();
+		if(type.equals(SearchTypes.USER_PLAYLISTS) && this.search.getOwnPlaylists().size() > songNumber) {
+			this.spotifyAPICalls.playListFromUri(this.search.getOwnPlaylists().get(songNumber).getUri());
+			return this.search.getOwnPlaylists().get(songNumber);
+		}
+		this.logger.warn("Item not found");
+		return null;
 	}
 
 	/**
@@ -198,28 +179,6 @@ public class PlayerLogic {
 		}
 		return null;
 
-	}
-
-	/**
-	 * get a list from user created or followed playlists
-	 * 
-	 * @param limit
-	 *            limit of returned playlists
-	 * @return a list from Playlists
-	 */
-	public List<PlaylistEntity> getOwnPlaylists(int limit) {
-		return this.search.searchOwnPlaylists(limit);
-	}
-
-	/**
-	 * get a list from featured playlists
-	 * 
-	 * @param limit
-	 *            limit of returned playlists
-	 * @return a list from Playlists
-	 */
-	public List<PlaylistEntity> getFeaturedPlaylists(int limit) {
-		return this.search.searchFeaturedPlaylists(limit);
 	}
 
 	/**

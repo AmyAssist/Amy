@@ -32,6 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
 
 /**
  * this class handle the speech commands from the spotify plugin
@@ -42,6 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
 public class SpotifySpeech {
 
 	private static final String ERROR_MESSAGE = "An error occurred";
+	private static final String ERROR_MESSAGE_ELEMENT = "Element is not available";
 	private static final int LIMIT_FOR_SEARCH = 5;
 
 	@Reference
@@ -49,9 +51,9 @@ public class SpotifySpeech {
 
 	@Reference
 	private DeviceLogic deviceLogic;
-
+	
 	@Reference
-	private StringGenerator stringGenerator;
+	private Search search;
 
 	/**
 	 * get a String of all name of all devices
@@ -104,14 +106,14 @@ public class SpotifySpeech {
 
 	@Grammar("play featured playlist #")
 	public String playFeaturedPlaylist(String... params) {
-		return this.stringGenerator.generateSearchOutputString(
-				this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.FEATURED_PLAYLISTS));
+		PlaylistEntity playlist =  this.playerLogic.playPlaylist(Integer.parseInt(params[3]), SearchTypes.FEATURED_PLAYLISTS);
+		return (playlist != null)? playlist.toString() : ERROR_MESSAGE_ELEMENT;
 	}
 
 	@Grammar("play own playlist #")
 	public String play(String... params) {
-		return this.stringGenerator.generateSearchOutputString(
-				this.playerLogic.play(Integer.parseInt(params[3]), SearchTypes.USER_PLAYLISTS));
+		PlaylistEntity playlist =  this.playerLogic.playPlaylist(Integer.parseInt(params[3]), SearchTypes.USER_PLAYLISTS);
+		return (playlist != null)? playlist.toString() : ERROR_MESSAGE_ELEMENT;
 	}
 
 	@Grammar("resume the music")
@@ -156,14 +158,13 @@ public class SpotifySpeech {
 
 	@Grammar("get currently played song")
 	public String getCurrentlyPlayed(String... params) {
-		return "track: " + playerLogic.getCurrentSong().get(SpotifyConstants.ITEM_NAME) + " by "
-				+ playerLogic.getCurrentSong().get(SpotifyConstants.ARTIST_NAME);
+		return "track: " + playerLogic.getCurrentSong().toString();
 	}
 
 	@Grammar("get own playlists")
 	public String getUserplaylists(String... params) {
 		String output = "";
-		for (PlaylistEntity playlist : this.playerLogic.getOwnPlaylists(LIMIT_FOR_SEARCH)) {
+		for (PlaylistEntity playlist : this.search.searchOwnPlaylists(LIMIT_FOR_SEARCH)) {
 			output = output.concat(playlist.toString()).concat("\n");
 		}
 		return output;
@@ -172,7 +173,7 @@ public class SpotifySpeech {
 	@Grammar("get featured playlists")
 	public String getFeaturedPlaylists(String... params) {
 		String output = "";
-		for (PlaylistEntity playlist : this.playerLogic.getFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
+		for (PlaylistEntity playlist : this.search.searchFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
 			output = output.concat(playlist.toString()).concat("\n");
 		}
 		return output;

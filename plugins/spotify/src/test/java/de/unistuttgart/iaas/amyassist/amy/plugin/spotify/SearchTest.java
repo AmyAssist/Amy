@@ -258,15 +258,6 @@ public class SearchTest {
 	}
 
 	@Test
-	void testTypeCheck() {
-		assertThat(search.typeCheck(SpotifyConstants.TYPE_ALBUM), equalTo(true));
-		assertThat(search.typeCheck(SpotifyConstants.TYPE_ARTIST), equalTo(true));
-		assertThat(search.typeCheck(SpotifyConstants.TYPE_TRACK), equalTo(true));
-		assertThat(search.typeCheck(SpotifyConstants.TYPE_PLAYLIST), equalTo(true));
-		assertThat(search.typeCheck(""), equalTo(false));
-	}
-
-	@Test
 	void testFeaturedPlaylists() {
 		when(spotifyAPICalls.getFeaturedPlaylists(Search.SEARCH_LIMIT)).thenReturn(featuredPlaylists);
 		List<PlaylistEntity> result = this.search.searchFeaturedPlaylists(Search.SEARCH_LIMIT);

@@ -35,9 +35,5 @@ public enum SearchTypes {
 	/**
 	 * needed for getUserPlaylists
 	 */
-	USER_PLAYLISTS, 
-	/**
-	 * needed for the normal search
-	 */
-	NORMAL_SEARCH
+	USER_PLAYLISTS
 }
