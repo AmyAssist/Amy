@@ -23,7 +23,7 @@ COPY --from=builder /dist/amy.jar /app/amy.jar
 COPY --from=builder /dist/plugins /app/plugins
 
 COPY --from=source /src/config /app/config
-#COPY --from=source /src/.docker/config /app/config
+COPY --from=source /src/.docker/config /app/config
 
 WORKDIR /app
 
