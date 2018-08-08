@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
@@ -47,6 +49,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
  */
 @Service
 public class ConfigurationLoaderImpl implements ConfigurationLoader {
+
+	private static final String FILE_ENDING = ".properties";
 
 	@Reference
 	private Logger logger;
@@ -85,7 +89,7 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 	}
 
 	/**
-	 * Finds the configuration file for the given name in all config directorys. The config dirs are checked from last
+	 * Finds the configuration file for the given name in all config directories. The config dirs are checked from last
 	 * to first.
 	 * 
 	 * @param configurationName
@@ -94,46 +98,56 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 	 */
 	private Path findPropertiesFile(String configurationName) {
 		for (int i = this.configDirs.size() - 1; i >= 0; i--) {
-			Path p = this.configDirs.get(i).resolve(configurationName + ".properties");
+			Path p = this.configDirs.get(i).resolve(configurationName + FILE_ENDING);
 			if (p.toFile().exists())
 				return p;
 		}
 		return null;
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader#load(java.lang.String)
-	 */
+	@Nonnull
 	@Override
 	public Properties load(String configurationName) {
-		Properties properties = new Properties();
-		Path path = this.findPropertiesFile(configurationName);
-
-		if (path == null) {
+		Properties emptyDefault = new Properties();
+		Properties load = this.load(configurationName, emptyDefault);
+		// the references must be compared to check if a new properties is loaded. The equals method don't work because
+		// empty properties can be loaded
+		if (load == emptyDefault) {// NOSONAR
 			this.logger.error("Could not load the configuration {}, because it was not found in any config dir.",
 					configurationName);
-			return null;
 		}
-
-		try (InputStream reader = Files.newInputStream(path)) {
-			properties.load(reader);
-		} catch (IOException e) {
-			this.logger.error("Error loading config file", e);
-		}
-		return properties;
+		return load;
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader#store(java.lang.String,
-	 *      java.util.Properties)
-	 */
+	@Nonnull
+	@Override
+	public Properties load(String configurationName, Properties defaults) {
+		return this.loadAll(configurationName, defaults);
+	}
+
+	private Properties loadAll(String configurationName, Properties properties) {
+		Properties loaded = properties;
+		for (Path path : this.configDirs) {
+			path = path.resolve(configurationName + FILE_ENDING);
+			if (path.toFile().exists()) {
+				loaded = new Properties(loaded);
+				try (InputStream reader = Files.newInputStream(path)) {
+					loaded.load(reader);
+				} catch (IOException e) {
+					this.logger.error("Error loading config file", e);
+				}
+			}
+		}
+		return loaded;
+	}
+
 	@Override
 	public void store(String configurationName, Properties properties) {
 		Path path = findPropertiesFile(configurationName);
 
 		// No property file with this name was found, so create one in the highest priority config folder.
 		if (path == null) {
-			path = this.configDirs.get(this.configDirs.size() - 1).resolve(configurationName + ".properties");
+			path = this.configDirs.get(this.configDirs.size() - 1).resolve(configurationName + FILE_ENDING);
 		}
 
 		try (OutputStream outputStream = Files.newOutputStream(path)) {

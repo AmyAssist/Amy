@@ -33,12 +33,14 @@ import javax.sound.sampled.AudioInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 
 /**
  * Class that manages the Recognizers belonging to a given AudioInputStream
@@ -53,11 +55,13 @@ public abstract class AbstractSpeechRecognizerManager
 	private SpeechInputHandler inputHandler;
 	private Output output;
 	private String mainGrammarName;
+	private MessageHub messageHub;
 
 	private SpeechRecognizer mainRecognizer;
 	private Map<String, SpeechRecognizer> recognizerList = new HashMap<>();
 
-	private boolean srListening = false;
+	private boolean multiCallActive = false;
+	private boolean singleCallActive = false;
 
 	private Thread currentRecognizer;
 
@@ -74,17 +78,20 @@ public abstract class AbstractSpeechRecognizerManager
 	 *            Output Object where to Output the result of the Recognizer
 	 * @param grammarData
 	 *            DataSet of all GrammarObjects
+	 * @param messageHub
+	 *            MessageHub
 	 * 
 	 */
 	public AbstractSpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
-			GrammarObjectsCreator grammarData) {
+			GrammarObjectsCreator grammarData, MessageHub messageHub) {
 		this.inputHandler = inputHandler;
 		this.output = output;
 		this.mainGrammarName = grammarData.getMainGrammar().getName();
+		this.messageHub = messageHub;
 
 		createRecognizers(grammarData, ais);
 
-		this.currentRecognizer = new Thread(this.mainRecognizer);
+		this.currentRecognizer = new Thread(this.mainRecognizer, "MainRecognizer");
 	}
 
 	private void createRecognizers(GrammarObjectsCreator grammarData, AudioInputStream ais) {
@@ -177,23 +184,39 @@ public abstract class AbstractSpeechRecognizerManager
 		this.currentRecognizer.start();
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#handleListeningState(boolean)
-	 */
 	@Override
-	public void handleListeningState(boolean listening) {
-		this.srListening = listening;
-		/**
-		 * notify(listening);
-		 */
+	public void handleMultiCallListeningState(boolean listening) {
+		this.multiCallActive = listening;
+		if (listening) {
+			this.voiceOutput("waking up");
+		} else {
+			this.voiceOutput("now sleeping");
+		}
+		this.messageHub.publish("home/all/music/mute", listening ? "true" : "false");
+	}
+
+	@Override
+	public boolean isMultiCallActive() {
+		return this.multiCallActive;
+	}
+
+	@Override
+	public void handleSingleCallListeningState(boolean singleCommand) {
+		this.singleCallActive = singleCommand;
+		if (singleCommand) {
+			this.soundOutput(Sounds.SINGLE_CALL_START_BEEP);
+		} else {
+			this.soundOutput(Sounds.SINGLE_CALL_STOP_BEEP);
+		}
+		this.messageHub.publish("home/all/music/mute", singleCommand ? "true" : "false");
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isListening()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#isSingleCallActive()
 	 */
 	@Override
-	public boolean isListening() {
-		return this.srListening;
+	public boolean isSingleCallActive() {
+		return this.singleCallActive;
 	}
 
 	/**
@@ -201,7 +224,15 @@ public abstract class AbstractSpeechRecognizerManager
 	 */
 	@Override
 	public void voiceOutput(String outputString) {
-		this.output.output(outputString);
+		this.output.voiceOutput(outputString);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#soundOutput(Sounds)
+	 */
+	@Override
+	public void soundOutput(Sounds sound) {
+		this.output.soundOutput(sound);
 	}
 
 	/**

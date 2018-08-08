@@ -24,6 +24,9 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of ServiceDescription interface
@@ -34,17 +37,25 @@ import java.lang.annotation.Annotation;
  */
 public class ServiceDescriptionImpl<T> implements ServiceDescription<T> {
 
-	private Class<T> serviceType;
-	private Annotation[] annotations;
+	private final Class<T> serviceType;
+	private final Set<Annotation> annotations;
 
 	/**
 	 * @param serviceType
 	 * @param annotations
 	 * 
 	 */
-	public ServiceDescriptionImpl(Class<T> serviceType, Annotation[] annotations) {
+	public ServiceDescriptionImpl(Class<T> serviceType, Set<Annotation> annotations) {
 		this.serviceType = serviceType;
 		this.annotations = annotations;
+	}
+
+	/**
+	 * @param serviceType2
+	 */
+	public ServiceDescriptionImpl(Class<T> serviceType) {
+		this.serviceType = serviceType;
+		this.annotations = Collections.emptySet();
 	}
 
 	@Override
@@ -53,24 +64,13 @@ public class ServiceDescriptionImpl<T> implements ServiceDescription<T> {
 	}
 
 	@Override
-	public Annotation[] getAnnotations() {
+	public Set<Annotation> getAnnotations() {
 		return this.annotations;
 	}
 
 	@Override
-	public int hashCode() {
-		return this.serviceType.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-
-		if (obj instanceof ServiceDescription<?>) {
-			return this.getServiceType().equals(((ServiceDescription<?>) obj).getServiceType());
-		}
-		return false;
+	public String toString() {
+		return "Service type: " + this.getServiceType().getSimpleName() + "\nService Annotations:\n"
+				+ this.getAnnotations().stream().map(Annotation::toString).collect(Collectors.joining("\n"));
 	}
 }

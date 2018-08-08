@@ -26,7 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver;
 import static java.time.Duration.ofSeconds;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 import java.util.Properties;
 
@@ -36,7 +37,7 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 
 /**
@@ -54,11 +55,11 @@ class ServerTest {
 		serverConfig.setProperty(Server.PROPERTY_CONTEXT_PATH, "test");
 		serverConfig.setProperty(Server.PROPERTY_LOCALHOST, "true");
 
-		ConfigurationLoader configLoader = Mockito.mock(ConfigurationLoader.class);
-		Mockito.when(configLoader.load(Server.CONFIG_NAME)).thenReturn(serverConfig);
+		ConfigurationManager configManager = Mockito.mock(ConfigurationManager.class);
+		Mockito.when(configManager.getConfigurationWithDefaults(Server.CONFIG_NAME)).thenReturn(serverConfig);
 
 		this.dependencyInjection = new DependencyInjection();
-		this.dependencyInjection.addExternalService(ConfigurationLoader.class, configLoader);
+		this.dependencyInjection.addExternalService(ConfigurationManager.class, configManager);
 		this.dependencyInjection.addExternalService(Logger.class, LoggerFactory.getLogger(Server.class));
 	}
 

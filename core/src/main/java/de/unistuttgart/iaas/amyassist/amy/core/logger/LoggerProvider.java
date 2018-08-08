@@ -24,14 +24,20 @@
 package de.unistuttgart.iaas.amyassist.amy.core.logger;
 
 import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ContextLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.SimpleServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandleImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceImplementationDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 
 /**
@@ -41,31 +47,28 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
  */
 public class LoggerProvider implements ServiceProvider<Logger> {
 
-	private static final String CONTEXT_IDENTIFIER = "class";
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider#getService(java.util.Map, java.util.Map)
-	 */
 	@Override
-	public Logger getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies, Map<String, ?> context) {
-		Class<?> cls = (Class<?>) context.get(CONTEXT_IDENTIFIER);
-		return LoggerFactory.getLogger(cls);
+	public ServiceDescription<Logger> getServiceDescription() {
+		return new ServiceDescriptionImpl<>(Logger.class);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider#getDependencies()
-	 */
 	@Override
-	public Set<ServiceConsumer<?>> getDependencies() {
-		return Collections.emptySet();
+	public ServiceImplementationDescription<Logger> getServiceImplementationDescription(ContextLocator locator,
+			ServiceConsumer<Logger> serviceConsumer) {
+		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
+				Collections.singletonMap(Context.CLASS, serviceConsumer.getConsumerClass()), LoggerFactory.class);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider#getRequiredContextIdentifiers()
-	 */
 	@Override
-	public Set<String> getRequiredContextIdentifiers() {
-		return Collections.singleton(CONTEXT_IDENTIFIER);
+	public ServiceHandle<Logger> createService(SimpleServiceLocator locator,
+			ServiceImplementationDescription<Logger> serviceImplementationDescription) {
+		Class<?> cls = (Class<?>) serviceImplementationDescription.getContext().get(Context.CLASS);
+		return new ServiceHandleImpl<>(LoggerFactory.getLogger(cls));
+	}
+
+	@Override
+	public void dispose(ServiceHandle<Logger> service) {
+		// Logger MUST NOT be disposed
 	}
 
 }

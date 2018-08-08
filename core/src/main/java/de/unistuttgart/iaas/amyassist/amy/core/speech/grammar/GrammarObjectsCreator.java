@@ -35,14 +35,15 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
+import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
 
 /**
  * Class that Creates all Grammar Objects sets the MainGrammar and the List of all other Grammars
  * 
  * @author Kai Menzel
  */
-@Service
-public class GrammarObjectsCreator {
+@Service(GrammarObjectsCreator.class)
+public class GrammarObjectsCreator implements DeploymentContainerService {
 
 	@Reference
 	private Environment environment;
@@ -55,7 +56,8 @@ public class GrammarObjectsCreator {
 	/**
 	 * Call this after all register and before process
 	 */
-	public void completeSetup() {
+	@Override
+	public void deploy() {
 		Path grammarFile = this.environment.getWorkingDirectory().resolve("resources")
 				.resolve("sphinx-grammars/grammar.gram");
 

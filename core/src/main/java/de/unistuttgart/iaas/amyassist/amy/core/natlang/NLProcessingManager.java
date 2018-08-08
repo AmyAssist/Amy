@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
+
 /**
  * Manages all natural language interpreter of the plugins and can process the input of natural language
  * 
@@ -42,12 +43,11 @@ public interface NLProcessingManager {
 	 * 
 	 * @param naturalLanguageText
 	 *            a natural language text string that only contains alphanumeric character and white space character
-	 * @param lang the language specifics like numbers
 	 * @return a answer as natural language text
 	 * @throws IllegalArgumentException
 	 *             if the string illegal character
 	 */
-	String process(String naturalLanguageText, LanguageSpecifics lang);
+	String process(String naturalLanguageText);
 
 	/**
 	 * @param grammarName name of the grammar

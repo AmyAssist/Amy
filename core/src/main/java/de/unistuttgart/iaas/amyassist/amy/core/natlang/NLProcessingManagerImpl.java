@@ -33,7 +33,9 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.Lists;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
@@ -41,6 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
@@ -69,12 +72,28 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	private final List<AGFNode> registeredNodeList = new ArrayList<>();
 
+	@Reference
+	private ConfigurationManager configurationLoader;
+	private static final String CONFIG_NAME = "core.config";
+	private static final String PROPERTY_ENABLE_STEMMER = "enableStemmer";
+	private static final String PROBERTY_LANGUAGE = "chooseLanguage";
+	private boolean stemmerEnabled;
+	private String languageString;
+
+	@PostConstruct
+	private void setup() {
+		this.stemmerEnabled = Boolean.parseBoolean(this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
+				.getProperty(PROPERTY_ENABLE_STEMMER, "true"));
+		this.languageString = this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
+				.getProperty(PROBERTY_LANGUAGE, "EN");
+	}
+
 	@Override
 	public void register(Class<?> naturalLanguageInterpreter) {
 		if (!naturalLanguageInterpreter
 				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand.class)) {
-			throw new IllegalArgumentException("annotation is not present in " 
-				+ naturalLanguageInterpreter.getSimpleName());
+			throw new IllegalArgumentException(
+					"annotation is not present in " + naturalLanguageInterpreter.getSimpleName());
 		}
 		Set<Method> grammars = NLIAnnotationReader.getValidNLIMethods(naturalLanguageInterpreter);
 
@@ -94,8 +113,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	@Override
 	public String getGrammarFileString(String grammarName) {
-		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.WAKE_UP, Constants.GO_SLEEP,
-				Constants.SHUT_UP);
+		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.MULTI_CALL_START,
+				Constants.SINGLE_CALL_START, Constants.MULTI_CALL_STOP, Constants.SHUT_UP);
 		for (PartialNLI partialNLI : this.register) {
 			generator.addRule(partialNLI.getGrammar(), UUID.randomUUID().toString());
 		}
@@ -104,11 +123,12 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	@Override
-	public String process(String naturalLanguageText, LanguageSpecifics lang) {
+	public String process(String naturalLanguageText) {
+		ChooseLanguage language = new ChooseLanguage(this.languageString);
 		this.logger.debug("input {}", naturalLanguageText);
-		NLLexer nlLexer = new NLLexer(lang);
+		NLLexer nlLexer = new NLLexer(language.getNumberConversion());
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
-		INLParser nlParser = new NLParser(this.registeredNodeList);
+		INLParser nlParser = new NLParser(this.registeredNodeList, language.getStemmer(), this.stemmerEnabled);
 		int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 		PartialNLI partialNLI = this.register.get(matchingNodeIndex);
 		String[] arguments = Lists.transform(tokens, WordToken::getContent).toArray(new String[tokens.size()]);
