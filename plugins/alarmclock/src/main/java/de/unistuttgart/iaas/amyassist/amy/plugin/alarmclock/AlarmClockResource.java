@@ -49,10 +49,10 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 /**
  * REST Resource for alarmclock
  * 
- * @author Christian Bräuner
+ * @author Christian Bräuner, Patrick Gebhardt
  */
 @Path(AlarmClockResource.PATH)
-public class AlarmClockResource implements Resource{
+public class AlarmClockResource implements Resource {
 
 	/**
 	 * the resource path for this plugin
@@ -73,16 +73,8 @@ public class AlarmClockResource implements Resource{
 	@GET
 	@Path("alarms")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Timestamp[] getAllAlarms() {
-		List<Alarm> alarms = this.logic.getAllAlarms();
-		Timestamp[] timestamps = new Timestamp[alarms.size()];
-		for (int i = 0; i < alarms.size(); i++) {
-			if (alarms.get(i) != null) {
-				timestamps[i] = new Timestamp(alarms.get(i));
-				timestamps[i].setLink(createAlarmPath(alarms.get(i).getId()));
-			}
-		}
-		return timestamps;
+	public List<Alarm> getAllAlarms() {
+		return this.logic.getAllAlarms();
 	}
 
 	/**
@@ -95,7 +87,7 @@ public class AlarmClockResource implements Resource{
 	@GET
 	@Path("alarms/{pathid}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Timestamp getAlarm(@PathParam("pathid") int alarmnumber) {
+	public Alarm getAlarm(@PathParam("pathid") int alarmnumber) {
 		Alarm alarm;
 		try {
 			alarm = this.logic.getAlarm(alarmnumber);
@@ -103,9 +95,7 @@ public class AlarmClockResource implements Resource{
 			throw new WebApplicationException("there is no alarm" + alarmnumber, e, Status.NOT_FOUND);
 		}
 
-		Timestamp ts = new Timestamp(alarm);
-		ts.setLink(createAlarmPath(alarmnumber));
-		return ts;
+		return alarm;
 	}
 
 	/**
