@@ -71,7 +71,7 @@ public class Sound {
 				}
 			} while (bytesRead != -1);
 
-			this.frameLength = (int) Math.ceil(bytesReadTotal / this.format.getFrameSize());
+			this.frameLength = (int) Math.ceil((double) bytesReadTotal / this.format.getFrameSize());
 
 			int byteLength = this.frameLength * this.format.getFrameSize();
 
