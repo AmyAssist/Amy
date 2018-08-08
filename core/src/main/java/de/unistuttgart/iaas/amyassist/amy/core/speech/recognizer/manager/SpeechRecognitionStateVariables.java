@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.data;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -38,9 +38,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.output.OutputImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.RuntimeExceptionRecognizerCantBeCreated;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SphinxSpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.MainGrammarSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.TempGrammarSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
@@ -73,13 +75,15 @@ public class SpeechRecognitionStateVariables {
 	private Grammar currentGrammar = Grammar.NONE;
 
 	private AudioInputStream ais = createNewAudioInputStream();
+	private static final String MESSAGE_TOPIC_MUTE = "home/all/music/mute";
 
 	// Predefined ResultHandler
 	private MainGrammarSpeechResultHandler mainResultHandler;
 	private TempGrammarSpeechResultHandler tempResultHandler;
 
-	// Predefined Recognizers
+	// Recognizer Threads
 	private Thread mainRecognizer;
+	private Thread currentTempRecognizer;
 
 	// -------------------------------------------------------
 
@@ -107,7 +111,7 @@ public class SpeechRecognitionStateVariables {
 	 * Creates the Main Recognizer
 	 */
 	public void init() {
-		this.mainRecognizer = new Thread(new SpeechRecognizer(Grammar.MAIN, this.mainResultHandler, this.ais));
+		this.mainRecognizer = new Thread(new SphinxSpeechRecognizer(Grammar.MAIN, this.mainResultHandler, this.ais));
 	}
 
 	// -------------------------------------------------------
@@ -121,12 +125,12 @@ public class SpeechRecognitionStateVariables {
 	public void setListeningState(ListeningState state) {
 		switch (state) {
 		case MULTI_CALL_LISTENING:
-			this.messageHub.publish("home/all/music/mute", "true");
+			this.messageHub.publish(MESSAGE_TOPIC_MUTE, "true");
 			this.output.voiceOutput("waking up");
 			break;
 
 		case SINGLE_CALL_LISTENING:
-			this.messageHub.publish("home/all/music/mute", "true");
+			this.messageHub.publish(MESSAGE_TOPIC_MUTE, "true");
 			this.output.soundOutput(Sounds.SINGLE_CALL_START_BEEP);
 			break;
 
@@ -143,7 +147,7 @@ public class SpeechRecognitionStateVariables {
 				break;
 			}
 
-			this.messageHub.publish("home/all/music/mute", "false");
+			this.messageHub.publish(MESSAGE_TOPIC_MUTE, "false");
 			break;
 
 		default:
@@ -174,7 +178,12 @@ public class SpeechRecognitionStateVariables {
 			this.mainRecognizer.start();
 			break;
 		case TEMP:
-			(new Thread(new SpeechRecognizer(Grammar.TEMP, this.tempResultHandler, this.ais))).start();
+			if (this.currentTempRecognizer != null) {
+				this.currentTempRecognizer.interrupt();
+			}
+			this.currentTempRecognizer = new Thread(
+					new SphinxSpeechRecognizer(Grammar.TEMP, this.tempResultHandler, this.ais));
+			this.currentTempRecognizer.start();
 			break;
 		case NONE:
 			break;

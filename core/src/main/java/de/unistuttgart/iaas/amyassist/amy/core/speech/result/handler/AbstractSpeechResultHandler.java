@@ -24,9 +24,9 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.SpeechRecognitionStateVariables;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.SpeechRecognitionStateVariables.ListeningState;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionStateVariables;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionStateVariables.ListeningState;
 
 /**
  * Handler that handles SpeechRecognition System intern commands

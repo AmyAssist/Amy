@@ -45,12 +45,12 @@ import edu.cmu.sphinx.api.StreamSpeechRecognizer;
  *
  * @author Kai Menzel
  */
-public class SpeechRecognizer implements Runnable {
+public class SphinxSpeechRecognizer implements Runnable {
 
 	/**
 	 * logger for all the Speech Recognition classes
 	 */
-	private final Logger logger = LoggerFactory.getLogger(SpeechRecognizer.class);
+	private final Logger logger = LoggerFactory.getLogger(SphinxSpeechRecognizer.class);
 
 	/**
 	 * Grammar of the Current running Recognizer
@@ -84,7 +84,7 @@ public class SpeechRecognizer implements Runnable {
 	 * @param ais
 	 *            set custom AudioInputStream.
 	 */
-	public SpeechRecognizer(Grammar grammar, AbstractSpeechResultHandler resultHandler, AudioInputStream ais) {
+	public SphinxSpeechRecognizer(Grammar grammar, AbstractSpeechResultHandler resultHandler, AudioInputStream ais) {
 		this.grammar = grammar;
 		this.resultHandler = resultHandler;
 		this.ais = ais;
@@ -162,7 +162,7 @@ public class SpeechRecognizer implements Runnable {
 	}
 
 	private boolean isRecognitionRunning() {
-		return (this.resultHandler.getCurrentGrammarState() == this.grammar);
+		return (this.resultHandler.getCurrentGrammarState() == this.grammar && !Thread.interrupted());
 	}
 
 	// ===============================================================================================
