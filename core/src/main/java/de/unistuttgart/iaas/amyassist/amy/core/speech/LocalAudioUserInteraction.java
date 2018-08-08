@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import java.util.NoSuchElementException;
 
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
 import org.slf4j.Logger;
@@ -99,19 +98,4 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 			throw new IllegalStateException("Could not find an audio environment");
 		}
 	}
-
-	/**
-	 * Returns the AudioFormat for the default AudioInputStream
-	 * 
-	 * @return fitting AudioFormat
-	 */
-	private AudioFormat getFormat() {
-		final float sampleRate = 16000.0f;
-		final int sampleSizeInBits = 16;
-		final int channels = 1;
-		final boolean signed = true;
-		final boolean bigEndian = false;
-		return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
-	}
-
 }
