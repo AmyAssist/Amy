@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.utility.audio;
+package de.unistuttgart.iaas.amyassist.amy.core.audio;
 
 import java.io.IOException;
 import java.io.InputStream;

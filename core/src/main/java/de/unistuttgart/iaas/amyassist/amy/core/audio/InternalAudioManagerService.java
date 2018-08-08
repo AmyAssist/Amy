@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment;
 import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.LocalAudioEnvironment;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -60,7 +60,7 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 	private Logger logger;
 
 	@Reference
-	private ConfigurationLoader configurationLoader;
+	private ConfigurationManager configurationManager;
 
 	private Properties config;
 
@@ -86,7 +86,7 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 	}
 
 	private void loadAndCheckProperties() {
-		this.config = this.configurationLoader.load(CONFIG_NAME);
+		this.config = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
 		if (this.config == null)
 			throw new IllegalStateException("Config for audio manager missing.");
 		if (this.config.getProperty(PROPERTY_LOCAL_AUDIO) == null)

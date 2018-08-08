@@ -21,35 +21,39 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.utility.audio.sound;
+package de.unistuttgart.iaas.amyassist.amy.core.audio.sound;
+
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Path;
 
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * A sound player. It can be started and stopped by the given methods.
- * 
- * To played data is written to the {@link AudioInputStream} returned by {@link #getAudioStream()}. The sound is not
- * played directly.
+ * Implementation of {@link SoundFactory}
  * 
  * @author Tim Neumann
  */
-public interface SoundPlayer {
+@Service
+public class SoundFactoryService implements SoundFactory {
 
-	/**
-	 * Get the {@link AudioInputStream} on which the audio is being played.
-	 * 
-	 * @return The audio stream
-	 */
-	AudioInputStream getAudioStream();
+	@Override
+	public Sound loadSound(AudioInputStream data) throws IOException {
+		return new BasicSound(data);
+	}
 
-	/**
-	 * Starts the audio output.
-	 */
-	void start();
+	@Override
+	public Sound loadSound(URL location) throws UnsupportedAudioFileException, IOException {
+		return loadSound(AudioSystem.getAudioInputStream(location));
+	}
 
-	/**
-	 * Stops / cancels the audio output.
-	 */
-	void stop();
+	@Override
+	public Sound loadSound(Path location) throws UnsupportedAudioFileException, IOException {
+		return loadSound(AudioSystem.getAudioInputStream(location.toFile()));
+	}
 
 }

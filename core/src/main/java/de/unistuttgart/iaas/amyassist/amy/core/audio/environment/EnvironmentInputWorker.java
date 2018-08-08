@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.utility.audio.QueuedInputStream;
+import de.unistuttgart.iaas.amyassist.amy.core.audio.QueuedInputStream;
 
 /**
  * A worker doing to audio input for a audio environment

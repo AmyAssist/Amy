@@ -21,20 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.utility.audio.sound;
+package de.unistuttgart.iaas.amyassist.amy.core.audio.sound;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import de.unistuttgart.iaas.amyassist.amy.utility.audio.QueuedInputStream;
+import de.unistuttgart.iaas.amyassist.amy.core.audio.QueuedInputStream;
 
 /**
  * Player for sounds
  * 
  * @author Tim Neumann
  */
-public class SoundPlayerImpl implements Runnable, SoundPlayer {
+public class BasicSoundPlayer implements Runnable, SoundPlayer {
 
 	private QueuedInputStream stream;
 	private AudioInputStream audioStream;
@@ -42,7 +44,7 @@ public class SoundPlayerImpl implements Runnable, SoundPlayer {
 	private int pos;
 	private int remainingLoopCount;
 
-	Thread playingThread;
+	private Thread playingThread;
 
 	/**
 	 * Creates a new SoundPlayer for the given audioData with the given format and the given frameLength.
@@ -54,7 +56,7 @@ public class SoundPlayerImpl implements Runnable, SoundPlayer {
 	 * @param loopCount
 	 *            The amount of times to loop. Can be -1 to indicate infinite looping.
 	 */
-	protected SoundPlayerImpl(byte[] audioData, AudioFormat format, int loopCount) {
+	protected BasicSoundPlayer(byte[] audioData, AudioFormat format, int loopCount) {
 		if (loopCount == 0)
 			throw new IllegalArgumentException("Can't loop 0 times.");
 		if (loopCount < -1)
@@ -79,9 +81,6 @@ public class SoundPlayerImpl implements Runnable, SoundPlayer {
 		this.playingThread = new Thread(this, "SoundPlayerThread");
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.utility.audio.sound.SoundPlayer#getAudioStream()
-	 */
 	@Override
 	public AudioInputStream getAudioStream() {
 		return this.audioStream;
@@ -92,9 +91,12 @@ public class SoundPlayerImpl implements Runnable, SoundPlayer {
 	 */
 	@Override
 	public void run() {
-		while (!Thread.interrupted() && this.remainingLoopCount != 0) {
+		while (!Thread.interrupted() && this.remainingLoopCount != 0 && !this.stream.isClosed()) {
 			try {
-				this.stream.getQueue().put(Byte.toUnsignedInt(this.data[this.pos]));
+				if (!this.stream.getQueue().offer(Byte.toUnsignedInt(this.data[this.pos]), 100,
+						TimeUnit.MILLISECONDS)) {
+					continue;
+				}
 				this.pos++;
 				if (this.pos >= this.data.length) {
 					this.pos = 0;
@@ -109,20 +111,18 @@ public class SoundPlayerImpl implements Runnable, SoundPlayer {
 		this.stream.setAutoEnding(true);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.utility.audio.sound.SoundPlayer#start()
-	 */
 	@Override
 	public void start() {
 		this.playingThread.start();
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.utility.audio.sound.SoundPlayer#stop()
-	 */
 	@Override
 	public void stop() {
 		this.playingThread.interrupt();
 	}
 
+	@Override
+	public boolean isRunning() {
+		return this.playingThread.isAlive();
+	}
 }

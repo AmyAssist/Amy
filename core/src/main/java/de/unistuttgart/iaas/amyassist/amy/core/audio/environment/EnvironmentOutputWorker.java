@@ -53,6 +53,12 @@ public class EnvironmentOutputWorker implements Runnable {
 	/** The hook to be executed after the next cancellation */
 	private PostCancellationHook hook = null;
 
+	/**
+	 * The lock to synchronize output. All write access to the cancel state as well as adding elements to queue need to
+	 * be synchronized.
+	 */
+	protected Object outputLock = new Object();
+
 	private Logger logger = LoggerFactory.getLogger(EnvironmentOutputWorker.class);
 
 	/**
@@ -87,13 +93,17 @@ public class EnvironmentOutputWorker implements Runnable {
 	 *            is only called if a stream was really cancelled.
 	 */
 	public void cancel(boolean pCloseStream, PostCancellationHook pHook) {
-		if (!this.shouldCancel) {
-			// Set discard stream first. Because as soon as cancel is set to true. The value of discard stream can be
-			// used.
-			this.closeStream = pCloseStream;
-			this.hook = pHook;
-			this.shouldCancel = true;
-			this.logger.debug("Cancelling output.");
+		synchronized (this.outputLock) {
+			if (!this.shouldCancel) {
+				/*
+				 * Set discard stream first. Because as soon as cancel is set to true. The value of discard stream can
+				 * be used.
+				 */
+				this.closeStream = pCloseStream;
+				this.hook = pHook;
+				this.shouldCancel = true;
+				this.logger.debug("Cancelling output.");
+			}
 		}
 	}
 
@@ -114,10 +124,14 @@ public class EnvironmentOutputWorker implements Runnable {
 			try {
 				currentStream = this.ae.takeHeadOfOutputQueue();
 				needToCloseStream = true;
-				// If cancel was called while waiting for new input we don't want to cancel immediately.
-				// We don't need to reset discard stream because it is not going to be used until cancel is called
-				// again.
-				this.shouldCancel = false;
+				/*
+				 * If cancel was called while waiting for new input we don't want to cancel immediately. We don't need
+				 * to reset cancel stream or the hook because they are not going to be used until cancel is called
+				 * again.
+				 */
+				synchronized (this.outputLock) {
+					this.shouldCancel = false;
+				}
 
 				doOutputWork(currentStream.getInputStream());
 

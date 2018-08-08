@@ -36,7 +36,7 @@ import javax.sound.sampled.AudioSystem;
 
 import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
 import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput;
-import de.unistuttgart.iaas.amyassist.amy.utility.audio.QueuedInputStream;
+import de.unistuttgart.iaas.amyassist.amy.core.audio.QueuedInputStream;
 
 /**
  * An Audio Environment, which does the AudioIO.
@@ -126,7 +126,7 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 		if (!audioToPlay.getFormat().matches(getOutputFormat()))
 			throw new IllegalArgumentException("AudioToPlay has the wrong AudioFormat.");
 
-		synchronized (this.outputQueue) {
+		synchronized (this.outputWorker.outputLock) {
 			switch (behavior) {
 			case INTERRUPT_ALL:
 				this.outputQueue.clear();
@@ -228,6 +228,7 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 	 *             When the Thread is interrupted while waiting for the next element.
 	 */
 	protected AudioOutput takeHeadOfOutputQueue() throws InterruptedException {
+
 		return this.outputQueue.take();
 	}
 }

@@ -21,24 +21,21 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.utility.audio.sound;
+package de.unistuttgart.iaas.amyassist.amy.core.audio.sound;
 
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Path;
 import java.util.Arrays;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
- * A class containing a sound, which can be played.
+ * The implementatio of {@link Sound}
  * 
  * @author Tim Neumann
  */
-public class Sound {
+public class BasicSound implements Sound {
 	private static final int BUFFER_SIZE_INCR = 100;
 
 	private byte[] data;
@@ -54,7 +51,7 @@ public class Sound {
 	 * @throws IOException
 	 *             if an input or output error occurs while reading from the stream.
 	 */
-	public Sound(AudioInputStream audioData) throws IOException {
+	public BasicSound(AudioInputStream audioData) throws IOException {
 		this.format = audioData.getFormat();
 		if (audioData.getFrameLength() != AudioSystem.NOT_SPECIFIED) {
 			this.data = new byte[(int) (audioData.getFrameLength() * audioData.getFormat().getFrameSize())];
@@ -92,71 +89,31 @@ public class Sound {
 		audioData.close();
 	}
 
-	/**
-	 * Creates a new sound from the file at the given URL.
-	 * 
-	 * @param audioFile
-	 *            The URL of the file to load
-	 * @throws UnsupportedAudioFileException
-	 *             When the file at the URL is not in a supported format
-	 * @throws IOException
-	 *             if an input or output error occurs while reading the file
-	 */
-	public Sound(URL audioFile) throws UnsupportedAudioFileException, IOException {
-		AudioSystem.getAudioInputStream(audioFile);
-	}
-
-	/**
-	 * Creates a new sound from the file at the given Path.
-	 * 
-	 * @param audioFile
-	 *            The Path of the file to load
-	 * @throws UnsupportedAudioFileException
-	 *             When the file at the Path is not in a supported format
-	 * @throws IOException
-	 *             if an input or output error occurs while reading the file
-	 */
-	public Sound(Path audioFile) throws UnsupportedAudioFileException, IOException {
-		AudioSystem.getAudioInputStream(audioFile.toFile());
-	}
-
-	/**
-	 * Get a sound player that will play this audio once.
-	 * 
-	 * @return The {@link SoundPlayerImpl}.
-	 */
+	@Override
 	public SoundPlayer getSinglePlayer() {
-		return new SoundPlayerImpl(this.data, this.format, 1);
+		return new BasicSoundPlayer(this.data, this.format, 1);
 	}
 
-	/**
-	 * Get a sound player that will play this audio the given amount of times.
-	 * 
-	 * @param loopCount
-	 *            How often to loop. Must be > 0
-	 * @return The {@link SoundPlayerImpl}
-	 */
+	@Override
 	public SoundPlayer getLoopPlayer(int loopCount) {
 		if (loopCount < 0)
 			throw new IllegalArgumentException("The loop count must be > 0");
-		return new SoundPlayerImpl(this.data, this.format, loopCount);
+		return new BasicSoundPlayer(this.data, this.format, loopCount);
 	}
 
-	/**
-	 * Get a sound player that will play this audio for ever.
-	 * 
-	 * @return The {@link SoundPlayerImpl}
-	 */
+	@Override
 	public SoundPlayer getInfiniteLoopPlayer() {
-		return new SoundPlayerImpl(this.data, this.format, -1);
+		return new BasicSoundPlayer(this.data, this.format, -1);
 	}
 
-	/**
-	 * Get's the length of the sound, expressed in sample frames rather than bytes.
-	 * 
-	 * @return the length in sample frames
-	 */
+	@Override
 	public int getFrameLength() {
 		return this.data.length / this.format.getFrameSize();
 	}
+
+	@Override
+	public AudioFormat getFormat() {
+		return this.format;
+	}
+
 }
