@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
-import java.util.List;
-
 
 /**
  * Manages all natural language interpreter of the plugins and can process the input of natural language
@@ -39,7 +37,7 @@ public interface NLProcessingManager {
 	 *            a class annotated with {@link de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand}
 	 * @param aimContents content of all amy interaction model xml files
 	 */
-	void register(Class<?> natuaralLanguageInterpreter, List<String> aimContents);
+	void register(Class<?> natuaralLanguageInterpreter);
 
 	/**
 	 * Process the input by searching and calling a responsible interpreter for that natural language text

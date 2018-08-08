@@ -34,7 +34,6 @@ import javax.xml.bind.annotation.*;
  * @author Felix Burk
  */
 
-@XmlRootElement(name = "Intent")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AIMIntent {
 

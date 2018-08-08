@@ -23,29 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.slf4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.google.common.collect.Lists;
 
@@ -58,9 +42,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AmyInteractionModel;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
@@ -83,6 +66,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private Logger logger;
 	@Reference
 	private Environment environment;
+	
+	@Reference
+	private LoadAIMService aimLoader;
 
 	@Reference
 	private ServiceLocator serviceLocator;
@@ -108,7 +94,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	@Override
-	public void register(Class<?> naturalLanguageInterpreter, List<String> aimContents) {
+	public void register(Class<?> naturalLanguageInterpreter) {
 		if (!naturalLanguageInterpreter
 				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand.class)) {
 			throw new IllegalArgumentException(
@@ -118,51 +104,16 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		
 		Set<Method> intentMethods = NLIAnnotationReader.getValidIntentMethods(naturalLanguageInterpreter);
 		
-		HashMap<String, Node> aimIntents = new HashMap<>();
-		for(String s : aimContents) {
-			NodeList tmpList = extractIntents(s);
-			for(int i=0; i < tmpList.getLength(); i++) {
-				aimIntents.put(tmpList.item(i).getAttributes().getNamedItem("ref").getTextContent(), tmpList.item(i));
-			}
-		}		
+		List<AmyInteractionModel> aims = this.aimLoader.getAims();
 		
-		HashMap<AIMIntent, Method> aimToMethod = new HashMap<>();
-		Iterator<Method> i = intentMethods.iterator();
-		while(i.hasNext()) {
-			Method method = i.next();
-			String s = naturalLanguageInterpreter.getName() + "." + method.getAnnotation(Intent.class).value();
-			if(aimIntents.containsKey(s)) {
-				AIMIntent intent = unmarshal(aimIntents.get(s));
-				if(intent != null) {
-					aimToMethod.put(unmarshal(aimIntents.get(s)), method);
-				}
-			}else {
-				this.logger.error("no matching intent found in xml for {}", s);
-			}
-		}
+		aims.forEach(AmyInteractionModel::printSelf);
+		
 
 		for (Method e : grammars) {
 			PartialNLI partialNLI = this.generatePartialNLI(naturalLanguageInterpreter, e);
 			this.register.add(partialNLI);
 			this.registeredNodeList.add(partialNLI.getGrammar());
 		}
-	}
-
-	/**
-	 * @param node
-	 * @return
-	 */
-	private AIMIntent unmarshal(Node node) {
-		try {
-			JAXBContext jc = JAXBContext.newInstance(AIMIntent.class);
-			Unmarshaller unmarshaller = jc.createUnmarshaller();
-			AIMIntent intentS = (AIMIntent) unmarshaller.unmarshal(node);
-			return intentS;
-		} catch (JAXBException e1) {
-			e1.printStackTrace();
-			this.logger.error("JAXBException Intent with ref {} could not be parsed", node.getAttributes().getNamedItem("ref").getTextContent());
-		}
-		return null;
 	}
 
 	private PartialNLI generatePartialNLI(Class<?> natuaralLanguageInterpreter, Method method) {
@@ -204,26 +155,5 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			return "I did not understand that";
 		}
 		
-	}
-	
-	/**
-	 * extracts <Intent> tags from amy interaction model xmls
-	 * 
-	 * @param s amy interaction model content
-	 * @return list of nodes with <Intent> tag
-	 */
-	private NodeList extractIntents(String s) {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		try {
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			
-			ByteArrayInputStream input = new ByteArrayInputStream(s.getBytes("UTF-8"));
-			Document doc = builder.parse(input);
-			Element root = doc.getDocumentElement();
-			return root.getElementsByTagName("Intent");
-		} catch (ParserConfigurationException | SAXException | IOException e) {
-			this.logger.error("error parsing xml " + e.getMessage());
-		}
-		return null;
 	}
 }

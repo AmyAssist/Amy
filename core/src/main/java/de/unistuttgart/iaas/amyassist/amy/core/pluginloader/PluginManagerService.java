@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
@@ -194,7 +193,7 @@ public class PluginManagerService implements PluginManager {
 	private void processPlugin(IPlugin plugin) {
 		for (Class<?> cls : plugin.getClasses()) {
 			if (cls.isAnnotationPresent(SpeechCommand.class)) {
-				this.nlProcessingManager.register(cls, plugin.getAIMContent());
+				this.nlProcessingManager.register(cls);
 			}
 			if (cls.isAnnotationPresent(Service.class)) {
 				this.di.register(cls);

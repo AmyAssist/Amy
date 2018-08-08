@@ -23,10 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -40,8 +37,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.PreDestroy;
 
@@ -96,8 +91,6 @@ public class PluginLoader {
 
 			ArrayList<Class<?>> classes = new ArrayList<>();
 			
-			List<String> aimContent = new ArrayList<>();
-
 			while (jarEntries.hasMoreElements()) {
 				JarEntry jarEntry = jarEntries.nextElement();
 				if (jarEntry.getName().endsWith(".class")) {
@@ -108,17 +101,9 @@ public class PluginLoader {
 						Class<?> c = Class.forName(className, true, childLoader);
 						classes.add(c);
 					}
-				}else if (jarEntry.getName().endsWith(".aim.xml")){
-					InputStream stream = childLoader.getResourceAsStream(jarEntry.getName());
-					
-					try(BufferedReader reader = new BufferedReader(new InputStreamReader(stream))){
-						aimContent.add(reader.lines().collect(Collectors.joining()));
-						reader.close();
-					}
 				}
 			}
 
-			plugin.setAIMContent(aimContent);
 			plugin.setClassLoader(childLoader);
 			plugin.setManifest(mf);
 			plugin.setClasses(classes);
@@ -146,7 +131,7 @@ public class PluginLoader {
 			this.logger.warn("Can't get version of plugin {}", name);
 		}
 
-		this.logger.info("loaded plugin {} with {} classes and {} aims", name, plugin.getClasses().size(), plugin.getAIMContent().size());
+		this.logger.info("loaded plugin {} with {} classes", name, plugin.getClasses().size());
 		this.plugins.put(plugin.getUniqueName(), plugin);
 	}
 
