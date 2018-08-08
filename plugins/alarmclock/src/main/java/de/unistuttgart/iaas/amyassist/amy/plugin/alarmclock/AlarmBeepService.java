@@ -29,21 +29,20 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.slf4j.Logger;
 
+import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.utility.audio.sound.Sound;
+import de.unistuttgart.iaas.amyassist.amy.utility.audio.sound.SoundPlayer;
 
 /**
  * This class controls the alarm sound file, which is used for the alarm clock
@@ -60,7 +59,11 @@ public class AlarmBeepService {
 	@Reference
 	private Environment env;
 
-	private Clip clip;
+	@Reference
+	private AudioManager am;
+
+	private Sound beepSound;
+	private SoundPlayer beepPlayer;
 
 	private boolean isBeeping = false;
 
@@ -73,11 +76,8 @@ public class AlarmBeepService {
 		InputStream resolve = this.getClass().getResourceAsStream(ALARMSOUND);
 		try (InputStream bufferedIn = new BufferedInputStream(resolve);
 				AudioInputStream soundIn = AudioSystem.getAudioInputStream(bufferedIn);) {
-			AudioFormat format = soundIn.getFormat();
-			DataLine.Info info = new DataLine.Info(Clip.class, format);
-			this.clip = (Clip) AudioSystem.getLine(info);
-			this.clip.open(soundIn);
-		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+			this.beepSound = new Sound(soundIn);
+		} catch (IOException | UnsupportedAudioFileException e) {
 			this.logger.error("Cant play alarm sound", e);
 		}
 	}
@@ -131,8 +131,13 @@ public class AlarmBeepService {
 	 */
 	private void startBeeping() {
 		if (!this.isBeeping) {
+			this.beepPlayer = this.beepSound.getInfiniteLoopPlayer();
+			if (!this.am.getAllRegisteredAudioEnvironments().isEmpty()) {
+				this.am.playAudio(this.am.getAllRegisteredAudioEnvironments().iterator().next(),
+						this.beepPlayer.getAudioStream(), AudioManager.OutputBehavior.SUSPEND);
+			}
+			this.beepPlayer.start();
 			this.isBeeping = true;
-			this.clip.loop(Clip.LOOP_CONTINUOUSLY);
 		}
 	}
 
@@ -141,15 +146,14 @@ public class AlarmBeepService {
 	 */
 	private void stopBeeping() {
 		if (this.isBeeping) {
-			this.clip.stop();
-			this.clip.setFramePosition(0);
+			this.beepPlayer.stop();
 			this.isBeeping = false;
 		}
 	}
 
 	@PreDestroy
 	private void preDestroy() {
-		this.clip.close();
+		this.stopBeeping();
 	}
 
 }
