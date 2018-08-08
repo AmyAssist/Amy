@@ -21,33 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.test;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
 /**
- * Simple in-memory ConfigurationLoader implementation for tests
+ * Exception that is thrown if a specific configuration was not found but must be loaded.
  * 
  * @author Leon Kiefer
  */
-@Service
-public class TestConfiguration implements ConfigurationLoader {
+public class ConfigurationNotFoundException extends RuntimeException {
 
-	private Map<String, Properties> map = new HashMap<>();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6884409079204932996L;
 
-	@Override
-	public Properties load(String configurationName) {
-		return this.map.get(configurationName);
-	}
-
-	@Override
-	public void store(String configurationName, Properties properties) {
-		this.map.put(configurationName, properties);
+	/**
+	 * Create a new exception with a message.
+	 * 
+	 * @param message
+	 *            the string message
+	 */
+	public ConfigurationNotFoundException(String message) {
+		super(message);
 	}
 
 }

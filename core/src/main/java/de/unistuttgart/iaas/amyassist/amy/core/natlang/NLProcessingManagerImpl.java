@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.Lists;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -73,7 +73,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private final List<AGFNode> registeredNodeList = new ArrayList<>();
 
 	@Reference
-	private ConfigurationLoader configurationLoader;
+	private ConfigurationManager configurationLoader;
 	private static final String CONFIG_NAME = "core.config";
 	private static final String PROPERTY_ENABLE_STEMMER = "enableStemmer";
 	private static final String PROBERTY_LANGUAGE = "chooseLanguage";
@@ -82,9 +82,10 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	@PostConstruct
 	private void setup() {
-		this.stemmerEnabled = Boolean
-				.parseBoolean(this.configurationLoader.load(CONFIG_NAME).getProperty(PROPERTY_ENABLE_STEMMER, "true"));
-		this.languageString = this.configurationLoader.load(CONFIG_NAME).getProperty(PROBERTY_LANGUAGE, "EN");
+		this.stemmerEnabled = Boolean.parseBoolean(this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
+				.getProperty(PROPERTY_ENABLE_STEMMER, "true"));
+		this.languageString = this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
+				.getProperty(PROBERTY_LANGUAGE, "EN");
 	}
 
 	@Override
