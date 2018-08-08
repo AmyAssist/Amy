@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio;
+package de.unistuttgart.iaas.amyassist.amy.utility.audio;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,6 +55,11 @@ public class QueuedInputStream extends InputStream {
 	private boolean ended;
 
 	/**
+	 * Whether to automatically end this stream, when the queue runs dry.
+	 */
+	private boolean autoEnding;
+
+	/**
 	 * Initializes this queued input stream
 	 */
 	public QueuedInputStream() {
@@ -68,6 +73,10 @@ public class QueuedInputStream extends InputStream {
 			throw new IOException("Stream closed.");
 		if (this.ended)
 			return -1;
+		if (this.autoEnding && this.queue.isEmpty()) {
+			this.ended = true;
+			return -1;
+		}
 		try {
 			int i = this.queue.take();
 			if (i == -1) {
@@ -108,11 +117,30 @@ public class QueuedInputStream extends InputStream {
 	}
 
 	/**
-	 * Get's {@link #queue queue}
+	 * Get's {@link #queue queue}. See {@link #queue queue} for information on what may be written into that.
 	 * 
 	 * @return queue
 	 */
 	public BlockingQueue<Integer> getQueue() {
 		return this.queue;
+	}
+
+	/**
+	 * Get's {@link #autoEnding autoEnding}
+	 * 
+	 * @return autoEnding
+	 */
+	public boolean isAutoEnding() {
+		return this.autoEnding;
+	}
+
+	/**
+	 * Set's {@link #autoEnding autoEnding}
+	 * 
+	 * @param autoEnding
+	 *            autoEnding
+	 */
+	public void setAutoEnding(boolean autoEnding) {
+		this.autoEnding = autoEnding;
 	}
 }

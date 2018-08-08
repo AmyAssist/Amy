@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.QueuedInputStream;
+import de.unistuttgart.iaas.amyassist.amy.utility.audio.QueuedInputStream;
 
 /**
  * A worker doing to audio input for a audio environment
@@ -142,8 +142,7 @@ public class EnvironmentInputWorker implements Runnable {
 				// If it failed, try again or end the stream
 				if (!success) {
 					if (lowestSize < BYTE_BUFFER_SIZE / 10) {
-						qis.getQueue().clear();
-						qis.getQueue().put(-1);
+						qis.setAutoEnding(true);
 						toRemove.add(qis);
 						this.logger.warn("Full queue. Another queue needs bytes. Ending stream.");
 					} else {

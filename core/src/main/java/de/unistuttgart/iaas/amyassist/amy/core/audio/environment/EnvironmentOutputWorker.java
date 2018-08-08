@@ -31,7 +31,6 @@ import javax.sound.sampled.AudioInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager.OutputBehavior;
 import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput;
 
 /**
@@ -47,10 +46,12 @@ public class EnvironmentOutputWorker implements Runnable {
 	private AbstractAudioEnvironment ae;
 	/** Whether this worker should cancel the current output. */
 	private boolean shouldCancel = false;
-	/** Whether the stream should be discarded. */
-	private boolean discardStream = false;
+	/** Whether the stream should be closed. */
+	private boolean closeStream = false;
 	/** Whether the worker is currently outputting. */
 	private boolean currentlyOutputting = false;
+	/** The hook to be executed after the next cancellation */
+	private PostCancellationHook hook = null;
 
 	private Logger logger = LoggerFactory.getLogger(EnvironmentOutputWorker.class);
 
@@ -67,16 +68,32 @@ public class EnvironmentOutputWorker implements Runnable {
 	/**
 	 * Cancels the current output of this worker without stopping to worker.
 	 * 
-	 * @param pDiscardStream
-	 *            Whether the stream that was being played should be discarded. If false this results in the stream
-	 *            being added to the front of the queue again.
+	 * @param pCloseStream
+	 *            Whether the stream that was being played should be closed.
 	 */
-	public void cancel(boolean pDiscardStream) {
+	public void cancel(boolean pCloseStream) {
+		cancel(pCloseStream, null);
+	}
+
+	/**
+	 * Cancels the current output of this worker without stopping the worker.
+	 * 
+	 * This version does not rein
+	 * 
+	 * @param pCloseStream
+	 *            Whether the stream should be discarded.
+	 * @param pHook
+	 *            The hook executed after the cancellation before the next element from the queue is read. This method
+	 *            is only called if a stream was really cancelled.
+	 */
+	public void cancel(boolean pCloseStream, PostCancellationHook pHook) {
 		if (!this.shouldCancel) {
 			// Set discard stream first. Because as soon as cancel is set to true. The value of discard stream can be
 			// used.
-			this.discardStream = pDiscardStream;
+			this.closeStream = pCloseStream;
+			this.hook = pHook;
 			this.shouldCancel = true;
+			this.logger.debug("Cancelling output.");
 		}
 	}
 
@@ -102,16 +119,13 @@ public class EnvironmentOutputWorker implements Runnable {
 				// again.
 				this.shouldCancel = false;
 
-				boolean finished = doOutputWork(currentStream.getInputStream());
-				/*
-				 * Do not need to check for should cancel. Because if not finished, there is only one way to get here:
-				 * By canceling.
-				 */
-				if (!finished && !this.discardStream) {
-					this.ae.playAudio(currentStream, OutputBehavior.QUEUE_PRIORITY);
+				doOutputWork(currentStream.getInputStream());
+
+				if (this.shouldCancel && !this.closeStream) {
 					needToCloseStream = false;
 				}
 			} catch (InterruptedException | InterruptedIOException e1) {
+				this.logger.trace("Interrupted.", e1);
 				Thread.currentThread().interrupt();
 			} catch (IOException e) {
 				this.logger.warn("IO Exception in audio worker.", e);
@@ -119,6 +133,9 @@ public class EnvironmentOutputWorker implements Runnable {
 				this.currentlyOutputting = false;
 				if (needToCloseStream && currentStream != null) {
 					currentStream.tryToCloseStream();
+				}
+				if (this.shouldCancel && this.hook != null) {
+					this.hook.execute(currentStream);
 				}
 			}
 
@@ -160,4 +177,20 @@ public class EnvironmentOutputWorker implements Runnable {
 		return (readBytes < 0);
 	}
 
+	/**
+	 * A interface to specify a method to be called after the output has been cancelled.
+	 * 
+	 * @author Tim Neumann
+	 */
+	@FunctionalInterface
+	public interface PostCancellationHook {
+		/**
+		 * Method that is executed.
+		 * 
+		 * @param cancelledStream
+		 *            The output that was playing when the worker was cancelled. This may already be closed, if the
+		 *            cancel specified to close the stream.
+		 */
+		void execute(AudioOutput cancelledStream);
+	}
 }

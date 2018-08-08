@@ -36,7 +36,7 @@ import javax.sound.sampled.AudioSystem;
 
 import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
 import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.QueuedInputStream;
+import de.unistuttgart.iaas.amyassist.amy.utility.audio.QueuedInputStream;
 
 /**
  * An Audio Environment, which does the AudioIO.
@@ -130,12 +130,12 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 			switch (behavior) {
 			case INTERRUPT_ALL:
 				this.outputQueue.clear();
-				this.outputWorker.cancel(true);
 				this.outputQueue.addFirst(audioToPlay);
+				this.outputWorker.cancel(true);
 				break;
 			case INTERRUPT_CURRENT:
-				this.outputWorker.cancel(true);
 				this.outputQueue.addFirst(audioToPlay);
+				this.outputWorker.cancel(true);
 				break;
 			case QUEUE:
 				this.outputQueue.add(audioToPlay);
@@ -144,8 +144,16 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 				this.outputQueue.addFirst(audioToPlay);
 				break;
 			case SUSPEND:
-				this.outputWorker.cancel(false);
 				this.outputQueue.addFirst(audioToPlay);
+				this.outputWorker.cancel(false, ao -> {
+					synchronized (this.outputQueue) {
+						// This get's called before the above element get's taken out of the queue, so we need to take
+						// that and then re add it at the front of the queue.
+						AudioOutput newOutput = this.outputQueue.pollFirst();
+						this.outputQueue.addFirst(ao);
+						this.outputQueue.addFirst(newOutput);
+					}
+				});
 				break;
 			default:
 				throw new IllegalStateException("Unknown behavior");
