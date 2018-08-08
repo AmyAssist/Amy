@@ -77,7 +77,7 @@ public enum Sounds {
 		try {
 			return AudioSystem.getAudioInputStream(this.getClass().getClassLoader().getResource(this.path));
 		} catch (UnsupportedAudioFileException e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 }

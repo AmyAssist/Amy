@@ -27,7 +27,6 @@ import java.util.NoSuchElementException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.TargetDataLine;
 
 import org.slf4j.Logger;
 
@@ -93,12 +92,11 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	 *             If no audio environment could be found.
 	 */
 	private AudioInputStream createNewAudioInputStream() {
-		TargetDataLine mic = null;
 		try {
 			return this.am
 					.getInputStreamOfAudioEnvironment(this.am.getAllRegisteredAudioEnvironments().iterator().next());
 		} catch (NoSuchElementException e) {
-			throw new RuntimeException("Could not find an audio environment");
+			throw new IllegalStateException("Could not find an audio environment");
 		}
 	}
 

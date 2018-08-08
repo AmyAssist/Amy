@@ -89,7 +89,7 @@ public class OutputImpl implements Output {
 	@Override
 	public void stopOutput() {
 		List<UUID> registeredAudioEnvs = this.am.getAllRegisteredAudioEnvironments();
-		if (registeredAudioEnvs.size() > 0) {
+		if (!registeredAudioEnvs.isEmpty()) {
 			this.am.stopAudioOutput(registeredAudioEnvs.iterator().next());
 		}
 	}
