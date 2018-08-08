@@ -40,7 +40,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="de.unistuttgart.iaas.amyassist.amy" level="DEBUG" />
+	<logger name="de.unistuttgart.iaas.amyassist.amy" level="INFO" />
 	<logger name="marytts" level="WARN" />
 	<logger name="default.config.edu.cmu.sphinx" level="WARN" />
 	<logger name="org.glassfish.grizzly.http.server" level="WARN" />
