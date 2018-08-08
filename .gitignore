@@ -1,5 +1,8 @@
 target/
+bin/
 *.gram
+.classpath
+.project
 
 temp/
 

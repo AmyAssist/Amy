@@ -47,18 +47,13 @@
 			<artifactId>log4j-over-slf4j</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-di</artifactId>
 			<version>${amy.di.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-message-hub</artifactId>
-			<version>${amy.message-hub.version}</version>
+			<artifactId>amy-message-hub-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
@@ -70,28 +65,13 @@
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-http-server</artifactId>
-			<version>${amy.http-server.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-plugin-manager-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-rest-resources</artifactId>
-			<version>${amy.rest-resources.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-testing-framework</artifactId>
 			<version>${amy.testing-framework.version}</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-registry</artifactId>
-			<version>${amy.registry.version}</version>
 		</dependency>
 		<!-- CMU Sphinx for SR -->
 		<dependency>
@@ -163,48 +143,4 @@
 			<artifactId>junit-jupiter-params</artifactId>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.3</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>de.unistuttgart.iaas.amyassist.amy.core.Main</mainClass>
-								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-									<resource>META-INF/de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService</resource>
-								</transformer>
-							</transformers>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.0</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>
