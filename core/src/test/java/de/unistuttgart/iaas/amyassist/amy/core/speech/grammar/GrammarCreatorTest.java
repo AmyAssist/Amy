@@ -80,7 +80,7 @@ public class GrammarCreatorTest {
 
 	@Test
 	public void test() {
-		this.objectsCreator.completeSetup();
+		this.objectsCreator.deploy();
 		assertThat(this.objectsCreator.getMainGrammar().getName(), equalTo(this.grammarName));
 		assertThat(this.objectsCreator.getMainGrammar().getFile(), equalTo(this.grammarFile.toFile()));
 		assertThat(this.objectsCreator.getSwitchableGrammars().isEmpty(), equalTo(true));
