@@ -1,5 +1,7 @@
 target/
 *.gram
+.classpath
+.project
 
 temp/
 
