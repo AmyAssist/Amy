@@ -1,4 +1,5 @@
 target/
+bin/
 *.gram
 .classpath
 .project
