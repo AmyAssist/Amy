@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -42,7 +41,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
@@ -113,22 +111,14 @@ public class AlarmClockResource implements Resource {
 	@Path("alarms/{pathid}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Timestamp editAlarm(@PathParam("pathid") int alarmNumber,
-			@QueryParam("mode") @DefaultValue("edit") String mode, Timestamp alarmTime) {
+	public Alarm editAlarm(@PathParam("pathid") int alarmNumber, @QueryParam("mode") @DefaultValue("edit") String mode,
+			Alarm alarmInc) {
 		switch (mode) {
 		case "edit":
-			if (alarmTime == null || !alarmTime.isValid()) {
-				throw new WebApplicationException("The given time wasn't a valid time", Status.BAD_REQUEST);
-			}
-			Alarm alarm;
-			try {
-				alarm = this.logic.editAlarm(alarmNumber, alarmTime.getHour(), alarmTime.getMinute());
-			} catch (NoSuchElementException e) {
-				throw new WebApplicationException("there is no alarm" + alarmNumber, e, Status.NOT_FOUND);
-			}
-			Timestamp ts = new Timestamp(alarm);
-			ts.setLink(createAlarmPath(alarm.getId()));
-			return ts;
+			Alarm alarm = alarmInc;
+			alarmInc = this.logic.editAlarm(alarmNumber, alarm.getAlarmTime().getHour(),
+					alarm.getAlarmTime().getMinute());
+			return alarm;
 		case "activate":
 			this.logic.activateAlarm(alarmNumber);
 			break;
@@ -155,13 +145,10 @@ public class AlarmClockResource implements Resource {
 	@Path("alarms/new")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Timestamp newAlarm(Timestamp alarmTime) {
-		if (alarmTime.isValid()) {
-			Alarm result = this.logic.setAlarm(alarmTime.getHour(), alarmTime.getMinute());
-			alarmTime.setLink(createAlarmPath(result.getId()));
-			return alarmTime;
-		}
-		throw new WebApplicationException("The given time wasn't a valid time", Status.BAD_REQUEST);
+	public Alarm newAlarm(Alarm alarmTime) {
+
+		Alarm result = this.logic.setAlarm(alarmTime.getAlarmTime().getHour(), alarmTime.getAlarmTime().getMinute());
+		return result;
 	}
 
 	/**
@@ -171,11 +158,6 @@ public class AlarmClockResource implements Resource {
 	@Path("alarms/reset")
 	public void resetAlarms() {
 		this.logic.resetAlarms();
-	}
-
-	private URI createAlarmPath(int id) {
-		return this.uri.getBaseUriBuilder().path(AlarmClockResource.class).path(AlarmClockResource.class, "getAlarm")
-				.build(Integer.valueOf(id));
 	}
 
 	/**

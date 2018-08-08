@@ -25,6 +25,10 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import java.time.LocalTime;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalTimeAdapter;
+
 /**
  * Class that defines timer attributes and behaviour
  * 
@@ -33,8 +37,13 @@ import java.time.LocalTime;
 public class Alarm {
 
 	private int id;
+	@XmlJavaTypeAdapter(LocalTimeAdapter.class)
 	private LocalTime alarmTime;
 	private boolean active;
+
+	public Alarm() {
+
+	}
 
 	/**
 	 * Constructor for the alarm. Every alarm is initially set active
