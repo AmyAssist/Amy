@@ -59,7 +59,7 @@ public class SSEResource {
 
         sr.setResource(this);
 
-        if (sink != null && !sink.isClosed()) {
+        if (this.sink != null && !this.sink.isClosed()) {
             logger.warn("New SSE client connected before the old one disconnected");
         }
 
