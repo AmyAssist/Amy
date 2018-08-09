@@ -65,7 +65,8 @@ public class LocalAudioEnvironment extends AbstractAudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#readFromInput(byte[], int, int)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#readFromInput(byte[],
+	 *      int, int)
 	 */
 	@Override
 	protected int readFromInput(byte[] buffer, int off, int len) {
@@ -73,7 +74,8 @@ public class LocalAudioEnvironment extends AbstractAudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#writeToOutput(byte[], int, int)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#writeToOutput(byte[],
+	 *      int, int)
 	 */
 	@Override
 	protected void writeToOutput(byte[] buffer, int off, int len) {
@@ -131,7 +133,16 @@ public class LocalAudioEnvironment extends AbstractAudioEnvironment {
 			this.tdl.stop();
 		}
 
-		this.sdl.close();
-		this.tdl.close();
+		try {
+			this.sdl.close();
+		} catch (RuntimeException e) {
+			// Needed because of a pulse audio bug, where close throws weird exceptions //NOSONAR
+		}
+
+		try {
+			this.tdl.close();
+		} catch (RuntimeException e) {
+			// Needed because of a pulse audio bug, where close throws weird exceptions //NOSONAR
+		}
 	}
 }

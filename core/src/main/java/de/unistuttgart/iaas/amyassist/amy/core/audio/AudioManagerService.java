@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core.audio;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import javax.sound.sampled.AudioFormat;
@@ -67,16 +66,6 @@ public class AudioManagerService implements AudioManager {
 	@Override
 	public AudioInputStream getInputStreamOfAudioEnvironment(UUID identifier) {
 		return this.iam.getInputStreamOfAudioEnvironment(identifier);
-	}
-
-	@Override
-	public UUID getLocalAudioEnvironmentIdentifier() throws NoSuchElementException {
-		return this.iam.getLocalAudioEnvironmentIdentifier();
-	}
-
-	@Override
-	public boolean hasLocalAudioEnvironment() {
-		return this.iam.hasLocalAudioEnvironment();
 	}
 
 	@Override

@@ -36,6 +36,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
+import de.unistuttgart.iaas.amyassist.amy.core.audio.LocalAudio;
 import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.Sound;
 import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.SoundFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.SoundPlayer;
@@ -65,6 +66,9 @@ public class AlarmBeepService {
 
 	@Reference
 	private AudioManager am;
+
+	@Reference
+	private LocalAudio la;
 
 	private Sound beepSound;
 	private SoundPlayer beepPlayer;
@@ -135,8 +139,8 @@ public class AlarmBeepService {
 	private void startBeeping() {
 		if (this.beepPlayer == null || !this.beepPlayer.isRunning()) {
 			this.beepPlayer = this.beepSound.getInfiniteLoopPlayer();
-			if (this.am.hasLocalAudioEnvironment()) {
-				this.am.playAudio(this.am.getLocalAudioEnvironmentIdentifier(), this.beepPlayer.getAudioStream(),
+			if (this.la.isLocalAudioAvailable()) {
+				this.am.playAudio(this.la.getLocalAudioEnvironmentIdentifier(), this.beepPlayer.getAudioStream(),
 						AudioManager.OutputBehavior.SUSPEND);
 			}
 			this.beepPlayer.start();

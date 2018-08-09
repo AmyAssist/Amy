@@ -26,7 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.audio;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,12 +33,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
 
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.LocalAudioEnvironment;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -54,9 +51,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 @Service(InternalAudioManager.class)
 public class InternalAudioManagerService implements InternalAudioManager, RunnableService {
 
-	private static final String CONFIG_NAME = "audio.config";
-	private static final String PROPERTY_LOCAL_AUDIO = "enableLocalAudio";
-
 	@Reference
 	private Logger logger;
 
@@ -69,33 +63,9 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 
 	private boolean running = false;
 
-	private UUID local = null;
-
 	@PostConstruct
 	private void init() {
-		loadAndCheckProperties();
-
 		this.registry = new ConcurrentHashMap<>();
-
-		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_LOCAL_AUDIO))) {
-			try {
-				AudioEnvironment localAe = new LocalAudioEnvironment(getDefaultInputAudioFormat(),
-						getDefaultOutputAudioFormat());
-				this.registerAudioEnvironment(localAe);
-				this.local = localAe.getAudioEnvironmentIdentifier();
-			} catch (LineUnavailableException e) {
-				this.logger.error("Could not initialize local audio environment.", e);
-			}
-		}
-
-	}
-
-	private void loadAndCheckProperties() {
-		this.config = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
-		if (this.config == null)
-			throw new IllegalStateException("Config for audio manager missing.");
-		if (this.config.getProperty(PROPERTY_LOCAL_AUDIO) == null)
-			throw new IllegalStateException("Property " + PROPERTY_LOCAL_AUDIO + " missing in audio manager config.");
 	}
 
 	@Override
@@ -159,18 +129,6 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 	public AudioInputStream getInputStreamOfAudioEnvironment(UUID identifier) {
 		AudioEnvironment ae = safelyGetEnv(identifier);
 		return ae.getAudioInputStream();
-	}
-
-	@Override
-	public UUID getLocalAudioEnvironmentIdentifier() throws NoSuchElementException {
-		if (!this.hasLocalAudioEnvironment())
-			throw new NoSuchElementException("There is no loacl audio environment in this audio manager");
-		return this.local;
-	}
-
-	@Override
-	public boolean hasLocalAudioEnvironment() {
-		return this.local != null;
 	}
 
 	@Override

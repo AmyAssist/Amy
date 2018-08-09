@@ -24,12 +24,15 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import java.util.NoSuchElementException;
+import java.util.Properties;
 
 import javax.sound.sampled.AudioInputStream;
 
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
+import de.unistuttgart.iaas.amyassist.amy.core.audio.LocalAudio;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -47,6 +50,9 @@ import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 @Service(LocalAudioUserInteraction.class)
 public class LocalAudioUserInteraction implements AudioUserInteraction {
 
+	private static final String CONFIG_NAME = "localSpeech.config";
+	private static final String PROPERTY_ENABLE = "enable";
+
 	@Reference
 	private Logger logger;
 
@@ -60,27 +66,51 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	private AudioManager am;
 
 	@Reference
+	private LocalAudio la;
+
+	@Reference
 	private GrammarObjectsCreator grammarData;
 
 	@Reference
 	private MessageHub messageHub;
 
+	@Reference
+	private ConfigurationManager configurationManager;
+
+	private Properties config;
+
 	private SpeechRecognizerManager localRecognition;
 
 	@PostConstruct
 	private void init() {
-		this.localRecognition = new LocalSpeechRecognizerManager(createNewAudioInputStream(), this.inputHandler,
-				this.tts, this.grammarData, this.messageHub);
+		loadAndCheckProperties();
+
+		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_ENABLE))) {
+			this.localRecognition = new LocalSpeechRecognizerManager(createNewAudioInputStream(), this.inputHandler,
+					this.tts, this.grammarData, this.messageHub);
+		}
+	}
+
+	private void loadAndCheckProperties() {
+		this.config = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
+		if (this.config == null)
+			throw new IllegalStateException("Config for audio manager missing.");
+		if (this.config.getProperty(PROPERTY_ENABLE) == null)
+			throw new IllegalStateException("Property " + PROPERTY_ENABLE + " missing in audio manager config.");
 	}
 
 	@Override
 	public void start() {
-		this.localRecognition.start();
+		if (this.localRecognition != null) {
+			this.localRecognition.start();
+		}
 	}
 
 	@Override
 	public void stop() {
-		this.localRecognition.stop();
+		if (this.localRecognition != null) {
+			this.localRecognition.stop();
+		}
 	}
 
 	/**
@@ -92,9 +122,9 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	 */
 	private AudioInputStream createNewAudioInputStream() {
 		try {
-			return this.am.getInputStreamOfAudioEnvironment(this.am.getLocalAudioEnvironmentIdentifier());
+			return this.am.getInputStreamOfAudioEnvironment(this.la.getLocalAudioEnvironmentIdentifier());
 		} catch (NoSuchElementException e) {
-			throw new IllegalStateException("Could not find an audio environment");
+			throw new IllegalStateException("Could not get local audio environment", e);
 		}
 	}
 }

@@ -30,6 +30,7 @@ import javax.sound.sampled.AudioInputStream;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
+import de.unistuttgart.iaas.amyassist.amy.core.audio.LocalAudio;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
@@ -49,10 +50,12 @@ public class OutputImpl implements Output {
 	private TextToSpeech tts;
 	@Reference
 	private AudioManager am;
+	@Reference
+	private LocalAudio la;
 
 	private void outputAudioStream(AudioInputStream ais) {
-		if (this.am.hasLocalAudioEnvironment()) {
-			this.am.playAudio(this.am.getLocalAudioEnvironmentIdentifier(), ais, AudioManager.OutputBehavior.QUEUE);
+		if (this.la.isLocalAudioAvailable()) {
+			this.am.playAudio(this.la.getLocalAudioEnvironmentIdentifier(), ais, AudioManager.OutputBehavior.QUEUE);
 		}
 	}
 
@@ -85,15 +88,15 @@ public class OutputImpl implements Output {
 	 */
 	@Override
 	public void stopOutput() {
-		if (this.am.hasLocalAudioEnvironment()) {
-			this.am.stopAudioOutput(this.am.getLocalAudioEnvironmentIdentifier());
+		if (this.la.isLocalAudioAvailable()) {
+			this.am.stopAudioOutput(this.la.getLocalAudioEnvironmentIdentifier());
 		}
 	}
 
 	@Override
 	public boolean isCurrentlyOutputting() {
-		if (!this.am.hasLocalAudioEnvironment())
-			return this.am.isAudioEnvironmentCurrentlyOutputting(this.am.getLocalAudioEnvironmentIdentifier());
+		if (!this.la.isLocalAudioAvailable())
+			return this.am.isAudioEnvironmentCurrentlyOutputting(this.la.getLocalAudioEnvironmentIdentifier());
 		return false;
 	}
 }
