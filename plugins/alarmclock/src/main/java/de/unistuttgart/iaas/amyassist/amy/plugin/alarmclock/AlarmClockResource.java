@@ -27,13 +27,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -111,25 +109,28 @@ public class AlarmClockResource implements Resource {
 	@Path("alarms/{pathid}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Alarm editAlarm(@PathParam("pathid") int alarmNumber, @QueryParam("mode") @DefaultValue("edit") String mode,
-			Alarm alarmInc) {
-		switch (mode) {
-		case "edit":
-			Alarm alarm = alarmInc;
-			alarmInc = this.logic.editAlarm(alarmNumber, alarm.getAlarmTime().getHour(),
-					alarm.getAlarmTime().getMinute());
-			return alarm;
-		case "activate":
+	public Alarm editAlarm(@PathParam("pathid") int alarmNumber, Alarm alarmInc) {
+		Alarm alarm = alarmInc;
+		this.logic.editAlarm(alarmNumber, alarm.getAlarmTime().getHour(), alarm.getAlarmTime().getMinute());
+		return alarm;
+	}
+
+	/**
+	 * @param alarmNumber
+	 * @param mode
+	 * @param alarmInc
+	 * @return
+	 */
+	@POST
+	@Path("alarms/de.activate/{pathid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Alarm activatedeactivateAlarm(@PathParam("pathid") int alarmNumber, Alarm alarmInc) {
+		Alarm alarm = alarmInc;
+		if (!alarm.isActive()) {
 			this.logic.activateAlarm(alarmNumber);
-			break;
-		case "delete":
-			this.logic.deleteAlarm(alarmNumber);
-			break;
-		case "deactivate":
+		} else if (alarm.isActive()) {
 			this.logic.deactivateAlarm(alarmNumber);
-			break;
-		default:
-			throw new WebApplicationException(500);
 		}
 		return null;
 	}
