@@ -146,7 +146,7 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 			case SUSPEND:
 				this.outputQueue.addFirst(audioToPlay);
 				this.outputWorker.cancel(false, ao -> {
-					synchronized (this.outputQueue) {
+					synchronized (this.outputWorker.outputLock) {
 						// This get's called before the above element get's taken out of the queue, so we need to take
 						// that and then re add it at the front of the queue.
 						AudioOutput newOutput = this.outputQueue.pollFirst();
