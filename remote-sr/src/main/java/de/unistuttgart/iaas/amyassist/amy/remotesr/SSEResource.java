@@ -24,6 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.remotesr;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -39,7 +41,7 @@ import javax.ws.rs.sse.SseEventSink;
  * @author Benno Krauß
  */
 @Path("remotesr")
-public class SSEResource {
+public class SSEResource implements Resource {
 
     @Reference
     private RemoteSR sr;
@@ -51,5 +53,9 @@ public class SSEResource {
 
         SSEClient newClient = new SSEClient(sink, sse);
         sr.setClient(newClient);
+    }
+
+    public ResourceEntity getPluginDescripion() {
+        return null;
     }
 }

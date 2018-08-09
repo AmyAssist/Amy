@@ -23,7 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.remotesr;
 
-import javax.annotation.Resource;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -41,9 +43,8 @@ import java.nio.file.Paths;
  * Resource to supply the static sr website for chrome
  * @author Benno Krauß
  */
-@Resource
 @Path("remotesr")
-public class StaticWebsite {
+public class StaticWebsite implements Resource {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
@@ -59,5 +60,9 @@ public class StaticWebsite {
         } catch (URISyntaxException | IOException e) {
             throw new WebApplicationException("Couldn't load static html file: ", e);
         }
+    }
+
+    public ResourceEntity getPluginDescripion() {
+        return null;
     }
 }
