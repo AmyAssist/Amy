@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.remotesr;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import org.slf4j.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,7 +32,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
-import java.util.concurrent.ExecutionException;
 
 /**
  * SSE resource for the remote SR. Chrome connects to this resource and stays connected indefinitely
@@ -43,12 +41,6 @@ import java.util.concurrent.ExecutionException;
 @Path("remotesr")
 public class SSEResource {
 
-    private SseEventSink sink = null;
-    private Sse sse = null;
-
-    @Reference
-    private Logger logger;
-
     @Reference
     private RemoteSR sr;
 
@@ -57,32 +49,7 @@ public class SSEResource {
     @Produces(MediaType.SERVER_SENT_EVENTS)
     public void eventStream(@Context SseEventSink sink, @Context Sse sse) {
 
-        sr.setResource(this);
-
-        if (this.sink != null && !this.sink.isClosed()) {
-            logger.warn("New SSE client connected before the old one disconnected");
-        }
-
-        this.sink = sink;
-        this.sse = sse;
-    }
-
-    /**
-     * Send an event to a connected client
-     * @param event the name of the event
-     * @return true if a client is connected and the transmission was successful, otherwise false
-     */
-    boolean sendEvent(String event) {
-        if (sink != null && !sink.isClosed()) {
-            try {
-                sink.send(sse.newEvent(event, "")).toCompletableFuture().get();
-                return true;
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (ExecutionException e) {
-                logger.warn("Couldn't send SSE", e);
-            }
-        }
-        return false;
+        SSEClient newClient = new SSEClient(sink, sse);
+        sr.setClient(newClient);
     }
 }

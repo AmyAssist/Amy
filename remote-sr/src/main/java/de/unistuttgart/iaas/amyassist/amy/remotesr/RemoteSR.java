@@ -23,7 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.remotesr;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import org.slf4j.Logger;
 
 /**
  * Class to initiate the remote SR
@@ -32,12 +34,19 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 @Service
 public class RemoteSR {
 
+    @Reference
+    private Logger logger;
+
     private static final String START_SR_EVENT = "START";
 
-    private SSEResource resource = null;
+    private SSEClient client = null;
 
-    void setResource(SSEResource resource) {
-        this.resource = resource;
+    public void setClient(SSEClient client) {
+        if (this.client != null && this.client.isConnected()) {
+            logger.warn("New SSE client connected before the old one disconnected");
+            this.client.disconnect();
+        }
+        this.client = client;
     }
 
     /**
@@ -45,6 +54,6 @@ public class RemoteSR {
      * @return true if the request was successful
      */
     public boolean requestSR() {
-        return resource != null && resource.sendEvent(START_SR_EVENT);
+        return client != null && client.sendEvent(START_SR_EVENT);
     }
 }
