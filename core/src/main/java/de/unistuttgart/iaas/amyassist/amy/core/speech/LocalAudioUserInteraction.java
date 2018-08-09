@@ -93,8 +93,6 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 
 	private void loadAndCheckProperties() {
 		this.config = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
-		if (this.config == null)
-			throw new IllegalStateException("Config for audio manager missing.");
 		if (this.config.getProperty(PROPERTY_ENABLE) == null)
 			throw new IllegalStateException("Property " + PROPERTY_ENABLE + " missing in audio manager config.");
 	}
