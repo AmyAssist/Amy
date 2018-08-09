@@ -4,7 +4,8 @@ de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl
 de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManagerImpl
 de.unistuttgart.iaas.amyassist.amy.core.configuration.DefaultConfigurationLoaderImpl
 de.unistuttgart.iaas.amyassist.amy.core.configuration.InternalDefaultConfigurationLoader
-de.unistuttgart.iaas.amyassist.amy.core.console.Console
+de.unistuttgart.iaas.amyassist.amy.core.console.ConsoleDeploymentAdapter
+de.unistuttgart.iaas.amyassist.amy.core.console.ConsoleImpl
 de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService
 de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManagerService
 de.unistuttgart.iaas.amyassist.amy.core.audio.InternalAudioManagerService

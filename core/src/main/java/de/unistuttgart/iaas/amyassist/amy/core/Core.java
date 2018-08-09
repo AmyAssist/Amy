@@ -29,7 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
+import de.unistuttgart.iaas.amyassist.amy.core.console.ExitConsole;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
@@ -140,7 +140,7 @@ public class Core {
 	}
 
 	/**
-	 * stop all Threads and terminate the application. This is call form the {@link Console}
+	 * stop all Threads and terminate the application. This is call form the {@link ExitConsole}
 	 */
 	public void stop() {
 		Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
