@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.audio;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,6 +69,8 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 
 	private boolean running = false;
 
+	private UUID local = null;
+
 	@PostConstruct
 	private void init() {
 		loadAndCheckProperties();
@@ -76,8 +79,10 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 
 		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_LOCAL_AUDIO))) {
 			try {
-				this.registerAudioEnvironment(
-						new LocalAudioEnvironment(getDefaultInputAudioFormat(), getDefaultOutputAudioFormat()));
+				AudioEnvironment localAe = new LocalAudioEnvironment(getDefaultInputAudioFormat(),
+						getDefaultOutputAudioFormat());
+				this.registerAudioEnvironment(localAe);
+				this.local = localAe.getAudioEnvironmentIdentifier();
 			} catch (LineUnavailableException e) {
 				this.logger.error("Could not initialize local audio environment.", e);
 			}
@@ -154,6 +159,18 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 	public AudioInputStream getInputStreamOfAudioEnvironment(UUID identifier) {
 		AudioEnvironment ae = safelyGetEnv(identifier);
 		return ae.getAudioInputStream();
+	}
+
+	@Override
+	public UUID getLocalAudioEnvironmentIdentifier() throws NoSuchElementException {
+		if (!this.hasLocalAudioEnvironment())
+			throw new NoSuchElementException("There is no loacl audio environment in this audio manager");
+		return this.local;
+	}
+
+	@Override
+	public boolean hasLocalAudioEnvironment() {
+		return this.local != null;
 	}
 
 	@Override

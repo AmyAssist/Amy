@@ -24,8 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech.output;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
 
 import javax.sound.sampled.AudioInputStream;
 
@@ -53,9 +51,8 @@ public class OutputImpl implements Output {
 	private AudioManager am;
 
 	private void outputAudioStream(AudioInputStream ais) {
-		List<UUID> registeredAudioEnvs = this.am.getAllRegisteredAudioEnvironments();
-		if (!registeredAudioEnvs.isEmpty()) {
-			this.am.playAudio(registeredAudioEnvs.iterator().next(), ais, AudioManager.OutputBehavior.QUEUE);
+		if (this.am.hasLocalAudioEnvironment()) {
+			this.am.playAudio(this.am.getLocalAudioEnvironmentIdentifier(), ais, AudioManager.OutputBehavior.QUEUE);
 		}
 	}
 
@@ -88,17 +85,15 @@ public class OutputImpl implements Output {
 	 */
 	@Override
 	public void stopOutput() {
-		List<UUID> registeredAudioEnvs = this.am.getAllRegisteredAudioEnvironments();
-		if (!registeredAudioEnvs.isEmpty()) {
-			this.am.stopAudioOutput(registeredAudioEnvs.iterator().next());
+		if (this.am.hasLocalAudioEnvironment()) {
+			this.am.stopAudioOutput(this.am.getLocalAudioEnvironmentIdentifier());
 		}
 	}
 
 	@Override
 	public boolean isCurrentlyOutputting() {
-		List<UUID> registeredAudioEnvs = this.am.getAllRegisteredAudioEnvironments();
-		if (!registeredAudioEnvs.isEmpty())
-			return this.am.isAudioEnvironmentCurrentlyOutputting(registeredAudioEnvs.iterator().next());
+		if (!this.am.hasLocalAudioEnvironment())
+			return this.am.isAudioEnvironmentCurrentlyOutputting(this.am.getLocalAudioEnvironmentIdentifier());
 		return false;
 	}
 }

@@ -92,8 +92,7 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	 */
 	private AudioInputStream createNewAudioInputStream() {
 		try {
-			return this.am
-					.getInputStreamOfAudioEnvironment(this.am.getAllRegisteredAudioEnvironments().iterator().next());
+			return this.am.getInputStreamOfAudioEnvironment(this.am.getLocalAudioEnvironmentIdentifier());
 		} catch (NoSuchElementException e) {
 			throw new IllegalStateException("Could not find an audio environment");
 		}

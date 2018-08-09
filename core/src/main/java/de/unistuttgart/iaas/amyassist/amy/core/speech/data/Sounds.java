@@ -44,8 +44,7 @@ public enum Sounds {
 	 */
 	SINGLE_CALL_STOP_BEEP("single_call_stop_beep.wav");
 
-	private static final String DIRECTORY = "de/unistuttgart/iaas/amyassist/amy/core/speech/data/sounds/";
-	private String path;
+	private String file;
 
 	/**
 	 * Create Sound
@@ -54,7 +53,7 @@ public enum Sounds {
 	 *            The file name of the sound
 	 */
 	Sounds(String fileName) {
-		this.path = Sounds.DIRECTORY.concat(fileName);
+		this.file = fileName;
 	}
 
 	/**
@@ -63,7 +62,7 @@ public enum Sounds {
 	 * @return Path-String from MavenResource to file
 	 */
 	public String getFileAsString() {
-		return this.path;
+		return this.file;
 	}
 
 	/**
@@ -75,7 +74,7 @@ public enum Sounds {
 	 */
 	public AudioInputStream getSoundData() throws IOException {
 		try {
-			return AudioSystem.getAudioInputStream(this.getClass().getClassLoader().getResource(this.path));
+			return AudioSystem.getAudioInputStream(this.getClass().getResource(this.file));
 		} catch (UnsupportedAudioFileException e) {
 			throw new IllegalStateException(e);
 		}

@@ -135,9 +135,9 @@ public class AlarmBeepService {
 	private void startBeeping() {
 		if (this.beepPlayer == null || !this.beepPlayer.isRunning()) {
 			this.beepPlayer = this.beepSound.getInfiniteLoopPlayer();
-			if (!this.am.getAllRegisteredAudioEnvironments().isEmpty()) {
-				this.am.playAudio(this.am.getAllRegisteredAudioEnvironments().iterator().next(),
-						this.beepPlayer.getAudioStream(), AudioManager.OutputBehavior.SUSPEND);
+			if (this.am.hasLocalAudioEnvironment()) {
+				this.am.playAudio(this.am.getLocalAudioEnvironmentIdentifier(), this.beepPlayer.getAudioStream(),
+						AudioManager.OutputBehavior.SUSPEND);
 			}
 			this.beepPlayer.start();
 		}

@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.audio;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import javax.sound.sampled.AudioFormat;
@@ -71,6 +72,18 @@ public interface AudioManager {
 	 * @return Whether the audio environment is currently outputting.
 	 */
 	boolean isAudioEnvironmentCurrentlyOutputting(UUID identifier);
+
+	/**
+	 * @return The identifier of the local audio environment.
+	 * @throws NoSuchElementException
+	 *             When this audio manager has no local audio environment.
+	 */
+	UUID getLocalAudioEnvironmentIdentifier() throws NoSuchElementException;
+
+	/**
+	 * @return Whether this audio manager has a local audio environment
+	 */
+	boolean hasLocalAudioEnvironment();
 
 	/**
 	 * Get's a AudioInputStream with the audio input from the audio environment described by the given identifier.
