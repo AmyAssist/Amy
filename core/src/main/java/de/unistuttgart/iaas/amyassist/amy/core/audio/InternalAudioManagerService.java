@@ -26,7 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.audio;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,7 +36,6 @@ import javax.sound.sampled.AudioSystem;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -53,11 +51,6 @@ public class InternalAudioManagerService implements InternalAudioManager, Runnab
 
 	@Reference
 	private Logger logger;
-
-	@Reference
-	private ConfigurationManager configurationManager;
-
-	private Properties config;
 
 	private Map<UUID, AudioEnvironment> registry;
 
