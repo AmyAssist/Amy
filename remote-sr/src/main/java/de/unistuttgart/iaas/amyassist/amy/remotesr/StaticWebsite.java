@@ -30,6 +30,7 @@ import javax.annotation.Resource;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.URI;
@@ -47,8 +48,6 @@ import java.nio.file.Paths;
 @Path("remotesr")
 public class StaticWebsite {
 
-    private final Logger logger = LoggerFactory.getLogger(StaticWebsite.class);
-
     @GET
     @Produces(MediaType.TEXT_HTML)
     public String getStaticWebsite() {
@@ -57,10 +56,11 @@ public class StaticWebsite {
             if (file != null) {
                 URI filePath = file.toURI();
                 return new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
+            } else {
+                throw new IOException("Couldn't get URL for resource file index.html");
             }
         } catch (URISyntaxException | IOException e) {
-            logger.warn("Couldn't load static html file: ", e);
+            throw new WebApplicationException("Couldn't load static html file: ", e);
         }
-        return null;
     }
 }
