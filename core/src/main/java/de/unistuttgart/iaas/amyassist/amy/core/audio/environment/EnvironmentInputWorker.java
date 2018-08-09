@@ -25,10 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.audio.environment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.audio.QueuedInputStream;
 
@@ -41,14 +37,8 @@ public class EnvironmentInputWorker implements Runnable {
 
 	/** The size of buffer used */
 	private static final int BYTE_BUFFER_SIZE = 1024;
-	/** The amount below which a queue is considered running dry */
-	private static final int RUNNING_DRY_AMOUNT = 10;
-	/** The maximum amount of time to wait for a input stream to consume new data in ms. */
-	private static final int MAX_INPUT_WAIT_TIME = 10;
 	/** The parent audio environment */
 	private AbstractAudioEnvironment ae;
-
-	private Logger logger = LoggerFactory.getLogger(EnvironmentInputWorker.class);
 
 	/**
 	 * Creates a new input worker for the given owner
@@ -69,6 +59,11 @@ public class EnvironmentInputWorker implements Runnable {
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
+		}
+
+		// End all remaining input streams.
+		for (QueuedInputStream qis : this.ae.getInputStreams()) {
+			qis.setAutoEnding(true);
 		}
 	}
 
@@ -103,10 +98,7 @@ public class EnvironmentInputWorker implements Runnable {
 	/**
 	 * Copies the given byte to all queued input streams of the parent.
 	 * <p>
-	 * If a queue does not accept new bytes and another queue needs new bytes because it is almost empty, this method
-	 * will end the stream of the blocking queue.
-	 * <p>
-	 * Also removes ended and closed queues from the parents input stream list.
+	 * Also removes closed queues from the parents input stream list.
 	 * 
 	 * @param b
 	 *            The byte to write.
@@ -129,31 +121,8 @@ public class EnvironmentInputWorker implements Runnable {
 				continue;
 			}
 
-			// Try adding the value to the queue until it either works or another queue runs dry.
-			boolean success, end = false;
-			do {
-				// Try to add new value to queue.
-				success = qis.getQueue().offer(value, MAX_INPUT_WAIT_TIME, TimeUnit.MILLISECONDS);
-
-				if (!success && doesOneQueueNeedBytes()) {
-					// If it was not successful and another queue is running dry, end it.
-					qis.setAutoEnding(true);
-					toRemove.add(qis);
-					this.logger.warn("Full queue. Another queue needs bytes. Ending stream.");
-					end = true;
-				}
-			} while (!success && !end);
+			qis.getQueue().put(value);
 		}
 		this.ae.getInputStreams().removeAll(toRemove);
-	}
-
-	private boolean doesOneQueueNeedBytes() {
-		int lowestSize = BYTE_BUFFER_SIZE;
-		for (QueuedInputStream qis : this.ae.getInputStreams()) {
-			if (qis.getQueue().size() < lowestSize) {
-				lowestSize = qis.getQueue().size();
-			}
-		}
-		return lowestSize < RUNNING_DRY_AMOUNT;
 	}
 }

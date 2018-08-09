@@ -80,9 +80,10 @@ public interface AudioEnvironment {
 	/**
 	 * Get's a {@link AudioInputStream} from this audio environment. This stream will contain the audio input (like
 	 * microphone data) of this environment.
-	 * 
-	 * This stream needs to be read from fast enough. Otherwise this stream will end.
-	 * 
+	 * <p>
+	 * This stream needs to be read from fast enough. Otherwise it will slow down every other part that needs audio from
+	 * this environment.
+	 * <p>
 	 * When this stream is no longer needed, it should be closed.
 	 * 
 	 * @return The stream.

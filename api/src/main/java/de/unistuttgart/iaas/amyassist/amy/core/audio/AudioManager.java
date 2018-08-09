@@ -74,8 +74,13 @@ public interface AudioManager {
 
 	/**
 	 * Get's a AudioInputStream with the audio input from the audio environment described by the given identifier.
-	 * 
+	 * <p>
 	 * For example the microphone input.
+	 * <p>
+	 * This stream should be read from with appropriate speed, because every other thread that has a InputStream from
+	 * the same environment will need to wait otherwise.
+	 * <p>
+	 * If the stream is no longer needed, it must be closed.
 	 * 
 	 * @param identifier
 	 *            The identifier of the audio environment to get the input Stream from.
