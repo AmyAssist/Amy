@@ -41,6 +41,8 @@ public class EnvironmentInputWorker implements Runnable {
 
 	/** The size of buffer used */
 	private static final int BYTE_BUFFER_SIZE = 1024;
+	/** The amount below which a queue is considered running dry */
+	private static final int RUNNING_DRY_AMOUNT = 10;
 	/** The maximum amount of time to wait for a input stream to consume new data in ms. */
 	private static final int MAX_INPUT_WAIT_TIME = 10;
 	/** The parent audio environment */
@@ -102,7 +104,7 @@ public class EnvironmentInputWorker implements Runnable {
 	 * Copies the given byte to all queued input streams of the parent.
 	 * <p>
 	 * If a queue does not accept new bytes and another queue needs new bytes because it is almost empty, this method
-	 * will end the stream of the blocking queue, by clearing it and inserting a single -1.
+	 * will end the stream of the blocking queue.
 	 * <p>
 	 * Also removes ended and closed queues from the parents input stream list.
 	 * 
@@ -112,52 +114,46 @@ public class EnvironmentInputWorker implements Runnable {
 	 *             When the method was interrupted.
 	 */
 	protected void doByteInput(byte b) throws InterruptedException {
-		boolean atLeastOneFull = false;
-		/*
-		 * The smallest amount of elements in any queue. This is used to check whether one queue is running dry because
-		 * another one is blocking.
-		 */
-		int lowestSize = BYTE_BUFFER_SIZE;
+		List<QueuedInputStream> toRemove = new ArrayList<>();
 
-		do {
-			List<QueuedInputStream> toRemove = new ArrayList<>();
-			atLeastOneFull = false;
-			for (QueuedInputStream qis : this.ae.getInputStreams()) {
-				if (Thread.currentThread().isInterrupted())
-					throw new InterruptedException();
+		// toUnsignedInt makes sure the conversion is the reverse from casting a int between 0 and 255 to a byte.
+		Integer value = Byte.toUnsignedInt(b);
 
-				// Remove closed streams
-				if (qis.isClosed()) {
-					toRemove.add(qis);
-					continue;
-				}
+		for (QueuedInputStream qis : this.ae.getInputStreams()) {
+			if (Thread.currentThread().isInterrupted())
+				throw new InterruptedException();
 
-				// toUnsignedInt makes sure the conversion is the reverse from casting a int between 0 and 255 to a
-				// byte.
-				Integer value = Byte.toUnsignedInt(b);
-
-				// Try to add new value to queue.
-				boolean success = qis.getQueue().offer(value, MAX_INPUT_WAIT_TIME, TimeUnit.MILLISECONDS);
-
-				// If it failed, try again or end the stream
-				if (!success) {
-					if (lowestSize < BYTE_BUFFER_SIZE / 10) {
-						qis.setAutoEnding(true);
-						toRemove.add(qis);
-						this.logger.warn("Full queue. Another queue needs bytes. Ending stream.");
-					} else {
-						atLeastOneFull = true;
-					}
-				}
-
-				// Update the lowest size
-				if (qis.getQueue().size() < lowestSize) {
-					lowestSize = qis.getQueue().size();
-				}
+			// Remove closed streams
+			if (qis.isClosed()) {
+				toRemove.add(qis);
+				continue;
 			}
 
-			this.ae.getInputStreams().removeAll(toRemove);
-		} while (atLeastOneFull);
+			// Try adding the value to the queue until it either works or another queue runs dry.
+			boolean success, end = false;
+			do {
+				// Try to add new value to queue.
+				success = qis.getQueue().offer(value, MAX_INPUT_WAIT_TIME, TimeUnit.MILLISECONDS);
+
+				if (!success && doesOneQueueNeedBytes()) {
+					// If it was not successful and another queue is running dry, end it.
+					qis.setAutoEnding(true);
+					toRemove.add(qis);
+					this.logger.warn("Full queue. Another queue needs bytes. Ending stream.");
+					end = true;
+				}
+			} while (!success && !end);
+		}
+		this.ae.getInputStreams().removeAll(toRemove);
 	}
 
+	private boolean doesOneQueueNeedBytes() {
+		int lowestSize = BYTE_BUFFER_SIZE;
+		for (QueuedInputStream qis : this.ae.getInputStreams()) {
+			if (qis.getQueue().size() < lowestSize) {
+				lowestSize = qis.getQueue().size();
+			}
+		}
+		return lowestSize < RUNNING_DRY_AMOUNT;
+	}
 }
