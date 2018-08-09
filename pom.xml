@@ -43,6 +43,7 @@
 		<httpcore.version>4.4.9</httpcore.version>
 		<swagger.version>2.0.2</swagger.version>
 		<commons-lang3.version>3.7</commons-lang3.version>
+		<jersey-media-sse.version>2.27</jersey-media-sse.version>
 	</properties>
 	<modules>
 		<module>amy-master-node</module>

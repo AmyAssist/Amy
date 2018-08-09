@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-sse</artifactId>
-			<version>LATEST</version>
+			<version>${jersey-media-sse.version}</version>
 		</dependency>
 
 		<!-- Jackson as JSON provider -->

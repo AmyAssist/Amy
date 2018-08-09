@@ -47,11 +47,6 @@
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-registry</artifactId>
-			<version>${amy.registry.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-remote-sr</artifactId>
 			<version>${amy.remote-sr.version}</version>
 		</dependency>
