@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
 /**
  * This enum represent the different Types of results in the playlerlogic to find the correct reuslts
@@ -29,11 +29,15 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
  */
 public enum SearchTypes {
 	/**
-	 * needed for getFeaturedPlaylist
+	 * to play a featured playlist with playPlaylist
 	 */
 	FEATURED_PLAYLISTS, 
 	/**
-	 * needed for getUserPlaylists
+	 * to play a user playlist with playPlaylist
 	 */
-	USER_PLAYLISTS
+	USER_PLAYLISTS,
+	/**
+	 *  to play a searched playlist with playPlaylist
+	 */
+	SEARCH_PLAYLISTS
 }

@@ -30,10 +30,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
  */
 public class PlaylistEntity extends Item {
 
-	/**
-	 * the songs in the playlist
-	 */
-	private MusicEntity[] songs;
 
 	/**
 	 * a Url to a image from the playlist
@@ -59,25 +55,9 @@ public class PlaylistEntity extends Item {
 	 * @param imageUrl
 	 *            a url to image from the playlist. can be null
 	 */
-	public PlaylistEntity(String name, MusicEntity[] songs, String uri, String imageUrl) {
+	public PlaylistEntity(String name, String uri, String imageUrl) {
 		super(name, uri);
-		this.songs = songs;
 		this.imageUrl = imageUrl;
-	}
-
-	/**
-	 * @return songs
-	 */
-	public MusicEntity[] getSongs() {
-		return this.songs;
-	}
-
-	/**
-	 * @param songs
-	 *            to set
-	 */
-	public void setSongs(MusicEntity[] songs) {
-		this.songs = songs;
 	}
 
 	/**

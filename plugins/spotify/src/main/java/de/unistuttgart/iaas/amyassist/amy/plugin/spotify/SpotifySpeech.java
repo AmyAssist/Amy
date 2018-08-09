@@ -33,6 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.SearchTypes;
 
 /**
  * this class handle the speech commands from the spotify plugin

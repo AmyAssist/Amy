@@ -28,6 +28,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
  * 
  * @author Lars Buttgereit
  */
+
 public class TrackEntity extends Item {
 	private String[] artists;
 	private int durationInMs;

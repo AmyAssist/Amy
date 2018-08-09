@@ -36,8 +36,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SearchTypes;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
 
@@ -61,6 +62,8 @@ public class PlayerLogic {
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
+	
+	private static final String ITME_NOT_FOUND = "Item not found";
 
 	@PostConstruct
 	private void init() {
@@ -130,24 +133,76 @@ public class PlayerLogic {
 	}
 
 	/**
-	 * this method play the item that searched before. Use only after a search
+	 * this method play a playlist from a playlist search. Use only after a search
 	 * 
-	 * @param songNumber
+	 * @param playlistNumber
 	 *            number of the item form the search before
 	 * @param type
 	 *            to find the right search Results
-	 * @return a map with the song data
+	 * @return a PlaylistEntity
 	 */
-	public PlaylistEntity playPlaylist(int songNumber, SearchTypes type) {
-		if(type.equals(SearchTypes.FEATURED_PLAYLISTS) && this.search.getFeaturedPlaylists().size() > songNumber) {
-			this.spotifyAPICalls.playListFromUri(this.search.getFeaturedPlaylists().get(songNumber).getUri());
-			return this.search.getFeaturedPlaylists().get(songNumber);
+	public PlaylistEntity playPlaylist(int playlistNumber, SearchTypes type) {
+		if(type.equals(SearchTypes.FEATURED_PLAYLISTS) && this.search.getFeaturedPlaylists().size() > playlistNumber) {
+			this.spotifyAPICalls.playListFromUri(this.search.getFeaturedPlaylists().get(playlistNumber).getUri());
+			return this.search.getFeaturedPlaylists().get(playlistNumber);
 		}
-		if(type.equals(SearchTypes.USER_PLAYLISTS) && this.search.getOwnPlaylists().size() > songNumber) {
-			this.spotifyAPICalls.playListFromUri(this.search.getOwnPlaylists().get(songNumber).getUri());
-			return this.search.getOwnPlaylists().get(songNumber);
+		if(type.equals(SearchTypes.USER_PLAYLISTS) && this.search.getOwnPlaylists().size() > playlistNumber) {
+			this.spotifyAPICalls.playListFromUri(this.search.getOwnPlaylists().get(playlistNumber).getUri());
+			return this.search.getOwnPlaylists().get(playlistNumber);
 		}
-		this.logger.warn("Item not found");
+		if(type.equals(SearchTypes.SEARCH_PLAYLISTS) && this.search.getPlaylistSearchResults().size() > playlistNumber) {
+			this.spotifyAPICalls.playListFromUri(this.search.getPlaylistSearchResults().get(playlistNumber).getUri());
+			return this.search.getPlaylistSearchResults().get(playlistNumber);
+		}
+		this.logger.warn(ITME_NOT_FOUND);
+		return null;
+	}
+	
+	/**
+	 * this method play a track from a track search. Use only after a search
+	 * 
+	 * @param trackNumber
+	 *            number of the item form the search before
+	 * @return a TrackEntity
+	 */
+	public TrackEntity playTrack(int trackNumber) {
+		if(this.search.getTrackSearchResults().size() > trackNumber) {
+			this.spotifyAPICalls.playSongFromUri(this.search.getTrackSearchResults().get(trackNumber).getUri());
+			return this.search.getTrackSearchResults().get(trackNumber);
+		}
+		this.logger.warn(ITME_NOT_FOUND);
+		return null;
+	}
+	
+	/**
+	 * this method play a album from a album search. Use only after a search
+	 * 
+	 * @param albumNumber
+	 *            number of the item form the search before
+	 * @return a AlbumEntity
+	 */
+	public AlbumEntity playAlbum(int albumNumber) {
+		if(this.search.getAlbumSearchResults().size() > albumNumber) {
+			this.spotifyAPICalls.playSongFromUri(this.search.getAlbumSearchResults().get(albumNumber).getUri());
+			return this.search.getAlbumSearchResults().get(albumNumber);
+		}
+		this.logger.warn(ITME_NOT_FOUND);
+		return null;
+	}
+	
+	/**
+	 * this method play a artist from a artist search. Use only after a search
+	 * 
+	 * @param artistNumber
+	 *            number of the item form the search before
+	 * @return a ArtistEntity
+	 */
+	public ArtistEntity playArtist(int artistNumber) {
+		if(this.search.getArtistSearchResults().size() > artistNumber) {
+			this.spotifyAPICalls.playSongFromUri(this.search.getArtistSearchResults().get(artistNumber).getUri());
+			return this.search.getArtistSearchResults().get(artistNumber);
+		}
+		this.logger.warn(ITME_NOT_FOUND);
 		return null;
 	}
 

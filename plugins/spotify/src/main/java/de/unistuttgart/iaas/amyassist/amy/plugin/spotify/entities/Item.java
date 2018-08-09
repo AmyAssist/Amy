@@ -1,5 +1,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
@@ -12,6 +14,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
  *
  */
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class Item extends Entity{
 	private String uri;
 	private String name;

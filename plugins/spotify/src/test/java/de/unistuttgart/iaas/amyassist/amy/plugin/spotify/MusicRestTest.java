@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+
 import static org.mockito.Mockito.*;
 
 import java.net.URI;
@@ -44,11 +45,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -65,12 +69,28 @@ class MusicRestTest {
 
 	private PlayerLogic logic;
 	private DeviceLogic deviceLogic;
-	private MusicEntity[] userMusics;
-	private MusicEntity[] featuredMusics;
-	private List<PlaylistEntity> userPlaylists;
-	private List<PlaylistEntity> featuredPlaylists;
-
+	private List<PlaylistEntity> userPlaylists = new ArrayList<>();
+	private List<PlaylistEntity> featuredPlaylists = new ArrayList<>();
+	private List<TrackEntity> trackList = new ArrayList<>();
+	private List<AlbumEntity> albumList = new ArrayList<>();
+	private List<ArtistEntity> artistList = new ArrayList<>();
 	private WebTarget target;
+	private Search search;
+	
+	private static final String SONG_NAME1 = "Flames";
+	private static final String SONG_NAME2 = "Say Something";
+	private static final String ID1 = "abc123";
+	private static final String ID2 = "123abc";
+	private static final String PLAYLIST_NAME1 = "New Hits";
+	private static final String PLAYLIST_NAME2 = "must popular hits";
+	private static final String ARTIST_NAME1 = "David Guetta";
+	private static final String ARTIST_NAME2 = "Justin Timberlake";
+	private static final String GENRE1 = "Pop";
+	private static final String GENRE2 = "Rock";
+	private static final int DURATION1 = 10;
+	private static final int DURATION2 = 30;
+	private static final String IMAGE_URL1 = "abc123";
+	private static final String IMAGE_URL2 = "123abc";
 
 	/**
 	 * 
@@ -80,6 +100,7 @@ class MusicRestTest {
 		this.target = this.testFramework.setRESTResource(MusicResource.class);
 		this.deviceLogic = this.testFramework.mockService(DeviceLogic.class);
 		this.logic = this.testFramework.mockService(PlayerLogic.class);
+		this.search = this.testFramework.mockService(Search.class);
 
 		createSongAndPlaylist();
 	}
@@ -88,10 +109,13 @@ class MusicRestTest {
 	 * creates song and playlist for testing
 	 */
 	private void createSongAndPlaylist() {
+		TrackEntity track = new TrackEntity();
+		track.setName("test");
+		this.trackList.add(track);
 	/*	HashMap<String, String> currentSong = new HashMap<>();
 		currentSong.put(SpotifyConstants.ITEM_NAME, "Say Something");
 		currentSong.put(SpotifyConstants.ARTIST_NAME, "Justin Timberlake");
-//		Mockito.when(this.logic.getCurrentSong()).thenReturn(currentSong);
+		
 
 		MusicEntity musicEntity1 = new MusicEntity(currentSong.get(SpotifyConstants.ITEM_NAME), currentSong.get(SpotifyConstants.ARTIST_NAME));
 		MusicEntity musicEntity2 = new MusicEntity("Flames", "David Guetta");
@@ -444,13 +468,13 @@ class MusicRestTest {
 	 */
 	@Test
 	void testGetCurrentSong() {
+		Mockito.when(this.logic.getCurrentSong()).thenReturn(this.trackList.get(0));
 		Response response = this.target.path("currentSong").request().get();
 
-		MusicEntity actualMusic = response.readEntity(MusicEntity.class);
-		assertThat(actualMusic.getArtist(), is("Justin Timberlake"));
-		assertThat(actualMusic.getTitle(), is("Say Something"));
+		TrackEntity actualMusic = response.readEntity(TrackEntity.class);
+		assertThat(actualMusic.getName(), equalTo(this.trackList.get(0).getName()));
 		assertThat(response.getStatus(), is(200));
-
+		
 		Mockito.when(this.logic.getCurrentSong()).thenReturn(null);
 		response = this.target.path("currentSong").request().get();
 		assertThat(response.readEntity(String.class), is("No song is currently playing"));

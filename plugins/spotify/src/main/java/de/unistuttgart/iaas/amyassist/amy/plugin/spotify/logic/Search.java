@@ -26,7 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.special.SearchResult;
 import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
@@ -38,7 +37,6 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SearchTypes;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
@@ -120,7 +118,7 @@ public class Search {
 	 *            max length of the result list
 	 * @return a list with tracks
 	 */
-	public List<AlbumEntity> searchforAlbum(String searchItem, int limit) {
+	public List<AlbumEntity> searchforAlbums(String searchItem, int limit) {
 			SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "album", limit);
 			if (searchResult != null) {
 				this.albumSearchResults =  createAlbumData(searchResult.getAlbums());
@@ -158,7 +156,7 @@ public class Search {
 	 *            the search result from a query
 	 * @return a list with track entities
 	 */
-	protected List<TrackEntity> createTrackData(Paging<Track> searchResult) {
+	public List<TrackEntity> createTrackData(Paging<Track> searchResult) {
 		TrackEntity trackEntity;
 		List<TrackEntity> result = new ArrayList<>();
 		if (searchResult != null) {
@@ -186,7 +184,7 @@ public class Search {
 	 *            the search result from a query
 	 * @return a list with album entities 
 	 */
-	protected List<AlbumEntity> createAlbumData(Paging<AlbumSimplified> searchResult) {
+	private List<AlbumEntity> createAlbumData(Paging<AlbumSimplified> searchResult) {
 		AlbumEntity albumEntity;
 		List<AlbumEntity> result = new ArrayList<>();
 		if (searchResult != null) {
@@ -215,7 +213,7 @@ public class Search {
 	 *            the search result from a query
 	 * @return a list with artist entities
 	 */
-	protected List<ArtistEntity> createArtistData(Paging<Artist> searchResult) {
+	private List<ArtistEntity> createArtistData(Paging<Artist> searchResult) {
 		List<ArtistEntity> result = new ArrayList<>();
 		ArtistEntity artistEntity;
 		if (searchResult != null) {
@@ -240,7 +238,7 @@ public class Search {
 	 *            the search result from a query
 	 * @return a list with playlist entities
 	 */
-	protected List<PlaylistEntity> createPlaylistData(PlaylistSimplified[] playlists) {
+	private List<PlaylistEntity> createPlaylistData(PlaylistSimplified[] playlists) {
 		ArrayList<PlaylistEntity> result = new ArrayList<>();
 		if (playlists != null) {
 			for (PlaylistSimplified playlist : playlists) {

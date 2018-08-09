@@ -128,8 +128,8 @@ public class SearchTest {
 		playlistList[1] = playlist2;
 		this.playlistsSpotifyFormat = new Paging.Builder<PlaylistSimplified>().setItems(playlistList).build();
 		this.playlistsOwnFormat = new ArrayList<>();
-		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME1, null, ID1, null));
-		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME2, null, ID2, ID1));
+		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME1, ID1, null));
+		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME2, ID2, ID1));
 	}
 
 	private void spotifyTrack() {
@@ -219,7 +219,7 @@ public class SearchTest {
 	@Test
 	void testSearchAlbum() {
 		when(this.spotifyAPICalls.searchInSpotify(SONG_NAME1, "album", 2)).thenReturn(this.albums);
-		List<AlbumEntity> albumEntities = this.search.searchforAlbum(SONG_NAME1, 2);
+		List<AlbumEntity> albumEntities = this.search.searchforAlbums(SONG_NAME1, 2);
 		AlbumEntity albumEntity1 = albumEntities.get(0);
 		AlbumEntity albumEntity2 = albumEntities.get(1);
 		assertThat(albumEntity1.getName(), equalTo(SONG_NAME1));
@@ -252,7 +252,7 @@ public class SearchTest {
 	void testEmptySearchResults() {
 		when(this.spotifyAPICalls.searchInSpotify(any(), any(), anyInt())).thenReturn(null);
 		assertThat(this.search.searchforTracks("", 0).isEmpty(), equalTo(true));
-		assertThat(this.search.searchforAlbum("", 0).isEmpty(), equalTo(true));
+		assertThat(this.search.searchforAlbums("", 0).isEmpty(), equalTo(true));
 		assertThat(this.search.searchforPlaylists("", 0).isEmpty(), equalTo(true));
 		assertThat(this.search.searchforArtists("", 0).isEmpty(), equalTo(true));
 	}

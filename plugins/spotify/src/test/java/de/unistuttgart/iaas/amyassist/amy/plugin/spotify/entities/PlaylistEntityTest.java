@@ -29,7 +29,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 
 /**
@@ -40,22 +39,15 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity
 class PlaylistEntityTest {
 
 	private PlaylistEntity playlist;
-	private MusicEntity[] musicEntity;
 
 	@BeforeEach
 	void init() {
-		this.musicEntity = new MusicEntity[0];
-		this.playlist = new PlaylistEntity("Hello", this.musicEntity, "abc123", "image.de");
+		this.playlist = new PlaylistEntity("Hello", "abc123", "image.de");
 	}
 
 	@Test
 	void testGetName() {
 		assertThat(this.playlist.getName(), equalTo("Hello"));
-	}
-
-	@Test
-	void testGetSongs() {
-		assertThat(this.playlist.getSongs(), equalTo(musicEntity));
 	}
 
 	@Test
@@ -72,13 +64,6 @@ class PlaylistEntityTest {
 	void testSetName() {
 		this.playlist.setName("name");
 		assertThat(this.playlist.getName(), equalTo("name"));
-	}
-
-	@Test
-	void testSetSongs() {
-		MusicEntity[] musicE = new MusicEntity[1];
-		this.playlist.setSongs(musicE);
-		assertThat(this.playlist.getSongs(), equalTo(musicE));
 	}
 
 	@Test
