@@ -34,6 +34,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -52,11 +53,14 @@ public class StaticWebsite {
     @Produces(MediaType.TEXT_HTML)
     public String getStaticWebsite() {
         try {
-            URI filePath = getClass().getClassLoader().getResource("index.html").toURI();
-            return new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
-        } catch (URISyntaxException | IOException | NullPointerException e) {
+            URL file = getClass().getClassLoader().getResource("index.html");
+            if (file != null) {
+                URI filePath = file.toURI();
+                return new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
+            }
+        } catch (URISyntaxException | IOException e) {
             logger.warn("Couldn't load static html file: ", e);
-            return null;
         }
+        return null;
     }
 }
