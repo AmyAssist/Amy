@@ -40,6 +40,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * The home resource of Amy
@@ -71,11 +76,23 @@ public class HomeResource {
 	@Path("console")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String useAmy(String input) {
+	@Operation(summary = "Process natural language text input",
+			description = "This is the remote amy chatbot. It can be used to interact with the natural language interface of amy."
+					+ " The possible intents are the same as using the local console or the speech interaction",
+			tags = "home")
+	@ApiResponse(responseCode = "200",
+			description = "the natural language text input has been processed successfully and the response contain the answer",
+			content = @Content(
+					examples = @ExampleObject(summary = "This response represent that you don't have new mails.",
+							name = "new mails", value = "You don't have new mails.")))
+	@ApiResponse(responseCode = "500", description = "the input could not be precessed")
+	public String useAmy(@RequestBody(description = "The natural language text", required = true,
+			content = @Content(examples = @ExampleObject(name = "new mails", summary = "Ask Amy if you have new mails",
+					value = "how many new emails do i have"))) String input) {
 		try {
 			return this.speechInputHandler.handle(input).get();
 		} catch (Exception e) {
-			throw new WebApplicationException("can't handle input: "+ input, e, Status.INTERNAL_SERVER_ERROR);
+			throw new WebApplicationException("can't handle input: " + input, e, Status.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -86,9 +103,10 @@ public class HomeResource {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Operation(tags="home")
 	public SimplePluginEntity[] getPlugins() {
 		List<IPlugin> pluginList = this.manager.getPlugins();
-		SimplePluginEntity[] plugins = new SimplePluginEntity[pluginList.size()+1];
+		SimplePluginEntity[] plugins = new SimplePluginEntity[pluginList.size() + 1];
 		for (int i = 0; i < pluginList.size(); i++) {
 			plugins[i] = new SimplePluginEntity(pluginList.get(i));
 			plugins[i].setLink(createPath(pluginList.get(i)));
@@ -107,8 +125,8 @@ public class HomeResource {
 
 	private String createPath(IPlugin iPlugin) {
 		List<Class<?>> classes = iPlugin.getClasses();
-		for(Class<?> cls : classes) {
-			if (cls.isAnnotationPresent(Path.class)) { //TODO change to has parent class
+		for (Class<?> cls : classes) {
+			if (cls.isAnnotationPresent(Path.class)) { // TODO change to has parent class
 				return this.uriInfo.getBaseUriBuilder().path(cls).build().toString();
 			}
 		}
