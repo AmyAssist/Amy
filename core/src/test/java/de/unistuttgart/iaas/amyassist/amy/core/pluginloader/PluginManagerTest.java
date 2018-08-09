@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
@@ -80,12 +80,12 @@ class PluginManagerTest {
 		CommandLineArgumentHandler cmaHandler = this.testFramework.mockService(CommandLineArgumentHandler.class);
 		when(cmaHandler.getPluginPaths()).thenReturn(null);
 
-		ConfigurationLoader configurationLoader = this.testFramework.mockService(ConfigurationLoader.class);
+		ConfigurationManager configurationManager = this.testFramework.mockService(ConfigurationManager.class);
 		this.properties = new Properties();
 		this.properties.setProperty("pluginDir", "plugins");
 		this.properties.setProperty("plugins", "");
 		this.properties.setProperty("mode", "dev");
-		when(configurationLoader.load("plugin.config")).thenReturn(this.properties);
+		when(configurationManager.getConfigurationWithDefaults("plugin.config")).thenReturn(this.properties);
 
 		this.testFramework.mockService(NLProcessingManager.class);
 		this.testFramework.mockService(Persistence.class);

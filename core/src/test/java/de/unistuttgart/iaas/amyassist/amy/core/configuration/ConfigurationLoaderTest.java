@@ -229,6 +229,11 @@ class ConfigurationLoaderTest {
 		assertThat(Files.exists(this.tempDir.resolve("config3").resolve("test.properties")), is(true));
 	}
 
+	@Test
+	void testNonNull() {
+		assertThat(this.configurationLoader.load("test"), notNullValue());
+	}
+
 	/**
 	 * Clean up after each test
 	 * 

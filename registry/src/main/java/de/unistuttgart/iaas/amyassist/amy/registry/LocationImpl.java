@@ -47,8 +47,7 @@ public class LocationImpl implements Location {
     private int houseNumber;
     private double longitude;
     private double latitude;
-    private boolean isHome;
-    private boolean isWork;
+    private String tag;
 
     public int getPersistentId() {
         return persistentId;
@@ -110,20 +109,14 @@ public class LocationImpl implements Location {
         this.latitude = latitude;
     }
 
-    public boolean isHome() {
-        return isHome;
+    @Override
+    public String getTag() {
+        return tag;
     }
 
-    public void setHome(boolean home) {
-        isHome = home;
-    }
-
-    public boolean isWork() {
-        return isWork;
-    }
-
-    public void setWork(boolean work) {
-        isWork = work;
+    @Override
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     @XmlTransient
@@ -141,18 +134,16 @@ public class LocationImpl implements Location {
                 houseNumber == location.houseNumber &&
                 Double.compare(location.longitude, longitude) == 0 &&
                 Double.compare(location.latitude, latitude) == 0 &&
-                isHome == location.isHome &&
-                isWork == location.isWork &&
                 Objects.equals(name, location.name) &&
                 Objects.equals(zipCode, location.zipCode) &&
                 Objects.equals(city, location.city) &&
-                Objects.equals(street, location.street);
+                Objects.equals(street, location.street) &&
+                Objects.equals(tag, location.tag);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(persistentId, name, zipCode, city, street, houseNumber, longitude, latitude, isHome,
-                isWork);
+        return Objects.hash(persistentId, name, zipCode, city, street, houseNumber, longitude, latitude, tag);
     }
 }

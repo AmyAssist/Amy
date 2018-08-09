@@ -1,5 +1,8 @@
 target/
+bin/
 *.gram
+.classpath
+.project
 
 temp/
 
@@ -22,5 +25,6 @@ dependency-reduced-pom.xml
 
 #Ignore config files
 *.properties
+!**/META-INF/*.properties
 
 *.db
