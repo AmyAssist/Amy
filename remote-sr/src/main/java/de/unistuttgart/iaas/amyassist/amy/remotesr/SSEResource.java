@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.remotesr;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -47,7 +46,8 @@ public class SSEResource {
     private SseEventSink sink = null;
     private Sse sse = null;
 
-    private Logger logger = LoggerFactory.getLogger(SSEResource.class);
+    @Reference
+    private Logger logger;
 
     @Reference
     private RemoteSR sr;
