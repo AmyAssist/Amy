@@ -51,7 +51,7 @@ public class EMailResource implements Resource {
 	private EMailLogic logic;
 
 	/**
-	 * REST implementation of {@link EMailLogic#getAllMails()}
+	 * REST implementation of {@link EMailLogic#getMailsForREST()}
 	 * 
 	 * @return Array of all mails in inbox
 	 */
@@ -60,14 +60,8 @@ public class EMailResource implements Resource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public MessageDTO[] getAllMails() {
 		// care for huge amount of mails
-		List<MessageDTO> mails;
-		try {
-			mails = this.logic.getAllMails();
-			return mails.toArray(new MessageDTO[mails.size()]);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		List<MessageDTO> mails = this.logic.getMailsForREST();
+		return mails.toArray(new MessageDTO[mails.size()]);
 	}
 
 	/**
