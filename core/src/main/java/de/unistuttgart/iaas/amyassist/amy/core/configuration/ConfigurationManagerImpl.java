@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -41,18 +42,28 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	private ConfigurationLoader configurationLoader;
 	@Reference
 	private InternalDefaultConfigurationLoader internalDefaultConfigurationLoader;
+	@Reference
+	private EnvironmentConfigurationLoader environmentConfiguratinLoader;
 	@Context(de.unistuttgart.iaas.amyassist.amy.core.di.Context.CLASSLOADER)
 	private ClassLoader classLoader;
 
 	@Override
-	public Properties getConfiguration(String s) {
-		return this.configurationLoader.load(s);
+	public Properties getConfiguration(String configurationName) {
+		Properties p = this.configurationLoader.load(configurationName);
+		if (Pattern.matches(EnvironmentConfigurationLoader.ALLOWED_ENV_VARS_PATTERN, configurationName)) {
+			p = this.environmentConfiguratinLoader.load(configurationName, p);
+		}
+		return p;
 	}
 
 	@Override
 	public Properties getConfigurationWithDefaults(String configurationName) {
-		Properties defaults = this.internalDefaultConfigurationLoader.load(classLoader, configurationName);
-		return this.configurationLoader.load(configurationName, defaults);
+		Properties defaults = this.internalDefaultConfigurationLoader.load(this.classLoader, configurationName);
+		Properties p = this.configurationLoader.load(configurationName, defaults);
+		if (Pattern.matches(EnvironmentConfigurationLoader.ALLOWED_ENV_VARS_PATTERN, configurationName)) {
+			p = this.environmentConfiguratinLoader.load(configurationName, p);
+		}
+		return p;
 	}
 
 }
