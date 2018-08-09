@@ -77,7 +77,8 @@ public class HomeResource {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
 	@Operation(summary = "Process natural language text input",
-			description = "This is the remote amy chatbot. It can be used to interact with the natural language interface of amy."
+			description = "This is the remote amy chatbot."
+					+ " It can be used to interact with the natural language interface of amy."
 					+ " The possible intents are the same as using the local console or the speech interaction",
 			tags = "home")
 	@ApiResponse(responseCode = "200",
@@ -103,7 +104,7 @@ public class HomeResource {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Operation(tags="home")
+	@Operation(tags = "home")
 	public SimplePluginEntity[] getPlugins() {
 		List<IPlugin> pluginList = this.manager.getPlugins();
 		SimplePluginEntity[] plugins = new SimplePluginEntity[pluginList.size() + 1];
