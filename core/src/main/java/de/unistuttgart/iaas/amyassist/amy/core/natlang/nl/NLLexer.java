@@ -32,7 +32,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.LanguageSpecifics;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.INumberConversion;
 
 /**
  * Lexer for language input from speechs
@@ -51,23 +51,23 @@ public class NLLexer {
 	private final Map<String, WordTokenType> regexTokenType = new HashMap<>();
 
 	/**
-	 * helper class handling language specific details
+	 * helper class handling language specific numbers
 	 */
-	LanguageSpecifics lang;
+	INumberConversion numberConverion;
 
 	/**
 	 * this class handles natural language input of any type
 	 * 
-	 * @param lang
+	 * @param iNumberConversion
 	 *            language specific details
 	 * 
 	 */
-	public NLLexer(LanguageSpecifics lang) {
+	public NLLexer(INumberConversion iNumberConversion) {
 
-		this.lang = lang;
+		this.numberConverion = iNumberConversion;
 
-		if (!lang.wordToNumber.isEmpty()) {
-			String regex = "((\\b" + String.join("\\b|\\b", lang.wordToNumber.keySet()) + "\\b)\\s{0,1})+";
+		if (!iNumberConversion.getWordToNumber().isEmpty()) {
+			String regex = "((\\b" + String.join("\\b|\\b", iNumberConversion.getWordToNumber().keySet()) + "\\b)\\s{0,1})+";
 			this.regexTokenType.put(regex, WordTokenType.NUMBER);
 		} else {
 			this.logger.error("problem with numbers file, written numbers will not be recognized");
@@ -147,7 +147,7 @@ public class NLLexer {
 	}
 
 	private WordToken fromNumbers(List<WordToken> numbers) {
-		int finalNumber = this.lang.calcNumber(numbers);
+		int finalNumber = this.numberConverion.calcNumber(numbers);
 		WordToken t = new WordToken(String.valueOf(finalNumber));
 		t.setType(WordTokenType.NUMBER);
 		return t;

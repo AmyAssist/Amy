@@ -41,7 +41,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 
 import com.google.common.collect.Lists;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -62,14 +62,14 @@ public class PersistenceService implements Persistence {
 	private Environment environment;
 
 	@Reference
-	private ConfigurationLoader configurationLoader;
+	private ConfigurationManager configurationManager;
 
 	private Properties globalProperties;
 	private PersistenceProvider persistenceProvider;
 
 	@PostConstruct
 	private void init() {
-		this.globalProperties = this.configurationLoader.load(PERSISTENCE_CONFIG);
+		this.globalProperties = this.configurationManager.getConfigurationWithDefaults(PERSISTENCE_CONFIG);
 
 		this.persistenceProvider = PersistenceProviderResolverHolder.getPersistenceProviderResolver()
 				.getPersistenceProviders().get(0);

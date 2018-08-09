@@ -34,12 +34,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
-import de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource;
+import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerServiceExtension;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableServiceExtension;
 
 /**
  * The central core of the application
@@ -50,14 +46,26 @@ public class Core {
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
-	private ServiceManagerImpl serviceManager;
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
-	private DependencyInjection di = new DependencyInjection();
+	private final DependencyInjection di;
 
 	private CommandLineArgumentHandlerService cmaHandler;
 
 	private Thread shutdownHook = new Thread(this::doStop, "ShutdownHook");
+
+	private RunnableServiceExtension runnableServiceExtension;
+
+	private DeploymentContainerServiceExtension deploymentContainerServiceExtension;
+
+	/**
+	 * 
+	 */
+	public Core() {
+		this.runnableServiceExtension = new RunnableServiceExtension();
+		this.deploymentContainerServiceExtension = new DeploymentContainerServiceExtension();
+		this.di = new DependencyInjection(this.runnableServiceExtension, this.deploymentContainerServiceExtension);
+	}
 
 	/**
 	 * Get's {@link #singleThreadScheduledExecutor singleThreadScheduledExecutor}
@@ -109,8 +117,7 @@ public class Core {
 	 * Initializes the core
 	 */
 	private void init() {
-		this.serviceManager = this.di.getService(ServiceManagerImpl.class);
-		this.serviceManager.loadServices();
+		// nothing in init stage
 	}
 
 	private void loadPlugins() {
@@ -119,17 +126,16 @@ public class Core {
 		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
 	}
 
+	/**
+	 * The deploy stage comes after all plugins are loaded
+	 */
 	private void deploy() {
-		this.di.getService(GrammarObjectsCreator.class).completeSetup();
-
-		Server server = this.di.getService(Server.class);
-		server.register(HomeResource.class);
-		server.register(LocationRegistryResource.class);
-		server.register(ContactRegistryResource.class);
+		this.runnableServiceExtension.deploy();
+		this.deploymentContainerServiceExtension.deploy();
 	}
 
 	private void start() {
-		this.serviceManager.start();
+		this.runnableServiceExtension.start();
 		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
 	}
 
@@ -143,7 +149,7 @@ public class Core {
 
 	private void doStop() {
 		this.logger.info("stop");
-		this.serviceManager.stop();
+		this.runnableServiceExtension.stop();
 		this.singleThreadScheduledExecutor.shutdownNow();
 		this.di.shutdown();
 		this.logger.info("stopped");

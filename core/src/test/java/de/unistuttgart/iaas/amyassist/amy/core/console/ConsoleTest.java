@@ -35,7 +35,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.Core;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -56,9 +56,9 @@ class ConsoleTest {
 	@BeforeEach
 	void init() {
 		this.testFramework.mockService(Core.class);
-		ConfigurationLoader configurationLoader = this.testFramework.mockService(ConfigurationLoader.class);
+		ConfigurationManager configurationManager = this.testFramework.mockService(ConfigurationManager.class);
 		this.properties = new Properties();
-		Mockito.when(configurationLoader.load("core.config")).thenReturn(this.properties);
+		Mockito.when(configurationManager.getConfigurationWithDefaults("core.config")).thenReturn(this.properties);
 	}
 
 	@Test

@@ -23,27 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.util.Properties;
+import java.util.Set;
 
-import org.slf4j.Logger;
-
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Services;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManagerImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.persistence.PersistenceService;
-import de.unistuttgart.iaas.amyassist.amy.core.persistence.storage.DatabaseStorage;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService;
-import de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskSchedulerImpl;
-import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistryImpl;
-import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistryImpl;
-import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
 
 /**
  * Register the Services of Core
@@ -54,24 +41,13 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 
 	@Override
 	public void load(Configuration di) {
-		di.register(Logger.class, new LoggerProvider());
-		di.register(Properties.class, new PropertiesProvider());
+		Set<Class<?>> loadServices = new Services().loadServices(this.getClass().getClassLoader());
+		loadServices.forEach(di::register);
 
-		di.register(GrammarObjectsCreator.class);
-		di.register(TaskSchedulerImpl.class);
-		di.register(ConfigurationImpl.class);
-		di.register(NLProcessingManagerImpl.class);
-		di.register(ConfigurationLoaderImpl.class);
-		di.register(PluginLoader.class);
-		di.register(PluginManagerService.class);
-		di.register(EnvironmentService.class);
-		di.register(DatabaseStorage.class);
-		di.register(PersistenceService.class);
-		di.register(NaturalLanaguageInputHandlerService.class);
-		di.register(ContactRegistryImpl.class);
-		di.register(LocationRegistryImpl.class);
-		di.register(ServiceManagerImpl.class);
-		di.register(Geocoder.class);
+		di.register(new LoggerProvider());
+		di.register(new PropertiesProvider());
+
+		di.registerContextProvider(Context.CLASSLOADER, Class::getClassLoader);
 	}
 
 }

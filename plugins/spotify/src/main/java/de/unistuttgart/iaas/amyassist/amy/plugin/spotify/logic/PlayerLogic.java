@@ -32,8 +32,10 @@ import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Track;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SearchTypes;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
@@ -53,10 +55,29 @@ public class PlayerLogic {
 	private Search search;
 	@Reference
 	private Logger logger;
+	@Reference
+	private MessageHub messageHub;
 
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
+
+	@PostConstruct
+	private void init() {
+		this.messageHub.subscribe("home/all/music/mute", message -> {
+			switch (message) {
+			case "true":
+				this.pause();
+				break;
+			case "false":
+				this.resume();
+				break;
+			default:
+				this.logger.warn("unkown message {}", message);
+				break;
+			}
+		});
+	}
 
 	/**
 	 * needed for the first init. need the clientID and the clientSecret form a spotify devloper account
@@ -189,23 +210,19 @@ public class PlayerLogic {
 	 * @return a int from 0-100. This represent the Volume in percent. if the volume is unknown the return value is -1
 	 */
 	public int setVolume(String volumeString) {
-		int volume = this.spotifyAPICalls.getVolume();
+		int volume = getVolume();
 		if (volume != -1) {
 			switch (volumeString) {
 			case "mute":
-				this.spotifyAPICalls.setVolume(VOLUME_MUTE_VALUE);
-				return VOLUME_MUTE_VALUE;
+				return setVolume(VOLUME_MUTE_VALUE);
 			case "max":
-				this.spotifyAPICalls.setVolume(VOLUME_MAX_VALUE);
-				return VOLUME_MAX_VALUE;
+				return setVolume(VOLUME_MAX_VALUE);
 			case "up":
 				volume = Math.min(VOLUME_MAX_VALUE, volume + VOLUME_UPDOWN_VALUE);
-				this.spotifyAPICalls.setVolume(volume);
-				return volume;
+				return setVolume(volume);
 			case "down":
 				volume = Math.max(VOLUME_MUTE_VALUE, volume - VOLUME_UPDOWN_VALUE);
-				this.spotifyAPICalls.setVolume(volume);
-				return volume;
+				return setVolume(volume);
 			default:
 				this.logger.warn("Incorrect volume command");
 				return -1;
