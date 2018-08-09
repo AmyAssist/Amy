@@ -43,9 +43,6 @@ public abstract class EnvironmentWorker implements Runnable {
 		this.thread = new Thread(this, name);
 	}
 
-	@Override
-	public abstract void run();
-
 	/**
 	 * Starts this worker
 	 */
