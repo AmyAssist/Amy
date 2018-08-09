@@ -33,7 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.audio.QueuedInputStream;
  * 
  * @author Tim Neumann
  */
-public class EnvironmentInputWorker implements Runnable {
+public class EnvironmentInputWorker extends EnvironmentWorker {
 
 	/** The size of buffer used */
 	private static final int BYTE_BUFFER_SIZE = 1024;
@@ -47,18 +47,19 @@ public class EnvironmentInputWorker implements Runnable {
 	 *            The audio environment owning this worker
 	 */
 	public EnvironmentInputWorker(AbstractAudioEnvironment owner) {
+		super("AE<" + owner.getAudioEnvironmentIdentifier().toString() + ">InputWorker");
 		this.ae = owner;
 	}
 
 	@Override
 	public void run() {
 		boolean done = false;
-		while (!Thread.currentThread().isInterrupted() && !done) {
-			try {
+		try {
+			while (!this.shouldStop() && !done) {
 				done = doInputWork();
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
 			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 
 		// End all remaining input streams.
@@ -86,7 +87,7 @@ public class EnvironmentInputWorker implements Runnable {
 			return true;
 
 		for (int i = 0; i < bytesRead; i++) {
-			if (Thread.currentThread().isInterrupted())
+			if (this.shouldStop())
 				throw new InterruptedException();
 
 			doByteInput(buffer[i]);
@@ -112,7 +113,7 @@ public class EnvironmentInputWorker implements Runnable {
 		Integer value = Byte.toUnsignedInt(b);
 
 		for (QueuedInputStream qis : this.ae.getInputStreams()) {
-			if (Thread.currentThread().isInterrupted())
+			if (this.shouldStop())
 				throw new InterruptedException();
 
 			// Remove closed streams

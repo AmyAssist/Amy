@@ -57,12 +57,8 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 
 	/** The worker used to transfer the output */
 	private EnvironmentOutputWorker outputWorker;
-	/** The Thread of the {@link #outputWorker} */
-	private Thread outputThread;
 	/** The worker used to transfer the input */
 	private EnvironmentInputWorker inputWorker;
-	/** The Thread of the {@link #inputWorker} */
-	private Thread inputThread;
 
 	/**
 	 * Initializes the audio environment
@@ -176,13 +172,8 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 	 */
 	@Override
 	public void start() {
-		String aeId = this.getAudioEnvironmentIdentifier().toString();
-
-		this.outputThread = new Thread(this.outputWorker, "AE<" + aeId + ">OutputThread");
-		this.inputThread = new Thread(this.inputWorker, "AE<" + aeId + ">InputThread");
-
-		this.outputThread.start();
-		this.inputThread.start();
+		this.outputWorker.start();
+		this.inputWorker.start();
 	}
 
 	/**
@@ -190,15 +181,8 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 	 */
 	@Override
 	public void stop() {
-		this.outputThread.interrupt();
-		this.inputThread.interrupt();
-
-		try {
-			this.outputThread.join();
-			this.inputThread.join();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
+		this.outputWorker.stop();
+		this.inputWorker.stop();
 	}
 
 	/**

@@ -38,7 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput;
  * 
  * @author Tim Neumann
  */
-public class EnvironmentOutputWorker implements Runnable {
+public class EnvironmentOutputWorker extends EnvironmentWorker {
 
 	/** The size of buffer used */
 	protected static final int BYTE_BUFFER_SIZE = 1024;
@@ -68,6 +68,7 @@ public class EnvironmentOutputWorker implements Runnable {
 	 *            The audio environment owning this worker
 	 */
 	public EnvironmentOutputWorker(AbstractAudioEnvironment owner) {
+		super("AE<" + owner.getAudioEnvironmentIdentifier().toString() + ">OutputWorker");
 		this.ae = owner;
 	}
 
@@ -120,7 +121,7 @@ public class EnvironmentOutputWorker implements Runnable {
 	public void run() {
 		AudioOutput currentStream = null;
 		boolean needToCloseStream = true;
-		while (!Thread.currentThread().isInterrupted()) {
+		while (!this.shouldStop()) {
 			try {
 				currentStream = this.ae.takeHeadOfOutputQueue();
 				needToCloseStream = true;
@@ -178,7 +179,7 @@ public class EnvironmentOutputWorker implements Runnable {
 
 		this.currentlyOutputting = true;
 		while (readBytes >= 0 && !this.shouldCancel) {
-			if (Thread.currentThread().isInterrupted())
+			if (this.shouldStop())
 				throw new InterruptedException();
 
 			readBytes = stream.read(buffer, 0, BYTE_BUFFER_SIZE);
