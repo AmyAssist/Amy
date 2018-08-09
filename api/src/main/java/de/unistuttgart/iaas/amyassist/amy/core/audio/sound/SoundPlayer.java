@@ -21,46 +21,41 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
+package de.unistuttgart.iaas.amyassist.amy.core.audio.sound;
+
+import javax.sound.sampled.AudioInputStream;
 
 /**
- * Object Time the Output Interface Uses
+ * A sound player. It can be started and stopped by the given methods.
  * 
- * @author Kai Menzel
+ * To played data is written to the {@link AudioInputStream} returned by {@link #getAudioStream()}. The sound is not
+ * played directly.
+ * 
+ * @author Tim Neumann
  */
-public class OutputObject {
-
-	private OutputType type;
-	private String message;
+public interface SoundPlayer {
 
 	/**
-	 * @param type
-	 *            of the output-message
-	 * @param message
-	 *            to say or path to sound
+	 * Get the {@link AudioInputStream} on which the audio is being played.
 	 * 
+	 * @return The audio stream
 	 */
-	public OutputObject(OutputType type, String message) {
-		this.type = type;
-		this.message = message;
-	}
+	AudioInputStream getAudioStream();
 
 	/**
-	 * return Type of OutputObject
-	 * 
-	 * @return OutputType
+	 * Starts the audio output.
 	 */
-	public OutputType getType() {
-		return this.type;
-	}
+	void start();
 
 	/**
-	 * return Path to Sound file or voice Message
-	 * 
-	 * @return Path to Sound file or message to voice
+	 * Stops / cancels the audio output.
 	 */
-	public String getMessage() {
-		return this.message;
-	}
+	void stop();
 
+	/**
+	 * Checks if the player is currently running
+	 * 
+	 * @return Whether the player is running
+	 */
+	boolean isRunning();
 }

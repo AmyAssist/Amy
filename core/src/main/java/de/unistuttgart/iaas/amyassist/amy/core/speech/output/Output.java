@@ -21,20 +21,40 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.output;
+
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 
 /**
- * Class that defines the Output Type
+ * Interface for the TextToSpeech
  * 
  * @author Kai Menzel
  */
-public enum OutputType {
+public interface Output {
+
 	/**
-	 * Sound File Type, the Message will be Path to file
+	 * Method to Voice and Log output the input String
+	 * 
+	 * @param s
+	 *            String that shall be said
 	 */
-	SOUND,
+	void voiceOutput(String s);
+
 	/**
-	 * Voice Output Type, the Message will be voiced by Amy
+	 * Method that outputs a sound
+	 * 
+	 * @param sound
+	 *            to output
 	 */
-	VOICE;
+	void soundOutput(Sounds sound);
+
+	/**
+	 * stop the OutputClip
+	 */
+	void stopOutput();
+
+	/**
+	 * @return whether this output is currently outputting information.
+	 */
+	boolean isCurrentlyOutputting();
 }

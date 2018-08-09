@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output.tts;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
 import javax.annotation.Nonnull;
 import javax.sound.sampled.AudioFormat;
@@ -45,15 +45,20 @@ import marytts.modules.synthesis.Voice;
 @Service(TextToSpeech.class)
 public class TextToSpeechImpl implements TextToSpeech {
 
+	private static final int DEFAULT_WAIT_TIME_AFTER_SPEECH = 1000;
+
 	@Reference
 	private Logger logger;
 	@Nonnull
 	private LocalMaryInterface mary;
 
+	private AudioInputStreamWithPauseFactory aisWithPauseFactory;
+
 	private Voice voice;
 
 	@PostConstruct
 	private void init() {
+		this.aisWithPauseFactory = new AudioInputStreamWithPauseFactory();
 		try {
 			this.mary = new LocalMaryInterface();
 			this.voice = Voice.getVoice("dfki-poppy-hsmm");
@@ -65,20 +70,27 @@ public class TextToSpeechImpl implements TextToSpeech {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.output.tts.TextToSpeech#getMaryAudio(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech#getMaryAudio(java.lang.String)
 	 */
 	@Override
 	public AudioInputStream getMaryAudio(String s) {
+		return getMaryAudio(s, DEFAULT_WAIT_TIME_AFTER_SPEECH);
+	}
+
+	@Override
+	public AudioInputStream getMaryAudio(String s, int millisecondsToPausetAfterSpeech) {
 		try {
-			return this.mary.generateAudio(s);
+			return this.aisWithPauseFactory.getAudioInputStreamWithPause(this.mary.generateAudio(preProcessing(s)),
+					millisecondsToPausetAfterSpeech);
 		} catch (SynthesisException e) {
 			this.logger.error("output error", e);
 			return null;
 		}
+
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.output.tts.TextToSpeech#getMaryAudioFormat()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech#getMaryAudioFormat()
 	 */
 	@Override
 	public AudioFormat getMaryAudioFormat() {
@@ -86,4 +98,17 @@ public class TextToSpeechImpl implements TextToSpeech {
 		return this.voice.dbAudioFormat();
 	}
 
+	/**
+	 * cleans String of SubString Mary can't pronounce
+	 * 
+	 * @param s
+	 *            String Mary shall say
+	 * @return cleaned String Mary shall say
+	 */
+	private String preProcessing(String s) {
+		String text = s;
+		text = text.replace("°C", " degree Celsius");
+		text = text.replace("°F", " degree Fahrenheit");
+		return text;
+	}
 }

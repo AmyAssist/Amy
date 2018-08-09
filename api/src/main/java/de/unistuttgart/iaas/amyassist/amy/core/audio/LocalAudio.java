@@ -21,40 +21,26 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
+package de.unistuttgart.iaas.amyassist.amy.core.audio;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 /**
- * Interface for the TextToSpeech
+ * The local audio
  * 
- * @author Kai Menzel
+ * @author Tim Neumann
  */
-public interface Output {
+public interface LocalAudio {
+	/**
+	 * @return The identifier of the local audio environment.
+	 * @throws NoSuchElementException
+	 *             When this audio manager has no local audio environment.
+	 */
+	UUID getLocalAudioEnvironmentIdentifier();
 
 	/**
-	 * Method to Voice and Log output the input String
-	 * 
-	 * @param s
-	 *            String that shall be said
+	 * @return Whether the local audio is available
 	 */
-	void voiceOutput(String s);
-
-	/**
-	 * Method that outputs a sound
-	 * 
-	 * @param sound
-	 *            to output
-	 */
-	void soundOutput(Sounds sound);
-
-	/**
-	 * stop the OutputClip
-	 */
-	void stopOutput();
-
-	/**
-	 * @return whether this output is currently outputting information.
-	 */
-	boolean isCurrentlyOutputting();
+	boolean isLocalAudioAvailable();
 }
