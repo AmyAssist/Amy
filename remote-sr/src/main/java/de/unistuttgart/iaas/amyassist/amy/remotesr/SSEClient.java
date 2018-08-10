@@ -35,23 +35,23 @@ import java.util.concurrent.ExecutionException;
  *
  * @author Benno Krauß
  */
-public class SSEClient {
+class SSEClient {
 
     private final Logger logger = LoggerFactory.getLogger(SSEClient.class);
 
     private final SseEventSink sink;
     private final Sse sse;
 
-    public SSEClient(SseEventSink sink, Sse sse) {
+    SSEClient(SseEventSink sink, Sse sse) {
         this.sink = sink;
         this.sse = sse;
     }
 
-    public boolean isConnected() {
+    boolean isConnected() {
         return !sink.isClosed();
     }
 
-    public void disconnect() {
+    void disconnect() {
         sink.close();
     }
 
@@ -63,7 +63,7 @@ public class SSEClient {
     boolean sendEvent(String event) {
         if (sink != null && !sink.isClosed()) {
             try {
-                sink.send(sse.newEvent(event, "")).toCompletableFuture().get();
+                sink.send(sse.newEvent(event, event)).toCompletableFuture().get();
                 return true;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

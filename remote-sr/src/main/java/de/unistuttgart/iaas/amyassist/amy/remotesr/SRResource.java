@@ -24,16 +24,19 @@
 package de.unistuttgart.iaas.amyassist.amy.remotesr;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * SSE resource for the remote SR. Chrome connects to this resource and stays connected indefinitely
@@ -41,11 +44,17 @@ import javax.ws.rs.sse.SseEventSink;
  * @author Benno Krauß
  */
 @Path("remotesr")
-public class SRResource implements Resource {
+public class SRResource {
 
     @Reference
     private RemoteSR sr;
 
+
+    /**
+     * SSE endpoint for the chrome instance
+     * @param sink sse event sink
+     * @param sse sse object
+     */
     @GET
     @Path("eventstream")
     @Produces(MediaType.SERVER_SENT_EVENTS)
@@ -53,9 +62,32 @@ public class SRResource implements Resource {
 
         SSEClient newClient = new SSEClient(sink, sse);
         sr.setClient(newClient);
+
     }
 
-    public ResourceEntity getPluginDescripion() {
-        return null;
+    /**
+     * endpoint to supply the static sr website for chrome
+     * @return static html website
+     */
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    public String getStaticWebsite() {
+        try {
+            URL file = getClass().getClassLoader().getResource("index.html");
+            if (file != null) {
+                URI filePath = file.toURI();
+                return new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
+            } else {
+                throw new IOException("Couldn't get URL for resource file index.html");
+            }
+        } catch (URISyntaxException | IOException e) {
+            throw new WebApplicationException("Couldn't load static html file: ", e);
+        }
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void postSRResult(SRResult res) {
+        sr.processResult(res);
     }
 }

@@ -16,12 +16,12 @@
 		if (!('webkitSpeechRecognition' in window)) {
 			console.log('Browser doesn\'t support SR!');
 		}
-		var recognition = new webkitSpeechRecognition();
+		const recognition = new webkitSpeechRecognition();
 		recognition.lang = 'en-US';
 		recognition.continuous = false;
 		recognition.interimResults = false;
 
-		var source = new EventSource("/rest/remotesr/eventstream");
+		const source = new EventSource("/rest/remotesr/eventstream");
 
 		source.onmessage = function(event) {
 			console.log('EventSource message: ', event.message);
@@ -47,11 +47,33 @@
 		}
 
 		recognition.onresult = function(event) {
-			var result = event.results[0][0].transcript;
+			const result = event.results[0][0].transcript;
 			console.log('onresult: ', result);
+
+			sendResult(result);
+		}
+
+		function sendResult(text) {
+		    fetch("/rest/remotesr", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    text
+                })
+            }).then(res => {
+                if (res.ok) {
+                    console.log(`sent result`);
+                }
+                else {
+                    console.log(`error sending result: ${res.statusText}`);
+				}
+			}, error => {
+                console.log(`error sending result: ${error}`)
+            });
 		}
 
 		function startSR(event) {
+			console.log('Starting SR');
 			recognition.start();
 		}
 
