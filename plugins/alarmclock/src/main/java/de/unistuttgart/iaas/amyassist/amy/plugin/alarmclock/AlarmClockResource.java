@@ -99,11 +99,9 @@ public class AlarmClockResource implements Resource {
 	 * 
 	 * @param alarmNumber
 	 *            the number of the alarm
-	 * @param mode
-	 *            what to do: allowed paramters: edit, activate, delete, deactivate
-	 * @param alarmTime
-	 *            the new time
-	 * @return the new alarmtime or null
+	 * @param alarmInc
+	 *            the incoming alarm
+	 * @return the new alarm or null
 	 */
 	@POST
 	@Path("alarms/{pathid}")
@@ -117,9 +115,10 @@ public class AlarmClockResource implements Resource {
 
 	/**
 	 * @param alarmNumber
-	 * @param mode
+	 *            number of the alarm which should be activated or deactivated
 	 * @param alarmInc
-	 * @return
+	 *            the incoming alarm
+	 * @return null
 	 */
 	@POST
 	@Path("alarms/de.activate/{pathid}")
@@ -132,6 +131,20 @@ public class AlarmClockResource implements Resource {
 		} else if (alarm.isActive()) {
 			this.logic.deactivateAlarm(alarmNumber);
 		}
+		return null;
+	}
+
+	/**
+	 * @param alarmNumber
+	 *            number of the alarm which should be deleted
+	 * @return null
+	 */
+	@POST
+	@Path("alarms/delete/{pathid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Alarm deleteAlarm(@PathParam("pathid") int alarmNumber) {
+		this.logic.deleteAlarm(alarmNumber);
 		return null;
 	}
 
