@@ -56,12 +56,10 @@ public class EnvironmentConfigurationLoaderImpl implements EnvironmentConfigurat
 
 	@Override
 	public Properties load(String configurationName, Properties original) {
+		if (!isAllowedName(configurationName))
+			throw new IllegalArgumentException("Illegal configuration name for loading from the environment.");
 		Properties ret = new Properties(original);
 		String configNameForEnv = configurationName.replace('.', '_');
-
-		if (!this.allowedEnvVars.matcher(configNameForEnv).matches())
-			throw new IllegalArgumentException(
-					"The configuration name can not be loaded from env, due to illegal characters.");
 
 		for (String envVarName : this.envVars.keySet()) {
 			if (envVarName.toLowerCase().startsWith(configNameForEnv.toLowerCase())) {
@@ -69,7 +67,14 @@ public class EnvironmentConfigurationLoaderImpl implements EnvironmentConfigurat
 				overwriteProperties(ret, key, this.envVars.get(envVarName));
 			}
 		}
+
 		return ret;
+	}
+
+	@Override
+	public boolean isAllowedName(String name) {
+		String configNameForEnv = name.replace('.', '_');
+		return this.allowedEnvVars.matcher(configNameForEnv).matches();
 	}
 
 	/**

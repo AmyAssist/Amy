@@ -58,4 +58,13 @@ public interface EnvironmentConfigurationLoader {
 	 *         environment.
 	 */
 	Properties load(String configurationName, Properties original);
+
+	/**
+	 * Checks whether the given string is an allowed name for configurations to load from the environment.
+	 * 
+	 * @param name
+	 *            The name to check.
+	 * @return Whether the name is allowed.
+	 */
+	boolean isAllowedName(String name);
 }

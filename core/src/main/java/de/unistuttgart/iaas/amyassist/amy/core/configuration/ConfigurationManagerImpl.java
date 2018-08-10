@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
 import java.util.Properties;
-import java.util.regex.Pattern;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -50,7 +49,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	@Override
 	public Properties getConfiguration(String configurationName) {
 		Properties p = this.configurationLoader.load(configurationName);
-		if (Pattern.matches(EnvironmentConfigurationLoader.ALLOWED_ENV_VARS_PATTERN, configurationName)) {
+		if (this.environmentConfiguratinLoader.isAllowedName(configurationName)) {
 			p = this.environmentConfiguratinLoader.load(configurationName, p);
 		}
 		return p;
@@ -60,7 +59,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	public Properties getConfigurationWithDefaults(String configurationName) {
 		Properties defaults = this.internalDefaultConfigurationLoader.load(this.classLoader, configurationName);
 		Properties p = this.configurationLoader.load(configurationName, defaults);
-		if (Pattern.matches(EnvironmentConfigurationLoader.ALLOWED_ENV_VARS_PATTERN, configurationName)) {
+		if (this.environmentConfiguratinLoader.isAllowedName(configurationName)) {
 			p = this.environmentConfiguratinLoader.load(configurationName, p);
 		}
 		return p;

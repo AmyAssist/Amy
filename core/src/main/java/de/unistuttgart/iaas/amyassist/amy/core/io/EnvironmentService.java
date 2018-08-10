@@ -27,7 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
@@ -66,7 +66,8 @@ public class EnvironmentService implements Environment {
 		return ZonedDateTime.now();
 	}
 
+	@Override
 	public Map<String, String> getEnvironmentVariables() {
-		return new HashMap<>(this.envVars);
+		return Collections.unmodifiableMap(this.envVars);
 	}
 }
