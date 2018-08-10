@@ -73,7 +73,8 @@ public class EnvironmentConfigurationLoaderImpl implements EnvironmentConfigurat
 	}
 
 	/**
-	 * Overwrites any properties in the given properties object, that case insensitively match the key.
+	 * Overwrites any properties in the given properties object, that case insensitively match the key with any '.'
+	 * replaced by '_'
 	 * 
 	 * @param p
 	 *            The properties object.
@@ -87,7 +88,7 @@ public class EnvironmentConfigurationLoaderImpl implements EnvironmentConfigurat
 
 		while (names.hasMoreElements()) {
 			String name = (String) names.nextElement();
-			if (name.equalsIgnoreCase(key)) {
+			if (name.replace('.', '_').equalsIgnoreCase(key)) {
 				p.setProperty(name, value);
 			}
 		}
