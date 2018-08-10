@@ -111,6 +111,32 @@ class EnvironmentConfigurationLoaderTest {
 	}
 
 	/**
+	 * Tests that env vars without amy_ have no influence
+	 * <p>
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 */
+	@Test
+	void testLoadNoPrefix() {
+		this.envVars.put("amyconfig1_key1", "value11");
+		this.envVars.put("a_config1_key1", "value11");
+		this.envVars.put("am_config1_key1", "value11");
+		this.envVars.put("m_config1_key1", "value11");
+		this.envVars.put("my_config1_key1", "value11");
+		this.envVars.put("y_config1_key1", "value11");
+		this.envVars.put("_config1_key1", "value11");
+		this.envVars.put("config1_key1", "value11");
+
+		Properties orig = new Properties();
+
+		orig.setProperty("key1", "orig11");
+
+		Properties res1 = this.loader.load("config1", orig);
+
+		Assertions.assertEquals("orig11", res1.getProperty("key1"));
+	}
+
+	/**
 	 * Tests that '.' in the config name works
 	 * <p>
 	 * Test method for
