@@ -308,7 +308,7 @@ class EnvironmentConfigurationLoaderTest {
 		try {
 			this.loader.load(var, new Properties());
 		} catch (IllegalArgumentException e) {
-			Assertions.fail("There should not be an exception. Seed: " + seed);
+			Assertions.fail("There should not be an exception. Name: " + var);
 		}
 	}
 
@@ -322,7 +322,7 @@ class EnvironmentConfigurationLoaderTest {
 	@MethodSource("invalidNames")
 	void testInvalidNames(String var) {
 		Assertions.assertThrows(IllegalArgumentException.class, () -> this.loader.load(var, new Properties()),
-				"No Exception. Seed: " + seed);
+				"No Exception. Name: " + var);
 	}
 
 	private static String allowedChars = "0123456789abcdefghijklmnopqrstuvwxyz_.";
