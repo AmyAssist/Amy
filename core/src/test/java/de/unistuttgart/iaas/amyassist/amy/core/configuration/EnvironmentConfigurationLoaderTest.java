@@ -98,21 +98,16 @@ class EnvironmentConfigurationLoaderTest {
 	void testLoadStandard() {
 		this.envVars.put("config1_key1", "value11");
 		this.envVars.put("config1_key2", "value12");
-		this.envVars.put("config2_key1", "value21");
 
-		Properties orig1 = new Properties();
-		Properties orig2 = new Properties();
+		Properties orig = new Properties();
 
-		orig1.setProperty("key1", "orig11");
-		orig1.setProperty("key2", "orig12");
-		orig2.setProperty("key1", "orig21");
+		orig.setProperty("key1", "orig11");
+		orig.setProperty("key2", "orig12");
 
-		Properties res1 = this.loader.load("config1", orig1);
-		Properties res2 = this.loader.load("config2", orig2);
+		Properties res1 = this.loader.load("config1", orig);
 
 		Assertions.assertEquals("value11", res1.getProperty("key1"));
 		Assertions.assertEquals("value12", res1.getProperty("key2"));
-		Assertions.assertEquals("value21", res2.getProperty("key1"));
 	}
 
 	/**
