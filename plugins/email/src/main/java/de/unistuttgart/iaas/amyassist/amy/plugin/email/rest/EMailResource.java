@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.email;
+package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
 
 import java.util.List;
 
@@ -31,6 +31,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailLogic;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 

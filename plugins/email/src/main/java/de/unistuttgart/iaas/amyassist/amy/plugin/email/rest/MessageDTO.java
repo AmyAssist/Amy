@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.email;
+package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -121,5 +121,31 @@ public class MessageDTO extends Entity {
 	 */
 	public boolean isImportant() {
 		return this.important;
+	}
+
+	/**
+	 * Needed for rest test
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof MessageDTO) {
+			MessageDTO other = (MessageDTO) object;
+			return (this.from.equals(other.from) && this.subject.equals(other.subject)
+					&& this.content.equals(other.content) && this.sentDate.equals(other.sentDate)
+					&& this.important == other.important);
+		}
+		return false;
+	}
+
+	/**
+	 * Needed because we override equals
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 }

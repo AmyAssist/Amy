@@ -48,6 +48,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 
@@ -224,7 +225,7 @@ public class EMailLogic {
 	 * 
 	 * @return all mails in the inbox in a list, because lists are better to work with than arrays
 	 */
-	protected List<MessageDTO> getMailsForREST() {
+	public List<MessageDTO> getMailsForREST() {
 		openInboxReadOnly();
 		List<MessageDTO> messagesToSend = new ArrayList<>();
 		Message[] messages;
