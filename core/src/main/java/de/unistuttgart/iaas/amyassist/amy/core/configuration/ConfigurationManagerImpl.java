@@ -41,28 +41,18 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	private ConfigurationLoader configurationLoader;
 	@Reference
 	private InternalDefaultConfigurationLoader internalDefaultConfigurationLoader;
-	@Reference
-	private EnvironmentConfigurationLoader environmentConfiguratinLoader;
 	@Context(de.unistuttgart.iaas.amyassist.amy.core.di.Context.CLASSLOADER)
 	private ClassLoader classLoader;
 
 	@Override
-	public Properties getConfiguration(String configurationName) {
-		Properties p = this.configurationLoader.load(configurationName);
-		if (this.environmentConfiguratinLoader.isAllowedName(configurationName)) {
-			p = this.environmentConfiguratinLoader.load(configurationName, p);
-		}
-		return p;
+	public Properties getConfiguration(String s) {
+		return this.configurationLoader.load(s);
 	}
 
 	@Override
 	public Properties getConfigurationWithDefaults(String configurationName) {
-		Properties defaults = this.internalDefaultConfigurationLoader.load(this.classLoader, configurationName);
-		Properties p = this.configurationLoader.load(configurationName, defaults);
-		if (this.environmentConfiguratinLoader.isAllowedName(configurationName)) {
-			p = this.environmentConfiguratinLoader.load(configurationName, p);
-		}
-		return p;
+		Properties defaults = this.internalDefaultConfigurationLoader.load(classLoader, configurationName);
+		return this.configurationLoader.load(configurationName, defaults);
 	}
 
 }

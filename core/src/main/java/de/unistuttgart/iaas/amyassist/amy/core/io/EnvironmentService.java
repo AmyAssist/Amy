@@ -27,8 +27,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -43,12 +41,9 @@ public class EnvironmentService implements Environment {
 
 	private Path workingDirectory;
 
-	private Map<String, String> envVars;
-
 	@PostConstruct
 	private void init() {
 		this.workingDirectory = Paths.get("");
-		this.envVars = System.getenv();
 	}
 
 	@Override
@@ -64,10 +59,5 @@ public class EnvironmentService implements Environment {
 	@Override
 	public ZonedDateTime getCurrentDateTime() {
 		return ZonedDateTime.now();
-	}
-
-	@Override
-	public Map<String, String> getEnvironmentVariables() {
-		return Collections.unmodifiableMap(this.envVars);
 	}
 }
