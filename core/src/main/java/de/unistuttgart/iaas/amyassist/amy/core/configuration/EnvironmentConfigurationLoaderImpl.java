@@ -59,7 +59,7 @@ public class EnvironmentConfigurationLoaderImpl implements EnvironmentConfigurat
 		if (!isAllowedName(configurationName))
 			throw new IllegalArgumentException("Illegal configuration name for loading from the environment.");
 		Properties ret = new Properties(original);
-		String configNameForEnv = configurationName.replace('.', '_');
+		String configNameForEnv = "amy_" + configurationName.replace('.', '_');
 
 		for (String envVarName : this.envVars.keySet()) {
 			if (envVarName.toLowerCase().startsWith(configNameForEnv.toLowerCase())) {
@@ -93,6 +93,7 @@ public class EnvironmentConfigurationLoaderImpl implements EnvironmentConfigurat
 
 		while (names.hasMoreElements()) {
 			String name = (String) names.nextElement();
+
 			if (name.replace('.', '_').equalsIgnoreCase(key)) {
 				p.setProperty(name, value);
 			}

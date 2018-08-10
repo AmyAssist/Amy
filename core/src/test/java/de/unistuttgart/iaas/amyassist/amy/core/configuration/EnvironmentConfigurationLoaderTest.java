@@ -96,8 +96,8 @@ class EnvironmentConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadStandard() {
-		this.envVars.put("config1_key1", "value11");
-		this.envVars.put("config1_key2", "value12");
+		this.envVars.put("amy_config1_key1", "value11");
+		this.envVars.put("amy_config1_key2", "value12");
 
 		Properties orig = new Properties();
 
@@ -118,7 +118,7 @@ class EnvironmentConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadPointInName() {
-		this.envVars.put("config_1_key1", "value11");
+		this.envVars.put("amy_config_1_key1", "value11");
 
 		Properties orig = new Properties();
 
@@ -137,7 +137,7 @@ class EnvironmentConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadPointInKey() {
-		this.envVars.put("config1_key_1", "value11");
+		this.envVars.put("amy_config1_key_1", "value11");
 
 		Properties orig = new Properties();
 
@@ -156,7 +156,7 @@ class EnvironmentConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadDefaults() {
-		this.envVars.put("config1_key1", "value11");
+		this.envVars.put("amy_config1_key1", "value11");
 
 		Properties def = new Properties();
 
@@ -177,7 +177,7 @@ class EnvironmentConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadNotSetInEnv() {
-		this.envVars.put("config1_key1", "value11");
+		this.envVars.put("amy_config1_key1", "value11");
 
 		Properties orig1 = new Properties();
 		Properties orig2 = new Properties();
@@ -202,9 +202,9 @@ class EnvironmentConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadNotSetInOrig() {
-		this.envVars.put("config1_key1", "value11");
-		this.envVars.put("config1_key2", "value12");
-		this.envVars.put("config2_key1", "value21");
+		this.envVars.put("amy_config1_key1", "value11");
+		this.envVars.put("amy_config1_key2", "value12");
+		this.envVars.put("amy_config2_key1", "value21");
 
 		Properties orig1 = new Properties();
 		Properties orig2 = new Properties();
@@ -227,9 +227,9 @@ class EnvironmentConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadReplacing() {
-		this.envVars.put("config_1_key1", "value11");
-		this.envVars.put("config_1_key2", "value12");
-		this.envVars.put("config_2_key1", "value21");
+		this.envVars.put("amy_config_1_key1", "value11");
+		this.envVars.put("amy_config_1_key2", "value12");
+		this.envVars.put("amy_config_2_key1", "value21");
 
 		Properties orig1 = new Properties();
 		Properties orig2 = new Properties();
@@ -254,9 +254,9 @@ class EnvironmentConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadIgnoreCase() {
-		this.envVars.put("CONFIG1_key1", "value11");
-		this.envVars.put("config1_KEY2", "value12");
-		this.envVars.put("config2_kEy1", "value21");
+		this.envVars.put("AMY_CONFIG1_key1", "value11");
+		this.envVars.put("amy_config1_KEY2", "value12");
+		this.envVars.put("aMy_config2_kEy1", "value21");
 
 		Properties orig1 = new Properties();
 		Properties orig2 = new Properties();
@@ -281,7 +281,7 @@ class EnvironmentConfigurationLoaderTest {
 	 */
 	@Test
 	void testLoadColidingName() {
-		this.envVars.put("a_b_c", "value11");
+		this.envVars.put("amy_a_b_c", "value11");
 
 		Properties orig1 = new Properties();
 		Properties orig2 = new Properties();
