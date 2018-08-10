@@ -29,7 +29,7 @@ import java.util.Properties;
  * A configuration loader that will load configurations from the environment variables. Changes can't be stored with
  * this ConfigurationLoader.
  * <p>
- * The name schema for the environment variables is amy_<config name>_<property key>.
+ * The name schema for the environment variables is AMY_<config name>_<property key>.
  * <p>
  * All '.'s in the config name are replaced with '_'. The matching is done case insensitive.
  * <p>
