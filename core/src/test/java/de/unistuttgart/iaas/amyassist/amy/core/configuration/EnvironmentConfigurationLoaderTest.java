@@ -116,6 +116,65 @@ class EnvironmentConfigurationLoaderTest {
 	}
 
 	/**
+	 * Tests that '.' in the config name works
+	 * <p>
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 */
+	@Test
+	void testLoadPointInName() {
+		this.envVars.put("config_1_key1", "value11");
+
+		Properties orig = new Properties();
+
+		orig.setProperty("key1", "orig11");
+
+		Properties res = this.loader.load("config.1", orig);
+
+		Assertions.assertEquals("value11", res.getProperty("key1"));
+	}
+
+	/**
+	 * Tests that '.' in the key works
+	 * <p>
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 */
+	@Test
+	void testLoadPointInKey() {
+		this.envVars.put("config1_key_1", "value11");
+
+		Properties orig = new Properties();
+
+		orig.setProperty("key.1", "orig11");
+
+		Properties res = this.loader.load("config1", orig);
+
+		Assertions.assertEquals("value11", res.getProperty("key.1"));
+	}
+
+	/**
+	 * Tests that it works with a config set in default.
+	 * <p>
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 */
+	@Test
+	void testLoadDefaults() {
+		this.envVars.put("config1_key1", "value11");
+
+		Properties def = new Properties();
+
+		def.setProperty("key1", "orig11");
+
+		Properties orig = new Properties(def);
+
+		Properties res = this.loader.load("config1", orig);
+
+		Assertions.assertEquals("value11", res.getProperty("key1"));
+	}
+
+	/**
 	 * Tests for configs that are not set in the environment
 	 * <p>
 	 * Test method for
