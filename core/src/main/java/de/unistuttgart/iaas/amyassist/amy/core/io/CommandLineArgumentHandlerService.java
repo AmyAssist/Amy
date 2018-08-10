@@ -21,35 +21,50 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.io;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
-import asg.cliche.Command;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformation;
 
 /**
  * This class handles the command line arguments passed to the core.
  *
  * @author Tim Neumann
  */
-@Service
-public class CommandLineArgumentHandlerService implements CommandLineArgumentHandler {
+public class CommandLineArgumentHandlerService {
 
 	private Map<Flag, List<String>> flags;
 
 	private boolean flagsValid = true;
 
+	private ProgramInformation programInfo;
+
+	private Consumer<String> outputFunction;
+
 	/**
-	 * Initializes the command line handler
-	 *
+	 * Creates a new command line argument handler with the given program information
+	 * 
+	 * @param programInformation
+	 *            The program information used to output things like the version.
+	 * @param output
+	 *            The function used to output all things.
 	 * @param args
 	 *            The command line arguments.
 	 */
-	public void init(String[] args) {
+	public CommandLineArgumentHandlerService(ProgramInformation programInformation, Consumer<String> output,
+			String[] args) {
+		this.programInfo = programInformation;
+		this.outputFunction = output;
+		processArgs(args);
+		output("This is Amy. Copyright (c) 2018 the Amy project authors. For help run with flag -h.");
+	}
+
+	private void processArgs(String[] args) {
 		this.flags = new EnumMap<>(Flag.class);
 
 		FlagParameterInformation flagParaInfo = new FlagParameterInformation(null);
@@ -68,13 +83,10 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 			this.flagsValid = false;
 			return;
 		}
-
-		output("This is Amy. Copyright (c) 2018 the Amy project authors. For help run with flag -h.");
-
 	}
 
 	/**
-	 * Processes the argument strin as a new flag
+	 * Processes the argument string as a new flag
 	 * 
 	 * @param arg
 	 *            The string argument
@@ -106,10 +118,10 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 			printHelp();
 			break;
 		case VERSION:
-			output(version());
+			printVersion();
 			break;
 		case NOTICE:
-			output(notice());
+			printNotice();
 			break;
 		default:
 			// All other flags don't do anything immediately.
@@ -141,12 +153,9 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#shouldProgramContinue()
+	 * @return Whether the program should continue execution.
 	 */
-	@Override
 	public boolean shouldProgramContinue() {
-		if (this.flags == null)
-			throw new NotInitializedException();
 		if (!this.flagsValid)
 			return false;
 		for (Flag f : this.flags.keySet()) {
@@ -157,23 +166,12 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#getConfigPaths()
+	 * Get the info about the command line arguments.
+	 * 
+	 * @return The info
 	 */
-	@Override
-	public List<String> getConfigPaths() {
-		if (this.flags == null)
-			throw new NotInitializedException();
-		return this.flags.get(Flag.CONFIG);
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#getPluginPaths()
-	 */
-	@Override
-	public List<String> getPluginPaths() {
-		if (this.flags == null)
-			throw new NotInitializedException();
-		return this.flags.get(Flag.PLUGIN);
+	public CommandLineArgumentInfo getInfo() {
+		return new CommandLineArgumentInfoImpl(this.flags.get(Flag.CONFIG), this.flags.get(Flag.PLUGIN));
 	}
 
 	private void printHelp() {
@@ -209,37 +207,16 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 		}
 	}
 
-	/**
-	 * The Version String
-	 * 
-	 * @return the version of amy core
-	 */
-	@Command(name = "version", description = "Prints out the version.")
-	public String version() {
-		return "Amy core version: " + getClass().getPackage().getImplementationVersion();
+	private void printVersion() {
+		output(this.programInfo.getVersion());
 	}
 
-	/**
-	 * The Notice text
-	 * 
-	 * @return the notice of Amy project
-	 */
-	@Command(name = "notice", description = "Prints out the license notice.")
-	public String notice() {
-		return "Copyright (c) 2018 the Amy project authors.\n" + " \n" + "  SPDX-License-Identifier: Apache-2.0\n"
-				+ " \n" + "  Licensed under the Apache License, Version 2.0 (the \"License\");\n"
-				+ "  you may not use this file except in compliance with the License.\n"
-				+ "  You may obtain a copy of the License at\n" + " \n"
-				+ "    http://www.apache.org/licenses/LICENSE-2.0\n" + " \n"
-				+ "  Unless required by applicable law or agreed to in writing, software\n"
-				+ "  distributed under the License is distributed on an \"AS IS\" BASIS,\n"
-				+ "  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n"
-				+ "  See the License for the specific language governing permissions and\n"
-				+ "  limitations under the License.\n" + " \n" + "  For more information see notice.md";
+	private void printNotice() {
+		output(this.programInfo.getLicenseNotice());
 	}
 
 	private void output(String s) {
-		System.out.println(s);
+		this.outputFunction.accept(s);
 	}
 
 	/**

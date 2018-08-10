@@ -37,12 +37,12 @@ import javax.persistence.Entity;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
@@ -76,7 +76,7 @@ public class PluginManagerService implements PluginManager {
 	private Configuration di;
 
 	@Reference
-	private CommandLineArgumentHandler cmaHandler;
+	private CommandLineArgumentInfo cmaInfo;
 
 	@Reference
 	private Environment environment;
@@ -109,8 +109,8 @@ public class PluginManagerService implements PluginManager {
 		if (this.loaded)
 			throw new IllegalStateException("the plugins are loaded");
 
-		if (this.cmaHandler.getPluginPaths() != null) {
-			for (String pathS : this.cmaHandler.getPluginPaths()) {
+		if (this.cmaInfo.getPluginPaths().size() > 0) {
+			for (String pathS : this.cmaInfo.getPluginPaths()) {
 				Path path = this.projectDir.resolve(pathS);
 				this.pluginLoader.loadPlugin(path);
 			}

@@ -36,10 +36,10 @@ import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
@@ -58,7 +58,7 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 	private Environment environment;
 
 	@Reference
-	private CommandLineArgumentHandler cmaHandler;
+	private CommandLineArgumentInfo cmaInfo;
 
 	private static final String DEFAULT_CONFIG_DIR = "config";
 	private List<Path> configDirs;
@@ -68,11 +68,8 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 		this.configDirs = new ArrayList<>();
 		this.configDirs.add(this.environment.getWorkingDirectory().resolve(DEFAULT_CONFIG_DIR));
 
-		List<String> cmaConfigPaths = this.cmaHandler.getConfigPaths();
-		if (cmaConfigPaths != null) {
-			for (String path : cmaConfigPaths) {
-				this.configDirs.add(this.environment.getWorkingDirectory().resolve(path));
-			}
+		for (String path : this.cmaInfo.getConfigPaths()) {
+			this.configDirs.add(this.environment.getWorkingDirectory().resolve(path));
 		}
 
 		boolean found = false;
