@@ -23,20 +23,34 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.console;
 
+import java.util.concurrent.ExecutionException;
+
+import org.slf4j.Logger;
+
 import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 
 /**
- * The console is the only Service that reads from the stdin. It provides a {@link #register(Object)} method to add new
- * command to the console. This Console uses http://cliche.sourceforge.net/.
+ * Console commands to interact with Amy like speaking with her.
  * 
  * @author Leon Kiefer
  */
-public interface Console {
-	/**
-	 * Register a MainHandler in the ConsoleShell. The Handler need {@link Command} annotations.
-	 * 
-	 * @param handler
-	 *            the handler object
-	 */
-	void register(Object handler);
+public class SpeechConsole {
+	@Reference
+	private Logger logger;
+	@Reference
+	private SpeechInputHandler handler;
+
+	@Command
+	public String say(String... speechInput) {
+		try {
+			return this.handler.handle(String.join(" ", speechInput)).get();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		} catch (ExecutionException e) {
+			this.logger.error("Error while handling input {}", speechInput, e.getCause());
+		}
+		return "";
+	}
 }
