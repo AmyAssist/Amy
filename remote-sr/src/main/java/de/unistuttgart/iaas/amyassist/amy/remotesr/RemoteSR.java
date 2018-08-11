@@ -45,8 +45,8 @@ public class RemoteSR {
     private static final String CONFIG_NAME = "remotesr.config";
     private static final String CHROME_DIRECTORY_CONFIG_KEY = "chrome";
 
-    private static final String MAC_CHROME_PATH = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-    private static final String WINDOWS_CHROME_PATH = "/Program Files (x86)/Google/Chrome/Application/chrome.exe";
+    private static final String MAC_CHROME_PATH = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" + "";
+    private static final String WINDOWS_CHROME_PATH = "/Program Files (x86)/Google/Chrome/Application/chrome.exe" + "";
 
     @Reference
     private Logger logger;
@@ -77,7 +77,8 @@ public class RemoteSR {
             }
             String file = fileURL.getFile();
 
-            String chromePath = configurationManager.getConfiguration(CONFIG_NAME).getProperty(CHROME_DIRECTORY_CONFIG_KEY);
+            String chromePath = configurationManager.getConfiguration(CONFIG_NAME)
+                    .getProperty(CHROME_DIRECTORY_CONFIG_KEY);
 
             if (chromePath == null) {
                 if (SystemUtils.IS_OS_MAC_OSX) {
