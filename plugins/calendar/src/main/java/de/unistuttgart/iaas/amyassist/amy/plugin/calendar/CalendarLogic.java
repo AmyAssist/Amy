@@ -49,8 +49,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
- * This class is for the Calendar Authentication and Logic, parts of the Code are from
- * https://developers.google.com/calendar/quickstart/java
+ * This class implements all the functions that our calendar plugin is capable of,
+ * e.g. get calendar events and set calendar events.
  *
  * @author Florian Bauer, Patrick Gebhardt
  */
@@ -77,7 +77,8 @@ public class CalendarLogic {
     String noEventsFound = "No upcoming events found.";
 
     /**
-     * This method creates an event for the connected google calendar
+     * This method creates an event for the connected google calendar,
+     * modified version from https://developers.google.com/calendar/create-events
      *
      * @param calendarEvent the event which will be created in the google calendar
      */
