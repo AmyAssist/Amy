@@ -39,7 +39,7 @@ import javax.persistence.PersistenceUnit;
  */
 @Entity
 @PersistenceUnit(unitName = "AlarmRegistry")
-public class AlarmImpl implements Alarm {
+public class AlarmImpl implements AlarmReg {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

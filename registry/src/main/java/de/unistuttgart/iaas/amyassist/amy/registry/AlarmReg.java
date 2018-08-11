@@ -30,7 +30,7 @@ import java.time.LocalTime;
  * 
  * @author Patrick Gebhardt
  */
-public interface Alarm extends RegistryEntity {
+public interface AlarmReg extends RegistryEntity {
 
 	/**
 	 * @return the id of the alarm
@@ -64,4 +64,5 @@ public interface Alarm extends RegistryEntity {
 	 *            sets whether the alarm is active or inactive
 	 */
 	void setActive(boolean active);
+
 }
