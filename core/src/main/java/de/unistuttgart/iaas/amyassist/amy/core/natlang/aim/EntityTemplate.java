@@ -23,9 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.aim;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
  * Contains information of EntityTemplates used in aim xml files
@@ -41,11 +46,23 @@ public class EntityTemplate {
 	@XmlAttribute(name = "type")
 	private String type;
 
+	@XmlElementWrapper(name = "Values", required = false)
+	@XmlElement(name = "value", required = false)
+	private List<String> values = new ArrayList<>();
+
 	/**
 	 * @return string representation of this object
 	 */
 	public String printSelf() {
-		return "\n Entity id=" + this.entityId + " type=" + this.type;
+		StringBuilder builder = new StringBuilder();
+		builder = builder.append("\n Entity id=" + this.entityId + " type=" + this.type);
+		if (!this.values.isEmpty()) {
+			builder = builder.append("\n\t values:" + this.values.get(0) + ",");
+			for (int i = 1; i < this.values.size(); i++) {
+				builder = builder.append(this.values.get(i));
+			}
+		}
+		return builder.toString();
 	}
 
 	/**

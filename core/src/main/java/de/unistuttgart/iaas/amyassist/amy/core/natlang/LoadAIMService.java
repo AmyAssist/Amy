@@ -112,7 +112,7 @@ public class LoadAIMService implements DeploymentContainerService {
 	 * @param entryName name of the jar entry
 	 * @return AmyInteractionModel instance 
 	 */
-	private AmyInteractionModel extractModel(String xmlContent, String entryName) {
+	protected AmyInteractionModel extractModel(String xmlContent, String entryName) {
 		try {
 			JAXBContext jc = JAXBContext.newInstance(AmyInteractionModel.class);
 			Unmarshaller unmarshaller = jc.createUnmarshaller();
