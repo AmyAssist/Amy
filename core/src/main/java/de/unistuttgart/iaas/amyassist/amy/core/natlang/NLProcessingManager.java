@@ -23,6 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
+import java.lang.reflect.Method;
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
 
 /**
  * Manages all natural language interpreter of the plugins and can process the input of natural language
@@ -55,4 +58,11 @@ public interface NLProcessingManager {
 	 * @return the grammar file string
 	 */
 	String getGrammarFileString(String grammarName);
+
+	/**
+	 * @param method
+	 * @param intent
+	 */
+	void register(Method method, AIMIntent intent);
+	
 }

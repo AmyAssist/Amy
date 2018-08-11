@@ -23,8 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
+import javax.annotation.Resource;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
@@ -36,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
  */
 @SpeechCommand
 public class HelloWorldSpeech {
-
+	
 	/**
 	 * The logic class of this plugin.
 	 */

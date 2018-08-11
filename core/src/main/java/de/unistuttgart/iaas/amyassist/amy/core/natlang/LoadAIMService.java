@@ -28,12 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.nio.file.Path;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
@@ -44,31 +41,31 @@ import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AmyInteractionModel;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
 
 /**
- * This service loads all amy interaction model xml files 
- * and saves them inside an array list, containing AmyInteractionModel instances
+ * This service loads all amy interaction model xml files and saves them inside an array list, containing
+ * AmyInteractionModel instances
  * 
  * @author Felix Burk
  */
 @Service(LoadAIMService.class)
 public class LoadAIMService implements DeploymentContainerService {
-	
+
+	private static final String METAFILENAME = "SpeechMeta";
+
 	@Reference
 	private PluginManager pluginManager;
 	
 	@Reference
-	private Logger logger;
-	
-	/**
-	 * internal list of all amy interaction models
-	 */
-	private List<AmyInteractionModel> aims = new ArrayList<>();
+	private NLProcessingManager nlManager;
 
+	@Reference
+	private Logger logger;
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService#deploy()
@@ -76,41 +73,109 @@ public class LoadAIMService implements DeploymentContainerService {
 	@Override
 	public void deploy() {
 		List<IPlugin> plugins = this.pluginManager.getPlugins();
-		
-		for(IPlugin plugin : plugins) {
-			Path path = plugin.getPath();
+
+		for (IPlugin plugin : plugins) {
+
+			String pathS = "META-INF/" + plugin.getUniqueName() + "." + METAFILENAME;
 			
-			try (JarFile jar = new JarFile(path.toFile())) {
-				Enumeration<JarEntry> jarEntries = jar.entries();
-
-				while(jarEntries.hasMoreElements()) {
-					JarEntry jarEntry = jarEntries.nextElement();
-					if(jarEntry.getName().endsWith(".aim.xml")) {
-						InputStream stream = plugin.getClassLoader().getResourceAsStream(jarEntry.getName());
-						
-						try(BufferedReader reader = new BufferedReader(new InputStreamReader(stream))){
-							AmyInteractionModel model = this.extractModel(reader.lines().collect(Collectors.joining()), jarEntry.getName());
-							if(model != null) {
-								this.aims.add(model);
-							}
-							reader.close();
-						}
-					}
-				}
-
-			} catch (IOException e) {
-				this.logger.error("could not load amy interaction model from plugin {}", plugin.getDisplayName());
+			@SuppressWarnings("resource") //this stream is gonna be closed - line 92
+			InputStream stream = plugin.getClassLoader().getResourceAsStream(pathS);
+			
+			if (stream == null) {
+				this.logger.info("could not find aim meta file for plugin {}", plugin.getDisplayName());
+				continue;
 			}
+			//get all aim.xml file names 
+			List<String> aimFiles = readMetaFile(stream, plugin);
+			
+			try {
+				stream.close();
+			} catch (IOException e) {
+				this.logger.info("stream could not be closed {}", e.getMessage());
+			}
+			
+			//extract all intents
+			List<AIMIntent> aimIntents = new ArrayList<>();
+			
+			for(String s : aimFiles) {
+				this.logger.error(s);
+				aimIntents.addAll(extractIntents(plugin, s));
+			}
+			
+			//extract all speech methods
+			List<Method> speechMethods = new ArrayList<>();
+			
+			for(Class<?> cls : plugin.getClasses()) {
+				if(cls.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand.class)) {
+					speechMethods.addAll(NLIAnnotationReader.getValidIntentMethods(cls));
+				}
+			}
+			
+			matchAndRegister(aimIntents, speechMethods);
+
 		}
+
 	}
 
+	/**
+	 * matches aim intents and methods of speech classes
+	 * and registeres them inside the NLProcessingManager
+	 * 
+	 * @param aimIntents list of all intents
+	 * @param speechMethods list of all methods
+	 */
+	private void matchAndRegister(List<AIMIntent> aimIntents, List<Method> speechMethods) {
+		for(AIMIntent intent : aimIntents) {
+			String ref = intent.getReference();
+			String fullClassName = ref.substring(0,ref.lastIndexOf("."));
+			String methodName = ref.substring(ref.lastIndexOf(".")+1, ref.length());
+			
+			speechMethods.stream().filter(o -> o.getClass().getName().equals(fullClassName)).forEach(
+				o -> {
+					if(o.getName().equals(methodName)) {
+						this.nlManager.register(o, intent);
+						speechMethods.remove(o);
+					}
+				});
+		}
+		
+	}
+
+	/**
+	 * extracts AIMIntents from aim xmls
+	 * 
+	 * @param plugin to load resource from
+	 * @param fileName n
+	 * @return list of extracted aim intents
+	 */
+	private List<AIMIntent> extractIntents(IPlugin plugin, String fileName) {
+		InputStream stream = plugin.getClassLoader().getResourceAsStream(fileName);
+
+		if (stream != null) {
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+				AmyInteractionModel model = this.extractModel(reader.lines().collect(Collectors.joining()), fileName);
+				if (model != null) {
+					return model.getIntents();
+				}
+				this.logger.error("could not read model");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		this.logger.error("could not read aim file");
+
+		return null;
+	}
 
 	/**
 	 * extracts AmyInteractionModel from
-	 *  
-	 * @param xmlContent content of the xml
-	 * @param entryName name of the jar entry
-	 * @return AmyInteractionModel instance 
+	 * 
+	 * @param xmlContent
+	 *            content of the xml
+	 * @param entryName
+	 *            name of the jar entry
+	 * @return AmyInteractionModel instance
 	 */
 	private AmyInteractionModel extractModel(String xmlContent, String entryName) {
 		try {
@@ -125,14 +190,38 @@ public class LoadAIMService implements DeploymentContainerService {
 		}
 		return null;
 	}
-
-
+	
+	
 	/**
-	 * Get's {@link #aims aims}
-	 * @return  aims
+	 * simple reader for meta file data 
+	 * 
+	 * @param stream input stream of file
+	 * @param plugin for debugging purposes
+	 * @return list of names from .aim.xml files
 	 */
-	public List<AmyInteractionModel> getAims() {
-		return this.aims;
-	}	
+	private List<String> readMetaFile(InputStream stream, IPlugin plugin) {
+		List<String> aimFiles = new ArrayList<>();
+		BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+
+		try {
+			String line = null;
+			boolean aimsFound = false;
+			while ((line = in.readLine()) != null) {
+				if (line.matches("#") || line.matches("\\s*"))
+					continue;
+				if (line.matches(".aims:")) {
+					aimsFound = true;
+					continue;
+				}
+				if(aimsFound) {
+					aimFiles.add(line);
+				}
+			}
+		} catch (IOException e) {
+			this.logger.error("could not read speech meta file of {}", plugin.getDisplayName());
+		}
+		return aimFiles;
+
+	}
 
 }

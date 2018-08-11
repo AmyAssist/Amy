@@ -42,7 +42,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AmyInteractionModel;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
@@ -57,7 +57,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
  * {@link de.unistuttgart.iaas.amyassist.amy.core.natlang.nl} and the
  * {@link de.unistuttgart.iaas.amyassist.amy.core.natlang.agf} package.
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Felix Burk
  */
 @Service
 public class NLProcessingManagerImpl implements NLProcessingManager {
@@ -66,9 +66,6 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private Logger logger;
 	@Reference
 	private Environment environment;
-	
-	@Reference
-	private LoadAIMService aimLoader;
 
 	@Reference
 	private ServiceLocator serviceLocator;
@@ -94,6 +91,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	@Override
+	@Deprecated
 	public void register(Class<?> naturalLanguageInterpreter) {
 		if (!naturalLanguageInterpreter
 				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand.class)) {
@@ -101,13 +99,6 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 					"annotation is not present in " + naturalLanguageInterpreter.getSimpleName());
 		}
 		Set<Method> grammars = NLIAnnotationReader.getValidNLIMethods(naturalLanguageInterpreter);
-		
-		Set<Method> intentMethods = NLIAnnotationReader.getValidIntentMethods(naturalLanguageInterpreter);
-		
-		List<AmyInteractionModel> aims = this.aimLoader.getAims();
-		
-		aims.forEach(AmyInteractionModel::printSelf);
-		
 
 		for (Method e : grammars) {
 			PartialNLI partialNLI = this.generatePartialNLI(naturalLanguageInterpreter, e);
@@ -115,7 +106,21 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			this.registeredNodeList.add(partialNLI.getGrammar());
 		}
 	}
+	
+	@Override
+	public void register(Method method, AIMIntent intent) {
+		if (!method
+				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent.class)) {
+			throw new IllegalArgumentException(
+					"annotation is not present in " + method.getName());
+		}
 
+		PartialNLI partialNLI = this.generatePartialNLI(method, intent);
+		this.register.add(partialNLI);
+		this.registeredNodeList.add(partialNLI.getGrammar());
+	}
+
+	@Deprecated
 	private PartialNLI generatePartialNLI(Class<?> natuaralLanguageInterpreter, Method method) {
 		String grammar = method.getAnnotation(Grammar.class).value();
 		
@@ -126,12 +131,23 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		AGFNode parseWholeExpression = agfParser.parseWholeExpression();
 		return new PartialNLI(method, parseWholeExpression, natuaralLanguageInterpreter);
 	}
+	
+	private PartialNLI generatePartialNLI(Method method, AIMIntent intent) {
+		String grammar = intent.getGram();
+		
+		AGFParser agfParser = new AGFParser(new AGFLexer(grammar));
+		AGFNode parseWholeExpression = agfParser.parseWholeExpression();
+		
+		return new PartialNLI(method, parseWholeExpression, method.getClass());
+	}
 
 	@Override
 	public String getGrammarFileString(String grammarName) {
 		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.MULTI_CALL_START,
 				Constants.SINGLE_CALL_START, Constants.MULTI_CALL_STOP, Constants.SHUT_UP);
+		
 		for (PartialNLI partialNLI : this.register) {
+			this.logger.error("registered grammar {}", partialNLI.getGrammar());
 			generator.addRule(partialNLI.getGrammar(), UUID.randomUUID().toString());
 		}
 
