@@ -31,6 +31,10 @@ import org.hamcrest.Matcher;
  * @author Tim Neumann
  */
 public class ThrowableMatchers {
+
+	private ThrowableMatchers() {
+	}
+
 	/**
 	 * Create a matcher that matches a throwable of the given kind or any subclass with the message and the cause.
 	 * 

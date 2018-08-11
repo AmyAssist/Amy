@@ -52,8 +52,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 /**
  * Manages the plugin integration.
  * 
- * For an explanation of the config see <a
- * href=https://github.com/AmyAssist/Amy/wiki/PluginManager#config>https://github.com/AmyAssist/Amy/wiki/PluginManager#config</a>.
+ * For an explanation of the config see <a href=https://github.com/AmyAssist/Amy/wiki/PluginManager#config>
+ * https://github.com/AmyAssist/Amy/wiki/PluginManager#config</a>.
  * 
  * @author Leon Kiefer, Tim Neumann
  */
@@ -128,7 +128,7 @@ public class PluginManagerService implements PluginManager {
 	private List<String> getPluginListFromConfig() {
 		String[] plugins = this.config.getProperty(PROPERTY_PLUGINS).split(",");
 		List<String> pluginList = new ArrayList<>(Arrays.asList(plugins));
-		pluginList.removeIf(s -> s.isEmpty());
+		pluginList.removeIf(String::isEmpty);
 		return pluginList;
 	}
 
@@ -164,12 +164,7 @@ public class PluginManagerService implements PluginManager {
 				}
 				break;
 			case PROPERTY_MODE_DOCKER:
-				try (Stream<Path> childs = Files.list(getPluginDirFromConfig())) {
-					childs.forEach(p -> this.pluginLoader.loadPlugin(p));
-				} catch (IOException e) {
-					this.logger.error("Failed loading plugins", e);
-					return;
-				}
+				tryLoadAllPluginsFromDir(getPluginDirFromConfig());
 				break;
 			case PROPERTY_MODE_MANUAL:
 				for (String pluginPathString : this.getPluginListFromConfig()) {
@@ -195,6 +190,14 @@ public class PluginManagerService implements PluginManager {
 		}
 
 		this.loaded = true;
+	}
+
+	private void tryLoadAllPluginsFromDir(Path dir) {
+		try (Stream<Path> childs = Files.list(dir)) {
+			childs.forEach(p -> this.pluginLoader.loadPlugin(p));
+		} catch (IOException e) {
+			this.logger.error("Failed loading plugins", e);
+		}
 	}
 
 	private boolean tryLoadPluginFromTarget(Path pluginDir, String pluginID) {
