@@ -23,14 +23,26 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 
-import org.junit.jupiter.api.AfterAll;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.GMailSession;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
@@ -38,87 +50,190 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 /**
  * Test for the email logic class
  * 
- * @author Felix Burk
+ * @author Felix Burk, Patrick Singer
  */
 @ExtendWith(FrameworkExtension.class)
 public class EmailLogicTest {
 
+	private Session session;
+
 	@Reference
 	private TestFramework framework;
+
+	private GMailSession mailSession;
 
 	private Properties configLoader;
 
 	private ContactRegistry contactRegistry;
 
-	private static EMailLogic emailLogic;
+	private EMailLogic emailLogic;
 
 	/**
 	 * Initializes the class variables before each test
 	 */
 	@BeforeEach
 	public void setup() {
-		// this.configLoader = this.framework.mockService(Properties.class);
-		// this.contactRegistry = this.framework.mockService(ContactRegistry.class);
-		// emailLogic = this.framework.setServiceUnderTest(EMailLogic.class);
-		//
-		// final Session session = Session.getInstance(System.getProperties());
-		// Mailbox mMailbox;
-		// MockFolder folder;
-		// MimeMessage msg = new MimeMessage(session);
-		//
-		// try {
-		// MockStore store = new MockStore(session, new URLName("amy.speechassist@gmail.com"));
-		// mMailbox = new Mailbox(new InternetAddress("amy.speechassist@gmail.com"));
-		// folder = new MockFolder(store, mMailbox);
-		//
-		// msg.addRecipients(Message.RecipientType.TO, "amy.speechassist@gmail.com");
-		// msg.setSubject("Test");
-		// msg.setFlag(Flag.RECENT, true);
-		// msg.setFlag(Flag.SEEN, false);
-		// msg.setText("some text");
-		// Transport.send(msg);
-		// Transport.send(msg);
-		// folder.appendMessages(new Message[] { msg, msg });
-		// emailLogic.inbox = folder;
-		//
-		// } catch (MessagingException e1) {
-		// e1.printStackTrace();
-		// }
+		this.session = Session.getInstance(System.getProperties(), null);
 
+		this.mailSession = this.framework.mockService(GMailSession.class);
+		this.configLoader = this.framework.mockService(Properties.class);
+		this.contactRegistry = this.framework.mockService(ContactRegistry.class);
+		this.emailLogic = this.framework.setServiceUnderTest(EMailLogic.class);
 	}
 
 	/**
-	 * tests if new messages are received
+	 * Tests one case of method {@link EMailLogic#hasNewMessages(boolean)}
 	 */
 	@Test
 	public void testHasNewMessages() {
-		// assertThat(new Boolean(emailLogic.hasNewMessages(false)), equalTo(new Boolean(true)));
-		// assertThat(new Boolean(emailLogic.hasNewMessages(true)), equalTo(new Boolean(true)));
+
 	}
 
 	/**
-	 * tests get plain text messages
+	 * Tests other case of method {@link EMailLogic#hasNewMessages(boolean)}
 	 */
 	@Test
-	public void testgetMessages() {
-		// assertThat(emailLogic.printMessages(false), is(not(nullValue())));
-		// assertThat(emailLogic.printMessages(true), is(not(nullValue())));
+	public void testHasNewImportantMessages() {
+
 	}
 
 	/**
-	 * tests the number of unread messages
+	 * Test method for {@link EMailLogic#getNewMessageCount()}
 	 */
 	@Test
-	public void testMessageCount() {
-		// assertThat(new Integer(emailLogic.getNewMessageCount()), equalTo(new Integer(2)));
+	public void testGetNewMessageCount() {
+
 	}
 
 	/**
-	 * cleans up the mailbox
+	 * Test method for {@link EMailLogic#getNewImportantMessageCount()}
 	 */
-	@AfterAll
-	public static void cleanup() {
-		// Mailbox.clearAll();
+	@Test
+	public void testGetNewImportantMessageCount() {
+
 	}
 
+	/**
+	 * Test method for {@link EMailLogic#printMessages(boolean)}
+	 */
+	@Test
+	public void testPrintMessages() {
+
+	}
+
+	/**
+	 * Test method for {@link EMailLogic#getNewMessages()}
+	 */
+	@Test
+	public void testGetNewMessages() {
+
+	}
+
+	/**
+	 * Test method for {@link EMailLogic#getNewImportantMessages()}
+	 */
+	@Test
+	public void testGetNewImportantMessages() {
+
+	}
+
+	/**
+	 * Test method for {@link EMailLogic#getContentFromMessage(Message)}
+	 * 
+	 * @throws IOException
+	 *             if something goes wrong
+	 * @throws MessagingException
+	 *             if something goes wrong
+	 */
+	@Test
+	public void testGetContentFromMessage() throws IOException, MessagingException {
+
+	}
+
+	/**
+	 * Tests {@link EMailLogic#getMailsForREST()}
+	 * 
+	 * @throws MessagingException
+	 *             if something goes wrong
+	 */
+	@Test
+	public void testConvertToMessageDTO() throws MessagingException {
+
+	}
+
+	/**
+	 * Tests {@link EMailLogic#getImportantMailAddresses()}
+	 */
+	@Test
+	protected void testGetImportantMailAddresses() {
+	}
+
+	/**
+	 * Tests {@link EMailLogic#isImportantMessage(Message)}
+	 * 
+	 * @throws MessagingException
+	 *             if something goes wrong
+	 */
+	@Test
+	protected void testIsImportantMessage() throws MessagingException {
+
+	}
+
+	/**
+	 * Tests {@link EMailLogic#getFrom(Message)}
+	 * 
+	 * @throws MessagingException
+	 *             if something goes wrong
+	 */
+	@Test
+	protected void testGetFrom() throws MessagingException {
+
+	}
+
+	/**
+	 * Create a message with the given parameters. Put null for every parameter that is not important
+	 * 
+	 * @param from
+	 *            mail address of the sender as string
+	 * @param subject
+	 *            subject of the message
+	 * @param content
+	 *            content of the message as plain text string
+	 * @param sentDate
+	 *            date that the message was sent
+	 * @return new Message object with the given parameters, returns null if something went wrong
+	 */
+	private Message createMessage(String from, String subject, String content, LocalDateTime sentDate) {
+		Message message = new MimeMessage(this.session);
+		try {
+			if (from != null) {
+				InternetAddress address = new InternetAddress(from);
+				message.setFrom(address);
+			}
+			if (subject != null) {
+				message.setSubject(subject);
+			}
+			if (content != null) {
+				message.setContent(content, "text/plain");
+			}
+			if (sentDate != null) {
+				message.setSentDate(Timestamp.valueOf(sentDate));
+			}
+		} catch (MessagingException me) {
+			return null;
+		}
+		return message;
+	}
+
+	private List<Message> createRandomMessages(int amount) {
+		List<Message> messages = new ArrayList<>();
+		Random random = new Random();
+		for (int i = 0; i < amount; i++) {
+			byte[] bytes = new byte[5];
+			random.nextBytes(bytes);
+			String randomString = new String(bytes);
+			messages.add(createMessage(randomString, randomString, randomString, LocalDateTime.now()));
+		}
+		return messages;
+	}
 }

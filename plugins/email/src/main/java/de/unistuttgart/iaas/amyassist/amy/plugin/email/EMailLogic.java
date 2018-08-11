@@ -32,23 +32,19 @@ import java.util.Properties;
 import javax.mail.Address;
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
-import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
-import javax.mail.Session;
-import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
 import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.GMailSession;
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 
@@ -60,28 +56,14 @@ import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 @Service
 public class EMailLogic {
 
-	private Store store;
-
-	/**
-	 * the inbox object containing all messages. this is not private because we need to change the inbox in the unit
-	 * tests
-	 */
-	Folder inbox;
+	@Reference
+	private GMailSession mailSession;
 
 	@Reference
 	private Properties configLoader;
 
 	@Reference
 	private ContactRegistry contactRegistry;
-
-	/**
-	 * user name key for properties file
-	 */
-	public static final String EMAIL_USR_KEY = "email_usr";
-	/**
-	 * password key for properties file
-	 */
-	public static final String EMAIL_PW_KEY = "email_pw";
 
 	@Reference
 	private Logger logger;
@@ -108,9 +90,8 @@ public class EMailLogic {
 	 * @return number of messages in inbox
 	 */
 	public int getNewMessageCount() {
-		openInboxReadOnly();
 		try {
-			return this.inbox.getUnreadMessageCount();
+			return this.mailSession.getInbox().getUnreadMessageCount();
 		} catch (MessagingException e) {
 			this.logger.error("Couldn't get number of unread mails", e);
 			return -1;
@@ -164,10 +145,9 @@ public class EMailLogic {
 	 * 
 	 * @return all unread messages in inbox
 	 */
-	private List<Message> getNewMessages() {
-		openInboxReadOnly();
+	List<Message> getNewMessages() {
 		try {
-			Message[] newMessages = this.inbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
+			Message[] newMessages = this.mailSession.getInbox().search(new FlagTerm(new Flags(Flag.SEEN), false));
 			return Arrays.asList(newMessages);
 		} catch (MessagingException me) {
 			this.logger.error("Searching for mails failed", me);
@@ -180,7 +160,7 @@ public class EMailLogic {
 	 * 
 	 * @return all important messages in given message array
 	 */
-	private List<Message> getNewImportantMessages() {
+	List<Message> getNewImportantMessages() {
 		List<Message> unseenMessages = getNewMessages();
 		List<Message> importantMessages = new ArrayList<>();
 		try {
@@ -195,7 +175,18 @@ public class EMailLogic {
 		return importantMessages;
 	}
 
-	private String getContentFromMessage(Message message) throws MessagingException, IOException {
+	/**
+	 * Get content in the message
+	 * 
+	 * @param message
+	 *            the message
+	 * @return content of the message as readable String
+	 * @throws MessagingException
+	 *             if something went wrong
+	 * @throws IOException
+	 *             if something went wrong
+	 */
+	String getContentFromMessage(Message message) throws MessagingException, IOException {
 		if (message.isMimeType("text/plain")) {
 			return message.getContent().toString();
 		} else if (message.isMimeType("multipart/*")) {
@@ -226,11 +217,10 @@ public class EMailLogic {
 	 * @return all mails in the inbox in a list, because lists are better to work with than arrays
 	 */
 	public List<MessageDTO> getMailsForREST() {
-		openInboxReadOnly();
 		List<MessageDTO> messagesToSend = new ArrayList<>();
 		Message[] messages;
 		try {
-			messages = this.inbox.getMessages();
+			messages = this.mailSession.getInbox().getMessages();
 			for (Message m : messages) {
 				messagesToSend.add(new MessageDTO(getFrom(m), m.getSubject(), getContentFromMessage(m), m.getSentDate(),
 						isImportantMessage(m)));
@@ -283,60 +273,5 @@ public class EMailLogic {
 	protected static String getFrom(Message message) throws MessagingException {
 		Address address = message.getFrom()[0];
 		return ((InternetAddress) address).getAddress();
-	}
-
-	/**
-	 * Opens the inbox so it can be accessible. It is only allowed to read
-	 */
-	private void openInboxReadOnly() {
-		if (this.store.isConnected()) {
-			this.logger.error("Inbox opened");
-			try {
-				this.inbox = this.store.getFolder("INBOX");
-				this.inbox.open(Folder.READ_ONLY);
-			} catch (MessagingException e) {
-				this.logger.error("Could not open inbox", e);
-			}
-		} else {
-			init();
-		}
-		assert (this.inbox != null);
-	}
-
-	/**
-	 * Set up connection to mail server with credentials from registry
-	 */
-	@PostConstruct
-	private void init() {
-		String username = this.configLoader.getProperty(EMAIL_USR_KEY);
-		String password = this.configLoader.getProperty(EMAIL_PW_KEY);
-
-		if (username != null && password != null) {
-			// set up session
-			try {
-				Session session = Session.getInstance(System.getProperties(), null);
-				this.store = session.getStore("imaps");
-				this.store.connect("imap.gmail.com", username, password);
-				openInboxReadOnly();
-			} catch (MessagingException me) {
-				this.logger.error("Couldn't connect to service", me);
-			}
-		} else {
-			this.logger.error("properties file not found");
-		}
-	}
-
-	/**
-	 * closes opened inbox
-	 */
-	@PreDestroy
-	public void closeInbox() {
-		try {
-			this.inbox.close(false);
-			this.inbox.getStore().close();
-			this.inbox = null;
-		} catch (MessagingException e) {
-			this.logger.error("Closing inbox or closing store failed", e);
-		}
 	}
 }

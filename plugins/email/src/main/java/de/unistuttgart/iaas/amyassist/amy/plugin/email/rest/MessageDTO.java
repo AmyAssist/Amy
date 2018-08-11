@@ -100,18 +100,30 @@ public class MessageDTO extends Entity {
 		this.important = important;
 	}
 
+	/**
+	 * @return address of the sender
+	 */
 	public String getFrom() {
 		return this.from;
 	}
 
+	/**
+	 * @return subject of message
+	 */
 	public String getSubject() {
 		return this.subject;
 	}
 
+	/**
+	 * @return return content of message
+	 */
 	public String getContent() {
 		return this.content;
 	}
 
+	/**
+	 * @return date when the message was sent
+	 */
 	public LocalDateTime getSentDate() {
 		return this.sentDate;
 	}
