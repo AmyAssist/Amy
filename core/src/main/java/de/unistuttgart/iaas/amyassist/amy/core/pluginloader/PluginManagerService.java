@@ -109,7 +109,7 @@ public class PluginManagerService implements PluginManager {
 		if (this.loaded)
 			throw new IllegalStateException("the plugins are loaded");
 
-		if (this.cmaInfo.getPluginPaths().size() > 0) {
+		if (!this.cmaInfo.getPluginPaths().isEmpty()) {
 			for (String pathS : this.cmaInfo.getPluginPaths()) {
 				Path path = this.projectDir.resolve(pathS);
 				this.pluginLoader.loadPlugin(path);

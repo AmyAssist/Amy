@@ -60,11 +60,19 @@ public class CommandLineArgumentHandlerService {
 			String[] args) {
 		this.programInfo = programInformation;
 		this.outputFunction = output;
-		processArgs(args);
-		output("This is Amy. Copyright (c) 2018 the Amy project authors. For help run with flag -h.");
+		if (processArgs(args)) {
+			output("This is Amy. Copyright (c) 2018 the Amy project authors. For help run with flag -h.");
+		}
 	}
 
-	private void processArgs(String[] args) {
+	/**
+	 * Process the given arguments
+	 * 
+	 * @param args
+	 *            The arguments
+	 * @return Whether the arguments were valid.
+	 */
+	private boolean processArgs(String[] args) {
 		this.flags = new EnumMap<>(Flag.class);
 
 		FlagParameterInformation flagParaInfo = new FlagParameterInformation(null);
@@ -75,14 +83,16 @@ public class CommandLineArgumentHandlerService {
 			}
 			flagParaInfo = processNewFlag(arg);
 			if (flagParaInfo == null)
-				return;
+				return false;
 		}
 
 		if (flagParaInfo.getRemainingParaCount() > 0) {
 			output("Missing parameter for last flag.");
 			this.flagsValid = false;
-			return;
+			return false;
 		}
+
+		return true;
 	}
 
 	/**
