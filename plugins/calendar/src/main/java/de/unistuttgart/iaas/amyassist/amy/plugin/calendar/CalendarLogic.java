@@ -331,7 +331,8 @@ public class CalendarLogic {
                 eventData += ". \n";
                 break;
             case STARTINFUTURE:
-                eventData += " from" + eventStartDate + eventStartTime + " until" + eventEndDate + eventEndTime + ". \n";
+                eventData += " from" + eventStartDate + eventStartTime +
+                        " until" + eventEndDate + eventEndTime + ". \n";
                 break;
             case ALLDAYLONG:
                 if (withStartDate) {
@@ -439,7 +440,9 @@ public class CalendarLogic {
      */
     public LocalDateTime getLocalDateTimeEnd(Event event) {
         if (isAllDay(event)) {
-            return LocalDateTime.parse(event.getEnd().getDate().toString() + "T23:59:59.999", formatter).minusDays(1);
+            return LocalDateTime
+                    .parse(event.getEnd().getDate().toString() + "T23:59:59.999", formatter)
+                    .minusDays(1);
         }
         return ZonedDateTime.parse(event.getEnd().getDateTime().toString()).withZoneSameInstant(ZoneId.systemDefault())
                 .toLocalDateTime();
