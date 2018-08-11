@@ -25,12 +25,15 @@ package de.unistuttgart.iaas.amyassist.amy.registry;
 
 import javax.annotation.Nonnull;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+
 /**
  * The alarm registry
  * 
  * @author Patrick Gebhardt
  */
-public class AlarmRegistryImpl extends AbstractRegistry<Alarm> implements AlarmRegistry {
+@Service(AlarmRegistry.class)
+public class AlarmRegistryImpl extends AbstractRegistry<AlarmReg> implements AlarmRegistry {
 
 	@Override
 	protected String getPersistenceUnitName() {
@@ -39,7 +42,16 @@ public class AlarmRegistryImpl extends AbstractRegistry<Alarm> implements AlarmR
 
 	@Nonnull
 	@Override
-	public Class<? extends Alarm> getEntityClass() {
+	public Class<? extends AlarmReg> getEntityClass() {
 		return AlarmImpl.class;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.registry.AlarmRegistry#getAlarm(int)
+	 */
+	@Override
+	public AlarmReg getAlarm(int alarmNumber) {
+		// TODO Auto-generated method stub
+		return super.getById(alarmNumber);
 	}
 }

@@ -28,6 +28,16 @@ package de.unistuttgart.iaas.amyassist.amy.registry;
  * 
  * @author Patrick Gebhardt
  */
-public interface AlarmRegistry extends IRegistry<Alarm> {
+public interface AlarmRegistry extends IRegistry<AlarmReg> {
+	/**
+	 * @param alarmNumber
+	 * @return
+	 */
+	AlarmReg getAlarm(int alarmNumber);
 
+	/**
+	 * @param alarm
+	 */
+	@Override
+	void save(AlarmReg alarm);
 }
