@@ -31,17 +31,16 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Properties;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
@@ -63,12 +62,20 @@ class PluginManagerTest {
 	private PluginManager serviceUnderTest;
 	private Properties properties;
 
+	private PluginLoader pluginLoader;
+
 	private Path tempDir;
 
+	/**
+	 * Setup
+	 * 
+	 * @throws IOException
+	 *             When a error occurs
+	 */
 	@BeforeEach
 	void setup() throws IOException {
 		this.testFramework.mockService(DependencyInjection.class);
-		this.testFramework.mockService(PluginLoader.class);
+		this.pluginLoader = this.testFramework.mockService(PluginLoader.class);
 
 		this.tempDir = Files.createTempDirectory(PluginManagerService.class.getName());
 		this.tempDir.toFile().deleteOnExit();
@@ -77,29 +84,32 @@ class PluginManagerTest {
 
 		Files.createDirectory(this.tempDir.resolve("plugins"));
 
-		CommandLineArgumentInfo cmaInfo = this.testFramework.mockService(CommandLineArgumentInfo.class);
-		when(cmaInfo.getPluginPaths()).thenReturn(new ArrayList<>());
-
 		ConfigurationManager configurationManager = this.testFramework.mockService(ConfigurationManager.class);
 		this.properties = new Properties();
-		this.properties.setProperty("pluginDir", "plugins");
-		this.properties.setProperty("plugins", "");
-		this.properties.setProperty("mode", "dev");
 		when(configurationManager.getConfigurationWithDefaults("plugin.config")).thenReturn(this.properties);
 
 		this.testFramework.mockService(NLProcessingManager.class);
 		this.testFramework.mockService(Persistence.class);
 
+		this.properties.setProperty("pluginDir", "plugins");
+		this.properties.setProperty("plugins", "");
+		this.properties.setProperty("mode", "dev");
+
 		this.serviceUnderTest = this.testFramework.setServiceUnderTest(PluginManagerService.class);
 	}
 
+	/**
+	 * Test that the plugin manager can't load twice.
+	 */
 	@Test
 	void testCantLoadTwice() {
-
 		this.serviceUnderTest.loadPlugins();
 		assertThrows(IllegalStateException.class, () -> this.serviceUnderTest.loadPlugins());
 	}
 
+	/**
+	 * Test that it is logged, when a plugin can't be found
+	 */
 	@Test
 	void testPluginNotFound() {
 		TestLogger testLogger = TestLoggerFactory.getTestLogger(PluginManagerService.class);
@@ -108,6 +118,66 @@ class PluginManagerTest {
 		this.serviceUnderTest.loadPlugins();
 		assertThat(testLogger, hasLogged(warn("The plugin {} does not exist in the plugin directory.",
 				this.tempDir.resolve("plugins").resolve("testPlugin"))));
+	}
+
+	/**
+	 * Test that the mode dev correctly tries to load a plugin.
+	 * 
+	 * @throws IOException
+	 *             When FS IO goes wrong.
+	 */
+	@Test
+	void testModeDev() throws IOException {
+		this.properties.setProperty("pluginDir", "plugins");
+		this.properties.setProperty("plugins", "pluginA");
+		this.properties.setProperty("mode", "dev");
+		Path pluginTarget = this.tempDir.resolve("plugins").resolve("pluginA").resolve("target");
+		Path plugin = pluginTarget.resolve("pluginA-with-dependencies.jar");
+		Files.createDirectories(pluginTarget);
+		Files.createFile(plugin);
+		this.serviceUnderTest.loadPlugins();
+		Mockito.verify(this.pluginLoader).loadPlugin(plugin);
+	}
+
+	/**
+	 * Test that the mode docker correctly tries to load some plugins.
+	 * 
+	 * @throws IOException
+	 *             When FS IO goes wrong.
+	 */
+	@Test
+	void testModeDocker() throws IOException {
+		this.properties.setProperty("pluginDir", "plugins");
+		this.properties.setProperty("mode", "docker");
+		Path pluginDir = this.tempDir.resolve("plugins");
+		Path plugin1 = pluginDir.resolve("pluginA-with-dependencies.jar");
+		Path plugin2 = pluginDir.resolve("pluginB-with-dependencies.jar");
+		Files.createDirectories(pluginDir);
+		Files.createFile(plugin1);
+		Files.createFile(plugin2);
+		this.serviceUnderTest.loadPlugins();
+		Mockito.verify(this.pluginLoader).loadPlugin(plugin1);
+		Mockito.verify(this.pluginLoader).loadPlugin(plugin2);
+	}
+
+	/**
+	 * Test that the mode manual correctly tries to load a plugin.
+	 * 
+	 * @throws IOException
+	 *             When FS IO goes wrong.
+	 */
+	@Test
+	void testModeManual() throws IOException {
+		this.properties.setProperty("mode", "manual");
+		Path pluginDir = this.tempDir.resolve("plugins");
+		Path plugin1 = pluginDir.resolve("pluginA-with-dependencies.jar");
+
+		this.properties.setProperty("plugins", plugin1.toString());
+
+		Files.createDirectories(pluginDir);
+		Files.createFile(plugin1);
+		this.serviceUnderTest.loadPlugins();
+		Mockito.verify(this.pluginLoader).loadPlugin(plugin1);
 	}
 
 }
