@@ -24,19 +24,21 @@
 package de.unistuttgart.iaas.amyassist.amy.core.console;
 
 import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.Core;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * The console is the only Service that reads from the stdin. It provides a {@link #register(Object)} method to add new
- * command to the console. This Console uses http://cliche.sourceforge.net/.
+ * The Exit Command to shutdown Amy.
  * 
  * @author Leon Kiefer
  */
-public interface Console {
-	/**
-	 * Register a MainHandler in the ConsoleShell. The Handler need {@link Command} annotations.
-	 * 
-	 * @param handler
-	 *            the handler object
-	 */
-	void register(Object handler);
+public class ExitConsole {
+
+	@Reference
+	private Core core;
+
+	@Command
+	public void exit() {
+		this.core.stop();
+	}
 }
