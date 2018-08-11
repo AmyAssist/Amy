@@ -23,10 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.console;
 
-import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandlerService;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformationCLI;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerCLI;
 import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TTSConsole;
@@ -50,7 +50,7 @@ public class ConsoleDeploymentAdapter implements DeploymentContainerService {
 		this.console.register(this.serviceLocator.createAndInitialize(TTSConsole.class));
 		this.console.register(this.serviceLocator.createAndInitialize(SpeechConsole.class));
 		this.console.register(this.serviceLocator.createAndInitialize(ExitConsole.class));
-		this.console.register(new CommandLineArgumentHandlerService());
+		this.console.register(this.serviceLocator.createAndInitialize(ProgramInformationCLI.class));
 	}
 
 }

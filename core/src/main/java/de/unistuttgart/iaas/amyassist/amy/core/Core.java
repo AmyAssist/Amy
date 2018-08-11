@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.console.ExitConsole;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService;
+import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerServiceExtension;
@@ -49,8 +51,6 @@ public class Core {
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
 	private final DependencyInjection di;
-
-	private CommandLineArgumentHandlerService cmaHandler;
 
 	private Thread shutdownHook = new Thread(this::doStop, "ShutdownHook");
 
@@ -83,9 +83,12 @@ public class Core {
 	 *            The arguments for the core.
 	 */
 	void start(String[] args) {
-		this.cmaHandler = new CommandLineArgumentHandlerService();
-		this.cmaHandler.init(args);
-		if (this.cmaHandler.shouldProgramContinue()) {
+		this.registerAllCoreServices();
+		this.init();
+		CommandLineArgumentHandlerService cmaHandler = this.di.getService(CommandLineArgumentHandlerService.class);
+		cmaHandler.load(args, System.out::println);
+		if (cmaHandler.shouldProgramContinue()) {
+			this.di.addExternalService(CommandLineArgumentInfo.class, cmaHandler.getInfo());
 			run();
 		}
 	}
@@ -95,8 +98,6 @@ public class Core {
 	 */
 	private void run() {
 		this.logger.info("run");
-		this.registerAllCoreServices();
-		this.init();
 		this.loadPlugins();
 		this.deploy();
 		this.start();
@@ -108,7 +109,6 @@ public class Core {
 	 */
 	private void registerAllCoreServices() {
 		this.di.addExternalService(Core.class, this);
-		this.di.addExternalService(CommandLineArgumentHandler.class, this.cmaHandler);
 
 		this.di.loadServices();
 	}
