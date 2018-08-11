@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -73,6 +74,23 @@ public class CalendarResource {
 	 */
 	private String errorLogger = "An error occurred.";
 
+	/**
+	 * This method creates an event for the connected google calendar
+	 * 
+	 * @param calendarEvent
+	 *					the event which will be created in the google calendar
+	 */
+	@POST
+	@Path("events/set")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void setEvent(CalendarEvent calendarEvent) {
+		if (calendarEvent != null) {
+			this.logic.setEvent(calendarEvent);
+		} else {
+			throw new WebApplicationException("Enter valid event information", Status.CONFLICT);
+		}
+	}
+	
 	/**
 	 * This method lists the next events from the calendar
 	 *

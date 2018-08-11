@@ -30,7 +30,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -71,6 +73,7 @@ class CalendarRestTest {
 	private String eventAtDate = "You have following events on the 2015-05-28T08:00:00: Meeting with Amy.";
 	private LocalDateTime ldt = LocalDateTime.parse("2015-05-28T08:00:00");
 	private CalendarEvent event;
+	private CalendarEvent setEvent;
 	private List<CalendarEvent> eventList;
 
 	/**
@@ -92,6 +95,26 @@ class CalendarRestTest {
 				LocalDateTime.parse("2015-05-28T10:00:00"), "summary", "work", "meeting", false);
 		this.eventList = new ArrayList<>();
 		this.eventList.add(this.event);
+
+		this.setEvent = new CalendarEvent(LocalDateTime.parse("2015-05-28T09:00:00"),
+				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, new String[1],
+				false);
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarResource#setEvent(CalendarEvent)}.
+	 */
+	@Test
+	void testSetEvents() {
+		Entity<CalendarEvent> entity = Entity.entity(this.setEvent, MediaType.APPLICATION_JSON);
+		Response response = this.target.path("events/set").request().post(entity);
+		assertThat(response.getStatus(), is(204));
+		Mockito.verify(this.logic).setEvent(this.setEvent);
+		
+		response = this.target.path("events/set").request().post(null);
+		String actualMsg = response.readEntity(String.class);
+		assertThat(actualMsg, is("Enter valid event information"));
+		assertThat(response.getStatus(), is(409));
 	}
 
 	/**

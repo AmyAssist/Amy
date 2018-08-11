@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -88,26 +89,26 @@ public class CalendarEvent {
 	/**
 	 *
 	 * @param start
-	 * 			set start
+	 *            set start
 	 * @param end
-	 * 			set end
+	 *            set end
 	 * @param summary
-	 * 			set summary
+	 *            set summary
 	 * @param location
-	 * 			set location
+	 *            set location
 	 * @param description
-	 * 			set description
+	 *            set description
 	 * @param reminderType
-	 * 			set reminderType
+	 *            set reminderType
 	 * @param reminderTime
-	 * 			set reminderTime in minutes
+	 *            set reminderTime in minutes
 	 * @param recurrence
-	 * 			set recurrence
+	 *            set recurrence
 	 * @param allDay
-	 * 			set allDay
+	 *            set allDay
 	 */
-	public CalendarEvent(LocalDateTime start, LocalDateTime end, String summary, String location,
-						 String description, String reminderType, int reminderTime, String[] recurrence, boolean allDay) {
+	public CalendarEvent(LocalDateTime start, LocalDateTime end, String summary, String location, String description,
+			String reminderType, int reminderTime, String[] recurrence, boolean allDay) {
 		this.start = start;
 		this.end = end;
 		this.summary = summary;
@@ -182,23 +183,6 @@ public class CalendarEvent {
 		return this.allDay;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		CalendarEvent that = (CalendarEvent) o;
-		return this.id.equals(that.id) && this.start.equals(that.start) && this.end.equals(that.end)
-				&& this.summary.equals(that.summary) && this.description.equals(that.description)
-				&& this.location.equals(that.location) && this.allDay == that.allDay;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.id, this.start, this.end, this.summary, this.description, this.location, this.allDay);
-	}
-
 	/**
 	 *
 	 * @return the recurrence options
@@ -221,6 +205,26 @@ public class CalendarEvent {
 	 */
 	public int getReminderTime() {
 		return reminderTime;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		CalendarEvent that = (CalendarEvent) o;
+		return (this.id == null || this.id.equals(that.id)) && this.start.equals(that.start) && this.end.equals(that.end)
+				&& this.summary.equals(that.summary) && this.location.equals(that.location)
+				&& this.description.equals(that.description) && this.reminderType.equals(that.reminderType)
+				&& this.reminderTime == that.reminderTime && Arrays.equals(this.recurrence, that.recurrence)
+				&& this.allDay == that.allDay;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.id, this.start, this.end, this.summary, this.location, this.description,
+				this.reminderType, this.reminderTime, this.recurrence, this.allDay);
 	}
 
 }
