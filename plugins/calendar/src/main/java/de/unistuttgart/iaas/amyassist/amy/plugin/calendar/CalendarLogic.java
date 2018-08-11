@@ -37,7 +37,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import com.eclipsesource.json.JsonObject;
 import com.google.api.services.calendar.model.EventReminder;
 import org.slf4j.Logger;
 
@@ -138,7 +137,7 @@ public class CalendarLogic {
 		try {
 			this.calendarService.getService().events().insert(calendarId, event).execute();
 		} catch (IOException e) {
-			e.printStackTrace();
+			this.logger.error(this.errorLogger, e);
 		}
 
 	}
