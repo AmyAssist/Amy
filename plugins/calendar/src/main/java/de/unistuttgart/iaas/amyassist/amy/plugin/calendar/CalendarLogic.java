@@ -331,8 +331,8 @@ public class CalendarLogic {
                 eventData += ". \n";
                 break;
             case STARTINFUTURE:
-                eventData += " from" + eventStartDate + eventStartTime +
-                        " until" + eventEndDate + eventEndTime + ". \n";
+                eventData += " from" + eventStartDate + eventStartTime;
+                eventData += " until" + eventEndDate + eventEndTime + ". \n";
                 break;
             case ALLDAYLONG:
                 if (withStartDate) {
