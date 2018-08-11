@@ -59,6 +59,8 @@ class CommandLineArgumentHandlerServiceTest {
 
 	private ProgramInformation pi;
 
+	private CommandLineArgumentHandlerService cmaService;
+
 	/**
 	 * Setup before each test
 	 */
@@ -67,6 +69,7 @@ class CommandLineArgumentHandlerServiceTest {
 		this.pi = this.testFramework.mockService(ProgramInformation.class);
 		Mockito.when(this.pi.getLicenseNotice()).thenReturn("notice");
 		Mockito.when(this.pi.getVersion()).thenReturn("version");
+		this.cmaService = this.testFramework.setServiceUnderTest(CommandLineArgumentHandlerService.class);
 	}
 
 	/**
@@ -79,9 +82,8 @@ class CommandLineArgumentHandlerServiceTest {
 	@ParameterizedTest
 	@MethodSource("stopFlags")
 	void testShouldProgramContinue(String[] args) {
-		CommandLineArgumentHandlerService cmaService = new CommandLineArgumentHandlerService(this.pi, this.logger::info,
-				args);
-		Assertions.assertFalse(cmaService.shouldProgramContinue(), "Program should not continue");
+		this.cmaService.load(args, this.logger::info);
+		Assertions.assertFalse(this.cmaService.shouldProgramContinue(), "Program should not continue");
 	}
 
 	/**
@@ -107,9 +109,8 @@ class CommandLineArgumentHandlerServiceTest {
 	@ParameterizedTest
 	@MethodSource("invalidFlags")
 	void testShouldProgramContinueWithInvalidFlags(String[] args) {
-		CommandLineArgumentHandlerService cmaService = new CommandLineArgumentHandlerService(this.pi, this.logger::info,
-				args);
-		Assertions.assertFalse(cmaService.shouldProgramContinue(), "Program should not continue");
+		this.cmaService.load(args, this.logger::info);
+		Assertions.assertFalse(this.cmaService.shouldProgramContinue(), "Program should not continue");
 	}
 
 	/**
@@ -140,11 +141,10 @@ class CommandLineArgumentHandlerServiceTest {
 			args[i * 2 + 1] = configs[i];
 		}
 
-		CommandLineArgumentHandlerService cmaService = new CommandLineArgumentHandlerService(this.pi, this.logger::info,
-				args);
-		Assertions.assertTrue(cmaService.shouldProgramContinue());
+		this.cmaService.load(args, this.logger::info);
+		Assertions.assertTrue(this.cmaService.shouldProgramContinue());
 		List<String> correct = Arrays.asList(configs);
-		Assertions.assertEquals(correct, cmaService.getInfo().getConfigPaths());
+		Assertions.assertEquals(correct, this.cmaService.getInfo().getConfigPaths());
 	}
 
 	/**
@@ -155,9 +155,34 @@ class CommandLineArgumentHandlerServiceTest {
 		String[] args = new String[2];
 		args[0] = "-h";
 		args[1] = "-h";
-		CommandLineArgumentHandlerService cmaService = new CommandLineArgumentHandlerService(this.pi, this.logger::info,
-				args);
-		Assertions.assertFalse(cmaService.shouldProgramContinue());
+		this.cmaService.load(args, this.logger::info);
+		Assertions.assertFalse(this.cmaService.shouldProgramContinue());
+	}
+
+	/**
+	 * Tests that duplicate load is not allowed.
+	 */
+	@Test
+	void testDuplicateLoad() {
+		String args[] = new String[0];
+		this.cmaService.load(args, this.logger::info);
+		Assertions.assertThrows(IllegalStateException.class, () -> this.cmaService.load(args, this.logger::info));
+	}
+
+	/**
+	 * Tests that using getInfo() before load is not allowed.
+	 */
+	@Test
+	void testGetInfoBeforeLoad() {
+		Assertions.assertThrows(IllegalStateException.class, () -> this.cmaService.getInfo());
+	}
+
+	/**
+	 * Tests that using shouldProgramContinue() before load is not allowed.
+	 */
+	@Test
+	void testShouldProgramContinueBeforeLoad() {
+		Assertions.assertThrows(IllegalStateException.class, () -> this.cmaService.shouldProgramContinue());
 	}
 
 	/**
@@ -191,11 +216,10 @@ class CommandLineArgumentHandlerServiceTest {
 			args[i * 2] = "-p";
 			args[i * 2 + 1] = plugins[i];
 		}
-		CommandLineArgumentHandlerService cmaService = new CommandLineArgumentHandlerService(this.pi, this.logger::info,
-				args);
-		Assertions.assertTrue(cmaService.shouldProgramContinue());
+		this.cmaService.load(args, this.logger::info);
+		Assertions.assertTrue(this.cmaService.shouldProgramContinue());
 		List<String> correct = Arrays.asList(plugins);
-		Assertions.assertEquals(correct, cmaService.getInfo().getPluginPaths());
+		Assertions.assertEquals(correct, this.cmaService.getInfo().getPluginPaths());
 	}
 
 }

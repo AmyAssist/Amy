@@ -7,6 +7,7 @@ de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLo
 de.unistuttgart.iaas.amyassist.amy.core.configuration.InternalDefaultConfigurationLoader
 de.unistuttgart.iaas.amyassist.amy.core.console.Console
 de.unistuttgart.iaas.amyassist.amy.core.io.EnvironmentService
+de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService
 de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManagerService
 de.unistuttgart.iaas.amyassist.amy.core.audio.InternalAudioManagerService
 de.unistuttgart.iaas.amyassist.amy.core.audio.LocalAudioService

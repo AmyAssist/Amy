@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformation;
 
 /**
@@ -36,31 +38,36 @@ import de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformation;
  *
  * @author Tim Neumann
  */
+@Service
 public class CommandLineArgumentHandlerService {
 
-	private Map<Flag, List<String>> flags;
-
-	private boolean flagsValid = true;
-
+	@Reference
 	private ProgramInformation programInfo;
+
+	private Map<Flag, List<String>> flags;
+	private boolean flagsValid = true;
 
 	private Consumer<String> outputFunction;
 
 	/**
-	 * Creates a new command line argument handler with the given program information
+	 * Loads the command line arguments from the given array and processes them. This method can only be called once and
+	 * must be called before any other method from this class.
 	 * 
-	 * @param programInformation
-	 *            The program information used to output things like the version.
+	 * @param args
+	 *            The command line arguments to load.
 	 * @param output
 	 *            The function used to output all things.
-	 * @param args
-	 *            The command line arguments.
+	 * @throws IllegalStateException
+	 *             When load is called a second time.
 	 */
-	public CommandLineArgumentHandlerService(ProgramInformation programInformation, Consumer<String> output,
-			String[] args) {
-		this.programInfo = programInformation;
+	public void load(String[] args, Consumer<String> output) {
+		if (this.flags != null)
+			throw new IllegalStateException("Already loaded.");
+		this.flags = new EnumMap<>(Flag.class);
+
 		this.outputFunction = output;
-		if (processArgs(args)) {
+		processArgs(args);
+		if (this.shouldProgramContinue()) {
 			output("This is Amy. Copyright (c) 2018 the Amy project authors. For help run with flag -h.");
 		}
 	}
@@ -70,11 +77,8 @@ public class CommandLineArgumentHandlerService {
 	 * 
 	 * @param args
 	 *            The arguments
-	 * @return Whether the arguments were valid.
 	 */
-	private boolean processArgs(String[] args) {
-		this.flags = new EnumMap<>(Flag.class);
-
+	private void processArgs(String[] args) {
 		FlagParameterInformation flagParaInfo = new FlagParameterInformation(null);
 		for (String arg : args) {
 			if (flagParaInfo.getRemainingParaCount() > 0) {
@@ -83,16 +87,13 @@ public class CommandLineArgumentHandlerService {
 			}
 			flagParaInfo = processNewFlag(arg);
 			if (flagParaInfo == null)
-				return false;
+				return;
 		}
 
 		if (flagParaInfo.getRemainingParaCount() > 0) {
 			output("Missing parameter for last flag.");
 			this.flagsValid = false;
-			return false;
 		}
-
-		return true;
 	}
 
 	/**
@@ -164,8 +165,12 @@ public class CommandLineArgumentHandlerService {
 
 	/**
 	 * @return Whether the program should continue execution.
+	 * @throws IllegalStateException
+	 *             When load was not called before.
 	 */
 	public boolean shouldProgramContinue() {
+		if (this.flags == null)
+			throw new IllegalStateException("Not loaded.");
 		if (!this.flagsValid)
 			return false;
 		for (Flag f : this.flags.keySet()) {
@@ -179,8 +184,12 @@ public class CommandLineArgumentHandlerService {
 	 * Get the info about the command line arguments.
 	 * 
 	 * @return The info
+	 * @throws IllegalStateException
+	 *             When load was not called before.
 	 */
 	public CommandLineArgumentInfo getInfo() {
+		if (this.flags == null)
+			throw new IllegalStateException("Not loaded.");
 		return new CommandLineArgumentInfoImpl(this.flags.get(Flag.CONFIG), this.flags.get(Flag.PLUGIN));
 	}
 

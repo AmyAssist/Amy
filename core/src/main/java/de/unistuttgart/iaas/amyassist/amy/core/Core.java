@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformation;
 import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService;
 import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
@@ -84,13 +83,10 @@ public class Core {
 	 *            The arguments for the core.
 	 */
 	void start(String[] args) {
-		this.logger.info("start");
 		this.registerAllCoreServices();
 		this.init();
-
-		ProgramInformation pi = this.di.getService(ProgramInformation.class);
-		CommandLineArgumentHandlerService cmaHandler = new CommandLineArgumentHandlerService(pi, System.out::println,
-				args);
+		CommandLineArgumentHandlerService cmaHandler = this.di.getService(CommandLineArgumentHandlerService.class);
+		cmaHandler.load(args, System.out::println);
 		if (cmaHandler.shouldProgramContinue()) {
 			this.di.addExternalService(CommandLineArgumentInfo.class, cmaHandler.getInfo());
 			run();
