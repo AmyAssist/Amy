@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import de.unistuttgart.iaas.amyassist.amy.registry.AlarmReg;
+import de.unistuttgart.iaas.amyassist.amy.registry.AlarmRegistry;
 
 /**
  * This class implements the logic for all the functions that our alarm clock and timer are capable of
@@ -45,7 +48,10 @@ public class AlarmClockLogic {
 	private AlarmBeepService alarmbeep;
 
 	@Reference
-	private IAlarmClockStorage acStorage;
+	private AlarmRegistry alarmStorage;
+
+	@Reference
+	private AlarmClockStorage timerStorage;
 
 	@Reference
 	private TaskScheduler taskScheduler;
@@ -53,9 +59,13 @@ public class AlarmClockLogic {
 	@Reference
 	private Environment environment;
 
+	private LocalTime alarmTime;
+
 	/**
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
 	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel Simion
+	 * 
+	 * @param alarm
 	 * 
 	 * @param alarmNumber
 	 *            alarm id of the corresponding alarm object
@@ -65,8 +75,8 @@ public class AlarmClockLogic {
 	 */
 	private Runnable createAlarmRunnable(int alarmNumber) {
 		return () -> {
-			if (this.acStorage.hasAlarm(alarmNumber) && this.acStorage.getAlarm(alarmNumber).isActive()) {
-				Alarm alarm = this.acStorage.getAlarm(alarmNumber);
+			if (this.alarmStorage.getAlarm(alarmNumber) != null && this.alarmStorage.getAlarm(alarmNumber).isActive()) {
+				Alarm alarm = (Alarm) this.alarmStorage.getAlarm(alarmNumber);
 				this.alarmbeep.beep(alarm);
 			}
 		};
@@ -83,8 +93,8 @@ public class AlarmClockLogic {
 	 */
 	private Runnable createTimerRunnable(int timerNumber) {
 		return () -> {
-			if (this.acStorage.hasTimer(timerNumber) && this.acStorage.getTimer(timerNumber).isActive()) {
-				Timer timer = this.acStorage.getTimer(timerNumber);
+			if (this.timerStorage.hasTimer(timerNumber) && this.timerStorage.getTimer(timerNumber).isActive()) {
+				Timer timer = this.timerStorage.getTimer(timerNumber);
 				this.alarmbeep.beep(timer);
 			}
 		};
@@ -103,10 +113,10 @@ public class AlarmClockLogic {
 	 */
 	protected Alarm setAlarm(int hour, int minute) {
 		if (Alarm.timeValid(hour, minute)) {
-			int counter = this.acStorage.incrementAlarmCounter();
-			Alarm alarm = new Alarm(counter, hour, minute, true);
-			this.acStorage.storeAlarm(alarm);
-			Runnable alarmRunnable = createAlarmRunnable(counter);
+			int id = this.alarmStorage.getAll().size() + 1;
+			Alarm alarm = new Alarm(id, this.alarmTime, true);
+			this.alarmStorage.save(alarm);
+			Runnable alarmRunnable = createAlarmRunnable(id);
 			ZonedDateTime with = this.environment.getCurrentDateTime().with(alarm.getAlarmTime());
 			if (with.isBefore(this.environment.getCurrentDateTime())) {
 				with = with.plusDays(1);
@@ -132,9 +142,9 @@ public class AlarmClockLogic {
 	protected Timer setTimer(int hours, int minutes, int seconds) {
 
 		if (Timer.delayValid(hours, minutes, seconds)) {
-			int counter = this.acStorage.incrementTimerCounter();
+			int counter = this.timerStorage.incrementTimerCounter();
 			Timer timer = new Timer(counter, hours, minutes, seconds, true);
-			this.acStorage.storeTimer(timer);
+			this.timerStorage.storeTimer(timer);
 			Runnable timerRunnable = createTimerRunnable(counter);
 			this.taskScheduler.schedule(timerRunnable, timer.getTimerDate().toInstant());
 			return timer;
@@ -148,14 +158,13 @@ public class AlarmClockLogic {
 	 * @return counter counts the existing alarms
 	 */
 	protected String resetAlarms() {
-		int amount = this.acStorage.getAlarmCounter();
-		this.acStorage.putAlarmCounter(0);
+		int amount = this.alarmStorage.getAll().size();
 		int counter = 0;
 		for (int i = 1; i <= amount; i++) {
-			if (this.acStorage.hasAlarm(i)) {
+			if (this.alarmStorage.getAlarm(i) != null) {
 				counter++;
 				deactivateAlarm(i);
-				this.acStorage.deleteAlarm(i);
+				this.alarmStorage.deleteById(i);
 			}
 		}
 		if (counter == 0) {
@@ -170,14 +179,14 @@ public class AlarmClockLogic {
 	 * @return counter counts the existing timers
 	 */
 	protected String resetTimers() {
-		int amount = this.acStorage.getTimerCounter();
-		this.acStorage.putTimerCounter(0);
+		int amount = this.timerStorage.getTimerCounter();
+		this.timerStorage.putTimerCounter(0);
 		int counter = 0;
 		for (int i = 1; i <= amount; i++) {
-			if (this.acStorage.hasTimer(i)) {
+			if (this.timerStorage.hasTimer(i)) {
 				counter++;
 				deactivateTimer(i);
-				this.acStorage.deleteTimer(i);
+				this.timerStorage.deleteTimer(i);
 			}
 		}
 		if (counter == 0) {
@@ -194,9 +203,10 @@ public class AlarmClockLogic {
 	 * @return alarmNumber
 	 */
 	protected String deleteAlarm(int alarmNumber) {
-		if (this.acStorage.hasAlarm(alarmNumber)) {
+		if (this.alarmStorage.getAlarm(alarmNumber) != null) {
 			deactivateAlarm(alarmNumber);
-			this.acStorage.deleteAlarm(alarmNumber);
+			this.alarmStorage.deleteById(alarmNumber);
+			;
 			return "Alarm " + alarmNumber + " deleted";
 		}
 		throw new NoSuchElementException();
@@ -210,9 +220,9 @@ public class AlarmClockLogic {
 	 * @return timerNumber
 	 */
 	protected String deleteTimer(int timerNumber) {
-		if (this.acStorage.hasTimer(timerNumber)) {
+		if (this.timerStorage.hasTimer(timerNumber)) {
 			deactivateTimer(timerNumber);
-			this.acStorage.deleteTimer(timerNumber);
+			this.timerStorage.deleteTimer(timerNumber);
 			return "Timer " + timerNumber + " deleted";
 		}
 		throw new NoSuchElementException();
@@ -227,12 +237,12 @@ public class AlarmClockLogic {
 	 * @return alarmNumber
 	 */
 	protected String deactivateAlarm(int alarmNumber) {
-		if (this.acStorage.hasAlarm(alarmNumber)) {
-			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
+		if (this.alarmStorage.getAlarm(alarmNumber) != null) {
+			Alarm alarm = (Alarm) this.alarmStorage.getAlarm(alarmNumber);
 			if (alarm.isActive()) {
 				this.alarmbeep.stopBeep(alarm);
 				alarm.setActive(false);
-				this.acStorage.storeAlarm(alarm);
+				this.alarmStorage.save(alarm);
 				return "Alarm " + alarmNumber + " deactivated";
 			}
 			return "Alarm " + alarmNumber + " is already inactive";
@@ -248,12 +258,12 @@ public class AlarmClockLogic {
 	 * @return timerNumber
 	 */
 	protected String deactivateTimer(int timerNumber) {
-		if (this.acStorage.hasTimer(timerNumber)) {
-			Timer timer = this.acStorage.getTimer(timerNumber);
+		if (this.timerStorage.hasTimer(timerNumber)) {
+			Timer timer = this.timerStorage.getTimer(timerNumber);
 			if (timer.isActive()) {
 				this.alarmbeep.stopBeep(timer);
 				timer.setActive(false);
-				this.acStorage.storeTimer(timer);
+				this.timerStorage.storeTimer(timer);
 				return "Timer " + timerNumber + " deactivated";
 			}
 			return "Timer " + timerNumber + " is already inactive";
@@ -269,11 +279,11 @@ public class AlarmClockLogic {
 	 * @return alarmNumber
 	 */
 	protected String activateAlarm(int alarmNumber) {
-		if (this.acStorage.hasAlarm(alarmNumber)) {
-			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
+		if (this.alarmStorage.getAlarm(alarmNumber) != null) {
+			Alarm alarm = (Alarm) this.alarmStorage.getAlarm(alarmNumber);
 			if (!alarm.isActive()) {
 				alarm.setActive(true);
-				this.acStorage.storeAlarm(alarm);
+				this.alarmStorage.save(alarm);
 				return "Alarm " + alarmNumber + " activated";
 			}
 			return "Alarm " + alarmNumber + " is already active";
@@ -290,8 +300,8 @@ public class AlarmClockLogic {
 	 * @return alarmNumber
 	 */
 	protected Alarm getAlarm(int alarmNumber) {
-		if (this.acStorage.hasAlarm(alarmNumber)) {
-			return this.acStorage.getAlarm(alarmNumber);
+		if (this.alarmStorage.getAlarm(alarmNumber) != null) {
+			return (Alarm) this.alarmStorage.getAlarm(alarmNumber);
 		}
 		throw new NoSuchElementException();
 	}
@@ -302,8 +312,8 @@ public class AlarmClockLogic {
 	 * @return timerNumber
 	 */
 	protected Timer getTimer(int timerNumber) {
-		if (this.acStorage.hasTimer(timerNumber)) {
-			return this.acStorage.getTimer(timerNumber);
+		if (this.timerStorage.hasTimer(timerNumber)) {
+			return this.timerStorage.getTimer(timerNumber);
 		}
 		throw new NoSuchElementException();
 	}
@@ -313,15 +323,8 @@ public class AlarmClockLogic {
 	 * 
 	 * @return List of all alarms
 	 */
-	protected List<Alarm> getAllAlarms() {
-		List<Alarm> allAlarms = new ArrayList<>();
-		int amount = this.acStorage.getAlarmCounter();
-		for (int i = 1; i <= amount; i++) {
-			if (this.acStorage.hasAlarm(i)) {
-				allAlarms.add(this.acStorage.getAlarm(i));
-			}
-		}
-		return allAlarms;
+	protected List<AlarmReg> getAllAlarms() {
+		return this.alarmStorage.getAll();
 	}
 
 	/**
@@ -331,10 +334,10 @@ public class AlarmClockLogic {
 	 */
 	protected List<Timer> getAllTimers() {
 		List<Timer> allTimers = new ArrayList<>();
-		int amount = this.acStorage.getTimerCounter();
+		int amount = this.timerStorage.getTimerCounter();
 		for (int i = 1; i <= amount; i++) {
-			if (this.acStorage.hasTimer(i)) {
-				allTimers.add(this.acStorage.getTimer(i));
+			if (this.timerStorage.hasTimer(i)) {
+				allTimers.add(this.timerStorage.getTimer(i));
 			}
 		}
 		return allTimers;
@@ -352,10 +355,10 @@ public class AlarmClockLogic {
 	 * @return alarmNumber + alarmTime new Time of the edited Alarm
 	 */
 	protected Alarm editAlarm(int alarmNumber, int hour, int minute) {
-		if (this.acStorage.hasAlarm(alarmNumber) && Alarm.timeValid(hour, minute)) {
-			Alarm alarm = this.acStorage.getAlarm(alarmNumber);
+		if (this.alarmStorage.getAlarm(alarmNumber) != null && Alarm.timeValid(hour, minute)) {
+			Alarm alarm = (Alarm) this.alarmStorage.getAlarm(alarmNumber);
 			alarm.setTime(hour, minute);
-			this.acStorage.storeAlarm(alarm);
+			this.alarmStorage.save(alarm);
 			return alarm;
 		}
 		throw new NoSuchElementException();

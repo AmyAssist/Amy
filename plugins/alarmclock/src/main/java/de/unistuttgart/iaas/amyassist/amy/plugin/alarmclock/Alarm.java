@@ -57,13 +57,13 @@ public class Alarm {
 	 * @param active
 	 *            alarm active
 	 */
-	public Alarm(int id, int hour, int minute, boolean active) {
+	public Alarm(int id, LocalTime alarmTime, boolean active) {
 		if (id < 0)
 			throw new IllegalArgumentException();
 
 		this.id = id;
 
-		setTime(hour, minute);
+		setTime(alarmTime.getHour(), alarmTime.getMinute());
 
 		this.active = active;
 	}
@@ -89,9 +89,10 @@ public class Alarm {
 	 */
 	public static Alarm reconstructObject(String input) {
 		String[] params = input.split(":");
-		if (params.length == 4)
-			return new Alarm(Integer.parseInt(params[0]), Integer.parseInt(params[1]), Integer.parseInt(params[2]),
-					Boolean.parseBoolean(params[3]));
+		if (params.length == 4) {
+			final LocalTime newAlarmTime = LocalTime.of(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
+			return new Alarm(Integer.parseInt(params[0]), newAlarmTime, Boolean.parseBoolean(params[3]));
+		}
 		throw new IllegalArgumentException();
 	}
 
