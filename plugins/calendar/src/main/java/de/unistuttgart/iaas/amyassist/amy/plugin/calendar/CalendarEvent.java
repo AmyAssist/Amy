@@ -46,6 +46,9 @@ public class CalendarEvent {
 	private String summary;
 	private String location;
 	private String description;
+	private String reminderType;
+	private int reminderTime;
+	private String[] recurrence;
 	private boolean allDay;
 
 	/**
@@ -83,22 +86,46 @@ public class CalendarEvent {
 	}
 
 	/**
+	 *
+	 * @param start
+	 * 			set start
+	 * @param end
+	 * 			set end
+	 * @param summary
+	 * 			set summary
+	 * @param location
+	 * 			set location
+	 * @param description
+	 * 			set description
+	 * @param reminderType
+	 * 			set reminderType
+	 * @param reminderTime
+	 * 			set reminderTime in minutes
+	 * @param recurrence
+	 * 			set recurrence
+	 * @param allDay
+	 * 			set allDay
+	 */
+	public CalendarEvent(LocalDateTime start, LocalDateTime end, String summary, String location,
+						 String description, String reminderType, int reminderTime, String[] recurrence, boolean allDay) {
+		this.start = start;
+		this.end = end;
+		this.summary = summary;
+		this.location = location;
+		this.description = description;
+		this.reminderType = reminderType;
+		this.reminderTime = reminderTime;
+		this.recurrence = recurrence;
+		this.allDay = allDay;
+	}
+
+	/**
 	 * Get's {@link #id id}
 	 *
 	 * @return id
 	 */
 	public String getId() {
 		return this.id;
-	}
-
-	/**
-	 * Set's {@link #id id}
-	 *
-	 * @param id
-	 *            id
-	 */
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	/**
@@ -111,18 +138,8 @@ public class CalendarEvent {
 	}
 
 	/**
-	 * Set's {@link #start start}
-	 * 
-	 * @param start
-	 *            start
-	 */
-	public void setStart(LocalDateTime start) {
-		this.start = start;
-	}
-
-	/**
 	 * Get's {@link #end end}
-	 * 
+	 *
 	 * @return end
 	 */
 	public LocalDateTime getEnd() {
@@ -130,18 +147,8 @@ public class CalendarEvent {
 	}
 
 	/**
-	 * Set's {@link #end end}
-	 * 
-	 * @param end
-	 *            end
-	 */
-	public void setEnd(LocalDateTime end) {
-		this.end = end;
-	}
-
-	/**
 	 * Get's {@link #summary summary}
-	 * 
+	 *
 	 * @return summary
 	 */
 	public String getSummary() {
@@ -149,18 +156,8 @@ public class CalendarEvent {
 	}
 
 	/**
-	 * Set's {@link #summary summary}
-	 * 
-	 * @param summary
-	 *            summary
-	 */
-	public void setSummary(String summary) {
-		this.summary = summary;
-	}
-
-	/**
 	 * Get's {@link #location location}
-	 * 
+	 *
 	 * @return location
 	 */
 	public String getLocation() {
@@ -168,18 +165,8 @@ public class CalendarEvent {
 	}
 
 	/**
-	 * Set's {@link #location location}
-	 * 
-	 * @param location
-	 *            location
-	 */
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-	/**
 	 * Get's {@link #description description}
-	 * 
+	 *
 	 * @return description
 	 */
 	public String getDescription() {
@@ -187,32 +174,12 @@ public class CalendarEvent {
 	}
 
 	/**
-	 * Set's {@link #description description}
-	 * 
-	 * @param description
-	 *            description
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
 	 * Get's {@link #allDay allDay}
-	 * 
+	 *
 	 * @return allDay
 	 */
 	public boolean isAllDay() {
 		return this.allDay;
-	}
-
-	/**
-	 * Set's {@link #allDay allDay}
-	 * 
-	 * @param allDay
-	 *            allDay
-	 */
-	public void setAllDay(boolean allDay) {
-		this.allDay = allDay;
 	}
 
 	@Override
@@ -230,6 +197,30 @@ public class CalendarEvent {
 	@Override
 	public int hashCode() {
 		return Objects.hash(this.id, this.start, this.end, this.summary, this.description, this.location, this.allDay);
+	}
+
+	/**
+	 *
+	 * @return the recurrence options
+	 */
+	public String[] getRecurrence() {
+		return recurrence;
+	}
+
+	/**
+	 *
+	 * @return the reminder type
+	 */
+	public String getReminderType() {
+		return reminderType;
+	}
+
+	/**
+	 *
+	 * @return the reminder time in minutes
+	 */
+	public int getReminderTime() {
+		return reminderTime;
 	}
 
 }

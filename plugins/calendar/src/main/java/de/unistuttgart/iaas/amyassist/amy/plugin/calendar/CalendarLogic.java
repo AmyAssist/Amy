@@ -33,9 +33,12 @@ import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import com.eclipsesource.json.JsonObject;
+import com.google.api.services.calendar.model.EventReminder;
 import org.slf4j.Logger;
 
 import com.google.api.client.util.DateTime;
@@ -91,18 +94,24 @@ public class CalendarLogic {
 	 */
 	String orderBy = "startTime";
 
-	public void setEvent(String summary, String location, String description, LocalDateTime startTime,
-			LocalDateTime endTime, boolean allDay, boolean recurring, boolean daily, int interval, int count,
-			LocalDate until) {
-		Event event = new Event().setSummary(summary).setLocation(location).setDescription(description);
+	/**
+	 * This method creates an event for the connected google calendar
+	 * @param calendarEvent
+	 *					the event which will be created in the google calendar
+	 */
+	public void setEvent(CalendarEvent calendarEvent) {
+		Event event = new Event()
+				.setSummary(calendarEvent.getSummary())
+				.setLocation(calendarEvent.getLocation())
+				.setDescription(calendarEvent.getDescription());
 
 		EventDateTime start = new EventDateTime();
 		EventDateTime end = new EventDateTime();
-		ZonedDateTime startZDT = startTime.atZone(ZoneId.systemDefault());
+		ZonedDateTime startZDT = calendarEvent.getStart().atZone(ZoneId.systemDefault());
 		DateTime startDT = new DateTime(startZDT.toInstant().toEpochMilli());
-		ZonedDateTime endZDT = endTime.atZone(ZoneId.systemDefault());
+		ZonedDateTime endZDT = calendarEvent.getEnd().atZone(ZoneId.systemDefault());
 		DateTime endDT = new DateTime(endZDT.toInstant().toEpochMilli());
-		if (allDay) {
+		if (calendarEvent.isAllDay()) {
 			start.setDate(startDT);
 			end.setDate(endDT);
 		} else {
@@ -112,23 +121,24 @@ public class CalendarLogic {
 		start.setTimeZone(ZoneId.systemDefault().toString());
 		end.setTimeZone(ZoneId.systemDefault().toString());
 
-		if (recurring) {
-			String recurrenceOptions = "RRULE:";
-			if (daily) {
-				recurrenceOptions += "FREQ=DAILY";
-			} else {
-				recurrenceOptions += "FREQ=WEEKLY";
-			}
-			if (interval > 0) {
-				recurrenceOptions += ";INTERVAL=" + interval;
-			}
-			if (count > 0) {
-				recurrenceOptions += ";COUNT=" + count;
-			}
-			if (until != null) {
-				recurrenceOptions += ";UNTIL:" + until.toString().replace("-", "");
-			}
+		event.setRecurrence(Arrays.asList(calendarEvent.getRecurrence()));
 
+		EventReminder[] reminderOverrides = new EventReminder[]{
+				new EventReminder()
+						.setMethod(calendarEvent.getReminderType())
+						.setMinutes(calendarEvent.getReminderTime()),
+		};
+
+		Event.Reminders reminders = new Event.Reminders()
+				.setUseDefault(false)
+				.setOverrides(Arrays.asList(reminderOverrides));
+		event.setReminders(reminders);
+
+		String calendarId = "primary";
+		try {
+			this.calendarService.getService().events().insert(calendarId, event).execute();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 	}
