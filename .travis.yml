@@ -16,7 +16,12 @@ jobs:
     - name: "Docker system test"
       if: branch IN (dev, master)
       install: docker build . -t amy-master-node
-      script: skip
+      script:
+      - docker run -d -p 80:80 --name=system-test amy-master-node
+      - sleep 10
+      - curl -I localhost
+      - docker stop system-test
+      - docker logs system-test
     - stage: dev deploy
       name: "Deploy Docker image"
       install: docker build . -t amy-master-node
