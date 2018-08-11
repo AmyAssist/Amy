@@ -30,4 +30,6 @@ ENV AMY_SERVER_CONFIG_SERVER_SOCKET_PORT 80
 ENV AMY_SERVER_CONFIG_SERVER_URL http://localhost:80/
 EXPOSE $AMY_SERVER_CONFIG_SERVER_SOCKET_PORT
 
-CMD ["java", "-jar", "amy.jar", "-c", "config"]
+RUN mkdir /config
+
+CMD ["java", "-jar", "amy.jar", "-c", "/config"]
