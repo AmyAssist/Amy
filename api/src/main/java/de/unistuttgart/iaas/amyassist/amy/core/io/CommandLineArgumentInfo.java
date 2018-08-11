@@ -21,28 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.io;
 
 import java.util.List;
 
 /**
- * The interface of our command line argument handler
+ * Information about the command line arguments used to launch amy.
  * 
  * @author Tim Neumann
  */
-public interface CommandLineArgumentHandler {
-
-	/**
-	 * @return whether the program should continue with normal execution considering these command line flags
-	 * @throws IllegalStateException
-	 *             When the CommandLineArgumentHandler is not initialized.
-	 */
-	boolean shouldProgramContinue();
-
+public interface CommandLineArgumentInfo {
 	/**
 	 * Get the additional config paths set by the command line flags.
 	 * 
-	 * @return a list of config paths or null if none is set.
+	 * @return a list of paths.
 	 * @throws IllegalStateException
 	 *             When the CommandLineArgumentHandler is not initialized.
 	 */
@@ -51,7 +43,7 @@ public interface CommandLineArgumentHandler {
 	/**
 	 * Get a list of plugin paths
 	 * 
-	 * @return a list of paths or null if none was sepcified.
+	 * @return a list of paths.
 	 * @throws IllegalStateException
 	 *             When the CommandLineArgumentHandler is not initialized.
 	 */

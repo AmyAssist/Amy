@@ -31,13 +31,13 @@ import org.slf4j.Logger;
 import asg.cliche.Command;
 import asg.cliche.Shell;
 import asg.cliche.ShellFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandlerService;
 import de.unistuttgart.iaas.amyassist.amy.core.Core;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformationCLI;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerCLI;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
@@ -104,7 +104,7 @@ public class Console implements RunnableService, Runnable {
 			Shell shell = ShellFactory.createConsoleShell("amy", "", this);
 			shell.addMainHandler(this.serviceLocator.createAndInitialize(PluginManagerCLI.class), "");
 			shell.addMainHandler(this.serviceLocator.createAndInitialize(TTSConsole.class), "");
-			shell.addMainHandler(new CommandLineArgumentHandlerService(), "");
+			shell.addMainHandler(this.serviceLocator.createAndInitialize(ProgramInformationCLI.class), "");
 			shell.commandLoop();
 		} catch (IOException e) {
 			this.logger.error("Error while running the console", e);
