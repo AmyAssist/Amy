@@ -13,7 +13,7 @@ WORKDIR /app
 RUN set -x; mvn install -DskipTests=true
 
 RUN mkdir /dist && mkdir /dist/plugins
-RUN mv amy-master-node/target/amy-master-node-*-Snapshot.jar /dist/amy.jar
+RUN mv amy-master-node/target/amy-master-node.jar /dist/amy.jar
 RUN mv plugins/*/target/*with-dependencies.jar /dist/plugins/
 
 # production
@@ -26,6 +26,8 @@ COPY --from=source /src/.docker/config /app/config
 
 WORKDIR /app
 
-EXPOSE 80
+ENV AMY_SERVER_CONFIG_SERVER_SOCKET_PORT 80
+ENV AMY_SERVER_CONFIG_SERVER_URL http://localhost:80/
+EXPOSE $AMY_SERVER_CONFIG_SERVER_SOCKET_PORT
 
 CMD ["java", "-jar", "amy.jar", "-c", "config"]
