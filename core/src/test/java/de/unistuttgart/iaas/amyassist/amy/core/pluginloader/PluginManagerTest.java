@@ -100,18 +100,24 @@ class PluginManagerTest {
 
 	/**
 	 * Test that the plugin manager can't load twice.
+	 * 
+	 * @throws IOException
+	 *             When a IO error occurs
 	 */
 	@Test
-	void testCantLoadTwice() {
+	void testCantLoadTwice() throws IOException {
 		this.serviceUnderTest.loadPlugins();
 		assertThrows(IllegalStateException.class, () -> this.serviceUnderTest.loadPlugins());
 	}
 
 	/**
 	 * Test that it is logged, when a plugin can't be found
+	 * 
+	 * @throws IOException
+	 *             When a IO error occurs
 	 */
 	@Test
-	void testPluginNotFound() {
+	void testPluginNotFound() throws IOException {
 		TestLogger testLogger = TestLoggerFactory.getTestLogger(PluginManagerService.class);
 		this.properties.setProperty("plugins", "testPlugin");
 
@@ -124,7 +130,7 @@ class PluginManagerTest {
 	 * Tests {@link PluginManager#loadPlugins()}
 	 * 
 	 * @throws IOException
-	 *             When FS IO goes wrong.
+	 *             When a IO error occurs
 	 */
 	@Test
 	void testLoadPlugins() throws IOException {
@@ -145,7 +151,7 @@ class PluginManagerTest {
 	 * Tests {@link PluginManager#loadPlugins()} with plugins=all
 	 * 
 	 * @throws IOException
-	 *             When FS IO goes wrong.
+	 *             When a IO error occurs
 	 */
 	@Test
 	void testLoadPluginsAll() throws IOException {

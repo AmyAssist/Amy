@@ -125,30 +125,28 @@ public class PluginManagerService implements PluginManager {
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager#loadPlugins()
 	 */
 	@Override
-	public synchronized void loadPlugins() {
+	public synchronized void loadPlugins() throws IOException {
 		if (this.loaded)
 			throw new IllegalStateException("the plugins are loaded");
 
 		this.logger.debug("workingDir: {}", this.workingDir);
 
 		if (!Files.exists(this.workingDir))
-			throw new RuntimeException("Working directory does not exist.");
+			throw new FileNotFoundException("Working directory does not exist.");
 
-		try {
-			if (isConfiguredToLoadAll()) {
-				tryLoadAllPluginsFromDir(getPluginDirFromConfig());
-			} else {
-				for (String plugin : this.getPluginListFromConfig()) {
-					Path pluginJar = getPluginDirFromConfig().resolve(plugin + ".jar");
-					if (!Files.isRegularFile(pluginJar)) {
-						this.logger.warn("The Plugin {} is missing its jar file {} and is therefore not loaded.",
-								plugin, pluginJar);
-					}
-					this.pluginLoader.loadPlugin(pluginJar);
+		Path pluginDir = getPluginDirFromConfig();
+
+		if (isConfiguredToLoadAll()) {
+			tryLoadAllPluginsFromDir(pluginDir);
+		} else {
+			for (String plugin : this.getPluginListFromConfig()) {
+				Path pluginJar = pluginDir.resolve(plugin + ".jar");
+				if (!Files.isRegularFile(pluginJar)) {
+					this.logger.warn("The Plugin {} is missing its jar file {} and is therefore not loaded.", plugin,
+							pluginJar);
 				}
+				this.pluginLoader.loadPlugin(pluginJar);
 			}
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException("File or Directory not found. Is your working directory correct?", e);
 		}
 
 		for (IPlugin p : this.pluginLoader.getPlugins()) {
@@ -158,12 +156,10 @@ public class PluginManagerService implements PluginManager {
 		this.loaded = true;
 	}
 
-	private void tryLoadAllPluginsFromDir(Path dir) {
+	private void tryLoadAllPluginsFromDir(Path dir) throws IOException {
 		try (Stream<Path> childs = Files.list(dir)) {
 			childs.filter(p -> p.getFileName().toString().endsWith(".jar"))
 					.forEach(p -> this.pluginLoader.loadPlugin(p));
-		} catch (IOException e) {
-			throw new RuntimeException("Failed opening dir.", e);
 		}
 	}
 
