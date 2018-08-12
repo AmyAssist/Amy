@@ -23,21 +23,16 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.*;
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers.tossedExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
-import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
@@ -47,8 +42,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
-import uk.org.lidalia.slf4jtest.TestLogger;
-import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 /**
  * Tests the post constructor of the plugin manager.
@@ -89,87 +82,24 @@ class PluginManagerSetupTest {
 	}
 
 	/**
-	 * Tests the an error occurs when the properties contain no mode
-	 */
-	@Test
-	void testInvalidPropertiesNoMode() {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(PluginManagerService.class);
-		this.testFramework.setServiceUnderTest(PluginManagerService.class);
-		assertThat(testLogger, hasLogged(error("Error loading config.",
-				tossedExactly(IllegalStateException.class, "The property mode is not set."))));
-	}
-
-	/**
-	 * Tests the an error occurs when the properties contain an invalid mode
-	 * 
-	 * @param mode
-	 *            A invalid mode
-	 */
-	@ParameterizedTest
-	@MethodSource("unknownModes")
-	void testInvalidPropertiesUnkownMode(String mode) {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(PluginManagerService.class);
-		this.properties.setProperty("mode", mode);
-		this.testFramework.setServiceUnderTest(PluginManagerService.class);
-		assertThat(testLogger, hasLogged(
-				error("Error loading config.", tossedExactly(IllegalStateException.class, "Unknown mode: " + mode))));
-	}
-
-	/**
 	 * Tests the an error occurs when the mode is dev the properties contain no plugins
 	 */
 	@Test
-	void testInvalidPropertiesModeDevNoPlugins() {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(PluginManagerService.class);
-		this.properties.setProperty("mode", "dev");
+	void testInvalidPropertiesNoPlugins() {
 		this.properties.setProperty("pluginDir", "test");
-		this.testFramework.setServiceUnderTest(PluginManagerService.class);
-		assertThat(testLogger, hasLogged(error("Error loading config.",
-				tossedExactly(IllegalStateException.class, "The property plugins is not set."))));
+		Assertions.assertThrows(IllegalStateException.class,
+				() -> this.testFramework.setServiceUnderTest(PluginManagerService.class),
+				"The property plugins is not set.");
 	}
 
 	/**
 	 * Tests the an error occurs when the mode is dev the properties contain no pluginDir
 	 */
 	@Test
-	void testInvalidPropertiesModeDevNoPluginDir() {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(PluginManagerService.class);
-		this.properties.setProperty("mode", "dev");
+	void testInvalidPropertiesNoPluginDir() {
 		this.properties.setProperty("plugins", "test");
-		this.testFramework.setServiceUnderTest(PluginManagerService.class);
-		assertThat(testLogger, hasLogged(error("Error loading config.",
-				tossedExactly(IllegalStateException.class, "The property pluginDir is not set."))));
-	}
-
-	/**
-	 * Tests the an error occurs when the mode is docker the properties contain no pluginDir
-	 */
-	@Test
-	void testInvalidPropertiesModeDockerNoPluginDir() {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(PluginManagerService.class);
-		this.properties.setProperty("mode", "docker");
-		this.testFramework.setServiceUnderTest(PluginManagerService.class);
-		assertThat(testLogger, hasLogged(error("Error loading config.",
-				tossedExactly(IllegalStateException.class, "The property pluginDir is not set."))));
-	}
-
-	/**
-	 * Tests the an error occurs when the mode is manula the properties contain no plugins
-	 */
-	@Test
-	void testInvalidPropertiesModeManualNoPlugins() {
-		TestLogger testLogger = TestLoggerFactory.getTestLogger(PluginManagerService.class);
-		this.properties.setProperty("mode", "manual");
-		this.properties.setProperty("pluginDir", "test");
-		this.testFramework.setServiceUnderTest(PluginManagerService.class);
-		assertThat(testLogger, hasLogged(error("Error loading config.",
-				tossedExactly(IllegalStateException.class, "The property plugins is not set."))));
-	}
-
-	/**
-	 * @return invalid modes
-	 */
-	static Stream<String> unknownModes() {
-		return Stream.of("", "mode", "de", "dock", "default", "devmanual");
+		Assertions.assertThrows(IllegalStateException.class,
+				() -> this.testFramework.setServiceUnderTest(PluginManagerService.class),
+				"The property pluginDir is not set.");
 	}
 }

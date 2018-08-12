@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
 
@@ -60,10 +59,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 @Service
 public class PluginManagerService implements PluginManager {
 	private static final String CONFIG_NAME = "plugin.config";
-	private static final String PROPERTY_MODE = "mode";
-	private static final String PROPERTY_MODE_DEV = "dev";
-	private static final String PROPERTY_MODE_DOCKER = "docker";
-	private static final String PROPERTY_MODE_MANUAL = "manual";
 	private static final String PROPERTY_PLUGINS = "plugins";
 	private static final String PROPERTY_PLUGIN_DIR = "pluginDir";
 
@@ -93,31 +88,13 @@ public class PluginManagerService implements PluginManager {
 	@PostConstruct
 	private void setup() {
 		this.workingDir = this.environment.getWorkingDirectory();
-		try {
-			loadAndCheckConfig();
-		} catch (IllegalStateException e) {
-			this.logger.error("Error loading config.", e);
-		}
+		loadAndCheckConfig();
 	}
 
 	private void loadAndCheckConfig() {
 		this.config = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
-		checkProperty(PROPERTY_MODE);
-		String mode = this.config.getProperty(PROPERTY_MODE);
-		switch (mode) {
-		case PROPERTY_MODE_DEV:
-			checkProperty(PROPERTY_PLUGINS);
-			checkProperty(PROPERTY_PLUGIN_DIR);
-			break;
-		case PROPERTY_MODE_DOCKER:
-			checkProperty(PROPERTY_PLUGIN_DIR);
-			break;
-		case PROPERTY_MODE_MANUAL:
-			checkProperty(PROPERTY_PLUGINS);
-			break;
-		default:
-			throw new IllegalStateException("Unknown mode: " + mode);
-		}
+		checkProperty(PROPERTY_PLUGINS);
+		checkProperty(PROPERTY_PLUGIN_DIR);
 	}
 
 	private void checkProperty(String key) {
@@ -139,6 +116,11 @@ public class PluginManagerService implements PluginManager {
 		return pluginDir;
 	}
 
+	private boolean isConfiguredToLoadAll() {
+		List<String> pluginList = getPluginListFromConfig();
+		return (pluginList.size() == 1 && pluginList.get(0).equals("all"));
+	}
+
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager#loadPlugins()
 	 */
@@ -149,40 +131,24 @@ public class PluginManagerService implements PluginManager {
 
 		this.logger.debug("workingDir: {}", this.workingDir);
 
-		if (!Files.exists(this.workingDir)) {
-			this.logger.error("Working directory does not exist.");
-			return;
-		}
-
-		String mode = this.config.getProperty(PROPERTY_MODE);
+		if (!Files.exists(this.workingDir))
+			throw new RuntimeException("Working directory does not exist.");
 
 		try {
-			switch (mode) {
-			case PROPERTY_MODE_DEV:
-				for (String pluginID : this.getPluginListFromConfig()) {
-					this.tryLoadPluginFromTarget(getPluginDirFromConfig(), pluginID);
-				}
-				break;
-			case PROPERTY_MODE_DOCKER:
+			if (isConfiguredToLoadAll()) {
 				tryLoadAllPluginsFromDir(getPluginDirFromConfig());
-				break;
-			case PROPERTY_MODE_MANUAL:
-				for (String pluginPathString : this.getPluginListFromConfig()) {
-					Path pluginPath = this.workingDir.resolve(pluginPathString);
-					if (!Files.isRegularFile(pluginPath)) {
-						this.logger.error("Plugin {} is not a regular file and is therefore not loaded.",
-								pluginPathString);
+			} else {
+				for (String plugin : this.getPluginListFromConfig()) {
+					Path pluginJar = getPluginDirFromConfig().resolve(plugin + ".jar");
+					if (!Files.isRegularFile(pluginJar)) {
+						this.logger.warn("The Plugin {} is missing its jar file {} and is therefore not loaded.",
+								plugin, pluginJar);
 					}
-					this.pluginLoader.loadPlugin(pluginPath);
+					this.pluginLoader.loadPlugin(pluginJar);
 				}
-				break;
-			default:
-				this.logger.error("Unknown plugin mode: {}", mode);
-				return;
 			}
 		} catch (FileNotFoundException e) {
-			this.logger.error("File or Directory not found. Is your working directory correct?", e);
-			return;
+			throw new RuntimeException("File or Directory not found. Is your working directory correct?", e);
 		}
 
 		for (IPlugin p : this.pluginLoader.getPlugins()) {
@@ -194,39 +160,11 @@ public class PluginManagerService implements PluginManager {
 
 	private void tryLoadAllPluginsFromDir(Path dir) {
 		try (Stream<Path> childs = Files.list(dir)) {
-			childs.forEach(p -> this.pluginLoader.loadPlugin(p));
+			childs.filter(p -> p.getFileName().toString().endsWith(".jar"))
+					.forEach(p -> this.pluginLoader.loadPlugin(p));
 		} catch (IOException e) {
-			this.logger.error("Failed loading plugins", e);
+			throw new RuntimeException("Failed opening dir.", e);
 		}
-	}
-
-	private boolean tryLoadPluginFromTarget(Path pluginDir, String pluginID) {
-		this.logger.debug("try load plugin {}", pluginID);
-		Path p = pluginDir.resolve(pluginID);
-
-		if (!Files.exists(p)) {
-			this.logger.warn("The plugin {} does not exist in the plugin directory.", p);
-			return false;
-		}
-		Path target = p.resolve("target");
-		if (!Files.exists(target)) {
-			this.logger.warn("Plugin {} has no target directory. Did you run mvn install?", p);
-			return false;
-		}
-
-		try (Stream<Path> childs = Files.list(target)) {
-			Optional<Path> jar = childs.filter(j -> j.getFileName().toString().endsWith("with-dependencies.jar"))
-					.findFirst();
-			if (!jar.isPresent()) {
-				this.logger.warn("The jar with dependencies is missing for plugin {}", pluginID);
-				return false;
-			}
-
-			return this.pluginLoader.loadPlugin(jar.get());
-		} catch (IOException e) {
-			this.logger.error("Failed to load plugin", e);
-		}
-		return false;
 	}
 
 	/**
