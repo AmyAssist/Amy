@@ -49,7 +49,6 @@ public class PlaylistEntity extends Item {
 	 * 
 	 * @param name
 	 *            of the playlist
-	 * @param songs
 	 * @param uri
 	 *            from a playlist to play it in spotify
 	 * @param imageUrl

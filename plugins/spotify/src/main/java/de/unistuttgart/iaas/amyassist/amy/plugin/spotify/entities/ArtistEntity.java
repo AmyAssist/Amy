@@ -42,9 +42,9 @@ public class ArtistEntity extends Item {
 	/**
 	 * this constructor set all data Objects
 	 * 
-	 * @param name
-	 * @param genre
-	 * @param uri
+	 * @param name of the artist
+	 * @param genres of the artist
+	 * @param uri of the artist
 	 */
 	public ArtistEntity(String name, String[] genres, String uri) {
 		super(name, uri);
@@ -54,16 +54,16 @@ public class ArtistEntity extends Item {
 	/**
 	 * get the genre from the artist
 	 * 
-	 * @return
+	 * @return generes
 	 */
 	public String[] getGenre() {
-		return genres;
+		return this.genres;
 	}
 
 	/**
 	 * set the genre from the artist
 	 * 
-	 * @param genres
+	 * @param genres of a artist
 	 */
 	public void setGenre(String[] genres) {
 		this.genres = genres;

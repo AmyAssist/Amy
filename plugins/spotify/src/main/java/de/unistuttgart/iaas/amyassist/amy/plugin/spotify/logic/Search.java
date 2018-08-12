@@ -79,16 +79,15 @@ public class Search {
 	 * @return a list with tracks
 	 */
 	public List<TrackEntity> searchforTracks(String searchItem, int limit) {
-			SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "track", limit);
-			if (searchResult != null) {
-				this.trackSearchResults =  createTrackData(searchResult.getTracks());
-			}
-			else {
-				this.trackSearchResults = new ArrayList<>();
-			}
+		SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "track", limit);
+		if (searchResult != null) {
+			this.trackSearchResults = createTrackData(searchResult.getTracks());
+		} else {
+			this.trackSearchResults = new ArrayList<>();
+		}
 		return this.trackSearchResults;
 	}
-	
+
 	/**
 	 * create a search query and output a list with search results from type track
 	 * 
@@ -99,16 +98,15 @@ public class Search {
 	 * @return a list with tracks
 	 */
 	public List<PlaylistEntity> searchforPlaylists(String searchItem, int limit) {
-			SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "playlist", limit);
-			if (searchResult != null) {
-				this.playlistSearchResults =  createPlaylistData(searchResult.getPlaylists().getItems());
-			}
-			else {
-				this.playlistSearchResults = new ArrayList<>();
-			}
+		SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "playlist", limit);
+		if (searchResult != null) {
+			this.playlistSearchResults = createPlaylistData(searchResult.getPlaylists().getItems());
+		} else {
+			this.playlistSearchResults = new ArrayList<>();
+		}
 		return this.playlistSearchResults;
 	}
-	
+
 	/**
 	 * create a search query and output a list with search results from type track
 	 * 
@@ -119,16 +117,15 @@ public class Search {
 	 * @return a list with tracks
 	 */
 	public List<AlbumEntity> searchforAlbums(String searchItem, int limit) {
-			SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "album", limit);
-			if (searchResult != null) {
-				this.albumSearchResults =  createAlbumData(searchResult.getAlbums());
-			}
-			else {
-				this.albumSearchResults = new ArrayList<>();
-			}
+		SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "album", limit);
+		if (searchResult != null) {
+			this.albumSearchResults = createAlbumData(searchResult.getAlbums());
+		} else {
+			this.albumSearchResults = new ArrayList<>();
+		}
 		return this.albumSearchResults;
 	}
-	
+
 	/**
 	 * create a search query and output a list with search results from type track
 	 * 
@@ -139,13 +136,12 @@ public class Search {
 	 * @return a list with tracks
 	 */
 	public List<ArtistEntity> searchforArtists(String searchItem, int limit) {
-			SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "artist", limit);
-			if (searchResult != null) {
-				this.artistSearchResults =  createArtistData(searchResult.getArtists());
-			}
-			else {
-				this.artistSearchResults = new ArrayList<>();
-			}
+		SearchResult searchResult = this.spotifyAPICalls.searchInSpotify(searchItem, "artist", limit);
+		if (searchResult != null) {
+			this.artistSearchResults = createArtistData(searchResult.getArtists());
+		} else {
+			this.artistSearchResults = new ArrayList<>();
+		}
 		return this.artistSearchResults;
 	}
 
@@ -182,7 +178,7 @@ public class Search {
 	 * 
 	 * @param searchResult
 	 *            the search result from a query
-	 * @return a list with album entities 
+	 * @return a list with album entities
 	 */
 	private List<AlbumEntity> createAlbumData(Paging<AlbumSimplified> searchResult) {
 		AlbumEntity albumEntity;
@@ -234,8 +230,8 @@ public class Search {
 	/**
 	 * create a List with all SearchResults when the type is playlist
 	 * 
-	 * @param playlists searchResult
-	 *            the search result from a query
+	 * @param playlists
+	 *            searchResult the search result from a query
 	 * @return a list with playlist entities
 	 */
 	private List<PlaylistEntity> createPlaylistData(PlaylistSimplified[] playlists) {

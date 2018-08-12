@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -447,7 +448,6 @@ public class MusicResource implements Resource {
 	public PlaylistEntity[] getPlaylists(@PathParam("type") String type,
 			@QueryParam("limit") @DefaultValue("5") int limit) {
 		List<PlaylistEntity> pl;
-		PlaylistEntity[] playlists;
 		switch (type) {
 		case "user":
 			pl = this.search.searchOwnPlaylists(limit);
@@ -460,14 +460,9 @@ public class MusicResource implements Resource {
 			break;
 		}
 		if (!pl.isEmpty()) {
-			playlists = new PlaylistEntity[pl.size()];
-			for (int i = 0; i < pl.size(); i++) {
-				playlists[i] = new PlaylistEntity(pl.get(i).getName(), pl.get(i).getUri(),
-						pl.get(i).getImageUrl());
-			}
-			return playlists;
+			return pl.toArray(new PlaylistEntity[pl.size()]);
 		}
-		throw new WebApplicationException("No Playlists are available", Status.NOT_FOUND);
+		throw new WebApplicationException("No Playlists are available", Status.NO_CONTENT);
 	}
 
 	/**

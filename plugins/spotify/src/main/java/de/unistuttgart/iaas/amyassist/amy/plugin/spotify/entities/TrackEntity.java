@@ -43,9 +43,9 @@ public class TrackEntity extends Item {
 	/**
 	 * this constructor set all data Objects
 	 * 
-	 * @param name
-	 * @param artists
-	 * @param uri
+	 * @param name of the item
+	 * @param artists of the item
+	 * @param uri of the item
 	 */
 	public TrackEntity(String name, String[] artists, String uri) {
 		super(name, uri);
@@ -53,21 +53,21 @@ public class TrackEntity extends Item {
 	}
 
 	/**
-	 * get the artists from the track
+	 * Get's {@link #getArtist() artists}
 	 * 
-	 * @return
+	 * @return artists a string array with all artists
 	 */
 	public String[] getArtist() {
-		return artists;
+		return this.artists;
 	}
 
 	/**
-	 * set the artists from the track
+	 * Set's {@link #artists artists} 
 	 * 
-	 * @param playlistOwner
+	 * @param artists all artists in a string array
 	 */
-	public void setArtists(String[] artist) {
-		this.artists = artist;
+	public void setArtists(String[] artists) {
+		this.artists = artists;
 	}
 
 	/**
