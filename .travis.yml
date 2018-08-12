@@ -15,7 +15,7 @@ jobs:
           token: $SONAR_TOKEN
     - name: "Docker system test"
       if: branch IN (dev, master)
-      install: docker build . -t amy-master-node
+      install: travis_retry docker build . -t amy-master-node
       script:
       - docker run -d -p 80:80 --name=system-test amy-master-node
       - sleep 10
@@ -24,7 +24,7 @@ jobs:
       - docker logs system-test
     - stage: dev deploy
       name: "Deploy Docker image"
-      install: docker build . -t amy-master-node
+      install: travis_retry docker build . -t amy-master-node
       script: skip
       deploy:
         provider: script
