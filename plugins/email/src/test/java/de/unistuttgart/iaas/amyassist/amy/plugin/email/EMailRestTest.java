@@ -75,7 +75,7 @@ class EMailRestTest {
 	public void testGetAllMails() {
 		final int amountOfMails = 15;
 		List<MessageDTO> mails = createMessages(amountOfMails);
-		when(this.logic.getMailsForREST()).thenReturn(mails);
+		when(this.logic.getMailsForREST(-1)).thenReturn(mails);
 
 		try (Response response = this.target.path("getMails").request().get()) {
 			assertEquals(200, response.getStatus());

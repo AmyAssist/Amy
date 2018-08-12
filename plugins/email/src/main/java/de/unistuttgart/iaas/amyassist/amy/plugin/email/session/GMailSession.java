@@ -57,13 +57,7 @@ public class GMailSession extends MailSession {
 
 	private static final String HOST_ADDRESS = "imap.gmail.com";
 
-	/**
-	 * Get folder of this class. If the folder is non-existent, or not opened, it will be created and opened
-	 * 
-	 * @return opened folder
-	 * @throws MessagingException
-	 *             if the folder couldn't be opened
-	 */
+	@Override
 	public Folder getInbox() throws MessagingException {
 		if (this.inbox != null) {
 			return this.inbox;

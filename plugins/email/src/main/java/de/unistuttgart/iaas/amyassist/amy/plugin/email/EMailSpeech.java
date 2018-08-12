@@ -80,14 +80,14 @@ public class EMailSpeech {
 	public String numberOfNewMails(String... params) {
 		for (int i = 0; i < params.length; i++) {
 			if (params[i].equals("important")) {
-				int count = this.logic.getNewImportantMessageCount();
+				int count = this.logic.getNewMessageCount(true);
 				if (count > 0) {
 					return count + " new important messages";
 				}
 				return NOIMPMAILS;
 			}
 		}
-		int count = this.logic.getNewMessageCount();
+		int count = this.logic.getNewMessageCount(false);
 		if (count > 0) {
 			return count + " new mails.";
 		}
@@ -103,9 +103,17 @@ public class EMailSpeech {
 	 */
 	@Grammar("read (#|all) [important] (emails|mails)")
 	public String readRecentMails(String... params) {
-		if (params[2].equals("important")) {
-			return this.logic.printMessages(true);
+		boolean important = params[2].equals("important");
+		if (!params[1].equals("all")) {
+			if (important) {
+				return this.logic.printMessages(-1, true);
+			}
+			return this.logic.printMessages(-1, false);
 		}
-		return this.logic.printMessages(false);
+		int amount = Integer.parseInt(params[1]);
+		if (important) {
+			return this.logic.printMessages(amount, true);
+		}
+		return this.logic.printMessages(amount, false);
 	}
 }

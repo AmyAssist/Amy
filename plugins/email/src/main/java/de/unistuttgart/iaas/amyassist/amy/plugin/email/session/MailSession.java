@@ -44,6 +44,15 @@ public abstract class MailSession {
 	Folder inbox;
 
 	/**
+	 * Get inbox of this class. If the inbox is non-existent, or not opened, it will be created and opened
+	 * 
+	 * @return opened inbox
+	 * @throws MessagingException
+	 *             if the folder couldn't be opened
+	 */
+	public abstract Folder getInbox() throws MessagingException;
+
+	/**
 	 * Set up connection to an email service
 	 * 
 	 * @param username

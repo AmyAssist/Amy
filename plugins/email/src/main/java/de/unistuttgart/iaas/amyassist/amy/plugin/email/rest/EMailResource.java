@@ -25,15 +25,15 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
 
 import java.util.List;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailLogic;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 /**
  * Rest Resource for email
@@ -41,7 +41,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
  * @author Muhammed Kaya
  */
 @Path(EMailResource.PATH)
-public class EMailResource implements Resource {
+public class EMailResource {
 
 	/**
 	 * the resource path for this plugin
@@ -52,25 +52,18 @@ public class EMailResource implements Resource {
 	private EMailLogic logic;
 
 	/**
-	 * REST implementation of {@link EMailLogic#getMailsForREST()}
+	 * REST implementation of {@link EMailLogic#getMailsForREST(int)}
+	 * 
+	 * @param amount
+	 *            the amount of mails, put -1 here if you want all mails
 	 * 
 	 * @return Array of all mails in inbox
 	 */
 	@GET
 	@Path("getMails")
 	@Produces(MediaType.APPLICATION_JSON)
-	public MessageDTO[] getAllMails() {
-		// care for huge amount of mails
-		List<MessageDTO> mails = this.logic.getMailsForREST();
+	public MessageDTO[] getAllMails(@QueryParam("amount") @DefaultValue("-1") int amount) {
+		List<MessageDTO> mails = this.logic.getMailsForREST(amount);
 		return mails.toArray(new MessageDTO[mails.size()]);
 	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
-	 */
-	@Override
-	public ResourceEntity getPluginDescripion() {
-		return null;
-	}
-
 }

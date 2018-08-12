@@ -26,8 +26,9 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
+import java.util.Set;
 
 import javax.mail.Address;
 import javax.mail.Flags;
@@ -44,7 +45,7 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.GMailSession;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 
@@ -57,10 +58,7 @@ import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 public class EMailLogic {
 
 	@Reference
-	private GMailSession mailSession;
-
-	@Reference
-	private Properties configLoader;
+	private MailSession mailSession;
 
 	@Reference
 	private ContactRegistry contactRegistry;
@@ -75,7 +73,7 @@ public class EMailLogic {
 	 *            set this to true if you want to look for IMPORTANT new mails, set this to false if you only want to
 	 *            look for new mails
 	 * 
-	 * @return success
+	 * @return true, if messages have been found, else false
 	 */
 	public boolean hasNewMessages(boolean checkForImportant) {
 		if (checkForImportant) {
@@ -87,35 +85,30 @@ public class EMailLogic {
 	/**
 	 * Returns number of new messages in inbox. The word "new" here refers to unread messages
 	 * 
+	 * @param checkForImportant
+	 *            put true here if you want the amount of new important mails
+	 * 
 	 * @return number of messages in inbox
 	 */
-	public int getNewMessageCount() {
-		try {
-			return this.mailSession.getInbox().getUnreadMessageCount();
-		} catch (MessagingException e) {
-			this.logger.error("Couldn't get number of unread mails", e);
-			return -1;
+	public int getNewMessageCount(boolean checkForImportant) {
+		if (checkForImportant) {
+			return getNewImportantMessages().size();
 		}
-	}
-
-	/**
-	 * Get amount of new important mails
-	 *
-	 * @return number of new important mails in inbox, -1 if something went wrong
-	 */
-	public int getNewImportantMessageCount() {
-		return getNewImportantMessages().size();
+		return getNewMessages().size();
 	}
 
 	/**
 	 * Converts all new messages to a readable string
+	 * 
+	 * @param amount
+	 *            amount of mails to print, put -1 here if you want every mail to be printed
 	 * 
 	 * @param important
 	 *            set this to true, if you only want the important mails to be converted, set this to false if you want
 	 *            every message to be converted
 	 * @return readable String of new messages
 	 */
-	public String printMessages(boolean important) {
+	public String printMessages(int amount, boolean important) {
 		List<Message> messagesToPrint;
 		StringBuilder sb = new StringBuilder();
 		if (important) {
@@ -123,8 +116,10 @@ public class EMailLogic {
 		} else {
 			messagesToPrint = getNewMessages();
 		}
+		int amountToPrint = (amount == -1) ? messagesToPrint.size() : amount;
 		try {
-			for (Message m : messagesToPrint) {
+			for (int i = 0; i < amountToPrint; i++) {
+				Message m = messagesToPrint.get(messagesToPrint.size() - 1 - i);
 				InternetAddress from = (InternetAddress) m.getFrom()[0];
 				String fromName = from.getPersonal();
 				sb.append((fromName == null) ? from.getAddress() + "\n" : fromName + "\n");
@@ -214,14 +209,20 @@ public class EMailLogic {
 	/**
 	 * Get all mails in the inbox and convert them to MessageDTO objects for the REST class to send to the web app
 	 * 
+	 * @param amount
+	 *            the amount of mails, put -1 here if you want all mails
+	 * 
 	 * @return all mails in the inbox in a list, because lists are better to work with than arrays
 	 */
-	public List<MessageDTO> getMailsForREST() {
+	public List<MessageDTO> getMailsForREST(int amount) {
 		List<MessageDTO> messagesToSend = new ArrayList<>();
 		Message[] messages;
 		try {
 			messages = this.mailSession.getInbox().getMessages();
-			for (Message m : messages) {
+			int amountToPrint = (amount == -1) ? messages.length : amount;
+			for (int i = 0; i < amountToPrint; i++) {
+				// we get the messages from the inbox from oldest to newest, but we want to send the most recent ones
+				Message m = messages[messages.length - 1 - i];
 				messagesToSend.add(new MessageDTO(getFrom(m), m.getSubject(), getContentFromMessage(m), m.getSentDate(),
 						isImportantMessage(m)));
 			}
@@ -237,8 +238,8 @@ public class EMailLogic {
 	 * 
 	 * @return List of important mail addresses saved in the registry
 	 */
-	protected List<String> getImportantMailAddresses() {
-		List<String> importantAddresses = new ArrayList<>();
+	Set<String> getImportantMailAddresses() {
+		Set<String> importantAddresses = new HashSet<>();
 		List<Contact> contacts = this.contactRegistry.getAll();
 		for (Contact c : contacts) {
 			if (c.isImportant())
@@ -256,8 +257,8 @@ public class EMailLogic {
 	 * @throws MessagingException
 	 *             if something goes wrong
 	 */
-	protected boolean isImportantMessage(Message message) throws MessagingException {
-		List<String> importantAddresses = getImportantMailAddresses();
+	boolean isImportantMessage(Message message) throws MessagingException {
+		Set<String> importantAddresses = getImportantMailAddresses();
 		return importantAddresses.contains(getFrom(message));
 	}
 
@@ -270,7 +271,7 @@ public class EMailLogic {
 	 * @throws MessagingException
 	 *             when something goes wrong
 	 */
-	protected static String getFrom(Message message) throws MessagingException {
+	static String getFrom(Message message) throws MessagingException {
 		Address address = message.getFrom()[0];
 		return ((InternetAddress) address).getAddress();
 	}
