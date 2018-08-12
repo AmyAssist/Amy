@@ -21,20 +21,26 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
+package de.unistuttgart.iaas.amyassist.amy.core.audio;
+
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 /**
- * Class that defines the Output Type
+ * The local audio
  * 
- * @author Kai Menzel
+ * @author Tim Neumann
  */
-public enum OutputType {
+public interface LocalAudio {
 	/**
-	 * Sound File Type, the Message will be Path to file
+	 * @return The identifier of the local audio environment.
+	 * @throws NoSuchElementException
+	 *             When this audio manager has no local audio environment.
 	 */
-	SOUND,
+	UUID getLocalAudioEnvironmentIdentifier();
+
 	/**
-	 * Voice Output Type, the Message will be voiced by Amy
+	 * @return Whether the local audio is available
 	 */
-	VOICE;
+	boolean isLocalAudioAvailable();
 }

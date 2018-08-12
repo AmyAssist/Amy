@@ -64,12 +64,17 @@ public class PersistenceService implements Persistence {
 	@Reference
 	private ConfigurationManager configurationManager;
 
-	private Properties globalProperties;
+	private Properties hibernateFix;
 	private PersistenceProvider persistenceProvider;
 
 	@PostConstruct
 	private void init() {
-		this.globalProperties = this.configurationManager.getConfigurationWithDefaults(PERSISTENCE_CONFIG);
+		Properties globalProperties = this.configurationManager.getConfigurationWithDefaults(PERSISTENCE_CONFIG);
+
+		this.hibernateFix = new Properties();
+		for (String propertyName : globalProperties.stringPropertyNames()) {
+			this.hibernateFix.setProperty(propertyName, globalProperties.getProperty(propertyName));
+		}
 
 		this.persistenceProvider = PersistenceProviderResolverHolder.getPersistenceProviderResolver()
 				.getPersistenceProviders().get(0);
@@ -87,7 +92,7 @@ public class PersistenceService implements Persistence {
 		List<String> entitiesNames = Lists.transform(entities, Class::getName);
 
 		PersistenceUnitInfo persistenceUnitInfo = new PersistenceUnitInfoImpl(name, entitiesNames,
-				entities.get(0).getClassLoader(), this.globalProperties);
+				entities.get(0).getClassLoader(), this.hibernateFix);
 
 		Map<String, String> properites = new HashMap<>();
 		String string = this.environment.getWorkingDirectory().resolve(name).toAbsolutePath().toString();

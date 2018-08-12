@@ -21,40 +21,25 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
-
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
+package de.unistuttgart.iaas.amyassist.amy.core.information;
 
 /**
- * Interface for the TextToSpeech
+ * Supplys information about the program
  * 
- * @author Kai Menzel
+ * @author Tim Neumann
  */
-public interface Output {
-
+public interface ProgramInformation {
 	/**
-	 * Method to Voice and Log output the input String
+	 * Get the version string of the amy core.
 	 * 
-	 * @param s
-	 *            String that shall be said
+	 * @return The version string
 	 */
-	void voiceOutput(String s);
+	String getVersion();
 
 	/**
-	 * Method that outputs a sound
+	 * Get the license notice of amy.
 	 * 
-	 * @param sound
-	 *            to output
+	 * @return The notice text
 	 */
-	void soundOutput(Sounds sound);
-
-	/**
-	 * stop the OutputClip
-	 */
-	void stopOutput();
-
-	/**
-	 * @return whether this output is currently outputting information.
-	 */
-	boolean isCurrentlyOutputting();
+	String getLicenseNotice();
 }

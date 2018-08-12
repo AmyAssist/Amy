@@ -21,46 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+
+import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 
 /**
- * Object Time the Output Interface Uses
+ * Console Tool to test the TextToSpeech service
  * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-public class OutputObject {
+public class TTSConsole {
+	@Reference
+	private Output output;
 
-	private OutputType type;
-	private String message;
-
-	/**
-	 * @param type
-	 *            of the output-message
-	 * @param message
-	 *            to say or path to sound
-	 * 
-	 */
-	public OutputObject(OutputType type, String message) {
-		this.type = type;
-		this.message = message;
+	@Command(name = "TextToSpeech", abbrev = "tts", description = "Let the TextToSpeech Service output text as speech")
+	public void textToSpeech(String... text) {
+		this.output.voiceOutput(String.join(" ", text));
 	}
 
-	/**
-	 * return Type of OutputObject
-	 * 
-	 * @return OutputType
-	 */
-	public OutputType getType() {
-		return this.type;
+	@Command(name = "StopTextToSpeech", abbrev = "tts:stop",
+			description = "stop the current and all queued output of the TextToSpeech Service")
+	public void stopTextToSpeech() {
+		this.output.stopOutput();
 	}
-
-	/**
-	 * return Path to Sound file or voice Message
-	 * 
-	 * @return Path to Sound file or message to voice
-	 */
-	public String getMessage() {
-		return this.message;
-	}
-
 }

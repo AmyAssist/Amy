@@ -23,10 +23,16 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.data;
 
+import java.io.IOException;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 /**
  * Class that holds System Sounds
  * 
- * @author Kai Menzel
+ * @author Kai Menzel, Tim Neumann
  */
 public enum Sounds {
 	/**
@@ -38,16 +44,16 @@ public enum Sounds {
 	 */
 	SINGLE_CALL_STOP_BEEP("single_call_stop_beep.wav");
 
-	private String fileName = "de/unistuttgart/iaas/amyassist/amy/core/speech/data/sounds/";
+	private String file;
 
 	/**
 	 * Create Sound
 	 * 
 	 * @param fileName
-	 *            Filename
+	 *            The file name of the sound
 	 */
 	Sounds(String fileName) {
-		this.fileName = this.fileName.concat(fileName);
+		this.file = fileName;
 	}
 
 	/**
@@ -56,6 +62,21 @@ public enum Sounds {
 	 * @return Path-String from MavenResource to file
 	 */
 	public String getFileAsString() {
-		return this.fileName;
+		return this.file;
+	}
+
+	/**
+	 * Get's the sound data of this sound
+	 * 
+	 * @return The {@link AudioInputStream} containing the data.
+	 * @throws IOException
+	 *             When a IO Exception occurs while reading the resource file from disk.
+	 */
+	public AudioInputStream getSoundData() throws IOException {
+		try {
+			return AudioSystem.getAudioInputStream(this.getClass().getResource(this.file));
+		} catch (UnsupportedAudioFileException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 }

@@ -21,15 +21,17 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package de.unistuttgart.iaas.amyassist.amy.core.io;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
-import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformation;
 
 /**
  * This class handles the command line arguments passed to the core.
@@ -37,21 +39,46 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * @author Tim Neumann
  */
 @Service
-public class CommandLineArgumentHandlerService implements CommandLineArgumentHandler {
+public class CommandLineArgumentHandlerService {
+
+	@Reference
+	private ProgramInformation programInfo;
 
 	private Map<Flag, List<String>> flags;
-
 	private boolean flagsValid = true;
 
+	private Consumer<String> outputFunction;
+
 	/**
-	 * Initializes the command line handler
-	 *
+	 * Loads the command line arguments from the given array and processes them. This method can only be called once and
+	 * must be called before any other method from this class.
+	 * 
 	 * @param args
-	 *            The command line arguments.
+	 *            The command line arguments to load.
+	 * @param output
+	 *            The function used to output all things.
+	 * @throws IllegalStateException
+	 *             When load is called a second time.
 	 */
-	public void init(String[] args) {
+	public void load(String[] args, Consumer<String> output) {
+		if (this.flags != null)
+			throw new IllegalStateException("Already loaded.");
 		this.flags = new EnumMap<>(Flag.class);
 
+		this.outputFunction = output;
+		processArgs(args);
+		if (this.shouldProgramContinue()) {
+			output("This is Amy. Copyright (c) 2018 the Amy project authors. For help run with flag -h.");
+		}
+	}
+
+	/**
+	 * Process the given arguments
+	 * 
+	 * @param args
+	 *            The arguments
+	 */
+	private void processArgs(String[] args) {
 		FlagParameterInformation flagParaInfo = new FlagParameterInformation(null);
 		for (String arg : args) {
 			if (flagParaInfo.getRemainingParaCount() > 0) {
@@ -66,15 +93,11 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 		if (flagParaInfo.getRemainingParaCount() > 0) {
 			output("Missing parameter for last flag.");
 			this.flagsValid = false;
-			return;
 		}
-
-		output("This is Amy. Copyright (c) 2018 the Amy project authors. For help run with flag -h.");
-
 	}
 
 	/**
-	 * Processes the argument strin as a new flag
+	 * Processes the argument string as a new flag
 	 * 
 	 * @param arg
 	 *            The string argument
@@ -106,10 +129,10 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 			printHelp();
 			break;
 		case VERSION:
-			output(version());
+			printVersion();
 			break;
 		case NOTICE:
-			output(notice());
+			printNotice();
 			break;
 		default:
 			// All other flags don't do anything immediately.
@@ -141,12 +164,13 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#shouldProgramContinue()
+	 * @return Whether the program should continue execution.
+	 * @throws IllegalStateException
+	 *             When load was not called before.
 	 */
-	@Override
 	public boolean shouldProgramContinue() {
 		if (this.flags == null)
-			throw new NotInitializedException();
+			throw new IllegalStateException("Not loaded.");
 		if (!this.flagsValid)
 			return false;
 		for (Flag f : this.flags.keySet()) {
@@ -157,23 +181,16 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#getConfigPaths()
+	 * Get the info about the command line arguments.
+	 * 
+	 * @return The info
+	 * @throws IllegalStateException
+	 *             When load was not called before.
 	 */
-	@Override
-	public List<String> getConfigPaths() {
+	public CommandLineArgumentInfo getInfo() {
 		if (this.flags == null)
-			throw new NotInitializedException();
-		return this.flags.get(Flag.CONFIG);
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler#getPluginPaths()
-	 */
-	@Override
-	public List<String> getPluginPaths() {
-		if (this.flags == null)
-			throw new NotInitializedException();
-		return this.flags.get(Flag.PLUGIN);
+			throw new IllegalStateException("Not loaded.");
+		return new CommandLineArgumentInfoImpl(this.flags.get(Flag.CONFIG), this.flags.get(Flag.PLUGIN));
 	}
 
 	private void printHelp() {
@@ -209,37 +226,16 @@ public class CommandLineArgumentHandlerService implements CommandLineArgumentHan
 		}
 	}
 
-	/**
-	 * The Version String
-	 * 
-	 * @return the version of amy core
-	 */
-	@Command(name = "version", description = "Prints out the version.")
-	public String version() {
-		return "Amy core version: " + getClass().getPackage().getImplementationVersion();
+	private void printVersion() {
+		output(this.programInfo.getVersion());
 	}
 
-	/**
-	 * The Notice text
-	 * 
-	 * @return the notice of Amy project
-	 */
-	@Command(name = "notice", description = "Prints out the license notice.")
-	public String notice() {
-		return "Copyright (c) 2018 the Amy project authors.\n" + " \n" + "  SPDX-License-Identifier: Apache-2.0\n"
-				+ " \n" + "  Licensed under the Apache License, Version 2.0 (the \"License\");\n"
-				+ "  you may not use this file except in compliance with the License.\n"
-				+ "  You may obtain a copy of the License at\n" + " \n"
-				+ "    http://www.apache.org/licenses/LICENSE-2.0\n" + " \n"
-				+ "  Unless required by applicable law or agreed to in writing, software\n"
-				+ "  distributed under the License is distributed on an \"AS IS\" BASIS,\n"
-				+ "  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n"
-				+ "  See the License for the specific language governing permissions and\n"
-				+ "  limitations under the License.\n" + " \n" + "  For more information see notice.md";
+	private void printNotice() {
+		output(this.programInfo.getLicenseNotice());
 	}
 
 	private void output(String s) {
-		System.out.println(s);
+		this.outputFunction.accept(s);
 	}
 
 	/**

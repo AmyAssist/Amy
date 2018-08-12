@@ -21,28 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
+package de.unistuttgart.iaas.amyassist.amy.core.information;
 
 import asg.cliche.Command;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * Console Tool to test the TextToSpeech service
+ * Command Line Interface for the program information
  * 
- * @author Leon Kiefer
+ * @author Tim Neumann
  */
-public class TTSConsole {
+public class ProgramInformationCLI {
 	@Reference
-	private OutputImpl output;
+	private ProgramInformation info;
 
-	@Command(name = "TextToSpeech", abbrev = "tts", description = "Let the TextToSpeech Service output text as speech")
-	public void textToSpeech(String... text) {
-		this.output.voiceOutput(String.join(" ", text));
+	/**
+	 * @return the version supplied by {@link ProgramInformation}.
+	 */
+	@Command(name = "version", description = "Prints out the version.")
+	public String version() {
+		return this.info.getVersion();
 	}
 
-	@Command(name = "StopTextToSpeech", abbrev = "tts:stop",
-			description = "stop the current and all queued output of the TextToSpeech Service")
-	public void stopTextToSpeech() {
-		this.output.stopOutput();
+	/**
+	 * @return the license notice supplied by {@link ProgramInformation}.
+	 */
+	@Command(name = "notice", description = "Prints out the license notice.")
+	public String licenseNotice() {
+		return this.info.getLicenseNotice();
 	}
 }
