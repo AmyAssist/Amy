@@ -100,13 +100,13 @@ public class PersistenceService implements Persistence {
 		PersistenceUnitInfo persistenceUnitInfo = new PersistenceUnitInfoImpl(name, entitiesNames,
 				entities.get(0).getClassLoader(), this.hibernateFix);
 
-		Map<String, String> properites = new HashMap<>();
+		Map<String, String> properties = new HashMap<>();
 		String string = this.environment.getWorkingDirectory().resolve(this.dataDir).resolve(name).toAbsolutePath()
 				.toString();
-		properites.put("javax.persistence.jdbc.url", "jdbc:h2:" + string);
+		properties.put("javax.persistence.jdbc.url", "jdbc:h2:" + string);
 
 		EntityManagerFactory entityManagerFactory = this.persistenceProvider
-				.createContainerEntityManagerFactory(persistenceUnitInfo, properites);
+				.createContainerEntityManagerFactory(persistenceUnitInfo, properties);
 		return entityManagerFactory.createEntityManager();
 	}
 
