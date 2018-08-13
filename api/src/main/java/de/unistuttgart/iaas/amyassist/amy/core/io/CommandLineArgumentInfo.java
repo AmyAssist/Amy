@@ -21,28 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
+package de.unistuttgart.iaas.amyassist.amy.core.io;
 
-import asg.cliche.Command;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import java.util.List;
 
 /**
- * Console Tool to test the TextToSpeech service
+ * Information about the command line arguments used to launch amy.
  * 
- * @author Leon Kiefer
+ * @author Tim Neumann
  */
-public class TTSConsole {
-	@Reference
-	private OutputImpl output;
-
-	@Command(name = "TextToSpeech", abbrev = "tts", description = "Let the TextToSpeech Service output text as speech")
-	public void textToSpeech(String... text) {
-		this.output.voiceOutput(String.join(" ", text));
-	}
-
-	@Command(name = "StopTextToSpeech", abbrev = "tts:stop",
-			description = "stop the current and all queued output of the TextToSpeech Service")
-	public void stopTextToSpeech() {
-		this.output.stopOutput();
-	}
+public interface CommandLineArgumentInfo {
+	/**
+	 * Get the additional config paths set by the command line flags.
+	 * 
+	 * @return a list of paths.
+	 */
+	List<String> getConfigPaths();
 }

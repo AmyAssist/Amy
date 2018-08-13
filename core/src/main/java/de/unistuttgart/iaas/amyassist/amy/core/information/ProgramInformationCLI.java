@@ -21,40 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
+package de.unistuttgart.iaas.amyassist.amy.core.information;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
+import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * Interface for the TextToSpeech
+ * Command Line Interface for the program information
  * 
- * @author Kai Menzel
+ * @author Tim Neumann
  */
-public interface Output {
+public class ProgramInformationCLI {
+	@Reference
+	private ProgramInformation info;
 
 	/**
-	 * Method to Voice and Log output the input String
-	 * 
-	 * @param s
-	 *            String that shall be said
+	 * @return the version supplied by {@link ProgramInformation}.
 	 */
-	void voiceOutput(String s);
+	@Command(name = "version", description = "Prints out the version.")
+	public String version() {
+		return this.info.getVersion();
+	}
 
 	/**
-	 * Method that outputs a sound
-	 * 
-	 * @param sound
-	 *            to output
+	 * @return the license notice supplied by {@link ProgramInformation}.
 	 */
-	void soundOutput(Sounds sound);
-
-	/**
-	 * stop the OutputClip
-	 */
-	void stopOutput();
-
-	/**
-	 * @return whether this output is currently outputting information.
-	 */
-	boolean isCurrentlyOutputting();
+	@Command(name = "notice", description = "Prints out the license notice.")
+	public String licenseNotice() {
+		return this.info.getLicenseNotice();
+	}
 }

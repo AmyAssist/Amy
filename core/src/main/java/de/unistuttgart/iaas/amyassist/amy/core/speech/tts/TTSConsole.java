@@ -21,33 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output.tts;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
+import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 
 /**
- * Class that uses MaryTTS to turn a String to a Voice Output
+ * Console Tool to test the TextToSpeech service
  * 
- * @see <a href="https://github.com/marytts/marytts">MaryTTS</a>
- * 
- * @author Kai Menzel
+ * @author Leon Kiefer
  */
-public interface TextToSpeech {
+public class TTSConsole {
+	@Reference
+	private Output output;
 
-	/**
-	 * Method that returns an AudioInputStream to given String
-	 * 
-	 * @param s
-	 *            String to voice
-	 * @return AudioInputStream of String
-	 */
-	AudioInputStream getMaryAudio(String s);
+	@Command(name = "TextToSpeech", abbrev = "tts", description = "Let the TextToSpeech Service output text as speech")
+	public void textToSpeech(String... text) {
+		this.output.voiceOutput(String.join(" ", text));
+	}
 
-	/**
-	 * Method to get Mary's AudioFormat
-	 * 
-	 * @return AudioFormat of Mary (16kHz, Mono)
-	 */
-	AudioFormat getMaryAudioFormat();
+	@Command(name = "StopTextToSpeech", abbrev = "tts:stop",
+			description = "stop the current and all queued output of the TextToSpeech Service")
+	public void stopTextToSpeech() {
+		this.output.stopOutput();
+	}
 }

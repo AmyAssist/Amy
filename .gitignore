@@ -1,4 +1,6 @@
+build/
 target/
+bin/
 *.gram
 .classpath
 .project
@@ -27,5 +29,9 @@ dependency-reduced-pom.xml
 #Ignore config files
 *.properties
 !**/META-INF/*.properties
+
+#Include docker and dev configs
+!.docker/config/**
+!.dev/config/**
 
 *.db

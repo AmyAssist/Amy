@@ -21,46 +21,42 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
+package de.unistuttgart.iaas.amyassist.amy.core.io;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Object Time the Output Interface Uses
+ * Implementation of {@link CommandLineArgumentInfo}
  * 
- * @author Kai Menzel
+ * @author Tim Neumann
  */
-public class OutputObject {
+public class CommandLineArgumentInfoImpl implements CommandLineArgumentInfo {
 
-	private OutputType type;
-	private String message;
+	private List<String> configPaths;
 
 	/**
-	 * @param type
-	 *            of the output-message
-	 * @param message
-	 *            to say or path to sound
+	 * Creates a new command line argument info
 	 * 
+	 * @param pConfigPaths
+	 *            The config paths.
 	 */
-	public OutputObject(OutputType type, String message) {
-		this.type = type;
-		this.message = message;
+	public CommandLineArgumentInfoImpl(List<String> pConfigPaths) {
+		this.configPaths = nullSaveList(pConfigPaths);
+	}
+
+	private List<String> nullSaveList(List<String> arg) {
+		if (arg == null)
+			return new ArrayList<>();
+		return arg;
 	}
 
 	/**
-	 * return Type of OutputObject
-	 * 
-	 * @return OutputType
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo#getConfigPaths()
 	 */
-	public OutputType getType() {
-		return this.type;
+	@Override
+	public List<String> getConfigPaths() {
+		return Collections.unmodifiableList(this.configPaths);
 	}
-
-	/**
-	 * return Path to Sound file or voice Message
-	 * 
-	 * @return Path to Sound file or message to voice
-	 */
-	public String getMessage() {
-		return this.message;
-	}
-
 }

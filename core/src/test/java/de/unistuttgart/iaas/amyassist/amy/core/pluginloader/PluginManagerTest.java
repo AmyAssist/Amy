@@ -23,8 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.hasLogged;
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.warn;
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -37,8 +36,8 @@ import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -62,12 +61,20 @@ class PluginManagerTest {
 	private PluginManager serviceUnderTest;
 	private Properties properties;
 
+	private PluginLoader pluginLoader;
+
 	private Path tempDir;
 
+	/**
+	 * Setup
+	 * 
+	 * @throws IOException
+	 *             When a error occurs
+	 */
 	@BeforeEach
 	void setup() throws IOException {
 		this.testFramework.mockService(DependencyInjection.class);
-		this.testFramework.mockService(PluginLoader.class);
+		this.pluginLoader = this.testFramework.mockService(PluginLoader.class);
 
 		this.tempDir = Files.createTempDirectory(PluginManagerService.class.getName());
 		this.tempDir.toFile().deleteOnExit();
@@ -79,24 +86,26 @@ class PluginManagerTest {
 		Files.createFile(this.tempDir
 				.resolve("plugins").resolve("testxml.xml"));
 
-		CommandLineArgumentHandler cmaHandler = this.testFramework.mockService(CommandLineArgumentHandler.class);
-		when(cmaHandler.getPluginPaths()).thenReturn(null);
-
 		ConfigurationManager configurationManager = this.testFramework.mockService(ConfigurationManager.class);
 		this.properties = new Properties();
-		this.properties.setProperty("pluginDir", "plugins");
-		this.properties.setProperty("plugins", "");
-		this.properties.setProperty("mode", "dev");
 		when(configurationManager.getConfigurationWithDefaults("plugin.config")).thenReturn(this.properties);
 
 		this.testFramework.mockService(Persistence.class);
 
+		this.properties.setProperty("pluginDir", "plugins");
+		this.properties.setProperty("plugins", "");
+
 		this.serviceUnderTest = this.testFramework.setServiceUnderTest(PluginManagerService.class);
 	}
 
+	/**
+	 * Test that the plugin manager can't load twice.
+	 * 
+	 * @throws IOException
+	 *             When a IO error occurs
+	 */
 	@Test
-	void testCantLoadTwice() {
-
+	void testCantLoadTwice() throws IOException {
 		this.serviceUnderTest.loadPlugins();
 		assertThrows(IllegalStateException.class, () -> this.serviceUnderTest.loadPlugins());
 	}
@@ -106,14 +115,62 @@ class PluginManagerTest {
 
 	}
 
+	/**
+	 * Test that it is logged, when a plugin can't be found
+	 * 
+	 * @throws IOException
+	 *             When a IO error occurs
+	 */
 	@Test
-	void testPluginNotFound() {
+	void testPluginNotFound() throws IOException {
 		TestLogger testLogger = TestLoggerFactory.getTestLogger(PluginManagerService.class);
 		this.properties.setProperty("plugins", "testPlugin");
 
 		this.serviceUnderTest.loadPlugins();
-		assertThat(testLogger, hasLogged(warn("The plugin {} does not exist in the plugin directory.",
-				this.tempDir.resolve("plugins").resolve("testPlugin"))));
+		assertThat(testLogger, hasLogged(warn("The Plugin {} is missing its jar file {} and is therefore not loaded.",
+				"testPlugin", this.tempDir.resolve("plugins").resolve("testPlugin.jar"))));
+	}
+
+	/**
+	 * Tests {@link PluginManager#loadPlugins()}
+	 * 
+	 * @throws IOException
+	 *             When a IO error occurs
+	 */
+	@Test
+	void testLoadPlugins() throws IOException {
+		this.properties.setProperty("pluginDir", "plugins");
+		this.properties.setProperty("plugins", "pluginA");
+		Path pluginDir = this.tempDir.resolve("plugins");
+		Path plugin1 = pluginDir.resolve("pluginA.jar");
+		Path plugin2 = pluginDir.resolve("pluginB.jar");
+		Files.createDirectories(pluginDir);
+		Files.createFile(plugin1);
+		Files.createFile(plugin2);
+		this.serviceUnderTest.loadPlugins();
+		Mockito.verify(this.pluginLoader).loadPlugin(plugin1);
+		Mockito.verify(this.pluginLoader, Mockito.never()).loadPlugin(plugin2);
+	}
+
+	/**
+	 * Tests {@link PluginManager#loadPlugins()} with plugins=all
+	 * 
+	 * @throws IOException
+	 *             When a IO error occurs
+	 */
+	@Test
+	void testLoadPluginsAll() throws IOException {
+		this.properties.setProperty("pluginDir", "plugins");
+		this.properties.setProperty("plugins", "all");
+		Path pluginDir = this.tempDir.resolve("plugins");
+		Path plugin1 = pluginDir.resolve("pluginA.jar");
+		Path plugin2 = pluginDir.resolve("pluginB.jar");
+		Files.createDirectories(pluginDir);
+		Files.createFile(plugin1);
+		Files.createFile(plugin2);
+		this.serviceUnderTest.loadPlugins();
+		Mockito.verify(this.pluginLoader).loadPlugin(plugin1);
+		Mockito.verify(this.pluginLoader).loadPlugin(plugin2);
 	}
 
 }

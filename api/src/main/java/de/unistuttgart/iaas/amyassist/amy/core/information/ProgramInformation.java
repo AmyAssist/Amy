@@ -21,20 +21,25 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.output;
+package de.unistuttgart.iaas.amyassist.amy.core.information;
 
 /**
- * Class that defines the Output Type
+ * Supplys information about the program
  * 
- * @author Kai Menzel
+ * @author Tim Neumann
  */
-public enum OutputType {
+public interface ProgramInformation {
 	/**
-	 * Sound File Type, the Message will be Path to file
+	 * Get the version string of the amy core.
+	 * 
+	 * @return The version string
 	 */
-	SOUND,
+	String getVersion();
+
 	/**
-	 * Voice Output Type, the Message will be voiced by Amy
+	 * Get the license notice of amy.
+	 * 
+	 * @return The notice text
 	 */
-	VOICE;
+	String getLicenseNotice();
 }
