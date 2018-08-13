@@ -63,7 +63,7 @@ public class GrammarObjectsCreator implements DeploymentContainerService {
 		Path tempGrammarFile = grammarFolder.resolve(this.tempGrammarName + ".gram");
 
 		try {
-			Files.createDirectories(grammarFolder.getParent());
+			Files.createDirectories(grammarFolder);
 		} catch (IOException e) {
 			throw new IllegalStateException("Can't create parent directories of the grammar file", e);
 		}
