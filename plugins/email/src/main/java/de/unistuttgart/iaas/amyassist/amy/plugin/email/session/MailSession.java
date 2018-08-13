@@ -35,7 +35,6 @@ import javax.mail.Store;
  */
 public abstract class MailSession {
 
-	private Session session;
 	private Store store;
 
 	/**
@@ -69,8 +68,8 @@ public abstract class MailSession {
 	void connect(String username, String password, String protocol, String hostAddress) throws MessagingException {
 		if (username != null && password != null) {
 			// set up session
-			this.session = Session.getInstance(System.getProperties(), null);
-			this.store = this.session.getStore(protocol);
+			Session session = Session.getInstance(System.getProperties(), null);
+			this.store = session.getStore(protocol);
 			this.store.connect(hostAddress, username, password);
 		} else {
 			throw new IllegalArgumentException("Parameters invalid");

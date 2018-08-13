@@ -77,9 +77,9 @@ public class EMailLogic {
 	 */
 	public boolean hasNewMessages(boolean checkForImportant) {
 		if (checkForImportant) {
-			return getNewImportantMessages().size() > 0;
+			return !getNewImportantMessages().isEmpty();
 		}
-		return getNewMessages().size() > 0;
+		return !getNewMessages().isEmpty();
 	}
 
 	/**
@@ -138,7 +138,7 @@ public class EMailLogic {
 		return sb.toString();
 	}
 
-	// ============================================================================================================================================
+	// ===========================================================================================================
 	// methods called only by logic class
 
 	/**
@@ -205,7 +205,7 @@ public class EMailLogic {
 				 * problem with finding the mail configuration, for more info, see:
 				 * https://javaee.github.io/javamail/FAQ#castmultipart
 				 */
-				this.logger.debug("Still getting a stream back");
+				this.logger.debug("Still getting a stream back", cce);
 			}
 		}
 		return "Message content not readable";
@@ -234,8 +234,8 @@ public class EMailLogic {
 			}
 			return messagesToSend;
 		} catch (MessagingException | IOException e) {
-			this.logger.error("Something went wrong");
-			return null;
+			this.logger.error("Something went wrong", e);
+			return new ArrayList<>();
 		}
 	}
 
