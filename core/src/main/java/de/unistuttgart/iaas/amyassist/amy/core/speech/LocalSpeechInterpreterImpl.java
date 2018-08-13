@@ -25,13 +25,11 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreter;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.MainGrammarSpeechResultHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.TempGrammarSpeechResultHandler;
 
 /**
  * Service that Controls the Local SpeechRecognition
@@ -46,8 +44,6 @@ public class LocalSpeechInterpreterImpl implements LocalSpeechInterpreter {
 
 	@Reference
 	private SpeechRecognizerManager srVar;
-
-	
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreter#start()

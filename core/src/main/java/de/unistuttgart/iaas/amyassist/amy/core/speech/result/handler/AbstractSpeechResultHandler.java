@@ -35,14 +35,16 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechR
  */
 public abstract class AbstractSpeechResultHandler {
 
-	private SpeechRecognizerManager srVar;
+	private SpeechRecognizerManager recognizerManager;
 
 	/**
-	 * @param srVar
-	 *            Variables Class
+	 * Set's {@link #recognizerManager recognizerManager}
+	 * 
+	 * @param recognizerManager
+	 *            recognizerManager
 	 */
-	public AbstractSpeechResultHandler(SpeechRecognizerManager srVar) {
-		this.srVar = srVar;
+	public void setRecognizerManager(SpeechRecognizerManager recognizerManager) {
+		this.recognizerManager = recognizerManager;
 	}
 
 	/**
@@ -54,9 +56,9 @@ public abstract class AbstractSpeechResultHandler {
 	public void handle(String result) {
 		if (!isPredefinedInputHandling(result)) {
 
-			this.srVar.handleSpeechResult(result);
-			if (this.srVar.getListeningState() == ListeningState.SINGLE_CALL_LISTENING) {
-				this.srVar.setListeningState(ListeningState.NOT_LISTENING);
+			this.recognizerManager.handleSpeechResult(result);
+			if (this.recognizerManager.getListeningState() == ListeningState.SINGLE_CALL_LISTENING) {
+				this.recognizerManager.setListeningState(ListeningState.NOT_LISTENING);
 			}
 		}
 	}
@@ -70,13 +72,13 @@ public abstract class AbstractSpeechResultHandler {
 	 * @return true if the result is an predefined one
 	 */
 	private boolean isPredefinedInputHandling(String result) {
-		if (result.equals(Constants.SHUT_UP) || this.srVar.isSoundPlaying()) {
-			if (result.equals(Constants.SHUT_UP) && this.srVar.isSoundPlaying()) {
-				this.srVar.stopOutput();
+		if (result.equals(Constants.SHUT_UP) || this.recognizerManager.isSoundPlaying()) {
+			if (result.equals(Constants.SHUT_UP) && this.recognizerManager.isSoundPlaying()) {
+				this.recognizerManager.stopOutput();
 			}
 			return true;
 		}
-		return environmentSpecificInputHandling(result, this.srVar);
+		return environmentSpecificInputHandling(result, this.recognizerManager);
 	}
 
 	/**
@@ -89,8 +91,7 @@ public abstract class AbstractSpeechResultHandler {
 	 *            variables Class
 	 * @return true if the result is an predefined one
 	 */
-	protected abstract boolean environmentSpecificInputHandling(String result,
-			SpeechRecognizerManager srVariables);
+	protected abstract boolean environmentSpecificInputHandling(String result, SpeechRecognizerManager srVariables);
 
 	/**
 	 * Getter
@@ -98,6 +99,6 @@ public abstract class AbstractSpeechResultHandler {
 	 * @return Current GrammarState
 	 */
 	public Grammar getCurrentGrammarState() {
-		return this.srVar.getCurrentGrammarState();
+		return this.recognizerManager.getCurrentGrammarState();
 	}
 }

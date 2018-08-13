@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager.ListeningState;
@@ -32,15 +33,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechR
  * 
  * @author Kai Menzel
  */
+@Service
 public class MainGrammarSpeechResultHandler extends AbstractSpeechResultHandler {
-
-	/**
-	 * @param srVar
-	 *            Variables Class
-	 */
-	public MainGrammarSpeechResultHandler(SpeechRecognizerManager srVar) {
-		super(srVar);
-	}
 
 	/**
 	 * Handles the Environment Specific Actions that trigger before giving the input to the inputHandler. Mainly waking
