@@ -104,7 +104,7 @@ public class EMailSpeech {
 	@Grammar("read (#|all) [important] (emails|mails)")
 	public String readRecentMails(String... params) {
 		boolean important = params[2].equals("important");
-		if (!params[1].equals("all")) {
+		if (params[1].equals("all")) {
 			if (important) {
 				return this.logic.printMessages(-1, true);
 			}

@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.GMailSession;
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 
@@ -58,7 +58,7 @@ import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 public class EMailLogic {
 
 	@Reference
-	private MailSession mailSession;
+	private GMailSession mailSession;
 
 	@Reference
 	private ContactRegistry contactRegistry;
@@ -116,7 +116,13 @@ public class EMailLogic {
 		} else {
 			messagesToPrint = getNewMessages();
 		}
-		int amountToPrint = (amount == -1) ? messagesToPrint.size() : amount;
+		int amountToPrint;
+		if (amount > messagesToPrint.size() || amount == -1) {
+			amountToPrint = messagesToPrint.size();
+		} else {
+			amountToPrint = amount;
+		}
+
 		try {
 			for (int i = 0; i < amountToPrint; i++) {
 				Message m = messagesToPrint.get(messagesToPrint.size() - 1 - i);
@@ -224,7 +230,7 @@ public class EMailLogic {
 				// we get the messages from the inbox from oldest to newest, but we want to send the most recent ones
 				Message m = messages[messages.length - 1 - i];
 				messagesToSend.add(new MessageDTO(getFrom(m), m.getSubject(), getContentFromMessage(m), m.getSentDate(),
-						isImportantMessage(m)));
+						isImportantMessage(m), m.isSet(Flags.Flag.SEEN)));
 			}
 			return messagesToSend;
 		} catch (MessagingException | IOException e) {

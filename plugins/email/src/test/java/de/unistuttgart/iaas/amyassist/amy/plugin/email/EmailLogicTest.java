@@ -34,8 +34,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -51,7 +53,7 @@ import org.mockito.ArgumentMatchers;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.GMailSession;
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -78,7 +80,7 @@ public class EmailLogicTest {
 	@Reference
 	private TestFramework framework;
 
-	private MailSession mailSession;
+	private GMailSession mailSession;
 
 	private ContactRegistry contactRegistry;
 
@@ -94,7 +96,7 @@ public class EmailLogicTest {
 	 */
 	@BeforeEach
 	public void setup() throws MessagingException {
-		this.mailSession = this.framework.mockService(MailSession.class);
+		this.mailSession = this.framework.mockService(GMailSession.class);
 		this.contactRegistry = this.framework.mockService(ContactRegistry.class);
 		this.emailLogic = this.framework.setServiceUnderTest(EMailLogic.class);
 
@@ -332,12 +334,14 @@ public class EmailLogicTest {
 		for (int i = 0; i < transferMessages.size(); i++) {
 			Message message = messages[messages.length - 1 - i];
 			MessageDTO transferMessage = transferMessages.get(i);
-			boolean senderEqual = ((InternetAddress) message.getFrom()[0]).getAddress()
-					.equals(transferMessage.getFrom());
+			String messageFrom = ((InternetAddress) message.getFrom()[0]).getAddress();
+			boolean senderEqual = messageFrom.equals(transferMessage.getFrom());
 			boolean subjectEqual = message.getSubject().equals(transferMessage.getSubject());
 			boolean contentEqual = message.getContent().toString().equals(transferMessage.getContent());
 			boolean dateEqual = message.getSentDate().equals(Timestamp.valueOf(transferMessage.getSentDate()));
-			if (!senderEqual || !subjectEqual || !contentEqual || !dateEqual) {
+			boolean importanceEqual = messageFrom.equals(IMPORTANT_ADDRESS) == transferMessage.isImportant();
+			boolean seenFlagEqual = message.isSet(Flags.Flag.SEEN) == transferMessage.isSeen();
+			if (!senderEqual || !subjectEqual || !contentEqual || !dateEqual || !importanceEqual || !seenFlagEqual) {
 				return false;
 			}
 		}
@@ -388,6 +392,7 @@ public class EmailLogicTest {
 			if (sentDate != null) {
 				message.setSentDate(Timestamp.valueOf(sentDate));
 			}
+			message.setFlag(Flags.Flag.SEEN, new Random().nextBoolean());
 		} catch (MessagingException me) {
 			return null;
 		}

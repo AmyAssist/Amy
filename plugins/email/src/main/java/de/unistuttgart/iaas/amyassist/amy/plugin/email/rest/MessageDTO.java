@@ -49,6 +49,7 @@ public class MessageDTO extends Entity {
 	private LocalDateTime sentDate;
 
 	private boolean important;
+	private boolean seen;
 
 	/**
 	 * Constructor needed to parse as JSON
@@ -69,13 +70,17 @@ public class MessageDTO extends Entity {
 	 *            the time the mail was sent
 	 * @param important
 	 *            is message from important sender
+	 * @param seen
+	 *            is message seen
 	 */
-	public MessageDTO(String from, String subject, String content, LocalDateTime sentDate, boolean important) {
+	public MessageDTO(String from, String subject, String content, LocalDateTime sentDate, boolean important,
+			boolean seen) {
 		this.from = from;
 		this.subject = subject;
 		this.content = content;
 		this.sentDate = sentDate;
 		this.important = important;
+		this.seen = seen;
 	}
 
 	/**
@@ -91,13 +96,12 @@ public class MessageDTO extends Entity {
 	 *            the time the mail was sent
 	 * @param important
 	 *            is message from important sender
+	 * @param seen
+	 *            is message seen
 	 */
-	public MessageDTO(String from, String subject, String content, Date sentDate, boolean important) {
-		this.from = from;
-		this.subject = subject;
-		this.content = content;
-		this.sentDate = sentDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-		this.important = important;
+	public MessageDTO(String from, String subject, String content, Date sentDate, boolean important, boolean seen) {
+		this(from, subject, content, sentDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(), important,
+				seen);
 	}
 
 	/**
@@ -133,6 +137,13 @@ public class MessageDTO extends Entity {
 	 */
 	public boolean isImportant() {
 		return this.important;
+	}
+
+	/**
+	 * @return if the message was seen
+	 */
+	public boolean isSeen() {
+		return this.seen;
 	}
 
 	/**

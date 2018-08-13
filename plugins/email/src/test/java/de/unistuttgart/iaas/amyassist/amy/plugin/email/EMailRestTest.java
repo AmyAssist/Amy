@@ -69,7 +69,7 @@ class EMailRestTest {
 	}
 
 	/**
-	 * Test method for {@link EMailResource#getAllMails()}
+	 * Test method for {@link EMailResource#getAllMails(int)}
 	 */
 	@Test
 	public void testGetAllMails() {
@@ -95,7 +95,7 @@ class EMailRestTest {
 			random.nextBytes(bytes);
 			String randomString = new String(bytes);
 			messages.add(new MessageDTO(randomString, randomString, randomString, LocalDateTime.now(),
-					random.nextBoolean()));
+					random.nextBoolean(), random.nextBoolean()));
 		}
 		return messages;
 	}
