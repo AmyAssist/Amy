@@ -58,6 +58,9 @@ public class CalendarLogicTest {
 
 	private CalendarLogic callog;
 
+	private CalendarEvent event1;
+	private CalendarEvent event2;
+
 	/**
 	 * Initializes the class variables before each test
 	 */
@@ -66,6 +69,10 @@ public class CalendarLogicTest {
 		this.framework.mockService(CalendarService.class);
 		this.framework.mockService(Environment.class);
 		this.callog = this.framework.setServiceUnderTest(CalendarLogic.class);
+		this.event1 = new CalendarEvent(LocalDateTime.parse("2018-08-12T15:00:00"),
+				LocalDateTime.parse("2018-08-12T18:00:00"), "Testing", "home",
+				"test the addEvent code", "mail", 20, new String[1], false);
+		this.event2 = new CalendarEvent();
 	}
 
 	/**
