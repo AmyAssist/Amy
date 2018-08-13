@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,6 +41,8 @@ import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLIAnnotationReader;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AmyInteractionModel;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;

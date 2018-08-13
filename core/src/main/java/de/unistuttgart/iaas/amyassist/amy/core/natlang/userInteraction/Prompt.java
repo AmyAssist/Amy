@@ -21,41 +21,48 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
-
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
 
 /**
  * TODO: Description
  * @author Lars Buttgereit
  */
-public class Intent {
-	@Nonnull
-	private final Method method;
-	@Nonnull
-	private final AGFNode grammar;
-	@Nonnull
-	private final Class<?> partialNLIClass;
-	@Nonnull
-	private final AIMIntent aimIntent;
-	
-	
-	private List<Entity> entityList;
-	private Map<String, IMatcher> matchers;
-	private List<Prompt> prompts;
-	
-	
-	public Intent(@Nonnull Method method, @Nonnull AGFNode grammar, @Nonnull Class<?> partialNLIClass, @Nonnull AIMIntent aimIntent) {
-		this.method = method;
+public class Prompt {
+	private String entityTemplateId;
+	private String outputText;
+	private AGFNode grammar;
+
+	public Prompt(String entityTemplateId, AGFNode grammar, String outputText) {
+		this.entityTemplateId = entityTemplateId;
 		this.grammar = grammar;
-		this.partialNLIClass = partialNLIClass;
-		this.aimIntent = aimIntent;
+		this.outputText = outputText;
 	}
+
+	/**
+	 * Get's {@link #entityTemplateId entityTemplateId}
+	 * @return  entityTemplateId
+	 */
+	public String getEntityTemplateId() {
+		return this.entityTemplateId;
+	}
+
+	/**
+	 * Get's {@link #outputText outputText}
+	 * @return  outputText
+	 */
+	public String getOutputText() {
+		return this.outputText;
+	}
+
+	/**
+	 * Get's {@link #grammar grammar}
+	 * @return  grammar
+	 */
+	public AGFNode getGrammar() {
+		return this.grammar;
+	}
+	
+	
 }

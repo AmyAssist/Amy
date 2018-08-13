@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
 import java.util.List;
 

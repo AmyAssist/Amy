@@ -21,48 +21,41 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
+
+import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
- * TODO: Description
- * @author Lars Buttgereit
+ * implementation of IntentHandler 
+ * 
+ * @author Felix Burk
  */
-public class Prompt {
-	private String entityTemplateId;
-	private String outputText;
-	private AGFNode grammar;
-
-	public Prompt(String entityTemplateId, AGFNode grammar, String outputText) {
-		this.entityTemplateId = entityTemplateId;
-		this.grammar = grammar;
-		this.outputText = outputText;
-	}
-
-	/**
-	 * Get's {@link #entityTemplateId entityTemplateId}
-	 * @return  entityTemplateId
-	 */
-	public String getEntityTemplateId() {
-		return this.entityTemplateId;
-	}
-
-	/**
-	 * Get's {@link #outputText outputText}
-	 * @return  outputText
-	 */
-	public String getOutputText() {
-		return this.outputText;
-	}
-
-	/**
-	 * Get's {@link #grammar grammar}
-	 * @return  grammar
-	 */
-	public AGFNode getGrammar() {
-		return this.grammar;
-	}
+public class IntentHandlerImpl implements IntentHandler {
 	
-	
+	void handle (Intent i) {
+		
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.IntentHandler#getGrammarsToHandle()
+	 */
+	@Override
+	public List<AGFNode> getGrammarsToHandle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.IntentHandler#isCurrentlyHandling()
+	 */
+	@Override
+	public boolean isCurrentlyHandling() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
+
+

@@ -21,12 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
 /**
  * TODO: Description
  * @author Lars Buttgereit
  */
-public class Entity {
-
+public interface IMatcher {
+	boolean match(String entityTemplateId);
+	
+	Entity convert(Entity entity);
+	
 }
