@@ -29,17 +29,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
+import de.unistuttgart.iaas.amyassist.amy.core.console.ExitConsole;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService;
+import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
-import de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource;
+import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerServiceExtension;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableServiceExtension;
 
 /**
  * The central core of the application
@@ -50,14 +48,24 @@ public class Core {
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
-	private ServiceManagerImpl serviceManager;
 	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
-	private DependencyInjection di = new DependencyInjection();
-
-	private CommandLineArgumentHandlerService cmaHandler;
+	private final DependencyInjection di;
 
 	private Thread shutdownHook = new Thread(this::doStop, "ShutdownHook");
+
+	private RunnableServiceExtension runnableServiceExtension;
+
+	private DeploymentContainerServiceExtension deploymentContainerServiceExtension;
+
+	/**
+	 * 
+	 */
+	public Core() {
+		this.runnableServiceExtension = new RunnableServiceExtension();
+		this.deploymentContainerServiceExtension = new DeploymentContainerServiceExtension();
+		this.di = new DependencyInjection(this.runnableServiceExtension, this.deploymentContainerServiceExtension);
+	}
 
 	/**
 	 * Get's {@link #singleThreadScheduledExecutor singleThreadScheduledExecutor}
@@ -75,9 +83,12 @@ public class Core {
 	 *            The arguments for the core.
 	 */
 	void start(String[] args) {
-		this.cmaHandler = new CommandLineArgumentHandlerService();
-		this.cmaHandler.init(args);
-		if (this.cmaHandler.shouldProgramContinue()) {
+		this.registerAllCoreServices();
+		this.init();
+		CommandLineArgumentHandlerService cmaHandler = this.di.getService(CommandLineArgumentHandlerService.class);
+		cmaHandler.load(args, System.out::println);
+		if (cmaHandler.shouldProgramContinue()) {
+			this.di.addExternalService(CommandLineArgumentInfo.class, cmaHandler.getInfo());
 			run();
 		}
 	}
@@ -87,8 +98,6 @@ public class Core {
 	 */
 	private void run() {
 		this.logger.info("run");
-		this.registerAllCoreServices();
-		this.init();
 		this.loadPlugins();
 		this.deploy();
 		this.start();
@@ -100,7 +109,6 @@ public class Core {
 	 */
 	private void registerAllCoreServices() {
 		this.di.addExternalService(Core.class, this);
-		this.di.addExternalService(CommandLineArgumentHandler.class, this.cmaHandler);
 
 		this.di.loadServices();
 	}
@@ -109,8 +117,7 @@ public class Core {
 	 * Initializes the core
 	 */
 	private void init() {
-		this.serviceManager = this.di.getService(ServiceManagerImpl.class);
-		this.serviceManager.loadServices();
+		// nothing in init stage
 	}
 
 	private void loadPlugins() {
@@ -119,22 +126,21 @@ public class Core {
 		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
 	}
 
+	/**
+	 * The deploy stage comes after all plugins are loaded
+	 */
 	private void deploy() {
-		this.di.getService(GrammarObjectsCreator.class).completeSetup();
-
-		Server server = this.di.getService(Server.class);
-		server.register(HomeResource.class);
-		server.register(LocationRegistryResource.class);
-		server.register(ContactRegistryResource.class);
+		this.runnableServiceExtension.deploy();
+		this.deploymentContainerServiceExtension.deploy();
 	}
 
 	private void start() {
-		this.serviceManager.start();
+		this.runnableServiceExtension.start();
 		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
 	}
 
 	/**
-	 * stop all Threads and terminate the application. This is call form the {@link Console}
+	 * stop all Threads and terminate the application. This is call form the {@link ExitConsole}
 	 */
 	public void stop() {
 		Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
@@ -143,7 +149,7 @@ public class Core {
 
 	private void doStop() {
 		this.logger.info("stop");
-		this.serviceManager.stop();
+		this.runnableServiceExtension.stop();
 		this.singleThreadScheduledExecutor.shutdownNow();
 		this.di.shutdown();
 		this.logger.info("stopped");

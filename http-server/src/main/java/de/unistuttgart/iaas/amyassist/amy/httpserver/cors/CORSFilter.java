@@ -23,9 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +38,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
+
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * a filter for CORS requests and OPTIONS calls
@@ -63,7 +63,7 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	private static final String CONFIG_ORIGINS_KEY = "origins";
 
 	@Reference
-	public ConfigurationLoader configurationLoader;
+	public ConfigurationManager configurationManager;
 	private Properties config;
 
 
@@ -119,11 +119,11 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	 * @return a list of allowed origins
 	 */
 	public List<String> getAllowedOrigins() {
-		if (config == null) {
-			config = configurationLoader.load(CONFIG_NAME);
+		if (this.config == null) {
+			this.config = this.configurationManager.getConfiguration(CONFIG_NAME);
 		}
 		// Load pipe-separated list of allowed origins from config
-		String[] origins = config.getProperty(CONFIG_ORIGINS_KEY).split("\\|");
+		String[] origins = this.config.getProperty(CONFIG_ORIGINS_KEY).split("\\|");
 		// Convert primitive array to list
 		return Arrays.asList(origins);
 	}

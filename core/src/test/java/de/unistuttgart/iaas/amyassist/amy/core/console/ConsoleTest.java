@@ -31,34 +31,33 @@ import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.Core;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
+import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import de.unistuttgart.iaas.amyassist.amy.test.LoggerProvider;
 
 /**
- * TODO: Description
+ * Test the SpeechConsole
  * 
  * @author Leon Kiefer
  */
-@ExtendWith(FrameworkExtension.class)
 class ConsoleTest {
 
-	@Reference
-	private TestFramework testFramework;
 	private Properties properties;
+	private DependencyInjection dependencyInjection;
 
 	@BeforeEach
 	void init() {
-		this.testFramework.mockService(Core.class);
-		ConfigurationLoader configurationLoader = this.testFramework.mockService(ConfigurationLoader.class);
+		this.dependencyInjection = new DependencyInjection();
+		ConfigurationManager configurationManager = Mockito.mock(ConfigurationManager.class);
 		this.properties = new Properties();
-		Mockito.when(configurationLoader.load("core.config")).thenReturn(this.properties);
+		Mockito.when(configurationManager.getConfigurationWithDefaults("core.config")).thenReturn(this.properties);
+		this.dependencyInjection
+				.register(new SingletonServiceProvider<>(ConfigurationManager.class, configurationManager));
+		this.dependencyInjection.register(new LoggerProvider());
 	}
 
 	@Test
@@ -66,13 +65,13 @@ class ConsoleTest {
 		final String[] testInput = { "Hello", "world", "say", "hello" };
 		final String expected = "hello1";
 
-		SpeechInputHandler handler = this.testFramework.mockService(SpeechInputHandler.class);
+		SpeechInputHandler handler = Mockito.mock(SpeechInputHandler.class);
 
 		CompletableFuture<String> completableFuture = new CompletableFuture<>();
 		completableFuture.complete(expected);
 		Mockito.when(handler.handle("Hello world say hello")).thenReturn(completableFuture);
-
-		Console console = this.testFramework.setServiceUnderTest(Console.class);
+		this.dependencyInjection.register(new SingletonServiceProvider<>(SpeechInputHandler.class, handler));
+		SpeechConsole console = this.dependencyInjection.createAndInitialize(SpeechConsole.class);
 
 		assertThat(console.say(testInput), equalTo(expected));
 	}

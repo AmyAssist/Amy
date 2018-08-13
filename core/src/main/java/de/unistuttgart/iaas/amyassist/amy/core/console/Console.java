@@ -23,99 +23,20 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.console;
 
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
-import org.slf4j.Logger;
-
 import asg.cliche.Command;
-import asg.cliche.Shell;
-import asg.cliche.ShellFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandlerService;
-import de.unistuttgart.iaas.amyassist.amy.core.Core;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerCLI;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TTSConsole;
 
 /**
- * The Console reads input from the command line and pass it to the TextParser
+ * The console is the only Service that reads from the stdin. It provides a {@link #register(Object)} method to add new
+ * command to the console. This Console uses http://cliche.sourceforge.net/.
  * 
  * @author Leon Kiefer
  */
-@Service(Console.class)
-public class Console implements RunnableService, Runnable {
-	private static final String CONFIG_NAME = "core.config";
-	private static final String PROPERTY_ENABLE_CONSOLE = "enableConsole";
-
-	@Reference
-	private Logger logger;
-
-	@Reference
-	private ServiceLocator serviceLocator;
-
-	@Reference
-	private Core core;
-
-	@Reference
-	private ConfigurationLoader configurationLoader;
-
-	private boolean enable;
-
-	@Reference
-	private SpeechInputHandler handler;
-
-	private Thread thread;
-
-	@Command
-	public String say(String... speechInput) {
-		try {
-			return this.handler.handle(String.join(" ", speechInput)).get();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		} catch (ExecutionException e) {
-			this.logger.error("Error while handling input {}", speechInput, e.getCause());
-		}
-		return "";
-	}
-
-	@PostConstruct
-	private void init() {
-		this.enable = Boolean
-				.valueOf(this.configurationLoader.load(CONFIG_NAME).getProperty(PROPERTY_ENABLE_CONSOLE, "true"));
-	}
-
-	@Override
-	public void start() {
-		if (this.enable) {
-			this.thread = new Thread(this, "Console");
-			this.thread.start();
-		}
-	}
-
-	@Override
-	public void run() {
-		try {
-			Shell shell = ShellFactory.createConsoleShell("amy", "", this);
-			shell.addMainHandler(this.serviceLocator.createAndInitialize(PluginManagerCLI.class), "");
-			shell.addMainHandler(this.serviceLocator.createAndInitialize(TTSConsole.class), "");
-			shell.addMainHandler(new CommandLineArgumentHandlerService(), "");
-			shell.commandLoop();
-		} catch (IOException e) {
-			this.logger.error("Error while running the console", e);
-		}
-		this.core.stop();
-	}
-
-	@Override
-	public void stop() {
-		if (this.enable) {
-			this.thread.interrupt();
-		}
-	}
+public interface Console {
+	/**
+	 * Register a MainHandler in the ConsoleShell. The Handler need {@link Command} annotations.
+	 * 
+	 * @param handler
+	 *            the handler object
+	 */
+	void register(Object handler);
 }

@@ -23,8 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.hasLogged;
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.warn;
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.logger.LoggerMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -32,16 +31,17 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
@@ -77,15 +77,15 @@ class PluginManagerTest {
 
 		Files.createDirectory(this.tempDir.resolve("plugins"));
 
-		CommandLineArgumentHandler cmaHandler = this.testFramework.mockService(CommandLineArgumentHandler.class);
-		when(cmaHandler.getPluginPaths()).thenReturn(null);
+		CommandLineArgumentInfo cmaInfo = this.testFramework.mockService(CommandLineArgumentInfo.class);
+		when(cmaInfo.getPluginPaths()).thenReturn(new ArrayList<>());
 
-		ConfigurationLoader configurationLoader = this.testFramework.mockService(ConfigurationLoader.class);
+		ConfigurationManager configurationManager = this.testFramework.mockService(ConfigurationManager.class);
 		this.properties = new Properties();
 		this.properties.setProperty("pluginDir", "plugins");
 		this.properties.setProperty("plugins", "");
 		this.properties.setProperty("mode", "dev");
-		when(configurationLoader.load("plugin.config")).thenReturn(this.properties);
+		when(configurationManager.getConfigurationWithDefaults("plugin.config")).thenReturn(this.properties);
 
 		this.testFramework.mockService(NLProcessingManager.class);
 		this.testFramework.mockService(Persistence.class);

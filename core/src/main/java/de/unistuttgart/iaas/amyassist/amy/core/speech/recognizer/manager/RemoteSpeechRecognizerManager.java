@@ -28,9 +28,11 @@ import javax.sound.sampled.AudioInputStream;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RemoteResultHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.Output;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+
 
 /**
  * Class that manages the Recognizers belonging to a given AudioInputStream
@@ -50,11 +52,13 @@ public class RemoteSpeechRecognizerManager extends AbstractSpeechRecognizerManag
 	 *            Output Object where to Output the result of the Recognizer
 	 * @param grammarData
 	 *            DataSet of all GrammarObjects
+	 * @param messageHub
+	 *            Message Hub
 	 * 
 	 */
 	public RemoteSpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
-			GrammarObjectsCreator grammarData) {
-		super(ais, inputHandler, output, grammarData);
+			GrammarObjectsCreator grammarData, MessageHub messageHub) {
+		super(ais, inputHandler, output, grammarData, messageHub);
 	}
 
 	/**

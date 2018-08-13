@@ -41,7 +41,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 
 import com.google.common.collect.Lists;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -55,6 +55,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 @Service
 public class PersistenceService implements Persistence {
 	private static final String PERSISTENCE_CONFIG = "persistence";
+	private static final String PERSISTENCE_DATA_PROPERTY = "dataDir";
+	private static final String JAVAX_PERSISTENCE_CONFIG = "javax.persistence";
 
 	private Map<String, List<Class<?>>> persistenceUnits = new HashMap<>();
 
@@ -62,14 +64,23 @@ public class PersistenceService implements Persistence {
 	private Environment environment;
 
 	@Reference
-	private ConfigurationLoader configurationLoader;
+	private ConfigurationManager configurationManager;
 
-	private Properties globalProperties;
+	private Properties hibernateFix;
 	private PersistenceProvider persistenceProvider;
+	private String dataDir;
 
 	@PostConstruct
 	private void init() {
-		this.globalProperties = this.configurationLoader.load(PERSISTENCE_CONFIG);
+		Properties javaxProperties = this.configurationManager.getConfigurationWithDefaults(JAVAX_PERSISTENCE_CONFIG);
+
+		this.hibernateFix = new Properties();
+		for (String propertyName : javaxProperties.stringPropertyNames()) {
+			this.hibernateFix.setProperty(propertyName, javaxProperties.getProperty(propertyName));
+		}
+
+		Properties config = this.configurationManager.getConfigurationWithDefaults(PERSISTENCE_CONFIG);
+		this.dataDir = config.getProperty(PERSISTENCE_DATA_PROPERTY);
 
 		this.persistenceProvider = PersistenceProviderResolverHolder.getPersistenceProviderResolver()
 				.getPersistenceProviders().get(0);
@@ -87,14 +98,15 @@ public class PersistenceService implements Persistence {
 		List<String> entitiesNames = Lists.transform(entities, Class::getName);
 
 		PersistenceUnitInfo persistenceUnitInfo = new PersistenceUnitInfoImpl(name, entitiesNames,
-				entities.get(0).getClassLoader(), this.globalProperties);
+				entities.get(0).getClassLoader(), this.hibernateFix);
 
-		Map<String, String> properites = new HashMap<>();
-		String string = this.environment.getWorkingDirectory().resolve(name).toAbsolutePath().toString();
-		properites.put("javax.persistence.jdbc.url", "jdbc:h2:" + string);
+		Map<String, String> properties = new HashMap<>();
+		String string = this.environment.getWorkingDirectory().resolve(this.dataDir).resolve(name).toAbsolutePath()
+				.toString();
+		properties.put("javax.persistence.jdbc.url", "jdbc:h2:" + string);
 
 		EntityManagerFactory entityManagerFactory = this.persistenceProvider
-				.createContainerEntityManagerFactory(persistenceUnitInfo, properites);
+				.createContainerEntityManagerFactory(persistenceUnitInfo, properties);
 		return entityManagerFactory.createEntityManager();
 	}
 

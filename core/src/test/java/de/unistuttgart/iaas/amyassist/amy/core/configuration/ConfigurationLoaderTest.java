@@ -44,8 +44,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.CommandLineArgumentHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
@@ -70,7 +70,7 @@ class ConfigurationLoaderTest {
 	 */
 	@BeforeEach
 	void setup() throws IOException {
-		CommandLineArgumentHandler cmaHandler = this.testFramework.mockService(CommandLineArgumentHandler.class);
+		CommandLineArgumentInfo cmaInfo = this.testFramework.mockService(CommandLineArgumentInfo.class);
 		Environment environment = this.testFramework.mockService(Environment.class);
 		this.tempDir = Files.createTempDirectory(ConfigurationLoaderTest.class.getName());
 		this.tempDir.toFile().deleteOnExit();
@@ -94,7 +94,7 @@ class ConfigurationLoaderTest {
 		writeToFile(this.tempDir.resolve("config3").resolve("test1.properties"), "Test1:conf3");
 
 		Mockito.when(environment.getWorkingDirectory()).thenReturn(this.tempDir);
-		Mockito.when(cmaHandler.getConfigPaths()).thenReturn(Arrays.asList("config1", "config2", "config3"));
+		Mockito.when(cmaInfo.getConfigPaths()).thenReturn(Arrays.asList("config1", "config2", "config3"));
 
 		this.configurationLoader = this.testFramework.setServiceUnderTest(ConfigurationLoaderImpl.class);
 	}
@@ -227,6 +227,11 @@ class ConfigurationLoaderTest {
 		this.configurationLoader.store("test", properties);
 
 		assertThat(Files.exists(this.tempDir.resolve("config3").resolve("test.properties")), is(true));
+	}
+
+	@Test
+	void testNonNull() {
+		assertThat(this.configurationLoader.load("test"), notNullValue());
 	}
 
 	/**

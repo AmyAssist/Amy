@@ -42,7 +42,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -96,13 +96,13 @@ public class Server implements RunnableService {
 	private HttpServer httpServer;
 
 	@Reference
-	private ConfigurationLoader configurationLoader;
+	private ConfigurationManager configurationManager;
 
 	/**
 	 * @return the URI of the server
 	 */
 	private URI socketURI() {
-		Properties conf = this.configurationLoader.load(CONFIG_NAME);
+		Properties conf = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
 		int port = Integer.parseInt(conf.getProperty(PROPERTY_PORT, "8080"));
 		String contextPath = conf.getProperty(PROPERTY_CONTEXT_PATH, "");
 		String local = conf.getProperty(PROPERTY_LOCALHOST);
@@ -147,8 +147,8 @@ public class Server implements RunnableService {
 		OpenApiResource openApiResource = new OpenApiResource();
 		OpenAPI openapi = new OpenAPI();
 		List<io.swagger.v3.oas.models.servers.Server> servers = Collections
-				.singletonList(new io.swagger.v3.oas.models.servers.Server()
-						.url(this.configurationLoader.load(CONFIG_NAME).getProperty(PROPERTY_SERVER_URL)));
+				.singletonList(new io.swagger.v3.oas.models.servers.Server().url(this.configurationManager
+						.getConfigurationWithDefaults(CONFIG_NAME).getProperty(PROPERTY_SERVER_URL)));
 		openapi.servers(servers);
 		SwaggerConfiguration oasConfig = new SwaggerConfiguration().openAPI(openapi).prettyPrint(true)
 				.scannerClass("io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner");
