@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.io;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Map;
 
 /**
  * Information about the execution environment
@@ -55,4 +56,11 @@ public interface Environment {
 	 * @return the current date-time with time zone
 	 */
 	ZonedDateTime getCurrentDateTime();
+
+	/**
+	 * The environment variables set in this environment.
+	 * 
+	 * @return A map of all environment variables.
+	 */
+	Map<String, String> getEnvironmentVariables();
 }
