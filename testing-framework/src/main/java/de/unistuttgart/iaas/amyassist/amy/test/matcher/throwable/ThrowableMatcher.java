@@ -34,79 +34,54 @@ import org.hamcrest.TypeSafeMatcher;
  */
 public class ThrowableMatcher extends TypeSafeMatcher<Throwable> {
 
-	private boolean matchClsStrict;
-	private boolean matchMessage;
-	private boolean matchCause;
-
-	private Class<? extends Throwable> cls;
-	private String msg;
-	private Matcher<Throwable> cause;
+	private Matcher<Class<? extends Throwable>> cls;
+	private Matcher<String> msg;
+	private Matcher<Throwable> cs;
 
 	/**
 	 * Creates a matcher that must match the kind of throwable, the message and the cause
 	 * 
 	 * @param kind
-	 *            The kind of throwable to match.
+	 *            A matcher for the kind of throwable to match. If this is null it means that the kind does not matter.
 	 * @param message
-	 *            The message to match
-	 * @param causeMatcher
-	 *            A matcher for the causes to match
-	 * @param matchKindStrict
-	 *            Whether to only the exact given type(true) or to allow subclasses(false).
+	 *            A matcher for the message to match. If this is null it means that the message does not matter.
+	 * @param cause
+	 *            A matcher for the causes to match. If this is null it means that the cause does not matter.
 	 */
-	public ThrowableMatcher(Class<? extends Throwable> kind, String message, Matcher<Throwable> causeMatcher,
-			boolean matchKindStrict) {
-		this.matchMessage = true;
-		this.matchCause = true;
+	public ThrowableMatcher(Matcher<Class<? extends Throwable>> kind, Matcher<String> message,
+			Matcher<Throwable> cause) {
 		this.cls = kind;
 		this.msg = message;
-		this.cause = causeMatcher;
-		this.matchClsStrict = matchKindStrict;
+		this.cs = cause;
 	}
 
 	/**
 	 * Creates a matcher that must match the kind of throwable, and the message
 	 * 
 	 * @param kind
-	 *            The kind of throwable to match.
-	 * 
+	 *            A matcher for the kind of throwable to match.
 	 * @param message
-	 *            The message to match
-	 * @param matchKindStrict
-	 *            Whether the kind need to be the exact given class(true) or to allow subclasses(false).
+	 *            A matcher for the message to match
 	 */
-	public ThrowableMatcher(Class<? extends Throwable> kind, String message, boolean matchKindStrict) {
-		this(kind, message, null, matchKindStrict);
-		this.matchCause = false;
-	}
-
-	/**
-	 * Creates a matcher that must match the kind of throwable, and the cause
-	 * 
-	 * @param kind
-	 *            The kind of throwable to match.
-	 * @param causeMatcher
-	 *            A matcher for the causes to match
-	 * @param matchKindStrict
-	 *            Whether the kind need to be the exact given class(true) or to allow subclasses(false).
-	 */
-	public ThrowableMatcher(Class<? extends Throwable> kind, Matcher<Throwable> causeMatcher, boolean matchKindStrict) {
-		this(kind, null, causeMatcher, matchKindStrict);
-		this.matchMessage = false;
+	public ThrowableMatcher(Matcher<Class<? extends Throwable>> kind, Matcher<String> message) {
+		this(kind, message, null);
 	}
 
 	/**
 	 * Creates a matcher that must match the kind of throwable
 	 * 
 	 * @param kind
-	 *            The kind of throwable to match.
-	 * @param matchKindStrict
-	 *            Whether the kind need to be the exact given class(true) or to allow subclasses(false).
+	 *            A matcher for the kind of throwable to match.
 	 */
-	public ThrowableMatcher(Class<? extends Throwable> kind, boolean matchKindStrict) {
-		this(kind, null, null, matchKindStrict);
-		this.matchMessage = false;
-		this.matchCause = false;
+	public ThrowableMatcher(Matcher<Class<? extends Throwable>> kind) {
+		this(kind, null, null);
+	}
+
+	/**
+	 * Creates a matcher for any throwable
+	 */
+	public ThrowableMatcher() {
+		this(null, null, null);
 	}
 
 	/**
@@ -114,26 +89,43 @@ public class ThrowableMatcher extends TypeSafeMatcher<Throwable> {
 	 */
 	@Override
 	public void describeTo(Description description) {
-		description.appendText("Throwable of type ");
-		description.appendText(this.cls.getName());
-		if (!this.matchClsStrict) {
-			description.appendText(" or a subtype");
+		description.appendText("A Throwable");
+		if (this.cls != null) {
+			description.appendText(" which is ");
+			this.cls.describeTo(description);
 		}
 
-		if (this.matchMessage) {
-			description.appendText(" with the message \"");
-			description.appendText(this.msg);
-			description.appendText("\"");
+		if (this.msg != null) {
+			description.appendText(" with the message ");
+			this.msg.describeTo(description);
 		}
-		if (this.matchCause) {
-			if (this.matchMessage) {
-				description.appendText(" and a cause that is a ");
-			} else {
-				description.appendText(" with a cause that is a ");
-			}
-			description.appendDescriptionOf(this.cause);
+
+		if (this.cs != null) {
+			description.appendText(" with the cause: ");
+			this.cs.describeTo(description);
 		}
-		description.appendText(".");
+	}
+
+	/**
+	 * @see org.hamcrest.TypeSafeMatcher#describeMismatchSafely(java.lang.Object, org.hamcrest.Description)
+	 */
+	@Override
+	protected void describeMismatchSafely(Throwable item, Description mismatchDescription) {
+		mismatchDescription.appendText("was a Throwable");
+		if (this.cls != null && !this.cls.matches(item)) {
+			mismatchDescription.appendText(" which is an instance of ");
+			mismatchDescription.appendText(item.getClass().toString());
+		}
+
+		if (this.msg != null && !this.msg.matches(item.getMessage())) {
+			mismatchDescription.appendText(" where the message ");
+			this.msg.describeMismatch(item.getMessage(), mismatchDescription);
+		}
+
+		if (this.cs != null && !this.cs.matches(item.getCause())) {
+			mismatchDescription.appendText(" where the cause ");
+			this.cs.describeMismatch(item.getCause(), mismatchDescription);
+		}
 	}
 
 	/**
@@ -141,21 +133,9 @@ public class ThrowableMatcher extends TypeSafeMatcher<Throwable> {
 	 */
 	@Override
 	protected boolean matchesSafely(Throwable item) {
-		if (this.matchClsStrict) {
-			if (!this.cls.equals(item.getClass()))
-				return false;
-		} else {
-			if (!this.cls.isAssignableFrom(item.getClass()))
-				return false;
-		}
-
-		if (this.matchMessage && !this.msg.equals(item.getMessage()))
-			return false;
-
-		if (this.matchCause && !this.cause.matches(item.getCause()))
-			return false;
-
-		return true;
+		return ((this.cls == null || this.cls.matches(item))
+				&& (this.msg == null || this.msg.matches(item.getMessage()))
+				&& (this.cs == null || this.cs.matches(item.getCause())));
 	}
 
 }

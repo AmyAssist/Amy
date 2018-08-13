@@ -93,7 +93,6 @@ class PluginManagerTest {
 
 		this.properties.setProperty("pluginDir", "plugins");
 		this.properties.setProperty("plugins", "");
-		this.properties.setProperty("mode", "dev");
 
 		this.serviceUnderTest = this.testFramework.setServiceUnderTest(PluginManagerService.class);
 	}

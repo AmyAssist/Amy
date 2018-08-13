@@ -36,107 +36,65 @@ public class ThrowableMatchers {
 	}
 
 	/**
-	 * Create a matcher that matches a throwable of the given kind or any subclass with the message and the cause.
+	 * Create a matcher that matches a throwable of the given kind with the message and the cause.
 	 * 
 	 * @param kind
-	 *            the type of throwable that matches. Subtypes of that also match.
+	 *            A matcher for the type of throwable. If this is null it means that the kind does not matter.
 	 * @param message
-	 *            the message that a throwable must have to match
+	 *            A matcher for the the message. If this is null it means that the message does not matter.
 	 * @param cause
-	 *            The cause that a throwable must have to match
+	 *            A matcher for the cause. If this is null it means that the cause does not matter.
 	 * @return The matcher
 	 */
-	public static Matcher<Throwable> tossed(Class<? extends Throwable> kind, String message, Matcher<Throwable> cause) {
-		return new ThrowableMatcher(kind, message, cause, false);
-	}
-
-	/**
-	 * Create a matcher that matches a throwable of exactly the given kind with the message and the cause.
-	 * 
-	 * @param kind
-	 *            the type of throwable that matches.
-	 * @param message
-	 *            the message that a throwable must have to match
-	 * @param cause
-	 *            The cause that a throwable must have to match
-	 * @return The matcher
-	 */
-	public static Matcher<Throwable> tossedExactly(Class<? extends Throwable> kind, String message,
+	public static Matcher<Throwable> tossed(Matcher<Class<? extends Throwable>> kind, Matcher<String> message,
 			Matcher<Throwable> cause) {
-		return new ThrowableMatcher(kind, message, cause, true);
+		return new ThrowableMatcher(kind, message, cause);
 	}
 
 	/**
-	 * Create a matcher that matches a throwable of the given kind or any subclass with the message.
+	 * Create a matcher that matches a throwable of the given kind with the message and the cause.
 	 * 
 	 * @param kind
-	 *            the type of throwable that matches. Subtypes of that also match.
+	 *            A matcher for the type of throwable.
 	 * @param message
-	 *            the message that a throwable must have to match
+	 *            A matcher for the the message.
 	 * @return The matcher
 	 */
-	public static Matcher<Throwable> tossed(Class<? extends Throwable> kind, String message) {
-		return new ThrowableMatcher(kind, message, false);
+	public static Matcher<Throwable> tossed(Matcher<Class<? extends Throwable>> kind, Matcher<String> message) {
+		return new ThrowableMatcher(kind, message);
 	}
 
 	/**
-	 * Create a matcher that matches a throwable of exactly the given kind with the message.
+	 * Create a matcher that matches a throwable of the given kind with the message and the cause.
 	 * 
 	 * @param kind
-	 *            the type of throwable that matches.
-	 * @param message
-	 *            the message that a throwable must have to match
+	 *            A matcher for the type of throwable.
 	 * @return The matcher
 	 */
-	public static Matcher<Throwable> tossedExactly(Class<? extends Throwable> kind, String message) {
-		return new ThrowableMatcher(kind, message, true);
+	public static Matcher<Throwable> tossed(Matcher<Class<? extends Throwable>> kind) {
+		return new ThrowableMatcher(kind);
 	}
 
 	/**
-	 * Create a matcher that matches a throwable of the given kind or any subclass with the cause.
+	 * Create a matcher that matches a throwable of the given kind with the message and the cause.
 	 * 
 	 * @param kind
-	 *            the type of throwable that matches. Subtypes of that also match.
+	 *            A matcher for the type of throwable.
 	 * @param cause
-	 *            The cause that a throwable must have to match
+	 *            A matcher for the cause.
 	 * @return The matcher
 	 */
-	public static Matcher<Throwable> tossed(Class<? extends Throwable> kind, Matcher<Throwable> cause) {
-		return new ThrowableMatcher(kind, cause, false);
+	public static Matcher<Throwable> tossedWithCause(Matcher<Class<? extends Throwable>> kind,
+			Matcher<Throwable> cause) {
+		return new ThrowableMatcher(kind, null, cause);
 	}
 
 	/**
-	 * Create a matcher that matches a throwable of exactly the given kind with the cause.
+	 * Create a matcher that matches a throwable of the given kind with the message and the cause.
 	 * 
-	 * @param kind
-	 *            the type of throwable that matches.
-	 * @param cause
-	 *            The cause that a throwable must have to match
 	 * @return The matcher
 	 */
-	public static Matcher<Throwable> tossedExactly(Class<? extends Throwable> kind, Matcher<Throwable> cause) {
-		return new ThrowableMatcher(kind, cause, true);
-	}
-
-	/**
-	 * Create a matcher that matches a throwable of the given kind or any subclass.
-	 * 
-	 * @param kind
-	 *            the type of throwable that matches. Subtypes of that also match.
-	 * @return The matcher
-	 */
-	public static Matcher<Throwable> tossed(Class<? extends Throwable> kind) {
-		return new ThrowableMatcher(kind, false);
-	}
-
-	/**
-	 * Create a matcher that matches a throwable of exactly the given kind.
-	 * 
-	 * @param kind
-	 *            the type of throwable that matches.
-	 * @return The matcher
-	 */
-	public static Matcher<Throwable> tossedExactly(Class<? extends Throwable> kind) {
-		return new ThrowableMatcher(kind, true);
+	public static Matcher<Throwable> tossedAny() {
+		return new ThrowableMatcher();
 	}
 }

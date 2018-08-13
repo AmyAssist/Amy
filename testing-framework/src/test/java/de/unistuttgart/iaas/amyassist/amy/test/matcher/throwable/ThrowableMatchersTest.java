@@ -24,28 +24,37 @@
 package de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable;
 
 import static de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers.*;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests the {@link ThrowableMatchers}
+ * Test class for {@link ThrowableMatchers} and {@link ThrowableMatcher}
  * 
  * @author Tim Neumann
  */
 class ThrowableMatchersTest {
 
 	/**
+	 * @throws java.lang.Exception
+	 */
+	@BeforeAll
+	static void setUpBeforeClass() throws Exception {
+	}
+
+	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(java.lang.Class, java.lang.String, org.hamcrest.Matcher)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(org.hamcrest.Matcher, org.hamcrest.Matcher, org.hamcrest.Matcher)}.
 	 */
 	@Test
-	void testTossedClassOfQextendsThrowableStringMatcherOfThrowable() {
-		Matcher<Throwable> matcher = tossed(RuntimeException.class, "Message", tossed(IOException.class));
+	void testTossedClassStringThrowable() {
+		Matcher<Throwable> matcher = tossed(instanceOf(RuntimeException.class), equalTo("Message"),
+				tossed(instanceOf(IOException.class)));
 
 		MatcherAssert.assertThat(new RuntimeException("Message", new IOException()), matcher);
 		MatcherAssert.assertThat(new IllegalStateException("Message", new IOException()), matcher);
@@ -59,29 +68,11 @@ class ThrowableMatchersTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossedExactly(java.lang.Class, java.lang.String, org.hamcrest.Matcher)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(org.hamcrest.Matcher, org.hamcrest.Matcher)}.
 	 */
 	@Test
-	void testTossedExactlyClassOfQextendsThrowableStringMatcherOfThrowable() {
-		Matcher<Throwable> matcher = tossedExactly(RuntimeException.class, "Message", tossed(IOException.class));
-
-		MatcherAssert.assertThat(new RuntimeException("Message", new IOException()), matcher);
-
-		MatcherAssert.assertThat(new IllegalStateException("Message", new IOException()), not(matcher));
-		MatcherAssert.assertThat(new Exception("Message", new IOException()), not(matcher));
-		MatcherAssert.assertThat(new RuntimeException("msg", new IOException()), not(matcher));
-		MatcherAssert.assertThat(new RuntimeException("Message", new RuntimeException()), not(matcher));
-		MatcherAssert.assertThat(new RuntimeException("Message"), not(matcher));
-		MatcherAssert.assertThat(new RuntimeException(), not(matcher));
-	}
-
-	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(java.lang.Class, java.lang.String)}.
-	 */
-	@Test
-	void testTossedClassOfQextendsThrowableString() {
-		Matcher<Throwable> matcher = tossed(RuntimeException.class, "Message");
+	void testTossedClassOfString() {
+		Matcher<Throwable> matcher = tossed(instanceOf(RuntimeException.class), equalTo("Message"));
 
 		MatcherAssert.assertThat(new RuntimeException("Message"), matcher);
 		MatcherAssert.assertThat(new IllegalStateException("Message"), matcher);
@@ -95,63 +86,11 @@ class ThrowableMatchersTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossedExactly(java.lang.Class, java.lang.String)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(org.hamcrest.Matcher)}.
 	 */
 	@Test
-	void testTossedExactlyClassOfQextendsThrowableString() {
-		Matcher<Throwable> matcher = tossedExactly(RuntimeException.class, "Message");
-
-		MatcherAssert.assertThat(new RuntimeException("Message"), matcher);
-		MatcherAssert.assertThat(new RuntimeException("Message", new IOException()), matcher);
-
-		MatcherAssert.assertThat(new IllegalStateException("Message"), not(matcher));
-		MatcherAssert.assertThat(new Exception("Message"), not(matcher));
-		MatcherAssert.assertThat(new RuntimeException("msg"), not(matcher));
-		MatcherAssert.assertThat(new RuntimeException(), not(matcher));
-	}
-
-	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(java.lang.Class, org.hamcrest.Matcher)}.
-	 */
-	@Test
-	void testTossedClassOfQextendsThrowableMatcherOfThrowable() {
-		Matcher<Throwable> matcher = tossed(RuntimeException.class, tossed(IOException.class));
-
-		MatcherAssert.assertThat(new RuntimeException(new IOException()), matcher);
-		MatcherAssert.assertThat(new IllegalStateException(new IOException()), matcher);
-		MatcherAssert.assertThat(new RuntimeException("Message", new IOException()), matcher);
-		MatcherAssert.assertThat(new IllegalStateException("Message", new IOException()), matcher);
-
-		MatcherAssert.assertThat(new Exception(new IOException()), not(matcher));
-		MatcherAssert.assertThat(new RuntimeException(new RuntimeException()), not(matcher));
-		MatcherAssert.assertThat(new RuntimeException(), not(matcher));
-	}
-
-	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossedExactly(java.lang.Class, org.hamcrest.Matcher)}.
-	 */
-	@Test
-	void testTossedExactlyClassOfQextendsThrowableMatcherOfThrowable() {
-		Matcher<Throwable> matcher = tossedExactly(RuntimeException.class, tossed(IOException.class));
-
-		MatcherAssert.assertThat(new RuntimeException(new IOException()), matcher);
-		MatcherAssert.assertThat(new RuntimeException("Message", new IOException()), matcher);
-
-		MatcherAssert.assertThat(new IllegalStateException(new IOException()), not(matcher));
-		MatcherAssert.assertThat(new Exception(new IOException()), not(matcher));
-		MatcherAssert.assertThat(new RuntimeException(new RuntimeException()), not(matcher));
-		MatcherAssert.assertThat(new RuntimeException(), not(matcher));
-	}
-
-	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(java.lang.Class)}.
-	 */
-	@Test
-	void testTossedClassOfQextendsThrowable() {
-		Matcher<Throwable> matcher = tossed(RuntimeException.class);
+	void testTossedClass() {
+		Matcher<Throwable> matcher = tossed(instanceOf(RuntimeException.class));
 
 		MatcherAssert.assertThat(new RuntimeException(), matcher);
 		MatcherAssert.assertThat(new IllegalStateException(), matcher);
@@ -167,19 +106,42 @@ class ThrowableMatchersTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossedExactly(java.lang.Class)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossedWithCause(org.hamcrest.Matcher, org.hamcrest.Matcher)}.
 	 */
 	@Test
-	void testTossedExactlyClassOfQextendsThrowable() {
-		Matcher<Throwable> matcher = tossedExactly(RuntimeException.class);
+	void testTossedWithCause() {
+		Matcher<Throwable> matcher = tossedWithCause(instanceOf(RuntimeException.class),
+				tossed(instanceOf(IOException.class)));
 
-		MatcherAssert.assertThat(new RuntimeException(), matcher);
-		MatcherAssert.assertThat(new RuntimeException("Message"), matcher);
 		MatcherAssert.assertThat(new RuntimeException(new IOException()), matcher);
+		MatcherAssert.assertThat(new IllegalStateException(new IOException()), matcher);
 		MatcherAssert.assertThat(new RuntimeException("Message", new IOException()), matcher);
+		MatcherAssert.assertThat(new IllegalStateException("Message", new IOException()), matcher);
 
-		MatcherAssert.assertThat(new IllegalStateException(), not(matcher));
-		MatcherAssert.assertThat(new Exception(), not(matcher));
+		MatcherAssert.assertThat(new Exception(new IOException()), not(matcher));
+		MatcherAssert.assertThat(new RuntimeException(new RuntimeException()), not(matcher));
+		MatcherAssert.assertThat(new RuntimeException(), not(matcher));
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossedAny()}.
+	 */
+	@Test
+	void testTossedAny() {
+		Matcher<Throwable> matcher = tossedAny();
+
+		MatcherAssert.assertThat(new Throwable(), matcher);
+		MatcherAssert.assertThat(new RuntimeException(), matcher);
+		MatcherAssert.assertThat(new IllegalStateException(), matcher);
+		MatcherAssert.assertThat(new Throwable("Message"), matcher);
+		MatcherAssert.assertThat(new RuntimeException("Message"), matcher);
+		MatcherAssert.assertThat(new IllegalStateException("Message"), matcher);
+		MatcherAssert.assertThat(new Throwable(new IOException()), matcher);
+		MatcherAssert.assertThat(new RuntimeException(new IOException()), matcher);
+		MatcherAssert.assertThat(new IllegalStateException(new IOException()), matcher);
+		MatcherAssert.assertThat(new Throwable("Message", new IOException()), matcher);
+		MatcherAssert.assertThat(new RuntimeException("Message", new IOException()), matcher);
+		MatcherAssert.assertThat(new IllegalStateException("Message", new IOException()), matcher);
 	}
 
 }
