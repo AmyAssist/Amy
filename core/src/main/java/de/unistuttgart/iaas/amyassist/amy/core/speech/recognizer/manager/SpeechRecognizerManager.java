@@ -84,6 +84,8 @@ public class SpeechRecognizerManager {
 
 	// --------------------------------------------------------------
 	// Fields
+	
+	private Grammar mainGrammarType = Grammar.GOOGLE;
 
 	private static final String CONFIG_NAME = "localSpeech.config";
 	private static final String PROPERTY_ENABLE = "enable";
@@ -144,11 +146,13 @@ public class SpeechRecognizerManager {
 		case MULTI_CALL_LISTENING:
 			this.messageHub.publish(MESSAGE_TOPIC_MUTE, "true");
 			this.output.voiceOutput("waking up");
+			setCurrentGrammar(this.mainGrammarType);
 			break;
 
 		case SINGLE_CALL_LISTENING:
 			this.messageHub.publish(MESSAGE_TOPIC_MUTE, "true");
 			this.output.soundOutput(Sounds.SINGLE_CALL_START_BEEP);
+			setCurrentGrammar(this.mainGrammarType);
 			break;
 
 		case NOT_LISTENING:
@@ -163,7 +167,8 @@ public class SpeechRecognizerManager {
 			default:
 				break;
 			}
-
+			
+			setCurrentGrammar(Grammar.MAIN);
 			this.messageHub.publish(MESSAGE_TOPIC_MUTE, "false");
 			break;
 
@@ -300,6 +305,14 @@ public class SpeechRecognizerManager {
 
 	// --------------------------------------------------------------
 	// Setter
+	
+	/**
+	 * Set's {@link #mainGrammarType mainGrammarType}
+	 * @param mainGrammarType  mainGrammarType
+	 */
+	public void setMainGrammarType(Grammar mainGrammarType) {
+		this.mainGrammarType = mainGrammarType;
+	}
 
 	// --------------------------------------------------------------
 	// Other

@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager.ListeningState;
 
@@ -51,7 +50,6 @@ public class TempGrammarSpeechResultHandler extends AbstractSpeechResultHandler 
 	protected boolean environmentSpecificInputHandling(String result, SpeechRecognizerManager srVar) {
 		if (result.equals(Constants.MULTI_CALL_STOP)) {
 			srVar.setListeningState(ListeningState.NOT_LISTENING);
-			srVar.setCurrentGrammar(Grammar.MAIN);
 			return true;
 		}
 		return false;
