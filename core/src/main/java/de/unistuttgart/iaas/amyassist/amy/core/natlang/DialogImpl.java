@@ -21,41 +21,37 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
-import java.util.List;
+import java.util.function.Consumer;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
 
 /**
- * implementation of IntentHandler 
- * 
+ * TODO: Description
  * @author Felix Burk
  */
-public class IntentHandlerImpl implements IntentHandler {
+class DialogImpl implements Dialog {
 	
-	void handle (UserIntent i) {
-		
+	private Consumer<String> consumer;
+	
+	/**
+	 * @param cons
+	 */
+	DialogImpl(Consumer<String> cons){
+		this.consumer = cons;
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.IntentHandler#getGrammarsToHandle()
+	 * current intent - if null no intent is started
 	 */
-	@Override
-	public List<AGFNode> getGrammarsToHandle() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	private UserIntent intent = null;
+	
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.IntentHandler#isCurrentlyHandling()
+	 * 
+	 * @param answerOutput
 	 */
-	@Override
-	public boolean isCurrentlyHandling() {
-		// TODO Auto-generated method stub
-		return false;
+	public void output(String answerOutput) {
+		this.consumer.accept(answerOutput);
 	}
-
 }
-
-

@@ -37,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
  * TODO: Description
  * @author Lars Buttgereit, Felix Burk
  */
-public class Intent {
+public class UserIntent {
 	@Nonnull
 	private final Method method;
 	@Nonnull
@@ -67,16 +67,15 @@ public class Intent {
 	 * 
 	 * @param method plugin method to call
 	 * @param grammar to match
-	 * @param partialNLIClass class of plugin
 	 * @param aimIntent corresponding aimintent from xml
 	 */
-	public Intent(@Nonnull Method method, @Nonnull AGFNode grammar, @Nonnull Class<?> partialNLIClass, @Nonnull AIMIntent aimIntent) {
+	public UserIntent(@Nonnull Method method, @Nonnull AGFNode grammar, @Nonnull AIMIntent aimIntent) {
 		this.method = method;
 		this.grammar = grammar;
-		this.partialNLIClass = partialNLIClass;
+		this.partialNLIClass = method.getDeclaringClass();
 		this.aimIntent = aimIntent;
 	}
-	
+
 	/**
 	 * Get's the partialNLI class
 	 * 

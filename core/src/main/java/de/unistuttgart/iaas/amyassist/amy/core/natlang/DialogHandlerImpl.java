@@ -21,41 +21,44 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Consumer;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * implementation of IntentHandler 
+ * TODO: Description
  * 
- * @author Felix Burk
+ * @author
  */
-public class IntentHandlerImpl implements IntentHandler {
+@Service()
+public class DialogHandlerImpl implements DialogHandler {
 	
-	void handle (UserIntent i) {
+	Map<UUID, Dialog> map = new HashMap<>();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	@Override
+	public UUID createDialog(Consumer<String> cons) {
+		UUID uuid = UUID.randomUUID();
+		map.put(uuid, new DialogImpl(cons));
+		return uuid;
+	}
+	
+	@Override
+	public void process(String naturalLanguageText, UUID uuid) {
+		if(!this.map.containsKey(uuid)) {
+			throw new IllegalArgumentException("wrong UUID");
+		}
+		
+		Dialog dialog = map.get(uuid);
+		
 		
 	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.IntentHandler#getGrammarsToHandle()
-	 */
-	@Override
-	public List<AGFNode> getGrammarsToHandle() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.IntentHandler#isCurrentlyHandling()
-	 */
-	@Override
-	public boolean isCurrentlyHandling() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }
-
-

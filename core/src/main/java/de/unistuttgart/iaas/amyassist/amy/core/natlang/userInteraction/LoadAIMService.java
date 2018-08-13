@@ -30,7 +30,9 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
@@ -100,20 +102,11 @@ public class LoadAIMService implements DeploymentContainerService {
 			List<AIMIntent> aimIntents = new ArrayList<>();
 			
 			for(String s : aimFiles) {
-				this.logger.error(s);
 				aimIntents.addAll(extractIntents(plugin, s));
 			}
 			
-			//extract all speech methods
-			List<Method> speechMethods = new ArrayList<>();
 			
-			for(Class<?> cls : plugin.getClasses()) {
-				if(cls.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand.class)) {
-					speechMethods.addAll(NLIAnnotationReader.getValidIntentMethods(cls));
-				}
-			}
-			
-			matchAndRegister(aimIntents, speechMethods);
+			matchAndRegister(aimIntents, plugin.getClassLoader());
 
 		}
 
@@ -126,23 +119,27 @@ public class LoadAIMService implements DeploymentContainerService {
 	 * @param aimIntents list of all intents
 	 * @param speechMethods list of all methods
 	 */
-	private void matchAndRegister(List<AIMIntent> aimIntents, List<Method> speechMethods) {
-		this.logger.error("is null speechMethods {}", speechMethods.isEmpty());
+	private void matchAndRegister(List<AIMIntent> aimIntents, ClassLoader classloader) {
 		for(AIMIntent intent : aimIntents) {
 			String ref = intent.getReference();
 			String fullClassName = ref.substring(0,ref.lastIndexOf("."));
 			String methodName = ref.substring(ref.lastIndexOf(".")+1, ref.length());
 			
-			this.logger.error("cls nm {} methodName {}", fullClassName, methodName);
-			speechMethods.stream().filter((Method o) -> o.getDeclaringClass().getName().equals(fullClassName)).forEach(
-				(Method m) -> {
+			Class<?> cls;
+			try {
+				cls = Class.forName(fullClassName,true, classloader);
+				Set<Method> set = NLIAnnotationReader.getValidIntentMethods(cls);
+				Iterator<Method> i = set.iterator();
+				while(i.hasNext()) {
+					Method m = i.next();
 					if(m.getName().equals(methodName)) {
-						this.logger.error("FOUND {}", m.getName());
 						this.nlManager.register(m, intent);
+						break;
 					}
-					
 				}
-			); 
+			} catch (ClassNotFoundException e) {
+				this.logger.error("class not found {} error {}", fullClassName, e.getMessage());
+			}
 		}
 		
 	}

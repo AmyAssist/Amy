@@ -21,41 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
-
-import java.util.List;
-
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 /**
- * implementation of IntentHandler 
- * 
- * @author Felix Burk
+ * TODO: Description
+ * @author Leon Kiefer, Felix Burk
  */
-public class IntentHandlerImpl implements IntentHandler {
+public interface Dialog {
 	
-	void handle (UserIntent i) {
-		
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.IntentHandler#getGrammarsToHandle()
-	 */
-	@Override
-	public List<AGFNode> getGrammarsToHandle() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.IntentHandler#isCurrentlyHandling()
-	 */
-	@Override
-	public boolean isCurrentlyHandling() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }
-
-

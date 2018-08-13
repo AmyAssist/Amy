@@ -50,6 +50,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParserException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
 /**
@@ -70,7 +71,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Reference
 	private ServiceLocator serviceLocator;
 
-	private final List<PartialNLI> register = new ArrayList<>();
+	private final List<UserIntent> register = new ArrayList<>();
 
 	private final List<AGFNode> registeredNodeList = new ArrayList<>();
 
@@ -116,7 +117,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		}
 
 		PartialNLI partialNLI = this.generatePartialNLI(method, intent);
-		this.register.add(partialNLI);
+		//this.register.add(partialNLI);
 		this.registeredNodeList.add(partialNLI.getGrammar());
 	}
 
@@ -147,14 +148,15 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.MULTI_CALL_START,
 				Constants.SINGLE_CALL_START, Constants.MULTI_CALL_STOP, Constants.SHUT_UP);
 		
-		for (PartialNLI partialNLI : this.register) {
-			this.logger.error("registered grammar {}", partialNLI.getGrammar());
-			generator.addRule(partialNLI.getGrammar(), UUID.randomUUID().toString());
+		for (UserIntent userIntent : this.register) {
+			this.logger.error("registered grammar {}", userIntent.getGrammar());
+			generator.addRule(userIntent.getGrammar(), UUID.randomUUID().toString());
 		}
 
 		return generator.generateGrammarFileString();
 	}
 
+	@Deprecated
 	@Override
 	public String process(String naturalLanguageText) {
 		ChooseLanguage language = new ChooseLanguage(this.languageString);
@@ -164,10 +166,10 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		INLParser nlParser = new NLParser(this.registeredNodeList, language.getStemmer(), this.stemmerEnabled);
 		try {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
-			PartialNLI partialNLI = this.register.get(matchingNodeIndex);
+			UserIntent userIntent = this.register.get(matchingNodeIndex);
 			String[] arguments = Lists.transform(tokens, WordToken::getContent).toArray(new String[tokens.size()]);
-			Object object = this.serviceLocator.createAndInitialize(partialNLI.getPartialNLIClass());
-			return partialNLI.call(object, arguments);
+			Object object = this.serviceLocator.createAndInitialize(userIntent.getPartialNLIClass());
+			return userIntent.call(object, arguments);
 		}catch(NLParserException e) {
 			return "I did not understand that";
 		}
