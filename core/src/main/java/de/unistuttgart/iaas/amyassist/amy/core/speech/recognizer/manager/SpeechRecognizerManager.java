@@ -42,7 +42,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.output.OutputImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SphinxSpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.MainGrammarSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.TempGrammarSpeechResultHandler;
@@ -62,7 +62,7 @@ public class SpeechRecognizerManager {
 	@Reference
 	private Logger logger;
 	@Reference
-	private OutputImpl output;
+	private Output output;
 	@Reference
 	private GrammarObjectsCreator creator;
 	@Reference
