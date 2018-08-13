@@ -37,6 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
  * 
  * @author Leon Kiefer
  */
+@Deprecated
 @Service
 public class NaturalLanaguageInputHandlerService implements SpeechInputHandler {
 	@Reference

@@ -27,13 +27,28 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
- * TODO: Description
- * @author
+ * Manages multiple Dialogs from different sources.
+ * 
+ * @author Leon Kiefer, Felix Burk
  */
 public interface DialogHandler {
-
+	/**
+	 * 
+	 * @param naturalLanguageText
+	 * @param uuid
+	 *            the uuid of the dialog for which to process the input
+	 */
 	void process(String naturalLanguageText, UUID uuid);
 
-	UUID createDialog(Consumer<String> cons);
+	/**
+	 * Create a new Dialog with a given output handler. The Dialog is the Session that stores all information of the
+	 * long running user interaction.
+	 * 
+	 * @param outputHandler
+	 *            the output handler that is responsible to deliver the given natural language output to the user
+	 * @return the unique id of the dialog, this must be passed to {@link #process(String, UUID)} to process input of
+	 *         that dialog
+	 */
+	UUID createDialog(Consumer<String> outputHandler);
 
 }

@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import java.util.NoSuchElementException;
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.sound.sampled.AudioInputStream;
 
@@ -36,6 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManage
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.LocalSpeechRecognizerManager;
@@ -57,7 +59,7 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	private Logger logger;
 
 	@Reference
-	private SpeechInputHandler inputHandler;
+	private DialogHandler dialogHandler;
 
 	@Reference
 	private Output tts;
@@ -80,14 +82,18 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	private Properties config;
 
 	private SpeechRecognizerManager localRecognition;
+	private UUID dialog;
 
 	@PostConstruct
 	private void init() {
 		loadAndCheckProperties();
 
 		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_ENABLE))) {
-			this.localRecognition = new LocalSpeechRecognizerManager(createNewAudioInputStream(), this.inputHandler,
-					this.tts, this.grammarData, this.messageHub);
+			this.dialog = this.dialogHandler.createDialog(this.tts::voiceOutput);
+
+			this.localRecognition = new LocalSpeechRecognizerManager(createNewAudioInputStream(), input -> {
+				this.dialogHandler.process(input, dialog);
+			}, this.tts, this.grammarData, this.messageHub);
 		}
 	}
 

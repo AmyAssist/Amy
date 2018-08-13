@@ -33,7 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 /**
  * TODO: Description
  * 
- * @author
+ * @author Felix Burk
  */
 @Service()
 public class DialogHandlerImpl implements DialogHandler {

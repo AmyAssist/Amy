@@ -29,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
  * 
  * @author Leon Kiefer
  */
+@Deprecated
 public interface SpeechInputHandler {
 	/**
 	 * 

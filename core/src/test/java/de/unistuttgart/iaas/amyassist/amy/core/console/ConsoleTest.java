@@ -23,20 +23,18 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.console;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.LoggerProvider;
 
 /**
@@ -63,16 +61,17 @@ class ConsoleTest {
 	@Test
 	void test() {
 		final String[] testInput = { "Hello", "world", "say", "hello" };
-		final String expected = "hello1";
+		final String expected = "Hello world say hello";
 
-		SpeechInputHandler handler = Mockito.mock(SpeechInputHandler.class);
+		UUID uuid = UUID.randomUUID();
+		DialogHandler handler = Mockito.mock(DialogHandler.class);
 
-		CompletableFuture<String> completableFuture = new CompletableFuture<>();
-		completableFuture.complete(expected);
-		Mockito.when(handler.handle("Hello world say hello")).thenReturn(completableFuture);
-		this.dependencyInjection.register(new SingletonServiceProvider<>(SpeechInputHandler.class, handler));
+		Mockito.when(handler.createDialog(ArgumentMatchers.any())).thenReturn(uuid);
+
+		this.dependencyInjection.register(new SingletonServiceProvider<>(DialogHandler.class, handler));
 		SpeechConsole console = this.dependencyInjection.createAndInitialize(SpeechConsole.class);
 
-		assertThat(console.say(testInput), equalTo(expected));
+		console.say(testInput);
+		Mockito.verify(handler).process(expected, uuid);
 	}
 }
