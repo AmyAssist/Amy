@@ -99,6 +99,5 @@ public interface IPlugin {
 	 * @return manifest
 	 */
 	Manifest getManifest();
-	
 
 }

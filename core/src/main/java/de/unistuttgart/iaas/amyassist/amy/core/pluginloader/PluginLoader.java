@@ -83,14 +83,14 @@ public class PluginLoader {
 			// We need that classLoader to stay open.
 			@SuppressWarnings("resource")
 			URLClassLoader childLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
-			
+
 			Manifest mf = jar.getManifest();
 			if (mf == null) {
 				this.logger.error("Can't find manifest for plugin {}", path);
 			}
 
 			ArrayList<Class<?>> classes = new ArrayList<>();
-			
+
 			while (jarEntries.hasMoreElements()) {
 				JarEntry jarEntry = jarEntries.nextElement();
 				if (jarEntry.getName().endsWith(".class")) {

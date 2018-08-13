@@ -38,7 +38,6 @@ public interface PluginManager {
 	void loadPlugins();
 
 	/**
-	 * @return list of plugins
 	 * @see PluginLoader#getPlugins()
 	 */
 	List<IPlugin> getPlugins();
