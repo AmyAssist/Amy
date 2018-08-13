@@ -21,22 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.console;
+package de.unistuttgart.iaas.amyassist.amy.core.information;
 
 import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * The console is the only Service that reads from the stdin. It provides a {@link #register(Object)} method to add new
- * command to the console. This Console uses http://cliche.sourceforge.net/.
+ * Command Line Interface for the program information
  * 
- * @author Leon Kiefer
+ * @author Tim Neumann
  */
-public interface Console {
+public class ProgramInformationCLI {
+	@Reference
+	private ProgramInformation info;
+
 	/**
-	 * Register a MainHandler in the ConsoleShell. The Handler need {@link Command} annotations.
-	 * 
-	 * @param handler
-	 *            the handler object
+	 * @return the version supplied by {@link ProgramInformation}.
 	 */
-	void register(Object handler);
+	@Command(name = "version", description = "Prints out the version.")
+	public String version() {
+		return this.info.getVersion();
+	}
+
+	/**
+	 * @return the license notice supplied by {@link ProgramInformation}.
+	 */
+	@Command(name = "notice", description = "Prints out the license notice.")
+	public String licenseNotice() {
+		return this.info.getLicenseNotice();
+	}
 }

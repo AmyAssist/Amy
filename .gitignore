@@ -27,4 +27,7 @@ dependency-reduced-pom.xml
 *.properties
 !**/META-INF/*.properties
 
+#Include docker configs
+!.docker/config/**
+
 *.db
