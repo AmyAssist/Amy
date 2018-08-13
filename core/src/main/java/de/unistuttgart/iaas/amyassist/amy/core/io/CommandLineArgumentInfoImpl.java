@@ -35,19 +35,15 @@ import java.util.List;
 public class CommandLineArgumentInfoImpl implements CommandLineArgumentInfo {
 
 	private List<String> configPaths;
-	private List<String> pluginPaths;
 
 	/**
 	 * Creates a new command line argument info
 	 * 
 	 * @param pConfigPaths
 	 *            The config paths.
-	 * @param pPluginPaths
-	 *            The plugin paths.
 	 */
-	public CommandLineArgumentInfoImpl(List<String> pConfigPaths, List<String> pPluginPaths) {
+	public CommandLineArgumentInfoImpl(List<String> pConfigPaths) {
 		this.configPaths = nullSaveList(pConfigPaths);
-		this.pluginPaths = nullSaveList(pPluginPaths);
 	}
 
 	private List<String> nullSaveList(List<String> arg) {
@@ -63,13 +59,4 @@ public class CommandLineArgumentInfoImpl implements CommandLineArgumentInfo {
 	public List<String> getConfigPaths() {
 		return Collections.unmodifiableList(this.configPaths);
 	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo#getPluginPaths()
-	 */
-	@Override
-	public List<String> getPluginPaths() {
-		return Collections.unmodifiableList(this.pluginPaths);
-	}
-
 }

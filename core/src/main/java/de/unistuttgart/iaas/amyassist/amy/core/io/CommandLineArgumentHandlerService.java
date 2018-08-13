@@ -190,7 +190,7 @@ public class CommandLineArgumentHandlerService {
 	public CommandLineArgumentInfo getInfo() {
 		if (this.flags == null)
 			throw new IllegalStateException("Not loaded.");
-		return new CommandLineArgumentInfoImpl(this.flags.get(Flag.CONFIG), this.flags.get(Flag.PLUGIN));
+		return new CommandLineArgumentInfoImpl(this.flags.get(Flag.CONFIG));
 	}
 
 	private void printHelp() {
@@ -331,15 +331,7 @@ public class CommandLineArgumentHandlerService {
 		 * The config dir flag
 		 */
 		CONFIG("-c", "--config <path>", "Add a alternate location for the config directory."
-				+ "Can be used multiple times to add multiple config directorys.", false, 1, true),
-
-		/**
-		 * The plugin url flag
-		 */
-		PLUGIN("-p", "--plugin <path>",
-				"Load the plugin found at the following path. "
-						+ "Ignore the plugin conf. Can be used multiple times to load more then one plugin.",
-				false, 1, true);
+				+ "Can be used multiple times to add multiple config directorys.", false, 1, true);
 
 		private String shortVariant;
 		private String longVariant;
