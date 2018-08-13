@@ -135,10 +135,11 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private PartialNLI generatePartialNLI(Method method, AIMIntent intent) {
 		String grammar = intent.getGram();
 		
-		AGFParser agfParser = new AGFParser(new AGFLexer(grammar));
+		this.logger.error("gram ={};", grammar);
+		AGFParser agfParser = new AGFParser(new AGFLexer(grammar.trim()));
 		AGFNode parseWholeExpression = agfParser.parseWholeExpression();
 		
-		return new PartialNLI(method, parseWholeExpression, method.getClass());
+		return new PartialNLI(method, parseWholeExpression, method.getDeclaringClass());
 	}
 
 	@Override

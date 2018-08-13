@@ -7,9 +7,16 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
-		<gram> say hello {number} </gram>
+		<gram> repeat {someString} [{number} times] </gram>
 		<EntityTemplates>
-			<EntityTemplate id="number" type="int" />
+			<EntityTemplate id="someString" type="String">
+				<Values>
+					<value>test</value>
+					<value>test2</value>
+					<value>fuck</value>
+				</Values>
+			</EntityTemplate>
+			<EntitiyTemplate id="number" type="int"/>
 		</EntityTemplates>
 
 		<Prompt entityTemplateId="number">
@@ -28,7 +35,7 @@
 		<gram>test contacts registry</gram>
 	</Intent>
 
-	<Intent 
+	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.testLocation">
 		<gram>test location registry</gram>
 	</Intent>

@@ -125,18 +125,22 @@ public class LoadAIMService implements DeploymentContainerService {
 	 * @param speechMethods list of all methods
 	 */
 	private void matchAndRegister(List<AIMIntent> aimIntents, List<Method> speechMethods) {
+		this.logger.error("is null speechMethods {}", speechMethods.isEmpty());
 		for(AIMIntent intent : aimIntents) {
 			String ref = intent.getReference();
 			String fullClassName = ref.substring(0,ref.lastIndexOf("."));
 			String methodName = ref.substring(ref.lastIndexOf(".")+1, ref.length());
 			
-			speechMethods.stream().filter(o -> o.getClass().getName().equals(fullClassName)).forEach(
-				o -> {
-					if(o.getName().equals(methodName)) {
-						this.nlManager.register(o, intent);
-						speechMethods.remove(o);
+			this.logger.error("cls nm {} methodName {}", fullClassName, methodName);
+			speechMethods.stream().filter((Method o) -> o.getDeclaringClass().getName().equals(fullClassName)).forEach(
+				(Method m) -> {
+					if(m.getName().equals(methodName)) {
+						this.logger.error("FOUND {}", m.getName());
+						this.nlManager.register(m, intent);
 					}
-				});
+					
+				}
+			); 
 		}
 		
 	}
