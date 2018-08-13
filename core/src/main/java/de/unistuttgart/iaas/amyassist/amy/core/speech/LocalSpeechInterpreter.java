@@ -31,7 +31,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
  * 
  * @author Kai Menzel
  */
-public interface LocalSpeechInputTranslator extends RunnableService {
+public interface LocalSpeechInterpreter extends RunnableService {
 	/**
 	 * start the Local Recognition System
 	 */
@@ -50,5 +50,5 @@ public interface LocalSpeechInputTranslator extends RunnableService {
 	 * @param grammar
 	 *            Main or Temp(first create Temp Grammar file)
 	 */
-	void changeGrammar(Grammar grammar);
+	void updateGrammar(Grammar grammar);
 }

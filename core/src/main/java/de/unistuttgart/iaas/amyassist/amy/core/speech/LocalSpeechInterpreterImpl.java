@@ -29,7 +29,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionStateVariables;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.MainGrammarSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.TempGrammarSpeechResultHandler;
 
@@ -38,24 +38,19 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.TempGrammar
  * 
  * @author Kai Menzel
  */
-@Service(LocalSpeechInputTranslator.class)
-public class LocalSpeechInputTranslatorImpl implements LocalSpeechInputTranslator {
+@Service(LocalSpeechInterpreter.class)
+public class LocalSpeechInterpreterImpl implements LocalSpeechInterpreter {
 
 	@Reference
 	private Logger logger;
 
 	@Reference
-	private SpeechRecognitionStateVariables srVar;
+	private SpeechRecognizerManager srVar;
 
-	@PostConstruct
-	private void init() {
-		this.srVar.setMainResultHandler(new MainGrammarSpeechResultHandler(this.srVar));
-		this.srVar.setTempResultHandler(new TempGrammarSpeechResultHandler(this.srVar));
-		this.srVar.init();
-	}
+	
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInputTranslator#start()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreter#start()
 	 */
 	@Override
 	public void start() {
@@ -63,7 +58,7 @@ public class LocalSpeechInputTranslatorImpl implements LocalSpeechInputTranslato
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInputTranslator#stop()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreter#stop()
 	 */
 	@Override
 	public void stop() {
@@ -71,14 +66,11 @@ public class LocalSpeechInputTranslatorImpl implements LocalSpeechInputTranslato
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInputTranslator#changeGrammar(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreter#updateGrammar(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
 	 */
 	@Override
-	public void changeGrammar(Grammar grammar) {
-		if (this.srVar.getCurrentGrammarState() != grammar) {
-			this.srVar.setCurrentGrammar(grammar);
-		}
-
+	public void updateGrammar(Grammar grammar) {
+		this.srVar.setCurrentGrammar(grammar);
 	}
 
 }

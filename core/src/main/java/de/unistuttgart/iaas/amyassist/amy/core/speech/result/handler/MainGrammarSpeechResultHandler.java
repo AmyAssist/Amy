@@ -24,8 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionStateVariables;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionStateVariables.ListeningState;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager.ListeningState;
 
 /**
  * Handler that handles the local SpeechRecognition System intern commands for the MainGrammar
@@ -38,7 +38,7 @@ public class MainGrammarSpeechResultHandler extends AbstractSpeechResultHandler 
 	 * @param srVar
 	 *            Variables Class
 	 */
-	public MainGrammarSpeechResultHandler(SpeechRecognitionStateVariables srVar) {
+	public MainGrammarSpeechResultHandler(SpeechRecognizerManager srVar) {
 		super(srVar);
 	}
 
@@ -53,7 +53,7 @@ public class MainGrammarSpeechResultHandler extends AbstractSpeechResultHandler 
 	 * @return true if the result is an predefined one
 	 */
 	@Override
-	protected boolean environmentSpecificInputHandling(String result, SpeechRecognitionStateVariables srVar) {
+	protected boolean environmentSpecificInputHandling(String result, SpeechRecognizerManager srVar) {
 		switch (result) {
 		case Constants.MULTI_CALL_START:
 			if (srVar.getListeningState() == ListeningState.NOT_LISTENING) {

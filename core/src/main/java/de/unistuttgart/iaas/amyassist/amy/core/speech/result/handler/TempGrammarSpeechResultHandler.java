@@ -25,8 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionStateVariables;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionStateVariables.ListeningState;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager.ListeningState;
 
 /**
  * Handler that handles the local SpeechRecognition System intern commands for additional Grammars
@@ -39,7 +39,7 @@ public class TempGrammarSpeechResultHandler extends AbstractSpeechResultHandler 
 	 * @param srVar
 	 *            Variables Class
 	 */
-	public TempGrammarSpeechResultHandler(SpeechRecognitionStateVariables srVar) {
+	public TempGrammarSpeechResultHandler(SpeechRecognizerManager srVar) {
 		super(srVar);
 	}
 
@@ -54,7 +54,7 @@ public class TempGrammarSpeechResultHandler extends AbstractSpeechResultHandler 
 	 * @return true if the result is an predefined one
 	 */
 	@Override
-	protected boolean environmentSpecificInputHandling(String result, SpeechRecognitionStateVariables srVar) {
+	protected boolean environmentSpecificInputHandling(String result, SpeechRecognizerManager srVar) {
 		if (result.equals(Constants.MULTI_CALL_STOP)) {
 			srVar.setListeningState(ListeningState.NOT_LISTENING);
 			srVar.setCurrentGrammar(Grammar.MAIN);

@@ -25,8 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionStateVariables;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionStateVariables.ListeningState;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager.ListeningState;
 
 /**
  * Handler that handles SpeechRecognition System intern commands
@@ -35,13 +35,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechR
  */
 public abstract class AbstractSpeechResultHandler {
 
-	private SpeechRecognitionStateVariables srVar;
+	private SpeechRecognizerManager srVar;
 
 	/**
 	 * @param srVar
 	 *            Variables Class
 	 */
-	public AbstractSpeechResultHandler(SpeechRecognitionStateVariables srVar) {
+	public AbstractSpeechResultHandler(SpeechRecognizerManager srVar) {
 		this.srVar = srVar;
 	}
 
@@ -90,7 +90,7 @@ public abstract class AbstractSpeechResultHandler {
 	 * @return true if the result is an predefined one
 	 */
 	protected abstract boolean environmentSpecificInputHandling(String result,
-			SpeechRecognitionStateVariables srVariables);
+			SpeechRecognizerManager srVariables);
 
 	/**
 	 * Getter

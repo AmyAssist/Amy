@@ -34,6 +34,7 @@ import javax.sound.sampled.TargetDataLine;
 
 import org.slf4j.Logger;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.output.OutputImpl;
@@ -53,22 +54,26 @@ import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
  * @author Kai Menzel
  */
 @Service
-public class SpeechRecognitionStateVariables {
+public class SpeechRecognizerManager {
+
+	// --------------------------------------------------------------
+	// Dependencies
 
 	@Reference
 	private Logger logger;
-
 	@Reference
 	private OutputImpl output;
-
 	@Reference
 	private GrammarObjectsCreator creator;
-
 	@Reference
 	private SpeechInputHandler inputHandler;
-
 	@Reference
 	private MessageHub messageHub;
+	@Reference
+	private SpeechRecognizerManager thisManager;
+
+	// --------------------------------------------------------------
+	// Fields
 
 	// State Data Variables
 	private ListeningState currentListeningState = ListeningState.NOT_LISTENING;
@@ -85,36 +90,25 @@ public class SpeechRecognitionStateVariables {
 	private Thread mainRecognizer;
 	private Thread currentTempRecognizer;
 
-	// -------------------------------------------------------
+	// --------------------------------------------------------------
+	// Construcor
 
-	/**
-	 * Setter
-	 * 
-	 * @param mainResultHandler
-	 *            handles Result of Main Recognizer
-	 */
-	public void setMainResultHandler(MainGrammarSpeechResultHandler mainResultHandler) {
-		this.mainResultHandler = mainResultHandler;
-	}
-
-	/**
-	 * Setter
-	 * 
-	 * @param tempResultHandler
-	 *            handles Result of Temp Recognizer
-	 */
-	public void setTempResultHandler(TempGrammarSpeechResultHandler tempResultHandler) {
-		this.tempResultHandler = tempResultHandler;
-	}
+	// --------------------------------------------------------------
+	// Init
 
 	/**
 	 * Creates the Main Recognizer
 	 */
-	public void init() {
+	@PostConstruct
+	private void init() {
+		this.mainResultHandler = new MainGrammarSpeechResultHandler(this.thisManager);
+		this.tempResultHandler = new TempGrammarSpeechResultHandler(this.thisManager);
+
 		this.mainRecognizer = new Thread(new SphinxSpeechRecognizer(Grammar.MAIN, this.mainResultHandler, this.ais));
 	}
 
-	// -------------------------------------------------------
+	// --------------------------------------------------------------
+	// Methods
 
 	/**
 	 * Change the Listening state
@@ -157,12 +151,10 @@ public class SpeechRecognitionStateVariables {
 	}
 
 	/**
-	 * Getter
-	 * 
-	 * @return Current ListeningState
+	 * Stop all Current Outputs
 	 */
-	public ListeningState getListeningState() {
-		return this.currentListeningState;
+	public void stopOutput() {
+		this.output.stopOutput();
 	}
 
 	/**
@@ -172,12 +164,17 @@ public class SpeechRecognitionStateVariables {
 	 *            Main Temp None
 	 */
 	public void setCurrentGrammar(Grammar currentGrammar) {
-		this.currentGrammar = currentGrammar;
 		switch (currentGrammar) {
+
 		case MAIN:
-			this.mainRecognizer.start();
+			if (this.currentGrammar != currentGrammar) {
+				this.currentGrammar = currentGrammar;
+				this.mainRecognizer.start();
+			}
 			break;
+
 		case TEMP:
+			this.currentGrammar = currentGrammar;
 			if (this.currentTempRecognizer != null) {
 				this.currentTempRecognizer.interrupt();
 			}
@@ -185,66 +182,25 @@ public class SpeechRecognitionStateVariables {
 					new SphinxSpeechRecognizer(Grammar.TEMP, this.tempResultHandler, this.ais));
 			this.currentTempRecognizer.start();
 			break;
+
 		case NONE:
+			if (this.currentGrammar != currentGrammar) {
+				this.currentGrammar = currentGrammar;
+				// Do nothing
+			}
 			break;
+
 		case GOOGLE:
-			// TODO start google translation
+			if(this.currentGrammar != currentGrammar) {
+				this.currentGrammar = currentGrammar;
+				this.mainRecognizer.start();	
+				// TODO start google translation			
+			}
 			break;
 		default:
 			break;
 		}
 	}
-
-	/**
-	 * Getter
-	 * 
-	 * @return current Active Grammar State
-	 */
-	public Grammar getCurrentGrammarState() {
-		return this.currentGrammar;
-	}
-
-	// -------------------------------------------------------
-
-	/**
-	 * Getter
-	 * 
-	 * @return true if System is Currently Outputting
-	 */
-	public boolean isSoundPlaying() {
-		return this.output.isCurrentlyOutputting();
-	}
-
-	/**
-	 * Stop all Current Outputs
-	 */
-	public void stopOutput() {
-		this.output.stopOutput();
-	}
-
-	// -------------------------------------------------------
-
-	/**
-	 * Enum that Describes the current Listening state of the SR System
-	 * 
-	 * @author Kai Menzel
-	 */
-	public enum ListeningState {
-		/**
-		 * Recognition is sleeping
-		 */
-		NOT_LISTENING,
-		/**
-		 * Recognition state where amy is listening to a single command
-		 */
-		SINGLE_CALL_LISTENING,
-		/**
-		 * Recognition state where amy is listening to an unlimited count of commands
-		 */
-		MULTI_CALL_LISTENING;
-	}
-
-	// -------------------------------------------------------
 
 	/**
 	 * handles the SpeechRecognition Result and transfers it to the Interpreter
@@ -269,8 +225,6 @@ public class SpeechRecognitionStateVariables {
 			Thread.currentThread().interrupt();
 		}
 	}
-
-	// -------------------------------------------------------
 
 	/**
 	 * starts the default AudioInputStream
@@ -302,4 +256,61 @@ public class SpeechRecognitionStateVariables {
 		final boolean bigEndian = false;
 		return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
 	}
+
+	// --------------------------------------------------------------
+	// Getter
+
+	/**
+	 * Getter
+	 * 
+	 * @return Current ListeningState
+	 */
+	public ListeningState getListeningState() {
+		return this.currentListeningState;
+	}
+
+	/**
+	 * Getter
+	 * 
+	 * @return current Active Grammar State
+	 */
+	public Grammar getCurrentGrammarState() {
+		return this.currentGrammar;
+	}
+
+	/**
+	 * Getter
+	 * 
+	 * @return true if System is Currently Outputting
+	 */
+	public boolean isSoundPlaying() {
+		return this.output.isCurrentlyOutputting();
+	}
+
+	// --------------------------------------------------------------
+	// Setter
+
+	// --------------------------------------------------------------
+	// Other
+
+	/**
+	 * Enum that Describes the current Listening state of the SR System
+	 * 
+	 * @author Kai Menzel
+	 */
+	public enum ListeningState {
+		/**
+		 * Recognition is sleeping
+		 */
+		NOT_LISTENING,
+		/**
+		 * Recognition state where amy is listening to a single command
+		 */
+		SINGLE_CALL_LISTENING,
+		/**
+		 * Recognition state where amy is listening to an unlimited count of commands
+		 */
+		MULTI_CALL_LISTENING;
+	}
+
 }
