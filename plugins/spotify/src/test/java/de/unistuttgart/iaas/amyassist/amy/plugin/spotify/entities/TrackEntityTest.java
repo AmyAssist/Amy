@@ -53,7 +53,7 @@ class TrackEntityTest {
 	@Test
 	void testConstructorAndGetters() {
 		assertThat(this.track.getName(), equalTo(NAME));
-		assertThat(this.track.getArtist(), equalTo(ARTIST));
+		assertThat(this.track.getArtists(), equalTo(ARTIST));
 		assertThat(this.track.getUri(), equalTo(URI));
 	}
 
@@ -65,7 +65,7 @@ class TrackEntityTest {
 		this.track.setUri(URI);
 		this.track.setDurationInMs(DURATION);
 		assertThat(this.track.getName(), equalTo(NAME));
-		assertThat(this.track.getArtist(), equalTo(ARTIST));
+		assertThat(this.track.getArtists(), equalTo(ARTIST));
 		assertThat(this.track.getUri(), equalTo(URI));
 		assertThat(this.track.getDurationInMs(), equalTo(DURATION));
 	}

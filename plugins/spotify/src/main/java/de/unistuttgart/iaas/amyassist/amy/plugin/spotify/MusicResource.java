@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -179,7 +178,7 @@ public class MusicResource implements Resource {
 	 *            how many results maximal searched for
 	 * @return a array with TrackEntities
 	 */
-	@POST
+	@GET
 	@Path("search/track/{searchText}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -201,7 +200,7 @@ public class MusicResource implements Resource {
 	 *            how many results maximal searched for
 	 * @return a array with PlaylistEntities
 	 */
-	@POST
+	@GET
 	@Path("search/playlist/{searchText}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -223,7 +222,7 @@ public class MusicResource implements Resource {
 	 *            how many results maximal searched for
 	 * @return a array with AlbumEntities
 	 */
-	@POST
+	@GET
 	@Path("search/album/{searchText}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -245,7 +244,7 @@ public class MusicResource implements Resource {
 	 *            how many results maximal searched for
 	 * @return a array with ArtistEntities
 	 */
-	@POST
+	@GET
 	@Path("search/artist/{searchText}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -262,7 +261,7 @@ public class MusicResource implements Resource {
 	 * plays the playlist with the index from the search
 	 * 
 	 * @param playlistNumber
-	 *           playlist number should be played
+	 *            playlist number should be played
 	 * @param type
 	 *            where to play: allowed parameters: user (playlist), featured (playlist), search
 	 * @return a PlaylistEntity
@@ -273,30 +272,24 @@ public class MusicResource implements Resource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public PlaylistEntity playPlaylist(@QueryParam("index") @DefaultValue("0") int playlistNumber,
 			@QueryParam("type") @DefaultValue("") String type) {
+		PlaylistEntity playlist;
 		switch (type.toLowerCase()) {
 		case "user":
-			PlaylistEntity userPlaylist = this.logic.playPlaylist(playlistNumber, SearchTypes.USER_PLAYLISTS);
-			if (userPlaylist == null) {
-				throw new WebApplicationException("There is no user playlist available with this number.",
-						Status.CONFLICT);
-			}
-			return userPlaylist;
+			playlist = this.logic.playPlaylist(playlistNumber, SearchTypes.USER_PLAYLISTS);
+			break;
 		case "featured":
-			PlaylistEntity featuredPlaylist = this.logic.playPlaylist(playlistNumber, SearchTypes.FEATURED_PLAYLISTS);
-			if (featuredPlaylist == null) {
-				throw new WebApplicationException("There is no featured playlist available with this number.",
-						Status.CONFLICT);
-			}
-			return featuredPlaylist;
+			playlist = this.logic.playPlaylist(playlistNumber, SearchTypes.FEATURED_PLAYLISTS);
+			break;
 		case "search":
-			PlaylistEntity searchPlaylist = this.logic.playPlaylist(playlistNumber, SearchTypes.SEARCH_PLAYLISTS);
-			if (searchPlaylist == null) {
-				throw new WebApplicationException("There is no playlist available with this number.", Status.CONFLICT);
-			}
-			return searchPlaylist;
+			playlist = this.logic.playPlaylist(playlistNumber, SearchTypes.SEARCH_PLAYLISTS);
+			break;
 		default:
 			throw new WebApplicationException("Found nothing to play.", Status.CONFLICT);
 		}
+		if (playlist != null) {
+			return playlist;
+		}
+		throw new WebApplicationException("There is no playlist available with this number.", Status.CONFLICT);
 	}
 
 	/**
@@ -317,13 +310,13 @@ public class MusicResource implements Resource {
 		}
 		throw new WebApplicationException("There is no track available with this number.", Status.CONFLICT);
 	}
-	
+
 	/**
 	 * plays the album with the index from the search
 	 * 
 	 * @param albumNumber
 	 *            which album number should be played
-	 * @return a AlbumEntity 
+	 * @return a AlbumEntity
 	 */
 	@POST
 	@Path("play/album")
@@ -336,13 +329,13 @@ public class MusicResource implements Resource {
 		}
 		throw new WebApplicationException("There is no album available with this number.", Status.CONFLICT);
 	}
-	
+
 	/**
 	 * plays the artist with the index from the search
 	 * 
 	 * @param artistNumber
 	 *            which album number should be played
-	 * @return a ArtistEntity 
+	 * @return a ArtistEntity
 	 */
 	@POST
 	@Path("play/artist")
@@ -441,7 +434,7 @@ public class MusicResource implements Resource {
 	 *            type of playlists: allowed parameters: user, featured
 	 * @return user or featured playlists
 	 */
-	@POST
+	@GET
 	@Path("playlists/{type}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)

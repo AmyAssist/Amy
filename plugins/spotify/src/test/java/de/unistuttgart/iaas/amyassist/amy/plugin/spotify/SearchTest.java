@@ -192,8 +192,8 @@ public class SearchTest {
 		TrackEntity TrackEntity2 = trackEntities.get(1);
 		assertThat(trackEntity1.getName(), equalTo(SONG_NAME1));
 		assertThat(TrackEntity2.getName(), equalTo(SONG_NAME2));
-		assertThat(trackEntity1.getArtist()[0], equalTo(ARTIST_NAME1));
-		assertThat(TrackEntity2.getArtist()[0], equalTo(ARTIST_NAME2));
+		assertThat(trackEntity1.getArtists()[0], equalTo(ARTIST_NAME1));
+		assertThat(TrackEntity2.getArtists()[0], equalTo(ARTIST_NAME2));
 		assertThat(trackEntity1.getUri(), equalTo(ID1));
 		assertThat(TrackEntity2.getUri(), equalTo(ID2));
 		assertThat(trackEntity1.getDurationInMs(), equalTo(DURATION1));

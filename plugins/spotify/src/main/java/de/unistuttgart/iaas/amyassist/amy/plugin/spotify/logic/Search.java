@@ -159,7 +159,6 @@ public class Search {
 			for (Track track : searchResult.getItems()) {
 				trackEntity = new TrackEntity();
 				trackEntity.setName(track.getName());
-
 				String[] artistNames = new String[track.getArtists().length];
 				for (int i = 0; i < track.getArtists().length; i++) {
 					artistNames[i] = track.getArtists()[i].getName();

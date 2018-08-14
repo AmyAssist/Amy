@@ -250,7 +250,7 @@ class MusicRestTest {
 	@Test
 	void testSearchTrack() {
 		when(this.search.searchforTracks(SONG_NAME1, 1)).thenReturn(this.trackList);
-		Response response = this.target.path("search/track/" + SONG_NAME1).queryParam("limit", 1).request().post(null);
+		Response response = this.target.path("search/track/" + SONG_NAME1).queryParam("limit", 1).request().get();
 		TrackEntity[] actual = response.readEntity(TrackEntity[].class);
 		assertThat(actual[0].getName(), equalTo(this.trackList.get(0).getName()));
 		assertThat(response.getStatus(), is(200));
@@ -264,7 +264,7 @@ class MusicRestTest {
 	@Test
 	void testSearchTrackEmpty() {
 		when(this.search.searchforTracks(SONG_NAME1, 1)).thenReturn(new ArrayList<>());
-		Response response = this.target.path("search/track/" + SONG_NAME1).queryParam("limit", 1).request().post(null);
+		Response response = this.target.path("search/track/" + SONG_NAME1).queryParam("limit", 1).request().get();
 		assertThat(response.getStatus(), is(204));
 	}
 
@@ -275,7 +275,7 @@ class MusicRestTest {
 	@Test
 	void testSearchAlbum() {
 		when(this.search.searchforAlbums(SONG_NAME1, 1)).thenReturn(this.albumList);
-		Response response = this.target.path("search/album/" + SONG_NAME1).queryParam("limit", 1).request().post(null);
+		Response response = this.target.path("search/album/" + SONG_NAME1).queryParam("limit", 1).request().get();
 		AlbumEntity[] actual = response.readEntity(AlbumEntity[].class);
 		assertThat(actual[0].getName(), equalTo(this.albumList.get(0).getName()));
 		assertThat(response.getStatus(), is(200));
@@ -289,7 +289,7 @@ class MusicRestTest {
 	@Test
 	void testSearchAlbumEmpty() {
 		when(this.search.searchforAlbums(SONG_NAME1, 1)).thenReturn(new ArrayList<>());
-		Response response = this.target.path("search/album/" + SONG_NAME1).queryParam("limit", 1).request().post(null);
+		Response response = this.target.path("search/album/" + SONG_NAME1).queryParam("limit", 1).request().get();
 		assertThat(response.getStatus(), is(204));
 	}
 
@@ -301,7 +301,7 @@ class MusicRestTest {
 	void testSearchArtist() {
 		when(this.search.searchforArtists(ARTIST_NAME1, 1)).thenReturn(this.artistList);
 		Response response = this.target.path("search/artist/" + ARTIST_NAME1).queryParam("limit", 1).request()
-				.post(null);
+				.get();
 		ArtistEntity[] actual = response.readEntity(ArtistEntity[].class);
 		assertThat(actual[0].getName(), equalTo(this.artistList.get(0).getName()));
 		assertThat(response.getStatus(), is(200));
@@ -316,7 +316,7 @@ class MusicRestTest {
 	void testSearchArtistEmpty() {
 		when(this.search.searchforTracks(ARTIST_NAME1, 1)).thenReturn(new ArrayList<>());
 		Response response = this.target.path("search/artist/" + ARTIST_NAME1).queryParam("limit", 1).request()
-				.post(null);
+				.get();
 		assertThat(response.getStatus(), is(204));
 	}
 
@@ -328,7 +328,7 @@ class MusicRestTest {
 	void testSearchPlaylist() {
 		when(this.search.searchforPlaylists(SONG_NAME1, 1)).thenReturn(this.playlistList);
 		Response response = this.target.path("search/playlist/" + SONG_NAME1).queryParam("limit", 1).request()
-				.post(null);
+				.get();
 		PlaylistEntity[] actual = response.readEntity(PlaylistEntity[].class);
 		assertThat(actual[0].getName(), equalTo(this.playlistList.get(0).getName()));
 		assertThat(response.getStatus(), is(200));
@@ -343,7 +343,7 @@ class MusicRestTest {
 	void testSearchPlaylistEmpty() {
 		when(this.search.searchforPlaylists(SONG_NAME1, 1)).thenReturn(new ArrayList<>());
 		Response response = this.target.path("search/playlist/" + SONG_NAME1).queryParam("limit", 1).request()
-				.post(null);
+				.get();
 		assertThat(response.getStatus(), is(204));
 	}
 
@@ -548,7 +548,7 @@ class MusicRestTest {
 	@Test
 	void testGetPlaylistUser() {
 		when(this.search.searchOwnPlaylists(1)).thenReturn(this.userPlaylists);
-		Response response = this.target.path("playlists/user").queryParam("limit", 1).request().post(null);
+		Response response = this.target.path("playlists/user").queryParam("limit", 1).request().get();
 		PlaylistEntity[] actual = response.readEntity(PlaylistEntity[].class);
 		assertThat(actual[0].getName(), equalTo(this.userPlaylists.get(0).getName()));
 		assertThat(response.getStatus(), is(200));
@@ -558,7 +558,7 @@ class MusicRestTest {
 	@Test
 	void testGetPlaylistFeatured() {
 		when(this.search.searchFeaturedPlaylists(1)).thenReturn(this.featuredPlaylists);
-		Response response = this.target.path("playlists/featured").queryParam("limit", 1).request().post(null);
+		Response response = this.target.path("playlists/featured").queryParam("limit", 1).request().get();
 		PlaylistEntity[] actual = response.readEntity(PlaylistEntity[].class);
 		assertThat(actual[0].getName(), equalTo(this.featuredPlaylists.get(0).getName()));
 		assertThat(response.getStatus(), is(200));
@@ -568,7 +568,7 @@ class MusicRestTest {
 	@Test
 	void testGetPlaylistEmpty() {
 		when(this.search.searchFeaturedPlaylists(1)).thenReturn(new ArrayList<>());
-		Response response = this.target.path("playlists/featured").queryParam("limit", 1).request().post(null);
+		Response response = this.target.path("playlists/featured").queryParam("limit", 1).request().get();
 		assertThat(response.getStatus(), is(204));
 	}
 

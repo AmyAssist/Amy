@@ -53,11 +53,11 @@ public class TrackEntity extends Item {
 	}
 
 	/**
-	 * Get's {@link #getArtist() artists}
+	 * Get's {@link #getArtists() artists}
 	 * 
 	 * @return artists a string array with all artists
 	 */
-	public String[] getArtist() {
+	public String[] getArtists() {
 		return this.artists;
 	}
 
