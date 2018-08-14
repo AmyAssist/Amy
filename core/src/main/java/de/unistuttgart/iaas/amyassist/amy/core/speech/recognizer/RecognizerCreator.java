@@ -97,8 +97,9 @@ public class RecognizerCreator implements DeploymentContainerService {
 	public void deploy() {
 		Path grammarFolder = this.environment.getWorkingDirectory().resolve("resources").resolve("sphinx-grammars");
 		Path mainGrammarFile = grammarFolder.resolve(this.mainGrammarName + ".gram");
-		Path tempGrammarFile = grammarFolder.resolve(this.tempGrammarName + ".gram");
+		// Path tempGrammarFile = grammarFolder.resolve(this.tempGrammarName + ".gram")
 
+		// Create mainGrammar.gram
 		try {
 			Files.createDirectories(grammarFolder);
 		} catch (IOException e) {
@@ -115,8 +116,9 @@ public class RecognizerCreator implements DeploymentContainerService {
 		loadAndCheckProperties();
 
 		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_ENABLE))) {
+			this.googleRecognition.launchChrome();
 			Grammar.GOOGLE.initiateAsRemoteRecognizer(this.googleRecognition);
-//			Grammar.TEMP.initiateAsSphinxRecognizer(tempGrammarFile.toFile(), getAudioinputStream());
+			// Grammar.TEMP.initiateAsSphinxRecognizer(tempGrammarFile.toFile(), getAudioinputStream())
 			Grammar.MAIN.initiateAsSphinxRecognizer(mainGrammarFile.toFile(), getAudioinputStream());
 		} else {
 			this.recognitionDisabled = true;
