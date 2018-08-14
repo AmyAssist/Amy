@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
@@ -40,7 +41,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class DialogHandler {
 	
 	@Reference
-	NLProcessingManager manager;
+	private NLProcessingManager manager;
+	
+	@Reference
+	private ServiceLocator serviceLocator;
 	
 	Map<UUID, DialogImpl> map = new HashMap<>();
 	
@@ -62,7 +66,15 @@ public class DialogHandler {
 		DialogImpl dialog = map.get(uuid);
 		
 		if(dialog.getIntent() == null) {
-			manager.decideIntent(dialog);
+			this.manager.decideIntent(dialog, naturalLanguageText);
+		}
+		
+		
+		
+		//is the intent ready for the plugin?
+		if(dialog.getIntent().isFinished()) {
+			Object object = this.serviceLocator.createAndInitialize(dialog.getIntent().getPartialNLIClass());
+			dialog.getIntent().call(object, naturalLanguageText);
 		}
 	}
 }

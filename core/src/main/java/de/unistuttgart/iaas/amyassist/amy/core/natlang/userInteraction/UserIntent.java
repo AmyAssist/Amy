@@ -98,7 +98,7 @@ public class UserIntent {
 	}
 
 	private IMatcher getAMatcher(XMLEntityTemplate entityTemplate) {
-		//TODO replace with regex
+		// TODO replace with regex
 		if (entityTemplate.getType().equals("string")) {
 			return new StringMatcher(entityTemplate.getValues());
 		}
@@ -154,15 +154,6 @@ public class UserIntent {
 	}
 
 	/**
-	 * Get's {@link #entityList entityList}
-	 * 
-	 * @return entityList
-	 */
-	public Map<String, Entity> getEntityList() {
-		return this.entityList;
-	}
-
-	/**
 	 * Get's {@link #prompts prompts}
 	 * 
 	 * @return prompts
@@ -171,4 +162,13 @@ public class UserIntent {
 		return this.prompts;
 	}
 
+	/**
+	 * Get's {@link #entityList entityList}
+	 * @return  entityList
+	 */
+	public Map<String, Entity> getEntityList() {
+		return this.entityList;
+	}
+	
+	
 }
