@@ -23,13 +23,53 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
+import java.time.LocalDateTime;
+
 /**
- * TODO: Description
+ * Stores the data from one entity. Only one attribute is set at the same time
  * @author Lars Buttgereit
  */
-public interface IMatcher {
-	boolean match(String value);
+public class EntityData {
+
+	private int number = Integer.MIN_VALUE;
+	private String string;
+	private LocalDateTime time;
 	
-	EntityData convert(String toConvert);
+	public EntityData(int number) {
+		this.number = number;
+	}
+	
+	public EntityData(String string) {
+		this.string = string;
+	}
+	
+	public EntityData(LocalDateTime time) {
+		this.time = time;
+	}
+
+	/**
+	 * Get's {@link #number number}
+	 * @return  number
+	 */
+	public int getNumber() {
+		return this.number;
+	}
+
+	/**
+	 * Get's {@link #string string}
+	 * @return  string
+	 */
+	public String getString() {
+		return this.string;
+	}
+
+	/**
+	 * Get's {@link #time time}
+	 * @return  time
+	 */
+	public LocalDateTime getTime() {
+		return this.time;
+	}
+	
 	
 }

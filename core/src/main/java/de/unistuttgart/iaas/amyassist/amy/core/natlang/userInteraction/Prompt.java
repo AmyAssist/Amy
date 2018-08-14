@@ -30,9 +30,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
  * @author Lars Buttgereit
  */
 public class Prompt {
-	private String entityTemplateId;
-	private String outputText;
-	private AGFNode grammar;
+	private final String entityTemplateId;
+	private final String outputText;
+	private final AGFNode grammar;
 
 	public Prompt(String entityTemplateId, AGFNode grammar, String outputText) {
 		this.entityTemplateId = entityTemplateId;

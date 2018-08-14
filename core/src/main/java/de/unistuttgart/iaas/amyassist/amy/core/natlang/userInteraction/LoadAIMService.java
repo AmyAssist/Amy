@@ -46,7 +46,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLIAnnotationReader;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AmyInteractionModel;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
@@ -156,7 +156,7 @@ public class LoadAIMService implements DeploymentContainerService {
 
 		if (stream != null) {
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
-				AmyInteractionModel model = this.extractModel(reader.lines().collect(Collectors.joining()), fileName);
+				XMLAmyInteractionModel model = this.extractModel(reader.lines().collect(Collectors.joining()), fileName);
 				if (model != null) {
 					return model.getIntents();
 				}
@@ -180,12 +180,12 @@ public class LoadAIMService implements DeploymentContainerService {
 	 *            name of the jar entry
 	 * @return AmyInteractionModel instance
 	 */
-	protected AmyInteractionModel extractModel(String xmlContent, String entryName) {
+	protected XMLAmyInteractionModel extractModel(String xmlContent, String entryName) {
 		try {
-			JAXBContext jc = JAXBContext.newInstance(AmyInteractionModel.class);
+			JAXBContext jc = JAXBContext.newInstance(XMLAmyInteractionModel.class);
 			Unmarshaller unmarshaller = jc.createUnmarshaller();
 			StringReader reader = new StringReader(xmlContent);
-			AmyInteractionModel aim = (AmyInteractionModel) unmarshaller.unmarshal(reader);
+			XMLAmyInteractionModel aim = (XMLAmyInteractionModel) unmarshaller.unmarshal(reader);
 			return aim;
 		} catch (JAXBException e1) {
 			e1.printStackTrace();

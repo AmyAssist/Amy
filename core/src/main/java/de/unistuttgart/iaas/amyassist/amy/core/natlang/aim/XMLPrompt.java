@@ -23,39 +23,43 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.aim;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
 /**
- * TODO: Description
+ * contains prompt information used in aim xml files
+ * 
  * @author Felix Burk
  */
-@XmlRootElement(name="AmyInteractionModel")
-public class AmyInteractionModel {
+@XmlAccessorType(XmlAccessType.FIELD)
+public class XMLPrompt {
 
-	@XmlElement(name = "Intent", required = false)
-	private List<AIMIntent> intents;
+	private String text;
+	private String gram;
 
 	/**
-	 * Get's {@link #intents intents}
-	 * @return  intents
-	 */
-	public List<AIMIntent> getIntents() {
-		return this.intents;
-	}
-	
-	/**
-	 * convenience method
-	 * @return string representation of this object 
+	 * @return string representation of this object
 	 */
 	public String printSelf() {
-		StringBuilder b = new StringBuilder();
-		for(AIMIntent intent : this.intents) {
-			b.append(intent.printSelf());
-		}
-		return b.toString();
+		return "\n Prompt text=" + this.text + " gram=" + this.gram;
 	}
-	
+
+	/**
+	 * Get's {@link #text text}
+	 * 
+	 * @return text
+	 */
+	public String getText() {
+		return this.text;
+	}
+
+	/**
+	 * Get's {@link #gram gram}
+	 * 
+	 * @return gram
+	 */
+	public String getGram() {
+		return this.gram;
+	}
+
 }

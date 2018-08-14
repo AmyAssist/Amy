@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLIAnnotationReader;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParseException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
 
@@ -41,7 +42,7 @@ public class UserIntent {
 	@Nonnull
 	private final Method method;
 	@Nonnull
-	private final AGFNode grammar;
+	private AGFNode grammar;
 	@Nonnull
 	private final Class<?> partialNLIClass;
 	@Nonnull
@@ -69,9 +70,8 @@ public class UserIntent {
 	 * @param grammar to match
 	 * @param aimIntent corresponding aimintent from xml
 	 */
-	public UserIntent(@Nonnull Method method, @Nonnull AGFNode grammar, @Nonnull AIMIntent aimIntent) {
+	public UserIntent(@Nonnull Method method, @Nonnull AIMIntent aimIntent) {
 		this.method = method;
-		this.grammar = grammar;
 		this.partialNLIClass = method.getDeclaringClass();
 		this.aimIntent = aimIntent;
 	}
@@ -106,5 +106,14 @@ public class UserIntent {
 	public String call(Object instance, String... input) {
 		Object[] params = { input };
 		return NLIAnnotationReader.callNLIMethod(this.method, instance, params);
+	}
+	
+	public boolean isFinished() {
+		for(Entity entity : this.entityList) {
+			if (entity.getEntityData() == null) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

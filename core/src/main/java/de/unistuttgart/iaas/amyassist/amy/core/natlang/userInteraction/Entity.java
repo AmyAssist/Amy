@@ -23,10 +23,89 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
+import java.util.List;
+
 /**
  * TODO: Description
+ * 
  * @author Lars Buttgereit
  */
 public class Entity {
+	private final String type;
+	private final String entityId;
+	private final List<String> values;
+	private final IMatcher matcher;
+	private EntityData entityData;
 
+	public Entity(String type, String entityId, List<String> values, IMatcher matcher) {
+		this.type = type;
+		this.entityId = entityId;
+		this.values = values;
+		this.matcher = matcher;
+	}
+
+	public boolean match(String toMatch) {
+		if(this.matcher.match(toMatch)) {
+			this.entityData = this.matcher.convert(toMatch);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Get's {@link #matcher matcher}
+	 * 
+	 * @return matcher
+	 */
+	public IMatcher getMatcher() {
+		return this.matcher;
+	}
+
+	/**
+	 * Set's {@link #matcher matcher}
+	 * 
+	 * @param matcher
+	 *            matcher
+	 */
+	public void setMatcher(IMatcher matcher) {
+		this.matcher = matcher;
+	}
+
+	/**
+	 * Get's {@link #type type}
+	 * 
+	 * @return type
+	 */
+	public String getType() {
+		return this.type;
+	}
+
+	/**
+	 * Get's {@link #entityId entityId}
+	 * 
+	 * @return entityId
+	 */
+	public String getEntityId() {
+		return this.entityId;
+	}
+
+	/**
+	 * Get's {@link #values values}
+	 * 
+	 * @return values
+	 */
+	public List<String> getValues() {
+		return this.values;
+	}
+
+	/**
+	 * Get's {@link #entityData entityData}
+	 * @return  entityData
+	 */
+	public EntityData getEntityData() {
+		return this.entityData;
+	}
+
+	
+	
 }

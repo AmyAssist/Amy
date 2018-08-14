@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -37,7 +37,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AmyInteractionModel;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.LoadAIMService;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -53,13 +54,16 @@ class TestAIMService {
 
 	@Reference
 	private TestFramework testFramework;
-
+	
+	
+	private NLProcessingManager nlProcessingManager;
 	private LoadAIMService loadAIMService;
-	private AmyInteractionModel interactionModel;
+	private XMLAmyInteractionModel interactionModel;
 
 	@BeforeEach
 	void init() throws FileNotFoundException {
 		this.testFramework.mockService(PluginManager.class);
+		this.testFramework.mockService(NLProcessingManager.class);
 		this.loadAIMService = this.testFramework.setServiceUnderTest(LoadAIMService.class);
 		FileInputStream stream = new FileInputStream(
 				"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/de.unistuttgart.iaas."

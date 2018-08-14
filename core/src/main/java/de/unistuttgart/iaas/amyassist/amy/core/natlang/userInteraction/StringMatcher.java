@@ -23,13 +23,43 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
+import java.util.List;
+
 /**
- * TODO: Description
+ * MAtch String values from the XML and 'conver' these to a string
+ * 
  * @author Lars Buttgereit
  */
-public interface IMatcher {
-	boolean match(String value);
-	
-	EntityData convert(String toConvert);
-	
+public class StringMatcher implements IMatcher {
+
+	private List<String> values;
+
+	public StringMatcher(List<String> values) {
+		this.values = values;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.IMatcher#match(java.lang.String)
+	 */
+	@Override
+	public boolean match(String toMatch) {
+		for (String value : this.values) {
+			if (value.equals(toMatch)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.IMatcher#convert(de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.Entity)
+	 */
+	@Override
+	public EntityData convert(String toConvert) {
+		if (match(toConvert)) {
+			return new EntityData(toConvert);
+		}
+		return null;
+	}
+
 }
