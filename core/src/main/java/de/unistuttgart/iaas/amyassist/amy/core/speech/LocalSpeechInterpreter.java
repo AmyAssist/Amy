@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 
 /**
  * Interface of the Local Recognition System
@@ -43,12 +42,4 @@ public interface LocalSpeechInterpreter extends RunnableService {
 	 */
 	@Override
 	void stop();
-
-	/**
-	 * Method that is called to change the current Grammar State
-	 * 
-	 * @param grammar
-	 *            Main or Temp(first create Temp Grammar file)
-	 */
-	void updateGrammar(Grammar grammar);
 }
