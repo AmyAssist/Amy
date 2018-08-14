@@ -144,7 +144,7 @@ public class RemoteSR {
 	/**
 	 * Exception that Singnals that there was an Error with the Chrome Launch
 	 */
-	private class LaunchChromeException extends Exception {
+	public class LaunchChromeException extends Exception {
 
 		/**
 		 * 

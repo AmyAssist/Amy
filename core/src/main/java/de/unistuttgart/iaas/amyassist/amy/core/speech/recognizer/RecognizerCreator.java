@@ -43,6 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
+import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR.LaunchChromeException;
 
 /**
  * Class that Creates all Grammar Objects sets the MainGrammar and the List of all other Grammars
@@ -80,7 +81,7 @@ public class RecognizerCreator implements DeploymentContainerService {
 	private boolean recognitionDisabled = false;
 
 	private String mainGrammarName = "mainGrammar";
-	private String tempGrammarName = "tempGrammar";
+	// private String tempGrammarName = "tempGrammar"
 
 	private AudioInputStream ais = null;
 
@@ -116,7 +117,13 @@ public class RecognizerCreator implements DeploymentContainerService {
 		loadAndCheckProperties();
 
 		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_ENABLE))) {
-			this.googleRecognition.launchChrome();
+			try {
+				this.googleRecognition.launchChrome();
+			} catch (LaunchChromeException e) {
+				e.printStackTrace();
+				this.recognitionDisabled = true;
+				return;
+			}
 			Grammar.GOOGLE.initiateAsRemoteRecognizer(this.googleRecognition);
 			// Grammar.TEMP.initiateAsSphinxRecognizer(tempGrammarFile.toFile(), getAudioinputStream())
 			Grammar.MAIN.initiateAsSphinxRecognizer(mainGrammarFile.toFile(), getAudioinputStream());
