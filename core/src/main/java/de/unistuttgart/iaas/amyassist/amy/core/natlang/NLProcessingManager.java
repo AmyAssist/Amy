@@ -45,4 +45,10 @@ public interface NLProcessingManager {
 	 */
 	void decideIntent(DialogImpl dialog, String naturalLanguageText);
 
+	/**
+	 * @param dialog
+	 * @param naturalLanguageText
+	 */
+	void processIntent(DialogImpl dialog, String naturalLanguageText);
+
 }

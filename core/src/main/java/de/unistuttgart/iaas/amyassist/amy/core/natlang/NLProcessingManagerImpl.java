@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 
@@ -50,6 +51,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParserException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.Prompt;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
@@ -62,15 +64,17 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
  */
 @Service
 public class NLProcessingManagerImpl implements NLProcessingManager {
+	
+	String[] failedToUnderstand = {
+			"I did not understand that", "Sorry, could you repeat that?", 
+			"I don't know what you mean", "No idea what you are talking about"
+	};
 
 	@Reference
 	private Logger logger;
 	@Reference
 	private Environment environment;
-
-	@Reference
-	private ServiceLocator serviceLocator;
-
+	
 	private final List<UserIntent> register = new ArrayList<>();
 
 	private final List<AGFNode> registeredNodeList = new ArrayList<>();
@@ -118,7 +122,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		AGFNode parseWholeExpression = agfParser.parseWholeExpression();
 		
 		return new PartialNLI(method, parseWholeExpression, method.getDeclaringClass()); */
-		return null;
+		return new UserIntent(method, intent);
 	}
 
 	/**
@@ -152,12 +156,22 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 			UserIntent userIntent = this.register.get(matchingNodeIndex);
 			String[] arguments = Lists.transform(tokens, WordToken::getContent).toArray(new String[tokens.size()]);
-			Object object = this.serviceLocator.createAndInitialize(userIntent.getPartialNLIClass());
-			return userIntent.call(object, arguments);
+			//Object object = this.serviceLocator.createAndInitialize(userIntent.getPartialNLIClass());
+		//	return userIntent.call(object, arguments);
 		}catch(NLParserException e) {
 			return "I did not understand that";
 		}
+		return null;
 		
+	}
+	
+	@Override
+	public void processIntent(DialogImpl dialog, String naturalLanguageText) {
+		
+		List<AGFNode> promptGrams = dialog.getIntent()
+				.getPrompts().stream().map(Prompt::getGrammar).collect(Collectors.toList());
+		
+		//TODO
 	}
 
 	/**
@@ -166,12 +180,19 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Override
 	public void decideIntent(DialogImpl dialog, String naturalLanguageText) {
 		ChooseLanguage language = new ChooseLanguage(this.languageString);
-		for(UserIntent intent : register) {
-			NLLexer nlLexer = new NLLexer(language.getNumberConversion());
-			List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
-			INLParser nlParser = new NLParser(this.registeredNodeList, language.getStemmer(), this.stemmerEnabled);
-
+		NLLexer nlLexer = new NLLexer(language.getNumberConversion());
+		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
+		INLParser nlParser = new NLParser(this.registeredNodeList, language.getStemmer(), this.stemmerEnabled);
+		try {
+			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
+			UserIntent userIntent = this.register.get(matchingNodeIndex);
+			dialog.setIntent(userIntent);
+		} catch(NLParserException e) {
+			int rndm = (int) Math.round(Math.random()*this.failedToUnderstand.length);
+			dialog.output(this.failedToUnderstand[rndm]);
 		}
+
+		
 	}
 }
 

@@ -116,4 +116,14 @@ public class UserIntent {
 		}
 		return true;
 	}
+
+	/**
+	 * Get's {@link #prompts prompts}
+	 * @return  prompts
+	 */
+	public List<Prompt> getPrompts() {
+		return this.prompts;
+	}
+	
+	
 }
