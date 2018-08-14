@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -122,7 +123,11 @@ public class Core {
 
 	private void loadPlugins() {
 		PluginManager pluginManager = this.di.getService(PluginManager.class);
-		pluginManager.loadPlugins();
+		try {
+			pluginManager.loadPlugins();
+		} catch (IOException e) {
+			throw new IllegalStateException("Could not load plugins due to an IOException.", e);
+		}
 		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
 	}
 

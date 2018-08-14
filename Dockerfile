@@ -12,9 +12,9 @@ WORKDIR /app
 
 RUN set -x; mvn install -DskipTests=true
 
-RUN mkdir /dist && mkdir /dist/plugins
+RUN mkdir /dist
 RUN mv amy-master-node/target/amy-master-node.jar /dist/amy.jar
-RUN mv plugins/*/target/*with-dependencies.jar /dist/plugins/
+RUN mv build/plugins/ /dist/
 
 # production
 FROM openjdk:8-jre

@@ -90,7 +90,10 @@ public interface IPlugin {
 	 * Get's a list of all classes of this plugin
 	 * 
 	 * @return classes
+	 * @deprecated Because it will not be possible to get this list when we start to use multiple deployment
+	 *             descriptors.
 	 */
+	@Deprecated
 	List<Class<?>> getClasses();
 
 	/**
