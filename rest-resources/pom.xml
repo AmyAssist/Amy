@@ -29,6 +29,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>2.0.2</version>
+		</dependency>
+		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-plugin-manager-api</artifactId>
 			<version>0.5.0-Snapshot</version>

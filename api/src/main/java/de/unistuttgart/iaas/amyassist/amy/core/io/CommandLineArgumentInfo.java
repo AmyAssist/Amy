@@ -35,17 +35,6 @@ public interface CommandLineArgumentInfo {
 	 * Get the additional config paths set by the command line flags.
 	 * 
 	 * @return a list of paths.
-	 * @throws IllegalStateException
-	 *             When the CommandLineArgumentHandler is not initialized.
 	 */
 	List<String> getConfigPaths();
-
-	/**
-	 * Get a list of plugin paths
-	 * 
-	 * @return a list of paths.
-	 * @throws IllegalStateException
-	 *             When the CommandLineArgumentHandler is not initialized.
-	 */
-	List<String> getPluginPaths();
 }

@@ -23,13 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
 
@@ -42,23 +43,24 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 
 /**
- * Manages the plugin integration
+ * Manages the plugin integration.
  * 
- * @author Leon Kiefer
+ * For an explanation of the config see <a href=https://github.com/AmyAssist/Amy/wiki/PluginManager#config>
+ * https://github.com/AmyAssist/Amy/wiki/PluginManager#config</a>.
+ * 
+ * @author Leon Kiefer, Tim Neumann
  */
 @Service
 public class PluginManagerService implements PluginManager {
 	private static final String CONFIG_NAME = "plugin.config";
 	private static final String PROPERTY_PLUGINS = "plugins";
 	private static final String PROPERTY_PLUGIN_DIR = "pluginDir";
-	private static final String PROPERTY_MODE = "mode";
 
 	@Reference
 	private Logger logger;
@@ -74,77 +76,76 @@ public class PluginManagerService implements PluginManager {
 	private ConfigurationManager configurationManager;
 	@Reference
 	private Configuration di;
-
-	@Reference
-	private CommandLineArgumentInfo cmaInfo;
-
 	@Reference
 	private Environment environment;
 
 	private Properties config;
 
-	/**
-	 * The root directory of the project. Defaults to the working directory.
-	 */
-	private Path projectDir;
+	private Path workingDir;
+
+	private boolean loaded = false;
 
 	@PostConstruct
 	private void setup() {
+		this.workingDir = this.environment.getWorkingDirectory();
+		loadAndCheckConfig();
+	}
+
+	private void loadAndCheckConfig() {
 		this.config = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
-		this.projectDir = this.environment.getWorkingDirectory();
+		checkProperty(PROPERTY_PLUGINS);
+		checkProperty(PROPERTY_PLUGIN_DIR);
+	}
+
+	private void checkProperty(String key) {
+		if (this.config.getProperty(key) == null)
+			throw new IllegalStateException("The property " + key + " is not set.");
 	}
 
 	private List<String> getPluginListFromConfig() {
 		String[] plugins = this.config.getProperty(PROPERTY_PLUGINS).split(",");
-		return Arrays.asList(plugins);
+		List<String> pluginList = new ArrayList<>(Arrays.asList(plugins));
+		pluginList.removeIf(String::isEmpty);
+		return pluginList;
 	}
 
-	private boolean loaded = false;
+	private Path getPluginDirFromConfig() throws FileNotFoundException {
+		Path pluginDir = this.workingDir.resolve(this.config.getProperty(PROPERTY_PLUGIN_DIR));
+		if (!Files.exists(pluginDir))
+			throw new FileNotFoundException("Plugin directory does not exist.");
+		return pluginDir;
+	}
+
+	private boolean isConfiguredToLoadAll() {
+		List<String> pluginList = getPluginListFromConfig();
+		return (pluginList.size() == 1 && pluginList.get(0).equals("all"));
+	}
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager#loadPlugins()
 	 */
 	@Override
-	public synchronized void loadPlugins() {
+	public synchronized void loadPlugins() throws IOException {
 		if (this.loaded)
 			throw new IllegalStateException("the plugins are loaded");
 
-		if (!this.cmaInfo.getPluginPaths().isEmpty()) {
-			for (String pathS : this.cmaInfo.getPluginPaths()) {
-				Path path = this.projectDir.resolve(pathS);
-				this.pluginLoader.loadPlugin(path);
-			}
+		this.logger.debug("workingDir: {}", this.workingDir);
+
+		if (!Files.exists(this.workingDir))
+			throw new FileNotFoundException("Working directory does not exist.");
+
+		Path pluginDir = getPluginDirFromConfig();
+
+		if (isConfiguredToLoadAll()) {
+			tryLoadAllPluginsFromDir(pluginDir);
 		} else {
-			this.logger.debug("projectDir: {}", this.projectDir);
-
-			if (!Files.exists(this.projectDir)) {
-				this.logger.error("Project directory does not exist.");
-				return;
-			}
-
-			Path pluginDir = this.projectDir.resolve(this.config.getProperty(PROPERTY_PLUGIN_DIR));
-
-			if (!Files.exists(pluginDir)) {
-				this.logger.error(
-						"Plugin directory does not exist. Is the project path correct for your working directory?");
-				return;
-			}
-
-			String mode = this.config.getProperty(PROPERTY_MODE);
-			if (mode.equals("dev")) {
-				for (String pluginID : this.getPluginListFromConfig()) {
-					if (!pluginID.isEmpty()) {
-						this.tryLoadPlugin(pluginDir, pluginID);
-					}
+			for (String plugin : this.getPluginListFromConfig()) {
+				Path pluginJar = pluginDir.resolve(plugin + ".jar");
+				if (!Files.isRegularFile(pluginJar)) {
+					this.logger.warn("The Plugin {} is missing its jar file {} and is therefore not loaded.", plugin,
+							pluginJar);
 				}
-			} else if (mode.equals("docker")) {
-				try (Stream<Path> childs = Files.list(pluginDir)) {
-					childs.forEach(p -> this.pluginLoader.loadPlugin(p));
-				} catch (IOException e) {
-					this.logger.error("Failed loading plugins", e);
-				}
-			} else {
-				this.logger.error("Unknown plugin mode: {}", mode);
+				this.pluginLoader.loadPlugin(pluginJar);
 			}
 		}
 
@@ -155,33 +156,11 @@ public class PluginManagerService implements PluginManager {
 		this.loaded = true;
 	}
 
-	private boolean tryLoadPlugin(Path pluginDir, String pluginID) {
-		this.logger.debug("try load plugin {}", pluginID);
-		Path p = pluginDir.resolve(pluginID);
-
-		if (!Files.exists(p)) {
-			this.logger.warn("The plugin {} does not exist in the plugin directory.", p);
-			return false;
+	private void tryLoadAllPluginsFromDir(Path dir) throws IOException {
+		try (Stream<Path> childs = Files.list(dir)) {
+			childs.filter(p -> p.getFileName().toString().endsWith(".jar"))
+					.forEach(p -> this.pluginLoader.loadPlugin(p));
 		}
-		Path target = p.resolve("target");
-		if (!Files.exists(target)) {
-			this.logger.warn("Plugin {} has no target directory. Did you run mvn install?", p);
-			return false;
-		}
-
-		try (Stream<Path> childs = Files.list(target)) {
-			Optional<Path> jar = childs.filter(j -> j.getFileName().toString().endsWith("with-dependencies.jar"))
-					.findFirst();
-			if (!jar.isPresent()) {
-				this.logger.warn("The jar with dependencies is missing for plugin {}", pluginID);
-				return false;
-			}
-
-			return this.pluginLoader.loadPlugin(jar.get());
-		} catch (IOException e) {
-			this.logger.error("Failed to load plugin", e);
-		}
-		return false;
 	}
 
 	/**
