@@ -57,13 +57,19 @@ public class GMailSession extends MailSession {
 
 	private static final String HOST_ADDRESS = "imap.gmail.com";
 
+	private static final String INBOX_NAME = "INBOX";
+
 	@Override
-	public Folder getInbox() throws MessagingException {
-		if (this.inbox != null) {
-			return this.inbox;
+	public Folder getInbox() {
+		Folder folderToOpen;
+		try {
+			folderToOpen = this.store.getFolder(INBOX_NAME);
+			folderToOpen.open(Folder.READ_ONLY);
+			return folderToOpen;
+		} catch (MessagingException e) {
+			this.logger.error("Couldn't access inbox", e);
 		}
-		openInboxReadOnly("inbox");
-		return this.inbox;
+		return null;
 	}
 
 	@PostConstruct
@@ -78,11 +84,11 @@ public class GMailSession extends MailSession {
 	}
 
 	@PreDestroy
-	private void endSession() {
+	private void destroy() {
 		try {
-			closeInbox();
+			endSession();
 		} catch (MessagingException e) {
-			this.logger.error("Inbox couldn't be closed properly", e);
+			this.logger.error("Couldn't close mail store", e);
 		}
 	}
 }

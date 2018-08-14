@@ -24,8 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -84,27 +82,6 @@ public class MessageDTO extends Entity {
 	}
 
 	/**
-	 * Constructor for a message
-	 * 
-	 * @param from
-	 *            the mail address of the sender
-	 * @param subject
-	 *            subject of the messages
-	 * @param content
-	 *            the content of the message
-	 * @param sentDate
-	 *            the time the mail was sent
-	 * @param important
-	 *            is message from important sender
-	 * @param seen
-	 *            is message seen
-	 */
-	public MessageDTO(String from, String subject, String content, Date sentDate, boolean important, boolean seen) {
-		this(from, subject, content, sentDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(), important,
-				seen);
-	}
-
-	/**
 	 * @return address of the sender
 	 */
 	public String getFrom() {
@@ -144,31 +121,5 @@ public class MessageDTO extends Entity {
 	 */
 	public boolean isSeen() {
 		return this.seen;
-	}
-
-	/**
-	 * Needed for rest test
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object object) {
-		if (object instanceof MessageDTO) {
-			MessageDTO other = (MessageDTO) object;
-			return (this.from.equals(other.from) && this.subject.equals(other.subject)
-					&& this.content.equals(other.content) && this.sentDate.equals(other.sentDate)
-					&& this.important == other.important);
-		}
-		return false;
-	}
-
-	/**
-	 * Needed because we override equals
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return super.hashCode();
 	}
 }

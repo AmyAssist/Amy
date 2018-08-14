@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email.session;
 
+import javax.annotation.Nonnull;
 import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -35,12 +36,10 @@ import javax.mail.Store;
  */
 public abstract class MailSession {
 
-	private Store store;
-
 	/**
-	 * The folder which will be used for getting mails
+	 * The mail store
 	 */
-	Folder inbox;
+	protected Store store;
 
 	/**
 	 * Get inbox of this class. If the inbox is non-existent, or not opened, it will be created and opened
@@ -65,35 +64,13 @@ public abstract class MailSession {
 	 * @throws MessagingException
 	 *             if connecting fails
 	 */
-	void connect(String username, String password, String protocol, String hostAddress) throws MessagingException {
-		if (username != null && password != null) {
-			// set up session
-			Session session = Session.getInstance(System.getProperties(), null);
-			this.store = session.getStore(protocol);
-			this.store.connect(hostAddress, username, password);
-		} else {
-			throw new IllegalArgumentException("Parameters invalid");
-		}
-	}
+	void connect(@Nonnull String username, @Nonnull String password, @Nonnull String protocol,
+			@Nonnull String hostAddress) throws MessagingException {
 
-	/**
-	 * Open folder, but only for reading
-	 * 
-	 * @param inboxFolderName
-	 *            name of the inbox on the server
-	 * 
-	 * @return the opened folder, null if store is not connected
-	 * @throws MessagingException
-	 *             if something went wrong
-	 */
-	Folder openInboxReadOnly(String inboxFolderName) throws MessagingException {
-		if (this.store.isConnected()) {
-			Folder folderToOpen = this.store.getFolder(inboxFolderName);
-			folderToOpen.open(Folder.READ_ONLY);
-			this.inbox = folderToOpen;
-			return folderToOpen;
-		}
-		return null;
+		Session session = Session.getInstance(System.getProperties(), null);
+		this.store = session.getStore(protocol);
+		this.store.connect(hostAddress, username, password);
+
 	}
 
 	/**
@@ -102,8 +79,7 @@ public abstract class MailSession {
 	 * @throws MessagingException
 	 *             if closing a folder failed
 	 */
-	public void closeInbox() throws MessagingException {
-		this.inbox.close(false);
-		this.inbox.getStore().close();
+	protected void endSession() throws MessagingException {
+		this.store.close();
 	}
 }

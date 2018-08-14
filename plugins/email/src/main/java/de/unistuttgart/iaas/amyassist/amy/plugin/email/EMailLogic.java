@@ -24,13 +24,15 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.mail.Address;
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
 import javax.mail.Message;
@@ -125,15 +127,15 @@ public class EMailLogic {
 
 		try {
 			for (int i = 0; i < amountToPrint; i++) {
-				Message m = messagesToPrint.get(messagesToPrint.size() - 1 - i);
-				InternetAddress from = (InternetAddress) m.getFrom()[0];
-				String fromName = from.getPersonal();
-				sb.append((fromName == null) ? from.getAddress() + "\n" : fromName + "\n");
+				Message m = messagesToPrint.get(i);
+				sb.append(getFrom(m) + "\n");
 				sb.append(m.getSubject() + "\n");
 				sb.append(getContentFromMessage(m) + "\n\n");
 			}
-		} catch (MessagingException | IOException e) {
-			this.logger.error("Something went wrong", e);
+		} catch (MessagingException me) {
+			this.logger.error("Operations on the message failed", me);
+		} catch (IOException ioe) {
+			this.logger.error("Getting content from message failed", ioe);
 		}
 		return sb.toString();
 	}
@@ -144,15 +146,17 @@ public class EMailLogic {
 	/**
 	 * Get all unread messages from the inbox
 	 * 
-	 * @return all unread messages in inbox
+	 * @return all unread messages in inbox, from newest to oldest
 	 */
 	List<Message> getNewMessages() {
 		try {
-			Message[] newMessages = this.mailSession.getInbox().search(new FlagTerm(new Flags(Flag.SEEN), false));
-			return Arrays.asList(newMessages);
+			List<Message> messages = Arrays
+					.asList(this.mailSession.getInbox().search(new FlagTerm(new Flags(Flag.SEEN), false)));
+			Collections.reverse(messages);
+			return messages;
 		} catch (MessagingException me) {
 			this.logger.error("Searching for mails failed", me);
-			return new ArrayList<>();
+			return Collections.emptyList();
 		}
 	}
 
@@ -170,10 +174,11 @@ public class EMailLogic {
 					importantMessages.add(m);
 				}
 			}
+			return importantMessages;
 		} catch (MessagingException e) {
-			this.logger.error("Something went wrong", e);
+			this.logger.error("Couldn't determine whether the message is important", e);
+			return Collections.emptyList();
 		}
-		return importantMessages;
 	}
 
 	/**
@@ -191,12 +196,15 @@ public class EMailLogic {
 		if (message.isMimeType("text/plain")) {
 			return message.getContent().toString();
 		} else if (message.isMimeType("multipart/*")) {
+			StringBuilder sb = new StringBuilder();
 			try {
 				Multipart mp = (Multipart) message.getContent();
 				for (int i = 0; i < mp.getCount(); i++) {
 					Part part = mp.getBodyPart(i);
 					if (part.isMimeType("text/plain")) {
-						return part.getContent().toString();
+						sb.append(i + part.getContent().toString() + "\n");
+					} else {
+						sb.append(i + "Body part is not plain text\n");
 					}
 				}
 			} catch (ClassCastException cce) {
@@ -207,6 +215,7 @@ public class EMailLogic {
 				 */
 				this.logger.debug("Still getting a stream back", cce);
 			}
+			return sb.toString();
 		}
 		return "Message content not readable";
 
@@ -222,20 +231,22 @@ public class EMailLogic {
 	 */
 	public List<MessageDTO> getMailsForREST(int amount) {
 		List<MessageDTO> messagesToSend = new ArrayList<>();
-		Message[] messages;
+		List<Message> messages;
 		try {
-			messages = this.mailSession.getInbox().getMessages();
-			int amountToPrint = (amount == -1) ? messages.length : amount;
+			// we switch order because we get the messages from the inbox from oldest to newest
+			messages = Arrays.asList(this.mailSession.getInbox().getMessages());
+			Collections.reverse(messages);
+			int amountToPrint = (amount == -1) ? messages.size() : amount;
 			for (int i = 0; i < amountToPrint; i++) {
-				// we get the messages from the inbox from oldest to newest, but we want to send the most recent ones
-				Message m = messages[messages.length - 1 - i];
-				messagesToSend.add(new MessageDTO(getFrom(m), m.getSubject(), getContentFromMessage(m), m.getSentDate(),
-						isImportantMessage(m), m.isSet(Flags.Flag.SEEN)));
+				Message m = messages.get(i);
+				LocalDateTime sentDate = m.getSentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+				messagesToSend.add(new MessageDTO(getFrom(m), m.getSubject(), getContentFromMessage(m), sentDate,
+						isImportantMessage(m), m.isSet(Flag.SEEN)));
 			}
 			return messagesToSend;
 		} catch (MessagingException | IOException e) {
-			this.logger.error("Something went wrong", e);
-			return new ArrayList<>();
+			this.logger.error("There were problems handling the messages", e);
+			return Collections.emptyList();
 		}
 	}
 
@@ -261,24 +272,27 @@ public class EMailLogic {
 	 *            the message to be checked
 	 * @return true if message sender is important, else false
 	 * @throws MessagingException
-	 *             if something goes wrong
+	 *             if getting the address of the sender failed
 	 */
 	boolean isImportantMessage(Message message) throws MessagingException {
 		Set<String> importantAddresses = getImportantMailAddresses();
-		return importantAddresses.contains(getFrom(message));
+		// we can't use getFrom() because it may return a personal name, but a mail address is needed here
+		InternetAddress address = (InternetAddress) message.getFrom()[0];
+		return importantAddresses.contains(address.getAddress());
 	}
 
 	/**
-	 * Get the mail address of the sender of the message
+	 * Get the mail address or personal name of the sender of the message
 	 * 
 	 * @param message
 	 *            the message
-	 * @return e-mail address of the sender as a String
+	 * @return if exists, the personal name of the sender, else the e-mail address of the sender as a String
 	 * @throws MessagingException
 	 *             when something goes wrong
 	 */
 	static String getFrom(Message message) throws MessagingException {
-		Address address = message.getFrom()[0];
-		return ((InternetAddress) address).getAddress();
+		InternetAddress address = (InternetAddress) message.getFrom()[0];
+		String personal = address.getPersonal();
+		return (personal == null) ? address.getAddress() : personal;
 	}
 }

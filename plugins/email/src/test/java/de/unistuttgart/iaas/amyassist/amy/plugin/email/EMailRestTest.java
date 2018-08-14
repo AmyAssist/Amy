@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -82,7 +84,15 @@ class EMailRestTest {
 			MessageDTO[] messages = response.readEntity(MessageDTO[].class);
 			assertEquals(amountOfMails, messages.length);
 			for (int i = 0; i < messages.length; i++) {
-				assertEquals(mails.get(i), messages[i]);
+				// test equality of objects
+				MessageDTO message1 = mails.get(i);
+				MessageDTO message2 = messages[i];
+
+				assertThat(message1.getFrom(), is(message2.getFrom()));
+				assertThat(message1.getSubject(), is(message2.getSubject()));
+				assertThat(message1.getContent(), is(message2.getContent()));
+				assertThat(message1.getSentDate(), is(message2.getSentDate()));
+				assertThat(new Boolean(message1.isImportant()), is(new Boolean(message2.isImportant())));
 			}
 		}
 	}
