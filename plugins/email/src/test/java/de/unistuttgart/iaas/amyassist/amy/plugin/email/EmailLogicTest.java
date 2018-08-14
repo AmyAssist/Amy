@@ -120,22 +120,22 @@ public class EmailLogicTest {
 		Message[] messages1 = createMockMessages(15, 7);
 		when(this.inboxMock.search(ArgumentMatchers.any(FlagTerm.class))).thenReturn(messages1);
 
-		assertEquals(new Boolean(true), new Boolean(this.emailLogic.hasNewMessages(false)));
-		assertEquals(new Boolean(true), new Boolean(this.emailLogic.hasNewMessages(true)));
+		assertEquals(true, this.emailLogic.hasNewMessages(false));
+		assertEquals(true, this.emailLogic.hasNewMessages(true));
 
 		// only normal mails
 		Message[] messages2 = createMockMessages(10, 0);
 		when(this.inboxMock.search(ArgumentMatchers.any(FlagTerm.class))).thenReturn(messages2);
 
-		assertEquals(new Boolean(true), new Boolean(this.emailLogic.hasNewMessages(false)));
-		assertEquals(new Boolean(false), new Boolean(this.emailLogic.hasNewMessages(true)));
+		assertEquals(true, this.emailLogic.hasNewMessages(false));
+		assertEquals(false, this.emailLogic.hasNewMessages(true));
 
 		// only important mails
 		Message[] messages3 = createMockMessages(10, 10);
 		when(this.inboxMock.search(ArgumentMatchers.any(FlagTerm.class))).thenReturn(messages3);
 
-		assertEquals(new Boolean(true), new Boolean(this.emailLogic.hasNewMessages(false)));
-		assertEquals(new Boolean(true), new Boolean(this.emailLogic.hasNewMessages(true)));
+		assertEquals(true, this.emailLogic.hasNewMessages(false));
+		assertEquals(true, this.emailLogic.hasNewMessages(true));
 	}
 
 	/**
@@ -148,8 +148,8 @@ public class EmailLogicTest {
 	public void testHasNewMessagesNoMails() throws MessagingException {
 		when(this.inboxMock.search(ArgumentMatchers.any(FlagTerm.class))).thenReturn(new Message[0]);
 
-		assertEquals(new Boolean(false), new Boolean(this.emailLogic.hasNewMessages(false)));
-		assertEquals(new Boolean(false), new Boolean(this.emailLogic.hasNewMessages(true)));
+		assertEquals(false, this.emailLogic.hasNewMessages(false));
+		assertEquals(false, this.emailLogic.hasNewMessages(true));
 	}
 
 	/**
@@ -354,7 +354,7 @@ public class EmailLogicTest {
 		Message[] messages = createMockMessages(15, 0);
 		when(this.inboxMock.search(ArgumentMatchers.any(FlagTerm.class))).thenReturn(messages);
 		List<Message> returnedMessages = this.emailLogic.getNewImportantMessages();
-		assertThat(new Integer(returnedMessages.size()), is(new Integer(0)));
+		assertThat(returnedMessages.size(), is(0));
 		assertThat(returnedMessages, is(Collections.emptyList()));
 	}
 
@@ -388,16 +388,16 @@ public class EmailLogicTest {
 		for (int i = 0; i < messages.length; i++) {
 			// setting up the mocks
 			Message m = messages[i];
-			when(new Boolean(m.isMimeType("text/plain"))).thenReturn(new Boolean(false));
-			when(new Boolean(m.isMimeType("multipart/*"))).thenReturn(new Boolean(true));
+			when(m.isMimeType("text/plain")).thenReturn(false);
+			when(m.isMimeType("multipart/*")).thenReturn(true);
 			Multipart mp = mock(Multipart.class);
 			when(m.getContent()).thenReturn(mp);
-			when(new Integer(mp.getCount())).thenReturn(new Integer(2));
+			when(mp.getCount()).thenReturn(2);
 			BodyPart part1 = mock(BodyPart.class);
 			BodyPart part2 = mock(BodyPart.class);
 			when(mp.getBodyPart(0)).thenReturn(part1);
 			when(mp.getBodyPart(1)).thenReturn(part2);
-			when(new Boolean(part1.isMimeType("text/plain"))).thenReturn(new Boolean(true));
+			when(part1.isMimeType("text/plain")).thenReturn(true);
 			when(part1.getContent()).thenReturn("innerContent" + i);
 
 			// testing
@@ -420,7 +420,7 @@ public class EmailLogicTest {
 	public void testGetContentFromMessageUnreadable() throws IOException, MessagingException {
 		Message[] messages = createMockMessages(10, 5);
 		for (Message m : messages) {
-			when(new Boolean(m.isMimeType("text/plain"))).thenReturn(new Boolean(false));
+			when(m.isMimeType("text/plain")).thenReturn(false);
 			assertThat(this.emailLogic.getContentFromMessage(m), containsString("Message content not readable"));
 		}
 	}
@@ -475,8 +475,8 @@ public class EmailLogicTest {
 		// need to convert from Date to LocalDateTime
 		assertThat(transferMessage.getSentDate(),
 				is(message.getSentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()));
-		assertThat(new Boolean(transferMessage.isImportant()), is(new Boolean(messageFrom.contains("important"))));
-		assertThat(new Boolean(transferMessage.isSeen()), is(new Boolean(message.isSet(Flag.SEEN))));
+		assertThat(transferMessage.isImportant(), is(messageFrom.contains("important")));
+		assertThat(transferMessage.isSeen(), is(message.isSet(Flag.SEEN)));
 	}
 
 	/**
@@ -491,7 +491,7 @@ public class EmailLogicTest {
 	protected void testGetImportantMailAddresses() throws MessagingException, IOException {
 		createMockMessages(10, 7); // needed so we have a few contacts
 		Set<String> importantAddresses = this.emailLogic.getImportantMailAddresses();
-		assertThat(new Integer(importantAddresses.size()), is(new Integer(7)));
+		assertThat(importantAddresses.size(), is(7));
 		for (String s : importantAddresses) {
 			assertThat(s, containsString("important"));
 		}
@@ -511,11 +511,11 @@ public class EmailLogicTest {
 		Message[] importantMessages = createMockMessages(10, 10);
 
 		for (Message message : normalMessages) {
-			assertThat(new Boolean(this.emailLogic.isImportantMessage(message)), is(new Boolean(false)));
+			assertThat(this.emailLogic.isImportantMessage(message), is(false));
 		}
 
 		for (Message message : importantMessages) {
-			assertThat(new Boolean(this.emailLogic.isImportantMessage(message)), is(new Boolean(true)));
+			assertThat(this.emailLogic.isImportantMessage(message), is(true));
 		}
 	}
 
@@ -544,8 +544,8 @@ public class EmailLogicTest {
 		Message[] messages = new Message[amount];
 		for (int i = 0; i < amount; i++) {
 			Message mockMessage = mock(Message.class);
-			when(mockMessage.getSubject()).thenReturn(new String("subject" + i));
-			when(new Boolean(mockMessage.isMimeType("text/plain"))).thenReturn(new Boolean(true));
+			when(mockMessage.getSubject()).thenReturn("subject" + i);
+			when(mockMessage.isMimeType("text/plain")).thenReturn(true);
 			when(mockMessage.getContent()).thenReturn("content" + i);
 			InternetAddress address = mock(InternetAddress.class);
 			when(mockMessage.getFrom()).thenReturn(new InternetAddress[] { address });
@@ -557,7 +557,7 @@ public class EmailLogicTest {
 
 				// add normal contact
 				Contact contact = mock(Contact.class);
-				when(new Boolean(contact.isImportant())).thenReturn(new Boolean(false));
+				when(contact.isImportant()).thenReturn(false);
 				when(contact.getEmail()).thenReturn(mailAddress);
 				this.contacts.add(contact);
 
@@ -568,7 +568,7 @@ public class EmailLogicTest {
 
 				// add important contact
 				Contact contact = mock(Contact.class);
-				when(new Boolean(contact.isImportant())).thenReturn(new Boolean(true));
+				when(contact.isImportant()).thenReturn(true);
 				when(contact.getEmail()).thenReturn(mailAddress);
 				this.contacts.add(contact);
 			}

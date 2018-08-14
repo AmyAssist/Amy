@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -80,9 +79,9 @@ class EMailRestTest {
 		when(this.logic.getMailsForREST(-1)).thenReturn(mails);
 
 		try (Response response = this.target.path("getMails").request().get()) {
-			assertEquals(200, response.getStatus());
+			assertThat(response.getStatus(), is(200));
 			MessageDTO[] messages = response.readEntity(MessageDTO[].class);
-			assertEquals(amountOfMails, messages.length);
+			assertThat(messages.length, is(amountOfMails));
 			for (int i = 0; i < messages.length; i++) {
 				// test equality of objects
 				MessageDTO message1 = mails.get(i);
@@ -92,7 +91,7 @@ class EMailRestTest {
 				assertThat(message1.getSubject(), is(message2.getSubject()));
 				assertThat(message1.getContent(), is(message2.getContent()));
 				assertThat(message1.getSentDate(), is(message2.getSentDate()));
-				assertThat(new Boolean(message1.isImportant()), is(new Boolean(message2.isImportant())));
+				assertThat(message1.isImportant(), is(message2.isImportant()));
 			}
 		}
 	}
