@@ -41,6 +41,7 @@ import org.mockito.Mockito;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.RecognizerCreator;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -55,7 +56,7 @@ public class GrammarCreatorTest {
 	@Reference
 	private TestFramework framework;
 
-	private GrammarObjectsCreator objectsCreator;
+	private RecognizerCreator objectsCreator;
 
 	private String grammarName;
 	private Path grammarFile;
@@ -75,7 +76,7 @@ public class GrammarCreatorTest {
 
 		this.grammarFile = this.tempDir.resolve("resources").resolve("sphinx-grammars/grammar.gram");
 
-		this.objectsCreator = this.framework.setServiceUnderTest(GrammarObjectsCreator.class);
+		this.objectsCreator = this.framework.setServiceUnderTest(RecognizerCreator.class);
 	}
 
 

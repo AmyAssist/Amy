@@ -27,8 +27,8 @@ import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreter;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.RecognizerCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
 
 /**
@@ -37,20 +37,21 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechR
  * @author Kai Menzel
  */
 @Service(LocalSpeechInterpreter.class)
-public class LocalSpeechInterpreterImpl implements LocalSpeechInterpreter {
+public class LocalSpeechInterpreterImpl implements LocalSpeechInterpreter, Runnable {
 
 	@Reference
 	private Logger logger;
-
 	@Reference
-	private SpeechRecognizerManager srVar;
+	private SpeechRecognizerManager recognitionManager;
+	@Reference
+	private RecognizerCreator recognizerCreator;
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreter#start()
 	 */
 	@Override
 	public void start() {
-		this.srVar.setCurrentGrammar(Grammar.MAIN);
+		(new Thread(this)).start();
 	}
 
 	/**
@@ -58,15 +59,27 @@ public class LocalSpeechInterpreterImpl implements LocalSpeechInterpreter {
 	 */
 	@Override
 	public void stop() {
-		this.srVar.setCurrentGrammar(Grammar.NONE);
+		this.recognitionManager.setCurrentGrammar(null);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreter#updateGrammar(de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar)
+	 * @see java.lang.Runnable#run()
 	 */
 	@Override
-	public void updateGrammar(Grammar grammar) {
-		this.srVar.setCurrentGrammar(grammar);
+	public void run() {
+		while (!Grammar.MAIN.isInitiated()) {
+			if (this.recognizerCreator.isRecognitionDisabled()) {
+				return;
+			}
+			Thread.yield();
+		}
+		if (this.recognizerCreator.isRecognitionDisabled()) {
+			this.logger.info("[INFORMATION] :: Speech Recognition Disabled");
+		} else {
+			this.logger.info("[INFORMATION] :: Speech Recognition activated");
+			this.recognitionManager.setCurrentGrammar(Grammar.MAIN);
+		}
+
 	}
 
 }

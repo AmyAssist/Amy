@@ -24,18 +24,18 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager.ListeningState;
 
 /**
  * Handler that handles SpeechRecognition System intern commands
  * 
  * @author Kai Menzel
  */
-public abstract class AbstractSpeechResultHandler {
+public abstract class AbstractSpeechResultHandler implements Runnable {
 
 	private SpeechRecognizerManager recognizerManager;
+
+	private String recognitionResult = null;
 
 	/**
 	 * Set's {@link #recognizerManager recognizerManager}
@@ -54,13 +54,20 @@ public abstract class AbstractSpeechResultHandler {
 	 *            speechRecognitionResult
 	 */
 	public void handle(String result) {
-		if (!isPredefinedInputHandling(result)) {
+		this.recognitionResult = result;
+		(new Thread(this)).start();
+	}
 
-			this.recognizerManager.handleSpeechResult(result);
-			if (this.recognizerManager.getListeningState() == ListeningState.SINGLE_CALL_LISTENING) {
-				this.recognizerManager.setListeningState(ListeningState.NOT_LISTENING);
-			}
+	/**
+	 * @see java.lang.Runnable#run()
+	 */
+	@Override
+	public void run() {
+		if (!isPredefinedInputHandling(this.recognitionResult)) {
+			this.recognizerManager.handleSpeechResult(this.recognitionResult);
+			this.recognitionResult = null;
 		}
+
 	}
 
 	/**
@@ -72,10 +79,11 @@ public abstract class AbstractSpeechResultHandler {
 	 * @return true if the result is an predefined one
 	 */
 	private boolean isPredefinedInputHandling(String result) {
-		if (result.equals(Constants.SHUT_UP) || this.recognizerManager.isSoundPlaying()) {
-			if (result.equals(Constants.SHUT_UP) && this.recognizerManager.isSoundPlaying()) {
+		if (result.equalsIgnoreCase(Constants.SHUT_UP) || this.recognizerManager.isSoundPlaying()) {
+			if (result.equalsIgnoreCase(Constants.SHUT_UP) && this.recognizerManager.isSoundPlaying()) {
 				this.recognizerManager.stopOutput();
 			}
+			this.recognizerManager.nextRecognitionRequest();
 			return true;
 		}
 		return environmentSpecificInputHandling(result, this.recognizerManager);
@@ -93,12 +101,4 @@ public abstract class AbstractSpeechResultHandler {
 	 */
 	protected abstract boolean environmentSpecificInputHandling(String result, SpeechRecognizerManager srVariables);
 
-	/**
-	 * Getter
-	 * 
-	 * @return Current GrammarState
-	 */
-	public Grammar getCurrentGrammarState() {
-		return this.recognizerManager.getCurrentGrammarState();
-	}
 }

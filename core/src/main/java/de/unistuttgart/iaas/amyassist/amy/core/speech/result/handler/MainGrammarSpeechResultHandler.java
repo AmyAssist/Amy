@@ -42,30 +42,39 @@ public class MainGrammarSpeechResultHandler extends AbstractSpeechResultHandler 
 	 * 
 	 * @param result
 	 *            Recognized String
-	 * @param srVar
+	 * @param recognitionManager
 	 *            variables Class
 	 * @return true if the result is an predefined one
 	 */
 	@Override
-	protected boolean environmentSpecificInputHandling(String result, SpeechRecognizerManager srVar) {
-		switch (result) {
+	protected boolean environmentSpecificInputHandling(String result, SpeechRecognizerManager recognitionManager) {
+
+		switch (result.toLowerCase()) {
+
 		case Constants.MULTI_CALL_START:
-			if (srVar.getListeningState() == ListeningState.NOT_LISTENING) {
-				srVar.setListeningState(ListeningState.MULTI_CALL_LISTENING);
+			if (recognitionManager.getListeningState() == ListeningState.NOT_LISTENING) {
+				recognitionManager.setListeningState(ListeningState.MULTI_CALL_LISTENING);
 			}
 			return true;
+
 		case Constants.SINGLE_CALL_START:
-			if (srVar.getListeningState() == ListeningState.NOT_LISTENING) {
-				srVar.setListeningState(ListeningState.SINGLE_CALL_LISTENING);
+			if (recognitionManager.getListeningState() == ListeningState.NOT_LISTENING) {
+				recognitionManager.setListeningState(ListeningState.SINGLE_CALL_LISTENING);
 			}
 			return true;
+
 		case Constants.MULTI_CALL_STOP:
-			if (srVar.getListeningState() != ListeningState.NOT_LISTENING) {
-				srVar.setListeningState(ListeningState.NOT_LISTENING);
+			if (recognitionManager.getListeningState() != ListeningState.NOT_LISTENING) {
+				recognitionManager.setListeningState(ListeningState.NOT_LISTENING);
 			}
 			return true;
+
 		default:
-			return (srVar.getListeningState() == ListeningState.NOT_LISTENING);
+			if (recognitionManager.getListeningState() == ListeningState.NOT_LISTENING) {
+				recognitionManager.nextRecognitionRequest();
+				return true;
+			}
+			return false;
 		}
 	}
 

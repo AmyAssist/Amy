@@ -21,20 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.grammar;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
 
-import java.nio.file.Path;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler;
 
 /**
- * Class that creates/updates the Temp Grammar
+ * Interface for the Different Recognizer
  * 
- * @author TODO
+ * @author Kai Menzel
  */
-@Service
-public class TempGrammarFactory {
-	private Path path = Grammar.TEMP.getPath();
-	
-	//TODO write the Temp Grammar
+public interface SpeechRecognizer {
+	void getRecognition(AbstractSpeechResultHandler resultHandler);
 }

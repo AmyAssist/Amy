@@ -48,7 +48,7 @@ public class TempGrammarSpeechResultHandler extends AbstractSpeechResultHandler 
 	 */
 	@Override
 	protected boolean environmentSpecificInputHandling(String result, SpeechRecognizerManager srVar) {
-		if (result.equals(Constants.MULTI_CALL_STOP)) {
+		if (result.equalsIgnoreCase(Constants.MULTI_CALL_STOP)) {
 			srVar.setListeningState(ListeningState.NOT_LISTENING);
 			return true;
 		}

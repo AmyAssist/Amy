@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -33,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.RuntimeExceptionRecognizerCantBeCreated;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.SpeechResult;
@@ -45,7 +45,7 @@ import edu.cmu.sphinx.api.StreamSpeechRecognizer;
  *
  * @author Kai Menzel
  */
-public class SphinxSpeechRecognizer implements Runnable {
+public class SphinxSpeechRecognizer implements SpeechRecognizer {
 
 	/**
 	 * logger for all the Speech Recognition classes
@@ -53,19 +53,9 @@ public class SphinxSpeechRecognizer implements Runnable {
 	private final Logger logger = LoggerFactory.getLogger(SphinxSpeechRecognizer.class);
 
 	/**
-	 * Grammar of the Current running Recognizer
-	 */
-	private final Grammar grammar;
-
-	/**
 	 * The Input Stream Source
 	 */
 	private final AudioInputStream ais;
-
-	/**
-	 * Handler who use the translated String for commanding the System
-	 */
-	private final AbstractSpeechResultHandler resultHandler;
 
 	/**
 	 * The Recognizer which Handles the Recognition
@@ -84,14 +74,12 @@ public class SphinxSpeechRecognizer implements Runnable {
 	 * @param ais
 	 *            set custom AudioInputStream.
 	 */
-	public SphinxSpeechRecognizer(Grammar grammar, AbstractSpeechResultHandler resultHandler, AudioInputStream ais) {
-		this.grammar = grammar;
-		this.resultHandler = resultHandler;
+	public SphinxSpeechRecognizer(File file, AudioInputStream ais) {
 		this.ais = ais;
 
 		// Create the Recognizer
 		try {
-			this.recognizer = new StreamSpeechRecognizer(this.createConfiguration());
+			this.recognizer = new StreamSpeechRecognizer(this.createConfiguration(file));
 		} catch (IOException e) {
 			throw new RuntimeExceptionRecognizerCantBeCreated("StreamRecognizer can't be instantiated", e);
 		}
@@ -100,69 +88,50 @@ public class SphinxSpeechRecognizer implements Runnable {
 	// -----------------------------------------------------------------------------------------------
 
 	/**
-	 * @see java.lang.Runnable#run() Starts and runs the recognizer calls makeDecision() with the recognized String
+	 * Starts and runs the recognizer calls makes Decision with the recognized String
 	 */
 	@Override
-	public void run() {
+	public void getRecognition(AbstractSpeechResultHandler resultHandler) {
 
 		// starts Recognition
-		this.recognizer.startRecognition(this.ais);
+		startRecognizer();
 
-		this.logger.info("[INFORMATION] :: Speech Recognition activated");
 
-		while (isRecognitionRunning()) {
-
-			// wait for input from the recognizer
-			SpeechResult speechResult = getSpeechResult();
-
-			/**
-			 * If Thread is not Interrupted, get and use SpeechRecognitionResult
-			 */
-			if (speechResult != null) {
-				String speechRecognitionResult = speechResult.getHypothesis();
-				this.logger.debug("I recognized: {}", speechRecognitionResult);
-				makeDecision(speechRecognitionResult);
-			}
+		// wait for input from the recognizer
+		SpeechResult speechResult = null;
+		while (speechResult == null) {
+			speechResult = this.recognizer.getResult();
 		}
+		/**
+		 * If Thread is not Interrupted, get and use SpeechRecognitionResult
+		 */
+		String speechRecognitionResult = speechResult.getHypothesis();
+		this.logger.debug("I recognized: {}", speechRecognitionResult);
 
-		this.recognizer.stopRecognition();
+		if (speechRecognitionResult.replace(" ", "").equals("") || speechRecognitionResult.equals("<unk>")) {
+			getRecognition(resultHandler);
+		} else {
+			stopRecognizer();
+			resultHandler.handle(speechRecognitionResult);
+		}
 	}
 
 	// ===============================================================================================
 
-	/**
-	 * Gives Input to Handler checks if input is useful
-	 * 
-	 * @param result
-	 *            the speechRecognitionResultString
-	 */
-	public void makeDecision(String result) {
-		if (result.replace(" ", "").equals("") || result.equals("<unk>")) {
-			return;
-		}
+	private boolean recognizerActive = false;
 
-		if (isRecognitionRunning()) {
-			this.resultHandler.handle(result);
+	private void startRecognizer() {
+		if (!this.recognizerActive) {
+			this.recognizer.startRecognition(this.ais);
+			this.recognizerActive = true;
 		}
 	}
 
-	// -----------------------------------------------------------------------------------------------
-
-	/**
-	 * wait for input from the recognizer
-	 * 
-	 * @return Result of VoiceInput or null if ThreadIsInterrupted
-	 */
-	private SpeechResult getSpeechResult() {
-		SpeechResult speechResult = null;
-		while (speechResult == null && isRecognitionRunning()) {
-			speechResult = this.recognizer.getResult();
+	private void stopRecognizer() {
+		if (this.recognizerActive) {
+			this.recognizer.stopRecognition();
+			this.recognizerActive = false;
 		}
-		return speechResult;
-	}
-
-	private boolean isRecognitionRunning() {
-		return (this.resultHandler.getCurrentGrammarState() == this.grammar && !Thread.interrupted());
 	}
 
 	// ===============================================================================================
@@ -174,7 +143,7 @@ public class SphinxSpeechRecognizer implements Runnable {
 	 * @throws FileNotFoundException
 	 *             throw if the given Grammar File does not exist
 	 */
-	private Configuration createConfiguration() throws FileNotFoundException {
+	private Configuration createConfiguration(File file) throws FileNotFoundException {
 		Configuration configuration = new Configuration();
 
 		configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
@@ -182,12 +151,11 @@ public class SphinxSpeechRecognizer implements Runnable {
 		configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
 
 		configuration.setUseGrammar(false);
-		if (this.grammar != null && this.grammar.getFile() != null
-				&& this.grammar.getFile().toString().endsWith(".gram")) {
+		if (file != null && file.toString().endsWith(".gram")) {
 			try {
-				if (this.grammar.getFile().exists()) {
-					configuration.setGrammarPath(this.grammar.getFile().getParentFile().toURI().toURL().toString());
-					configuration.setGrammarName(this.grammar.getFile().getName().replace(".gram", ""));
+				if (file.exists()) {
+					configuration.setGrammarPath(file.getParentFile().toURI().toURL().toString());
+					configuration.setGrammarName(file.getName().replace(".gram", ""));
 					configuration.setUseGrammar(true);
 				} else {
 					throw new FileNotFoundException();

@@ -24,7 +24,14 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech.grammar;
 
 import java.io.File;
-import java.nio.file.Path;
+
+import javax.sound.sampled.AudioInputStream;
+
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.GoogleSpeechRecognizer;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SphinxSpeechRecognizer;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
 
 /**
  * Enum that holds the mainGrammar and the tempGrammar
@@ -32,10 +39,6 @@ import java.nio.file.Path;
  * @author Kai Menzel
  */
 public enum Grammar {
-	/**
-	 * No Grammar is Currently Active
-	 */
-	NONE,
 	/**
 	 * The Main Grammar Recognition is currently Active
 	 */
@@ -49,33 +52,91 @@ public enum Grammar {
 	 */
 	GOOGLE;
 
-	private Path path;
+	private boolean initiated = false;
 
-	/**
-	 * Setter
-	 * 
-	 * @param path
-	 *            to Grammar
-	 */
-	public void setPath(Path path) {
-		this.path = path;
+	private AbstractSpeechResultHandler resultHandler;
+
+	private SpeechRecognizer recognizer;
+
+	// Init
+
+	public void initiateAsSphinxRecognizer(File grammar, AudioInputStream ais) {
+		this.recognizer = new SphinxSpeechRecognizer(grammar, ais);
+		this.initiated = true;
 	}
 
-	/**
-	 * Getter
-	 * 
-	 * @return Path Object of the Path to Grammar File
-	 */
-	public Path getPath() {
-		return this.path;
+	public void initiateAsSphinxRecognizer(File grammar, AudioInputStream ais,
+			AbstractSpeechResultHandler resultHandler) {
+		this.recognizer = new SphinxSpeechRecognizer(grammar, ais);
+		this.resultHandler = resultHandler;
+		this.initiated = true;
 	}
 
+	public void initiateAsRemoteRecognizer(RemoteSR recognizer) {
+		this.recognizer = new GoogleSpeechRecognizer(recognizer);
+		this.initiated = true;
+	}
+
+	public void initiateAsRemoteRecognizer(RemoteSR recognizer, AbstractSpeechResultHandler resultHandler) {
+		this.recognizer = new GoogleSpeechRecognizer(recognizer);
+		this.resultHandler = resultHandler;
+		this.initiated = true;
+	}
+
+	// SetResultHandler
+
 	/**
-	 * Getter
+	 * Set's {@link #resultHandler resultHandler}
 	 * 
-	 * @return File Object of the Path to the Grammar File
+	 * @param resultHandler
+	 *            resultHandler
 	 */
-	public File getFile() {
-		return this.path.toFile();
+	public void setResultHandler(AbstractSpeechResultHandler resultHandler) {
+		this.resultHandler = resultHandler;
+	}
+
+	// RequestSR
+
+	public void requestSR(AbstractSpeechResultHandler resultHandler) {
+		if (isInitiated()) {
+			this.recognizer.getRecognition(resultHandler);
+		} else {
+			throw new RecognizerNotInitiatedException();
+		}
+
+	}
+
+	public void requestSR() {
+		if (isInitiated()) {
+			if (this.resultHandler != null) {
+				this.recognizer.getRecognition(this.resultHandler);
+			} else {
+				throw new ResultHandlerNotSet();
+			}
+		} else {
+			throw new RecognizerNotInitiatedException();
+		}
+
+	}
+
+	// GetInitiatedState
+
+	/**
+	 * Get's {@link #initiated initiated}
+	 * 
+	 * @return initiated
+	 */
+	public boolean isInitiated() {
+		return this.initiated;
+	}
+
+	// Exceptions
+
+	private class RecognizerNotInitiatedException extends NullPointerException {
+
+	}
+
+	private class ResultHandlerNotSet extends NullPointerException {
+
 	}
 }

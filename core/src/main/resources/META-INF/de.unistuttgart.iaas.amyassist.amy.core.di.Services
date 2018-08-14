@@ -22,9 +22,9 @@ de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl
 de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskSchedulerImpl
 de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformationService
 de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreterImpl
+de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.RecognizerCreator
 de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager
 de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.MainGrammarSpeechResultHandler
 de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.TempGrammarSpeechResultHandler
-de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator
 de.unistuttgart.iaas.amyassist.amy.core.speech.output.OutputImpl
 de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeechImpl
