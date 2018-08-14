@@ -23,43 +23,64 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.aim;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
- * contains prompt information used in aim xml files
+ * Contains information of EntityTemplates used in aim xml files
  * 
  * @author Felix Burk
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Prompt {
+public class XMLEntityTemplate {
 
-	private String text;
-	private String gram;
+	@XmlAttribute(name = "id")
+	private String entityId;
+
+	@XmlAttribute(name = "type")
+	private String type;
+
+	@XmlElementWrapper(name = "Values", required = false)
+	@XmlElement(name = "value", required = false)
+	private List<String> values = new ArrayList<>();
 
 	/**
 	 * @return string representation of this object
 	 */
 	public String printSelf() {
-		return "\n Prompt text=" + this.text + " gram=" + this.gram;
+		StringBuilder builder = new StringBuilder();
+		builder = builder.append("\n Entity id=" + this.entityId + " type=" + this.type);
+		if (!this.values.isEmpty()) {
+			builder = builder.append("\n\t values:" + this.values.get(0) + ",");
+			for (int i = 1; i < this.values.size(); i++) {
+				builder = builder.append(this.values.get(i));
+			}
+		}
+		return builder.toString();
 	}
 
 	/**
-	 * Get's {@link #text text}
+	 * Get's {@link #entityId entityId}
 	 * 
-	 * @return text
+	 * @return entityId
 	 */
-	public String getText() {
-		return this.text;
+	public String getEntityId() {
+		return this.entityId;
 	}
 
 	/**
-	 * Get's {@link #gram gram}
+	 * Get's {@link #type type}
 	 * 
-	 * @return gram
+	 * @return type
 	 */
-	public String getGram() {
-		return this.gram;
+	public String getType() {
+		return this.type;
 	}
 
 }

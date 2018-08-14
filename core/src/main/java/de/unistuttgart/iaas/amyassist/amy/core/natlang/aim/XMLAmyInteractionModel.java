@@ -21,15 +21,41 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.aim;
+
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * TODO: Description
- * @author Lars Buttgereit
+ * @author Felix Burk
  */
-public interface IMatcher {
-	boolean match(String value);
+@XmlRootElement(name="AmyInteractionModel")
+public class XMLAmyInteractionModel {
+
+	@XmlElement(name = "Intent", required = false)
+	private List<AIMIntent> intents;
+
+	/**
+	 * Get's {@link #intents intents}
+	 * @return  intents
+	 */
+	public List<AIMIntent> getIntents() {
+		return this.intents;
+	}
 	
-	EntityData convert(String toConvert);
+	/**
+	 * convenience method
+	 * @return string representation of this object 
+	 */
+	public String printSelf() {
+		StringBuilder b = new StringBuilder();
+		for(AIMIntent intent : this.intents) {
+			b.append(intent.printSelf());
+		}
+		return b.toString();
+	}
 	
 }

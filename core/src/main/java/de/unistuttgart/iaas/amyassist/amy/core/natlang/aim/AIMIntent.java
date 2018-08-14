@@ -44,10 +44,10 @@ public class AIMIntent {
 
 	@XmlElementWrapper(name = "EntityTemplates", required = false)
 	@XmlElement(name = "EntityTemplate", required = false)
-	private List<EntityTemplate> templates = new ArrayList<>();
+	private List<XMLEntityTemplate> templates = new ArrayList<>();
 
 	@XmlElement(name = "Prompt", required = false)
-	private List<Prompt> prompts = new ArrayList<>();
+	private List<XMLPrompt> prompts = new ArrayList<>();
 
 	/**
 	 * prints information of itself and its content
@@ -57,10 +57,10 @@ public class AIMIntent {
 	public String printSelf() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("\n Intent ref=" + this.reference + " gram=" + this.gram);
-		for (EntityTemplate temp : this.templates) {
+		for (XMLEntityTemplate temp : this.templates) {
 			builder.append(temp.printSelf());
 		}
-		for (Prompt p : this.prompts) {
+		for (XMLPrompt p : this.prompts) {
 			builder.append(p.printSelf());
 		}
 		return builder.toString();
@@ -89,7 +89,7 @@ public class AIMIntent {
 	 * 
 	 * @return templates
 	 */
-	public List<EntityTemplate> getTemplates() {
+	public List<XMLEntityTemplate> getTemplates() {
 		return this.templates;
 	}
 
@@ -98,7 +98,7 @@ public class AIMIntent {
 	 * 
 	 * @return prompts
 	 */
-	public List<Prompt> getPrompts() {
+	public List<XMLPrompt> getPrompts() {
 		return this.prompts;
 	}
 
