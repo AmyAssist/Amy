@@ -24,33 +24,30 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
+import java.util.Set;
 
-import javax.mail.Address;
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
-import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.GMailSession;
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 
@@ -62,299 +59,240 @@ import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 @Service
 public class EMailLogic {
 
-	private Session session;
-
-	/**
-	 * the inbox object containing all messages this is not private because we need to change the inbox in the unit
-	 * tests
-	 */
-	Folder inbox;
-
 	@Reference
-	private Properties configLoader;
+	private GMailSession mailSession;
 
 	@Reference
 	private ContactRegistry contactRegistry;
-
-	/**
-	 * user name key for properties file
-	 */
-	public static final String EMAIL_USR_KEY = "email_usr";
-	/**
-	 * password key for properties file
-	 */
-	public static final String EMAIL_PW_KEY = "email_pw";
 
 	@Reference
 	private Logger logger;
 
 	/**
-	 * Returns number of new messages in inbox. New refers to messages that were received while the mailbox was not
-	 * opened.
+	 * returns if unread messages have been found
+	 * 
+	 * @param checkForImportant
+	 *            set this to true if you want to look for IMPORTANT new mails, set this to false if you only want to
+	 *            look for new mails
+	 * 
+	 * @return true, if messages have been found, else false
+	 */
+	public boolean hasNewMessages(boolean checkForImportant) {
+		if (checkForImportant) {
+			return !getNewImportantMessages().isEmpty();
+		}
+		return !getNewMessages().isEmpty();
+	}
+
+	/**
+	 * Returns number of new messages in inbox. The word "new" here refers to unread messages
+	 * 
+	 * @param checkForImportant
+	 *            put true here if you want the amount of new important mails
 	 * 
 	 * @return number of messages in inbox
 	 */
-	public int getNewMessageCount() {
-		if (this.inbox != null) {
-			try {
-				return this.inbox.getUnreadMessageCount();
-			} catch (MessagingException e) {
-				this.logger.error("Inbox fail", e);
-			}
+	public int getNewMessageCount(boolean checkForImportant) {
+		if (checkForImportant) {
+			return getNewImportantMessages().size();
 		}
-		this.logger.error("Tried to access a closed inbox!");
-		return -1;
+		return getNewMessages().size();
 	}
 
 	/**
-	 * Prints the plain text from all the mails in the inbox
+	 * Converts all new messages to a readable string
 	 * 
 	 * @param amount
-	 *            the amount of messages that should be returned, put -1 here if you want to have all messages returned
-	 * @return most recent messages
+	 *            amount of mails to print, put -1 here if you want every mail to be printed
 	 * 
+	 * @param important
+	 *            set this to true, if you only want the important mails to be converted, set this to false if you want
+	 *            every message to be converted
+	 * @return readable String of new messages
 	 */
-	public String printPlainTextMessages(int amount) {
-		StringBuilder b = new StringBuilder();
-		int count = 1;
-		if (this.inbox != null) {
-			Message[] messages;
-			try {
-				messages = this.inbox.getMessages();
-				for (Message m : messages) {
-					if (amount == -1 || count <= amount) {
-						b.append(concatenateMessage(m));
-					}
-					count++;
-				}
-			} catch (MessagingException e) {
-				this.logger.error("couldn't fetch messages from inbox", e);
-				return "";
-			}
-		}
-		return b.toString();
-	}
-
-	/**
-	 * Prints the plain text from messages from important people
-	 * 
-	 * @param amount
-	 *            the amount of messages that should be returned, put -1 here if you want to have all important messages
-	 *            returned
-	 * 
-	 * @return important messages
-	 */
-	public String printImportantMessages(int amount) {
+	public String printMessages(int amount, boolean important) {
+		List<Message> messagesToPrint;
 		StringBuilder sb = new StringBuilder();
-		int count = 1;
-		if (this.inbox != null) {
-			Message[] messages;
-			List<String> importantMailAddresses = getImportantMailAddresses();
-			try {
-				messages = this.inbox.getMessages();
-				for (Message m : messages) {
-					Address a = m.getFrom()[0];
-					if (a instanceof InternetAddress
-							&& importantMailAddresses.contains(((InternetAddress) a).getAddress())
-							&& (amount == -1 || count <= amount)) {
-						sb.append(concatenateMessage(m));
-					}
-				}
-			} catch (MessagingException e) {
-				this.logger.error("couldn't fetch messages from inbox", e);
-				return "";
+		if (important) {
+			messagesToPrint = getNewImportantMessages();
+		} else {
+			messagesToPrint = getNewMessages();
+		}
+		int amountToPrint;
+		if (amount > messagesToPrint.size() || amount == -1) {
+			amountToPrint = messagesToPrint.size();
+		} else {
+			amountToPrint = amount;
+		}
+
+		try {
+			for (int i = 0; i < amountToPrint; i++) {
+				Message m = messagesToPrint.get(i);
+				sb.append(getFrom(m) + "\n");
+				sb.append(m.getSubject() + "\n");
+				sb.append(getContentFromMessage(m) + "\n\n");
 			}
+		} catch (MessagingException me) {
+			this.logger.error("Operations on the message failed", me);
+		} catch (IOException ioe) {
+			this.logger.error("Getting content from message failed", ioe);
 		}
 		return sb.toString();
 	}
 
+	// ===========================================================================================================
+	// methods called only by logic class
+
 	/**
-	 * returns if unread messages have been found
+	 * Get all unread messages from the inbox
 	 * 
-	 * @return success
+	 * @return all unread messages in inbox, from newest to oldest
 	 */
-	public boolean hasUnreadMessages() {
-		if (this.inbox != null) {
-			Message[] messages;
-			try {
-				messages = this.inbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
-				return messages.length > 0;
-			} catch (MessagingException e) {
-				this.logger.error("could not read message", e);
-			}
+	List<Message> getNewMessages() {
+		try {
+			List<Message> messages = Arrays
+					.asList(this.mailSession.getInbox().search(new FlagTerm(new Flags(Flag.SEEN), false)));
+			Collections.reverse(messages);
+			return messages;
+		} catch (MessagingException me) {
+			this.logger.error("Searching for mails failed", me);
+			return Collections.emptyList();
 		}
-		return false;
 	}
 
 	/**
-	 * Transforms the message into a readable String
+	 * Get all important messages from given message array
+	 * 
+	 * @return all important messages in given message array
+	 */
+	List<Message> getNewImportantMessages() {
+		List<Message> unseenMessages = getNewMessages();
+		List<Message> importantMessages = new ArrayList<>();
+		try {
+			for (Message m : unseenMessages) {
+				if (isImportantMessage(m)) {
+					importantMessages.add(m);
+				}
+			}
+			return importantMessages;
+		} catch (MessagingException e) {
+			this.logger.error("Couldn't determine whether the message is important", e);
+			return Collections.emptyList();
+		}
+	}
+
+	/**
+	 * Get content in the message
 	 * 
 	 * @param message
-	 *            message to transform
-	 * @return concatenated String of message
+	 *            the message
+	 * @return content of the message as readable String
+	 * @throws MessagingException
+	 *             if something went wrong
+	 * @throws IOException
+	 *             if something went wrong
 	 */
-	public String concatenateMessage(Message message) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("\nMessage:");
-		try {
-			sb.append("\nFrom: " + Arrays.toString(message.getFrom()));
-			sb.append("\nSubject: " + message.getSubject());
-			sb.append("\nSent: " + message.getSentDate());
-
-		} catch (MessagingException e) {
-			this.logger.error("could not read message", e);
-		}
-
-		try {
-			if (message.isMimeType("text/plain")) {
-				sb.append("\nContent: " + message.getContent().toString());
-				// still broken, probably wrong message part appended to string builder - Felix B
-			} else if (message.getContent() instanceof Multipart) {
-				sb.append("\nVerarbeite multipart/* Nachricht");
+	String getContentFromMessage(Message message) throws MessagingException, IOException {
+		if (message.isMimeType("text/plain")) {
+			return message.getContent().toString();
+		} else if (message.isMimeType("multipart/*")) {
+			StringBuilder sb = new StringBuilder();
+			try {
 				Multipart mp = (Multipart) message.getContent();
-				// // Der erste Part ist immer die Hauptnachricht
-				if (mp.getCount() > 1) {
-					Part part = mp.getBodyPart(0);
-					sb.append("\n" + part.getContent());
+				for (int i = 0; i < mp.getCount(); i++) {
+					Part part = mp.getBodyPart(i);
+					if (part.isMimeType("text/plain")) {
+						sb.append(i + part.getContent().toString() + "\n");
+					} else {
+						sb.append(i + "Body part is not plain text\n");
+					}
 				}
+			} catch (ClassCastException cce) {
+				/*
+				 * Normally, casting should work fine when the content type is multipart, but there seems to be a
+				 * problem with finding the mail configuration, for more info, see:
+				 * https://javaee.github.io/javamail/FAQ#castmultipart
+				 */
+				this.logger.debug("Still getting a stream back", cce);
 			}
-		} catch (MessagingException | IOException e) {
-			this.logger.error("error reading message", e);
+			return sb.toString();
 		}
-		return sb.toString();
+		return "Message content not readable";
+
 	}
 
 	/**
-	 * sends a message to some recipient
+	 * Get all mails in the inbox and convert them to MessageDTO objects for the REST class to send to the web app
 	 * 
-	 * @param recipient
-	 *            the recipient
-	 * @param subject
-	 *            mail subject
-	 * @param message
-	 *            the mail body
-	 * @return success string
+	 * @param amount
+	 *            the amount of mails, put -1 here if you want all mails
+	 * 
+	 * @return all mails in the inbox in a list, because lists are better to work with than arrays
 	 */
-	public String sendMail(String recipient, String subject, String message) {
-		Message msg = new MimeMessage(this.session);
-
-		InternetAddress addressTo;
+	public List<MessageDTO> getMailsForREST(int amount) {
+		List<MessageDTO> messagesToSend = new ArrayList<>();
+		List<Message> messages;
 		try {
-			addressTo = new InternetAddress(recipient);
-			msg.setRecipient(Message.RecipientType.TO, addressTo);
-
-			msg.setSubject(subject);
-			msg.setContent(message, "text/plain");
-			Transport.send(msg);
-		} catch (MessagingException e) {
-			this.logger.error("messaging exception while sending mail", e);
-			return "Message could not be sent";
+			// we switch order because we get the messages from the inbox from oldest to newest
+			messages = Arrays.asList(this.mailSession.getInbox().getMessages());
+			Collections.reverse(messages);
+			int amountToPrint = (amount == -1) ? messages.size() : amount;
+			for (int i = 0; i < amountToPrint; i++) {
+				Message m = messages.get(i);
+				LocalDateTime sentDate = m.getSentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+				messagesToSend.add(new MessageDTO(getFrom(m), m.getSubject(), getContentFromMessage(m), sentDate,
+						isImportantMessage(m), m.isSet(Flag.SEEN)));
+			}
+			return messagesToSend;
+		} catch (MessagingException | IOException e) {
+			this.logger.error("There were problems handling the messages", e);
+			return Collections.emptyList();
 		}
-
-		return "Message sent!";
 	}
 
 	/**
-	 * Checks if the given email belongs to an important person
+	 * Get all important mail addresses from the registry
 	 * 
-	 * @return true if email belongs to important person, if not, false
+	 * @return List of important mail addresses saved in the registry
 	 */
-	public List<String> getImportantMailAddresses() {
-		List<String> importantMails = new ArrayList<>();
+	Set<String> getImportantMailAddresses() {
+		Set<String> importantAddresses = new HashSet<>();
 		List<Contact> contacts = this.contactRegistry.getAll();
 		for (Contact c : contacts) {
 			if (c.isImportant())
-				importantMails.add(c.getEmail());
+				importantAddresses.add(c.getEmail());
 		}
-		return importantMails;
+		return importantAddresses;
 	}
 
 	/**
-	 * Get credentials from file or registry
-	 */
-	@PostConstruct
-	public void init() {
-		String username = this.configLoader.getProperty(EMAIL_USR_KEY);
-		String password = this.configLoader.getProperty(EMAIL_PW_KEY);
-
-		if (username != null && password != null) {
-			startSession(username, password);
-			openInboxReadOnly();
-		} else {
-			this.logger.error("properties file not found");
-		}
-
-	}
-
-	/**
-	 * closes opened inbox
-	 */
-	@PreDestroy
-	public void closeInbox() {
-		try {
-			this.inbox.close(false);
-			this.inbox.getStore().close();
-			this.inbox = null;
-		} catch (MessagingException e) {
-			this.logger.error("Closing inbox or closing store failed", e);
-		}
-	}
-
-	/**
-	 * Log into the email account
+	 * Check if a message was sent from an important person
 	 * 
-	 * @param username
-	 *            username of the account
-	 * @param password
-	 *            password of the account
+	 * @param message
+	 *            the message to be checked
+	 * @return true if message sender is important, else false
+	 * @throws MessagingException
+	 *             if getting the address of the sender failed
 	 */
-	private void startSession(String username, String password) {
-		final Properties props = System.getProperties();
-
-		/*
-		 * We should probably use imap instead of pop because it syncs up with the email server
-		 */
-		// Zum Empfangen
-		props.setProperty("mail.pop3.host", "pop.gmail.com");
-		props.setProperty("mail.pop3.username", username);
-		props.setProperty("mail.pop3.password", password);
-		props.setProperty("mail.pop3.port", "995");
-		props.setProperty("mail.pop3.auth", "true");
-		props.setProperty("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-
-		// Zum Senden
-		props.setProperty("mail.smtp.host", "smtp.gmail.com");
-		props.setProperty("mail.smtp.auth", "true");
-		props.setProperty("mail.smtp.port", "465");
-		props.setProperty("mail.smtp.socketFactory.port", "465");
-		props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-		props.setProperty("mail.smtp.socketFactory.fallback", "false");
-
-		this.session = Session.getInstance(props, new javax.mail.Authenticator() {
-			@Override
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(props.getProperty("mail.pop3.username"),
-						props.getProperty("mail.pop3.password"));
-			}
-		});
+	boolean isImportantMessage(Message message) throws MessagingException {
+		Set<String> importantAddresses = getImportantMailAddresses();
+		// we can't use getFrom() because it may return a personal name, but a mail address is needed here
+		InternetAddress address = (InternetAddress) message.getFrom()[0];
+		return importantAddresses.contains(address.getAddress());
 	}
 
 	/**
-	 * Opens the inbox so it can be accessible. It is only allowed to read
+	 * Get the mail address or personal name of the sender of the message
+	 * 
+	 * @param message
+	 *            the message
+	 * @return if exists, the personal name of the sender, else the e-mail address of the sender as a String
+	 * @throws MessagingException
+	 *             when something goes wrong
 	 */
-	private void openInboxReadOnly() {
-		try {
-			Store store = this.session.getStore("pop3");
-			store.connect();
-
-			Folder folder = store.getFolder("INBOX");
-			folder.open(Folder.READ_ONLY);
-
-			this.inbox = folder;
-
-		} catch (MessagingException e) {
-			this.logger.error("could not open inbox", e);
-		}
-
+	static String getFrom(Message message) throws MessagingException {
+		InternetAddress address = (InternetAddress) message.getFrom()[0];
+		String personal = address.getPersonal();
+		return (personal == null) ? address.getAddress() : personal;
 	}
 }
