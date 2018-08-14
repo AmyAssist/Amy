@@ -28,41 +28,21 @@ import java.lang.reflect.Method;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
 
 /**
- * Manages all natural language interpreter of the plugins and can process the input of natural language
- * 
- * @author Leon Kiefer
+ * TODO: Description
+ * @author
  */
 public interface NLProcessingManager {
-	/**
-	 * registers the given class
-	 * 
-	 * @param natuaralLanguageInterpreter
-	 *            a class annotated with {@link de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand}
-	 * @param aimContents content of all amy interaction model xml files
-	 */
-	void register(Class<?> natuaralLanguageInterpreter);
 
-	/**
-	 * Process the input by searching and calling a responsible interpreter for that natural language text
-	 * 
-	 * @param naturalLanguageText
-	 *            a natural language text string that only contains alphanumeric character and white space character
-	 * @return a answer as natural language text
-	 * @throws IllegalArgumentException
-	 *             if the string illegal character
-	 */
+	void register(Method method, AIMIntent intent);
+
+	String getGrammarFileString(String grammarName);
+
 	String process(String naturalLanguageText);
 
 	/**
-	 * @param grammarName name of the grammar
-	 * @return the grammar file string
+	 * @param dialog
+	 * @param naturalLanguageText 
 	 */
-	String getGrammarFileString(String grammarName);
+	void decideIntent(DialogImpl dialog, String naturalLanguageText);
 
-	/**
-	 * @param method
-	 * @param intent
-	 */
-	void register(Method method, AIMIntent intent);
-	
 }

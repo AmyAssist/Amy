@@ -54,4 +54,22 @@ class DialogImpl implements Dialog {
 	public void output(String answerOutput) {
 		this.consumer.accept(answerOutput);
 	}
+
+	/**
+	 * Get's {@link #intent intent}
+	 * @return  intent
+	 */
+	public UserIntent getIntent() {
+		return this.intent;
+	}
+
+	/**
+	 * Set's {@link #intent intent}
+	 * @param intent  intent
+	 */
+	public void setIntent(UserIntent intent) {
+		this.intent = intent;
+	}
+	
+	
 }

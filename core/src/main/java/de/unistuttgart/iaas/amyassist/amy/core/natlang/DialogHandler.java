@@ -23,32 +23,46 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+
 /**
- * Manages multiple Dialogs from different sources.
+ * TODO: Description
  * 
- * @author Leon Kiefer, Felix Burk
+ * @author Felix Burk
  */
-public interface DialogHandler {
+@Service()
+public class DialogHandler {
+	
+	@Reference
+	NLProcessingManager manager;
+	
+	Map<UUID, DialogImpl> map = new HashMap<>();
+	
 	/**
 	 * 
-	 * @param naturalLanguageText
-	 * @param uuid
-	 *            the uuid of the dialog for which to process the input
+	 * @return
 	 */
-	void process(String naturalLanguageText, UUID uuid);
-
-	/**
-	 * Create a new Dialog with a given output handler. The Dialog is the Session that stores all information of the
-	 * long running user interaction.
-	 * 
-	 * @param outputHandler
-	 *            the output handler that is responsible to deliver the given natural language output to the user
-	 * @return the unique id of the dialog, this must be passed to {@link #process(String, UUID)} to process input of
-	 *         that dialog
-	 */
-	UUID createDialog(Consumer<String> outputHandler);
-
+	public UUID createDialog(Consumer<String> cons) {
+		UUID uuid = UUID.randomUUID();
+		map.put(uuid, new DialogImpl(cons));
+		return uuid;
+	}
+	
+	public void process(String naturalLanguageText, UUID uuid) {
+		if(!this.map.containsKey(uuid)) {
+			throw new IllegalArgumentException("wrong UUID");
+		}
+		
+		DialogImpl dialog = map.get(uuid);
+		
+		if(dialog.getIntent() == null) {
+			manager.decideIntent(dialog);
+		}
+	}
 }

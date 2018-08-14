@@ -65,8 +65,8 @@ class TestAIMService {
 				"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/de.unistuttgart.iaas."
 						+ "amyassist.amy.plugin.example.HelloWorldSpeech.aim.xml");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-		this.interactionModel = this.loadAIMService.extractModel(reader.lines().collect(Collectors.joining()),
-				"de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.aim.xml");
+		//this.interactionModel = this.loadAIMService.extractModel(reader.lines().collect(Collectors.joining()),
+			//	"de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.aim.xml");
 	}
 
 	@Test

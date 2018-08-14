@@ -77,9 +77,11 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	@Reference
 	private ConfigurationManager configurationLoader;
+	
 	private static final String CONFIG_NAME = "core.config";
 	private static final String PROPERTY_ENABLE_STEMMER = "enableStemmer";
 	private static final String PROBERTY_LANGUAGE = "chooseLanguage";
+	
 	private boolean stemmerEnabled;
 	private String languageString;
 
@@ -90,24 +92,10 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		this.languageString = this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
 				.getProperty(PROBERTY_LANGUAGE, "EN");
 	}
-
-	@Override
-	@Deprecated
-	public void register(Class<?> naturalLanguageInterpreter) {
-		if (!naturalLanguageInterpreter
-				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand.class)) {
-			throw new IllegalArgumentException(
-					"annotation is not present in " + naturalLanguageInterpreter.getSimpleName());
-		}
-		Set<Method> grammars = NLIAnnotationReader.getValidNLIMethods(naturalLanguageInterpreter);
-
-		for (Method e : grammars) {
-			PartialNLI partialNLI = this.generatePartialNLI(naturalLanguageInterpreter, e);
-			this.register.add(partialNLI);
-			this.registeredNodeList.add(partialNLI.getGrammar());
-		}
-	}
 	
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#register(java.lang.reflect.Method, de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent)
+	 */
 	@Override
 	public void register(Method method, AIMIntent intent) {
 		if (!method
@@ -116,33 +104,26 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 					"annotation is not present in " + method.getName());
 		}
 
-		PartialNLI partialNLI = this.generatePartialNLI(method, intent);
-		//this.register.add(partialNLI);
-		this.registeredNodeList.add(partialNLI.getGrammar());
+		UserIntent  userIntent = this.generateUserIntent(method, intent);
+		this.register.add(userIntent);
+		this.registeredNodeList.add(userIntent.getGrammar());
 	}
 
-	@Deprecated
-	private PartialNLI generatePartialNLI(Class<?> natuaralLanguageInterpreter, Method method) {
-		String grammar = method.getAnnotation(Grammar.class).value();
-		
-		//TODO quick workaround for legacy # REMOVE THIS
-		grammar = grammar.replaceAll("#", "{test}");
-		
-		AGFParser agfParser = new AGFParser(new AGFLexer(grammar));
-		AGFNode parseWholeExpression = agfParser.parseWholeExpression();
-		return new PartialNLI(method, parseWholeExpression, natuaralLanguageInterpreter);
-	}
 	
-	private PartialNLI generatePartialNLI(Method method, AIMIntent intent) {
-		String grammar = intent.getGram();
+	private UserIntent generateUserIntent(Method method, AIMIntent intent) {
+		/*String grammar = intent.getGram();
 		
 		this.logger.error("gram ={};", grammar);
 		AGFParser agfParser = new AGFParser(new AGFLexer(grammar.trim()));
 		AGFNode parseWholeExpression = agfParser.parseWholeExpression();
 		
-		return new PartialNLI(method, parseWholeExpression, method.getDeclaringClass());
+		return new PartialNLI(method, parseWholeExpression, method.getDeclaringClass()); */
+		return null;
 	}
 
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#getGrammarFileString(java.lang.String)
+	 */
 	@Override
 	public String getGrammarFileString(String grammarName) {
 		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.MULTI_CALL_START,
@@ -156,6 +137,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		return generator.generateGrammarFileString();
 	}
 
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#process(java.lang.String)
+	 */
 	@Deprecated
 	@Override
 	public String process(String naturalLanguageText) {
@@ -175,4 +159,26 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		}
 		
 	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#decideIntent(de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogImpl)
+	 */
+	@Override
+	public void decideIntent(DialogImpl dialog, String naturalLanguageText) {
+		ChooseLanguage language = new ChooseLanguage(this.languageString);
+		for(UserIntent intent : register) {
+			NLLexer nlLexer = new NLLexer(language.getNumberConversion());
+			List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
+			INLParser nlParser = new NLParser(this.registeredNodeList, language.getStemmer(), this.stemmerEnabled);
+
+		}
+	}
 }
+
+
+
+
+
+
+
+
