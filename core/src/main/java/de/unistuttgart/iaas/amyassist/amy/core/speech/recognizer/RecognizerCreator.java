@@ -33,6 +33,8 @@ import java.util.Properties;
 
 import javax.sound.sampled.AudioInputStream;
 
+import org.slf4j.Logger;
+
 import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
 import de.unistuttgart.iaas.amyassist.amy.core.audio.LocalAudio;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
@@ -57,6 +59,8 @@ public class RecognizerCreator implements DeploymentContainerService {
 	// --------------------------------------------------------------
 	// Dependencies
 
+	@Reference
+	private Logger logger;
 	@Reference
 	private Environment environment;
 	@Reference
@@ -120,7 +124,7 @@ public class RecognizerCreator implements DeploymentContainerService {
 			try {
 				this.googleRecognition.launchChrome();
 			} catch (LaunchChromeException e) {
-				e.printStackTrace();
+				this.logger.error(e.getMessage());
 				this.recognitionDisabled = true;
 				return;
 			}
