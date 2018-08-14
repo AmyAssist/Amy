@@ -25,8 +25,15 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import java.time.LocalTime;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.PersistenceUnit;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalTimeAdapter;
 
 /**
@@ -34,8 +41,14 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalTimeAdapter;
  * 
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer, Leon Kiefer
  */
-public class Alarm {
+@Entity
+@PersistenceUnit(unitName = "AlarmRegistry")
+public class Alarm implements RegistryEntity {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(updatable = false, nullable = false)
+	private int persistentId;
 	private int id;
 	@XmlJavaTypeAdapter(LocalTimeAdapter.class)
 	private LocalTime alarmTime;
@@ -63,7 +76,7 @@ public class Alarm {
 
 		this.id = id;
 
-		setTime(alarmTime.getHour(), alarmTime.getMinute());
+		setAlarmTime(alarmTime);
 
 		this.active = active;
 	}
@@ -162,6 +175,62 @@ public class Alarm {
 	 */
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity#getPersistentId()
+	 */
+	@Override
+	public int getPersistentId() {
+		return this.persistentId;
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (this.active ? 1231 : 1237);
+		result = prime * result + ((this.alarmTime == null) ? 0 : this.alarmTime.hashCode());
+		result = prime * result + this.id;
+		result = prime * result + this.persistentId;
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Alarm other = (Alarm) obj;
+		if (this.active != other.active)
+			return false;
+		if (this.alarmTime == null) {
+			if (other.alarmTime != null)
+				return false;
+		} else if (!this.alarmTime.equals(other.alarmTime)) {
+			return false;
+		}
+		if (this.id != other.id)
+			return false;
+		if (this.persistentId != other.persistentId)
+			return false;
+		return true;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmReg#setAlarmTime(java.time.LocalTime)
+	 */
+	public void setAlarmTime(LocalTime alarmTime) {
+		this.alarmTime = alarmTime;
 	}
 
 }

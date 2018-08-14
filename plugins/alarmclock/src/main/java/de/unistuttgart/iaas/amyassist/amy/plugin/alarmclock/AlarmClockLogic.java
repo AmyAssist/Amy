@@ -33,8 +33,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
-import de.unistuttgart.iaas.amyassist.amy.registry.AlarmReg;
-import de.unistuttgart.iaas.amyassist.amy.registry.AlarmRegistry;
 
 /**
  * This class implements the logic for all the functions that our alarm clock and timer are capable of
@@ -51,7 +49,7 @@ public class AlarmClockLogic {
 	private AlarmRegistry alarmStorage;
 
 	@Reference
-	private AlarmClockStorage timerStorage;
+	private IAlarmClockStorage timerStorage;
 
 	@Reference
 	private TaskScheduler taskScheduler;
@@ -75,9 +73,10 @@ public class AlarmClockLogic {
 	 */
 	private Runnable createAlarmRunnable(int alarmNumber) {
 		return () -> {
-			if (this.alarmStorage.getAlarm(alarmNumber) != null && this.alarmStorage.getAlarm(alarmNumber).isActive()) {
-				Alarm alarm = (Alarm) this.alarmStorage.getAlarm(alarmNumber);
-				this.alarmbeep.beep(alarm);
+			for (Alarm a : this.alarmStorage.getAll()) {
+				if (a.getId() == alarmNumber && a.isActive()) {
+					this.alarmbeep.beep(a);
+				}
 			}
 		};
 
@@ -114,8 +113,9 @@ public class AlarmClockLogic {
 	protected Alarm setAlarm(int hour, int minute) {
 		if (Alarm.timeValid(hour, minute)) {
 			int id = this.alarmStorage.getAll().size() + 1;
+			this.alarmTime = LocalTime.of(hour, minute);
 			Alarm alarm = new Alarm(id, this.alarmTime, true);
-			this.alarmStorage.save((AlarmReg) alarm);
+			this.alarmStorage.save(alarm);
 			Runnable alarmRunnable = createAlarmRunnable(id);
 			ZonedDateTime with = this.environment.getCurrentDateTime().with(alarm.getAlarmTime());
 			if (with.isBefore(this.environment.getCurrentDateTime())) {
@@ -158,14 +158,11 @@ public class AlarmClockLogic {
 	 * @return counter counts the existing alarms
 	 */
 	protected String resetAlarms() {
-		int amount = this.alarmStorage.getAll().size();
 		int counter = 0;
-		for (int i = 1; i <= amount; i++) {
-			if (this.alarmStorage.getAlarm(i) != null) {
-				counter++;
-				deactivateAlarm(i);
-				this.alarmStorage.deleteById(i);
-			}
+		for (Alarm a : this.alarmStorage.getAll()) {
+			counter++;
+			deactivateAlarm(a.getId());
+			this.alarmStorage.deleteById(a.getPersistentId());
 		}
 		if (counter == 0) {
 			return "No alarms found";
@@ -203,11 +200,13 @@ public class AlarmClockLogic {
 	 * @return alarmNumber
 	 */
 	protected String deleteAlarm(int alarmNumber) {
-		if (this.alarmStorage.getAlarm(alarmNumber) != null) {
-			deactivateAlarm(alarmNumber);
-			this.alarmStorage.deleteById(alarmNumber);
-			;
-			return "Alarm " + alarmNumber + " deleted";
+
+		for (Alarm a : this.alarmStorage.getAll()) {
+			if (a.getId() == alarmNumber) {
+				deactivateAlarm(a.getId());
+				this.alarmStorage.deleteById(a.getPersistentId());
+				return "Alarm " + a.getId() + " deleted";
+			}
 		}
 		throw new NoSuchElementException();
 	}
@@ -237,17 +236,15 @@ public class AlarmClockLogic {
 	 * @return alarmNumber
 	 */
 	protected String deactivateAlarm(int alarmNumber) {
-		if (this.alarmStorage.getAlarm(alarmNumber) != null) {
-			Alarm alarm = (Alarm) this.alarmStorage.getAlarm(alarmNumber);
-			if (alarm.isActive()) {
-				this.alarmbeep.stopBeep(alarm);
-				alarm.setActive(false);
-				this.alarmStorage.save((AlarmReg) alarm);
-				return "Alarm " + alarmNumber + " deactivated";
+
+		for (Alarm a : this.alarmStorage.getAll()) {
+			if (a.getId() == alarmNumber && a.isActive()) {
+				this.alarmbeep.stopBeep(a);
+				a.setActive(false);
+				return "Alarm " + a.getId() + " deactivated";
 			}
-			return "Alarm " + alarmNumber + " is already inactive";
 		}
-		throw new NoSuchElementException();
+		return "Alarm " + alarmNumber + " is already inactive";
 	}
 
 	/**
@@ -279,16 +276,13 @@ public class AlarmClockLogic {
 	 * @return alarmNumber
 	 */
 	protected String activateAlarm(int alarmNumber) {
-		if (this.alarmStorage.getAlarm(alarmNumber) != null) {
-			Alarm alarm = (Alarm) this.alarmStorage.getAlarm(alarmNumber);
-			if (!alarm.isActive()) {
-				alarm.setActive(true);
-				this.alarmStorage.save((AlarmReg) alarm);
-				return "Alarm " + alarmNumber + " activated";
+		for (Alarm a : this.alarmStorage.getAll()) {
+			if (a.getId() == alarmNumber && !a.isActive()) {
+				a.setActive(true);
+				return "Alarm " + a.getId() + " activated";
 			}
-			return "Alarm " + alarmNumber + " is already active";
 		}
-		throw new NoSuchElementException();
+		return "Alarm " + alarmNumber + " is already active";
 	}
 
 	/**
@@ -300,8 +294,10 @@ public class AlarmClockLogic {
 	 * @return alarmNumber
 	 */
 	protected Alarm getAlarm(int alarmNumber) {
-		if (this.alarmStorage.getAlarm(alarmNumber) != null) {
-			return (Alarm) this.alarmStorage.getAlarm(alarmNumber);
+		for (Alarm a : this.alarmStorage.getAll()) {
+			if (a.getId() == alarmNumber) {
+				return a;
+			}
 		}
 		throw new NoSuchElementException();
 	}
@@ -325,8 +321,8 @@ public class AlarmClockLogic {
 	 */
 	protected List<Alarm> getAllAlarms() {
 		List<Alarm> alarmList = new ArrayList<>();
-		for (int i = 1; i <= this.alarmStorage.getAll().size(); i++)
-			alarmList.add((Alarm) this.alarmStorage.getAlarm(i));
+		for (Alarm a : this.alarmStorage.getAll())
+			alarmList.add(a);
 		return alarmList;
 	}
 
@@ -358,11 +354,18 @@ public class AlarmClockLogic {
 	 * @return alarmNumber + alarmTime new Time of the edited Alarm
 	 */
 	protected Alarm editAlarm(int alarmNumber, int hour, int minute) {
-		if (this.alarmStorage.getAlarm(alarmNumber) != null && Alarm.timeValid(hour, minute)) {
-			Alarm alarm = (Alarm) this.alarmStorage.getAlarm(alarmNumber);
-			alarm.setTime(hour, minute);
-			this.alarmStorage.save((AlarmReg) alarm);
-			return alarm;
+		for (Alarm a : this.alarmStorage.getAll()) {
+			if (a.getId() == alarmNumber && Alarm.timeValid(hour, minute)) {
+
+				a.setAlarmTime(LocalTime.of(hour, minute));
+				Runnable alarmRunnable = createAlarmRunnable(alarmNumber);
+				ZonedDateTime with = this.environment.getCurrentDateTime().with(a.getAlarmTime());
+				if (with.isBefore(this.environment.getCurrentDateTime())) {
+					with = with.plusDays(1);
+				}
+				this.taskScheduler.schedule(alarmRunnable, with.toInstant());
+				return a;
+			}
 		}
 		throw new NoSuchElementException();
 	}

@@ -21,11 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.registry;
+package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import javax.annotation.Nonnull;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry;
 
 /**
  * The alarm registry
@@ -33,7 +34,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * @author Patrick Gebhardt
  */
 @Service(AlarmRegistry.class)
-public class AlarmRegistryImpl extends AbstractRegistry<AlarmReg> implements AlarmRegistry {
+public class AlarmRegistryImpl extends AbstractRegistry<Alarm> implements AlarmRegistry {
 
 	@Override
 	protected String getPersistenceUnitName() {
@@ -42,16 +43,8 @@ public class AlarmRegistryImpl extends AbstractRegistry<AlarmReg> implements Ala
 
 	@Nonnull
 	@Override
-	public Class<? extends AlarmReg> getEntityClass() {
-		return AlarmImpl.class;
+	public Class<? extends Alarm> getEntityClass() {
+		return Alarm.class;
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.registry.AlarmRegistry#getAlarm(int)
-	 */
-	@Override
-	public AlarmReg getAlarm(int alarmNumber) {
-		// TODO Auto-generated method stub
-		return super.getById(alarmNumber);
-	}
 }

@@ -21,23 +21,21 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.registry;
+package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
+
+import de.unistuttgart.iaas.amyassist.amy.registry.IRegistry;
 
 /**
  * Interface for the alarm registry
  * 
  * @author Patrick Gebhardt
  */
-public interface AlarmRegistry extends IRegistry<AlarmReg> {
-	/**
-	 * @param alarmNumber
-	 * @return
-	 */
-	AlarmReg getAlarm(int alarmNumber);
+public interface AlarmRegistry extends IRegistry<Alarm> {
 
 	/**
 	 * @param alarm
 	 */
 	@Override
-	void save(AlarmReg alarm);
+	void save(Alarm alarm);
+
 }
