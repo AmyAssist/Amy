@@ -24,15 +24,12 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.special.SearchResult;
-import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
-import com.wrapper.spotify.model_objects.specification.Artist;
-import com.wrapper.spotify.model_objects.specification.Paging;
-import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
-import com.wrapper.spotify.model_objects.specification.Track;
+import com.wrapper.spotify.model_objects.specification.*;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -159,10 +156,7 @@ public class Search {
 			for (Track track : searchResult.getItems()) {
 				trackEntity = new TrackEntity();
 				trackEntity.setName(track.getName());
-				String[] artistNames = new String[track.getArtists().length];
-				for (int i = 0; i < track.getArtists().length; i++) {
-					artistNames[i] = track.getArtists()[i].getName();
-				}
+				String[] artistNames = Arrays.stream(track.getArtists()).map(ArtistSimplified::getName).toArray(String[]::new);
 				trackEntity.setArtists(artistNames);
 				trackEntity.setUri(track.getUri());
 				trackEntity.setDurationInMs(track.getDurationMs());
@@ -186,10 +180,7 @@ public class Search {
 			for (AlbumSimplified album : searchResult.getItems()) {
 				albumEntity = new AlbumEntity();
 				albumEntity.setName(album.getName());
-				String[] artistNames = new String[album.getArtists().length];
-				for (int i = 0; i < album.getArtists().length; i++) {
-					artistNames[i] = album.getArtists()[i].getName();
-				}
+				String[] artistNames = Arrays.stream(album.getArtists()).map(ArtistSimplified::getName).toArray(String[]::new);
 				if (album.getImages() != null && album.getImages().length > 0) {
 					albumEntity.setImageUrl(album.getImages()[0].getUrl());
 				}
