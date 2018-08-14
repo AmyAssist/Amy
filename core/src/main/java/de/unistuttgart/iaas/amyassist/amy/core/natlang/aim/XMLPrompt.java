@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.aim;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * contains prompt information used in aim xml files
@@ -36,7 +37,8 @@ public class XMLPrompt {
 
 	private String text;
 	private String gram;
-
+	@XmlAttribute(name = "entityTemplateId")
+	private String entityTemplateId;
 	/**
 	 * @return string representation of this object
 	 */
@@ -62,4 +64,13 @@ public class XMLPrompt {
 		return this.gram;
 	}
 
+	/**
+	 * Get's {@link #entityTemplateId entityTemplateId}
+	 * @return  entityTemplateId
+	 */
+	public String getEntityTemplateId() {
+		return this.entityTemplateId;
+	}
+
+	
 }

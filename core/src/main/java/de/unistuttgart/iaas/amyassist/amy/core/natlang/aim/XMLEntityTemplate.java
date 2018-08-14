@@ -82,5 +82,13 @@ public class XMLEntityTemplate {
 	public String getType() {
 		return this.type;
 	}
+	
+	/**
+	 * Get's {@link #values values}
+	 * @return  values
+	 */
+	public List<String> getValues() {
+		return this.values;
+	}
 
 }

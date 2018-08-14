@@ -60,17 +60,7 @@ public class Entity {
 	public IMatcher getMatcher() {
 		return this.matcher;
 	}
-
-	/**
-	 * Set's {@link #matcher matcher}
-	 * 
-	 * @param matcher
-	 *            matcher
-	 */
-	public void setMatcher(IMatcher matcher) {
-		this.matcher = matcher;
-	}
-
+	
 	/**
 	 * Get's {@link #type type}
 	 * 

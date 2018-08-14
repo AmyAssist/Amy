@@ -24,18 +24,24 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLIAnnotationReader;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParseException;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLEntityTemplate;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLPrompt;
 
 /**
  * TODO: Description
+ * 
  * @author Lars Buttgereit, Felix Burk
  */
 public class UserIntent {
@@ -47,33 +53,63 @@ public class UserIntent {
 	private final Class<?> partialNLIClass;
 	@Nonnull
 	private final AIMIntent aimIntent;
-	
+
 	/**
 	 * internal list of all entities
 	 */
-	private List<Entity> entityList;
+	private Map<String, Entity> entityList = new HashMap<>();
 	/**
 	 * internal list of all matchers
 	 */
 	private Map<String, IMatcher> matchers;
 	/**
-	 * internal lists of possible prompts to receive 
-	 * missing entities
+	 * internal lists of possible prompts to receive missing entities
 	 */
-	private List<Prompt> prompts;
-	
-	
+	private List<Prompt> prompts = new ArrayList<>();
+
 	/**
 	 * Represents an intent of a user
 	 * 
-	 * @param method plugin method to call
-	 * @param grammar to match
-	 * @param aimIntent corresponding aimintent from xml
+	 * @param method
+	 *            plugin method to call
+	 * @param aimIntent
+	 *            corresponding aimintent from xml
 	 */
 	public UserIntent(@Nonnull Method method, @Nonnull AIMIntent aimIntent) {
 		this.method = method;
 		this.partialNLIClass = method.getDeclaringClass();
 		this.aimIntent = aimIntent;
+		this.grammar = parseStringToAGF(this.aimIntent.getGram());
+		setPrompts();
+		setEntity();
+	}
+
+	private AGFNode parseStringToAGF(String toParse) {
+		AGFLexer lex = new AGFLexer(toParse);
+		AGFParser parse = new AGFParser(lex);
+		return parse.parseWholeExpression();
+	}
+
+	private void setEntity() {
+		for (XMLEntityTemplate xmlEntityTemplate : this.aimIntent.getTemplates()) {
+			this.entityList.put(xmlEntityTemplate.getEntityId(), new Entity(xmlEntityTemplate.getType(),
+					xmlEntityTemplate.getEntityId(), xmlEntityTemplate.getValues(), getAMatcher(xmlEntityTemplate)));
+		}
+	}
+
+	private IMatcher getAMatcher(XMLEntityTemplate entityTemplate) {
+		//TODO replace with regex
+		if (entityTemplate.getType().equals("string")) {
+			return new StringMatcher(entityTemplate.getValues());
+		}
+		return null;
+	}
+
+	private void setPrompts() {
+		for (XMLPrompt xmlPrompt : this.aimIntent.getPrompts()) {
+			this.prompts.add(new Prompt(xmlPrompt.getEntityTemplateId(), parseStringToAGF(xmlPrompt.getGram()),
+					xmlPrompt.getText()));
+		}
 	}
 
 	/**
@@ -107,13 +143,32 @@ public class UserIntent {
 		Object[] params = { input };
 		return NLIAnnotationReader.callNLIMethod(this.method, instance, params);
 	}
-	
+
 	public boolean isFinished() {
-		for(Entity entity : this.entityList) {
+		for (Entity entity : this.entityList.values()) {
 			if (entity.getEntityData() == null) {
 				return false;
 			}
 		}
 		return true;
 	}
+
+	/**
+	 * Get's {@link #entityList entityList}
+	 * 
+	 * @return entityList
+	 */
+	public Map<String, Entity> getEntityList() {
+		return this.entityList;
+	}
+
+	/**
+	 * Get's {@link #prompts prompts}
+	 * 
+	 * @return prompts
+	 */
+	public List<Prompt> getPrompts() {
+		return this.prompts;
+	}
+
 }

@@ -26,7 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 import java.util.List;
 
 /**
- * MAtch String values from the XML and 'conver' these to a string
+ * MAtch String values from the XML and 'convert' these to a string
  * 
  * @author Lars Buttgereit
  */
