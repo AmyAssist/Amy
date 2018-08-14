@@ -21,25 +21,23 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
-public class SpotifyConstants {
-
-	public static final String TYPE_ARTIST = "artist";
-	public static final String TYPE_TRACK = "track";
-	public static final String TYPE_PLAYLIST = "playlist";
-	public static final String TYPE_ALBUM = "album";
-	public static final String ITEM_NAME = "name";
-	public static final String GENRE = "genre";
-	public static final String ARTIST_NAME = "artistName";
-	public static final String ITEM_URI = "uri";
-	public static final String ITEM_TYPE = "type";
-	public static final String DEVICE_NAME = "deviceName";
-	public static final String DEVICE_ID = "deviceId";
-	public static final String DEVICE_TYPE = "deviceType";
-
-	private SpotifyConstants() {
-
-	}
-
+/**
+ * This enum represent the different Types of results in the playlerlogic to find the correct reuslts
+ * @author Lars Buttgereit
+ */
+public enum SearchTypes {
+	/**
+	 * to play a featured playlist with playPlaylist
+	 */
+	FEATURED_PLAYLISTS, 
+	/**
+	 * to play a user playlist with playPlaylist
+	 */
+	USER_PLAYLISTS,
+	/**
+	 *  to play a searched playlist with playPlaylist
+	 */
+	SEARCH_PLAYLISTS
 }
