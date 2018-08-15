@@ -125,7 +125,7 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 		}
 		
 		List<String> originsList = new ArrayList<>();
-		if(this.config.containsKey(CONFIG_ORIGINS_KEY)) {			
+		if(this.config.getProperty(CONFIG_ORIGINS_KEY) != null) {
 			// Load pipe-separated list of allowed origins from config
 			String[] origins = this.config.getProperty(CONFIG_ORIGINS_KEY).split("\\|");
 			// Convert primitive array to list
