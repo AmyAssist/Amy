@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -188,7 +189,15 @@ public class CalendarEvent {
 	 * @return the recurrence options
 	 */
 	public String[] getRecurrence() {
-		return recurrence;
+		return this.recurrence;
+	}
+
+	/**
+	 *
+	 * @return the recurrence options as List<String>
+	 */
+	public List<String> getRecurrenceAsList() {
+		return Arrays.asList(this.recurrence);
 	}
 
 	/**
@@ -196,7 +205,7 @@ public class CalendarEvent {
 	 * @return the reminder type
 	 */
 	public String getReminderType() {
-		return reminderType;
+		return this.reminderType;
 	}
 
 	/**
@@ -204,18 +213,20 @@ public class CalendarEvent {
 	 * @return the reminder time in minutes
 	 */
 	public int getReminderTime() {
-		return reminderTime;
+		return this.reminderTime;
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
-		if (o == null || getClass() != o.getClass())
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
+		}
 		CalendarEvent that = (CalendarEvent) o;
-		return (this.id == null || this.id.equals(that.id)) && this.start.equals(that.start) && this.end.equals(that.end)
-				&& this.summary.equals(that.summary) && this.location.equals(that.location)
+		return (this.id == null || this.id.equals(that.id)) && this.start.equals(that.start)
+				&& this.end.equals(that.end) && this.summary.equals(that.summary) && this.location.equals(that.location)
 				&& this.description.equals(that.description) && this.reminderType.equals(that.reminderType)
 				&& this.reminderTime == that.reminderTime && Arrays.equals(this.recurrence, that.recurrence)
 				&& this.allDay == that.allDay;

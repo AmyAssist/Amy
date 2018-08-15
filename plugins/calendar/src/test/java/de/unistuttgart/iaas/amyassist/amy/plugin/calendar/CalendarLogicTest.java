@@ -32,9 +32,12 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
@@ -57,6 +60,7 @@ public class CalendarLogicTest {
 	private TestFramework framework;
 
 	private CalendarLogic callog;
+	private CalendarService calendarService;
 
 	private CalendarEvent event1;
 	private CalendarEvent event2;
@@ -66,13 +70,29 @@ public class CalendarLogicTest {
 	 */
 	@BeforeEach
 	public void setup() {
-		this.framework.mockService(CalendarService.class);
+		this.calendarService = this.framework.mockService(CalendarService.class);
 		this.framework.mockService(Environment.class);
 		this.callog = this.framework.setServiceUnderTest(CalendarLogic.class);
 		this.event1 = new CalendarEvent(LocalDateTime.parse("2018-08-12T15:00:00"),
-				LocalDateTime.parse("2018-08-12T18:00:00"), "Testing", "home",
-				"test the addEvent code", "mail", 20, new String[1], false);
+				LocalDateTime.parse("2018-08-12T18:00:00"), "Testing", "home", "test the addEvent code", "mail", 20,
+				new String[1], false);
 		this.event2 = new CalendarEvent();
+	}
+
+	@Test
+	public void testSetEvent() {
+
+		CalendarEvent testEvent = this.event1;
+		this.callog.setEvent(testEvent);
+
+		Mockito.verify(this.calendarService).addEvent(ArgumentMatchers.eq("primary"),
+				ArgumentMatchers.argThat(event -> {
+					return event.getSummary().equals(testEvent.getSummary())
+							&& event.getLocation().equals(testEvent.getLocation())
+							&& event.getDescription().equals(testEvent.getDescription())
+							&& ((event.getStart().getDate() != null) == testEvent.isAllDay())
+							&& event.getRecurrence().equals(testEvent.getRecurrenceAsList());
+				}));
 	}
 
 	/**
