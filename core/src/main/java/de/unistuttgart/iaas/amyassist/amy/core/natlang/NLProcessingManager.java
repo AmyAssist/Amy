@@ -28,26 +28,36 @@ import java.lang.reflect.Method;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
 
 /**
- * TODO: Description
- * @author
+ * Manages all natural language interpreter of the plugins and can process the input of natural language
+ * 
+ * @author Felix Burk, Leon Kiefer
  */
 public interface NLProcessingManager {
 
+	/**
+	 * registers the given class
+	 * @param method to call
+	 * @param intent to register
+	*/
 	void register(Method method, AIMIntent intent);
 
+	/**
+	 * @param grammarName name of the grammar
+	 * @return the grammar file string
+	 */
 	String getGrammarFileString(String grammarName);
 
-	String process(String naturalLanguageText);
-
 	/**
-	 * @param dialog
-	 * @param naturalLanguageText 
+	 * decides which intent matches 
+	 * @param dialog containing intents
+	 * @param naturalLanguageText text to match 
 	 */
 	void decideIntent(DialogImpl dialog, String naturalLanguageText);
 
 	/**
-	 * @param dialog
-	 * @param naturalLanguageText
+	 * processes an intent 
+	 * @param dialog containing current intent
+	 * @param naturalLanguageText input text
 	 */
 	void processIntent(DialogImpl dialog, String naturalLanguageText);
 

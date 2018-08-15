@@ -41,7 +41,7 @@ public class TestChooseLanguage {
 
 	@Test
 	void testChooseEnglish() {
-		ChooseLanguage chooseLanguage = new ChooseLanguage("en");
+		ChooseLanguage chooseLanguage = new ChooseLanguage("en", true);
 		assertThat(chooseLanguage.getNumberConversion().getClass().getName(),
 				equalTo(EnglishNumberConversion.class.getName()));
 		assertThat(chooseLanguage.getStemmer().getClass().getName(), equalTo(EnglishStemmer.class.getName()));

@@ -26,32 +26,24 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 
-import com.google.common.collect.Lists;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParserException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.Prompt;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
@@ -65,6 +57,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 @Service
 public class NLProcessingManagerImpl implements NLProcessingManager {
 	
+	/**
+	 * different possible answers 
+	 */
 	String[] failedToUnderstand = {
 			"I did not understand that", "Sorry, could you repeat that?", 
 			"I don't know what you mean", "No idea what you are talking about"
@@ -109,21 +104,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 					"annotation is not present in " + method.getName());
 		}
 
-		UserIntent  userIntent = this.generateUserIntent(method, intent);
+		UserIntent  userIntent = new UserIntent(method, intent);
 		this.register.add(userIntent);
 		this.registeredNodeList.add(userIntent.getGrammar());
-	}
-
-	
-	private UserIntent generateUserIntent(Method method, AIMIntent intent) {
-		/*String grammar = intent.getGram();
-		
-		this.logger.error("gram ={};", grammar);
-		AGFParser agfParser = new AGFParser(new AGFLexer(grammar.trim()));
-		AGFNode parseWholeExpression = agfParser.parseWholeExpression();
-		
-		return new PartialNLI(method, parseWholeExpression, method.getDeclaringClass()); */
-		return new UserIntent(method, intent);
 	}
 
 	/**
@@ -142,40 +125,19 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		return generator.generateGrammarFileString();
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#process(java.lang.String)
-	 */
-	@Deprecated
-	@Override
-	public String process(String naturalLanguageText) {
-		this.logger.debug("input {}", naturalLanguageText);
-		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
-		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
-		INLParser nlParser = new NLParser(this.registeredNodeList, this.language.getStemmer());
-		try {
-			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
-			UserIntent userIntent = this.register.get(matchingNodeIndex);
-			String[] arguments = Lists.transform(tokens, WordToken::getContent).toArray(new String[tokens.size()]);
-			//Object object = this.serviceLocator.createAndInitialize(userIntent.getPartialNLIClass());
-		//	return userIntent.call(object, arguments);
-		}catch(NLParserException e) {
-			return "I did not understand that";
-		}
-		return null;
-		
-	}
 	
 	@Override
 	public void processIntent(DialogImpl dialog, String naturalLanguageText) {
 		
-		List<AGFNode> promptGrams = dialog.getIntent()
-				.getPrompts().stream().map(Prompt::getGrammar).collect(Collectors.toList());
+		//List<AGFNode> promptGrams = dialog.getIntent()
+				//.getPrompts().stream().map(Prompt::getGrammar).collect(Collectors.toList());
 		
 		//TODO
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#decideIntent(de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogImpl)
+	 * 
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#decideIntent(de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogImpl, java.lang.String)
 	 */
 	@Override
 	public void decideIntent(DialogImpl dialog, String naturalLanguageText) {
