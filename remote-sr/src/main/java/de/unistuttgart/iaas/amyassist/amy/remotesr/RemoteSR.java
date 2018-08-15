@@ -75,10 +75,10 @@ public class RemoteSR {
 			}
 			String file = fileURL.getFile();
 
-			String chromePath = configurationManager.getConfiguration(CONFIG_NAME)
+			String chromePath = configurationManager.getConfigurationWithDefaults(CONFIG_NAME)
 					.getProperty(CHROME_DIRECTORY_CONFIG_KEY);
 
-			if (chromePath == null) {
+			if (chromePath == null || chromePath.isEmpty()) {
 				if (SystemUtils.IS_OS_MAC_OSX) {
 					chromePath = MAC_CHROME_PATH;
 				} else if (SystemUtils.IS_OS_WINDOWS) {
