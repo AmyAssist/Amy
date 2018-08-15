@@ -28,15 +28,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
 
 /**
  * SSE resource for the remote SR. Chrome connects to this resource and stays connected indefinitely
@@ -71,17 +66,15 @@ public class SRResource {
      */
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public String getStaticWebsite() {
-        try {
-            URL file = getClass().getClassLoader().getResource("index.html");
-            if (file != null) {
-                URI filePath = file.toURI();
-                return new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
-            } else {
-                throw new IOException("Couldn't get URL for resource file index.html");
-            }
-        } catch (URISyntaxException | IOException e) {
-            throw new WebApplicationException("Couldn't load static html file: ", e);
+    public Response getStaticWebsite() {
+        InputStream is = getClass().getClassLoader().getResourceAsStream("index.html");
+        if (is != null) {
+            // The input stream is kept open on purpose. Jax-rs will close the stream after it's done reading
+            // from it
+            return Response.ok(is).build();
+        } else {
+            throw new WebApplicationException("Couldn't get input stream for file index.html",
+                    Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
