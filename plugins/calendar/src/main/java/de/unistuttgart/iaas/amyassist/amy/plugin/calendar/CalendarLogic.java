@@ -32,16 +32,13 @@ import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import com.google.api.services.calendar.model.EventReminder;
 import org.slf4j.Logger;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.Events;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -88,37 +85,12 @@ public class CalendarLogic {
                 .setLocation(calendarEvent.getLocation())
                 .setDescription(calendarEvent.getDescription());
 
-        EventDateTime start = new EventDateTime();
-        EventDateTime end = new EventDateTime();
-        ZonedDateTime startZDT = calendarEvent.getStart().atZone(ZoneId.systemDefault());
-        DateTime startDT = new DateTime(startZDT.toInstant().toEpochMilli());
-        ZonedDateTime endZDT = calendarEvent.getEnd().atZone(ZoneId.systemDefault());
-        DateTime endDT = new DateTime(endZDT.toInstant().toEpochMilli());
-        if (calendarEvent.isAllDay()) {
-            start.setDate(startDT);
-            end.setDate(endDT);
-        } else {
-            start.setDateTime(startDT);
-            end.setDateTime(endDT);
-        }
-        start.setTimeZone(ZoneId.systemDefault().toString());
-        end.setTimeZone(ZoneId.systemDefault().toString());
-
-        event.setStart(start);
-        event.setEnd(end);
+        event.setStart(calendarEvent.getEventStart());
+        event.setEnd(calendarEvent.getEventEnd());
 
         event.setRecurrence(calendarEvent.getRecurrenceAsList());
 
-        EventReminder[] reminderOverrides = new EventReminder[]{
-                new EventReminder()
-                        .setMethod(calendarEvent.getReminderType())
-                        .setMinutes(calendarEvent.getReminderTime()),
-        };
-
-        Event.Reminders reminders = new Event.Reminders()
-                .setUseDefault(false)
-                .setOverrides(Arrays.asList(reminderOverrides));
-        event.setReminders(reminders);
+        event.setReminders(calendarEvent.getReminders());
         this.calendarService.addEvent("primary", event);
     }
 

@@ -97,7 +97,7 @@ class CalendarRestTest {
 		this.eventList.add(this.event);
 
 		this.setEvent = new CalendarEvent(LocalDateTime.parse("2015-05-28T09:00:00"),
-				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, new String[1],
+				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, "",
 				false);
 	}
 

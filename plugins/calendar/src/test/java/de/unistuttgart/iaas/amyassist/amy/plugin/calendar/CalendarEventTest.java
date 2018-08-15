@@ -50,7 +50,7 @@ class CalendarEventTest {
 	void testCalendarEventConstructors() {
 		this.event1 = new CalendarEvent();
 		this.event1 = new CalendarEvent(LocalDateTime.parse("2015-05-28T09:00:00"),
-				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, new String[1],
+				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, "",
 				false);
 		this.event2 = new CalendarEvent("1", LocalDateTime.parse("2015-05-28T08:00:00"),
 				LocalDateTime.parse("2015-05-28T10:00:00"), "summary", "work", "meeting", false);
@@ -117,7 +117,7 @@ class CalendarEventTest {
 	 */
 	@Test
 	void testGetRecurrence() {
-		assertThat(this.event1.getRecurrence(), equalTo(new String[1]));
+		assertThat(this.event1.getRecurrence(), equalTo(""));
 	}
 
 	/**
@@ -143,7 +143,7 @@ class CalendarEventTest {
 	@Test
 	void testEqualsObject() {
 		assertThat(this.event1.equals(new CalendarEvent(LocalDateTime.parse("2015-05-28T09:00:00"),
-				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, new String[1],
+				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, "",
 				false)), is(true));
 		assertThat(this.event1.equals(this.event1), is(true));
 		assertThat(this.event1.equals(null), is(false));

@@ -32,7 +32,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -62,9 +61,6 @@ public class CalendarLogicTest {
 	private CalendarLogic callog;
 	private CalendarService calendarService;
 
-	private CalendarEvent event1;
-	private CalendarEvent event2;
-
 	/**
 	 * Initializes the class variables before each test
 	 */
@@ -73,26 +69,40 @@ public class CalendarLogicTest {
 		this.calendarService = this.framework.mockService(CalendarService.class);
 		this.framework.mockService(Environment.class);
 		this.callog = this.framework.setServiceUnderTest(CalendarLogic.class);
-		this.event1 = new CalendarEvent(LocalDateTime.parse("2018-08-12T15:00:00"),
-				LocalDateTime.parse("2018-08-12T18:00:00"), "Testing", "home", "test the addEvent code", "mail", 20,
-				new String[1], false);
-		this.event2 = new CalendarEvent();
 	}
 
-	@Test
-	public void testSetEvent() {
-
-		CalendarEvent testEvent = this.event1;
-		this.callog.setEvent(testEvent);
+	@ParameterizedTest
+	@MethodSource("testSetEvent")
+	public void testCheckSetEvent(CalendarEvent calendarEvent) {
+		this.callog.setEvent(calendarEvent);
 
 		Mockito.verify(this.calendarService).addEvent(ArgumentMatchers.eq("primary"),
 				ArgumentMatchers.argThat(event -> {
-					return event.getSummary().equals(testEvent.getSummary())
-							&& event.getLocation().equals(testEvent.getLocation())
-							&& event.getDescription().equals(testEvent.getDescription())
-							&& ((event.getStart().getDate() != null) == testEvent.isAllDay())
-							&& event.getRecurrence().equals(testEvent.getRecurrenceAsList());
+					return event.getSummary().equals(calendarEvent.getSummary())
+							&& event.getLocation().equals(calendarEvent.getLocation())
+							&& event.getDescription().equals(calendarEvent.getDescription())
+							&& ((event.getStart().getDate() != null) == calendarEvent.isAllDay())
+							&& calendarEvent.isAllDay() ? (event.getStart().getDate()
+							.equals(calendarEvent.getEventStart().getDate()) && event.getEnd().getDate()
+							.equals(calendarEvent.getEventEnd().getDate())) : (event.getStart().getDateTime()
+							.equals(calendarEvent.getEventStart().getDateTime()) && event.getEnd().getDateTime()
+							.equals(calendarEvent.getEventEnd().getDateTime()))
+							&& event.getRecurrence().equals(calendarEvent.getRecurrenceAsList())
+							&& event.getReminders().equals(calendarEvent.getReminders());
 				}));
+	}
+
+	/**
+	 *
+	 * @return the test cases used in the {@link #testCheckSetEvent(CalendarEvent)} test
+	 */
+	public static Stream<CalendarEvent> testSetEvent() {
+		return Stream.of(new CalendarEvent(LocalDateTime.parse("2018-08-12T15:00:00"),
+				LocalDateTime.parse("2018-08-12T18:00:00"), "Testing", "home", "test the addEvent code", "mail", 20,
+				"RRULE:FREQ=WEEKLY", false),
+				new CalendarEvent(LocalDateTime.parse("2018-08-15T00:00"),
+						LocalDateTime.parse("2018-08-16T00:00"), "Testing", "home", "test the addEvent code", "popup", 85,
+						"", true));
 	}
 
 	/**

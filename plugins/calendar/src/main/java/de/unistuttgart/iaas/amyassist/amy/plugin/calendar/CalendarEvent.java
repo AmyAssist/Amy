@@ -24,6 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +33,10 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.google.api.client.util.DateTime;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
+import com.google.api.services.calendar.model.EventReminder;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
 
 /**
@@ -50,7 +56,7 @@ public class CalendarEvent {
 	private String description;
 	private String reminderType;
 	private int reminderTime;
-	private String[] recurrence;
+	private String recurrence;
 	private boolean allDay;
 
 	/**
@@ -109,7 +115,7 @@ public class CalendarEvent {
 	 *            set allDay
 	 */
 	public CalendarEvent(LocalDateTime start, LocalDateTime end, String summary, String location, String description,
-			String reminderType, int reminderTime, String[] recurrence, boolean allDay) {
+			String reminderType, int reminderTime, String recurrence, boolean allDay) {
 		this.start = start;
 		this.end = end;
 		this.summary = summary;
@@ -188,7 +194,7 @@ public class CalendarEvent {
 	 *
 	 * @return the recurrence options
 	 */
-	public String[] getRecurrence() {
+	public String getRecurrence() {
 		return this.recurrence;
 	}
 
@@ -216,6 +222,56 @@ public class CalendarEvent {
 		return this.reminderTime;
 	}
 
+	/**
+	 *
+	 * @return start time as EventDateTime
+	 */
+	public EventDateTime getEventStart(){
+		ZonedDateTime zdt = this.start.atZone(ZoneId.systemDefault());
+		DateTime dt = new DateTime(zdt.toInstant().toEpochMilli());
+		EventDateTime edt = new EventDateTime();
+		if (this.allDay) {
+			edt.setDate(dt);
+		} else {
+			edt.setDateTime(dt);
+		}
+		edt.setTimeZone(ZoneId.systemDefault().toString());
+		return edt;
+	}
+
+	/**
+	 *
+	 * @return end time as EventDateTime
+	 */
+	public EventDateTime getEventEnd(){
+		ZonedDateTime zdt = this.end.atZone(ZoneId.systemDefault());
+		DateTime dt = new DateTime(zdt.toInstant().toEpochMilli());
+		EventDateTime edt = new EventDateTime();
+		if (this.allDay) {
+			edt.setDate(dt);
+		} else {
+			edt.setDateTime(dt);
+		}
+		edt.setTimeZone(ZoneId.systemDefault().toString());
+		return edt;
+	}
+
+	/**
+	 *
+	 * @return the reminders of the Event as Event.Reminders from google api
+	 */
+	public Event.Reminders getReminders(){
+		EventReminder[] reminderOverrides = new EventReminder[]{
+				new EventReminder()
+						.setMethod(this.reminderType)
+						.setMinutes(this.reminderTime),
+		};
+
+		return new Event.Reminders()
+				.setUseDefault(false)
+				.setOverrides(Arrays.asList(reminderOverrides));
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -228,7 +284,7 @@ public class CalendarEvent {
 		return (this.id == null || this.id.equals(that.id)) && this.start.equals(that.start)
 				&& this.end.equals(that.end) && this.summary.equals(that.summary) && this.location.equals(that.location)
 				&& this.description.equals(that.description) && this.reminderType.equals(that.reminderType)
-				&& this.reminderTime == that.reminderTime && Arrays.equals(this.recurrence, that.recurrence)
+				&& this.reminderTime == that.reminderTime && this.recurrence.equals(that.recurrence)
 				&& this.allDay == that.allDay;
 	}
 
