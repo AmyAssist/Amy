@@ -2,7 +2,7 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
-		<gram>greet me [with {greeting}]</gram>
+		<gram>greet me [with {greeting}] [test {AmyTime}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="greeting">
 				<gram>(hello|good morning)</gram>
