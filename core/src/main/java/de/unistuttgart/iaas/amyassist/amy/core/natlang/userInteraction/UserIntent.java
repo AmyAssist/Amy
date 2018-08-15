@@ -59,6 +59,8 @@ public class UserIntent {
 	 * internal list of all entities
 	 */
 	private Map<String, Entity> entityList = new HashMap<>();
+	
+	private Map<String, AGFNode> pluginCustomGrams = new HashMap<>();
 	/**
 	 * internal lists of possible prompts to receive missing entities
 	 */
@@ -73,17 +75,17 @@ public class UserIntent {
 	 *            corresponding aimintent from xml
 	 */
 	public UserIntent(@Nonnull Method method, @Nonnull AIMIntent aimIntent) {
-		setEntity();
 		this.method = method;
 		this.partialNLIClass = method.getDeclaringClass();
 		this.aimIntent = aimIntent;
+		setEntity();
 		this.grammar = parseStringToAGF(this.aimIntent.getGram());
 		setPrompts();
 	}
 
 	private AGFNode parseStringToAGF(String toParse) {
 		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
-		
+		customEntities.putAll(this.pluginCustomGrams);
 		AGFLexer lex = new AGFLexer(toParse);
 		AGFParser parse = new AGFParser(lex, customEntities);
 		return parse.parseWholeExpression();
@@ -94,6 +96,7 @@ public class UserIntent {
 			AGFNode node = parseStringToAGF(xmlEntityTemplate.getGrammar());
 			Entity entity = new Entity(xmlEntityTemplate.getEntityId(), node);
 			this.entityList.put(xmlEntityTemplate.getEntityId(), entity);
+			this.pluginCustomGrams.put(xmlEntityTemplate.getEntityId(), node);
 		}
 	}
 

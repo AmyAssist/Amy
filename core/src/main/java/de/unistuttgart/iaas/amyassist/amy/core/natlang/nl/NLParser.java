@@ -29,6 +29,7 @@ import java.util.List;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParseException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.IStemmer;
 
 /**
@@ -149,7 +150,7 @@ public class NLParser implements INLParser {
 		case WORD:
 			return match(agf);
 		case ENTITY:
-			return matchType(WordTokenType.NUMBER);
+			return fillEntity(agf);
 		default:
 			return false;
 
@@ -158,19 +159,25 @@ public class NLParser implements INLParser {
 	}
 
 	/**
-	 * match a WordTokenType with current position in iterator
-	 * 
-	 * @param type
-	 *            the type to match
-	 * @return success
+	 * @param agf
+	 * @return
 	 */
-	private boolean matchType(WordTokenType type) {
-		WordToken token = lookAhead(0);
-		if (token != null && token.getType().equals(type)) {
-			consume();
-			return true;
+	private boolean fillEntity(AGFNode agf) {
+		int startIndex = this.currentIndex;
+		boolean matched = checkNode(agf.getChilds().get(0));
+		int endIndex = this.currentIndex;
+		
+		try {
+			EntityNode entity = (EntityNode) agf;
+			StringBuilder b = new StringBuilder();
+			for(int i=startIndex; i<=endIndex-1; i++) {
+				b.append(this.mRead.get(i)+ " ");
+			}
+			entity.setUserProvidedContent(b.toString().trim());
+			return matched;
+		}catch(ClassCastException e) {
+			throw new NLParserException("Node Type Entity was no EntityNode " + e.getMessage());
 		}
-		return false;
 	}
 
 	/**

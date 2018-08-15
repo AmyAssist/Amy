@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
+		<gram>greet me [with {greeting}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="greeting">
+				<gram>(hello|good morning)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+
+		<Prompt entityTemplateId="number">
+			<text> how should i greet you? </text>
+			<gram>with {greeting}</gram>
+		</Prompt>
+		
+	</Intent>
+</AmyInteractionModel>
