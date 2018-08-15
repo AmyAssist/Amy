@@ -21,50 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.PreDefinedEntityTypes;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
- * A rule node implementation
- * 
- * @author Felix Burk
+ * TODO: Description
+ * @author Felix Burk, Lars Buttgereit
  */
-public class EntityNode extends AGFNode {
-
-	private String userProvidedContent;
-	/**
-	 * constructor
-	 * 
-	 * @param content of node
-	 */
-	public EntityNode(String content) {
-		super(content);
-	}
+public class PreDefinedEntitesTest {
 	
-	/**
-	 * returns the node type
-	 * @return the type
-	 */
-	@Override
-	public AGFNodeType getType() {
-		return AGFNodeType.ENTITY;
+	@Test
+	public void test() {
+		Map<String, AGFNode> map = PreDefinedEntityTypes.getTypes();
+		
+		assertEquals(map.isEmpty(), false);
 	}
-
-	/**
-	 * set the content the user provided for this entity
-	 * 
-	 * @param content to set
-	 */
-	public void  setUserProvidedContent(String content) {
-		this.userProvidedContent = content;
-	}
-	
-	/**
-	 * get the content the user provided for this entity
-	 * @return the content
-	 */
-	public String getUserProvidedContent() {
-		return this.userProvidedContent;
-	}
-
 
 }

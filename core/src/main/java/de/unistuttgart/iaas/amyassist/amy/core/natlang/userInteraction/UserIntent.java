@@ -59,10 +59,6 @@ public class UserIntent {
 	 */
 	private Map<String, Entity> entityList = new HashMap<>();
 	/**
-	 * internal list of all matchers
-	 */
-	private Map<String, IMatcher> matchers;
-	/**
 	 * internal lists of possible prompts to receive missing entities
 	 */
 	private List<Prompt> prompts = new ArrayList<>();
@@ -144,6 +140,10 @@ public class UserIntent {
 		return NLIAnnotationReader.callNLIMethod(this.method, instance, params);
 	}
 
+	/**
+	 * tells if this intent is already finished if all entities have been provided by the user
+	 * @return if this intent is finished
+	 */
 	public boolean isFinished() {
 		for (Entity entity : this.entityList.values()) {
 			if (entity.getEntityData() == null) {

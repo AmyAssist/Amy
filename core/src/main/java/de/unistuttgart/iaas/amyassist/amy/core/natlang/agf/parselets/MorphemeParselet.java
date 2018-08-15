@@ -68,7 +68,7 @@ public class MorphemeParselet implements IAGFParselet {
 	/**
 	 * parses a single morpheme
 	 * 
-	 * <Morpheme> := (<Word> | <Rule>);
+	 * <Morpheme> := (<Word> | <Entity>);
 	 * 
 	 * @param morph the morpheme node
 	 * @param token the corresponding token
@@ -80,8 +80,10 @@ public class MorphemeParselet implements IAGFParselet {
 		}else if(token.type == AGFTokenType.OPENCBR) {
 			if(parser.match(AGFTokenType.WORD)) {
 				AGFToken word = parser.consume();
+				AGFNode node = parser.getEntityAGF(word.content);
 				EntityNode entity = new EntityNode(word.content);
-
+				entity.addChild(node);
+				
 				if(parser.consume().type != AGFTokenType.CLOSECBR) {
 					throw new AGFParseException("} missing or entity name contains a whitespace");
 				}

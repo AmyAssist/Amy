@@ -30,7 +30,6 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 
-
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;

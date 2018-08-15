@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,11 @@ public class Parser {
 	private final Map<AGFTokenType, IAGFParselet> mAGFParselets = new EnumMap<>(AGFTokenType.class);
 
 	private List<AGFToken> mRead;
+	
+	/**
+	 * maps entity id to corresponding AGFNode
+	 */
+	protected Map<String, AGFNode> entityToAGF = new HashMap<>();
 
 	/**
 	 * constructor
@@ -166,5 +172,17 @@ public class Parser {
 		}
 
 		return null;
+	}
+
+	/**
+	 * returns corresponding AGFNode for entity id
+	 * @param id of entity
+	 * @return corresponding AGFNode
+	 */
+	public AGFNode getEntityAGF(String id) {
+		if(this.entityToAGF != null && this.entityToAGF.get(id) != null) {
+			return this.entityToAGF.get(id);
+		}
+		throw new AGFLexerException("no matching entity found for id " + id);
 	}
 }
