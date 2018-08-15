@@ -74,9 +74,8 @@ public class LocalSpeechInterpreterImpl implements LocalSpeechInterpreter, Runna
 			Thread.yield();
 		}
 		if (this.recognizerCreator.isRecognitionDisabled()) {
-			this.logger.info("[INFORMATION] :: Speech Recognition Disabled");
+			this.logger.info("[INFORMATION] :: [Speech Recognition] :: Disabled");
 		} else {
-			this.logger.info("[INFORMATION] :: Speech Recognition activated");
 			this.recognitionManager.setCurrentGrammar(Grammar.MAIN);
 		}
 

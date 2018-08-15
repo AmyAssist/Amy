@@ -67,10 +67,8 @@ public class SphinxSpeechRecognizer implements SpeechRecognizer {
 	/**
 	 * Creates the Recognizers and Configures them
 	 * 
-	 * @param grammar
+	 * @param file
 	 *            Grammar to use in this Recognizer
-	 * @param resultHandler
-	 *            specific Handler
 	 * @param ais
 	 *            set custom AudioInputStream.
 	 */
@@ -96,6 +94,7 @@ public class SphinxSpeechRecognizer implements SpeechRecognizer {
 		// starts Recognition
 		startRecognizer();
 
+		this.logger.info(":: waiting for speech input");
 
 		// wait for input from the recognizer
 		SpeechResult speechResult = null;
@@ -138,6 +137,9 @@ public class SphinxSpeechRecognizer implements SpeechRecognizer {
 
 	/**
 	 * creates Configuration for the recognizers
+	 * 
+	 * @param file
+	 *            Grammar of the Recognizer
 	 *
 	 * @return the configuration
 	 * @throws FileNotFoundException

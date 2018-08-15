@@ -54,8 +54,10 @@ public abstract class AbstractSpeechResultHandler implements Runnable {
 	 *            speechRecognitionResult
 	 */
 	public void handle(String result) {
-		this.recognitionResult = result;
-		(new Thread(this)).start();
+		if (this.recognizerManager.getCurrentGrammarState() != null) {
+			this.recognitionResult = result;
+			(new Thread(this)).start();
+		}
 	}
 
 	/**

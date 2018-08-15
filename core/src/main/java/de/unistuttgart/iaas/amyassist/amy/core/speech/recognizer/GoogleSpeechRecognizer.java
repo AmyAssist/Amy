@@ -23,6 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSRListener;
@@ -41,6 +44,11 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	// Fields
 
 	/**
+	 * logger for all the Speech Recognition classes
+	 */
+	private final Logger logger = LoggerFactory.getLogger(GoogleSpeechRecognizer.class);
+
+	/**
 	 * Handler who use the translated String for commanding the System
 	 */
 	private AbstractSpeechResultHandler resultHandler;
@@ -56,10 +64,6 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	/**
 	 * Returns Recognition Result to given Handler from Given Recognizer
 	 * 
-	 * @param grammar
-	 *            Grammar of this Recognizer
-	 * @param resultHandler
-	 *            ResultHandler of this Recognizer
 	 * @param recognizer
 	 *            The Remote Recognizer
 	 */
@@ -82,6 +86,7 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	public void getRecognition(AbstractSpeechResultHandler resultHandler) {
 		this.resultHandler = resultHandler;
 		this.recognizer.requestSR();
+		this.logger.info("waiting for speech input");
 	}
 
 	/**

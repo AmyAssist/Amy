@@ -165,7 +165,9 @@ public class SpeechRecognizerManager {
 	 * Request the NextRecognitionResult
 	 */
 	public void nextRecognitionRequest() {
-		this.currentGrammar.requestSR();
+		if (this.currentGrammar != null) {
+			this.currentGrammar.requestSR();
+		}
 	}
 
 	/**
@@ -195,12 +197,14 @@ public class SpeechRecognizerManager {
 			setCurrentGrammar(null);
 			Thread.currentThread().interrupt();
 		}
-		
-		if(this.currentListeningState == ListeningState.SINGLE_CALL_LISTENING) {
+
+		if (this.currentListeningState == ListeningState.SINGLE_CALL_LISTENING) {
 			setListeningState(ListeningState.NOT_LISTENING);
-		}else {
-			returnGrammar.requestSR();
-		}	
+		} else {
+			if (this.currentGrammar != null) {
+				returnGrammar.requestSR();
+			}
+		}
 	}
 
 	// --------------------------------------------------------------

@@ -31,5 +31,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpe
  * @author Kai Menzel
  */
 public interface SpeechRecognizer {
+	/**
+	 * request a SpeechRecognition
+	 * 
+	 * @param resultHandler
+	 *            handler that will be called by the recognitionResult
+	 */
 	void getRecognition(AbstractSpeechResultHandler resultHandler);
 }
