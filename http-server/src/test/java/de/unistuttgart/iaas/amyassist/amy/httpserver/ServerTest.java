@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
 
 /**
  * 
@@ -55,6 +56,8 @@ class ServerTest {
 		serverConfig.setProperty(Server.PROPERTY_CONTEXT_PATH, "test");
 		serverConfig.setProperty(Server.PROPERTY_LOCALHOST, "true");
 
+		RemoteSR remoteSR = Mockito.mock(RemoteSR.class);
+		
 		ConfigurationManager configManager = Mockito.mock(ConfigurationManager.class);
 		Mockito.when(configManager.getConfigurationWithDefaults(Server.CONFIG_NAME)).thenReturn(serverConfig);
 
