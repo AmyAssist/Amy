@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
-import java.util.List;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
  * TODO: Description
@@ -31,43 +31,17 @@ import java.util.List;
  * @author Lars Buttgereit
  */
 public class Entity {
-	private final String type;
 	private final String entityId;
-	private final List<String> values;
-	private final IMatcher matcher;
 	private EntityData entityData;
+	private AGFNode grammar;
 
-	public Entity(String type, String entityId, List<String> values, IMatcher matcher) {
-		this.type = type;
+	public Entity(String entityId, AGFNode grammar) {
 		this.entityId = entityId;
-		this.values = values;
-		this.matcher = matcher;
+		this.grammar = grammar;
 	}
 
-	public boolean insertEntityData(String toMatch) {
-		if(this.matcher.match(toMatch)) {
-			this.entityData = this.matcher.convert(toMatch);
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Get's {@link #matcher matcher}
-	 * 
-	 * @return matcher
-	 */
-	public IMatcher getMatcher() {
-		return this.matcher;
-	}
-	
-	/**
-	 * Get's {@link #type type}
-	 * 
-	 * @return type
-	 */
-	public String getType() {
-		return this.type;
+	public void insertEntityData(EntityData entData) {
+		this.entityData = entData;
 	}
 
 	/**
@@ -80,19 +54,17 @@ public class Entity {
 	}
 
 	/**
-	 * Get's {@link #values values}
-	 * 
-	 * @return values
-	 */
-	public List<String> getValues() {
-		return this.values;
-	}
-
-	/**
 	 * Get's {@link #entityData entityData}
 	 * @return  entityData
 	 */
 	public EntityData getEntityData() {
 		return this.entityData;
+	}
+
+	/**
+	 * @return
+	 */
+	public AGFNode getGrammar() {
+		return this.grammar;
 	}
 }

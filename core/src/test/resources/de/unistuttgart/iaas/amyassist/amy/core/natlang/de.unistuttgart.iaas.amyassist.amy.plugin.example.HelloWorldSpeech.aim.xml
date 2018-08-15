@@ -4,8 +4,8 @@
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
 		<gram> say {greeting} {number} </gram>
 		<EntityTemplates>
-			<EntityTemplate id="number" type="int" />
-			<EntityTemplate id="greeting" type="string" >
+			<EntityTemplate id="number"/>
+			<EntityTemplate id="greeting">
 				<Values>
 					<value> hello </value>
 					<value> good morning </value>

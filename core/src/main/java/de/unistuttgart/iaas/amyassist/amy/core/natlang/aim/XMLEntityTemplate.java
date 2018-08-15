@@ -23,14 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.aim;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
  * Contains information of EntityTemplates used in aim xml files
@@ -42,25 +38,19 @@ public class XMLEntityTemplate {
 
 	@XmlAttribute(name = "id")
 	private String entityId;
+	
+	@XmlElement(name="gram", required = false)
+	private String grammar;
 
-	@XmlAttribute(name = "type")
-	private String type;
-
-	@XmlElementWrapper(name = "Values", required = false)
-	@XmlElement(name = "value", required = false)
-	private List<String> values = new ArrayList<>();
 
 	/**
 	 * @return string representation of this object
 	 */
 	public String printSelf() {
 		StringBuilder builder = new StringBuilder();
-		builder = builder.append("\n Entity id=" + this.entityId + " type=" + this.type);
-		if (!this.values.isEmpty()) {
-			builder = builder.append("\n\t values:" + this.values.get(0) + ",");
-			for (int i = 1; i < this.values.size(); i++) {
-				builder = builder.append(this.values.get(i));
-			}
+		builder = builder.append("\n Entity id=" + this.entityId);
+		if(this.grammar != null) {
+			builder.append(" grammar=" + this.grammar);
 		}
 		return builder.toString();
 	}
@@ -75,20 +65,10 @@ public class XMLEntityTemplate {
 	}
 
 	/**
-	 * Get's {@link #type type}
-	 * 
-	 * @return type
+	 * @return
 	 */
-	public String getType() {
-		return this.type;
-	}
-	
-	/**
-	 * Get's {@link #values values}
-	 * @return  values
-	 */
-	public List<String> getValues() {
-		return this.values;
+	public String getGrammar() {
+		return this.grammar;
 	}
 
 }

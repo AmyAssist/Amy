@@ -102,11 +102,6 @@ class TestAIMService {
 	}
 
 	@Test
-	void testTemplateType() {
-		assertThat(this.interactionModel.getIntents().get(0).getTemplates().get(0).getType(), equalTo("int"));
-	}
-
-	@Test
 	void testPromptText() {
 		assertThat(this.interactionModel.getIntents().get(0).getPrompts().get(0).getText(),
 				equalTo(" how many times should i say {greeting}? "));

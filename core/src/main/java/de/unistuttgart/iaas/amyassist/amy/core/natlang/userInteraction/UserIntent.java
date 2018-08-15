@@ -32,6 +32,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLIAnnotationReader;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.PreDefinedEntityTypes;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
@@ -72,33 +73,28 @@ public class UserIntent {
 	 *            corresponding aimintent from xml
 	 */
 	public UserIntent(@Nonnull Method method, @Nonnull AIMIntent aimIntent) {
+		setEntity();
 		this.method = method;
 		this.partialNLIClass = method.getDeclaringClass();
 		this.aimIntent = aimIntent;
 		this.grammar = parseStringToAGF(this.aimIntent.getGram());
 		setPrompts();
-		setEntity();
 	}
 
 	private AGFNode parseStringToAGF(String toParse) {
+		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
+		
 		AGFLexer lex = new AGFLexer(toParse);
-		AGFParser parse = new AGFParser(lex);
+		AGFParser parse = new AGFParser(lex, customEntities);
 		return parse.parseWholeExpression();
 	}
 
 	private void setEntity() {
 		for (XMLEntityTemplate xmlEntityTemplate : this.aimIntent.getTemplates()) {
-			this.entityList.put(xmlEntityTemplate.getEntityId(), new Entity(xmlEntityTemplate.getType(),
-					xmlEntityTemplate.getEntityId(), xmlEntityTemplate.getValues(), getAMatcher(xmlEntityTemplate)));
+			AGFNode node = parseStringToAGF(xmlEntityTemplate.getGrammar());
+			Entity entity = new Entity(xmlEntityTemplate.getEntityId(), node);
+			this.entityList.put(xmlEntityTemplate.getEntityId(), entity);
 		}
-	}
-
-	private IMatcher getAMatcher(XMLEntityTemplate entityTemplate) {
-		// TODO replace with regex
-		if (entityTemplate.getType().equals("string")) {
-			return new StringMatcher(entityTemplate.getValues());
-		}
-		return null;
 	}
 
 	private void setPrompts() {
