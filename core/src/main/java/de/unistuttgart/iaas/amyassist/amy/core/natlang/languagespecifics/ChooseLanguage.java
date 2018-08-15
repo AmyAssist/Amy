@@ -39,12 +39,16 @@ public class ChooseLanguage {
 	 * 
 	 * @param language
 	 *            which language should be used (language code after ISO 639-1)
+	 * @param stemmerEnabled
+	 *            if stemmerEnabled true the correct stemmer is set, false stemmer is null
 	 */
-	public ChooseLanguage(String language) {
+	public ChooseLanguage(String language, boolean stemmerEnabled) {
 		switch (language.toLowerCase()) {
 		case "en":
 		default:
-			this.stemmer = new EnglishStemmer();
+			if (stemmerEnabled) {
+				this.stemmer = new EnglishStemmer();
+			}
 			this.numberConversion = new EnglishNumberConversion();
 			break;
 		}

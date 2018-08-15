@@ -44,7 +44,7 @@ public class Entity {
 		this.matcher = matcher;
 	}
 
-	public boolean match(String toMatch) {
+	public boolean insertEntityData(String toMatch) {
 		if(this.matcher.match(toMatch)) {
 			this.entityData = this.matcher.convert(toMatch);
 			return true;
@@ -95,7 +95,4 @@ public class Entity {
 	public EntityData getEntityData() {
 		return this.entityData;
 	}
-
-	
-	
 }

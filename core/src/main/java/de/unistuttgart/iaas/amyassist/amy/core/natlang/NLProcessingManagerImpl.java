@@ -86,15 +86,16 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private static final String PROPERTY_ENABLE_STEMMER = "enableStemmer";
 	private static final String PROBERTY_LANGUAGE = "chooseLanguage";
 	
-	private boolean stemmerEnabled;
 	private String languageString;
+	private ChooseLanguage language;
 
 	@PostConstruct
 	private void setup() {
-		this.stemmerEnabled = Boolean.parseBoolean(this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
+		boolean stemmerEnabled = Boolean.parseBoolean(this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
 				.getProperty(PROPERTY_ENABLE_STEMMER, "true"));
 		this.languageString = this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
 				.getProperty(PROBERTY_LANGUAGE, "EN");
+		this.language = new ChooseLanguage(this.languageString, stemmerEnabled);
 	}
 	
 	/**
@@ -147,11 +148,10 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Deprecated
 	@Override
 	public String process(String naturalLanguageText) {
-		ChooseLanguage language = new ChooseLanguage(this.languageString);
 		this.logger.debug("input {}", naturalLanguageText);
-		NLLexer nlLexer = new NLLexer(language.getNumberConversion());
+		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
-		INLParser nlParser = new NLParser(this.registeredNodeList, language.getStemmer(), this.stemmerEnabled);
+		INLParser nlParser = new NLParser(this.registeredNodeList, this.language.getStemmer());
 		try {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 			UserIntent userIntent = this.register.get(matchingNodeIndex);
@@ -179,10 +179,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	 */
 	@Override
 	public void decideIntent(DialogImpl dialog, String naturalLanguageText) {
-		ChooseLanguage language = new ChooseLanguage(this.languageString);
-		NLLexer nlLexer = new NLLexer(language.getNumberConversion());
+		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
-		INLParser nlParser = new NLParser(this.registeredNodeList, language.getStemmer(), this.stemmerEnabled);
+		INLParser nlParser = new NLParser(this.registeredNodeList, this.language.getStemmer());
 		try {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 			UserIntent userIntent = this.register.get(matchingNodeIndex);

@@ -52,7 +52,6 @@ public class NLParser implements INLParser {
 
 	private IStemmer stemmer;
 
-	private boolean stemmingIsEnabled;
 
 	/**
 	 * 
@@ -60,13 +59,10 @@ public class NLParser implements INLParser {
 	 *            all possible grammars to match
 	 * @param stemmer
 	 *            which stemmer should be used
-	 * @param stemmingIsEnabled
-	 *            true if stemmer should be active, else false
 	 */
-	public NLParser(List<AGFNode> grammars, IStemmer stemmer, boolean stemmingIsEnabled) {
+	public NLParser(List<AGFNode> grammars, IStemmer stemmer) {
 		this.grammars = grammars;
 		this.stemmer = stemmer;
-		this.stemmingIsEnabled = stemmingIsEnabled;
 	}
 
 	@Override
@@ -186,12 +182,12 @@ public class NLParser implements INLParser {
 	 */
 	private boolean match(AGFNode toMatch) {
 		WordToken token = lookAhead(0);
-		if (this.stemmingIsEnabled && token != null
+		if (this.stemmer != null && token != null
 				&& this.stemmer.stem(toMatch.getContent()).equals(this.stemmer.stem(token.getContent()))) {
 			consume();
 			return true;
 		}
-		if (!this.stemmingIsEnabled && token != null && toMatch.getContent().equals(token.getContent())) {
+		if (this.stemmer == null && token != null && toMatch.getContent().equals(token.getContent())) {
 			consume();
 			return true;
 		}

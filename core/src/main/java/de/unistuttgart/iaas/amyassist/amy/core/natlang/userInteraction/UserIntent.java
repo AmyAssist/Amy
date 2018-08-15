@@ -169,6 +169,4 @@ public class UserIntent {
 	public Map<String, Entity> getEntityList() {
 		return this.entityList;
 	}
-	
-	
 }
