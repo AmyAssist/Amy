@@ -27,8 +27,8 @@ import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.RecognizerCreator;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
 
 /**
@@ -59,7 +59,16 @@ public class LocalSpeechInterpreterImpl implements LocalSpeechInterpreter, Runna
 	 */
 	@Override
 	public void stop() {
-		this.recognitionManager.setCurrentGrammar(null);
+		this.recognitionManager.setCurrentRecognizer(null);
+	}
+	
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreter#changeRecognizer(de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer)
+	 */
+	@Override
+	public void changeRecognizer(SpeechRecognizer newRecognizer) {
+		this.recognitionManager.setCurrentRecognizer(newRecognizer);
 	}
 
 	/**
@@ -67,7 +76,7 @@ public class LocalSpeechInterpreterImpl implements LocalSpeechInterpreter, Runna
 	 */
 	@Override
 	public void run() {
-		while (!Grammar.MAIN.isInitiated()) {
+		while (!SpeechRecognizer.MAIN.isInitiated()) {
 			if (this.recognizerCreator.isRecognitionDisabled()) {
 				return;
 			}
@@ -76,9 +85,10 @@ public class LocalSpeechInterpreterImpl implements LocalSpeechInterpreter, Runna
 		if (this.recognizerCreator.isRecognitionDisabled()) {
 			this.logger.info("[INFORMATION] :: [Speech Recognition] :: Disabled");
 		} else {
-			this.recognitionManager.setCurrentGrammar(Grammar.MAIN);
+			this.recognitionManager.setCurrentRecognizer(SpeechRecognizer.MAIN);
 		}
 
 	}
+
 
 }

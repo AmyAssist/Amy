@@ -89,6 +89,11 @@
 			<artifactId>swagger-jaxrs2-servlet-initializer</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-remote-sr</artifactId>
+			<version>0.5.0-Snapshot</version>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

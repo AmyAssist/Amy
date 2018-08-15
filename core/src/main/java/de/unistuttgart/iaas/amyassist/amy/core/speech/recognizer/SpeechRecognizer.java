@@ -23,19 +23,117 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
 
+import java.io.File;
+
+import javax.sound.sampled.AudioInputStream;
+
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
 
 /**
- * Interface for the Different Recognizer
+ * Enum that holds the mainGrammar and the tempGrammar
  * 
  * @author Kai Menzel
  */
-public interface SpeechRecognizer {
+public enum SpeechRecognizer {
 	/**
-	 * request a SpeechRecognition
+	 * The Main Grammar Recognition is currently Active
+	 */
+	MAIN,
+	/**
+	 * The Temp Grammar Recognition is currently Active
+	 */
+	TEMP,
+	/**
+	 * The Google Speech Recognition is currently Active
+	 */
+	GOOGLE;
+
+	private boolean initiated = false;
+
+	private AbstractSpeechResultHandler resultHandler;
+
+	private SpeechRecognizerType recognizer;
+
+	// Init
+
+	public void initiateAsSphinxRecognizer(File grammar, AudioInputStream ais) {
+		this.recognizer = new SphinxSpeechRecognizer(grammar, ais);
+		this.initiated = true;
+	}
+
+	public void initiateAsSphinxRecognizer(File grammar, AudioInputStream ais,
+			AbstractSpeechResultHandler resultHandler) {
+		this.recognizer = new SphinxSpeechRecognizer(grammar, ais);
+		this.resultHandler = resultHandler;
+		this.initiated = true;
+	}
+
+	public void initiateAsRemoteRecognizer(RemoteSR recognizer) {
+		this.recognizer = new GoogleSpeechRecognizer(recognizer);
+		this.initiated = true;
+	}
+
+	public void initiateAsRemoteRecognizer(RemoteSR recognizer, AbstractSpeechResultHandler resultHandler) {
+		this.recognizer = new GoogleSpeechRecognizer(recognizer);
+		this.resultHandler = resultHandler;
+		this.initiated = true;
+	}
+
+	// SetResultHandler
+
+	/**
+	 * Set's {@link #resultHandler resultHandler}
 	 * 
 	 * @param resultHandler
-	 *            handler that will be called by the recognitionResult
+	 *            resultHandler
 	 */
-	void getRecognition(AbstractSpeechResultHandler resultHandler);
+	public void setResultHandler(AbstractSpeechResultHandler resultHandler) {
+		this.resultHandler = resultHandler;
+	}
+
+	// RequestSR
+
+	public void requestSR(AbstractSpeechResultHandler resultHandler) {
+		if (isInitiated()) {
+			this.recognizer.getRecognition(resultHandler);
+		} else {
+			throw new RecognizerNotInitiatedException();
+		}
+
+	}
+
+	public void requestSR() {
+		if (isInitiated()) {
+			if (this.resultHandler != null) {
+				this.recognizer.getRecognition(this.resultHandler);
+			} else {
+				throw new ResultHandlerNotSet();
+			}
+		} else {
+			throw new RecognizerNotInitiatedException();
+		}
+
+	}
+
+	// GetInitiatedState
+
+	/**
+	 * Get's {@link #initiated initiated}
+	 * 
+	 * @return initiated
+	 */
+	public boolean isInitiated() {
+		return this.initiated;
+	}
+
+	// Exceptions
+
+	private class RecognizerNotInitiatedException extends NullPointerException {
+
+	}
+
+	private class ResultHandlerNotSet extends NullPointerException {
+
+	}
 }

@@ -21,34 +21,21 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
 
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler;
 
 /**
- * Interface of the Local Recognition System
+ * Interface for the Different Recognizer
  * 
  * @author Kai Menzel
  */
-public interface LocalSpeechInterpreter extends RunnableService {
+public interface SpeechRecognizerType {
 	/**
-	 * start the Local Recognition System
-	 */
-	@Override
-	void start();
-
-	/**
-	 * stop the Local Recognition System
-	 */
-	@Override
-	void stop();
-
-	/**
-	 * change the Recognizer Type for the next Recognition
+	 * request a SpeechRecognition
 	 * 
-	 * @param newRecognizer
-	 *            next Recognition Type
+	 * @param resultHandler
+	 *            handler that will be called by the recognitionResult
 	 */
-	void changeRecognizer(SpeechRecognizer newRecognizer);
+	void getRecognition(AbstractSpeechResultHandler resultHandler);
 }

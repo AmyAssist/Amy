@@ -33,8 +33,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.MainGrammarSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.TempGrammarSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
@@ -66,10 +66,12 @@ public class SpeechRecognizerManager {
 	// --------------------------------------------------------------
 	// Fields
 
-	private Grammar keyWordGrammar = Grammar.MAIN;
-	private Grammar startGrammar = Grammar.GOOGLE;
+	private SpeechRecognizer defaultKeyWordRecognizer = SpeechRecognizer.MAIN;
+	private SpeechRecognizer defaultStartRecognizer = SpeechRecognizer.GOOGLE;
+
 	private ListeningState currentListeningState = ListeningState.NOT_LISTENING;
-	private Grammar currentGrammar = null;
+
+	private SpeechRecognizer currentRecognizer = null;
 
 	private static final String MESSAGE_TOPIC_MUTE = "home/all/music/mute";
 
@@ -84,9 +86,9 @@ public class SpeechRecognizerManager {
 		this.tempResultHandler.setRecognizerManager(this);
 		this.mainResultHandler.setRecognizerManager(this);
 
-		Grammar.GOOGLE.setResultHandler(this.tempResultHandler);
-		Grammar.TEMP.setResultHandler(this.tempResultHandler);
-		Grammar.MAIN.setResultHandler(this.mainResultHandler);
+		SpeechRecognizer.GOOGLE.setResultHandler(this.tempResultHandler);
+		SpeechRecognizer.TEMP.setResultHandler(this.tempResultHandler);
+		SpeechRecognizer.MAIN.setResultHandler(this.mainResultHandler);
 	}
 
 	// --------------------------------------------------------------
@@ -106,14 +108,14 @@ public class SpeechRecognizerManager {
 
 			this.messageHub.publish(MESSAGE_TOPIC_MUTE, "true");
 			this.output.voiceOutput("waking up");
-			setCurrentGrammar(this.startGrammar);
+			setCurrentRecognizer(this.defaultStartRecognizer);
 			break;
 
 		case SINGLE_CALL_LISTENING:
 
 			this.messageHub.publish(MESSAGE_TOPIC_MUTE, "true");
 			this.output.soundOutput(Sounds.SINGLE_CALL_START_BEEP);
-			setCurrentGrammar(this.startGrammar);
+			setCurrentRecognizer(this.defaultStartRecognizer);
 			break;
 
 		case NOT_LISTENING:
@@ -129,7 +131,7 @@ public class SpeechRecognizerManager {
 			default:
 				break;
 			}
-			setCurrentGrammar(this.keyWordGrammar);
+			setCurrentRecognizer(this.defaultKeyWordRecognizer);
 			this.messageHub.publish(MESSAGE_TOPIC_MUTE, "false");
 			break;
 
@@ -150,13 +152,13 @@ public class SpeechRecognizerManager {
 	/**
 	 * Change the Current Grammar
 	 * 
-	 * @param currentGrammar
-	 *            Main Temp None
+	 * @param currentRecognizer
+	 *            Currently Used Recognizer
 	 */
-	public void setCurrentGrammar(Grammar currentGrammar) {
-		this.currentGrammar = currentGrammar;
-		if (currentGrammar != null) {
-			currentGrammar.requestSR();
+	public void setCurrentRecognizer(SpeechRecognizer currentRecognizer) {
+		this.currentRecognizer = currentRecognizer;
+		if (currentRecognizer != null) {
+			currentRecognizer.requestSR();
 		}
 
 	}
@@ -165,8 +167,8 @@ public class SpeechRecognizerManager {
 	 * Request the NextRecognitionResult
 	 */
 	public void nextRecognitionRequest() {
-		if (this.currentGrammar != null) {
-			this.currentGrammar.requestSR();
+		if (this.currentRecognizer != null) {
+			this.currentRecognizer.requestSR();
 		}
 	}
 
@@ -182,8 +184,6 @@ public class SpeechRecognizerManager {
 
 		Future<String> handle = this.inputHandler.handle(result);
 
-		Grammar returnGrammar = Grammar.GOOGLE;
-
 		try {
 			this.output.voiceOutput(handle.get());
 		} catch (ExecutionException e) {
@@ -194,16 +194,14 @@ public class SpeechRecognizerManager {
 			}
 		} catch (InterruptedException e) {
 			this.logger.error("[Recognition Stopped] Error with SpeechInputhandler Return", e);
-			setCurrentGrammar(null);
+			setCurrentRecognizer(null);
 			Thread.currentThread().interrupt();
 		}
 
 		if (this.currentListeningState == ListeningState.SINGLE_CALL_LISTENING) {
 			setListeningState(ListeningState.NOT_LISTENING);
 		} else {
-			if (this.currentGrammar != null) {
-				returnGrammar.requestSR();
-			}
+			nextRecognitionRequest();
 		}
 	}
 
@@ -220,12 +218,13 @@ public class SpeechRecognizerManager {
 	}
 
 	/**
+	 * 
 	 * Getter
 	 * 
-	 * @return current Active Grammar State
+	 * @return current Active Recognizer
 	 */
-	public Grammar getCurrentGrammarState() {
-		return this.currentGrammar;
+	public SpeechRecognizer getCurrentRecognizer() {
+		return this.currentRecognizer;
 	}
 
 	/**
@@ -241,23 +240,19 @@ public class SpeechRecognizerManager {
 	// Setter
 
 	/**
-	 * Set's {@link #startGrammar startGrammar}
-	 * 
-	 * @param startGrammar
-	 *            startGrammar
+	 * Set's {@link #defaultKeyWordRecognizer defaultKeyWordRecognizer}
+	 * @param defaultKeyWordRecognizer  defaultKeyWordRecognizer
 	 */
-	public void setStartGrammar(Grammar startGrammar) {
-		this.startGrammar = startGrammar;
+	public void setDefaultKeyWordRecognizer(SpeechRecognizer defaultKeyWordRecognizer) {
+		this.defaultKeyWordRecognizer = defaultKeyWordRecognizer;
 	}
-
+	
 	/**
-	 * Set's {@link #keyWordGrammar keyWordGrammar}
-	 * 
-	 * @param keyWordGrammar
-	 *            keyWordGrammar
+	 * Set's {@link #defaultStartRecognizer defaultStartRecognizer}
+	 * @param defaultStartRecognizer  defaultStartRecognizer
 	 */
-	public void setKeyWordGrammar(Grammar keyWordGrammar) {
-		this.keyWordGrammar = keyWordGrammar;
+	public void setDefaultStartRecognizer(SpeechRecognizer defaultStartRecognizer) {
+		this.defaultStartRecognizer = defaultStartRecognizer;
 	}
 
 	// --------------------------------------------------------------

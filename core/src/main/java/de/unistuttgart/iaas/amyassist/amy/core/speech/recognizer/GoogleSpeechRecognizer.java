@@ -35,7 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSRListener;
  * 
  * @author Kai Menzel
  */
-public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognizer {
+public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognizerType {
 
 	// --------------------------------------------------------------
 	// Dependencies
@@ -80,7 +80,7 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	// Methods
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer#getRecognition(de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerType#getRecognition(de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler)
 	 */
 	@Override
 	public void getRecognition(AbstractSpeechResultHandler resultHandler) {

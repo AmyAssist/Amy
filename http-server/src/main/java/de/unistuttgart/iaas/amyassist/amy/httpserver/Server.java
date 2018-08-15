@@ -52,6 +52,8 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.LocalDateTimeProvid
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeMessageBodyWriter;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeProvider;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
+import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
+import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR.LaunchChromeException;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -91,6 +93,9 @@ public class Server implements RunnableService {
 	 */
 	@Reference
 	private ServiceLocator di;
+	
+	@Reference
+	private RemoteSR googleSpeech;
 
 	private Set<Class<?>> restResources = new HashSet<>();
 	private HttpServer httpServer;
@@ -176,6 +181,11 @@ public class Server implements RunnableService {
 			throw new IllegalStateException("The Server is can not be started", e);
 		}
 		this.logger.info("started the server");
+		try {
+			this.googleSpeech.launchChrome();
+		} catch (LaunchChromeException e) {
+			this.logger.error(e.getMessage());
+		}
 	}
 
 	/**

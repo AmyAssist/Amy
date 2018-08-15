@@ -43,7 +43,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR.LaunchChromeException;
 
@@ -121,16 +120,9 @@ public class RecognizerCreator implements DeploymentContainerService {
 		loadAndCheckProperties();
 
 		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_ENABLE))) {
-			try {
-				this.googleRecognition.launchChrome();
-			} catch (LaunchChromeException e) {
-				this.logger.error(e.getMessage());
-				this.recognitionDisabled = true;
-				return;
-			}
-			Grammar.GOOGLE.initiateAsRemoteRecognizer(this.googleRecognition);
+			SpeechRecognizer.GOOGLE.initiateAsRemoteRecognizer(this.googleRecognition);
 			// Grammar.TEMP.initiateAsSphinxRecognizer(tempGrammarFile.toFile(), getAudioinputStream())
-			Grammar.MAIN.initiateAsSphinxRecognizer(mainGrammarFile.toFile(), getAudioinputStream());
+			SpeechRecognizer.MAIN.initiateAsSphinxRecognizer(mainGrammarFile.toFile(), getAudioinputStream());
 		} else {
 			this.recognitionDisabled = true;
 		}

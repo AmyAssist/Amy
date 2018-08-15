@@ -45,7 +45,7 @@ import edu.cmu.sphinx.api.StreamSpeechRecognizer;
  *
  * @author Kai Menzel
  */
-public class SphinxSpeechRecognizer implements SpeechRecognizer {
+public class SphinxSpeechRecognizer implements SpeechRecognizerType {
 
 	/**
 	 * logger for all the Speech Recognition classes
