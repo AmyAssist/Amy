@@ -23,17 +23,21 @@
 
 package de.unistuttgart.iaas.amyassist.amy.remotesr;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-
-import org.apache.commons.lang3.SystemUtils;
-import org.slf4j.Logger;
-
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import org.apache.commons.lang3.SystemUtils;
+import org.slf4j.Logger;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collections;
 
 /**
  * Class to initiate the remote SR
@@ -69,11 +73,7 @@ public class RemoteSR {
 	 */
 	public void launchChrome() throws LaunchChromeException {
 		try {
-			URL fileURL = getClass().getClassLoader().getResource("chrome_profile");
-			if (fileURL == null) {
-				throw new LaunchChromeException("Couldn't get chrome_profile resource");
-			}
-			String file = fileURL.getFile();
+			String file = generateTempProfile();
 
 			String chromePath = configurationManager.getConfigurationWithDefaults(CONFIG_NAME)
 					.getProperty(CHROME_DIRECTORY_CONFIG_KEY);
@@ -95,6 +95,66 @@ public class RemoteSR {
 			watchProcess(process, new BufferedReader(new InputStreamReader(process.getInputStream())));
 		} catch (IOException e) {
 			throw new LaunchChromeException("Couldn't start Chrome:", e);
+		}
+	}
+
+	/**
+	 *
+	 * @return file path of chrome profile in temp directory
+	 * @throws LaunchChromeException if any error occurs
+	 */
+	private String generateTempProfile() throws LaunchChromeException {
+		try {
+			URL chromeProfileJarDir = getClass().getClassLoader().getResource("chrome_profile");
+			if (chromeProfileJarDir == null) {
+				throw new LaunchChromeException("Couldn't get chrome_profile resource");
+			}
+
+			Path tempDir = Files.createTempDirectory(getClass().getSimpleName());
+
+			copyFromJar(chromeProfileJarDir.toURI(), tempDir);
+
+			return tempDir.toAbsolutePath().toString();
+
+		} catch (IOException | URISyntaxException e) {
+			throw new LaunchChromeException("Couldn't copy chrome_profile:", e);
+		}
+	}
+
+	/**
+	 * Copy a directory from our jar recursively to a directory outside of the jar
+	 * @param sourceURI URI of the source directory
+	 * @param target target directory path
+	 * @throws IOException if any IO error occurs
+	 */
+	private void copyFromJar(final URI sourceURI, final Path target) throws IOException {
+
+		FileSystem fs = null;
+		try {
+			if (sourceURI.getScheme().equals("jar")) {
+				fs = FileSystems.newFileSystem(sourceURI, Collections.<String, String>emptyMap());
+			}
+
+			final Path jarPath = Paths.get(sourceURI);
+
+			Files.walkFileTree(jarPath, new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
+					Path currentTarget = target.resolve(jarPath.relativize(dir).toString());
+					Files.createDirectories(currentTarget);
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
+					Files.copy(file, target.resolve(jarPath.relativize(file).toString()), StandardCopyOption.REPLACE_EXISTING);
+					return FileVisitResult.CONTINUE;
+				}
+			});
+		} finally {
+			if (fs != null) {
+				fs.close();
+			}
 		}
 	}
 
@@ -156,7 +216,7 @@ public class RemoteSR {
 		 *            Message of the Exception
 		 * 
 		 */
-		public LaunchChromeException(String s) {
+		LaunchChromeException(String s) {
 			super(s);
 		}
 
@@ -166,7 +226,7 @@ public class RemoteSR {
 		 * @param e
 		 *            Error Message
 		 */
-		public LaunchChromeException(String string, Exception e) {
+		LaunchChromeException(String string, Exception e) {
 			super(string, e);
 		}
 	}
