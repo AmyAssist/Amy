@@ -104,7 +104,10 @@ public class CalendarLogic {
         start.setTimeZone(ZoneId.systemDefault().toString());
         end.setTimeZone(ZoneId.systemDefault().toString());
 
-        event.setRecurrence(Arrays.asList(calendarEvent.getRecurrence()));
+        event.setStart(start);
+        event.setEnd(end);
+
+        event.setRecurrence(calendarEvent.getRecurrenceAsList());
 
         EventReminder[] reminderOverrides = new EventReminder[]{
                 new EventReminder()
