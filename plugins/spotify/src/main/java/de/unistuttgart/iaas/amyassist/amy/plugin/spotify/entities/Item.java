@@ -28,77 +28,68 @@ import javax.xml.bind.annotation.XmlRootElement;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
 
 /**
- * Music Entity for JSON
+ * in this abstract class are all attributes from Data object that are the same
+ * in all four different types. For example after a search
  * 
- * @author Muhammed Kaya, Lars Buttgereit
+ * @author Lars Buttgereit
+ *
  */
 @XmlRootElement
-public class MusicEntity extends Entity{
+public abstract class Item extends Entity{
+	private String uri;
+	private String name;
 
 	/**
-	 * constructor for a MusicEntity
+	 * default constructor. no data is set
 	 */
-	public MusicEntity() {
+	public Item() {
 
 	}
 
 	/**
-	 * constructor for a MusicEntity with set values
+	 * this constructor set all data Objects
 	 * 
-	 * @param title
-	 *            title of the music
-	 * @param artist
-	 *            artist of the music
+	 * @param name of the item
+	 * @param uri of the item
 	 */
-	public MusicEntity(String title, String artist) {
-		this.title = title;
-		this.artist = artist;
+	public Item(String name, String uri) {
+		this.uri = uri;
+		this.name = name;
 	}
 
 	/**
-	 * the artist of the music
+	 * get the name from the item
+	 * 
+	 * @return name
 	 */
-	private String artist;
-	
-	/**
-	 * the title of the music
-	 */
-	private String title;
-	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return this.title + " " + this.artist;
+	public String getName() {
+		return this.name;
 	}
 
 	/**
-	 * @return artist
+	 * set the name form the item
+	 * 
+	 * @param name from the item
 	 */
-	public String getArtist() {
-		return this.artist;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
-	 * @param artist to set
+	 * get the uri from the item
+	 * 
+	 * @return uri
 	 */
-	public void setArtist(String artist) {
-		this.artist = artist;
+	public String getUri() {
+		return this.uri;
 	}
 
 	/**
-	 * @return title
+	 * set the uri form the item
+	 * 
+	 * @param uri from the item
 	 */
-	public String getTitle() {
-		return this.title;
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
-
-	/**
-	 * @param title to set
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	
 }

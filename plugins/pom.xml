@@ -59,33 +59,46 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.1.0</version>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.1.1</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
 						<goals>
-							<goal>single</goal>
+							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-							<archive>
-								<manifest>
-									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-								</manifest>
-								<manifestEntries>
-									<PluginID>${project.groupId}.${project.artifactId}</PluginID>
-									<PluginDescription>${project.description}</PluginDescription>
-								</manifestEntries>
-							</archive>
+							<!-- <outputFile>${project.parent.parent.basedir}/${amy.plugin.build.dir}/${project.artifactId}.jar</outputFile> -->
+							<!-- <finalName>${project.artifactId}</finalName> <outputDirectory>${project.parent.parent.basedir}/${amy.plugin.build.dir}</outputDirectory> -->
+							<!--<outputDirectory>${project.parent.parent.basedir}/${amy.plugin.build.dir}</outputDirectory> -->
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<manifestEntries>
+										<Specification-Title>${project.artifactId}</Specification-Title>
+										<Specification-Version>${project.version}</Specification-Version>
+										<Implementation-Title>${project.artifactId}</Implementation-Title>
+										<Implementation-Version>${project.version}</Implementation-Version>
+										<Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
+										<PluginID>${project.groupId}.${project.artifactId}</PluginID>
+										<PluginDescription>${project.description}</PluginDescription>
+									</manifestEntries>
+								</transformer>
+							</transformers>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<outputDirectory>${project.parent.parent.basedir}/${amy.plugin.build.dir}</outputDirectory>
+				</configuration>
+			</plugin>
 		</plugins>
+		<finalName>${project.artifactId}</finalName>
 	</build>
 </project>
  

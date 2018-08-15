@@ -37,6 +37,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 @SpeechCommand
 public class EMailSpeech {
 
+	private static final String NOMAILS = "No new messages";
+	private static final String NOIMPMAILS = "No important new messages";
+
 	@Reference
 	private EMailLogic logic;
 
@@ -50,31 +53,45 @@ public class EMailSpeech {
 	 *            words in the grammar annotation
 	 * @return yes or no
 	 */
-	@Grammar("new messages")
+	@Grammar("[do i have] new [important] messages")
 	public String newMessages(String... params) {
-		if (this.logic.hasUnreadMessages()) {
+		for (int i = 0; i < params.length; i++) {
+			if (params[i].equals("important")) {
+				if (this.logic.hasNewMessages(true)) {
+					return "You have new important messages.";
+				}
+				return NOIMPMAILS;
+			}
+		}
+		if (this.logic.hasNewMessages(false)) {
 			return "You have new messages.";
 		}
-		return "You have no new messages.";
-
+		return NOMAILS;
 	}
 
 	/**
-	 * Gets number of UNSEEN (don't confuse with UNREAD) mails
+	 * Gets number of UNREAD mails
 	 * 
 	 * @param params
 	 *            words in the grammar annotation
 	 * @return number of unseen emails
 	 */
-	@Grammar("how many [new] (emails|mails) [do i have]")
+	@Grammar("how many [new] [important] (emails|mails) [do i have]")
 	public String numberOfNewMails(String... params) {
-		int s = this.logic.getNewMessageCount();
-		if (s > 0) {
-			return this.logic.getNewMessageCount() + " new mails.";
-		} else if (s == 0) {
-			return "You don't have new mails.";
+		for (int i = 0; i < params.length; i++) {
+			if (params[i].equals("important")) {
+				int count = this.logic.getNewMessageCount(true);
+				if (count > 0) {
+					return count + " new important messages";
+				}
+				return NOIMPMAILS;
+			}
 		}
-		return "something went wrong - i am deeply sorry";
+		int count = this.logic.getNewMessageCount(false);
+		if (count > 0) {
+			return count + " new mails.";
+		}
+		return NOMAILS;
 	}
 
 	/**
@@ -84,50 +101,19 @@ public class EMailSpeech {
 	 *            words in the grammar annotation
 	 * @return x most recent mails
 	 */
-	@Grammar("read [# most recent] (emails|mails)")
+	@Grammar("read (#|all) [important] (emails|mails)")
 	public String readRecentMails(String... params) {
-		String message;
-		if (params.length == 2) {
-			message = this.logic.printPlainTextMessages(-1);
-		} else {
-			message = this.logic.printPlainTextMessages(Integer.parseInt(params[1]));
+		boolean important = params[2].equals("important");
+		if (params[1].equals("all")) {
+			if (important) {
+				return this.logic.printMessages(-1, true);
+			}
+			return this.logic.printMessages(-1, false);
 		}
-		if (message.isEmpty()) {
-			return "no messages received - poor you";
+		int amount = Integer.parseInt(params[1]);
+		if (important) {
+			return this.logic.printMessages(amount, true);
 		}
-		return message;
-	}
-
-	/**
-	 * Reads all messages from important people
-	 * 
-	 * @param params
-	 *            words in the grammar annotation
-	 * @return all important mails
-	 */
-	@Grammar("read [# most recent] important (emails|mails)")
-	public String readImportantMails(String... params) {
-		String message;
-		if (params.length == 3) {
-			message = this.logic.printImportantMessages(-1);
-		} else {
-			message = this.logic.printImportantMessages(Integer.parseInt(params[1]));
-		}
-		if (message.isEmpty()) {
-			return "You have no important messages";
-		}
-		return message;
-	}
-
-	/**
-	 * Sends an example email
-	 * 
-	 * @param params
-	 *            words in the grammar annotation
-	 * @return confirmation
-	 */
-	@Grammar("send example mail")
-	public String sendExampleMail(String... params) {
-		return this.logic.sendMail("amy.speechassist@gmail.com", "Mail From Amy", "Hello!");
+		return this.logic.printMessages(amount, false);
 	}
 }

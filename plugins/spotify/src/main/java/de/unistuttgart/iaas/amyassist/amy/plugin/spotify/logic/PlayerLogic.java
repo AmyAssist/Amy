@@ -24,9 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 
@@ -38,9 +36,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SearchTypes;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
 
 /**
  * This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music
@@ -62,6 +62,8 @@ public class PlayerLogic {
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
+	
+	private static final String ITME_NOT_FOUND = "Item not found";
 
 	@PostConstruct
 	private void init() {
@@ -115,28 +117,13 @@ public class PlayerLogic {
 	}
 
 	/**
-	 * this call the searchAnaything method in the Search class
-	 * 
-	 * @param searchText
-	 *            the text you want to search
-	 * @param type
-	 *            artist, track, playlist, album
-	 * @param limit
-	 *            how many results maximal searched for
-	 * @return one output String with all results
-	 */
-	public List<Map<String, String>> search(String searchText, String type, int limit) {
-		return this.search.searchList(searchText, type, limit);
-	}
-
-	/**
 	 * this play method play a featured playlist from spotify
 	 * 
 	 * @return a Playlist object. can be null
 	 */
 	public PlaylistEntity play() {
 		List<PlaylistEntity> playLists;
-		playLists = this.search.getFeaturedPlaylists(5);
+		playLists = this.search.searchFeaturedPlaylists(5);
 		if (!playLists.isEmpty() && 1 < playLists.size()
 				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).getUri())) {
 			return playLists.get(1);
@@ -146,27 +133,77 @@ public class PlayerLogic {
 	}
 
 	/**
-	 * this method play the item that searched before. Use only after a search
+	 * this method play a playlist from a playlist search. Use only after a search
 	 * 
-	 * @param songNumber
+	 * @param playlistNumber
 	 *            number of the item form the search before
 	 * @param type
 	 *            to find the right search Results
-	 * @return a map with the song data
+	 * @return a PlaylistEntity
 	 */
-	public Map<String, String> play(int songNumber, SearchTypes type) {
-		if (songNumber < this.search.restoreUris(type).size()) {
-			String uriToPlay = this.search.restoreUris(type).get(songNumber);
-			if (uriToPlay.contains("track")) {
-				this.spotifyAPICalls.playSongFromUri(uriToPlay);
-			} else {
-				this.spotifyAPICalls.playListFromUri(uriToPlay);
-			}
-
-		} else {
-			this.logger.warn("Item not found");
+	public PlaylistEntity playPlaylist(int playlistNumber, SearchTypes type) {
+		if(type.equals(SearchTypes.FEATURED_PLAYLISTS) && this.search.getFeaturedPlaylists().size() > playlistNumber) {
+			this.spotifyAPICalls.playListFromUri(this.search.getFeaturedPlaylists().get(playlistNumber).getUri());
+			return this.search.getFeaturedPlaylists().get(playlistNumber);
 		}
-		return new HashMap<>();
+		if(type.equals(SearchTypes.USER_PLAYLISTS) && this.search.getOwnPlaylists().size() > playlistNumber) {
+			this.spotifyAPICalls.playListFromUri(this.search.getOwnPlaylists().get(playlistNumber).getUri());
+			return this.search.getOwnPlaylists().get(playlistNumber);
+		}
+		if(type.equals(SearchTypes.SEARCH_PLAYLISTS) && this.search.getPlaylistSearchResults().size() > playlistNumber) {
+			this.spotifyAPICalls.playListFromUri(this.search.getPlaylistSearchResults().get(playlistNumber).getUri());
+			return this.search.getPlaylistSearchResults().get(playlistNumber);
+		}
+		this.logger.warn(ITME_NOT_FOUND);
+		return null;
+	}
+	
+	/**
+	 * this method play a track from a track search. Use only after a search
+	 * 
+	 * @param trackNumber
+	 *            number of the item form the search before
+	 * @return a TrackEntity
+	 */
+	public TrackEntity playTrack(int trackNumber) {
+		if(this.search.getTrackSearchResults().size() > trackNumber) {
+			this.spotifyAPICalls.playSongFromUri(this.search.getTrackSearchResults().get(trackNumber).getUri());
+			return this.search.getTrackSearchResults().get(trackNumber);
+		}
+		this.logger.warn(ITME_NOT_FOUND);
+		return null;
+	}
+	
+	/**
+	 * this method play a album from a album search. Use only after a search
+	 * 
+	 * @param albumNumber
+	 *            number of the item form the search before
+	 * @return a AlbumEntity
+	 */
+	public AlbumEntity playAlbum(int albumNumber) {
+		if(this.search.getAlbumSearchResults().size() > albumNumber) {
+			this.spotifyAPICalls.playSongFromUri(this.search.getAlbumSearchResults().get(albumNumber).getUri());
+			return this.search.getAlbumSearchResults().get(albumNumber);
+		}
+		this.logger.warn(ITME_NOT_FOUND);
+		return null;
+	}
+	
+	/**
+	 * this method play a artist from a artist search. Use only after a search
+	 * 
+	 * @param artistNumber
+	 *            number of the item form the search before
+	 * @return a ArtistEntity
+	 */
+	public ArtistEntity playArtist(int artistNumber) {
+		if(this.search.getArtistSearchResults().size() > artistNumber) {
+			this.spotifyAPICalls.playSongFromUri(this.search.getArtistSearchResults().get(artistNumber).getUri());
+			return this.search.getArtistSearchResults().get(artistNumber);
+		}
+		this.logger.warn(ITME_NOT_FOUND);
+		return null;
 	}
 
 	/**
@@ -210,36 +247,14 @@ public class PlayerLogic {
 	 * 
 	 * @return a hashMap with the keys name and artist
 	 */
-	public Map<String, String> getCurrentSong() {
+	public TrackEntity getCurrentSong() {
 		CurrentlyPlayingContext currentlyPlayingContext = this.spotifyAPICalls.getCurrentSong();
 		if (currentlyPlayingContext != null) {
 			Track[] track = { currentlyPlayingContext.getItem() };
-			return this.search.createTrackOutput(new Paging.Builder<Track>().setItems(track).build()).get(0);
+			return this.search.createTrackData(new Paging.Builder<Track>().setItems(track).build()).get(0);
 		}
-		return new HashMap<>();
+		return null;
 
-	}
-
-	/**
-	 * get a list from user created or followed playlists
-	 * 
-	 * @param limit
-	 *            limit of returned playlists
-	 * @return a list from Playlists
-	 */
-	public List<PlaylistEntity> getOwnPlaylists(int limit) {
-		return this.search.getOwnPlaylists(limit);
-	}
-
-	/**
-	 * get a list from featured playlists
-	 * 
-	 * @param limit
-	 *            limit of returned playlists
-	 * @return a list from Playlists
-	 */
-	public List<PlaylistEntity> getFeaturedPlaylists(int limit) {
-		return this.search.getFeaturedPlaylists(limit);
 	}
 
 	/**

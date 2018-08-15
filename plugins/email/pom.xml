@@ -12,20 +12,11 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+		<!-- https://mvnrepository.com/artifact/com.sun.mail/javax.mail -->
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4</version>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.6.1</version>
 		</dependency>
-
-		<!-- for testing only -->
-		<dependency>
-			<groupId>org.jvnet.mock-javamail</groupId>
-			<artifactId>mock-javamail</artifactId>
-			<version>1.9</version>
-			<scope>test</scope>
-		</dependency>
-
 	</dependencies>
 </project>

@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -40,11 +39,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.SearchTypes;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
@@ -54,25 +57,24 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
  * @author Muhammed Kaya, Christian Bräuner, Lars Buttgereit
  */
 @Path(MusicResource.PATH)
-public class MusicResource implements Resource{
+public class MusicResource implements Resource {
 
 	/**
 	 * the resource path for this plugin
 	 */
 	public static final String PATH = "music";
-	
+
 	private static final String CHECK_PLAYER_STATE = "Check player state";
+	private static final String NO_RESULTS_FOUND = "No results found";
 
 	@Reference
 	private PlayerLogic logic;
 
 	@Reference
-	private StringGenerator stringGenerator;
-	
-	@Reference
 	private DeviceLogic deviceLogic;
 
-	private MusicEntity musicEntity;
+	@Reference
+	private Search search;
 
 	/**
 	 * needed for the first init. Use the clientID and the clientSecret as query parameter form a spotify devloper
@@ -168,103 +170,183 @@ public class MusicResource implements Resource{
 	}
 
 	/**
-	 * this method allows to search artist, track, playlist and album names
+	 * this method allows to search for tracks
 	 * 
 	 * @param searchText
 	 *            the text you want to search
-	 * @param type
-	 *            artist, track, playlist, album
 	 * @param limit
 	 *            how many results maximal searched for
-	 * @return one output String with all results
+	 * @return a array with TrackEntities
 	 */
-	@POST
-	@Path("search/{searchText}")
+	@GET
+	@Path("search/track/{searchText}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Map<String, String>> search(@PathParam("searchText") String searchText,
-			@QueryParam("type") @DefaultValue("track") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
-		List<Map<String, String>> actualSearchResult = null;
-		switch (type.toLowerCase()) {
-		case SpotifyConstants.TYPE_ARTIST:
-			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_ARTIST, limit);
-			break;
-		case SpotifyConstants.TYPE_PLAYLIST:
-			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_PLAYLIST, limit);
-			break;
-		case SpotifyConstants.TYPE_ALBUM:
-			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_ALBUM, limit);
-			break;
-		case SpotifyConstants.TYPE_TRACK:
-			actualSearchResult = this.logic.search(searchText, SpotifyConstants.TYPE_TRACK, limit);
-			break;
-		default:
-			
-			break;
+	public TrackEntity[] searchTracks(@PathParam("searchText") String searchText,
+			@QueryParam("limit") @DefaultValue("5") int limit) {
+		List<TrackEntity> trackList = this.search.searchforTracks(searchText, limit);
+		if (!trackList.isEmpty()) {
+			return trackList.toArray(new TrackEntity[trackList.size()]);
 		}
-		if (actualSearchResult != null) {
-			return actualSearchResult;
-		}
-		throw new WebApplicationException("No results found", Status.NO_CONTENT);
+		throw new WebApplicationException(NO_RESULTS_FOUND, Status.NO_CONTENT);
 	}
 
 	/**
-	 * plays the given music
+	 * this method allows to search for playlists
 	 * 
-	 * @param songNumber
-	 *            which song or playlist number should be played
-	 * @param type
-	 *            where to play: allowed parameters: user (playlist), featured (playlist), track
+	 * @param searchText
+	 *            the text you want to search
 	 * @param limit
-	 *            limit of returned tracks or playlists
-	 * @param music
-	 *            the music to be played
-	 * @return the playing music if there is one
+	 *            how many results maximal searched for
+	 * @return a array with PlaylistEntities
+	 */
+	@GET
+	@Path("search/playlist/{searchText}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PlaylistEntity[] searchPlaylists(@PathParam("searchText") String searchText,
+			@QueryParam("limit") @DefaultValue("5") int limit) {
+		List<PlaylistEntity> playlistList = this.search.searchforPlaylists(searchText, limit);
+		if (!playlistList.isEmpty()) {
+			return playlistList.toArray(new PlaylistEntity[playlistList.size()]);
+		}
+		throw new WebApplicationException(NO_RESULTS_FOUND, Status.NO_CONTENT);
+	}
+
+	/**
+	 * this method allows to search for albums
+	 * 
+	 * @param searchText
+	 *            the text you want to search
+	 * @param limit
+	 *            how many results maximal searched for
+	 * @return a array with AlbumEntities
+	 */
+	@GET
+	@Path("search/album/{searchText}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public AlbumEntity[] searchAlbums(@PathParam("searchText") String searchText,
+			@QueryParam("limit") @DefaultValue("5") int limit) {
+		List<AlbumEntity> albumList = this.search.searchforAlbums(searchText, limit);
+		if (!albumList.isEmpty()) {
+			return albumList.toArray(new AlbumEntity[albumList.size()]);
+		}
+		throw new WebApplicationException(NO_RESULTS_FOUND, Status.NO_CONTENT);
+	}
+
+	/**
+	 * this method allows to search for artists
+	 * 
+	 * @param searchText
+	 *            the text you want to search
+	 * @param limit
+	 *            how many results maximal searched for
+	 * @return a array with ArtistEntities
+	 */
+	@GET
+	@Path("search/artist/{searchText}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArtistEntity[] searchArtists(@PathParam("searchText") String searchText,
+			@QueryParam("limit") @DefaultValue("5") int limit) {
+		List<ArtistEntity> albumList = this.search.searchforArtists(searchText, limit);
+		if (!albumList.isEmpty()) {
+			return albumList.toArray(new ArtistEntity[albumList.size()]);
+		}
+		throw new WebApplicationException(NO_RESULTS_FOUND, Status.NO_CONTENT);
+	}
+
+	/**
+	 * plays the playlist with the index from the search
+	 * 
+	 * @param playlistNumber
+	 *            playlist number should be played
+	 * @param type
+	 *            where to play: allowed parameters: user (playlist), featured (playlist), search
+	 * @return a PlaylistEntity
 	 */
 	@POST
-	@Path("play")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String play(MusicEntity music, @QueryParam("songNumber") @DefaultValue("0") int songNumber,
-			@QueryParam("type") @DefaultValue("") String type, @QueryParam("limit") @DefaultValue("5") int limit) {
+	@Path("play/playlist")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PlaylistEntity playPlaylist(@QueryParam("index") @DefaultValue("0") int playlistNumber,
+			@QueryParam("type") @DefaultValue("") String type) {
+		PlaylistEntity playlist;
 		switch (type.toLowerCase()) {
 		case "user":
-			Map<String, String> userPlaylist = this.logic.play(songNumber, SearchTypes.USER_PLAYLISTS);
-			if (userPlaylist.isEmpty()) {
-				throw new WebApplicationException("There is no user playlist available.", Status.CONFLICT);
-			}
-			return this.stringGenerator.generateSearchOutputString(userPlaylist);
+			playlist = this.logic.playPlaylist(playlistNumber, SearchTypes.USER_PLAYLISTS);
+			break;
 		case "featured":
-			Map<String, String> featuredPlaylist = this.logic.play(songNumber, SearchTypes.FEATURED_PLAYLISTS);
-			if (featuredPlaylist.isEmpty()) {
-				throw new WebApplicationException("There is no featured playlist available.", Status.CONFLICT);
-			}
-			return this.stringGenerator.generateSearchOutputString(featuredPlaylist);
+			playlist = this.logic.playPlaylist(playlistNumber, SearchTypes.FEATURED_PLAYLISTS);
+			break;
 		case "search":
-			Map<String, String> searchResult = this.logic.play(songNumber, SearchTypes.NORMAL_SEARCH);
-			if (searchResult.isEmpty()) {
-				throw new WebApplicationException("There is no featured playlist available.", Status.CONFLICT);
-			}
-			return this.stringGenerator.generateSearchOutputString(searchResult);
-		case SpotifyConstants.TYPE_TRACK:
-			if (music != null) {
-				List<Map<String, String>> searchList = this.logic.search(music.toString(), SpotifyConstants.TYPE_TRACK,
-						limit);
-				if (searchList.isEmpty()) {
-					throw new WebApplicationException("No matching results found.", Status.CONFLICT);
-				}
-				this.musicEntity = new MusicEntity(music.getTitle(), music.getArtist());
-				return this.stringGenerator
-						.generateSearchOutputString(this.logic.play(songNumber, SearchTypes.NORMAL_SEARCH));
-			}
-			throw new WebApplicationException("Enter valid music information.", Status.CONFLICT);
+			playlist = this.logic.playPlaylist(playlistNumber, SearchTypes.SEARCH_PLAYLISTS);
+			break;
 		default:
-			PlaylistEntity playlist = this.logic.play();
-			if (playlist != null) {
-				return playlist.toString();
-			}
+			throw new WebApplicationException("Found nothing to play.", Status.CONFLICT);
 		}
-		throw new WebApplicationException("Found nothing to play.", Status.CONFLICT);
+		if (playlist != null) {
+			return playlist;
+		}
+		throw new WebApplicationException("There is no playlist available with this number.", Status.CONFLICT);
+	}
+
+	/**
+	 * plays the track with the index from the search
+	 * 
+	 * @param trackNumber
+	 *            which track number should be played
+	 * @return a TrackEntity
+	 */
+	@POST
+	@Path("play/track")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public TrackEntity playTrack(@QueryParam("index") @DefaultValue("0") int trackNumber) {
+		TrackEntity searchTrack = this.logic.playTrack(trackNumber);
+		if (searchTrack != null) {
+			return searchTrack;
+		}
+		throw new WebApplicationException("There is no track available with this number.", Status.CONFLICT);
+	}
+
+	/**
+	 * plays the album with the index from the search
+	 * 
+	 * @param albumNumber
+	 *            which album number should be played
+	 * @return a AlbumEntity
+	 */
+	@POST
+	@Path("play/album")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public AlbumEntity playAlbum(@QueryParam("index") @DefaultValue("0") int albumNumber) {
+		AlbumEntity searchAlbum = this.logic.playAlbum(albumNumber);
+		if (searchAlbum != null) {
+			return searchAlbum;
+		}
+		throw new WebApplicationException("There is no album available with this number.", Status.CONFLICT);
+	}
+
+	/**
+	 * plays the artist with the index from the search
+	 * 
+	 * @param artistNumber
+	 *            which album number should be played
+	 * @return a ArtistEntity
+	 */
+	@POST
+	@Path("play/artist")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArtistEntity playArtist(@QueryParam("index") @DefaultValue("0") int artistNumber) {
+		ArtistEntity searchArtist = this.logic.playArtist(artistNumber);
+		if (searchArtist != null) {
+			return searchArtist;
+		}
+		throw new WebApplicationException("There is no artist available with this number.", Status.CONFLICT);
 	}
 
 	/**
@@ -335,14 +417,10 @@ public class MusicResource implements Resource{
 	@GET
 	@Path("currentSong")
 	@Produces(MediaType.APPLICATION_JSON)
-	public MusicEntity getCurrentSong() {
-		Map<String, String> currentSong = this.logic.getCurrentSong();
-		this.musicEntity = new MusicEntity();
-		if (currentSong != null && currentSong.containsKey(SpotifyConstants.ITEM_NAME)
-				&& currentSong.containsKey(SpotifyConstants.ARTIST_NAME)) {
-			this.musicEntity = new MusicEntity(currentSong.get(SpotifyConstants.ITEM_NAME),
-					currentSong.get(SpotifyConstants.ARTIST_NAME));
-			return this.musicEntity;
+	public TrackEntity getCurrentSong() {
+		TrackEntity currentSong = this.logic.getCurrentSong();
+		if (currentSong != null) {
+			return currentSong;
 		}
 		throw new WebApplicationException("No song is currently playing", Status.CONFLICT);
 	}
@@ -356,34 +434,28 @@ public class MusicResource implements Resource{
 	 *            type of playlists: allowed parameters: user, featured
 	 * @return user or featured playlists
 	 */
-	@POST
+	@GET
 	@Path("playlists/{type}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public PlaylistEntity[] getPlaylists(@PathParam("type") String type,
 			@QueryParam("limit") @DefaultValue("5") int limit) {
 		List<PlaylistEntity> pl;
-		PlaylistEntity[] playlists;
 		switch (type) {
 		case "user":
-			pl = this.logic.getOwnPlaylists(limit);
+			pl = this.search.searchOwnPlaylists(limit);
 			break;
 		case "featured":
-			pl = this.logic.getFeaturedPlaylists(limit);
+			pl = this.search.searchFeaturedPlaylists(limit);
 			break;
 		default:
-			pl = this.logic.getFeaturedPlaylists(limit);
+			pl = this.search.searchFeaturedPlaylists(limit);
 			break;
 		}
 		if (!pl.isEmpty()) {
-			playlists = new PlaylistEntity[pl.size()];
-			for (int i = 0; i < pl.size(); i++) {
-				playlists[i] = new PlaylistEntity(pl.get(i).getName(), pl.get(i).getSongs(), pl.get(i).getUri(),
-						pl.get(i).getImageUrl());
-			}
-			return playlists;
+			return pl.toArray(new PlaylistEntity[pl.size()]);
 		}
-		throw new WebApplicationException("No Playlists are available", Status.NOT_FOUND);
+		throw new WebApplicationException("No Playlists are available", Status.NO_CONTENT);
 	}
 
 	/**
@@ -429,24 +501,25 @@ public class MusicResource implements Resource{
 	/**
 	 * set the new name of the given device
 	 * 
-	 * @param deviceUri
+	 * @param uri
 	 *            the Uri from the device to change
 	 * @param newName
+	 *            new device name
 	 * @return the deviceEntity with the new name or null if the Uri is not found in the registry
 	 */
 	@POST
 	@Path("setDeviceName")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public DeviceEntity setDeviceName(
-			@QueryParam("uri") @DefaultValue("") String uri, @QueryParam("newName") @DefaultValue("" )String newName) {
+	public DeviceEntity setDeviceName(@QueryParam("uri") @DefaultValue("") String uri,
+			@QueryParam("newName") @DefaultValue("") String newName) {
 		DeviceEntity device = this.deviceLogic.setNewDeviceName(uri, newName);
-		if(device != null) {
+		if (device != null) {
 			return device;
 		}
-		throw new  WebApplicationException("No device with this uri", Status.NOT_FOUND);
+		throw new WebApplicationException("No device with this uri", Status.NOT_FOUND);
 	}
-	
+
 	/**
 	 * get actual volume from 0-100, -1 if no volume available
 	 * 

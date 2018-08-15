@@ -1,3 +1,4 @@
+build/
 target/
 bin/
 *.gram
@@ -27,8 +28,9 @@ dependency-reduced-pom.xml
 *.properties
 !**/META-INF/*.properties
 
-#Include docker configs
+#Include docker and dev configs
 !.docker/config/**
+!.dev/config/**
 
 *.db
 
