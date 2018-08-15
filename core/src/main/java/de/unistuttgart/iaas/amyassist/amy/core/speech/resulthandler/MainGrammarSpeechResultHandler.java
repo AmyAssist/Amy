@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
@@ -29,12 +29,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechR
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager.ListeningState;
 
 /**
- * Handler that handles the local SpeechRecognition System intern commands for additional Grammars
+ * Handler that handles the local SpeechRecognition System intern commands for the MainGrammar
  * 
  * @author Kai Menzel
  */
 @Service
-public class TempGrammarSpeechResultHandler extends AbstractSpeechResultHandler {
+public class MainGrammarSpeechResultHandler extends AbstractSpeechResultHandler {
 
 	/**
 	 * Handles the Environment Specific Actions that trigger before giving the input to the inputHandler. Mainly waking
@@ -42,17 +42,40 @@ public class TempGrammarSpeechResultHandler extends AbstractSpeechResultHandler 
 	 * 
 	 * @param result
 	 *            Recognized String
-	 * @param srVar
+	 * @param recognitionManager
 	 *            variables Class
 	 * @return true if the result is an predefined one
 	 */
 	@Override
-	protected boolean environmentSpecificInputHandling(String result, SpeechRecognizerManager srVar) {
-		if (result.equalsIgnoreCase(Constants.MULTI_CALL_STOP)) {
-			srVar.setListeningState(ListeningState.NOT_LISTENING);
+	protected boolean environmentSpecificInputHandling(String result, SpeechRecognizerManager recognitionManager) {
+
+		switch (result.toLowerCase()) {
+
+		case Constants.MULTI_CALL_START:
+			if (recognitionManager.getListeningState() == ListeningState.NOT_LISTENING) {
+				recognitionManager.setListeningState(ListeningState.MULTI_CALL_LISTENING);
+			}
 			return true;
+
+		case Constants.SINGLE_CALL_START:
+			if (recognitionManager.getListeningState() == ListeningState.NOT_LISTENING) {
+				recognitionManager.setListeningState(ListeningState.SINGLE_CALL_LISTENING);
+			}
+			return true;
+
+		case Constants.MULTI_CALL_STOP:
+			if (recognitionManager.getListeningState() != ListeningState.NOT_LISTENING) {
+				recognitionManager.setListeningState(ListeningState.NOT_LISTENING);
+			}
+			return true;
+
+		default:
+			if (recognitionManager.getListeningState() == ListeningState.NOT_LISTENING) {
+				recognitionManager.nextRecognitionRequest();
+				return true;
+			}
+			return false;
 		}
-		return false;
 	}
 
 }

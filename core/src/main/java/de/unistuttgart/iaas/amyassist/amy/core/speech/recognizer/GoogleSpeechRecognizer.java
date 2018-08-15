@@ -26,7 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.AbstractSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSRListener;
 
@@ -80,7 +80,7 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	// Methods
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerType#getRecognition(de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerType#getRecognition(de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.AbstractSpeechResultHandler)
 	 */
 	@Override
 	public void getRecognition(AbstractSpeechResultHandler resultHandler) {

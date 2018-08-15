@@ -35,8 +35,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.MainGrammarSpeechResultHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.TempGrammarSpeechResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.MainGrammarSpeechResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.TempGrammarSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 
 /**

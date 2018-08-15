@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.AbstractSpeechResultHandler;
 
 /**
  * Interface for the Different Recognizer

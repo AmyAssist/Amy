@@ -27,7 +27,7 @@ import java.io.File;
 
 import javax.sound.sampled.AudioInputStream;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler.AbstractSpeechResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.AbstractSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
 
 /**

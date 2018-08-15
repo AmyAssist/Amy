@@ -120,6 +120,11 @@ public class RecognizerCreator implements DeploymentContainerService {
 		loadAndCheckProperties();
 
 		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_ENABLE))) {
+			try {
+				this.googleRecognition.launchChrome();
+			} catch (LaunchChromeException e) {
+				this.logger.error(e.getMessage());
+			}
 			SpeechRecognizer.GOOGLE.initiateAsRemoteRecognizer(this.googleRecognition);
 			// Grammar.TEMP.initiateAsSphinxRecognizer(tempGrammarFile.toFile(), getAudioinputStream())
 			SpeechRecognizer.MAIN.initiateAsSphinxRecognizer(mainGrammarFile.toFile(), getAudioinputStream());
