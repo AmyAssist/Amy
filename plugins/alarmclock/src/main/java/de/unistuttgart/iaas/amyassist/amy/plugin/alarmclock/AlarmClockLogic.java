@@ -23,8 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -49,7 +50,7 @@ public class AlarmClockLogic {
 	private AlarmRegistry alarmStorage;
 
 	@Reference
-	private IAlarmClockStorage timerStorage;
+	private ITimerStorage timerStorage;
 
 	@Reference
 	private TaskScheduler taskScheduler;
@@ -57,7 +58,7 @@ public class AlarmClockLogic {
 	@Reference
 	private Environment environment;
 
-	private LocalTime alarmTime;
+	private LocalDateTime alarmTime;
 
 	/**
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
@@ -74,7 +75,8 @@ public class AlarmClockLogic {
 	private Runnable createAlarmRunnable(int alarmNumber) {
 		return () -> {
 			Alarm a = getAlarm(alarmNumber);
-			if (a.isActive()) {
+			if (a.isActive() && this.environment.getCurrentLocalDateTime().truncatedTo(ChronoUnit.MINUTES)
+					.isEqual(a.getAlarmTime())) {
 				this.alarmbeep.beep(a);
 			}
 		};
@@ -102,17 +104,26 @@ public class AlarmClockLogic {
 	/**
 	 * Set new alarm and schedule it
 	 * 
+	 * @param tomorrow
+	 *            the day of the alarm
 	 * @param hour
 	 *            hour of the alarm
 	 * @param minute
 	 *            minute of the alarm
 	 * 
-	 * @return counter, alarmTime[0], alarmTime[1]
+	 * @return alarm
 	 */
-	protected Alarm setAlarm(int hour, int minute) {
+	protected Alarm setAlarm(int tomorrow, int hour, int minute) {
 		if (Alarm.timeValid(hour, minute)) {
+			if (tomorrow == 1) {
+				LocalDateTime date = LocalDateTime.now().plusDays(1);
+				this.alarmTime = LocalDateTime.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), hour,
+						minute);
+			} else {
+				this.alarmTime = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(),
+						LocalDateTime.now().getDayOfMonth(), hour, minute);
+			}
 			int id = this.alarmStorage.getAll().size() + 1;
-			this.alarmTime = LocalTime.of(hour, minute);
 			Alarm alarm = new Alarm(id, this.alarmTime, true);
 			this.alarmStorage.save(alarm);
 			Runnable alarmRunnable = createAlarmRunnable(id);
@@ -339,16 +350,30 @@ public class AlarmClockLogic {
 	 * 
 	 * @param alarmNumber
 	 *            name of the alarm
+	 * @param year
+	 *            year of the alarmtime
+	 * @param month
+	 *            month of the alarmtime
+	 * @param day
+	 *            day of the alarmtime
 	 * @param hour
 	 *            new hour of the alarm
 	 * @param minute
 	 *            new minute of the alarm
-	 * @return alarmNumber + alarmTime new Time of the edited Alarm
+	 * @return alarm a
 	 */
-	protected Alarm editAlarm(int alarmNumber, int hour, int minute) {
+	protected Alarm editAlarm(int alarmNumber, int tomorrow, int hour, int minute) {
 		if (Alarm.timeValid(hour, minute)) {
+			if (tomorrow == 1) {
+				LocalDateTime date = LocalDateTime.now().plusDays(1);
+				this.alarmTime = LocalDateTime.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), hour,
+						minute);
+			} else {
+				this.alarmTime = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(),
+						LocalDateTime.now().getDayOfMonth(), hour, minute);
+			}
 			Alarm a = getAlarm(alarmNumber);
-			a.setAlarmTime(LocalTime.of(hour, minute));
+			a.setAlarmTime(this.alarmTime);
 			Runnable alarmRunnable = createAlarmRunnable(alarmNumber);
 			ZonedDateTime with = this.environment.getCurrentDateTime().with(a.getAlarmTime());
 			if (with.isBefore(this.environment.getCurrentDateTime())) {

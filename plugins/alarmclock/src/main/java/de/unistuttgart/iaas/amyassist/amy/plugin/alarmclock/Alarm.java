@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,7 +51,7 @@ public class Alarm implements RegistryEntity {
 	private int persistentId;
 	private int id;
 	@XmlJavaTypeAdapter(LocalTimeAdapter.class)
-	private LocalTime alarmTime;
+	private LocalDateTime alarmTime;
 	private boolean active;
 
 	public Alarm() {
@@ -70,13 +70,15 @@ public class Alarm implements RegistryEntity {
 	 * @param active
 	 *            alarm active
 	 */
-	public Alarm(int id, LocalTime alarmTime, boolean active) {
+	public Alarm(int id, LocalDateTime alarmTime, boolean active) {
 		if (id < 0)
 			throw new IllegalArgumentException();
 
 		this.id = id;
 
-		setAlarmTime(alarmTime);
+		this.alarmTime = alarmTime;
+
+		// setAlarmTime(alarmTime);
 
 		this.active = active;
 	}
@@ -90,7 +92,7 @@ public class Alarm implements RegistryEntity {
 	 */
 	@Override
 	public String toString() {
-		return this.id + ":" + this.alarmTime.getHour() + ":" + this.alarmTime.getMinute() + ":" + this.active;
+		return this.id + ":" + this.alarmTime + ":" + this.active;
 	}
 
 	/**
@@ -103,7 +105,9 @@ public class Alarm implements RegistryEntity {
 	public static Alarm reconstructObject(String input) {
 		String[] params = input.split(":");
 		if (params.length == 4) {
-			final LocalTime newAlarmTime = LocalTime.of(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
+			final LocalDateTime newAlarmTime = LocalDateTime.of(LocalDateTime.now().getYear(),
+					LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(), Integer.parseInt(params[1]),
+					Integer.parseInt(params[2]));
 			return new Alarm(Integer.parseInt(params[0]), newAlarmTime, Boolean.parseBoolean(params[3]));
 		}
 		throw new IllegalArgumentException();
@@ -119,7 +123,8 @@ public class Alarm implements RegistryEntity {
 	 */
 	public final void setTime(int hour, int minute) {
 		if (timeValid(hour, minute)) {
-			this.alarmTime = LocalTime.of(hour, minute);
+			this.alarmTime = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonth(),
+					LocalDateTime.now().getDayOfMonth(), hour, minute);
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -158,7 +163,7 @@ public class Alarm implements RegistryEntity {
 	/**
 	 * @return alarmDate
 	 */
-	public LocalTime getAlarmTime() {
+	public LocalDateTime getAlarmTime() {
 		return this.alarmTime;
 	}
 
@@ -227,9 +232,10 @@ public class Alarm implements RegistryEntity {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmReg#setAlarmTime(java.time.LocalTime)
+	 * @param alarmTime
+	 *            the date and time of the alarm
 	 */
-	public void setAlarmTime(LocalTime alarmTime) {
+	public void setAlarmTime(LocalDateTime alarmTime) {
 		this.alarmTime = alarmTime;
 	}
 

@@ -69,7 +69,7 @@ public class AlarmClockLogicTest {
 
 	private TaskScheduler scheduler;
 
-	private IAlarmClockStorage acStorage;
+	private ITimerStorage acStorage;
 
 	private Environment env;
 
@@ -80,7 +80,7 @@ public class AlarmClockLogicTest {
 	public void setup() {
 		env = this.framework.mockService(Environment.class);
 		this.scheduler = this.framework.mockService(TaskScheduler.class);
-		this.acStorage = this.framework.mockService(IAlarmClockStorage.class);
+		this.acStorage = this.framework.mockService(ITimerStorage.class);
 		this.abs = this.framework.mockService(AlarmBeepService.class);
 		this.acl = this.framework.setServiceUnderTest(AlarmClockLogic.class);
 	}

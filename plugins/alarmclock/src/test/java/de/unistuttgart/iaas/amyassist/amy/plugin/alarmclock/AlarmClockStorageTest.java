@@ -56,7 +56,7 @@ public class AlarmClockStorageTest {
 	@Reference
 	private TestFramework framework;
 
-	private AlarmClockStorage acs;
+	private TimerStorage acs;
 
 	private IStorage storage;
 
@@ -70,7 +70,7 @@ public class AlarmClockStorageTest {
 	@BeforeEach
 	void setup() {
 		this.storage = this.framework.storage();
-		this.acs = this.framework.setServiceUnderTest(AlarmClockStorage.class);
+		this.acs = this.framework.setServiceUnderTest(TimerStorage.class);
 		reset(this.storage);
 	}
 
