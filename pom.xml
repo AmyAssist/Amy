@@ -30,6 +30,7 @@
 		<amy.rest-resources.version>0.5.0-Snapshot</amy.rest-resources.version>
 		<amy.utility.version>0.5.0-Snapshot</amy.utility.version>
 		<amy.registry.version>0.5.0-Snapshot</amy.registry.version>
+		<deployment.descriptor.utility.version>0.5.0-Snapshot</deployment.descriptor.utility.version>
 
 		<!-- External dependency versions. Only project wide or core dependencies 
 			here -->
@@ -67,6 +68,7 @@
 		<module>plugins/navigation</module>
 		<module>amy-message-hub-api</module>
 		<module>amy-message-hub</module>
+		<module>deployment-descriptor-utility</module>
 	</modules>
 	<licenses>
 		<license>
