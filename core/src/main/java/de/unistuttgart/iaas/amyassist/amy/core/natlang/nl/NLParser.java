@@ -30,6 +30,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParseException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.NumberNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.IStemmer;
 
 /**
@@ -149,6 +150,8 @@ public class NLParser implements INLParser {
 			break;
 		case WORD:
 			return match(agf);
+		case NUMBER:
+			return matchNumber(agf);
 		case ENTITY:
 			return fillEntity(agf);
 		default:
@@ -159,8 +162,33 @@ public class NLParser implements INLParser {
 	}
 
 	/**
-	 * @param agf
-	 * @return
+	 * checks if a number is at the current index and if the number
+	 * matches the conditions of the NumberNode e.g. is in correct range and stepsize
+	 * 
+	 * @param agf to match
+	 * @return true if the node matches
+	 */
+	private boolean matchNumber(AGFNode agf) {
+		WordToken token = lookAhead(0);
+
+		try {
+			NumberNode numberNode = (NumberNode) agf;
+			numberNode.setContainedNumber(token.getContent().trim());
+			consume();
+		} catch(ClassCastException e) {
+			throw new NLParserException("Node Type Number was no NumberNode " + e.getMessage());
+		} catch(NumberFormatException e) {
+			System.out.println("failed");
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * fills entity content and checks if the entity matches
+	 * 
+	 * @param agf to match
+	 * @return true if the entity matched
 	 */
 	private boolean fillEntity(AGFNode agf) {
 		int startIndex = this.currentIndex;
@@ -189,6 +217,7 @@ public class NLParser implements INLParser {
 	 */
 	private boolean match(AGFNode toMatch) {
 		WordToken token = lookAhead(0);
+		
 		if (this.stemmer != null && token != null
 				&& this.stemmer.stem(toMatch.getContent()).equals(this.stemmer.stem(token.getContent()))) {
 			consume();

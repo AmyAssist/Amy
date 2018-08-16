@@ -82,13 +82,17 @@ public class AGFLexer implements Iterator<AGFToken> {
     				return new AGFToken(AGFTokenType.OPENCBR);
     			case '}':
     				return new AGFToken(AGFTokenType.CLOSECBR);
+    			case ',':
+    				return new AGFToken(AGFTokenType.COMMA);
+    			case '$':
+    				return new AGFToken(AGFTokenType.DOLLAR);
     			//only allow normal SPACE codepoint 32, U+0020
     			case 32: 
     				return this.next();
 				default:
-					if(Character.isLetter(c)) {
+					if(Character.isLetterOrDigit(c)) {
 						currentWord.append(c);
-						while(hasNext() && Character.isLetter(this.mToLex.charAt(this.mIndex))) {
+						while(hasNext() && Character.isLetterOrDigit(this.mToLex.charAt(this.mIndex))) {
 							currentWord.append(this.mToLex.charAt(this.mIndex));
 							this.mIndex++;
 						}

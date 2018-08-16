@@ -40,18 +40,9 @@ public class PreDefinedEntityTypes {
 	private static final Map<String, String> grammars; 
 	static{
 		grammars = new HashMap<>();
-		grammars.put("AmyInteger", "(one | two | three | four | five | six | seven |nine | ten "
-				+ "| eleven | twelve | thirteen | fourteen | fifteen | sixteen | seventeen | eighteen | nineteen "
-				+ "| twenty | thirty | forty | fifty | sixty  | seventy | eighty | ninety )"
-				+ "[one | two | three | four | five | six | seven | nine | ten "
-				+ "| eleven | twelve | thirteen | fourteen | fifteen | sixteen | seventeen | eighteen | nineteen "
-				+ "| twenty | thirty | forty | fifty | sixty  | seventy | eighty | ninety ]");
-		grammars.put("AmyHour", "(one | two | three | four | five | six | seven |nine | ten "
-				+ "| eleven | twelve | thirteen | fourteen | fifteen | sixteen | seventeen | eighteen | nineteen "
-				+ "| twenty)");
-		grammars.put("AmyMinute", "(one | two | three | four | five | six | seven |nine | ten "
-				+ "| eleven | twelve | thirteen | fourteen | fifteen | sixteen | seventeen | eighteen | nineteen "
-				+ "| twenty | thirty | forty | fifty | sixty )");
+		grammars.put("AmyInteger", "$(0,1000000000, 1)");
+		grammars.put("AmyHour", "$(0,24,1)");
+		grammars.put("AmyMinute", "$(0,60,1)");
 	    grammars.put("AmyTime", "{AmyHour} oh {AmyMinute}");
 	};
 	
@@ -60,7 +51,8 @@ public class PreDefinedEntityTypes {
 	};
 
 	/**
-	 * @return
+	 * returns a hashmap of pre defined types
+	 * @return the hashmap
 	 */
 	public static Map<String, AGFNode> getTypes(){
 		if(map == null) {
@@ -72,11 +64,11 @@ public class PreDefinedEntityTypes {
 	}
 
 	/**
-	 * @param grmrs 
+	 * helper method for generation agfNodes from strings
+	 * @param grmrs hashmap of grammars to generate
 	 */
 	private static void generateAGFNodes(Map<String, String> grmrs) {
 		for(String s : ids) {
-			System.out.println(s);
 			AGFLexer lex = new AGFLexer(grmrs.get(s));
 			AGFParser parser = new AGFParser(lex, map);
 			map.put(s.toLowerCase(), parser.parseWholeExpression());

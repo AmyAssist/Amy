@@ -108,5 +108,32 @@ public class AGFParserTest {
 		assertEquals(secndOr.getType(), type);
 		
 	}
+	
+	/**
+	 * tests parsing number expressions eg: $(0,1000,1)
+	 */
+	@Test
+	public void testNumberExpressions() {
+		//okay i know this is really bad practice but it's 1 AM i'll fix this later... - Felix B 
+		AGFParser parser = new AGFParser(new AGFLexer("test $(0,100,10)"));
+		assertEquals(AGFNodeType.NUMBER, parser.parseExpression().getChilds().get(1).getType());
+		AGFParser parser2 = new AGFParser(new AGFLexer("test $(0,100,10) test"));
+		assertEquals(AGFNodeType.NUMBER, parser2.parseExpression().getChilds().get(1).getType());
+		
+		AGFParser parser3 = new AGFParser(new AGFLexer("test $(0,100,10 test"));
+		assertThrows(AGFParseException.class, () -> parser3.parseWholeExpression());
+		AGFParser parser4 = new AGFParser(new AGFLexer("test $(0,100,) test"));
+		assertThrows(AGFParseException.class, () -> parser4.parseWholeExpression());
+
+		AGFParser parser5 = new AGFParser(new AGFLexer("test $(0,100) test"));
+		assertThrows(AGFParseException.class, () -> parser5.parseWholeExpression());
+
+		AGFParser parser6 = new AGFParser(new AGFLexer("test $(0,10010) test"));
+		assertThrows(AGFParseException.class, () -> parser6.parseWholeExpression());
+
+		AGFParser parser7 = new AGFParser(new AGFLexer("test (0,100,10) test"));
+		assertThrows(AGFParseException.class, () -> parser7.parseWholeExpression());
+
+	}
 
 }

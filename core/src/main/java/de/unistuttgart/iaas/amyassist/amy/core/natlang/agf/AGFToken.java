@@ -76,6 +76,12 @@ public class AGFToken {
 		case OR:
 			this.content = "|";
 			break;
+		case DOLLAR:
+			this.content = "$";
+			break;
+		case COMMA:
+			this.content = ",";
+			break;
 		default:
 			throw new AGFLexerException("type could not be set because there is no matching content");
 		}

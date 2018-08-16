@@ -51,5 +51,9 @@ public enum AGFNodeType {
 	/**
 	 * word
 	 */
-	WORD
+	WORD, 
+	/**
+	 * any integer number
+	 */
+	NUMBER;
 }

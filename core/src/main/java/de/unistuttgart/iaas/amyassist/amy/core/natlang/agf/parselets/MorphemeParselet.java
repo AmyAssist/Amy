@@ -29,13 +29,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFTokenType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.Parser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.MorphemeNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.NumberNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.WordNode;
 
 /**
  * parses the smallest meaningful unit in the AGF Syntax
  * 
- * <Morpheme> := (<Word> | <Rule>)+;
+ * <Morpheme> := (<Word> | <Rule> | <Number>)+;
  *  
  * @author Felix Burk
  */
@@ -56,7 +57,7 @@ public class MorphemeParselet implements IAGFParselet {
 		//first one was already consumed by the parser
 		//the following ones have to be consumed "by hand"
 		while(parser.match(AGFTokenType.OPENCBR) ||
-				parser.match(AGFTokenType.CLOSECBR) || parser.match(AGFTokenType.WORD)) {
+				parser.match(AGFTokenType.CLOSECBR) || parser.match(AGFTokenType.WORD) || parser.match(AGFTokenType.DOLLAR)) {
 			AGFToken t = parser.consume();
 			parseMorph(morph, t, parser);
 		}
@@ -68,15 +69,17 @@ public class MorphemeParselet implements IAGFParselet {
 	/**
 	 * parses a single morpheme
 	 * 
-	 * <Morpheme> := (<Word> | <Entity>);
+	 * <Morpheme> := (<Word> | <Entity> | <Number>);
 	 * 
 	 * @param morph the morpheme node
 	 * @param token the corresponding token
 	 * @param parser the corresponding parser
 	 */
 	private void parseMorph(MorphemeNode morph, AGFToken token, Parser parser) {
+		//Parse Word 
 		if(token.type == AGFTokenType.WORD) {
 			morph.addChild(new WordNode(token.content));
+		//Parse Entity ex: {someId}
 		}else if(token.type == AGFTokenType.OPENCBR) {
 			if(parser.match(AGFTokenType.WORD)) {
 				AGFToken word = parser.consume();
@@ -91,6 +94,45 @@ public class MorphemeParselet implements IAGFParselet {
 
 			}else {
 				throw new AGFParseException("} missing or entity name contains a whitespace");
+			}
+		//Parse number expression ex: $(0,100,10)
+		}else if(token.type == AGFTokenType.DOLLAR) {
+			String numbersInsideExpression[] = new String[3];
+			int j = 0;
+			if(parser.match(AGFTokenType.OPENBR)) {
+				parser.consume();
+				for(int i=1; i <= 5; i++) {
+					if(i % 2 == 0) {
+						if(!parser.match(AGFTokenType.COMMA)) {
+							throw new AGFParseException("missing comma in number expression");
+						}
+						parser.consume();
+					}else {
+						if(!parser.match(AGFTokenType.WORD)) {
+							throw new AGFParseException("missing number inside number expression");
+						}
+						AGFToken numberToken = parser.consume();
+						numbersInsideExpression[j] = numberToken.content;
+						j++;
+					}
+				}
+				
+				if(parser.match(AGFTokenType.CLOSEBR)) {
+					parser.consume();
+					try {
+						int min = Integer.parseInt(numbersInsideExpression[0]);
+						int max = Integer.parseInt(numbersInsideExpression[1]);
+						int stepSize = Integer.parseInt(numbersInsideExpression[2]);
+						
+						NumberNode numberNode = new NumberNode(min, max, stepSize);
+						morph.addChild(numberNode);
+					}catch(NumberFormatException e) {
+						throw new AGFParseException(
+								"number inside number expression could not be converted " + e.getMessage());
+					}
+				}else {
+					throw new AGFParseException("missing ) in number expression");
+				}
 			}
 		}
 		

@@ -59,5 +59,13 @@ public enum AGFTokenType {
 	/**
 	 * or |
 	 */
-	OR;
+	OR, 
+	/**
+	 * comma ,
+	 */
+	COMMA,
+	/**
+	 * $ sign for $(0,100,10)
+	 */
+	DOLLAR
 }
