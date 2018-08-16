@@ -41,7 +41,10 @@ public class ServiceNotFoundException extends RuntimeException {
 	 */
 	public ServiceNotFoundException(ServiceDescription<?> serviceDescription) {
 		this.message = "The Service " + serviceDescription.getServiceType().getName() + " with "
-				+ serviceDescription.getAnnotations() + " is not registered in the DI or do not exists.";
+				+ serviceDescription.getAnnotations() + " is not registered in the DI."
+				+ " So first make sure you use the Service type and not the Service implementation to find the service."
+				+ " Second is the Service implementation of the type registered in the DI."
+				+ " Either by using a deployment descriptor or by a progamatic call.";
 	}
 
 	@Override
