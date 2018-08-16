@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Locale;
 
 import com.google.api.services.calendar.model.EventDateTime;
-import com.google.api.services.calendar.model.EventReminder;
 import org.slf4j.Logger;
 
 import com.google.api.client.util.DateTime;
