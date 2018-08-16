@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.remotesr;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 
@@ -44,8 +45,8 @@ import java.util.Collections;
  * 
  * @author Benno Krauß
  */
-@Service
-public class RemoteSR {
+@Service(RemoteSR.class)
+public class RemoteSR implements RunnableService {
 
 	private static final String CONFIG_NAME = "remotesr.config";
 	private static final String CHROME_DIRECTORY_CONFIG_KEY = "chrome";
@@ -65,10 +66,25 @@ public class RemoteSR {
 
 	private RemoteSRListener listener;
 
+	@Override
+	public void start() {
+		logger.warn("Starting chrome");
+		try {
+			launchChrome();
+		} catch (LaunchChromeException e) {
+			logger.error("Error launching chrome: ", e);
+		}
+	}
+
+	@Override
+	public void stop() {
+		//TODO: Implement this method
+	}
+
 	/**
 	 * launch the chrome browser, open the remote-SR url immediately and prevent microphone permission dialog by using a
 	 * prepared user profile
-	 * 
+	 *
 	 * @throws LaunchChromeException
 	 */
 	public void launchChrome() throws LaunchChromeException {
@@ -184,7 +200,7 @@ public class RemoteSR {
 
 	/**
 	 * request remote SR
-	 * 
+	 *
 	 * @return true if the request was successful
 	 */
 	public boolean requestSR() {
