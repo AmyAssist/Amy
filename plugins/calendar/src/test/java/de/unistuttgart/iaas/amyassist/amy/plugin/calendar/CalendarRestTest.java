@@ -46,7 +46,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
  * Test for the rest resource of calendar
- * 
+ *
  * @author Muhammed Kaya
  */
 @ExtendWith(FrameworkExtension.class)
@@ -77,7 +77,7 @@ class CalendarRestTest {
 	private List<CalendarEvent> eventList;
 
 	/**
-	 * 
+	 *
 	 */
 	@BeforeEach
 	public void setUp() {
@@ -88,7 +88,7 @@ class CalendarRestTest {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private void createEvent() {
 		this.event = new CalendarEvent("1", LocalDateTime.parse("2015-05-28T08:00:00"),
@@ -97,12 +97,12 @@ class CalendarRestTest {
 		this.eventList.add(this.event);
 
 		this.setEvent = new CalendarEvent(LocalDateTime.parse("2015-05-28T09:00:00"),
-				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, "",
-				false);
+				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, "", false);
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarResource#setEvent(CalendarEvent)}.
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarResource#setEvent(CalendarEvent)}.
 	 */
 	@Test
 	void testSetEvents() {
@@ -110,7 +110,7 @@ class CalendarRestTest {
 		Response response = this.target.path("events/set").request().post(entity);
 		assertThat(response.getStatus(), is(204));
 		Mockito.verify(this.logic).setEvent(this.setEvent);
-		
+
 		response = this.target.path("events/set").request().post(null);
 		String actualMsg = response.readEntity(String.class);
 		assertThat(actualMsg, is("Enter valid event information"));

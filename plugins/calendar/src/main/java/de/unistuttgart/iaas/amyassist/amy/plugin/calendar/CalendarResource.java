@@ -40,7 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * REST Resource for calendar
- * 
+ *
  * @author Muhammed Kaya
  */
 @Path(CalendarResource.PATH)
@@ -76,9 +76,9 @@ public class CalendarResource {
 
 	/**
 	 * This method creates an event for the connected google calendar
-	 * 
+	 *
 	 * @param calendarEvent
-	 *					the event which will be created in the google calendar
+	 *            the event which will be created in the google calendar
 	 */
 	@POST
 	@Path("events/set")
@@ -90,7 +90,7 @@ public class CalendarResource {
 			throw new WebApplicationException("Enter valid event information", Status.CONFLICT);
 		}
 	}
-	
+
 	/**
 	 * This method lists the next events from the calendar
 	 *

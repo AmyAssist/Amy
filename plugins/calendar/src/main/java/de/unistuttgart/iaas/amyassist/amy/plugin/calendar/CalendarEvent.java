@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventReminder;
+
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
 
 /**
@@ -213,16 +214,11 @@ public class CalendarEvent {
 	 *
 	 * @return the reminders of the Event as Event.Reminders from google api
 	 */
-	public Event.Reminders getReminders(){
-		EventReminder[] reminderOverrides = new EventReminder[]{
-				new EventReminder()
-						.setMethod(this.reminderType)
-						.setMinutes(this.reminderTime),
-		};
+	public Event.Reminders getReminders() {
+		EventReminder[] reminderOverrides = new EventReminder[] {
+				new EventReminder().setMethod(this.reminderType).setMinutes(this.reminderTime), };
 
-		return new Event.Reminders()
-				.setUseDefault(false)
-				.setOverrides(Arrays.asList(reminderOverrides));
+		return new Event.Reminders().setUseDefault(false).setOverrides(Arrays.asList(reminderOverrides));
 	}
 
 	@Override

@@ -82,18 +82,19 @@ public class CalendarLogicTest {
 					return event.getSummary().equals(calendarEvent.getSummary())
 							&& event.getLocation().equals(calendarEvent.getLocation())
 							&& event.getDescription().equals(calendarEvent.getDescription())
-							&& ((event.getStart().getDate() != null) == allDay)
-							&& allDay ? (event.getStart().getDate()
-							.equals(EDTfromLocalDateTime(calendarEvent.getStart(),allDay).getDate())
-							&& event.getEnd().getDate()
-							.equals(EDTfromLocalDateTime(calendarEvent.getEnd(), allDay).getDate())) :
-							(event.getStart().getDateTime()
-									.equals(EDTfromLocalDateTime(calendarEvent.getStart(), allDay).getDateTime())
-									&& event.getEnd().getDateTime()
-									.equals(EDTfromLocalDateTime(calendarEvent.getEnd(), allDay).getDateTime()))
-	 						&& event.getRecurrence().equals(Arrays.asList(calendarEvent.getRecurrence()))
-							&& event.getReminders().equals(calendarEvent.getReminders())
- 							;
+							&& ((event.getStart().getDate() != null) == allDay) && allDay
+									? (event.getStart().getDate().equals(
+											EDTfromLocalDateTime(calendarEvent.getStart(), allDay).getDate())
+											&& event.getEnd().getDate()
+													.equals(EDTfromLocalDateTime(calendarEvent.getEnd(), allDay)
+															.getDate()))
+									: (event.getStart().getDateTime().equals(
+											EDTfromLocalDateTime(calendarEvent.getStart(), allDay).getDateTime())
+											&& event.getEnd().getDateTime().equals(
+													EDTfromLocalDateTime(calendarEvent.getEnd(), allDay).getDateTime()))
+											&& event.getRecurrence()
+													.equals(Arrays.asList(calendarEvent.getRecurrence()))
+											&& event.getReminders().equals(calendarEvent.getReminders());
 				}));
 	}
 
@@ -102,12 +103,12 @@ public class CalendarLogicTest {
 	 * @return the test cases used in the {@link #testCheckSetEvent(CalendarEvent)} test
 	 */
 	public static Stream<CalendarEvent> testSetEvent() {
-		return Stream.of(new CalendarEvent(LocalDateTime.parse("2018-08-12T15:00:00"),
-				LocalDateTime.parse("2018-08-12T18:00:00"), "Testing", "home", "test the addEvent code", "mail", 20,
-				"RRULE:FREQ=WEEKLY", false),
-				new CalendarEvent(LocalDateTime.parse("2018-08-15T00:00"),
-						LocalDateTime.parse("2018-08-16T00:00"), "Testing", "home", "test the addEvent code", "popup", 85,
-						"", true));
+		return Stream.of(
+				new CalendarEvent(LocalDateTime.parse("2018-08-12T15:00:00"),
+						LocalDateTime.parse("2018-08-12T18:00:00"), "Testing", "home", "test the addEvent code", "mail",
+						20, "RRULE:FREQ=WEEKLY", false),
+				new CalendarEvent(LocalDateTime.parse("2018-08-15T00:00"), LocalDateTime.parse("2018-08-16T00:00"),
+						"Testing", "home", "test the addEvent code", "popup", 85, "", true));
 	}
 
 	/**
@@ -197,7 +198,7 @@ public class CalendarLogicTest {
 	/**
 	 *
 	 * @param localDateTime
-	 * 				the LocalDateTime which will be converted into EventDateTime
+	 *            the LocalDateTime which will be converted into EventDateTime
 	 * @return DateTime
 	 */
 	private static DateTime fromLocalDateTime(LocalDateTime localDateTime) {
@@ -207,9 +208,9 @@ public class CalendarLogicTest {
 	/**
 	 *
 	 * @param localDateTime
-	 * 				the LocalDateTime which will be converted into EventDateTime
+	 *            the LocalDateTime which will be converted into EventDateTime
 	 * @param allDay
-	 * 				differentiate between only Date oder DateTime
+	 *            differentiate between only Date oder DateTime
 	 * @return EventDateTime
 	 */
 	private static EventDateTime EDTfromLocalDateTime(LocalDateTime localDateTime, boolean allDay) {

@@ -30,9 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import com.google.api.client.util.DateTime;
-import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.Events;
 import org.slf4j.Logger;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -44,9 +41,12 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.Events;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -61,106 +61,114 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
  */
 @Service
 public class CalendarService {
-    private static final String APPLICATION_NAME = "Amy Google Calendar API";
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+	private static final String APPLICATION_NAME = "Amy Google Calendar API";
+	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
-    private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR_READONLY);
+	private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR_READONLY);
 
-    @Reference
-    private Properties configuration;
-    @Reference
-    private Environment environment;
-    @Reference
-    private Logger logger;
+	@Reference
+	private Properties configuration;
+	@Reference
+	private Environment environment;
+	@Reference
+	private Logger logger;
 
-    private Calendar service;
+	private Calendar service;
 
-    /**
-     * Output of the logger
-     */
-    private String errorLogger = "An error occurred.";
-    private String primary = "primary";
-    private String orderBy = "startTime";
+	/**
+	 * Output of the logger
+	 */
+	private String errorLogger = "An error occurred.";
+	private String primary = "primary";
+	private String orderBy = "startTime";
 
-    /**
-     * Creates an authorized Credential object.
-     *
-     * @param xHTTPTRANSPORT The network HTTP Transport.
-     * @return An authorized Credential object.
-     * @throws IOException If there is no client_secret.
-     */
-    private Credential getCredentials(final NetHttpTransport xHTTPTRANSPORT) throws IOException {
-        // Load client secrets
-        String clientSecretIn = this.configuration.getProperty("JSON");
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new StringReader(clientSecretIn));
-        // Build flow and trigger user authorization request
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(xHTTPTRANSPORT, JSON_FACTORY,
-                clientSecrets, SCOPES)
-                .setDataStoreFactory(new FileDataStoreFactory(this.environment.getWorkingDirectory()
-                        .resolve("temp/calendarauth").toAbsolutePath().toFile()))
-                .setAccessType("offline").build();
-        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-    }
+	/**
+	 * Creates an authorized Credential object.
+	 *
+	 * @param xHTTPTRANSPORT
+	 *            The network HTTP Transport.
+	 * @return An authorized Credential object.
+	 * @throws IOException
+	 *             If there is no client_secret.
+	 */
+	private Credential getCredentials(final NetHttpTransport xHTTPTRANSPORT) throws IOException {
+		// Load client secrets
+		String clientSecretIn = this.configuration.getProperty("JSON");
+		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new StringReader(clientSecretIn));
+		// Build flow and trigger user authorization request
+		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(xHTTPTRANSPORT, JSON_FACTORY,
+				clientSecrets, SCOPES)
+						.setDataStoreFactory(new FileDataStoreFactory(this.environment.getWorkingDirectory()
+								.resolve("temp/calendarauth").toAbsolutePath().toFile()))
+						.setAccessType("offline").build();
+		return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+	}
 
-    /**
-     * This method is to authorize the Google account with the calendar
-     */
-    @PostConstruct
-    public void authorize() {
-        try {
-            // Build a new authorized API client service.
-            final NetHttpTransport yHTTPTRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            this.service = new Calendar.Builder(yHTTPTRANSPORT, JSON_FACTORY, getCredentials(yHTTPTRANSPORT))
-                    .setApplicationName(APPLICATION_NAME).build();
-        } catch (IOException | GeneralSecurityException e) {
-            this.logger.error("Sorry, an error occured during the authorization", e);
-        }
-    }
+	/**
+	 * This method is to authorize the Google account with the calendar
+	 */
+	@PostConstruct
+	public void authorize() {
+		try {
+			// Build a new authorized API client service.
+			final NetHttpTransport yHTTPTRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+			this.service = new Calendar.Builder(yHTTPTRANSPORT, JSON_FACTORY, getCredentials(yHTTPTRANSPORT))
+					.setApplicationName(APPLICATION_NAME).build();
+		} catch (IOException | GeneralSecurityException e) {
+			this.logger.error("Sorry, an error occured during the authorization", e);
+		}
+	}
 
-    /**
-     * @param min    the time at which the calendar starts to check for events
-     * @param number the number of events it should return
-     * @return the next events after the min time
-     */
-    public Events getEvents(DateTime min, int number) {
-        Events events = new Events();
-        try {
-            events = this.service.events().list(this.primary).setMaxResults(number).setTimeMin(min)
-                    .setOrderBy(this.orderBy).setSingleEvents(true).execute();
-        } catch (IOException e) {
-            this.logger.error(this.errorLogger, e);
-        }
-        return events;
-    }
+	/**
+	 * @param min
+	 *            the time at which the calendar starts to check for events
+	 * @param number
+	 *            the number of events it should return
+	 * @return the next events after the min time
+	 */
+	public Events getEvents(DateTime min, int number) {
+		Events events = new Events();
+		try {
+			events = this.service.events().list(this.primary).setMaxResults(number).setTimeMin(min)
+					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
+		} catch (IOException e) {
+			this.logger.error(this.errorLogger, e);
+		}
+		return events;
+	}
 
-    /**
-     * @param min the time at which the calendar starts to check for events
-     * @param max the time at which the calendar stops looking for events
-     * @return the events between min and max
-     */
-    public Events getEvents(DateTime min, DateTime max) {
-        Events events = new Events();
-        try {
-            events = this.service.events().list(this.primary).setTimeMin(min).setTimeMax(max)
-                    .setOrderBy(this.orderBy).setSingleEvents(true).execute();
-        } catch (IOException e) {
-            this.logger.error(this.errorLogger, e);
-        }
-        return events;
-    }
+	/**
+	 * @param min
+	 *            the time at which the calendar starts to check for events
+	 * @param max
+	 *            the time at which the calendar stops looking for events
+	 * @return the events between min and max
+	 */
+	public Events getEvents(DateTime min, DateTime max) {
+		Events events = new Events();
+		try {
+			events = this.service.events().list(this.primary).setTimeMin(min).setTimeMax(max).setOrderBy(this.orderBy)
+					.setSingleEvents(true).execute();
+		} catch (IOException e) {
+			this.logger.error(this.errorLogger, e);
+		}
+		return events;
+	}
 
-    /**
-     * This method adds an event to the calendar
-     *
-     * @param calId the ID of the calendar the event should be added to
-     * @param event the event that should be added
-     */
-    public void addEvent(String calId, Event event) {
-        try {
-            this.service.events().insert(calId, event).execute();
-        } catch (IOException e) {
-            this.logger.error(this.errorLogger, e);
-        }
-    }
+	/**
+	 * This method adds an event to the calendar
+	 *
+	 * @param calId
+	 *            the ID of the calendar the event should be added to
+	 * @param event
+	 *            the event that should be added
+	 */
+	public void addEvent(String calId, Event event) {
+		try {
+			this.service.events().insert(calId, event).execute();
+		} catch (IOException e) {
+			this.logger.error(this.errorLogger, e);
+		}
+	}
 
 }

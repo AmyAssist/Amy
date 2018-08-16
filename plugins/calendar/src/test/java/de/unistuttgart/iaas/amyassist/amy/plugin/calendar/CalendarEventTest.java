@@ -23,18 +23,19 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  * Test case for CalendarEvent
- * 
+ *
  * @author Muhammed Kaya
  */
 class CalendarEventTest {
@@ -50,8 +51,7 @@ class CalendarEventTest {
 	void testCalendarEventConstructors() {
 		this.event1 = new CalendarEvent();
 		this.event1 = new CalendarEvent(LocalDateTime.parse("2015-05-28T09:00:00"),
-				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, "",
-				false);
+				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, "", false);
 		this.event2 = new CalendarEvent("1", LocalDateTime.parse("2015-05-28T08:00:00"),
 				LocalDateTime.parse("2015-05-28T10:00:00"), "summary", "work", "meeting", false);
 	}
@@ -143,8 +143,8 @@ class CalendarEventTest {
 	@Test
 	void testEqualsObject() {
 		assertThat(this.event1.equals(new CalendarEvent(LocalDateTime.parse("2015-05-28T09:00:00"),
-				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, "",
-				false)), is(true));
+				LocalDateTime.parse("2015-05-28T11:00:00"), "summary", "home", "homework", "type", 0, "", false)),
+				is(true));
 		assertThat(this.event1.equals(this.event1), is(true));
 		assertThat(this.event1.equals(null), is(false));
 		assertThat(this.event1.equals(""), is(false));
@@ -155,8 +155,11 @@ class CalendarEventTest {
 	 */
 	@Test
 	void testHashCode() {
-		assertThat(this.event1.hashCode(), is(Objects.hash(this.event1.getId(), this.event1.getStart(), this.event1.getEnd(), this.event1.getSummary(), this.event1.getLocation(), this.event1.getDescription(),
-				this.event1.getReminderType(), this.event1.getReminderTime(), this.event1.getRecurrence(), this.event1.isAllDay())));
+		assertThat(this.event1.hashCode(),
+				is(Objects.hash(this.event1.getId(), this.event1.getStart(), this.event1.getEnd(),
+						this.event1.getSummary(), this.event1.getLocation(), this.event1.getDescription(),
+						this.event1.getReminderType(), this.event1.getReminderTime(), this.event1.getRecurrence(),
+						this.event1.isAllDay())));
 	}
 
 }

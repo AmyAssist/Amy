@@ -29,7 +29,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * This is the speech class, which contains the commands for the calendar
- * 
+ *
  * @author Patrick Gebhardt, Florian Bauer
  */
 @SpeechCommand
