@@ -23,17 +23,19 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
-
 /**
  * Playlist entity for JSON
  * 
  * @author Christian Bräuner, Muhammed Kaya, Lars Buttgereit
  */
-@XmlRootElement
-public class PlaylistEntity extends Entity{
+public class PlaylistEntity extends Item {
+
+
+	/**
+	 * a Url to a image from the playlist
+	 */
+	private String imageUrl;
+	private String playlistCreator;
 
 	/**
 	 * constructor for a Playlist
@@ -43,90 +45,18 @@ public class PlaylistEntity extends Entity{
 	}
 
 	/**
-	* constructor for a Playlist with set values
-	* 
-	* @param name
-	*            of the playlist
-	* @param songs
-	* @param uri
-	*            from a playlist to play it in spotify
-	* @param imageUrl
-	*            a url to image from the playlist. can be null
-	*/
-	public PlaylistEntity(String name, MusicEntity[] songs, String uri, String imageUrl) {
-		this.name = name;
-		this.songs = songs;
-		this.uri = uri;
-		this.imageUrl = imageUrl;
-	}
-
-	/**
-	 * the name of the playlist
-	 */
-	private String name = "";
-
-	/**
-	 * the songs in the playlist
-	 */
-	private MusicEntity[] songs;
-
-	/**
-	 * uri of the playlist
-	 */
-	private String uri;
-
-	/**
-	 * a Url to a image from the playlist
-	 */
-	private String imageUrl;
-
-	/**
-	 * @return name
-	 */
-	public String getName() {
-		return this.name;
-	}
-
-	/**
+	 * constructor for a Playlist with set values
+	 * 
 	 * @param name
-	 *            to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * @return songs
-	 */
-	public MusicEntity[] getSongs() {
-		return this.songs;
-	}
-
-	/**
-	 * @param songs
-	 *            to set
-	 */
-	public void setSongs(MusicEntity[] songs) {
-		this.songs = songs;
-	}
-
-	/**
-	 * get the uri from the playlist
-	 * 
-	 * @return the uri
-	 */
-	public String getUri() {
-		return this.uri;
-	}
-
-	/**
-	 * set the uri form the playlist
-	 * 
+	 *            of the playlist
 	 * @param uri
-	 *            to set
+	 *            from a playlist to play it in spotify
+	 * @param imageUrl
+	 *            a url to image from the playlist. can be null
 	 */
-	public void setUri(String uri) {
-		this.uri = uri;
+	public PlaylistEntity(String name, String uri, String imageUrl) {
+		super(name, uri);
+		this.imageUrl = imageUrl;
 	}
 
 	/**
@@ -148,8 +78,34 @@ public class PlaylistEntity extends Entity{
 		this.imageUrl = imageUrl;
 	}
 
+	/**
+	 * Get's {@link #playlistCreator playlistCreator}
+	 * 
+	 * @return playlistCreator
+	 */
+	public String getPlaylistCreator() {
+		return this.playlistCreator;
+	}
+
+	/**
+	 * Set's {@link #playlistCreator playlistCreator}
+	 * 
+	 * @param playlistCreator
+	 *            playlistCreator
+	 */
+	public void setPlaylistCreator(String playlistCreator) {
+		this.playlistCreator = playlistCreator;
+	}
+
 	@Override
 	public String toString() {
-		return "name of the playlist is: ".concat(getName());
+		StringBuilder stringbuilder = new StringBuilder();
+		if (getName() != null) {
+			if (this.playlistCreator != null) {
+				return stringbuilder.append(getName()).append(" created by: ").append(this.playlistCreator).toString();
+			}
+			return stringbuilder.append(getName()).toString();
+		}
+		return "No playlist data available";
 	}
 }

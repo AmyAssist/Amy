@@ -51,7 +51,7 @@ public class DeviceRegistry extends AbstractRegistry<DeviceEntity> {
 	/**
 	 * find a device in the registry with the uri
 	 * 
-	 * @param uri
+	 * @param uri of the device
 	 * @return the device or null if the device not in the registry
 	 */
 	public DeviceEntity findDeviceWithUri(String uri) {

@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -34,11 +35,14 @@ public interface PluginManager {
 
 	/**
 	 * load the plugins
+	 * 
+	 * @throws IOException
+	 *             When an major IO Exception occurs while loading the plugins.
 	 */
-	void loadPlugins();
+	void loadPlugins() throws IOException;
 
 	/**
-	 * @see PluginLoader#getPlugins()
+	 * @return a list of loaded plugins
 	 */
 	List<IPlugin> getPlugins();
 
