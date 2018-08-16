@@ -24,18 +24,13 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.EventReminder;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
 
@@ -200,14 +195,6 @@ public class CalendarEvent {
 
 	/**
 	 *
-	 * @return the recurrence options as List<String>
-	 */
-	public List<String> getRecurrenceAsList() {
-		return Arrays.asList(this.recurrence);
-	}
-
-	/**
-	 *
 	 * @return the reminder type
 	 */
 	public String getReminderType() {
@@ -220,40 +207,6 @@ public class CalendarEvent {
 	 */
 	public int getReminderTime() {
 		return this.reminderTime;
-	}
-
-	/**
-	 *
-	 * @return start time as EventDateTime
-	 */
-	public EventDateTime getEventStart(){
-		ZonedDateTime zdt = this.start.atZone(ZoneId.systemDefault());
-		DateTime dt = new DateTime(zdt.toInstant().toEpochMilli());
-		EventDateTime edt = new EventDateTime();
-		if (this.allDay) {
-			edt.setDate(dt);
-		} else {
-			edt.setDateTime(dt);
-		}
-		edt.setTimeZone(ZoneId.systemDefault().toString());
-		return edt;
-	}
-
-	/**
-	 *
-	 * @return end time as EventDateTime
-	 */
-	public EventDateTime getEventEnd(){
-		ZonedDateTime zdt = this.end.atZone(ZoneId.systemDefault());
-		DateTime dt = new DateTime(zdt.toInstant().toEpochMilli());
-		EventDateTime edt = new EventDateTime();
-		if (this.allDay) {
-			edt.setDate(dt);
-		} else {
-			edt.setDateTime(dt);
-		}
-		edt.setTimeZone(ZoneId.systemDefault().toString());
-		return edt;
 	}
 
 	/**

@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -75,20 +76,24 @@ public class CalendarLogicTest {
 	@MethodSource("testSetEvent")
 	public void testCheckSetEvent(CalendarEvent calendarEvent) {
 		this.callog.setEvent(calendarEvent);
-
+		boolean allDay = calendarEvent.isAllDay();
 		Mockito.verify(this.calendarService).addEvent(ArgumentMatchers.eq("primary"),
 				ArgumentMatchers.argThat(event -> {
 					return event.getSummary().equals(calendarEvent.getSummary())
 							&& event.getLocation().equals(calendarEvent.getLocation())
 							&& event.getDescription().equals(calendarEvent.getDescription())
-							&& ((event.getStart().getDate() != null) == calendarEvent.isAllDay())
-							&& calendarEvent.isAllDay() ? (event.getStart().getDate()
-							.equals(calendarEvent.getEventStart().getDate()) && event.getEnd().getDate()
-							.equals(calendarEvent.getEventEnd().getDate())) : (event.getStart().getDateTime()
-							.equals(calendarEvent.getEventStart().getDateTime()) && event.getEnd().getDateTime()
-							.equals(calendarEvent.getEventEnd().getDateTime()))
-							&& event.getRecurrence().equals(calendarEvent.getRecurrenceAsList())
-							&& event.getReminders().equals(calendarEvent.getReminders());
+							&& ((event.getStart().getDate() != null) == allDay)
+							&& allDay ? (event.getStart().getDate()
+							.equals(EDTfromLocalDateTime(calendarEvent.getStart(),allDay).getDate())
+							&& event.getEnd().getDate()
+							.equals(EDTfromLocalDateTime(calendarEvent.getEnd(), allDay).getDate())) :
+							(event.getStart().getDateTime()
+									.equals(EDTfromLocalDateTime(calendarEvent.getStart(), allDay).getDateTime())
+									&& event.getEnd().getDateTime()
+									.equals(EDTfromLocalDateTime(calendarEvent.getEnd(), allDay).getDateTime()))
+	 						&& event.getRecurrence().equals(Arrays.asList(calendarEvent.getRecurrence()))
+							&& event.getReminders().equals(calendarEvent.getReminders())
+ 							;
 				}));
 	}
 
@@ -189,7 +194,33 @@ public class CalendarLogicTest {
 		return fromLocalDateTime(LocalDateTime.parse(iso));
 	}
 
+	/**
+	 *
+	 * @param localDateTime
+	 * 				the LocalDateTime which will be converted into EventDateTime
+	 * @return DateTime
+	 */
 	private static DateTime fromLocalDateTime(LocalDateTime localDateTime) {
 		return new DateTime(localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
 	}
+
+	/**
+	 *
+	 * @param localDateTime
+	 * 				the LocalDateTime which will be converted into EventDateTime
+	 * @param allDay
+	 * 				differentiate between only Date oder DateTime
+	 * @return EventDateTime
+	 */
+	private static EventDateTime EDTfromLocalDateTime(LocalDateTime localDateTime, boolean allDay) {
+		DateTime dt = fromLocalDateTime(localDateTime);
+		EventDateTime edt = new EventDateTime();
+		if (allDay) {
+			edt.setDate(dt);
+		} else {
+			edt.setDateTime(dt);
+		}
+		return edt;
+	}
+
 }

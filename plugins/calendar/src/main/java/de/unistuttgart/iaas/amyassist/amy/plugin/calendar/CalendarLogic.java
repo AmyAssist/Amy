@@ -32,9 +32,12 @@ import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.api.services.calendar.model.EventDateTime;
+import com.google.api.services.calendar.model.EventReminder;
 import org.slf4j.Logger;
 
 import com.google.api.client.util.DateTime;
@@ -74,21 +77,36 @@ public class CalendarLogic {
     String noEventsFound = "No upcoming events found.";
 
     /**
-     * This method creates an event for the connected google calendar,
-     * modified version from https://developers.google.com/calendar/create-events
+     * This method creates an event for the connected google calendar, modified version from
+     * https://developers.google.com/calendar/create-events
      *
-     * @param calendarEvent the event which will be created in the google calendar
+     * @param calendarEvent
+     *            the event which will be created in the google calendar
      */
     public void setEvent(CalendarEvent calendarEvent) {
-        Event event = new Event()
-                .setSummary(calendarEvent.getSummary())
-                .setLocation(calendarEvent.getLocation())
+        Event event = new Event().setSummary(calendarEvent.getSummary()).setLocation(calendarEvent.getLocation())
                 .setDescription(calendarEvent.getDescription());
 
-        event.setStart(calendarEvent.getEventStart());
-        event.setEnd(calendarEvent.getEventEnd());
+        EventDateTime start = new EventDateTime();
+        EventDateTime end = new EventDateTime();
+        ZonedDateTime startZDT = calendarEvent.getStart().atZone(ZoneId.systemDefault());
+        DateTime startDT = new DateTime(startZDT.toInstant().toEpochMilli());
+        ZonedDateTime endZDT = calendarEvent.getEnd().atZone(ZoneId.systemDefault());
+        DateTime endDT = new DateTime(endZDT.toInstant().toEpochMilli());
+        if (calendarEvent.isAllDay()) {
+            start.setDate(startDT);
+            end.setDate(endDT);
+        } else {
+            start.setDateTime(startDT);
+            end.setDateTime(endDT);
+        }
+        start.setTimeZone(ZoneId.systemDefault().toString());
+        end.setTimeZone(ZoneId.systemDefault().toString());
 
-        event.setRecurrence(calendarEvent.getRecurrenceAsList());
+        event.setStart(start);
+        event.setEnd(end);
+
+        event.setRecurrence(Arrays.asList(calendarEvent.getRecurrence()));
 
         event.setReminders(calendarEvent.getReminders());
         this.calendarService.addEvent("primary", event);
