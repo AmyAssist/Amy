@@ -39,6 +39,11 @@ import java.util.Set;
  * @author Leon Kiefer
  */
 public class DeploymentDescriptorUtil {
+
+	private DeploymentDescriptorUtil() {
+		// hide constructor
+	}
+
 	/**
 	 * Get all classes from the deployment descriptor using the given {@link ClassLoader}.
 	 * 
@@ -88,7 +93,7 @@ public class DeploymentDescriptorUtil {
 			return Class.forName(className, true, classLoader);
 		} catch (ClassNotFoundException e) {
 			throw new IllegalArgumentException(
-					"could not load class " + className + " with the given ClassLoader " + classLoader, e);
+					"Could not load class " + className + " with the given ClassLoader " + classLoader, e);
 		}
 	}
 }
