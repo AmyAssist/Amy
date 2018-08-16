@@ -37,7 +37,7 @@ public class Services {
 
 	/**
 	 * Loads Services using the deployment descriptor file
-	 * META-INF/de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService
+	 * META-INF/de.unistuttgart.iaas.amyassist.amy.core.di.Services
 	 * 
 	 * @param classLoader
 	 *            the classLoader from which the deployment descriptor is read is used to load the classes
