@@ -28,64 +28,67 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * Test Cases for the AnnotationReader
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Felix Burk
  */
 class TestNLIAnnotationReader {
 
 	@Test
 	public void testGrammar() {
-		Set<Method> grammars = NLIAnnotationReader.getValidNLIMethods(Plugin.class);
+		Set<Method> grammars = NLIAnnotationReader.getValidIntentMethods(Plugin.class);
 
 		assertThat(grammars, hasSize(2));
 	}
 
 	@SpeechCommand
 	class Plugin {
-		@Grammar("count")
-		public String count(String... s) {
+		@Intent("count")
+		public String count(Map<String, EntityData> test) {
 			return "1";
 		}
 
-		@Grammar("say (hello|test)")
-		public String say(String[] s) {
-			return s[0];
+		@Intent("say (hello|test)")
+		public String say(Map<String, EntityData> test) {
+			return "";
 		}
 	}
 
 	@Test
 	public void testIllegalTypes() {
-		assertThrows(IllegalArgumentException.class, () -> NLIAnnotationReader.getValidNLIMethods(Broken.class));
+		assertThrows(IllegalArgumentException.class, () -> NLIAnnotationReader.getValidIntentMethods(Broken.class));
 	}
 
 	@SpeechCommand
 	class Broken {
-		@Grammar("count")
-		public int count(int i) {
-			return i;
+		@Intent("count")
+		public String count(String s) {
+			return "";
 		}
 	}
 
 	@Test
 	public void testIllegalReturnType() {
 		String message = assertThrows(IllegalArgumentException.class,
-				() -> NLIAnnotationReader.getValidNLIMethods(BrokenReturnType.class)).getMessage();
-		assertThat(message, equalTo("The returntype of a method annotated with @Grammar should be String."));
+				() -> NLIAnnotationReader.getValidIntentMethods(BrokenReturnType.class)).getMessage();
+		assertThat(message, equalTo("The returntype of a method annotated with @Intent should be String."));
 	}
 
 	@SpeechCommand
 	class BrokenReturnType {
-		@Grammar("count")
-		public int count(String[] i) {
+		@Intent("count")
+		public int count(Map<String, EntityData> tes) {
 			return 0;
 		}
 	}

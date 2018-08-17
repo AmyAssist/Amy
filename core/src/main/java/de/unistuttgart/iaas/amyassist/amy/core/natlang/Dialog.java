@@ -24,7 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 /**
- * TODO: Description
+ * This interface is used for storing dialog related data
+ * 
  * @author Leon Kiefer, Felix Burk
  */
 public interface Dialog {

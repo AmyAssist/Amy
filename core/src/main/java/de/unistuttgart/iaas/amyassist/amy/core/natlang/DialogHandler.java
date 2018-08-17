@@ -32,10 +32,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.Entity;
 
 /**
- * TODO: Description
+ * Handles different dialog tasks
  * 
  * @author Felix Burk
  */

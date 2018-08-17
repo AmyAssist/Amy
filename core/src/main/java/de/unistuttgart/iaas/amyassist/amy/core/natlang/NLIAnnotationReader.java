@@ -31,8 +31,6 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
@@ -45,8 +43,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
  */
 public class NLIAnnotationReader {
 	
-	private static Logger logger = LoggerFactory.getLogger(NLIAnnotationReader.class);
-
 	private NLIAnnotationReader() {
 		// hide constructor
 	}
@@ -54,6 +50,7 @@ public class NLIAnnotationReader {
 	/**
 	 * Get's the methods annotated with {@link Grammar}
 	 * 
+	 * @deprecated legacy from @Grammar annotations
 	 * @param cls
 	 *            The class of which to get the grammars
 	 * @return a List of grammars
@@ -103,20 +100,17 @@ public class NLIAnnotationReader {
 	 */
 	public static void assertValid(Method method) {
 		Class<?>[] parameterTypes = method.getParameterTypes();
-		for(Class<?> cls : parameterTypes) {
-			logger.error(cls.getTypeName());
-		}
 		if (parameterTypes.length != 1
 				|| !parameterTypes[0].getTypeName().equals("java.util.Map")) {
 			throw new IllegalArgumentException("The method " + method.toString()
-					+ " does not have the correct parameter type. It should be String[].");
+					+ " does not have the correct parameter type. It should be a Map.");
 		}
 		if (!method.getReturnType().equals(String.class)) {
-			throw new IllegalArgumentException("The returntype of a method annotated with @Grammar should be String.");
+			throw new IllegalArgumentException("The returntype of a method annotated with @Intent should be String.");
 		}
 		if (method.getExceptionTypes().length > 0) {
 			throw new IllegalArgumentException(
-					"The method annotated with @Grammar should should not throw exceptions.");
+					"The method annotated with @Intent should should not throw exceptions.");
 		}
 	}
 

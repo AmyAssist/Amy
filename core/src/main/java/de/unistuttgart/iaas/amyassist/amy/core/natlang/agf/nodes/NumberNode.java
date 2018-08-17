@@ -24,7 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
- * TODO: Description
+ * A node representing a number in some range and stepsize
+ * 
  * @author Felix Burk
  */
 public class NumberNode extends AGFNode {
@@ -95,7 +96,7 @@ public class NumberNode extends AGFNode {
 	 * @param number to set as String
 	 * @throws NumberFormatException if the string is not a number or not inside the specified range and stepsize
 	 */
-	public void setContainedNumber(String number) throws NumberFormatException{
+	public void setContainedNumber(String number) throws NumberFormatException {
 		int nmb = Integer.parseInt(number);
 		
 		if(!(this.min <= nmb && nmb <= this.max && nmb % this.stepsize == 0)) {
