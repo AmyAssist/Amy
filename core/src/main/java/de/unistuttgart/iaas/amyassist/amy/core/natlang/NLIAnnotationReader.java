@@ -103,20 +103,17 @@ public class NLIAnnotationReader {
 	 */
 	public static void assertValid(Method method) {
 		Class<?>[] parameterTypes = method.getParameterTypes();
-		for(Class<?> cls : parameterTypes) {
-			logger.error(cls.getTypeName());
-		}
 		if (parameterTypes.length != 1
 				|| !parameterTypes[0].getTypeName().equals("java.util.Map")) {
 			throw new IllegalArgumentException("The method " + method.toString()
-					+ " does not have the correct parameter type. It should be String[].");
+					+ " does not have the correct parameter type. It should be a Map.");
 		}
 		if (!method.getReturnType().equals(String.class)) {
-			throw new IllegalArgumentException("The returntype of a method annotated with @Grammar should be String.");
+			throw new IllegalArgumentException("The returntype of a method annotated with @Intent should be String.");
 		}
 		if (method.getExceptionTypes().length > 0) {
 			throw new IllegalArgumentException(
-					"The method annotated with @Grammar should should not throw exceptions.");
+					"The method annotated with @Intent should should not throw exceptions.");
 		}
 	}
 
