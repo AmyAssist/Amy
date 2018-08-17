@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
+import java.util.Random;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -50,7 +51,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParserException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.Entity;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.Prompt;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
@@ -74,6 +74,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	@Reference
 	private Logger logger;
+	
 	@Reference
 	private Environment environment;
 		
@@ -86,16 +87,15 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private static final String PROPERTY_ENABLE_STEMMER = "enableStemmer";
 	private static final String PROBERTY_LANGUAGE = "chooseLanguage";
 	
-	private String languageString;
 	private ChooseLanguage language;
 
 	@PostConstruct
 	private void setup() {
 		boolean stemmerEnabled = Boolean.parseBoolean(this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
 				.getProperty(PROPERTY_ENABLE_STEMMER, "true"));
-		this.languageString = this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
+		String languageString = this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
 				.getProperty(PROBERTY_LANGUAGE, "EN");
-		this.language = new ChooseLanguage(this.languageString, stemmerEnabled);
+		this.language = new ChooseLanguage(languageString, stemmerEnabled);
 	}
 	
 	/**
@@ -145,16 +145,18 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			
 			Map<String, String> entityIdToUserContent = getEntityContent(promptGrams.get(matchingNodeIndex));
 			
-			for(String s : entityIdToUserContent.keySet()) {
-				EntityData data = new EntityData(entityIdToUserContent.get(s));
-				dialog.getIntent().getEntityList().get(s).insertEntityData(data);
+			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
+				EntityData data = new EntityData(entry.getValue());
+				dialog.getIntent().getEntityList().get(entry.getValue()).insertEntityData(data);
 			}
 			
 			if(!dialog.getIntent().isFinished()) {
 				dialog.output(dialog.getIntent().generateQuestion());
 			}
 		} catch(NLParserException e) {
-			int rndm = (int) Math.round(Math.random()*this.failedToUnderstand.length);
+			this.logger.debug("no matching grammar found " + e.getMessage());
+			Random rand = new Random();
+			int rndm = rand.nextInt(this.failedToUnderstand.length);
 			dialog.output(this.failedToUnderstand[rndm]);
 		}
 		
@@ -200,16 +202,18 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			
 			Map<String, String> entityIdToUserContent = getEntityContent(node);
 			
-			for(String s : entityIdToUserContent.keySet()) {
-				EntityData data = new EntityData(entityIdToUserContent.get(s));
-				dialog.getIntent().getEntityList().get(s).insertEntityData(data);
+			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
+				EntityData data = new EntityData(entry.getValue());
+				dialog.getIntent().getEntityList().get(entry.getValue()).insertEntityData(data);
 			}
 			
 			if(!dialog.getIntent().isFinished()) {
 				dialog.output(dialog.getIntent().generateQuestion());
 			}
 		} catch(NLParserException e) {
-			int rndm = (int) Math.round(Math.random()*this.failedToUnderstand.length);
+			this.logger.debug("no matching grammar found " + e.getMessage());
+			Random rand = new Random();
+			int rndm = rand.nextInt(this.failedToUnderstand.length);
 			dialog.output(this.failedToUnderstand[rndm]);
 		}
 

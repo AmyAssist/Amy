@@ -179,9 +179,8 @@ public class NLParser implements INLParser {
 			numberNode.setContainedNumber(token.getContent().trim());
 			consume();
 		} catch(ClassCastException e) {
-			throw new NLParserException("Node Type Number was no NumberNode " + e.getMessage());
+			throw new NLParserException("Node Type Number was no NumberNode " + e);
 		} catch(NumberFormatException e) {
-			System.out.println("failed");
 			return false;
 		}
 		return true;
@@ -207,7 +206,7 @@ public class NLParser implements INLParser {
 			if(matched)entity.setUserProvidedContent(b.toString().trim());
 			return matched;
 		}catch(ClassCastException e) {
-			throw new NLParserException("Node Type Entity was no EntityNode " + e.getMessage());
+			throw new NLParserException("Node Type Entity was no EntityNode " + e);
 		}
 	}
 

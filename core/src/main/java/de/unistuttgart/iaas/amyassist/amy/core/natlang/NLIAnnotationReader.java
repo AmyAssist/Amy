@@ -31,8 +31,6 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
@@ -45,8 +43,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
  */
 public class NLIAnnotationReader {
 	
-	private static Logger logger = LoggerFactory.getLogger(NLIAnnotationReader.class);
-
 	private NLIAnnotationReader() {
 		// hide constructor
 	}
@@ -54,6 +50,7 @@ public class NLIAnnotationReader {
 	/**
 	 * Get's the methods annotated with {@link Grammar}
 	 * 
+	 * @deprecated legacy from @Grammar annotations
 	 * @param cls
 	 *            The class of which to get the grammars
 	 * @return a List of grammars

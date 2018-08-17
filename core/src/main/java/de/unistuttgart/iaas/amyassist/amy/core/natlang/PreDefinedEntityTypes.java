@@ -39,6 +39,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
  * @author Lars Buttgereit, Felix Burk
  */
 public class PreDefinedEntityTypes {
+	
+	private PreDefinedEntityTypes() {
+		//hide constructor
+	}
 		
 	private static Map<String, AGFNode> map;
 	private static final Map<String, String> grammars; 

@@ -95,47 +95,58 @@ public class MorphemeParselet implements IAGFParselet {
 			}else {
 				throw new AGFParseException("} missing or entity name contains a whitespace");
 			}
-		//Parse number expression ex: $(0,100,10)
 		}else if(token.type == AGFTokenType.DOLLAR) {
-			String numbersInsideExpression[] = new String[3];
-			int j = 0;
-			if(parser.match(AGFTokenType.OPENBR)) {
-				parser.consume();
-				for(int i=1; i <= 5; i++) {
-					if(i % 2 == 0) {
-						if(!parser.match(AGFTokenType.COMMA)) {
-							throw new AGFParseException("missing comma in number expression");
-						}
-						parser.consume();
-					}else {
-						if(!parser.match(AGFTokenType.WORD)) {
-							throw new AGFParseException("missing number inside number expression");
-						}
-						AGFToken numberToken = parser.consume();
-						numbersInsideExpression[j] = numberToken.content;
-						j++;
-					}
-				}
-				
-				if(parser.match(AGFTokenType.CLOSEBR)) {
-					parser.consume();
-					try {
-						int min = Integer.parseInt(numbersInsideExpression[0]);
-						int max = Integer.parseInt(numbersInsideExpression[1]);
-						int stepSize = Integer.parseInt(numbersInsideExpression[2]);
-						
-						NumberNode numberNode = new NumberNode(min, max, stepSize);
-						morph.addChild(numberNode);
-					}catch(NumberFormatException e) {
-						throw new AGFParseException(
-								"number inside number expression could not be converted " + e.getMessage());
-					}
-				}else {
-					throw new AGFParseException("missing ) in number expression");
-				}
-			}
+			parseNumberExpression(morph, token, parser);
 		}
 		
+		
+	}
+
+	/**
+	 * Parse number expression ex: $(0,100,10) 
+	 * 
+	 * @param morph the morpheme node
+	 * @param token the corresponding token
+	 * @param parser the corresponding parser
+	 */
+	private void parseNumberExpression(MorphemeNode morph, AGFToken token, Parser parser) {
+		String numbersInsideExpression[] = new String[3];
+		int j = 0;
+		if(parser.match(AGFTokenType.OPENBR)) {
+			parser.consume();
+			for(int i=1; i <= 5; i++) {
+				if(i % 2 == 0) {
+					if(!parser.match(AGFTokenType.COMMA)) {
+						throw new AGFParseException("missing comma in number expression");
+					}
+					parser.consume();
+				}else {
+					if(!parser.match(AGFTokenType.WORD)) {
+						throw new AGFParseException("missing number inside number expression");
+					}
+					AGFToken numberToken = parser.consume();
+					numbersInsideExpression[j] = numberToken.content;
+					j++;
+				}
+			}
+			
+			if(parser.match(AGFTokenType.CLOSEBR)) {
+				parser.consume();
+				try {
+					int min = Integer.parseInt(numbersInsideExpression[0]);
+					int max = Integer.parseInt(numbersInsideExpression[1]);
+					int stepSize = Integer.parseInt(numbersInsideExpression[2]);
+					
+					NumberNode numberNode = new NumberNode(min, max, stepSize);
+					morph.addChild(numberNode);
+				}catch(NumberFormatException e) {
+					throw new AGFParseException(
+							"number inside number expression could not be converted " + e.getMessage());
+				}
+			}else {
+				throw new AGFParseException("missing ) in number expression");
+			}
+		}
 		
 	}
 	
