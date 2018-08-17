@@ -49,6 +49,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParserException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.Entity;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.Prompt;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
@@ -130,10 +131,12 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	
 	@Override
 	public void processIntent(DialogImpl dialog, String naturalLanguageText) {
-		
-		List<AGFNode> promptGrams = dialog.getIntent()
-				.getPrompts().stream().map(Prompt::getGrammar).collect(Collectors.toList());
-		
+		List<AGFNode> promptGrams = new ArrayList<>();
+		for(Entity entity : dialog.getIntent().getEntityList().values()) {
+			if(entity.getPrompt() != null) {
+			promptGrams.add(entity.getPrompt().getGrammar());
+			}
+		}
 		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
 		INLParser nlParser = new NLParser(promptGrams, this.language.getStemmer());

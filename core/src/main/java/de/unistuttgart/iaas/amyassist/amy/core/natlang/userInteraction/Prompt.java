@@ -30,22 +30,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
  * @author Lars Buttgereit
  */
 public class Prompt {
-	private final String entityTemplateId;
 	private final String outputText;
 	private final AGFNode grammar;
 
-	public Prompt(String entityTemplateId, AGFNode grammar, String outputText) {
-		this.entityTemplateId = entityTemplateId;
+	public Prompt(AGFNode grammar, String outputText) {
 		this.grammar = grammar;
 		this.outputText = outputText;
-	}
-
-	/**
-	 * Get's {@link #entityTemplateId entityTemplateId}
-	 * @return  entityTemplateId
-	 */
-	public String getEntityTemplateId() {
-		return this.entityTemplateId;
 	}
 
 	/**
