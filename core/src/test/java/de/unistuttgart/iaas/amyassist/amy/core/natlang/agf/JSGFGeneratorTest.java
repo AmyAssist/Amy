@@ -39,7 +39,7 @@ public class JSGFGeneratorTest {
 	/**
 	 * tests if digit rules get changed
 	 */
-	@Test
+	/*@Test
 	public void testDigit() {
 		AGFParser parser = new AGFParser(new AGFLexer("set timer on {num} minutes"));
 		AGFNode node = parser.parseWholeExpression();
@@ -51,13 +51,13 @@ public class JSGFGeneratorTest {
 		gen.addRule(node2, "dwoa");
 		assertEquals(s.trim().replaceAll("\\s{2,}", " "), "public <testi> = ( set timer on <number> minutes );");
 		
-	}
+	}*/
 	
 	/**
 	 * tests a big example, with lots of variations
 	 * does not consider whitespace
 	 */
-	@Test
+	/*@Test
 	public void testBigSyntax() {
 		AGFParser parser = new AGFParser(new AGFLexer("set timer on (x|(wa|d)) [{num} [x] hours] [{num} minutes] [{num} seconds] test"));
 	
@@ -67,5 +67,5 @@ public class JSGFGeneratorTest {
 		String s = gen.addRule(node, "test");
 		assertEquals(s.replaceAll("\\s*", "").trim(), "public <test> = ( set timer on (x|(wa|d)) [<number> [x] hours] [<number> minutes] [<number> seconds] test );".replaceAll("\\s*", ""));
 		
-	}
+	}*/
 }

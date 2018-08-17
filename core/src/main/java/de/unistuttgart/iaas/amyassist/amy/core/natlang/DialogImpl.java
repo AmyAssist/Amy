@@ -28,7 +28,8 @@ import java.util.function.Consumer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
 
 /**
- * TODO: Description
+ * internal implementation of dialog interface 
+ * 
  * @author Felix Burk
  */
 class DialogImpl implements Dialog {
@@ -36,7 +37,8 @@ class DialogImpl implements Dialog {
 	private Consumer<String> consumer;
 	
 	/**
-	 * @param cons
+	 * constructor
+	 * @param cons consumer for callback
 	 */
 	DialogImpl(Consumer<String> cons){
 		this.consumer = cons;
@@ -48,8 +50,9 @@ class DialogImpl implements Dialog {
 	private UserIntent intent = null;
 	
 	/**
+	 * outputs the string to the user in some way 
 	 * 
-	 * @param answerOutput
+	 * @param answerOutput the string to output
 	 */
 	public void output(String answerOutput) {
 		this.consumer.accept(answerOutput);

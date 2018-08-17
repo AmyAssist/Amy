@@ -46,24 +46,44 @@ public class DialogHandler {
 	@Reference
 	private ServiceLocator serviceLocator;
 
-	Map<UUID, DialogImpl> map = new HashMap<>();
+	/**
+	 * internal map of dialogs with corresponding uuid
+	 */
+	private Map<UUID, DialogImpl> map = new HashMap<>();
 
 	/**
-	 * 
-	 * @return
+	 * creates a new dialog 
+	 * @param cons callback for consumer
+	 * @return the matching uuid
 	 */
 	public UUID createDialog(Consumer<String> cons) {
 		UUID uuid = UUID.randomUUID();
-		map.put(uuid, new DialogImpl(cons));
+		this.map.put(uuid, new DialogImpl(cons));
 		return uuid;
 	}
+	
+	/**
+	 * deletes a save dialog - this should be called once in a while
+	 * if the core is running for any long amounts of time
+	 * 
+	 * @param uuid of fialog to delete
+	 */
+	public void deleteDialog(UUID uuid) {
+		this.map.remove(uuid);
+	}
 
+	/**
+	 * processes a dialog from a given uuid with natural language input from a user
+	 * 
+	 * @param naturalLanguageText from user
+	 * @param uuid of dialog
+	 */
 	public void process(String naturalLanguageText, UUID uuid) {
 		if (!this.map.containsKey(uuid)) {
 			throw new IllegalArgumentException("wrong UUID");
 		}
 
-		DialogImpl dialog = map.get(uuid);
+		DialogImpl dialog = this.map.get(uuid);
 
 		if (dialog.getIntent() == null) {
 			this.manager.decideIntent(dialog, naturalLanguageText);
@@ -74,7 +94,7 @@ public class DialogHandler {
 		// is the intent ready for the plugin?
 		if (dialog.getIntent().isFinished()) {
 			Object object = this.serviceLocator.createAndInitialize(dialog.getIntent().getPartialNLIClass());
-			dialog.getIntent().call(object, naturalLanguageText);
+			dialog.output(dialog.getIntent().call(object, naturalLanguageText));
 			dialog.setIntent(null);
 		}
 	}

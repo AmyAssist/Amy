@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import javax.annotation.Resource;
-
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
@@ -58,7 +56,7 @@ public class HelloWorldSpeech {
 
 	@Intent("sayHelloXTimes")
 	public String sayHelloXTimes(String... params) {
-		return this.helloWorld.helloWorldXTimes(Integer.parseInt(params[2]));
+		return "done";
 	}
 
 	@Intent("getContacts")

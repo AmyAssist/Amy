@@ -16,7 +16,7 @@
 
 		<Prompt entityTemplateId="amyinteger">
 			<text> how many times should i say hello? </text>
-			<gram>{AmyInteger} times</gram>
+			<gram>{amyinteger} times</gram>
 		</Prompt>
 	</Intent>
 
