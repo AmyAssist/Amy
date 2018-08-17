@@ -25,10 +25,12 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
@@ -36,16 +38,17 @@ import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailResource;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
  * Test for the rest resource of email
  * 
- * @author Muhammed Kaya
+ * @author Muhammed Kaya, Patrick Singer
  */
 @ExtendWith(FrameworkExtension.class)
 class EMailRestTest {
@@ -67,145 +70,42 @@ class EMailRestTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailResource#getNewMessageCount()}.
+	 * Test method for {@link EMailResource#getAllMails(int)}
 	 */
 	@Test
-	void testGetNewMessageCount() {
-		Mockito.when(this.logic.getNewMessageCount()).thenReturn(5);
-		Response response = this.target.path("new/count").request().get();
-		int count = response.readEntity(Integer.class);
-		assertEquals(count, 5);
-		assertThat(response.getStatus(), is(200));
+	public void testGetAllMails() {
+		final int amountOfMails = 15;
+		List<MessageDTO> mails = createMessages(amountOfMails);
+		when(this.logic.getMailsForREST(-1)).thenReturn(mails);
 
-		Mockito.when(this.logic.getNewMessageCount()).thenReturn(-1);
-		response = this.target.path("new/count").request().get();
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Initialize before accessing the inbox."));
-		assertThat(response.getStatus(), is(401));
-		Mockito.verify(this.logic, Mockito.times(2)).getNewMessageCount();
+		try (Response response = this.target.path("getMails").request().get()) {
+			assertThat(response.getStatus(), is(200));
+			MessageDTO[] messages = response.readEntity(MessageDTO[].class);
+			assertThat(messages.length, is(amountOfMails));
+			for (int i = 0; i < messages.length; i++) {
+				// test equality of objects
+				MessageDTO message1 = mails.get(i);
+				MessageDTO message2 = messages[i];
+
+				assertThat(message1.getFrom(), is(message2.getFrom()));
+				assertThat(message1.getSubject(), is(message2.getSubject()));
+				assertThat(message1.getContent(), is(message2.getContent()));
+				assertThat(message1.getSentDate(), is(message2.getSentDate()));
+				assertThat(message1.isImportant(), is(message2.isImportant()));
+			}
+		}
 	}
 
-	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailResource#printPlainTextMessages(String, int)}.
-	 */
-	@Test
-	void testPrintPlainTextMessages() {
-		Mockito.when(this.logic.printPlainTextMessages(3)).thenReturn("Hello");
-		Mockito.when(this.logic.printPlainTextMessages(4)).thenReturn("");
-		Mockito.when(this.logic.printPlainTextMessages(5)).thenReturn("Bye");
-		Mockito.when(this.logic.printImportantMessages(5)).thenReturn("Important");
-
-		Response response = this.target.path("plains").queryParam("amount", "3").request().post(null);
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Hello"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).printPlainTextMessages(3);
-
-		response = this.target.path("plains").queryParam("amount", "4").request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("No messages found"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).printPlainTextMessages(4);
-
-		response = this.target.path("plains").request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Bye"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).printPlainTextMessages(5);
-
-		response = this.target.path("plains/fails").request().post(null);
-		assertThat(response.getStatus(), is(404));
-
-		response = this.target.path("plains/important").request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Important"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).printImportantMessages(5);
+	private List<MessageDTO> createMessages(int amount) {
+		List<MessageDTO> messages = new ArrayList<>();
+		Random random = new Random();
+		for (int i = 0; i < amount; i++) {
+			byte[] bytes = new byte[5];
+			random.nextBytes(bytes);
+			String randomString = new String(bytes);
+			messages.add(new MessageDTO(randomString, randomString, randomString, LocalDateTime.now(),
+					random.nextBoolean(), random.nextBoolean()));
+		}
+		return messages;
 	}
-
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailResource#hasUnreadMessages()}.
-	 */
-	@Test
-	void testHasUnreadMessages() {
-		Mockito.when(this.logic.hasUnreadMessages()).thenReturn(true);
-		Response response = this.target.path("unread").request().get();
-		Boolean actual = response.readEntity(Boolean.class);
-		assertThat(actual, is(true));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).hasUnreadMessages();
-	}
-
-	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailResource#sendMail(java.lang.String, java.lang.String, java.lang.String)}.
-	 */
-	@Test
-	void testSendMail() {
-		String recipient = "example@mail.com";
-		String subject = "Mail From Amy";
-		String message = "Hello!";
-
-		Mockito.when(this.logic.sendMail(recipient, subject, message)).thenReturn("Message is sent!");
-		Response response = this.target.path("new").queryParam("recipient", recipient).queryParam("subject", subject)
-				.queryParam("message", message).request().post(null);
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Message is sent!"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).sendMail(recipient, subject, message);
-
-		Mockito.when(this.logic.sendMail("", "", "")).thenReturn("Message could not be sent");
-		response = this.target.path("new").request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Message could not be sent."));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic).sendMail("", "", "");
-	}
-
-	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailResource#getImportantMailAddresses()}.
-	 */
-	@Test
-	void testGetImportantMailAddresses() {
-		List<String> emptyList = new ArrayList<>();
-		List<String> addressesList = new ArrayList<>();
-		addressesList.add("Amy");
-		addressesList.add("Horst");
-
-		Mockito.when(this.logic.getImportantMailAddresses()).thenReturn(addressesList);
-		Response response = this.target.path("addresses").request().get();
-		List<String> actual = response.readEntity(List.class);
-		assertThat(actual, is(addressesList));
-		assertThat(response.getStatus(), is(200));
-
-		Mockito.when(this.logic.getImportantMailAddresses()).thenReturn(emptyList);
-		response = this.target.path("addresses").request().get();
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("No important mail addresses were found."));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic, Mockito.times(2)).getImportantMailAddresses();
-	}
-
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailResource#init()}.
-	 */
-	@Test
-	void testInit() {
-		Response response = this.target.path("init").request().post(null);
-		assertThat(response.getStatus(), is(204));
-		Mockito.verify(this.logic).init();
-	}
-
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailResource#closeInbox()}.
-	 */
-	@Test
-	void testCloseInbox() {
-		Response response = this.target.path("close").request().post(null);
-		assertThat(response.getStatus(), is(204));
-		Mockito.verify(this.logic).closeInbox();
-	}
-
 }
