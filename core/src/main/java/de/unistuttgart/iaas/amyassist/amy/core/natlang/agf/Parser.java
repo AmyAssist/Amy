@@ -183,6 +183,6 @@ public class Parser {
 		if(this.entityToAGF != null && this.entityToAGF.get(id) != null) {
 			return this.entityToAGF.get(id);
 		}
-		throw new AGFLexerException("no matching entity found for id " + id);
+		throw new AGFParseException("no matching entity found for id " + id);
 	}
 }

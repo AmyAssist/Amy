@@ -26,6 +26,9 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
@@ -53,14 +56,17 @@ public class AGFParserTest {
 	 * 
 	 */
 	private void testEntities() {
-		AGFParser parser = new AGFParser(new AGFLexer("set timer on {x"));
+		Map<String, AGFNode> map = new HashMap<>();
+		map.put("x", new AGFNode("test"));
+		map.put("timer", new AGFNode("test"));
+		AGFParser parser = new AGFParser(new AGFLexer("set timer on {x"), map);
 		assertThrows(AGFParseException.class, () -> parser.parseWholeExpression());
 
 		AGFLexer lex = new AGFLexer("set {timer} on x");
 		while(lex.hasNext()) {
 			System.out.println(lex.next().type);
 		}
-		AGFParser parser2 = new AGFParser(new AGFLexer("set {timer} on x"));
+		AGFParser parser2 = new AGFParser(new AGFLexer("set {timer} on x"), map);
 		AGFNode node = parser2.parseWholeExpression();
 		System.out.println(node.printSelf());
 		AGFNode morph = node.getChilds().get(0);

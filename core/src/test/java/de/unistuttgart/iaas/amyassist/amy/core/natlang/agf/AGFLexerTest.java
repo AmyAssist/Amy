@@ -141,6 +141,9 @@ public class AGFLexerTest {
 		for(c = 'A'; c <= 'Z'; c++) {
 			ascii.remove(String.valueOf(c));
 		}
+		for(c = '0'; c <= '9'; c++) {
+			ascii.remove(String.valueOf(c));
+		}
 
 		ascii.remove("(");
 		ascii.remove(")");
@@ -149,6 +152,8 @@ public class AGFLexerTest {
 		ascii.remove("|");
 		ascii.remove("{");
 		ascii.remove("}");
+		ascii.remove("$");
+		ascii.remove(",");
 		//normal whitespace
 		ascii.remove(32);
 		
