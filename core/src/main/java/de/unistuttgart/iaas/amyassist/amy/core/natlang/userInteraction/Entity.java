@@ -34,10 +34,17 @@ public class Entity {
 	private final String entityId;
 	private EntityData entityData;
 	private AGFNode grammar;
+	private Prompt prompt;
 
 	public Entity(String entityId, AGFNode grammar) {
 		this.entityId = entityId;
 		this.grammar = grammar;
+	}
+	
+	public Entity(String entityId, AGFNode grammar, Prompt prompt) {
+		this.entityId = entityId;
+		this.grammar = grammar;
+		this.prompt = prompt;
 	}
 
 	public void insertEntityData(EntityData entData) {
@@ -67,4 +74,22 @@ public class Entity {
 	public AGFNode getGrammar() {
 		return this.grammar;
 	}
+
+	/**
+	 * Get's {@link #prompt prompt}
+	 * @return  prompt
+	 */
+	public Prompt getPrompt() {
+		return this.prompt;
+	}
+
+	/**
+	 * Set's {@link #prompt prompt}
+	 * @param prompt  prompt
+	 */
+	public void setPrompt(Prompt prompt) {
+		this.prompt = prompt;
+	}
+	
+	
 }

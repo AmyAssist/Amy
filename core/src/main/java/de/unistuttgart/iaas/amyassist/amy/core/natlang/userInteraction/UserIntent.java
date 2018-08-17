@@ -51,7 +51,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLPrompt;
  * @author Lars Buttgereit, Felix Burk
  */
 public class UserIntent {
-	
+
 	@Reference
 	private Logger logger = LoggerFactory.getLogger(UserIntent.class);
 
@@ -68,12 +68,6 @@ public class UserIntent {
 	 * internal list of all entities
 	 */
 	private Map<String, Entity> entityList = new HashMap<>();
-	
-	private Map<String, AGFNode> pluginCustomGrams = new HashMap<>();
-	/**
-	 * internal lists of possible prompts to receive missing entities
-	 */
-	private Map<String, Prompt> prompts = new HashMap<>();
 
 	/**
 	 * Represents an intent of a user
@@ -89,39 +83,41 @@ public class UserIntent {
 		this.aimIntent = aimIntent;
 		setEntity();
 		this.grammar = parseStringToAGF(this.aimIntent.getGram());
-		setPrompts();
+		setPromptsInEntity();
 	}
-	
+
 	/**
 	 * generates amys answers
+	 * 
 	 * @return string of amys answer
 	 */
 	public String generateQuestion() {
-		if(this.isFinished()) {
+		if (this.isFinished()) {
 			return null;
 		}
-		
-		for(String s : this.entityList.keySet()) {
-			if(this.entityList.get(s).getEntityData() == null) {
-				return this.prompts.get(s).getOutputText();
+
+		for (String s : this.entityList.keySet()) {
+			if (this.entityList.get(s).getEntityData() == null) {
+				return this.entityList.get(s).getPrompt().getOutputText();
 			}
 		}
-		
+
 		throw new IllegalStateException(
 				"could not find empty entity but user intent for method " + this.method.getName() + " is not finished");
 	}
 
 	private AGFNode parseStringToAGF(String toParse) {
 		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
-		customEntities.putAll(this.pluginCustomGrams);
-
+		for (Entity entity : this.entityList.values()) {
+			customEntities.put(entity.getEntityId(), entity.getGrammar());
+		}
 		AGFLexer lex = new AGFLexer(toParse);
 		AGFParser parse = new AGFParser(lex, customEntities);
 		AGFNode node = parse.parseWholeExpression();
-		
+
 		List<EntityNode> entityNodes = node.getChildEntityNodes();
-		for(EntityNode entity : entityNodes) {
-			this.entityList.put(entity.getContent(), 
+		for (EntityNode entity : entityNodes) {
+			this.entityList.put(entity.getContent(),
 					new Entity(entity.getContent(), customEntities.get(entity.getContent())));
 		}
 		return node;
@@ -132,15 +128,18 @@ public class UserIntent {
 			AGFNode node = parseStringToAGF(xmlEntityTemplate.getGrammar());
 			Entity entity = new Entity(xmlEntityTemplate.getEntityId(), node);
 			this.entityList.put(xmlEntityTemplate.getEntityId(), entity);
-			this.pluginCustomGrams.put(xmlEntityTemplate.getEntityId(), node);
 		}
 	}
 
-	private void setPrompts() {
+	private void setPromptsInEntity() {
 		for (XMLPrompt xmlPrompt : this.aimIntent.getPrompts()) {
-			this.logger.error(xmlPrompt.getText());
-			this.prompts.put(xmlPrompt.getEntityTemplateId(), new Prompt(xmlPrompt.getEntityTemplateId(), parseStringToAGF(xmlPrompt.getGram()),
-					xmlPrompt.getText()));
+			if (this.entityList.get(xmlPrompt.getEntityTemplateId()) != null) {
+				Entity entity = this.entityList.get(xmlPrompt.getEntityTemplateId());
+				entity.setPrompt(new Prompt(parseStringToAGF(xmlPrompt.getGram()), xmlPrompt.getText()));
+				this.entityList.replace(xmlPrompt.getEntityTemplateId(), entity);
+			} else {
+
+			}
 		}
 	}
 
@@ -178,6 +177,7 @@ public class UserIntent {
 
 	/**
 	 * tells if this intent is already finished if all entities have been provided by the user
+	 * 
 	 * @return if this intent is finished
 	 */
 	public boolean isFinished() {
@@ -190,18 +190,9 @@ public class UserIntent {
 	}
 
 	/**
-	 * Get's {@link #prompts prompts}
-	 * 
-	 * @return prompts
-	 */
-	public List<Prompt> getPrompts() {
-		List<Prompt> list = new ArrayList<>(this.prompts.values());
-		return list;
-	}
-
-	/**
 	 * Get's {@link #entityList entityList}
-	 * @return  entityList
+	 * 
+	 * @return entityList
 	 */
 	public Map<String, Entity> getEntityList() {
 		return this.entityList;
