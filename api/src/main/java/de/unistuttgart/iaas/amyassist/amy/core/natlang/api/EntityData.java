@@ -21,30 +21,25 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
 
 import java.time.LocalDateTime;
+import java.util.logging.Logger;
+
+import javax.persistence.Entity;
+
 
 /**
  * Stores the data from one entity. Only one attribute is set at the same time
  * @author Lars Buttgereit
  */
 public class EntityData {
-
-	private int number = Integer.MIN_VALUE;
+	
 	private String string;
 	private LocalDateTime time;
 	
-	public EntityData(int number) {
-		this.number = number;
-	}
-	
 	public EntityData(String string) {
 		this.string = string;
-	}
-	
-	public EntityData(LocalDateTime time) {
-		this.time = time;
 	}
 
 	/**
@@ -52,7 +47,12 @@ public class EntityData {
 	 * @return  number
 	 */
 	public int getNumber() {
-		return this.number;
+		try {
+			return Integer.parseInt(this.string);
+		}catch (NumberFormatException e) {
+			
+			return Integer.MIN_VALUE;
+		}
 	}
 
 	/**

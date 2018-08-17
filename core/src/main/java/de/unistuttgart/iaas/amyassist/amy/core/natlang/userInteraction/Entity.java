@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 
 /**
  * TODO: Description

@@ -44,6 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLEntityTemplate;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLPrompt;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 
 /**
  * TODO: Description
@@ -166,12 +167,12 @@ public class UserIntent {
 	 * 
 	 * @param instance
 	 *            the instance of the partialNLIClass
-	 * @param input
-	 *            the natural language text splitted into words
+	 * @param map
+	 *            map of all entities with the id as key
 	 * @return the result String from calling the command
 	 */
-	public String call(Object instance, String... input) {
-		Object[] params = { input };
+	public String call(Object instance, Map<String, EntityData> map) {
+		Object[] params = { map };
 		return NLIAnnotationReader.callNLIMethod(this.method, instance, params);
 	}
 
