@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	</head>
+	<body>
+		<button onclick="startSR(event)">Start SR</button>
+		<p id="textBox">
+		</p>
+	</body>
+	<script>
+		/**
+		 * Simple Speech Recognition website.
+		 * @author Benno Krauß
+		 */
+		if (!('webkitSpeechRecognition' in window)) {
+			console.log('Browser doesn\'t support SR!');
+		}
+		const recognition = new webkitSpeechRecognition();
+		recognition.lang = 'en-US';
+		recognition.continuous = false;
+		recognition.interimResults = false;
+
+		const source = new EventSource("/rest/remotesr/eventstream");
+
+		source.onmessage = function(event) {
+			console.log('EventSource message: ', event.message);
+		};
+		source.onopen = function(event) {
+			console.log('EventSource onopen: ', event);
+		}
+
+		source.onerror = function(event) {
+			console.log('EventSource onerror: ', event);
+		}
+
+		recognition.onstart = function() {
+			console.log('onstart');
+		}
+
+		recognition.onerror = function(event) {
+			console.log('onerror: ', event);
+		}
+
+		recognition.onend = function() {
+			console.log('onend');
+		}
+
+		recognition.onresult = function(event) {
+			const result = event.results[0][0].transcript;
+			console.log('onresult: ', result);
+
+			sendResult(result);
+		}
+
+		function sendResult(text) {
+		    fetch("/rest/remotesr", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    text
+                })
+            }).then(res => {
+                if (res.ok) {
+                    console.log(`sent result`);
+                }
+                else {
+                    console.log(`error sending result: ${res.statusText}`);
+				}
+			}, error => {
+                console.log(`error sending result: ${error}`)
+            });
+		}
+
+		function startSR(event) {
+			console.log('Starting SR');
+			recognition.start();
+		}
+
+		source.addEventListener('START', startSR, false);
+	</script>
+</html>
