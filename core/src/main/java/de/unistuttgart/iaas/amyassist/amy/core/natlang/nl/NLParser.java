@@ -171,6 +171,9 @@ public class NLParser implements INLParser {
 	private boolean matchNumber(AGFNode agf) {
 		WordToken token = lookAhead(0);
 
+		if(token == null || token.getContent() == null) {
+			return false;
+		}
 		try {
 			NumberNode numberNode = (NumberNode) agf;
 			numberNode.setContainedNumber(token.getContent().trim());
@@ -201,7 +204,7 @@ public class NLParser implements INLParser {
 			for(int i=startIndex; i<=endIndex-1; i++) {
 				b.append(this.mRead.get(i)+ " ");
 			}
-			entity.setUserProvidedContent(b.toString().trim());
+			if(matched)entity.setUserProvidedContent(b.toString().trim());
 			return matched;
 		}catch(ClassCastException e) {
 			throw new NLParserException("Node Type Entity was no EntityNode " + e.getMessage());

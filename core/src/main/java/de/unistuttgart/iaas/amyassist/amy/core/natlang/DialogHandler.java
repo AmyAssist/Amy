@@ -39,15 +39,15 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  */
 @Service()
 public class DialogHandler {
-	
+
 	@Reference
 	private NLProcessingManager manager;
-	
+
 	@Reference
 	private ServiceLocator serviceLocator;
-	
+
 	Map<UUID, DialogImpl> map = new HashMap<>();
-	
+
 	/**
 	 * 
 	 * @return
@@ -57,24 +57,25 @@ public class DialogHandler {
 		map.put(uuid, new DialogImpl(cons));
 		return uuid;
 	}
-	
+
 	public void process(String naturalLanguageText, UUID uuid) {
-		if(!this.map.containsKey(uuid)) {
+		if (!this.map.containsKey(uuid)) {
 			throw new IllegalArgumentException("wrong UUID");
 		}
-		
+
 		DialogImpl dialog = map.get(uuid);
-		
-		if(dialog.getIntent() == null) {
+
+		if (dialog.getIntent() == null) {
 			this.manager.decideIntent(dialog, naturalLanguageText);
+		} else {
+			this.manager.processIntent(dialog, naturalLanguageText);
 		}
-		
-		
-		
-		//is the intent ready for the plugin?
-		if(dialog.getIntent().isFinished()) {
+
+		// is the intent ready for the plugin?
+		if (dialog.getIntent().isFinished()) {
 			Object object = this.serviceLocator.createAndInitialize(dialog.getIntent().getPartialNLIClass());
 			dialog.getIntent().call(object, naturalLanguageText);
+			dialog.setIntent(null);
 		}
 	}
 }

@@ -1,5 +1,4 @@
 de.unistuttgart.iaas.amyassist.amy.core.ConfigurationImpl
-de.unistuttgart.iaas.amyassist.amy.core.NaturalLanaguageInputHandlerService
 de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoaderImpl
 de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManagerImpl
 de.unistuttgart.iaas.amyassist.amy.core.configuration.DefaultConfigurationLoaderImpl

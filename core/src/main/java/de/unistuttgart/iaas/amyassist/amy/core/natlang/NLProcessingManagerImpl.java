@@ -25,8 +25,11 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 
@@ -36,6 +39,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
@@ -43,6 +48,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParserException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.Prompt;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
@@ -128,10 +135,53 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Override
 	public void processIntent(DialogImpl dialog, String naturalLanguageText) {
 		
-		//List<AGFNode> promptGrams = dialog.getIntent()
-				//.getPrompts().stream().map(Prompt::getGrammar).collect(Collectors.toList());
+		List<AGFNode> promptGrams = dialog.getIntent()
+				.getPrompts().stream().map(Prompt::getGrammar).collect(Collectors.toList());
 		
-		//TODO
+		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
+		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
+		INLParser nlParser = new NLParser(promptGrams, this.language.getStemmer());
+		try {
+			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
+			Prompt prompt = dialog.getIntent().getPrompts().get(matchingNodeIndex);
+			
+			Map<String, String> entityIdToUserContent = getEntityContent(promptGrams.get(matchingNodeIndex));
+			
+			for(String s : entityIdToUserContent.keySet()) {
+				EntityData data = new EntityData(entityIdToUserContent.get(s));
+				dialog.getIntent().getEntityList().get(s).insertEntityData(data);
+			}
+			
+			if(!dialog.getIntent().isFinished()) {
+				dialog.output(dialog.getIntent().generateQuestion());
+			}
+		} catch(NLParserException e) {
+			int rndm = (int) Math.round(Math.random()*this.failedToUnderstand.length);
+			dialog.output(this.failedToUnderstand[rndm]);
+		}
+		
+	}
+	
+	/**
+	 * helper method to extract entity contents
+	 * @param node to extract entity content from
+	 * @return Map which is mapping the entity id to the user provided content
+	 */
+	private Map<String, String> getEntityContent(AGFNode node){
+		Map<String, String> result = new HashMap<>();
+		
+		for(AGFNode child : node.getChilds()) {
+			if(child.getType() == AGFNodeType.ENTITY) {
+				EntityNode entity = (EntityNode) child;
+				if(entity.getUserProvidedContent() != null) {
+					result.put(entity.getContent(),entity.getUserProvidedContent());
+				}
+			}else {
+				result.putAll(getEntityContent(child));
+			}
+		}
+		
+		return result;
 	}
 
 	/**
@@ -147,6 +197,17 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 			UserIntent userIntent = this.register.get(matchingNodeIndex);
 			dialog.setIntent(userIntent);
+			
+			Map<String, String> entityIdToUserContent = getEntityContent(this.registeredNodeList.get(matchingNodeIndex));
+			
+			for(String s : entityIdToUserContent.keySet()) {
+				EntityData data = new EntityData(entityIdToUserContent.get(s));
+				dialog.getIntent().getEntityList().get(s).insertEntityData(data);
+			}
+			
+			if(!dialog.getIntent().isFinished()) {
+				dialog.output(dialog.getIntent().generateQuestion());
+			}
 		} catch(NLParserException e) {
 			int rndm = (int) Math.round(Math.random()*this.failedToUnderstand.length);
 			dialog.output(this.failedToUnderstand[rndm]);

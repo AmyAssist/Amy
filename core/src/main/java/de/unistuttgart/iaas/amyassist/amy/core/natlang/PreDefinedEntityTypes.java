@@ -40,14 +40,14 @@ public class PreDefinedEntityTypes {
 	private static final Map<String, String> grammars; 
 	static{
 		grammars = new HashMap<>();
-		grammars.put("AmyInteger", "$(0,1000000000, 1)");
+		grammars.put("amyinteger", "$(0,1000000000, 1)");
 		grammars.put("AmyHour", "$(0,24,1)");
 		grammars.put("AmyMinute", "$(0,60,1)");
 	    grammars.put("AmyTime", "{AmyHour} oh {AmyMinute}");
 	};
 	
 	private static final String[] ids =  {
-		"AmyInteger", "AmyHour", "AmyMinute", "AmyTime"
+		"amyinteger", "AmyHour", "AmyMinute", "AmyTime"
 	};
 
 	/**

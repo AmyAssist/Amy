@@ -127,6 +127,20 @@ public class AGFNode {
 
 		return b.toString();
 	}
+	
+	public List<EntityNode> getChildEntityNodes(){
+		List<EntityNode> result = new ArrayList<>();
+		
+		for(AGFNode node : this.childs) {
+			if(node.getType() == AGFNodeType.ENTITY) {
+				EntityNode entity = (EntityNode) node;
+				result.add(entity);
+			}
+			result.addAll(node.getChildEntityNodes());
+		}
+		
+		return result;
+	}
 
 	/**
 	 * method to print the content

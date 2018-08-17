@@ -2,26 +2,21 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.say">
-		<gram> say hello </gram>
+		<gram>say hello</gram>
 	</Intent>
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
-		<gram> repeat {someString} [{number} times] </gram>
+		<gram>repeat {somestring} [{amyinteger} times]</gram>
 		<EntityTemplates>
-			<EntityTemplate id="someString" type="String">
-				<Values>
-					<value>test</value>
-					<value>test2</value>
-					<value>fuck</value>
-				</Values>
+			<EntityTemplate id="somestring">
+				<gram>(hello|test)</gram>
 			</EntityTemplate>
-			<EntitiyTemplate id="number" type="int"/>
 		</EntityTemplates>
 
-		<Prompt entityTemplateId="number">
+		<Prompt entityTemplateId="amyinteger">
 			<text> how many times should i say hello? </text>
-			<gram> {number} [times] </gram>
+			<gram>{AmyInteger} times</gram>
 		</Prompt>
 	</Intent>
 

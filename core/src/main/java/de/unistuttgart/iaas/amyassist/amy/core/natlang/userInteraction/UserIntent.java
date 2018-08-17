@@ -29,13 +29,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.annotation.Nonnull;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLIAnnotationReader;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.PreDefinedEntityTypes;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLEntityTemplate;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLPrompt;
@@ -46,6 +51,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLPrompt;
  * @author Lars Buttgereit, Felix Burk
  */
 public class UserIntent {
+	
+	@Reference
+	private Logger logger = LoggerFactory.getLogger(UserIntent.class);
+
 	@Nonnull
 	private final Method method;
 	@Nonnull
@@ -64,7 +73,7 @@ public class UserIntent {
 	/**
 	 * internal lists of possible prompts to receive missing entities
 	 */
-	private List<Prompt> prompts = new ArrayList<>();
+	private Map<String, Prompt> prompts = new HashMap<>();
 
 	/**
 	 * Represents an intent of a user
@@ -82,13 +91,40 @@ public class UserIntent {
 		this.grammar = parseStringToAGF(this.aimIntent.getGram());
 		setPrompts();
 	}
+	
+	/**
+	 * generates amys answers
+	 * @return string of amys answer
+	 */
+	public String generateQuestion() {
+		if(this.isFinished()) {
+			return null;
+		}
+		
+		for(String s : this.entityList.keySet()) {
+			if(this.entityList.get(s).getEntityData() == null) {
+				return this.prompts.get(s).getOutputText();
+			}
+		}
+		
+		throw new IllegalStateException(
+				"could not find empty entity but user intent for method " + this.method.getName() + " is not finished");
+	}
 
 	private AGFNode parseStringToAGF(String toParse) {
 		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
 		customEntities.putAll(this.pluginCustomGrams);
+
 		AGFLexer lex = new AGFLexer(toParse);
 		AGFParser parse = new AGFParser(lex, customEntities);
-		return parse.parseWholeExpression();
+		AGFNode node = parse.parseWholeExpression();
+		
+		List<EntityNode> entityNodes = node.getChildEntityNodes();
+		for(EntityNode entity : entityNodes) {
+			this.entityList.put(entity.getContent(), 
+					new Entity(entity.getContent(), customEntities.get(entity.getContent())));
+		}
+		return node;
 	}
 
 	private void setEntity() {
@@ -102,7 +138,8 @@ public class UserIntent {
 
 	private void setPrompts() {
 		for (XMLPrompt xmlPrompt : this.aimIntent.getPrompts()) {
-			this.prompts.add(new Prompt(xmlPrompt.getEntityTemplateId(), parseStringToAGF(xmlPrompt.getGram()),
+			this.logger.error(xmlPrompt.getText());
+			this.prompts.put(xmlPrompt.getEntityTemplateId(), new Prompt(xmlPrompt.getEntityTemplateId(), parseStringToAGF(xmlPrompt.getGram()),
 					xmlPrompt.getText()));
 		}
 	}
@@ -158,7 +195,8 @@ public class UserIntent {
 	 * @return prompts
 	 */
 	public List<Prompt> getPrompts() {
-		return this.prompts;
+		List<Prompt> list = new ArrayList<>(this.prompts.values());
+		return list;
 	}
 
 	/**
