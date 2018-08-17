@@ -239,7 +239,7 @@ public class CalendarLogic {
 	 *            LocalDateTime variable
 	 * @param plusDays
 	 *            the number of days you want to add
-	 * @return
+	 * @return DateTime of input
 	 */
 	private DateTime getDateTime(LocalDateTime ldt, int plusDays) {
 		LocalDate nextDay = ldt.plusDays(plusDays).toLocalDate();
