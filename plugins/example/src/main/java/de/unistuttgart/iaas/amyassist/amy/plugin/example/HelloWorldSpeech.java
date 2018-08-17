@@ -23,7 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
+import java.util.Map;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
@@ -49,32 +52,36 @@ public class HelloWorldSpeech {
 	 *            [Not used] The parameters of the sentence.
 	 * @return The response of the system
 	 */
-	@Intent("say")
+	//@Intent("say")
 	public String say(String... params) {
 		return this.helloWorld.helloWorld();
 	}
 
 	@Intent("sayHelloXTimes")
-	public String sayHelloXTimes(String... params) {
-		return "done";
+	public String sayHelloXTimes(Map<String, EntityData> entities) {
+		StringBuilder b = new StringBuilder();
+		for(int i=0; i <= entities.get("amyinteger").getNumber(); i++) {
+			b.append(entities.get("somestring").getString() + " ");
+		}
+		return b.toString();
 	}
 
-	@Intent("getContacts")
+	//@Intent("getContacts")
 	public String getContacts(String... params) {
 		return this.helloWorld.demonstrateContactRegistry();
 	}
 
-	@Intent("testContacts")
+	//@Intent("testContacts")
 	public String testContacts(String... params) {
 		return this.helloWorld.testContactRegistry();
 	}
 
-	@Intent("testLocation")
+	//@Intent("testLocation")
 	public String testLocation(String... params) {
 		return this.helloWorld.testLocationRegistry();
 	}
 
-	@Intent("testCustom")
+	//@Intent("testCustom")
 	public String testCustom(String... params) {
 		return this.helloWorld.testCustomRegistry();
 	}

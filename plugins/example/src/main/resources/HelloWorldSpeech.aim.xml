@@ -10,7 +10,7 @@
 		<gram>repeat {somestring} [{amyinteger} times]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="somestring">
-				<gram>(hello|test)</gram>
+				<gram>(hello|test test testsetstestst)</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 

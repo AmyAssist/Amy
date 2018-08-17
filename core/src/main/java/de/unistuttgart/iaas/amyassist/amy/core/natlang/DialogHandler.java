@@ -31,6 +31,8 @@ import java.util.function.Consumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.Entity;
 
 /**
  * TODO: Description
@@ -93,8 +95,13 @@ public class DialogHandler {
 
 		// is the intent ready for the plugin?
 		if (dialog.getIntent().isFinished()) {
+			Map<String, EntityData> stringToEntityData = new HashMap<>();
+			
+			for(String s : dialog.getIntent().getEntityList().keySet()) {
+				stringToEntityData.put(s, dialog.getIntent().getEntityList().get(s).getEntityData());
+			}
 			Object object = this.serviceLocator.createAndInitialize(dialog.getIntent().getPartialNLIClass());
-			dialog.output(dialog.getIntent().call(object, naturalLanguageText));
+			dialog.output(dialog.getIntent().call(object, stringToEntityData));
 			dialog.setIntent(null);
 		}
 	}
