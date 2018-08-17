@@ -82,14 +82,13 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	private Properties config;
 
 	private SpeechRecognizerManager localRecognition;
-	private UUID dialog;
 
 	@PostConstruct
 	private void init() {
 		loadAndCheckProperties();
-
+		UUID dialog;
 		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_ENABLE))) {
-			this.dialog = this.dialogHandler.createDialog(this.tts::voiceOutput);
+			dialog = this.dialogHandler.createDialog(this.tts::voiceOutput);
 
 			this.localRecognition = new LocalSpeechRecognizerManager(createNewAudioInputStream(), input -> {
 				this.dialogHandler.process(input, dialog);

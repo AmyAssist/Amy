@@ -25,8 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import javax.sound.sampled.AudioInputStream;

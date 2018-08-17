@@ -36,13 +36,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class XMLAmyInteractionModel {
 
 	@XmlElement(name = "Intent", required = false)
-	private List<AIMIntent> intents;
+	private List<XMLAIMIntent> intents;
 
 	/**
 	 * Get's {@link #intents intents}
 	 * @return  intents
 	 */
-	public List<AIMIntent> getIntents() {
+	public List<XMLAIMIntent> getIntents() {
 		return this.intents;
 	}
 	
@@ -52,7 +52,7 @@ public class XMLAmyInteractionModel {
 	 */
 	public String printSelf() {
 		StringBuilder b = new StringBuilder();
-		for(AIMIntent intent : this.intents) {
+		for(XMLAIMIntent intent : this.intents) {
 			b.append(intent.printSelf());
 		}
 		return b.toString();

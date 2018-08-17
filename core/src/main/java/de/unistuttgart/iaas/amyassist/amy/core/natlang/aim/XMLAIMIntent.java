@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.*;
  */
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AIMIntent {
+public class XMLAIMIntent {
 
 	@XmlAttribute(name = "ref", required = true)
 	private String reference = "";

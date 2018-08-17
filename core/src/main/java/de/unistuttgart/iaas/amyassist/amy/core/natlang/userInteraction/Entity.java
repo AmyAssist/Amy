@@ -27,29 +27,32 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 
 /**
- * TODO: Description
+ * this class represent the entity from an user intent
  * 
  * @author Lars Buttgereit
  */
 public class Entity {
 	private final String entityId;
+	private final AGFNode grammar;
 	private EntityData entityData;
-	private AGFNode grammar;
 	private Prompt prompt;
 
+	/**
+	 * constructor for a entity
+	 * @param entityId entityTemplateId from the xml file
+	 * @param grammar grammar from the entity
+	 */
 	public Entity(String entityId, AGFNode grammar) {
 		this.entityId = entityId;
 		this.grammar = grammar;
 	}
 	
-	public Entity(String entityId, AGFNode grammar, Prompt prompt) {
-		this.entityId = entityId;
-		this.grammar = grammar;
-		this.prompt = prompt;
-	}
-
-	public void insertEntityData(EntityData entData) {
-		this.entityData = entData;
+	/**
+	 * Set's {@link #entityData entityData}
+	 * @param entityData  entityData
+	 */
+	public void setEntityData(EntityData entityData) {
+		this.entityData = entityData;
 	}
 
 	/**
@@ -63,14 +66,17 @@ public class Entity {
 
 	/**
 	 * Get's {@link #entityData entityData}
-	 * @return  entityData
+	 * 
+	 * @return entityData
 	 */
 	public EntityData getEntityData() {
 		return this.entityData;
 	}
 
 	/**
-	 * @return
+	 * Get's {@link #grammar grammar}
+	 * 
+	 * @return grammar
 	 */
 	public AGFNode getGrammar() {
 		return this.grammar;
@@ -78,7 +84,8 @@ public class Entity {
 
 	/**
 	 * Get's {@link #prompt prompt}
-	 * @return  prompt
+	 * 
+	 * @return prompt
 	 */
 	public Prompt getPrompt() {
 		return this.prompt;
@@ -86,11 +93,12 @@ public class Entity {
 
 	/**
 	 * Set's {@link #prompt prompt}
-	 * @param prompt  prompt
+	 * 
+	 * @param prompt
+	 *            prompt
 	 */
 	public void setPrompt(Prompt prompt) {
 		this.prompt = prompt;
 	}
-	
-	
+
 }
