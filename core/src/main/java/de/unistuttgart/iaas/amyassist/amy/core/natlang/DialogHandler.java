@@ -74,7 +74,7 @@ public class DialogHandler {
 		// is the intent ready for the plugin?
 		if (dialog.getIntent().isFinished()) {
 			Object object = this.serviceLocator.createAndInitialize(dialog.getIntent().getPartialNLIClass());
-			dialog.getIntent().call(object, naturalLanguageText);
+			dialog.output(dialog.getIntent().call(object, naturalLanguageText));
 			dialog.setIntent(null);
 		}
 	}

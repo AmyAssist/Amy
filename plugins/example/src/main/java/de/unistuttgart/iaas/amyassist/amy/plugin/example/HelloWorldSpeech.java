@@ -58,7 +58,7 @@ public class HelloWorldSpeech {
 
 	@Intent("sayHelloXTimes")
 	public String sayHelloXTimes(String... params) {
-		return this.helloWorld.helloWorldXTimes(Integer.parseInt(params[2]));
+		return "done";
 	}
 
 	@Intent("getContacts")

@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
@@ -68,18 +68,16 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	 */
 	String[] failedToUnderstand = {
 			"I did not understand that", "Sorry, could you repeat that?", 
-			"I don't know what you mean", "No idea what you are talking about"
+			"I don't know what you mean", "No idea what you are talking about", "My plugin developers did not teach me this yet"
 	};
 
 	@Reference
 	private Logger logger;
 	@Reference
 	private Environment environment;
-	
-	private final List<UserIntent> register = new ArrayList<>();
-
-	private final List<AGFNode> registeredNodeList = new ArrayList<>();
-
+		
+	private final Map<AGFNode, Pair<Method, AIMIntent>> nodeToMethodAIMPair = new HashMap<>();
+ 
 	@Reference
 	private ConfigurationManager configurationLoader;
 	
@@ -111,11 +109,13 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		}
 
 		UserIntent  userIntent = new UserIntent(method, intent);
-		this.register.add(userIntent);
-		this.registeredNodeList.add(userIntent.getGrammar());
+		this.nodeToMethodAIMPair.put(userIntent.getGrammar(), Pair.of(method, intent));
 	}
 
 	/**
+	 * 
+	 * currently not working! 
+	 * 
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#getGrammarFileString(java.lang.String)
 	 */
 	@Override
@@ -123,10 +123,6 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.MULTI_CALL_START,
 				Constants.SINGLE_CALL_START, Constants.MULTI_CALL_STOP, Constants.SHUT_UP);
 		
-		for (UserIntent userIntent : this.register) {
-			this.logger.error("registered grammar {}", userIntent.getGrammar());
-			generator.addRule(userIntent.getGrammar(), UUID.randomUUID().toString());
-		}
 
 		return generator.generateGrammarFileString();
 	}
@@ -143,7 +139,6 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		INLParser nlParser = new NLParser(promptGrams, this.language.getStemmer());
 		try {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
-			Prompt prompt = dialog.getIntent().getPrompts().get(matchingNodeIndex);
 			
 			Map<String, String> entityIdToUserContent = getEntityContent(promptGrams.get(matchingNodeIndex));
 			
@@ -192,13 +187,15 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	public void decideIntent(DialogImpl dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
-		INLParser nlParser = new NLParser(this.registeredNodeList, this.language.getStemmer());
+		INLParser nlParser = new NLParser(new ArrayList<>(this.nodeToMethodAIMPair.keySet()), this.language.getStemmer());
 		try {
-			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
-			UserIntent userIntent = this.register.get(matchingNodeIndex);
+			AGFNode node = nlParser.matchingNode(tokens);
+			Method left = this.nodeToMethodAIMPair.get(node).getLeft();
+			AIMIntent right = this.nodeToMethodAIMPair.get(node).getRight();
+			UserIntent userIntent = new UserIntent(left, right);
 			dialog.setIntent(userIntent);
 			
-			Map<String, String> entityIdToUserContent = getEntityContent(this.registeredNodeList.get(matchingNodeIndex));
+			Map<String, String> entityIdToUserContent = getEntityContent(node);
 			
 			for(String s : entityIdToUserContent.keySet()) {
 				EntityData data = new EntityData(entityIdToUserContent.get(s));

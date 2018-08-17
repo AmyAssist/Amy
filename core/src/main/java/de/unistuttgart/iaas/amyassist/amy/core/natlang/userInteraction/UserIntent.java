@@ -138,7 +138,6 @@ public class UserIntent {
 
 	private void setPrompts() {
 		for (XMLPrompt xmlPrompt : this.aimIntent.getPrompts()) {
-			this.logger.error(xmlPrompt.getText());
 			this.prompts.put(xmlPrompt.getEntityTemplateId(), new Prompt(xmlPrompt.getEntityTemplateId(), parseStringToAGF(xmlPrompt.getGram()),
 					xmlPrompt.getText()));
 		}
