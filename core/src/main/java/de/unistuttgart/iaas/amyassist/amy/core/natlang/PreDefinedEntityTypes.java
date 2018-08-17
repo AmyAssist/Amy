@@ -31,7 +31,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
- * TODO: Description
+ * this class contains pre defined entity types 
+ * all of them have to start with "amy" to prevent double usage
+ * 
+ * feel free to add more - keep in mind that they are saved in agf form
+ * 
  * @author Lars Buttgereit, Felix Burk
  */
 public class PreDefinedEntityTypes {
@@ -41,13 +45,13 @@ public class PreDefinedEntityTypes {
 	static{
 		grammars = new HashMap<>();
 		grammars.put("amyinteger", "$(0,1000000000, 1)");
-		grammars.put("AmyHour", "$(0,24,1)");
-		grammars.put("AmyMinute", "$(0,60,1)");
-	    grammars.put("AmyTime", "{AmyHour} oh {AmyMinute}");
-	};
+		grammars.put("amyhour", "$(0,24,1)");
+		grammars.put("amyminute", "$(0,60,1)");
+	    grammars.put("amytime", "{AmyHour} oh {AmyMinute}");
+	}
 	
 	private static final String[] ids =  {
-		"amyinteger", "AmyHour", "AmyMinute", "AmyTime"
+		"amyinteger", "amyhour", "amyminute", "amytime"
 	};
 
 	/**

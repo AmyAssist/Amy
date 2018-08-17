@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
-import javax.annotation.Resource;
-
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;

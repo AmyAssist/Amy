@@ -117,7 +117,7 @@ public class LoadAIMService implements DeploymentContainerService {
 	 * and registeres them inside the NLProcessingManager
 	 * 
 	 * @param aimIntents list of all intents
-	 * @param speechMethods list of all methods
+	 * @param classloader matching classloader
 	 */
 	private void matchAndRegister(List<AIMIntent> aimIntents, ClassLoader classloader) {
 		for(AIMIntent intent : aimIntents) {
@@ -162,8 +162,7 @@ public class LoadAIMService implements DeploymentContainerService {
 				}
 				this.logger.error("could not read model");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				this.logger.error("could not read aim file {}", e.getMessage());
 			}
 		}
 		this.logger.error("could not read aim file");
