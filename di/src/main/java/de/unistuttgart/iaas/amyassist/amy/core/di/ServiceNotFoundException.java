@@ -44,7 +44,7 @@ public class ServiceNotFoundException extends RuntimeException {
 				+ serviceDescription.getAnnotations() + " is not registered in the DI."
 				+ " So first make sure you use the Service type and not the Service implementation to find the service."
 				+ " Second is the Service implementation of the type registered in the DI."
-				+ " Either by using a deployment descriptor or by a progamatic call.";
+				+ " Either by using a deployment descriptor or by a programmatic call.";
 	}
 
 	@Override
