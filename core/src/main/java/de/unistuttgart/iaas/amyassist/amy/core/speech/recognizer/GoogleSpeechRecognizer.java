@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.AbstractSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
+import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR.LaunchChromeException;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSRListener;
 
 /**
@@ -85,7 +86,25 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	@Override
 	public void getRecognition(AbstractSpeechResultHandler resultHandler) {
 		this.resultHandler = resultHandler;
-		this.recognizer.requestSR();
+		
+		if(!this.recognizer.requestSR()) {
+			this.logger.info("A problem connecting to the remote Speech Recognition has occured.");
+			while(!this.recognizer.requestSR()) {
+				this.logger.info("trying to reconnect");
+				try {
+					this.recognizer.restart();
+				} catch (LaunchChromeException e) {
+					e.printStackTrace();
+				}
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			this.logger.info("Reconnected");
+		}
+		
 		this.logger.info("waiting for speech input");
 	}
 

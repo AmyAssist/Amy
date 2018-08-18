@@ -23,22 +23,30 @@
 
 package de.unistuttgart.iaas.amyassist.amy.remotesr;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import org.apache.commons.lang3.SystemUtils;
-import org.slf4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.*;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
+
+import org.apache.commons.lang3.SystemUtils;
+import org.slf4j.Logger;
+
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 
 /**
  * Class to initiate the remote SR
@@ -78,7 +86,12 @@ public class RemoteSR implements RunnableService {
 
 	@Override
 	public void stop() {
-		//TODO: Implement this method
+		// TODO: Implement this method
+	}
+
+	public void restart() throws LaunchChromeException {
+		stop();
+		launchChrome();
 	}
 
 	/**
@@ -117,7 +130,8 @@ public class RemoteSR implements RunnableService {
 	/**
 	 *
 	 * @return file path of chrome profile in temp directory
-	 * @throws LaunchChromeException if any error occurs
+	 * @throws LaunchChromeException
+	 *             if any error occurs
 	 */
 	private String generateTempProfile() throws LaunchChromeException {
 		try {
@@ -139,23 +153,28 @@ public class RemoteSR implements RunnableService {
 
 	/**
 	 * Copy a directory from our jar recursively to a directory outside of the jar
-	 * @param sourceURI URI of the source directory
-	 * @param target target directory path
-	 * @throws IOException if any IO error occurs
+	 * 
+	 * @param sourceURI
+	 *            URI of the source directory
+	 * @param target
+	 *            target directory path
+	 * @throws IOException
+	 *             if any IO error occurs
 	 */
 	private void copyFromJar(final URI sourceURI, final Path target) throws IOException {
 
 		FileSystem fs = null;
 		try {
 			if (sourceURI.getScheme().equals("jar")) {
-				fs = FileSystems.newFileSystem(sourceURI, Collections.<String, String>emptyMap());
+				fs = FileSystems.newFileSystem(sourceURI, Collections.<String, String> emptyMap());
 			}
 
 			final Path jarPath = Paths.get(sourceURI);
 
 			Files.walkFileTree(jarPath, new SimpleFileVisitor<Path>() {
 				@Override
-				public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
+				public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs)
+						throws IOException {
 					Path currentTarget = target.resolve(jarPath.relativize(dir).toString());
 					Files.createDirectories(currentTarget);
 					return FileVisitResult.CONTINUE;
@@ -163,7 +182,8 @@ public class RemoteSR implements RunnableService {
 
 				@Override
 				public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-					Files.copy(file, target.resolve(jarPath.relativize(file).toString()), StandardCopyOption.REPLACE_EXISTING);
+					Files.copy(file, target.resolve(jarPath.relativize(file).toString()),
+							StandardCopyOption.REPLACE_EXISTING);
 					return FileVisitResult.CONTINUE;
 				}
 			});

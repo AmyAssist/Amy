@@ -98,7 +98,7 @@ public enum SpeechRecognizer {
 		if (isInitiated()) {
 			this.recognizer.getRecognition(resultHandler);
 		} else {
-			throw new RecognizerNotInitiatedException();
+			throw new RecognizerNotInitiatedException("The Recognizer had not been initiated");
 		}
 
 	}
@@ -108,10 +108,10 @@ public enum SpeechRecognizer {
 			if (this.resultHandler != null) {
 				this.recognizer.getRecognition(this.resultHandler);
 			} else {
-				throw new ResultHandlerNotSet();
+				throw new ResultHandlerNotSet("No Result Handler Set");
 			}
 		} else {
-			throw new RecognizerNotInitiatedException();
+			throw new RecognizerNotInitiatedException("The Recognizer had not been initiated");
 		}
 
 	}
@@ -129,11 +129,25 @@ public enum SpeechRecognizer {
 
 	// Exceptions
 
-	private class RecognizerNotInitiatedException extends NullPointerException {
+	public class RecognizerNotInitiatedException extends NullPointerException {
+
+		/**
+		 * @param string
+		 */
+		public RecognizerNotInitiatedException(String string) {
+			super(string);
+		}
 
 	}
 
-	private class ResultHandlerNotSet extends NullPointerException {
+	public class ResultHandlerNotSet extends NullPointerException {
+
+		/**
+		 * @param string
+		 */
+		public ResultHandlerNotSet(String string) {
+			super(string);
+		}
 
 	}
 }
