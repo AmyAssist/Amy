@@ -38,10 +38,9 @@ public class XMLEntityTemplate {
 
 	@XmlAttribute(name = "id")
 	private String entityId;
-	
-	@XmlElement(name="gram", required = false)
-	private String grammar;
 
+	@XmlElement(name = "gram", required = false)
+	private String grammar;
 
 	/**
 	 * @return string representation of this object
@@ -49,7 +48,7 @@ public class XMLEntityTemplate {
 	public String printSelf() {
 		StringBuilder builder = new StringBuilder();
 		builder = builder.append("\n Entity id=" + this.entityId);
-		if(this.grammar != null) {
+		if (this.grammar != null) {
 			builder.append(" grammar=" + this.grammar);
 		}
 		return builder.toString();
@@ -65,10 +64,11 @@ public class XMLEntityTemplate {
 	}
 
 	/**
-	 * @return
+	 * Get's {@link #grammar grammar}
+	 * 
+	 * @return grammar
 	 */
 	public String getGrammar() {
 		return this.grammar;
 	}
-
 }

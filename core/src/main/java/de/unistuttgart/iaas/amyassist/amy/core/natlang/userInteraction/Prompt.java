@@ -26,13 +26,18 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
- * TODO: Description
+ * Prompt hold the grammar and output for a query 
  * @author Lars Buttgereit
  */
 public class Prompt {
 	private final String outputText;
 	private final AGFNode grammar;
 
+	/**
+	 * constructor for a prompt
+	 * @param grammar AGF Grammar for the prompt
+	 * @param outputText output text for the prompt
+	 */
 	public Prompt(AGFNode grammar, String outputText) {
 		this.grammar = grammar;
 		this.outputText = outputText;

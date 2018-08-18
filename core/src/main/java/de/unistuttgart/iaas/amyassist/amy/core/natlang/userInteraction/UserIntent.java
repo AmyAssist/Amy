@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,13 +40,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLEntityTemplate;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLPrompt;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 
 /**
- * TODO: Description
+ * The user intent class load all needed grammars and answers from the xml. the entities were saved here.
  * 
  * @author Lars Buttgereit, Felix Burk
  */
@@ -63,7 +62,7 @@ public class UserIntent {
 	@Nonnull
 	private final Class<?> partialNLIClass;
 	@Nonnull
-	private final AIMIntent aimIntent;
+	private final XMLAIMIntent aimIntent;
 
 	/**
 	 * internal list of all entities
@@ -78,35 +77,33 @@ public class UserIntent {
 	 * @param aimIntent
 	 *            corresponding aimintent from xml
 	 */
-	public UserIntent(@Nonnull Method method, @Nonnull AIMIntent aimIntent) {
+	public UserIntent(@Nonnull Method method, @Nonnull XMLAIMIntent aimIntent) {
 		this.method = method;
 		this.partialNLIClass = method.getDeclaringClass();
 		this.aimIntent = aimIntent;
-		setEntity();
+		setEntities();
 		this.grammar = parseStringToAGF(this.aimIntent.getGram());
 		setPromptsInEntity();
 	}
 
 	/**
-	 * generates amys answers
-	 * 
-	 * @return string of amys answer
+	 * set up the entities from the intent
 	 */
-	public String generateQuestion() {
-		if (this.isFinished()) {
-			return null;
+	private void setEntities() {
+		for (XMLEntityTemplate xmlEntityTemplate : this.aimIntent.getTemplates()) {
+			AGFNode node = parseStringToAGF(xmlEntityTemplate.getGrammar());
+			Entity entity = new Entity(xmlEntityTemplate.getEntityId(), node);
+			this.entityList.put(xmlEntityTemplate.getEntityId(), entity);
 		}
-
-		for (String s : this.entityList.keySet()) {
-			if (this.entityList.get(s).getEntityData() == null) {
-				return this.entityList.get(s).getPrompt().getOutputText();
-			}
-		}
-
-		throw new IllegalStateException(
-				"could not find empty entity but user intent for method " + this.method.getName() + " is not finished");
 	}
 
+	/**
+	 * parse a string to agf
+	 * 
+	 * @param toParse
+	 *            String to parse
+	 * @return a agf node
+	 */
 	private AGFNode parseStringToAGF(String toParse) {
 		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
 		for (Entity entity : this.entityList.values()) {
@@ -124,42 +121,17 @@ public class UserIntent {
 		return node;
 	}
 
-	private void setEntity() {
-		for (XMLEntityTemplate xmlEntityTemplate : this.aimIntent.getTemplates()) {
-			AGFNode node = parseStringToAGF(xmlEntityTemplate.getGrammar());
-			Entity entity = new Entity(xmlEntityTemplate.getEntityId(), node);
-			this.entityList.put(xmlEntityTemplate.getEntityId(), entity);
-		}
-	}
-
+	/**
+	 * set the prompt to the correct entity
+	 */
 	private void setPromptsInEntity() {
 		for (XMLPrompt xmlPrompt : this.aimIntent.getPrompts()) {
 			if (this.entityList.get(xmlPrompt.getEntityTemplateId()) != null) {
 				Entity entity = this.entityList.get(xmlPrompt.getEntityTemplateId());
 				entity.setPrompt(new Prompt(parseStringToAGF(xmlPrompt.getGram()), xmlPrompt.getText()));
 				this.entityList.replace(xmlPrompt.getEntityTemplateId(), entity);
-			} else {
-
 			}
 		}
-	}
-
-	/**
-	 * Get's the partialNLI class
-	 * 
-	 * @return partialNLIClass
-	 */
-	public Class<?> getPartialNLIClass() {
-		return this.partialNLIClass;
-	}
-
-	/**
-	 * Get's {@link #grammar grammar}
-	 * 
-	 * @return grammar
-	 */
-	public AGFNode getGrammar() {
-		return this.grammar;
 	}
 
 	/**
@@ -191,11 +163,47 @@ public class UserIntent {
 	}
 
 	/**
+	 * generates amys answers
+	 * 
+	 * @return string of amys answer
+	 */
+	public String generateQuestion() {
+		if (this.isFinished()) {
+			return null;
+		}
+		for (Entity entity : this.entityList.values()) {
+			if (entity.getEntityData() == null) {
+				return entity.getPrompt().getOutputText();
+			}
+		}
+		throw new IllegalStateException(
+				"could not find empty entity but user intent for method " + this.method.getName() + " is not finished");
+	}
+
+	/**
 	 * Get's {@link #entityList entityList}
 	 * 
 	 * @return entityList
 	 */
 	public Map<String, Entity> getEntityList() {
 		return this.entityList;
+	}
+
+	/**
+	 * Get's the partialNLI class
+	 * 
+	 * @return partialNLIClass
+	 */
+	public Class<?> getPartialNLIClass() {
+		return this.partialNLIClass;
+	}
+
+	/**
+	 * Get's {@link #grammar grammar}
+	 * 
+	 * @return grammar
+	 */
+	public AGFNode getGrammar() {
+		return this.grammar;
 	}
 }

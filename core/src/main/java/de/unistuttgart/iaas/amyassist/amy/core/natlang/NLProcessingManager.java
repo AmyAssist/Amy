@@ -25,7 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.lang.reflect.Method;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent;
 
 /**
  * Manages all natural language interpreter of the plugins and can process the input of natural language
@@ -39,7 +39,7 @@ public interface NLProcessingManager {
 	 * @param method to call
 	 * @param intent to register
 	*/
-	void register(Method method, AIMIntent intent);
+	void register(Method method, XMLAIMIntent intent);
 
 	/**
 	 * @param grammarName name of the grammar

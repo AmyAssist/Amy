@@ -45,7 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLIAnnotationReader;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
@@ -81,8 +81,8 @@ public class LoadAIMService implements DeploymentContainerService {
 		for (IPlugin plugin : plugins) {
 
 			String pathS = "META-INF/" + plugin.getUniqueName() + "." + METAFILENAME;
-			
-			@SuppressWarnings("resource") //this stream is gonna be closed - line 92
+			//this stream is gonna be closed - line 92
+			@SuppressWarnings("resource") 
 			InputStream stream = plugin.getClassLoader().getResourceAsStream(pathS);
 			
 			if (stream == null) {
@@ -95,11 +95,11 @@ public class LoadAIMService implements DeploymentContainerService {
 			try {
 				stream.close();
 			} catch (IOException e) {
-				this.logger.info("stream could not be closed {}", e.getMessage());
+				this.logger.info("stream could not be closed {}", e);
 			}
 			
 			//extract all intents
-			List<AIMIntent> aimIntents = new ArrayList<>();
+			List<XMLAIMIntent> aimIntents = new ArrayList<>();
 			
 			for(String s : aimFiles) {
 				aimIntents.addAll(extractIntents(plugin, s));
@@ -119,11 +119,11 @@ public class LoadAIMService implements DeploymentContainerService {
 	 * @param aimIntents list of all intents
 	 * @param classloader matching classloader
 	 */
-	private void matchAndRegister(List<AIMIntent> aimIntents, ClassLoader classloader) {
-		for(AIMIntent intent : aimIntents) {
+	private void matchAndRegister(List<XMLAIMIntent> aimIntents, ClassLoader classloader) {
+		for(XMLAIMIntent intent : aimIntents) {
 			String ref = intent.getReference();
-			String fullClassName = ref.substring(0,ref.lastIndexOf("."));
-			String methodName = ref.substring(ref.lastIndexOf(".")+1, ref.length());
+			String fullClassName = ref.substring(0,ref.lastIndexOf('.'));
+			String methodName = ref.substring(ref.lastIndexOf('.')+1, ref.length());
 			
 			Class<?> cls;
 			try {
@@ -138,7 +138,7 @@ public class LoadAIMService implements DeploymentContainerService {
 					}
 				}
 			} catch (ClassNotFoundException e) {
-				this.logger.error("class not found {} error {}", fullClassName, e.getMessage());
+				this.logger.error("class not found {} error {}", fullClassName, e);
 			}
 		}
 		
@@ -151,7 +151,7 @@ public class LoadAIMService implements DeploymentContainerService {
 	 * @param fileName n
 	 * @return list of extracted aim intents
 	 */
-	private List<AIMIntent> extractIntents(IPlugin plugin, String fileName) {
+	private List<XMLAIMIntent> extractIntents(IPlugin plugin, String fileName) {
 		InputStream stream = plugin.getClassLoader().getResourceAsStream(fileName);
 
 		if (stream != null) {
@@ -162,12 +162,12 @@ public class LoadAIMService implements DeploymentContainerService {
 				}
 				this.logger.error("could not read model");
 			} catch (IOException e) {
-				this.logger.error("could not read aim file {}", e.getMessage());
+				this.logger.error("could not read aim file {}", e);
 			}
 		}
 		this.logger.error("could not read aim file");
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	/**
@@ -184,11 +184,9 @@ public class LoadAIMService implements DeploymentContainerService {
 			JAXBContext jc = JAXBContext.newInstance(XMLAmyInteractionModel.class);
 			Unmarshaller unmarshaller = jc.createUnmarshaller();
 			StringReader reader = new StringReader(xmlContent);
-			XMLAmyInteractionModel aim = (XMLAmyInteractionModel) unmarshaller.unmarshal(reader);
-			return aim;
+			return (XMLAmyInteractionModel) unmarshaller.unmarshal(reader);		
 		} catch (JAXBException e1) {
-			e1.printStackTrace();
-			this.logger.error("Amy Interaction Model for file {} could not be parsed", entryName);
+			this.logger.error("Amy Interaction Model for file {} could not be parsed: " +  entryName, e1);
 		}
 		return null;
 	}
@@ -213,14 +211,13 @@ public class LoadAIMService implements DeploymentContainerService {
 					continue;
 				if (line.matches(".aims:")) {
 					aimsFound = true;
-					continue;
 				}
 				if(aimsFound) {
 					aimFiles.add(line);
 				}
 			}
 		} catch (IOException e) {
-			this.logger.error("could not read speech meta file of {}", plugin.getDisplayName());
+			this.logger.error("could not read speech meta file of {}: " + plugin.getDisplayName(), e);
 		}
 		return aimFiles;
 

@@ -44,7 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
@@ -86,7 +86,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Reference
 	private Environment environment;
 		
-	private final Map<AGFNode, Pair<Method, AIMIntent>> nodeToMethodAIMPair = new HashMap<>();
+	private final Map<AGFNode, Pair<Method, XMLAIMIntent>> nodeToMethodAIMPair = new HashMap<>();
  
 	@Reference
 	private ConfigurationManager configurationLoader;
@@ -113,10 +113,10 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 	
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#register(java.lang.reflect.Method, de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.AIMIntent)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#register(java.lang.reflect.Method, de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent)
 	 */
 	@Override
-	public void register(Method method, AIMIntent intent) {
+	public void register(Method method, XMLAIMIntent intent) {
 		if (!method
 				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent.class)) {
 			throw new IllegalArgumentException(
@@ -170,7 +170,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			
 			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
 				EntityData data = new EntityData(entry.getValue());
-				dialog.getIntent().getEntityList().get(entry.getKey()).insertEntityData(data);
+				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
 			}
 			
 			if(!dialog.getIntent().isFinished()) {
@@ -217,16 +217,14 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		try {
 			AGFNode node = nlParser.matchingNode(tokens);
 			Method left = this.nodeToMethodAIMPair.get(node).getLeft();
-			AIMIntent right = this.nodeToMethodAIMPair.get(node).getRight();
+			XMLAIMIntent right = this.nodeToMethodAIMPair.get(node).getRight();
 			UserIntent userIntent = new UserIntent(left, right);
 			dialog.setIntent(userIntent);
 			
 			Map<String, String> entityIdToUserContent = getEntityContent(node);
-			
 			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
-				dialog.getIntent().getEntityList().get(entry.getValue());
 				EntityData data = new EntityData(entry.getValue());
-				dialog.getIntent().getEntityList().get(entry.getKey()).insertEntityData(data);
+				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
 			}
 			
 			if(!dialog.getIntent().isFinished()) {
