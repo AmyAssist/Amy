@@ -52,13 +52,13 @@ public class HelloWorldSpeech {
 	 *            [Not used] The parameters of the sentence.
 	 * @return The response of the system
 	 */
-	//@Intent("say")
-	public String say(String... params) {
+	@Intent("say")
+	public String say(Map<String, EntityData> entities) {
 		return this.helloWorld.helloWorld();
 	}
 
-	@Intent("sayHelloXTimes")
-	public String sayHelloXTimes(Map<String, EntityData> entities) {
+	@Intent("repeat")
+	public String repeat(Map<String, EntityData> entities) {
 		StringBuilder b = new StringBuilder();
 		for(int i=0; i <= entities.get("amyinteger").getNumber(); i++) {
 			b.append(entities.get("somestring").getString() + " ");
@@ -66,23 +66,23 @@ public class HelloWorldSpeech {
 		return b.toString();
 	}
 
-	//@Intent("getContacts")
-	public String getContacts(String... params) {
+	@Intent("getContacts")
+	public String getContacts(Map<String, EntityData> entities) {
 		return this.helloWorld.demonstrateContactRegistry();
 	}
 
-	//@Intent("testContacts")
-	public String testContacts(String... params) {
+	@Intent("testContacts")
+	public String testContacts(Map<String, EntityData> entities) {
 		return this.helloWorld.testContactRegistry();
 	}
 
-	//@Intent("testLocation")
-	public String testLocation(String... params) {
+	@Intent("testLocation")
+	public String testLocation(Map<String, EntityData> entities) {
 		return this.helloWorld.testLocationRegistry();
 	}
 
-	//@Intent("testCustom")
-	public String testCustom(String... params) {
+	@Intent("testCustom")
+	public String testCustom(Map<String, EntityData> entities) {
 		return this.helloWorld.testCustomRegistry();
 	}
 }

@@ -6,11 +6,11 @@
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.repeat">
 		<gram>repeat {somestring} [{amyinteger} times]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="somestring">
-				<gram>(hello|test test testsetstestst)</gram>
+				<gram>(hello|good morning|something)</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 

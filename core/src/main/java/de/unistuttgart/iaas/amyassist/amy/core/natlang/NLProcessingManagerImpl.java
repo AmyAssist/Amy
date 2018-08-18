@@ -39,6 +39,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
@@ -67,9 +69,15 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	/**
 	 * different possible answers 
 	 */
-	String[] failedToUnderstand = {
+	private final String[] failedToUnderstandAnswer = {
 			"I did not understand that", "Sorry, could you repeat that?", 
 			"I don't know what you mean", "No idea what you are talking about", "My plugin developers did not teach me this yet"
+	};
+	
+	private final String quitIntentUserInput = "(never mind|quit|forget that)";
+	
+	private final String[] quitIntentAnswer = {
+		"ok", "sure", "what else can i do for you?"	
 	};
 
 	@Reference
@@ -88,6 +96,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private static final String PROBERTY_LANGUAGE = "chooseLanguage";
 	
 	private ChooseLanguage language;
+	
+	private AGFNode quitIntentUserInputGram;
 
 	@PostConstruct
 	private void setup() {
@@ -96,6 +106,10 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		String languageString = this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
 				.getProperty(PROBERTY_LANGUAGE, "EN");
 		this.language = new ChooseLanguage(languageString, stemmerEnabled);
+		
+		AGFLexer lex = new AGFLexer(this.quitIntentUserInput);
+		AGFParser parser = new AGFParser(lex);
+		this.quitIntentUserInputGram = parser.parseWholeExpression();
 	}
 	
 	/**
@@ -137,17 +151,26 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			promptGrams.add(entity.getPrompt().getGrammar());
 			}
 		}
+		
+		promptGrams.add(this.quitIntentUserInputGram);
+		
 		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
 		INLParser nlParser = new NLParser(promptGrams, this.language.getStemmer());
 		try {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 			
+			if(matchingNodeIndex == promptGrams.indexOf(this.quitIntentUserInputGram)) {
+				dialog.output(generateRandomAnswer(this.quitIntentAnswer));
+				dialog.setIntent(null);
+				return;
+			}
+			
 			Map<String, String> entityIdToUserContent = getEntityContent(promptGrams.get(matchingNodeIndex));
 			
 			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
 				EntityData data = new EntityData(entry.getValue());
-				dialog.getIntent().getEntityList().get(entry.getValue()).insertEntityData(data);
+				dialog.getIntent().getEntityList().get(entry.getKey()).insertEntityData(data);
 			}
 			
 			if(!dialog.getIntent().isFinished()) {
@@ -155,9 +178,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			}
 		} catch(NLParserException e) {
 			this.logger.debug("no matching grammar found " + e.getMessage());
-			Random rand = new Random();
-			int rndm = rand.nextInt(this.failedToUnderstand.length);
-			dialog.output(this.failedToUnderstand[rndm]);
+			dialog.output(generateRandomAnswer(this.failedToUnderstandAnswer));
 		}
 		
 	}
@@ -203,8 +224,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			Map<String, String> entityIdToUserContent = getEntityContent(node);
 			
 			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
+				dialog.getIntent().getEntityList().get(entry.getValue());
 				EntityData data = new EntityData(entry.getValue());
-				dialog.getIntent().getEntityList().get(entry.getValue()).insertEntityData(data);
+				dialog.getIntent().getEntityList().get(entry.getKey()).insertEntityData(data);
 			}
 			
 			if(!dialog.getIntent().isFinished()) {
@@ -212,12 +234,15 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			}
 		} catch(NLParserException e) {
 			this.logger.debug("no matching grammar found " + e.getMessage());
-			Random rand = new Random();
-			int rndm = rand.nextInt(this.failedToUnderstand.length);
-			dialog.output(this.failedToUnderstand[rndm]);
+			dialog.output(generateRandomAnswer(this.failedToUnderstandAnswer));
 		}
 
-		
+	}
+	
+	private String generateRandomAnswer(String[] strings) {
+		Random rand = new Random();
+		int rndm = rand.nextInt(strings.length);
+		return strings[rndm];
 	}
 }
 

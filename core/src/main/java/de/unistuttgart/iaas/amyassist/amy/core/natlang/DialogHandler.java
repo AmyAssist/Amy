@@ -93,7 +93,7 @@ public class DialogHandler {
 		}
 
 		// is the intent ready for the plugin?
-		if (dialog.getIntent().isFinished()) {
+		if (dialog.getIntent() != null && dialog.getIntent().isFinished()) {
 			Map<String, EntityData> stringToEntityData = new HashMap<>();
 			
 			for(String s : dialog.getIntent().getEntityList().keySet()) {
