@@ -171,13 +171,6 @@ public class PluginManagerService implements PluginManager {
 		loadServices.removeIf(cls -> cls.getClassLoader() != classLoader);
 		loadServices.forEach(this.di::register);
 
-		for (Class<?> cls : plugin.getClasses()) {
-			if (cls.isAnnotationPresent(Service.class)) {
-				this.di.register(cls);
-			}
-			if (cls.isAnnotationPresent(Entity.class)) {
-				this.persistence.register(cls);
-		}
 	}
 
 	/**
