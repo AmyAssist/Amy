@@ -32,14 +32,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Stream;
-
-import javax.persistence.Entity;
 
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Services;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -166,13 +166,17 @@ public class PluginManagerService implements PluginManager {
 	 *            the plugin to process
 	 */
 	private void processPlugin(IPlugin plugin) {
+		ClassLoader classLoader = plugin.getClassLoader();
+		Set<Class<?>> loadServices = new Services().loadServices(classLoader);
+		loadServices.removeIf(cls -> cls.getClassLoader() != classLoader);
+		loadServices.forEach(this.di::register);
+
 		for (Class<?> cls : plugin.getClasses()) {
 			if (cls.isAnnotationPresent(Service.class)) {
 				this.di.register(cls);
 			}
 			if (cls.isAnnotationPresent(Entity.class)) {
 				this.persistence.register(cls);
-			}
 		}
 	}
 

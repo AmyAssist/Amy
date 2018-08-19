@@ -15,6 +15,7 @@ de.unistuttgart.iaas.amyassist.amy.core.audio.sound.SoundFactoryService
 de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManagerImpl
 de.unistuttgart.iaas.amyassist.amy.core.speech.output.OutputImpl
 de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeechImpl
+de.unistuttgart.iaas.amyassist.amy.core.persistence.DeploymentAdapter
 de.unistuttgart.iaas.amyassist.amy.core.persistence.PersistenceService
 de.unistuttgart.iaas.amyassist.amy.core.persistence.storage.DatabaseStorage
 de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader

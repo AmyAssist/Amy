@@ -21,29 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
-
-import java.util.Set;
-
-import de.unistuttgart.iaas.amyassist.amy.deployment.DeploymentDescriptorUtil;
+package de.unistuttgart.iaas.amyassist.amy.deployment.classes;
 
 /**
- * This class name is used as deployment descriptor name.
- * 
- * @author Leon Kiefer
+ * TODO: Description
+ * @author
  */
-public class Services {
-	private static final String SERVICE_DEPLOYMENT_DESCRIPTOR = "META-INF/" + Services.class.getName();
+public class Class3 {
 
-	/**
-	 * Loads Services using the deployment descriptor file
-	 * META-INF/de.unistuttgart.iaas.amyassist.amy.core.di.Services
-	 * 
-	 * @param classLoader
-	 *            the classLoader from which the deployment descriptor is read is used to load the classes
-	 * @return the set of loaded classes
-	 */
-	public Set<Class<?>> loadServices(ClassLoader classLoader) {
-		return DeploymentDescriptorUtil.getClasses(classLoader, SERVICE_DEPLOYMENT_DESCRIPTOR);
-	}
 }
