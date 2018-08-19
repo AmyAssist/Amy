@@ -57,8 +57,7 @@ public class RegistryConnection {
 		List<Location> locations = this.locationRegistry.getEntitiesWithTag(name);
 		if (!locations.isEmpty()) {
 			address = locations.get(0);
-		}
-		else {
+		} else {
 			// Try to find by name
 			for (Location location : this.locationRegistry.getAll()) {
 				if (location.getName().equals(name)) {
