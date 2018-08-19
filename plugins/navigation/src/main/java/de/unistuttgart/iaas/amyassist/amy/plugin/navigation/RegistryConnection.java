@@ -49,12 +49,8 @@ public class RegistryConnection {
 	 * @return one String with all address data, to use for e.g. google maps queries
 	 */
 	public String getAddress(String name) {
-		return findOtherLocations(name);
-	}
-
-	private String findOtherLocations(String loc) {
 		for (Location location : this.locationRegistry.getAll()) {
-			if (location.getName().equals(loc) || location.getTag().equals(loc)) {
+			if (location.getName().equals(name) || location.getTag().equals(name)) {
 				return location.getAddressString();
 			}
 		}
