@@ -27,11 +27,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.registry.Location;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.Taggable;
 
 /**
  * get and set the data to the registry. At the moment with hardcoded data while registry is not avaiable
  * 
  * @author Lars Buttgereit
+ * @author Benno Krauß
  */
 @Service
 public class RegistryConnection {
@@ -47,29 +49,24 @@ public class RegistryConnection {
 	 * @return one String with all address data, to use for e.g. google maps queries
 	 */
 	public String getAddress(String name) {
-		switch (name.toLowerCase()) {
-		case "home":
-			if (this.locationRegistry.getHome() != null) {
-				return this.locationRegistry.getHome().getAddressString();
-			}
-			break;
-		case "work":
-			if (this.locationRegistry.getWork() != null) {
-				return this.locationRegistry.getWork().getAddressString();
-			}
-			break;
-		default:
-			return findOtherLocations(name);
-		}
-		return null;
+		return findOtherLocations(name);
 	}
 
 	private String findOtherLocations(String loc) {
 		for (Location location : this.locationRegistry.getAll()) {
-			if (location.getName().equals(loc)) {
+			if (location.getName().equals(loc) || location.getTag().equals(loc)) {
 				return location.getAddressString();
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Get all available location tags
+	 * @return all location tags
+	 */
+	String[] getAllLocationTags() {
+		return this.locationRegistry.getAll().stream().filter(l -> l.getTag() != null && !l.getTag().isEmpty())
+				.map(Taggable::getTag).distinct().toArray(String[]::new);
 	}
 }
