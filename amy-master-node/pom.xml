@@ -74,6 +74,14 @@
 									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 									<resource>META-INF/javax.ws.rs.Path</resource>
 								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/javax.persistence.Entity</resource>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/de.unistuttgart.iaas.amyassist.amy.core.console.Console</resource>
+								</transformer>
 							</transformers>
 						</configuration>
 					</execution>

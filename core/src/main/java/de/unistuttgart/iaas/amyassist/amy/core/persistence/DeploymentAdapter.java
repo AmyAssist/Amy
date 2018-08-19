@@ -21,42 +21,30 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.core.persistence;
 
-import java.util.Set;
-
-import javax.ws.rs.Path;
+import javax.persistence.Entity;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
 import de.unistuttgart.iaas.amyassist.amy.deployment.DeploymentDescriptorUtil;
 
 /**
- * An adapter to load resources from deployment descriptors and from the PluginManager.
+ * Deploy persistent entities to the persistent service.
  * 
  * @author Leon Kiefer
  */
-@Service(DeploymentContainerAdapter.class)
-public class DeploymentContainerAdapter implements DeploymentContainerService {
-
-	private static final String SERVICE_DEPLOYMENT_DESCRIPTOR = "META-INF/" + Path.class.getName();
-
+@Service
+public class DeploymentAdapter implements DeploymentContainerService {
+	private static final String DEPLOYMENT_DESCRIPTOR = "META-INF/" + Entity.class.getName();
 	@Reference
-	private Server server;
-	@Reference
-	private PluginManager pluginManager;
+	private Persistence persistence;
 
 	@Override
 	public void deploy() {
-		Set<Class<?>> all = DeploymentDescriptorUtil.getClasses(this.getClass().getClassLoader(),
-				SERVICE_DEPLOYMENT_DESCRIPTOR);
-
-		for (IPlugin plugin : this.pluginManager.getPlugins()) {
-			all.addAll(DeploymentDescriptorUtil.getClasses(plugin.getClassLoader(), SERVICE_DEPLOYMENT_DESCRIPTOR));
-		}
-		all.forEach(this.server::register);
+		DeploymentDescriptorUtil.getClasses(this.getClass().getClassLoader(), DEPLOYMENT_DESCRIPTOR)
+				.forEach(this.persistence::register);
 	}
+
 }
