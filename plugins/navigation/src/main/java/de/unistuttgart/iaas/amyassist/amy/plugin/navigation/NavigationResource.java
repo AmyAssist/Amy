@@ -25,12 +25,9 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
 import java.time.ZonedDateTime;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.*;
+import static javax.ws.rs.core.MediaType.*;
+
 import javax.ws.rs.core.Response.Status;
 
 import org.joda.time.DateTime;
@@ -59,6 +56,10 @@ public class NavigationResource implements Resource {
 	@Reference
 	private DirectionApiLogic logic;
 
+	@Reference
+	private RegistryConnection registryConnection;
+
+
 	/**
 	 * Find the best route from A to B without a given departure time
 	 * 
@@ -67,9 +68,10 @@ public class NavigationResource implements Resource {
 	 */
 	@POST
 	@Path("fromTo")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(APPLICATION_JSON)
+	@Produces(APPLICATION_JSON)
 	public BestTransportResult routeFromTo(Route route) {
+		resolveLocationTags(route);
 		checkRoute(route);
 		checkTravelMode(route.getTravelmode());
 		TravelMode mode = this.logic.getTravelMode(route.getTravelmode());
@@ -94,9 +96,10 @@ public class NavigationResource implements Resource {
 	 */
 	@POST
 	@Path("when")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes(APPLICATION_JSON)
+	@Produces(TEXT_PLAIN)
 	public ZonedDateTime whenIHaveToGo(Route route) {
+		resolveLocationTags(route);
 		checkRoute(route);
 		checkTravelMode(route.getTravelmode());
 		TravelMode mode = this.logic.getTravelMode(route.getTravelmode());
@@ -116,9 +119,10 @@ public class NavigationResource implements Resource {
 	 */
 	@POST
 	@Path("best")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(APPLICATION_JSON)
+	@Produces(APPLICATION_JSON)
 	public BestTransportResult getBestTransportInTime(Route route) {
+		resolveLocationTags(route);
 		checkRoute(route);
 		BestTransportResult bestTransport = this.logic.getBestTransportInTime(route.getOrigin(), route.getDestination(),
 				convert(route.getTime()));
@@ -126,6 +130,13 @@ public class NavigationResource implements Resource {
 			return bestTransport;
 		}
 		throw new WebApplicationException("No best transport type found.", Status.NOT_FOUND);
+	}
+
+	@GET
+	@Path("tags")
+	@Produces(APPLICATION_JSON)
+	public String[] getTags() {
+		return registryConnection.getAllLocationTags();
 	}
 
 	/**
@@ -157,6 +168,17 @@ public class NavigationResource implements Resource {
 			return true;
 		}
 		throw new WebApplicationException("Enter a correct travel mode.", Status.CONFLICT);
+	}
+
+	private void resolveLocationTags(Route r) {
+
+		if ((r.getDestination() == null || r.getDestination().isEmpty()) && r.getDestinationTag() != null) {
+			r.setDestination(registryConnection.getAddress(r.getDestinationTag()));
+		}
+
+		if ((r.getOrigin() == null || r.getOrigin().isEmpty()) && r.getOriginTag() != null) {
+			r.setOrigin(registryConnection.getAddress(r.getOriginTag()));
+		}
 	}
 
 	/**
