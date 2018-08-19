@@ -61,6 +61,8 @@ class NavigationRestTest {
 
 	private DirectionApiLogic logic;
 
+	private RegistryConnection registryConnection;
+
 	private WebTarget target;
 
 	private TestDataForDirectionsRoutes data;
@@ -79,6 +81,7 @@ class NavigationRestTest {
 	public void setUp() {
 		this.target = this.testFramework.setRESTResource(NavigationResource.class);
 		this.logic = this.testFramework.mockService(DirectionApiLogic.class);
+		this.registryConnection = this.testFramework.mockService(RegistryConnection.class);
 		initInputs();
 	}
 
