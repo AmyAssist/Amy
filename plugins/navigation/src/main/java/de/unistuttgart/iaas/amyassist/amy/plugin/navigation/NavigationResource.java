@@ -44,6 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
  * Rest Resource for navigation
  * 
  * @author Muhammed Kaya
+ * @author Benno Krauß
  */
 @Path(NavigationResource.PATH)
 public class NavigationResource implements Resource {
@@ -171,6 +172,9 @@ public class NavigationResource implements Resource {
 	}
 
 	private void resolveLocationTags(Route r) {
+		if (r == null) {
+			return;
+		}
 
 		if ((r.getDestination() == null || r.getDestination().isEmpty()) && r.getDestinationTag() != null) {
 			r.setDestination(registryConnection.getAddress(r.getDestinationTag()));
