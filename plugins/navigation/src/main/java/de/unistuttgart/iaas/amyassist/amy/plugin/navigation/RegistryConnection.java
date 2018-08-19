@@ -29,6 +29,8 @@ import de.unistuttgart.iaas.amyassist.amy.registry.Location;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 import de.unistuttgart.iaas.amyassist.amy.registry.Taggable;
 
+import java.util.List;
+
 /**
  * get and set the data to the registry. At the moment with hardcoded data while registry is not avaiable
  * 
@@ -49,12 +51,28 @@ public class RegistryConnection {
 	 * @return one String with all address data, to use for e.g. google maps queries
 	 */
 	public String getAddress(String name) {
-		for (Location location : this.locationRegistry.getAll()) {
-			if (location.getName().equals(name) || location.getTag().equals(name)) {
-				return location.getAddressString();
+
+		Location address = null;
+
+		List<Location> locations = this.locationRegistry.getEntitiesWithTag(name);
+		if (!locations.isEmpty()) {
+			address = locations.get(0);
+		}
+		else {
+			// Try to find by name
+			for (Location location : this.locationRegistry.getAll()) {
+				if (location.getName().equals(name)) {
+					address = location;
+					break;
+				}
 			}
 		}
-		return null;
+
+		if (address == null) {
+			return null;
+		}
+
+		return address.getAddressString();
 	}
 
 	/**
