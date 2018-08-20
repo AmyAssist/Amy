@@ -46,7 +46,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.INLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
@@ -54,6 +53,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParserException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.Entity;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.EntityDataImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
@@ -166,8 +166,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 			Map<String, String> entityIdToUserContent = getEntityContent(promptGrams.get(matchingNodeIndex));
 
-			for (Entry<String, String> entry : entityIdToUserContent.entrySet()) {
-				EntityData data = new EntityData(entry.getValue());
+			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
+				EntityDataImpl data = new EntityDataImpl(entry.getValue());
 				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
 			}
 
@@ -224,8 +224,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			dialog.setIntent(userIntent);
 
 			Map<String, String> entityIdToUserContent = getEntityContent(node);
-			for (Entry<String, String> entry : entityIdToUserContent.entrySet()) {
-				EntityData data = new EntityData(entry.getValue());
+			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
+				EntityDataImpl data = new EntityDataImpl(entry.getValue());
 				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
 			}
 

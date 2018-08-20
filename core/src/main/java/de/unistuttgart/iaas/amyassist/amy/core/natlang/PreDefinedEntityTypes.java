@@ -40,23 +40,22 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
  */
 public class PreDefinedEntityTypes {
 	
-	private PreDefinedEntityTypes() {
-		//hide constructor
-	}
-		
 	private static Map<String, AGFNode> map;
-	private static final Map<String, String> grammars; 
-	static{
+	private static Map<String, String> grammars; 
+	
+	
+	private static final String[] ids =  {
+		"amyinteger", "amyhour", "amyminute", "amytime"
+	};
+	
+	private PreDefinedEntityTypes() {
 		grammars = new HashMap<>();
 		grammars.put("amyinteger", "$(0,1000000000, 1)");
 		grammars.put("amyhour", "$(0,24,1)");
 		grammars.put("amyminute", "$(0,60,1)");
 	    grammars.put("amytime", "{amyhour} oh {amyminute}");
 	}
-	
-	private static final String[] ids =  {
-		"amyinteger", "amyhour", "amyminute", "amytime"
-	};
+		
 
 	/**
 	 * returns a hashmap of pre defined types

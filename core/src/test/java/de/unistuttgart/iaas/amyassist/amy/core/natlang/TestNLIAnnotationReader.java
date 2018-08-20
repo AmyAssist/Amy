@@ -36,10 +36,10 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.EntityDataImpl;
 
 /**
  * Test Cases for the AnnotationReader
@@ -58,12 +58,12 @@ class TestNLIAnnotationReader {
 	@SpeechCommand
 	class Plugin {
 		@Intent()
-		public String count(Map<String, EntityData> test) {
+		public String count(Map<String, EntityDataImpl> test) {
 			return "1";
 		}
 
 		@Intent()
-		public String say(Map<String, EntityData> test) {
+		public String say(Map<String, EntityDataImpl> test) {
 			return "";
 		}
 	}
@@ -91,7 +91,7 @@ class TestNLIAnnotationReader {
 	@SpeechCommand
 	class BrokenReturnType {
 		@Intent()
-		public int count(Map<String, EntityData> tes) {
+		public int count(Map<String, EntityDataImpl> tes) {
 			return 0;
 		}
 	}
