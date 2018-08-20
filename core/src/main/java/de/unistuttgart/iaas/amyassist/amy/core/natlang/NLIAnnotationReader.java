@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -34,10 +35,9 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Placeholder;
-
 
 /**
  * This class is responsible to read the annotations of a given class
@@ -95,15 +95,18 @@ public class NLIAnnotationReader {
 	/**
 	 * returns fitting method
 	 *
-	 * @param cls containing the method
-	 * @param entityId value inside annotation
+	 * @param cls
+	 *            containing the method
+	 * @param entityId
+	 *            value inside annotation
 	 * @return fitting method
 	 */
 	public static Method getValidEnityProviderMethod(Class<?> cls, String entityId) {
-		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Placeholder.class);
-		for(Method m : methodsWithAnnotation) {
-			Placeholder plch = m.getAnnotation(Placeholder.class);
-			if(plch.value().equals(entityId)) {
+		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, EntityProvider.class);
+		for (Method m : methodsWithAnnotation) {
+			assertValidEntityProviderAnnotation(m);
+			EntityProvider plch = m.getAnnotation(EntityProvider.class);
+			if (plch.value().equals(entityId)) {
 				return m;
 			}
 
@@ -119,23 +122,20 @@ public class NLIAnnotationReader {
 	 *            the method that should be a NLIMethod
 	 *
 	 * @throws IllegalArgumentException
-	 * 			  in case of wrong parameter types, the method throws exceptions
-	 * 			  or the return type is not a String
+	 *             in case of wrong parameter types, the method throws exceptions or the return type is not a String
 	 *
 	 */
 	public static void assertValid(Method method) {
 		Class<?>[] parameterTypes = method.getParameterTypes();
-		if (parameterTypes.length != 1
-				|| !parameterTypes[0].getTypeName().equals("java.util.Map")) {
+		if (parameterTypes.length != 1 || !parameterTypes[0].getTypeName().equals("java.util.Map")) {
 			throw new IllegalArgumentException("The method " + method.toString()
-			+ " does not have the correct parameter type. It should be a Map.");
+					+ " does not have the correct parameter type. It should be a Map.");
 		}
 		if (!method.getReturnType().equals(String.class)) {
 			throw new IllegalArgumentException("The returntype of a method annotated with @Intent should be String.");
 		}
 		if (method.getExceptionTypes().length > 0) {
-			throw new IllegalArgumentException(
-					"The method annotated with @Intent should should not throw exceptions.");
+			throw new IllegalArgumentException("The method annotated with @Intent should should not throw exceptions.");
 		}
 	}
 
@@ -170,7 +170,6 @@ public class NLIAnnotationReader {
 		}
 	}
 
-
 	/**
 	 * calls the given method and handles possible exceptions
 	 *
@@ -185,7 +184,7 @@ public class NLIAnnotationReader {
 	 *             if the annotated methods not valid
 	 */
 	public static String callNLIMethod(@Nonnull Method method, @Nonnull Object instance) {
-		//assertValid(method);
+		// assertValid(method);
 
 		try {
 			method.setAccessible(true);
@@ -201,4 +200,59 @@ public class NLIAnnotationReader {
 			throw new IllegalArgumentException("method " + method + " throw an exception", cause);
 		}
 	}
+
+	/**
+	 * calls the given method and handles possible exceptions
+	 *
+	 * @param method
+	 *            the method to call
+	 * @param instance
+	 *            the instance of which to call the method
+	 * @return a list with all custom grammars
+	 * @throws IllegalArgumentException
+	 *             if the annotated methods not valid
+	 */
+	public static List<String> callNLIGetEntityProviderMethod(@Nonnull Method method, @Nonnull Object instance) {
+		assertValidEntityProviderAnnotation(method);
+		try {
+			method.setAccessible(true);
+			return (List<String>) method.invoke(instance);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("tryed to invoke method " + method + " but got an error", e);
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getCause();
+
+			if (cause instanceof RuntimeException) {
+				throw (RuntimeException) cause;
+			}
+			throw new IllegalArgumentException("method " + method + " throw an exception", cause);
+		}
+	}
+
+	/**
+	 * Check if method is a valid annotated method from type EntityProvider. Annotated methods must not throw
+	 * Exceptions.
+	 *
+	 * @param method
+	 *            the method that should be a EntityProvider Method
+	 *
+	 * @throws IllegalArgumentException
+	 *             in case of wrong parameter types, the method throws exceptions or the return type is not a String
+	 *
+	 */
+	public static void assertValidEntityProviderAnnotation(Method method) {
+		Class<?>[] parameterTypes = method.getParameterTypes();
+		if (parameterTypes.length != 0) {
+			throw new IllegalArgumentException("The method " + method.toString() + " should not have paramters");
+		}
+		if (!method.getReturnType().getTypeName().equals("java.util.List")) {
+			throw new IllegalArgumentException(
+					"The returntype of a method annotated with @EntityProvider should be List<String>.");
+		}
+		if (method.getExceptionTypes().length > 0) {
+			throw new IllegalArgumentException(
+					"The method annotated with @EntityProvider should should not throw exceptions.");
+		}
+	}
+
 }

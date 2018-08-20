@@ -28,7 +28,6 @@ import java.util.Map;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Placeholder;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
 
@@ -85,10 +84,5 @@ public class HelloWorldSpeech {
 	@Intent
 	public String testCustom(Map<String, EntityData> entities) {
 		return this.helloWorld.testCustomRegistry();
-	}
-	
-	@Placeholder("int")
-	public String someStringReturn() {
-		return "$(0,1,1)";
 	}
 }

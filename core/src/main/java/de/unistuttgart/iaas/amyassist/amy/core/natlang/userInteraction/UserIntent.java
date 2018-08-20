@@ -87,10 +87,9 @@ public class UserIntent {
 		this.grammar = parseStringToAGF(this.aimIntent.getGram());
 	}
 
-
 	private void registerEntities() {
 		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
-		for(Entry<String, AGFNode> e : customEntities.entrySet()) {
+		for (Entry<String, AGFNode> e : customEntities.entrySet()) {
 			this.entityList.put(e.getKey(), new Entity(e.getKey(), e.getValue()));
 		}
 
@@ -103,7 +102,8 @@ public class UserIntent {
 
 		Map<String, Prompt> idToPrompt = new HashMap<>();
 		for (XMLPrompt xmlPrompt : this.aimIntent.getPrompts()) {
-			idToPrompt.put(xmlPrompt.getEntityTemplateId(), new Prompt(parseStringToAGF(xmlPrompt.getGram()), xmlPrompt.getText()));
+			idToPrompt.put(xmlPrompt.getEntityTemplateId(),
+					new Prompt(parseStringToAGF(xmlPrompt.getGram()), xmlPrompt.getText()));
 			Entity e = this.entityList.get(xmlPrompt.getEntityTemplateId());
 			e.setPrompt(idToPrompt.get(xmlPrompt.getEntityTemplateId()));
 			e.setMethod(NLIAnnotationReader.getValidEnityProviderMethod(this.partialNLIClass, e.getEntityId()));
@@ -111,7 +111,6 @@ public class UserIntent {
 		}
 
 	}
-
 
 	/**
 	 * parse a string to agf
@@ -122,7 +121,7 @@ public class UserIntent {
 	 */
 	private AGFNode parseStringToAGF(String toParse) {
 		HashMap<String, AGFNode> idToGram = new HashMap<>();
-		for(Entry<String, Entity> e : this.entityList.entrySet()) {
+		for (Entry<String, Entity> e : this.entityList.entrySet()) {
 			idToGram.put(e.getKey(), e.getValue().getGrammar());
 		}
 
@@ -211,28 +210,38 @@ public class UserIntent {
 		return this.grammar;
 	}
 
-
 	/**
 	 * @param object
 	 */
 	public void updateGrammars(Object object) {
 		List<Entity> toUpdate = new ArrayList<>();
-		for(Entry<String, Entity> entry : this.entityList.entrySet()) {
-			if(entry.getValue().getMethod() != null) {
-				AGFNode node = parseStringToAGF(NLIAnnotationReader.callNLIMethod(entry.getValue().getMethod(), object));
+		for (Entry<String, Entity> entry : this.entityList.entrySet()) {
+			if (entry.getValue().getMethod() != null) {
+				StringBuilder builder = new StringBuilder();
+				List<String> providedEntities = NLIAnnotationReader.callNLIGetEntityProviderMethod(entry.getValue().getMethod(),
+						object);
+				if (!providedEntities.isEmpty()) {
+					builder.append("(").append(providedEntities.get(0));
+					for (int i = 1; i < providedEntities.size(); i++) {
+						builder.append("|").append(providedEntities.get(i));
+					}
+					builder.append(")");
+				}
+				AGFNode node = parseStringToAGF(builder.toString());
 				Entity e = entry.getValue();
 				e.setGrammar(node);
 				toUpdate.add(e);
 			}
 		}
 
-		for(Entity e : toUpdate) {
+		for (Entity e : toUpdate) {
 			this.entityList.replace(e.getEntityId(), e);
 		}
 
 		Map<String, Prompt> idToPrompt = new HashMap<>();
 		for (XMLPrompt xmlPrompt : this.aimIntent.getPrompts()) {
-			idToPrompt.put(xmlPrompt.getEntityTemplateId(), new Prompt(parseStringToAGF(xmlPrompt.getGram()), xmlPrompt.getText()));
+			idToPrompt.put(xmlPrompt.getEntityTemplateId(),
+					new Prompt(parseStringToAGF(xmlPrompt.getGram()), xmlPrompt.getText()));
 			Entity e = this.entityList.get(xmlPrompt.getEntityTemplateId());
 			e.setPrompt(idToPrompt.get(xmlPrompt.getEntityTemplateId()));
 			this.entityList.replace(xmlPrompt.getEntityTemplateId(), e);

@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Target(java.lang.annotation.ElementType.METHOD)
-public @interface Placeholder {
+public @interface EntityProvider {
 	/**
 	 * The string inside this annotation has to be in
 	 * Amy Grammar Format (AGF), a description and examples

@@ -29,12 +29,15 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
@@ -93,4 +96,50 @@ class TestNLIAnnotationReader {
 		}
 	}
 
+	@Test
+	public void testIllegalReturnTypeEntityProvider() {
+		String message = assertThrows(IllegalArgumentException.class,
+				() -> NLIAnnotationReader.getValidEnityProviderMethod(BrokenReturnTypeEntityProvider.class, ""))
+						.getMessage();
+		assertThat(message,
+				equalTo("The returntype of a method annotated with @EntityProvider should be List<String>."));
+	}
+
+	class BrokenReturnTypeEntityProvider {
+		@EntityProvider("test")
+		public int count() {
+			return 0;
+		}
+	}
+
+	@Test
+	public void testIllegalParameterTypeEntityProvider() {
+		String message = assertThrows(IllegalArgumentException.class,
+				() -> NLIAnnotationReader.getValidEnityProviderMethod(BrokenParamterEntityProvider.class, ""))
+						.getMessage();
+		assertThat(message, equalTo("The method " + BrokenParamterEntityProvider.class.getMethods()[0].toString()
+				+ " should not have paramters"));
+	}
+
+	class BrokenParamterEntityProvider {
+		@EntityProvider("test")
+		public List<String> count(int i) {
+			return new ArrayList<>();
+		}
+	}
+
+	@Test
+	public void testIllegalExceptionEntityProvider() {
+		String message = assertThrows(IllegalArgumentException.class,
+				() -> NLIAnnotationReader.getValidEnityProviderMethod(IllegalExceptionEntityProvider.class, ""))
+						.getMessage();
+		assertThat(message, equalTo("The method annotated with @EntityProvider should should not throw exceptions."));
+	}
+
+	class IllegalExceptionEntityProvider {
+		@EntityProvider("test")
+		public List<String> count() throws IllegalArgumentException {
+			return new ArrayList<>();
+		}
+	}
 }

@@ -70,16 +70,13 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	/**
 	 * different possible answers
 	 */
-	private final String[] failedToUnderstandAnswer = {
-			"I did not understand that", "Sorry, could you repeat that?",
-			"I don't know what you mean", "No idea what you are talking about", "My plugin developers did not teach me this yet"
-	};
+	private final String[] failedToUnderstandAnswer = { "I did not understand that", "Sorry, could you repeat that?",
+			"I don't know what you mean", "No idea what you are talking about",
+			"My plugin developers did not teach me this yet" };
 
 	private final String quitIntentUserInput = "(never mind|quit|forget that)";
 
-	private final String[] quitIntentAnswer = {
-			"ok", "sure", "what else can i do for you?"
-	};
+	private final String[] quitIntentAnswer = { "ok", "sure", "what else can i do for you?" };
 
 	@Reference
 	private Logger logger;
@@ -117,17 +114,16 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#register(java.lang.reflect.Method, de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#register(java.lang.reflect.Method,
+	 *      de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent)
 	 */
 	@Override
 	public void register(Method method, XMLAIMIntent intent) {
-		if (!method
-				.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent.class)) {
-			throw new IllegalArgumentException(
-					"annotation is not present in " + method.getName());
+		if (!method.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent.class)) {
+			throw new IllegalArgumentException("annotation is not present in " + method.getName());
 		}
 
-		UserIntent  userIntent = new UserIntent(method, intent);
+		UserIntent userIntent = new UserIntent(method, intent);
 		this.nodeToMethodAIMPair.put(userIntent.getGrammar(), Pair.of(method, intent));
 	}
 
@@ -142,16 +138,14 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.MULTI_CALL_START,
 				Constants.SINGLE_CALL_START, Constants.MULTI_CALL_STOP, Constants.SHUT_UP);
 
-
 		return generator.generateGrammarFileString();
 	}
-
 
 	@Override
 	public void processIntent(Dialog dialog, String naturalLanguageText) {
 		List<AGFNode> promptGrams = new ArrayList<>();
-		for(Entity entity : dialog.getIntent().getEntityList().values()) {
-			if(entity.getPrompt() != null) {
+		for (Entity entity : dialog.getIntent().getEntityList().values()) {
+			if (entity.getPrompt() != null) {
 				promptGrams.add(entity.getPrompt().getGrammar());
 			}
 		}
@@ -164,7 +158,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		try {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 
-			if(matchingNodeIndex == promptGrams.indexOf(this.quitIntentUserInputGram)) {
+			if (matchingNodeIndex == promptGrams.indexOf(this.quitIntentUserInputGram)) {
 				dialog.output(generateRandomAnswer(this.quitIntentAnswer));
 				dialog.setIntent(null);
 				return;
@@ -172,15 +166,15 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 			Map<String, String> entityIdToUserContent = getEntityContent(promptGrams.get(matchingNodeIndex));
 
-			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
+			for (Entry<String, String> entry : entityIdToUserContent.entrySet()) {
 				EntityData data = new EntityData(entry.getValue());
 				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
 			}
 
-			if(!dialog.getIntent().isFinished()) {
+			if (!dialog.getIntent().isFinished()) {
 				dialog.output(dialog.getIntent().generateQuestion());
 			}
-		} catch(NLParserException e) {
+		} catch (NLParserException e) {
 			this.logger.debug("no matching grammar found " + e.getMessage());
 			dialog.output(generateRandomAnswer(this.failedToUnderstandAnswer));
 		}
@@ -189,19 +183,21 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	/**
 	 * helper method to extract entity contents
-	 * @param node to extract entity content from
+	 * 
+	 * @param node
+	 *            to extract entity content from
 	 * @return Map which is mapping the entity id to the user provided content
 	 */
-	private Map<String, String> getEntityContent(AGFNode node){
+	private Map<String, String> getEntityContent(AGFNode node) {
 		Map<String, String> result = new HashMap<>();
 
-		for(AGFNode child : node.getChilds()) {
-			if(child.getType() == AGFNodeType.ENTITY) {
+		for (AGFNode child : node.getChilds()) {
+			if (child.getType() == AGFNodeType.ENTITY) {
 				EntityNode entity = (EntityNode) child;
-				if(entity.getUserProvidedContent() != null) {
-					result.put(entity.getContent(),entity.getUserProvidedContent());
+				if (entity.getUserProvidedContent() != null) {
+					result.put(entity.getContent(), entity.getUserProvidedContent());
 				}
-			}else {
+			} else {
 				result.putAll(getEntityContent(child));
 			}
 		}
@@ -211,13 +207,15 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	/**
 	 *
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#decideIntent(de.unistuttgart.iaas.amyassist.amy.core.natlang.Dialog, java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#decideIntent(de.unistuttgart.iaas.amyassist.amy.core.natlang.Dialog,
+	 *      java.lang.String)
 	 */
 	@Override
 	public void decideIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
-		INLParser nlParser = new NLParser(new ArrayList<>(this.nodeToMethodAIMPair.keySet()), this.language.getStemmer());
+		INLParser nlParser = new NLParser(new ArrayList<>(this.nodeToMethodAIMPair.keySet()),
+				this.language.getStemmer());
 		try {
 			AGFNode node = nlParser.matchingNode(tokens);
 			Method left = this.nodeToMethodAIMPair.get(node).getLeft();
@@ -226,15 +224,15 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			dialog.setIntent(userIntent);
 
 			Map<String, String> entityIdToUserContent = getEntityContent(node);
-			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
+			for (Entry<String, String> entry : entityIdToUserContent.entrySet()) {
 				EntityData data = new EntityData(entry.getValue());
 				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
 			}
 
-			if(!dialog.getIntent().isFinished()) {
+			if (!dialog.getIntent().isFinished()) {
 				dialog.output(dialog.getIntent().generateQuestion());
 			}
-		} catch(NLParserException e) {
+		} catch (NLParserException e) {
 			this.logger.debug("no matching grammar found " + e.getMessage());
 			dialog.output(generateRandomAnswer(this.failedToUnderstandAnswer));
 		}
@@ -247,11 +245,3 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		return strings[rndm];
 	}
 }
-
-
-
-
-
-
-
-
