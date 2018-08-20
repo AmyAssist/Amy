@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.persistence;
 
+import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;
 
 /**
@@ -37,12 +38,12 @@ public interface Persistence {
 	 *            the name of the Persistence Unit
 	 * @return the entity manager of the Persistence Unit
 	 */
-	EntityManager getEntityManager(String name);
+	EntityManager getEntityManager(@Nonnull String name);
 
 	/**
 	 * 
 	 * @param entity
 	 *            the entity class to register in the Persistence manager
 	 */
-	void register(Class<?> entity);
+	void register(@Nonnull Class<?> entity);
 }

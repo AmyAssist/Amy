@@ -49,7 +49,7 @@ public class TextToSpeechImpl implements TextToSpeech {
 
 	@Reference
 	private Logger logger;
-	@Nonnull
+
 	private LocalMaryInterface mary;
 
 	private AudioInputStreamWithPauseFactory aisWithPauseFactory;
