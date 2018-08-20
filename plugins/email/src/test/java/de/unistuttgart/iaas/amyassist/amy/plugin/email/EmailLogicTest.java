@@ -436,7 +436,7 @@ public class EmailLogicTest {
 	@Test
 	public void testGetMailsForRESTAll() throws MessagingException, IOException {
 		Message[] messages = createMockMessages(10, 5);
-		when(this.inboxMock.getMessages()).thenReturn(messages);
+		when(this.inboxMock.getMessages(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt())).thenReturn(messages);
 
 		// careful! every call of getMailsForREST will revert the order of the messages array
 		List<MessageDTO> transferMessages = this.emailLogic.getMailsForREST(-1);
@@ -456,8 +456,8 @@ public class EmailLogicTest {
 	@Test
 	public void testGetMailsForRESTAmount() throws MessagingException, IOException {
 		final int amount = 7;
-		Message[] messages = createMockMessages(10, 5);
-		when(this.inboxMock.getMessages()).thenReturn(messages);
+		Message[] messages = createMockMessages(7, 5);
+		when(this.inboxMock.getMessages(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt())).thenReturn(messages);
 
 		// careful! every call of getMailsForREST will revert the order of the messages array
 		List<MessageDTO> transferMessages = this.emailLogic.getMailsForREST(amount);
