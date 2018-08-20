@@ -23,8 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,14 +43,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
  * test for the rest resource of the alarmclock
  * 
- * @author Christian Bräuner
+ * @author Christian Bräuner, Patrick Gebhardt
  */
 @ExtendWith(FrameworkExtension.class)
 class AlarmClockResourceTest {
