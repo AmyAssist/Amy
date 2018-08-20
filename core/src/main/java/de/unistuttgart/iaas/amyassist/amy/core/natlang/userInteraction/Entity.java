@@ -26,7 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 import java.lang.reflect.Method;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 
 /**
  * this class represent the entity from an user intent
@@ -36,7 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 public class Entity {
 	private final String entityId;
 	private AGFNode grammar;
-	private EntityData entityData;
+	private EntityDataImpl entityData;
 	private Prompt prompt;
 	private Method method;
 
@@ -54,7 +53,7 @@ public class Entity {
 	 * Set's {@link #entityData entityData}
 	 * @param entityData  entityData
 	 */
-	public void setEntityData(EntityData entityData) {
+	public void setEntityData(EntityDataImpl entityData) {
 		this.entityData = entityData;
 	}
 
@@ -72,7 +71,7 @@ public class Entity {
 	 *
 	 * @return entityData
 	 */
-	public EntityData getEntityData() {
+	public EntityDataImpl getEntityData() {
 		return this.entityData;
 	}
 

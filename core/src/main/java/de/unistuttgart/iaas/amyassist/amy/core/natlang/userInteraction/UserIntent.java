@@ -44,7 +44,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLEntityTemplate;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLPrompt;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 
 /**
  * The user intent class load all needed grammars and answers from the xml. the entities were saved here.
@@ -142,7 +141,7 @@ public class UserIntent {
 	 *            map of all entities with the id as key
 	 * @return the result String from calling the command
 	 */
-	public String call(Object instance, Map<String, EntityData> map) {
+	public String call(Object instance, Map<String, EntityDataImpl> map) {
 		Object[] params = { map };
 		return NLIAnnotationReader.callNLIMethod(this.method, instance, params);
 	}

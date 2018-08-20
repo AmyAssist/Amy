@@ -24,52 +24,29 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
 
 import java.time.LocalDateTime;
-import java.util.logging.Logger;
-
-import javax.persistence.Entity;
-
 
 /**
- * Stores the data from one entity. Only one attribute is set at the same time
- * @author Lars Buttgereit
+ * TODO: Description
+ * @author
  */
-public class EntityData {
-	
-	private String string;
-	private LocalDateTime time;
-	
-	public EntityData(String string) {
-		this.string = string;
-	}
+public interface EntityData {
 
 	/**
 	 * Get's {@link #number number}
 	 * @return  number
 	 */
-	public int getNumber() {
-		try {
-			return Integer.parseInt(this.string);
-		}catch (NumberFormatException e) {
-			
-			return Integer.MIN_VALUE;
-		}
-	}
+	int getNumber();
 
 	/**
 	 * Get's {@link #string string}
 	 * @return  string
 	 */
-	public String getString() {
-		return this.string;
-	}
+	String getString();
 
 	/**
 	 * Get's {@link #time time}
 	 * @return  time
 	 */
-	public LocalDateTime getTime() {
-		return this.time;
-	}
-	
-	
+	LocalDateTime getTime();
+
 }
