@@ -54,8 +54,13 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.setDeviceId">
-		<gram> set (spotify|music) device [to {amyinteger}] </gram>
-		<Prompt entityTemplateId="amyinteger">
+		<gram> set (spotify|music) device [to {deviceid}] </gram>
+		<EntityTemplates>
+			<EntityTemplate id="deviceid">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="deviceid">
 			<text>To which device should i switch? </text>
 			<gram>[device] {amyinteger} </gram>
 		</Prompt>
@@ -63,16 +68,19 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.playPlaylistId">
-		<gram> [spotify] play [{type}] [playlist] [{amyinteger}]</gram>
+		<gram> [spotify] play [{type}] [playlist] [{songid}]</gram>
 
 		<EntityTemplates>
 			<EntityTemplate id="type">
 				<gram>(own|featured)</gram>
 			</EntityTemplate>
+			<EntityTemplate id="songid">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
 		</EntityTemplates>
-		<Prompt entityTemplateId="amyinteger">
+		<Prompt entityTemplateId="songid">
 			<text> which playlist id would you play? </text>
-			<gram>[playlist] {amyinteger}</gram>
+			<gram>[playlist] {songid}</gram>
 		</Prompt>
 
 		<Prompt entityTemplateId="type">
