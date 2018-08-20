@@ -23,24 +23,24 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.*;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.registry.Location;
-import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.when;
 
 /**
  * Test class for the registry connection
@@ -72,15 +72,15 @@ public class TestRegistryConnection {
 	@Test
 	public void testGetAdressHome() {
 		when(this.location.getAddressString()).thenReturn("Pforzheim");
-		when(this.registry.getHome()).thenReturn(this.location);
+		when(this.registry.getEntitiesWithTag("Home")).thenReturn(Collections.singletonList(this.location));
 		assertThat(this.connection.getAddress("Home"), equalTo("Pforzheim"));
 	}
 
 	@Test
 	public void testGetAdressWork() {
 		when(this.location.getAddressString()).thenReturn("Pforzheim");
-		when(this.registry.getWork()).thenReturn(this.location);
-		assertThat(this.connection.getAddress("work"), equalTo("Pforzheim"));
+		when(this.registry.getEntitiesWithTag("Work")).thenReturn(Collections.singletonList(this.location));
+		assertThat(this.connection.getAddress("Work"), equalTo("Pforzheim"));
 	}
 
 	@Test
