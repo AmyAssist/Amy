@@ -31,7 +31,9 @@ import java.util.function.Consumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.EntityDataImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
 
 /**
  * Handles different dialog tasks
@@ -85,24 +87,24 @@ public class DialogHandler {
 		}
 
 		Dialog dialog = this.map.get(uuid);
+		UserIntent intent = dialog.getIntent();
 
-
-		if (dialog.getIntent() == null) {
+		if (intent == null) {
 			this.manager.decideIntent(dialog, naturalLanguageText);
 		} else {
 			Object object = this.serviceLocator.createAndInitialize(dialog.getIntent().getPartialNLIClass());
-			dialog.getIntent().updateGrammars(object);
+			intent.updateGrammars(object);
 			this.manager.processIntent(dialog, naturalLanguageText);
 		}
 
 		// is the intent ready for the plugin?
-		if (dialog.getIntent() != null && dialog.getIntent().isFinished()) {
+		if (intent != null && dialog.getIntent().isFinished()) {
 			Map<String, EntityDataImpl> stringToEntityData = new HashMap<>();
 
 			for(String s : dialog.getIntent().getEntityList().keySet()) {
-				stringToEntityData.put(s, dialog.getIntent().getEntityList().get(s).getEntityData());
+				stringToEntityData.put(s, intent.getEntityList().get(s).getEntityData());
 			}
-			Object object = this.serviceLocator.createAndInitialize(dialog.getIntent().getPartialNLIClass());
+			Object object = this.serviceLocator.createAndInitialize(intent.getPartialNLIClass());
 			dialog.output(dialog.getIntent().call(object, stringToEntityData));
 			dialog.setIntent(null);
 		}

@@ -91,6 +91,6 @@ class TestNLIAnnotationReader {
 		public int count(Map<String, EntityDataImpl> tes) {
 			return 0;
 		}
-	} */
+	}
 
 }
