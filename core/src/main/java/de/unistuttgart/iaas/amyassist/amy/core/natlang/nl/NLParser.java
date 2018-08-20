@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- * 
+ *
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
- * 
+ * You may obtain a copy of the License at
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,7 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.IStemme
 
 /**
  * NLParser implementation, matches NL input to AGFNodes
- * 
+ *
  * @author Felix Burk
  */
 public class NLParser implements INLParser {
@@ -56,7 +56,7 @@ public class NLParser implements INLParser {
 
 
 	/**
-	 * 
+	 *
 	 * @param grammars
 	 *            all possible grammars to match
 	 * @param stemmer
@@ -83,11 +83,11 @@ public class NLParser implements INLParser {
 	/**
 	 * sorts childs of or groups and optional groups by size size meaning number of words inside the sentences seperated
 	 * by '|'
-	 * 
+	 *
 	 * this prevents problems like [very | very very] very not beeing recognized with the input very very very because
 	 * this parser is greedy and picks the first matching sentence it finds. If we just order the sentences in or and
 	 * optional groups by number of leafes (meaning words/rules) we will be fine
-	 * 
+	 *
 	 * @param node
 	 *            to sort
 	 * @return sorted node
@@ -113,7 +113,7 @@ public class NLParser implements INLParser {
 
 	/**
 	 * recursive method to check each node preorder style
-	 * 
+	 *
 	 * @param agf
 	 *            current node to check
 	 * @return success
@@ -164,7 +164,7 @@ public class NLParser implements INLParser {
 	/**
 	 * checks if a number is at the current index and if the number
 	 * matches the conditions of the NumberNode e.g. is in correct range and stepsize
-	 * 
+	 *
 	 * @param agf to match
 	 * @return true if the node matches
 	 */
@@ -188,15 +188,18 @@ public class NLParser implements INLParser {
 
 	/**
 	 * fills entity content and checks if the entity matches
-	 * 
+	 *
 	 * @param agf to match
 	 * @return true if the entity matched
 	 */
 	private boolean fillEntity(AGFNode agf) {
 		int startIndex = this.currentIndex;
-		boolean matched = checkNode(agf.getChilds().get(0));
+		boolean matched = true;
+		for(AGFNode node : agf.getChilds()) {
+			matched = checkNode(node) && matched;
+		}
 		int endIndex = this.currentIndex;
-		
+
 		try {
 			EntityNode entity = (EntityNode) agf;
 			StringBuilder b = new StringBuilder();
@@ -212,14 +215,14 @@ public class NLParser implements INLParser {
 
 	/**
 	 * does the current token match the expected one?
-	 * 
+	 *
 	 * @param toMatch
 	 *            the node to match
 	 * @return if it matched
 	 */
 	private boolean match(AGFNode toMatch) {
 		WordToken token = lookAhead(0);
-		
+
 		if (this.stemmer != null && token != null
 				&& this.stemmer.stem(toMatch.getContent()).equals(this.stemmer.stem(token.getContent()))) {
 			consume();
@@ -234,7 +237,7 @@ public class NLParser implements INLParser {
 
 	/**
 	 * consume a token
-	 * 
+	 *
 	 * @return consumed token
 	 */
 	private WordToken consume() {
@@ -246,7 +249,7 @@ public class NLParser implements INLParser {
 
 	/**
 	 * look ahead as many tokens as needed
-	 * 
+	 *
 	 * @param distance
 	 *            needed
 	 * @return token at distance

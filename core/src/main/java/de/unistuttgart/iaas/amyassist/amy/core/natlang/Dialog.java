@@ -23,11 +23,56 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
+import java.util.function.Consumer;
+
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
+
 /**
- * This interface is used for storing dialog related data
+ * internal implementation of dialog interface 
  * 
- * @author Leon Kiefer, Felix Burk
+ * @author Felix Burk
  */
-public interface Dialog {
+class Dialog {
+	
+	private Consumer<String> consumer;
+	
+	/**
+	 * constructor
+	 * @param cons consumer for callback
+	 */
+	Dialog(Consumer<String> cons){
+		this.consumer = cons;
+	}
+
+	/**
+	 * current intent - if null no intent is started
+	 */
+	private UserIntent intent = null;
+	
+	/**
+	 * outputs the string to the user in some way 
+	 * 
+	 * @param answerOutput the string to output
+	 */
+	public void output(String answerOutput) {
+		this.consumer.accept(answerOutput);
+	}
+
+	/**
+	 * Get's {@link #intent intent}
+	 * @return  intent
+	 */
+	public UserIntent getIntent() {
+		return this.intent;
+	}
+
+	/**
+	 * Set's {@link #intent intent}
+	 * @param intent  intent
+	 */
+	public void setIntent(UserIntent intent) {
+		this.intent = intent;
+	}
+	
 	
 }

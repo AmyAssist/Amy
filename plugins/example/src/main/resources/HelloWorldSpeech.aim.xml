@@ -7,16 +7,19 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.repeat">
-		<gram>repeat {somestring} [{amyinteger} times]</gram>
+		<gram>repeat {somestring} [{int} times]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="somestring">
 				<gram>(hello|good morning|something)</gram>
 			</EntityTemplate>
+			<EntityTemplate id="int">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
 		</EntityTemplates>
 
-		<Prompt entityTemplateId="amyinteger">
+		<Prompt entityTemplateId="int">
 			<text> how many times should i say hello? </text>
-			<gram>{amyinteger} times</gram>
+			<gram>{int} times</gram>
 		</Prompt>
 	</Intent>
 
