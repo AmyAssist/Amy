@@ -35,6 +35,7 @@ import java.util.Set;
 
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
+import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -214,6 +215,7 @@ public class EMailLogic {
 				 * https://javaee.github.io/javamail/FAQ#castmultipart
 				 */
 				this.logger.debug("Still getting a stream back", cce);
+				sb.append("Cannot read message content");
 			}
 			return sb.toString();
 		}
@@ -232,12 +234,14 @@ public class EMailLogic {
 	public List<MessageDTO> getMailsForREST(int amount) {
 		List<MessageDTO> messagesToSend = new ArrayList<>();
 		List<Message> messages;
-		try {
+		try (Folder inbox = this.mailSession.getInbox()) {
+			int amountInInbox = inbox.getMessageCount();
+			int lowerIndex = (amount == -1) ? 1 : Math.max(amountInInbox - amount, 1);
+			messages = Arrays.asList(this.mailSession.getInbox().getMessages(lowerIndex, amountInInbox));
+
 			// we switch order because we get the messages from the inbox from oldest to newest
-			messages = Arrays.asList(this.mailSession.getInbox().getMessages());
 			Collections.reverse(messages);
-			int amountToPrint = (amount == -1) ? messages.size() : amount;
-			for (int i = 0; i < amountToPrint; i++) {
+			for (int i = 0; i < messages.size(); i++) {
 				Message m = messages.get(i);
 				LocalDateTime sentDate = m.getSentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 				messagesToSend.add(new MessageDTO(getFrom(m), m.getSubject(), getContentFromMessage(m), sentDate,
