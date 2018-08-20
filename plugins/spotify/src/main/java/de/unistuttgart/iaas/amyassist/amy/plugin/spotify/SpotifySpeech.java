@@ -74,8 +74,7 @@ public class SpotifySpeech {
 		}
 		if (builder.length() > 0) {
 			builder.insert(0, "Following Devices are online: \n");
-		}
-		else {
+		} else {
 			builder.append("No devices are online");
 		}
 		return builder.toString();
@@ -122,8 +121,7 @@ public class SpotifySpeech {
 		}
 		if (builder.length() > 0) {
 			builder.insert(0, "Following Playlists found: \n");
-		}
-		else {
+		} else {
 			builder.append("No playlists found");
 		}
 		return builder.toString();

@@ -73,17 +73,16 @@ class TestAIMService {
 				"de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.aim.xml");
 	}
 
-/*	@Test
+	@Test
 	void testPrintSelf() {
 		StringBuilder builder = new StringBuilder();
 		builder = builder.append(
 				"\n Intent ref=de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes"
-						+ " gram= say {greeting} {number} \n")
-				.append(" Entity id=number type=int\n").append(" Entity id=greeting type=string\n")
-				.append("\t values: hello , good morning \n")
-				.append(" Prompt text= how many times should i say {greeting}?  gram= {number} [times] ");
+						+ " gram= say {greeting} {number} \n ")
+				.append("Entity id=number\n ").append("Entity id=greeting\n ")
+				.append("Prompt text= how many times should i say {greeting}?  gram= {number} [times] ");
 		assertThat(this.interactionModel.printSelf(), equalTo(builder.toString()));
-	}*/
+	}
 
 	@Test
 	void testReference() {
@@ -93,7 +92,7 @@ class TestAIMService {
 
 	@Test
 	void testGram() {
-		assertThat(this.interactionModel.getIntents().get(0).getGram(), equalTo(" say {greeting} {number} "));
+		assertThat(this.interactionModel.getIntents().get(0).getGram(), equalTo("say {greeting} {number}"));
 	}
 
 	@Test
@@ -110,7 +109,7 @@ class TestAIMService {
 	@Test
 	void testPromptGram() {
 		assertThat(this.interactionModel.getIntents().get(0).getPrompts().get(0).getGram(),
-				equalTo(" {number} [times] "));
+				equalTo("{number} [times]"));
 	}
 
 }
