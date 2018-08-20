@@ -88,6 +88,12 @@ public class AGFToken {
 		case COMMA:
 			this.content = ",";
 			break;
+		case PLUS:
+			this.content = "+";
+			break;
+		case ASTERISC:
+			this.content = "*";
+			break;
 		default:
 			throw new AGFLexerException("type could not be set because there is no matching content");
 		}

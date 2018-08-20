@@ -54,7 +54,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserInten
  */
 public class NLParserTest {
 	
-	private UserIntent intent;
+	private List<UserIntent> intents;
 	
 	@BeforeEach
 	public void setup() throws JAXBException, FileNotFoundException {
@@ -67,7 +67,13 @@ public class NLParserTest {
 		StringReader stringReader = new StringReader(xml);
 		XMLAmyInteractionModel aimmodel = (XMLAmyInteractionModel) unmarshaller.unmarshal(stringReader);
 		
-		this.intent = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(0));
+		UserIntent int0 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(0));
+		UserIntent int1 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(1));
+		
+		this.intents = new ArrayList<>();
+		this.intents.add(int0);
+		this.intents.add(int1);
+
 		
 	}
 	
@@ -77,10 +83,10 @@ public class NLParserTest {
 		NLLexer lex = new NLLexer(new EnglishNumberConversion());
 		List<WordToken> tokens = lex.tokenize("greet me");
 		List<AGFNode> nodes = new ArrayList<>();
-		nodes.add(this.intent.getGrammar());
+		nodes.add(this.intents.get(0).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
 		assertEquals(parser.matchingNodeIndex(tokens),0);
-		assertEquals(intent.isFinished(), false);
+		assertEquals(this.intents.get(0).isFinished(), false);
 	}
 	
 	@Test
@@ -88,11 +94,22 @@ public class NLParserTest {
 		NLLexer lex = new NLLexer(new EnglishNumberConversion());
 		List<WordToken> tokens = lex.tokenize("greet me with good morning test ten oh twenty");
 		List<AGFNode> nodes = new ArrayList<>();
-		nodes.add(this.intent.getGrammar());
+		nodes.add(this.intents.get(0).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
 		
 		assertEquals(parser.matchingNodeIndex(tokens),0);
 		assertEquals(getEntityNodeContent(parser.matchingNode(tokens)), "good morning10 oh 20");
+	}
+	
+	@Test
+	public void shortWildcardTest() {
+		NLLexer lex = new NLLexer(new EnglishNumberConversion());
+		List<WordToken> tokens = lex.tokenize("test the four sign long wildcard here");
+		List<AGFNode> nodes = new ArrayList<>();
+		nodes.add(this.intents.get(1).getGrammar());
+		NLParser parser = new NLParser(nodes, null);
+		System.out.println(parser.matchingNode(tokens).printSelf());
+		assertEquals(parser.matchingNodeIndex(tokens),0);
 	}
 	
 	StringBuilder b = new StringBuilder();

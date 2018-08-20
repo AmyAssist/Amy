@@ -68,5 +68,13 @@ public enum AGFTokenType {
 	/**
 	 * $ sign for $(0,100,10)
 	 */
-	DOLLAR
+	DOLLAR,
+	/**
+	 * + sign als wildcard for 0 to 5 words
+	 */
+	PLUS,
+	/**
+	 * * asterisc used as a wildcard at the end of a sentence
+	 */
+	ASTERISC
 }

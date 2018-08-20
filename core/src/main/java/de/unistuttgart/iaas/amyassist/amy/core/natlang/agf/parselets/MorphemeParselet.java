@@ -30,6 +30,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.Parser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.MorphemeNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.NumberNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.ShortWNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.WordNode;
 
@@ -60,7 +61,8 @@ public class MorphemeParselet implements IAGFParselet {
 		// first one was already consumed by the parser
 		// the following ones have to be consumed "by hand"
 		while (parser.match(AGFTokenType.OPENCBR) || parser.match(AGFTokenType.CLOSECBR)
-				|| parser.match(AGFTokenType.WORD) || parser.match(AGFTokenType.DOLLAR)) {
+				|| parser.match(AGFTokenType.WORD) || parser.match(AGFTokenType.DOLLAR) 
+				|| parser.match(AGFTokenType.PLUS)) {
 			AGFToken t = parser.consume();
 			parseMorph(morph, t, parser);
 		}
@@ -102,9 +104,13 @@ public class MorphemeParselet implements IAGFParselet {
 			}
 		} else if (token.type == AGFTokenType.DOLLAR) {
 			parseNumberExpression(morph, token, parser);
+		} else if(token.type == AGFTokenType.PLUS) {
+			AGFNode node = new ShortWNode("");
+			morph.addChild(node);
 		}
 
 	}
+
 
 	/**
 	 * Parse number expression ex: $(0,100,10)

@@ -87,6 +87,10 @@ public class AGFLexer implements Iterator<AGFToken> {
 				return new AGFToken(AGFTokenType.COMMA);
 			case '$':
 				return new AGFToken(AGFTokenType.DOLLAR);
+			case '+':
+				return new AGFToken(AGFTokenType.PLUS);
+			case '*':
+				return new AGFToken(AGFTokenType.ASTERISC);
 			// only allow normal SPACE codepoint 32, U+0020
 			case 32:
 				return this.next();

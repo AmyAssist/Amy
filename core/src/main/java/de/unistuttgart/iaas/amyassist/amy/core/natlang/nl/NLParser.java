@@ -31,6 +31,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.NumberNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.ShortWNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.IStemmer;
 
 /**
@@ -109,7 +110,13 @@ public class NLParser implements INLParser {
 	public int matchingNodeIndex(List<WordToken> nl) {
 		return this.grammars.indexOf(matchingNode(nl));
 	}
-
+	
+	/**
+	 * ugly internal state variable to show how many
+	 * skips are allowed currently
+	 */
+	int wcSkips = 0;
+	
 	/**
 	 * recursive method to check each node preorder style
 	 *
@@ -146,6 +153,9 @@ public class NLParser implements INLParser {
 					return false;
 				}
 			}
+			break;
+		case SHORTWC:
+			this.wcSkips = ((ShortWNode) agf).getMaxWordLength();
 			break;
 		case WORD:
 			return match(agf);
@@ -225,13 +235,39 @@ public class NLParser implements INLParser {
 	private boolean match(AGFNode toMatch) {
 		WordToken token = lookAhead(0);
 
-		if (this.stemmer != null && token != null
-				&& this.stemmer.stem(toMatch.getContent()).equals(this.stemmer.stem(token.getContent()))) {
+		if(compareWord(toMatch, token)) {
 			consume();
 			return true;
 		}
+		
+		//greedy match words with fixed size of skips for wildcards
+		if(this.wcSkips != 0) {
+			int lookaheadSize = 0;
+			for(int i=1; i <= this.wcSkips; i++) {
+				WordToken temp = lookAhead(i);
+				if(compareWord(toMatch, temp)) {
+					lookaheadSize = i;
+					break;
+				}
+			}
+			for(int i=0; i < lookaheadSize+1; i++) {
+				consume();
+			}
+			if(lookaheadSize != 0) {
+				return true;
+			}
+		}
+		this.wcSkips = 0;
+		return false;
+	}
+	
+	
+	private boolean compareWord(AGFNode toMatch, WordToken token) {
+		if (this.stemmer != null && token != null
+				&& this.stemmer.stem(toMatch.getContent()).equals(this.stemmer.stem(token.getContent()))) {
+			return true;
+		}
 		if (this.stemmer == null && token != null && toMatch.getContent().equals(token.getContent())) {
-			consume();
 			return true;
 		}
 		return false;

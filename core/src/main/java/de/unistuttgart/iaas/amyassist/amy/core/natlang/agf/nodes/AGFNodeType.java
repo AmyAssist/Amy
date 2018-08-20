@@ -42,7 +42,7 @@ public enum AGFNodeType {
 	 */
 	OPG,
 	/**
-	 * morphene node
+	 * morpheme node
 	 */
 	MORPH,
 	/**
@@ -56,5 +56,9 @@ public enum AGFNodeType {
 	/**
 	 * any integer number
 	 */
-	NUMBER;
+	NUMBER, 
+	/**
+	 * a wildcard with fixed length
+	 */
+	SHORTWC;
 }
