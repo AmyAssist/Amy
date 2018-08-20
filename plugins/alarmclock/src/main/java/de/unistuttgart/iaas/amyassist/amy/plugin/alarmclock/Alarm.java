@@ -34,7 +34,7 @@ import javax.persistence.PersistenceUnit;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalTimeAdapter;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
 
 /**
  * Class that defines timer attributes and behaviour
@@ -50,7 +50,7 @@ public class Alarm implements RegistryEntity {
 	@Column(updatable = false, nullable = false)
 	private int persistentId;
 	private int id;
-	@XmlJavaTypeAdapter(LocalTimeAdapter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
 	private LocalDateTime alarmTime;
 	private boolean active;
 
@@ -78,8 +78,6 @@ public class Alarm implements RegistryEntity {
 
 		this.alarmTime = alarmTime;
 
-		// setAlarmTime(alarmTime);
-
 		this.active = active;
 	}
 
@@ -103,12 +101,12 @@ public class Alarm implements RegistryEntity {
 	 * @return the corresponding alarm object
 	 */
 	public static Alarm reconstructObject(String input) {
-		String[] params = input.split(":");
-		if (params.length == 4) {
-			final LocalDateTime newAlarmTime = LocalDateTime.of(LocalDateTime.now().getYear(),
-					LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(), Integer.parseInt(params[1]),
-					Integer.parseInt(params[2]));
-			return new Alarm(Integer.parseInt(params[0]), newAlarmTime, Boolean.parseBoolean(params[3]));
+		String[] params = input.split(":|\\-|T");
+		if (params.length == 7) {
+			final LocalDateTime newAlarmTime = LocalDateTime.of(Integer.parseInt(params[1]),
+					Integer.parseInt(params[2]), Integer.parseInt(params[3]), Integer.parseInt(params[4]),
+					Integer.parseInt(params[5]));
+			return new Alarm(Integer.parseInt(params[0]), newAlarmTime, Boolean.parseBoolean(params[6]));
 		}
 		throw new IllegalArgumentException();
 	}
