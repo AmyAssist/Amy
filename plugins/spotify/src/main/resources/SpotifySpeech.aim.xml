@@ -63,14 +63,13 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.playPlaylistId">
-		<gram> [spotify] play [{amyinteger}] [from {type} playlist]</gram>
+		<gram> [spotify] play [{type}] [playlist] [{amyinteger}]</gram>
 
 		<EntityTemplates>
 			<EntityTemplate id="type">
 				<gram>(own|featured)</gram>
 			</EntityTemplate>
 		</EntityTemplates>
-
 		<Prompt entityTemplateId="amyinteger">
 			<text> which playlist id would you play? </text>
 			<gram>[playlist] {amyinteger}</gram>
