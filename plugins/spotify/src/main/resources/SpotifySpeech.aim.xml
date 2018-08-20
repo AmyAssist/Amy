@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.getDevices">
+		<gram> get (music|spotify) devices </gram>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.getCurrentSong">
+		<gram> get current [playing] (song|track) </gram>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.getPlaylists">
+		<gram> get [{type}] playlists </gram>
+		<EntityTemplates>
+			<EntityTemplate id="type">
+				<gram>(own|featured)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+
+		<Prompt entityTemplateId="type">
+			<text> what type of playlists would you search? </text>
+			<gram>{type} playlist
+			</gram>
+		</Prompt>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.playSomething">
+		<gram> play some music </gram>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.control">
+		<gram>[go] {type} [(a track|the music)]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="type">
+				<gram>(back|skip|pause|resume)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.volume">
+		<gram> (set [music] volume [to] |spotify) {volumeoption}
+		</gram>
+		<EntityTemplates>
+			<EntityTemplate id="volumeoption">
+				<gram>(max|mute|up|down)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.setDeviceId">
+		<gram> set (spotify|music) device [to {amyinteger}] </gram>
+		<Prompt entityTemplateId="amyinteger">
+			<text>To which device should i switch? </text>
+			<gram>[device] {amyinteger} </gram>
+		</Prompt>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.playPlaylistId">
+		<gram> [spotify] play [{amyinteger}] [from {type} playlist]</gram>
+
+		<EntityTemplates>
+			<EntityTemplate id="type">
+				<gram>(own|featured)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+
+		<Prompt entityTemplateId="amyinteger">
+			<text> which playlist id would you play? </text>
+			<gram>[playlist] {amyinteger}</gram>
+		</Prompt>
+
+		<Prompt entityTemplateId="type">
+			<text> would you play the featured or a own playlist?
+			</text>
+			<gram>{type} playlist</gram>
+		</Prompt>
+	</Intent>
+</AmyInteractionModel>

@@ -24,12 +24,15 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 import java.util.List;
+import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
@@ -42,7 +45,6 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.SearchTypes;
  */
 @SpeechCommand
 public class SpotifySpeech {
-
 	private static final String ERROR_MESSAGE = "An error occurred";
 	private static final String ERROR_MESSAGE_ELEMENT = "Element is not available";
 	private static final int LIMIT_FOR_SEARCH = 5;
@@ -52,131 +54,177 @@ public class SpotifySpeech {
 
 	@Reference
 	private DeviceLogic deviceLogic;
-	
+
 	@Reference
 	private Search search;
 
 	/**
-	 * get a String of all name of all devices
+	 * speech command to get all online devices from spotify
 	 * 
-	 * @param params
-	 *            not used here
-	 * @return
+	 * @param enties
+	 *            input. no input is expected
+	 * @return the speech output string
 	 */
-	@Grammar("get music devices")
-	public String getDevices(String... params) {
+	@Intent("getDevices")
+	public String getDevices(Map<String, EntityData> enties) {
 		List<DeviceEntity> devices = this.deviceLogic.getDevices();
-		String output = "";
+		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < devices.size(); i++) {
-			output = output.concat(String.valueOf(i)).concat(". ").concat(devices.get(i).getName().concat("\n"));
+			builder = builder.append(String.valueOf(i)).append(". ").append(devices.get(i).getName().concat("\n"));
 		}
-		if (output.equals("")) {
-			return "no device found";
+		if (builder.length() > 0) {
+			builder.insert(0, "Following Devices are online: \n");
 		}
-		return output;
+		else {
+			builder.append("No devices are online");
+		}
+		return builder.toString();
 	}
 
 	/**
-	 * set the device in the player logic # is a number between 0 and theoretically infinite
+	 * speech command to get the currently song that is playing
 	 * 
-	 * @param params
-	 * 
-	 * @return
+	 * @param enties
+	 *            input. no input is expected
+	 * @return the speech output string
 	 */
-	@Grammar("set music device #")
-	public String setDevice(String... params) {
-		if (2 < params.length) {
-			try {
-				return this.deviceLogic.setDevice(Integer.parseInt(params[3]));
-			} catch (NumberFormatException e) {
-				return "Input please as Integer";
+	@Intent("getCurrentSong")
+	public String getCurrentSong(Map<String, EntityData> enties) {
+		TrackEntity track = this.playerLogic.getCurrentSong();
+		return (track != null) ? "track: " + track.toString() : "No song is playing";
+	}
+
+	/**
+	 * speech command to get own or featured playlists
+	 * 
+	 * @param enties
+	 *            input. to get the type featured or own
+	 * @return the speech output string
+	 */
+	@Intent("getPlaylists")
+	public String getPlaylists(Map<String, EntityData> enties) {
+		StringBuilder builder = new StringBuilder();
+		if (enties.get("type").getString() != null) {
+			switch (enties.get("type").getString()) {
+			case "featured":
+				for (PlaylistEntity playlist : this.search.searchFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
+					builder = builder.append(playlist.toString()).append("\n");
+				}
+				break;
+			case "own":
+				for (PlaylistEntity playlist : this.search.searchOwnPlaylists(LIMIT_FOR_SEARCH)) {
+					builder = builder.append(playlist.toString()).append("\n");
+				}
+				break;
+			default:
+				break;
 			}
 		}
-		return ERROR_MESSAGE;
+		if (builder.length() > 0) {
+			builder.insert(0, "Following Playlists found: \n");
+		}
+		else {
+			builder.append("No playlists found");
+		}
+		return builder.toString();
+
 	}
 
 	/**
-	 * play a featured playlist
+	 * speech command for play a 'random' playlist
 	 * 
-	 * @return
+	 * @param enties
+	 *            input. no input is expected
+	 * @return the speech output string
 	 */
-	@Grammar("(music|spotify) play [music]")
-	public String playASong(String... params) {
-		return (this.playerLogic.play().toString());
+	@Intent("playSomething")
+	public String playSomething(Map<String, EntityData> enties) {
+		PlaylistEntity list = this.playerLogic.play();
+		return (list != null) ? list.toString() : "No playlist available";
 	}
 
-	@Grammar("play featured playlist #")
-	public String playFeaturedPlaylist(String... params) {
-		PlaylistEntity playlist =  this.playerLogic.playPlaylist(Integer.parseInt(params[3]), SearchTypes.FEATURED_PLAYLISTS);
-		return (playlist != null)? playlist.toString() : ERROR_MESSAGE_ELEMENT;
-	}
-
-	@Grammar("play own playlist #")
-	public String play(String... params) {
-		PlaylistEntity playlist =  this.playerLogic.playPlaylist(Integer.parseInt(params[3]), SearchTypes.USER_PLAYLISTS);
-		return (playlist != null)? playlist.toString() : ERROR_MESSAGE_ELEMENT;
-	}
-
-	@Grammar("resume the music")
-	public String resume(String... params) {
-		if (this.playerLogic.resume()) {
-			return "resume";
+	/**
+	 * speech command for back, skip, pause, resume
+	 * 
+	 * @param enties
+	 *            input. contains the wich command should be used
+	 * @return the speech output string
+	 */
+	@Intent("control")
+	public String control(Map<String, EntityData> enties) {
+		switch (enties.get("type").getString()) {
+		case "back":
+			if (this.playerLogic.back()) {
+				return "back";
+			}
+			return ERROR_MESSAGE;
+		case "skip":
+			if (this.playerLogic.skip()) {
+				return "skip";
+			}
+			return ERROR_MESSAGE;
+		case "pause":
+			if (this.playerLogic.pause()) {
+				return "pause";
+			}
+			return ERROR_MESSAGE;
+		case "resume":
+			if (this.playerLogic.resume()) {
+				return "resume";
+			}
+			return ERROR_MESSAGE;
+		default:
+			return ERROR_MESSAGE;
 		}
-		return ERROR_MESSAGE;
 	}
 
-	@Grammar("pause the music")
-	public String pause(String... params) {
-		if (this.playerLogic.pause()) {
-			return "pause";
+	/**
+	 * speech command for the volume control
+	 * 
+	 * @param enties
+	 *            input. contain one of the following strings: mute, max, up or down
+	 * @return the speech output string
+	 */
+	@Intent("volume")
+	public String volume(Map<String, EntityData> enties) {
+		return "Volume is now on: "
+				+ Integer.toString(this.playerLogic.setVolume(enties.get("volumeoption").getString())) + " percent";
+	}
+
+	/**
+	 * speech command to set a spotify device with id
+	 * 
+	 * @param enties
+	 *            input. contains the id from the device
+	 * @return the speech output string
+	 */
+	@Intent("setDeviceId")
+	public String setDeviceId(Map<String, EntityData> enties) {
+		return this.deviceLogic.setDevice(enties.get("amyinteger").getNumber());
+	}
+
+	/**
+	 * speech command to play a playlist that was searched before
+	 * 
+	 * @param enties
+	 *            input. type to play and id from the playlist
+	 * @return the speech output string
+	 */
+	@Intent("playPlaylistId")
+	public String playPlaylistId(Map<String, EntityData> enties) {
+		PlaylistEntity playlist = null;
+		switch (enties.get("type").getString()) {
+		case "own":
+			playlist = this.playerLogic.playPlaylist(enties.get("amyinteger").getNumber(), SearchTypes.USER_PLAYLISTS);
+			break;
+		case "featured":
+			playlist = this.playerLogic.playPlaylist(enties.get("amyinteger").getNumber(),
+					SearchTypes.FEATURED_PLAYLISTS);
+			break;
+		default:
+			break;
 		}
-		return ERROR_MESSAGE;
+		return (playlist != null) ? playlist.toString() : ERROR_MESSAGE_ELEMENT;
 	}
 
-	@Grammar("skip a track")
-	public String skip(String... params) {
-		if (this.playerLogic.skip()) {
-			return "skip";
-		}
-		return ERROR_MESSAGE;
-	}
-
-	@Grammar("go back a track")
-	public String back(String... params) {
-		if (this.playerLogic.back()) {
-			return "back";
-		}
-		return ERROR_MESSAGE;
-	}
-
-	@Grammar("set music volume (mute|max|up|down)")
-	public String volume(String... params) {
-		if (3 < params.length) {
-			return Integer.toString(this.playerLogic.setVolume(params[3]));
-		}
-		return "not enough arguments";
-	}
-
-	@Grammar("get currently played song")
-	public String getCurrentlyPlayed(String... params) {
-		return "track: " + playerLogic.getCurrentSong().toString();
-	}
-
-	@Grammar("get own playlists")
-	public String getUserplaylists(String... params) {
-		String output = "";
-		for (PlaylistEntity playlist : this.search.searchOwnPlaylists(LIMIT_FOR_SEARCH)) {
-			output = output.concat(playlist.toString()).concat("\n");
-		}
-		return output;
-	}
-
-	@Grammar("get featured playlists")
-	public String getFeaturedPlaylists(String... params) {
-		String output = "";
-		for (PlaylistEntity playlist : this.search.searchFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
-			output = output.concat(playlist.toString()).concat("\n");
-		}
-		return output;
-	}
 }

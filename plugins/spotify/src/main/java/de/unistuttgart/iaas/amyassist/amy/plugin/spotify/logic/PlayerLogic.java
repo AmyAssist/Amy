@@ -249,7 +249,7 @@ public class PlayerLogic {
 	 */
 	public TrackEntity getCurrentSong() {
 		CurrentlyPlayingContext currentlyPlayingContext = this.spotifyAPICalls.getCurrentSong();
-		if (currentlyPlayingContext != null) {
+		if (currentlyPlayingContext != null && currentlyPlayingContext.getItem() != null) {
 			Track[] track = { currentlyPlayingContext.getItem() };
 			return this.search.createTrackData(new Paging.Builder<Track>().setItems(track).build()).get(0);
 		}
