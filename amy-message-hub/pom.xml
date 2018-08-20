@@ -25,5 +25,17 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
+		<!-- MQTT -->
+		<dependency>
+			<groupId>org.eclipse.paho</groupId>
+			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<!-- Console -->
+		<dependency>
+			<groupId>com.googlecode.clichemaven</groupId>
+			<artifactId>cliche</artifactId>
+			<version>${cliche.version}</version>
+		</dependency>
 	</dependencies>
 </project>

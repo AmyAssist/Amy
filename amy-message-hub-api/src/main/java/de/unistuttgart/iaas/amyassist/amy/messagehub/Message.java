@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- * 
+ *
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
- * 
+ * You may obtain a copy of the License at
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,42 +24,29 @@
 package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
 /**
- * This is a internal used representation of a Message. It contains the topic and the data of a message.
- * 
- * @author Leon Kiefer
- * @param <T>
- *            the type of the message payload
+ * A message which was received by the {@link MessageHub}.
+ *
+ * @author Tim Neumann
  */
-public class Message<T> {
-	private final String topic;
-	private final T data;
+public interface Message {
+	/**
+	 * @return The Payload of this message
+	 */
+	String getPayload();
 
 	/**
-	 * @param topic
-	 *            the topic the message was published
-	 * @param data
-	 *            the payload of the message
+	 * @return The quality of service(0-2) of this message.
+	 * @see <a href="https://en.wikipedia.org/wiki/MQTT#Quality_of_service_(QoS)"> quality of service </a>
 	 */
-	public Message(String topic, T data) {
-		this.topic = topic;
-		this.data = data;
-	}
+	int getQualityOfService();
 
 	/**
-	 * Get the topic.
-	 * 
-	 * @return the topic of the message
+	 * @return Whether this message may be a duplicate message
 	 */
-	public String getTopic() {
-		return this.topic;
-	}
+	boolean mayBeDuplicate();
 
 	/**
-	 * Get the data.
-	 * 
-	 * @return the payload of the message
+	 * @return Whether the message was retained in the Broker, an may therefore not be "fresh".
 	 */
-	public T getData() {
-		return this.data;
-	}
+	boolean wasRetained();
 }
