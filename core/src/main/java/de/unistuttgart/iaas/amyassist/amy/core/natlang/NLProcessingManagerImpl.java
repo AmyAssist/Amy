@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- * 
+ *
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
- * 
+ * You may obtain a copy of the License at
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,6 +35,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -60,43 +61,46 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
  * The implementation of the NLProcessingManager. This implementation uses the Parsers in the
  * {@link de.unistuttgart.iaas.amyassist.amy.core.natlang.nl} and the
  * {@link de.unistuttgart.iaas.amyassist.amy.core.natlang.agf} package.
- * 
+ *
  * @author Leon Kiefer, Felix Burk
  */
 @Service
 public class NLProcessingManagerImpl implements NLProcessingManager {
-	
+
 	/**
-	 * different possible answers 
+	 * different possible answers
 	 */
 	private final String[] failedToUnderstandAnswer = {
-			"I did not understand that", "Sorry, could you repeat that?", 
+			"I did not understand that", "Sorry, could you repeat that?",
 			"I don't know what you mean", "No idea what you are talking about", "My plugin developers did not teach me this yet"
 	};
-	
+
 	private final String quitIntentUserInput = "(never mind|quit|forget that)";
-	
+
 	private final String[] quitIntentAnswer = {
-		"ok", "sure", "what else can i do for you?"	
+			"ok", "sure", "what else can i do for you?"
 	};
 
 	@Reference
 	private Logger logger;
-	
+
 	@Reference
 	private Environment environment;
-		
-	private final Map<AGFNode, Pair<Method, XMLAIMIntent>> nodeToMethodAIMPair = new HashMap<>();
- 
+
+	@Reference
+	private ServiceLocator serviceLocator;
+
+	private Map<AGFNode, Pair<Method, XMLAIMIntent>> nodeToMethodAIMPair = new HashMap<>();
+
 	@Reference
 	private ConfigurationManager configurationLoader;
-	
+
 	private static final String CONFIG_NAME = "core.config";
 	private static final String PROPERTY_ENABLE_STEMMER = "enableStemmer";
 	private static final String PROBERTY_LANGUAGE = "chooseLanguage";
-	
+
 	private ChooseLanguage language;
-	
+
 	private AGFNode quitIntentUserInputGram;
 
 	@PostConstruct
@@ -106,12 +110,12 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		String languageString = this.configurationLoader.getConfigurationWithDefaults(CONFIG_NAME)
 				.getProperty(PROBERTY_LANGUAGE, "EN");
 		this.language = new ChooseLanguage(languageString, stemmerEnabled);
-		
+
 		AGFLexer lex = new AGFLexer(this.quitIntentUserInput);
 		AGFParser parser = new AGFParser(lex);
 		this.quitIntentUserInputGram = parser.parseWholeExpression();
 	}
-	
+
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#register(java.lang.reflect.Method, de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent)
 	 */
@@ -128,51 +132,51 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * 
-	 * currently not working! 
-	 * 
+	 *
+	 * currently not working!
+	 *
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#getGrammarFileString(java.lang.String)
 	 */
 	@Override
 	public String getGrammarFileString(String grammarName) {
 		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.MULTI_CALL_START,
 				Constants.SINGLE_CALL_START, Constants.MULTI_CALL_STOP, Constants.SHUT_UP);
-		
+
 
 		return generator.generateGrammarFileString();
 	}
 
-	
+
 	@Override
-	public void processIntent(DialogImpl dialog, String naturalLanguageText) {
+	public void processIntent(Dialog dialog, String naturalLanguageText) {
 		List<AGFNode> promptGrams = new ArrayList<>();
 		for(Entity entity : dialog.getIntent().getEntityList().values()) {
 			if(entity.getPrompt() != null) {
-			promptGrams.add(entity.getPrompt().getGrammar());
+				promptGrams.add(entity.getPrompt().getGrammar());
 			}
 		}
-		
+
 		promptGrams.add(this.quitIntentUserInputGram);
-		
+
 		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
 		INLParser nlParser = new NLParser(promptGrams, this.language.getStemmer());
 		try {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
-			
+
 			if(matchingNodeIndex == promptGrams.indexOf(this.quitIntentUserInputGram)) {
 				dialog.output(generateRandomAnswer(this.quitIntentAnswer));
 				dialog.setIntent(null);
 				return;
 			}
-			
+
 			Map<String, String> entityIdToUserContent = getEntityContent(promptGrams.get(matchingNodeIndex));
-			
+
 			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
 				EntityData data = new EntityData(entry.getValue());
 				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
 			}
-			
+
 			if(!dialog.getIntent().isFinished()) {
 				dialog.output(dialog.getIntent().generateQuestion());
 			}
@@ -180,9 +184,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			this.logger.debug("no matching grammar found " + e.getMessage());
 			dialog.output(generateRandomAnswer(this.failedToUnderstandAnswer));
 		}
-		
+
 	}
-	
+
 	/**
 	 * helper method to extract entity contents
 	 * @param node to extract entity content from
@@ -190,7 +194,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	 */
 	private Map<String, String> getEntityContent(AGFNode node){
 		Map<String, String> result = new HashMap<>();
-		
+
 		for(AGFNode child : node.getChilds()) {
 			if(child.getType() == AGFNodeType.ENTITY) {
 				EntityNode entity = (EntityNode) child;
@@ -201,16 +205,16 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 				result.putAll(getEntityContent(child));
 			}
 		}
-		
+
 		return result;
 	}
 
 	/**
-	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#decideIntent(de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogImpl, java.lang.String)
+	 *
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#decideIntent(de.unistuttgart.iaas.amyassist.amy.core.natlang.Dialog, java.lang.String)
 	 */
 	@Override
-	public void decideIntent(DialogImpl dialog, String naturalLanguageText) {
+	public void decideIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
 		INLParser nlParser = new NLParser(new ArrayList<>(this.nodeToMethodAIMPair.keySet()), this.language.getStemmer());
@@ -220,13 +224,13 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			XMLAIMIntent right = this.nodeToMethodAIMPair.get(node).getRight();
 			UserIntent userIntent = new UserIntent(left, right);
 			dialog.setIntent(userIntent);
-			
+
 			Map<String, String> entityIdToUserContent = getEntityContent(node);
 			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
 				EntityData data = new EntityData(entry.getValue());
 				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
 			}
-			
+
 			if(!dialog.getIntent().isFinished()) {
 				dialog.output(dialog.getIntent().generateQuestion());
 			}
@@ -236,7 +240,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		}
 
 	}
-	
+
 	private String generateRandomAnswer(String[] strings) {
 		Random rand = new Random();
 		int rndm = rand.nextInt(strings.length);

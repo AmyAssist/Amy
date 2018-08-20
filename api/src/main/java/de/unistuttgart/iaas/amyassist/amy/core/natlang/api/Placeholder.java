@@ -31,11 +31,19 @@ import java.lang.annotation.Target;
 /**
  * The definition of a grammar annotation.
  * 
- * @author Leon Kiefer, Felix Burk
+ * @author Felix Burk
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Target(java.lang.annotation.ElementType.METHOD)
-public @interface Intent {
-
+public @interface Placeholder {
+	/**
+	 * The string inside this annotation has to be in
+	 * Amy Grammar Format (AGF), a description and examples
+	 * can be found in the amy-assist wiki 
+	 * https://github.com/AmyAssist/Amy/wiki/Annotations
+	 *  
+	 * @return the grammar in AGF - Amy Grammar Format
+	 */
+	String value();
 }

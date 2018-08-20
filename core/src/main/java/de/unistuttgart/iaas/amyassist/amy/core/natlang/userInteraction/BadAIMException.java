@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- * 
+ *
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
- * 
+ * You may obtain a copy of the License at
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,21 +21,26 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
 /**
- * The definition of a grammar annotation.
- * 
- * @author Leon Kiefer, Felix Burk
+ * Thrown if AIM xml is not correct
+ *
+ * @author Felix Burk
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Target(java.lang.annotation.ElementType.METHOD)
-public @interface Intent {
+public class BadAIMException extends RuntimeException {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 5771538728222282851L;
+
+	/**
+	 * constructor
+	 * @param msg to show
+	 */
+	public BadAIMException(String msg) {
+		super(msg);
+	}
 
 }

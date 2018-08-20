@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- * 
+ *
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
- * 
+ * You may obtain a copy of the License at
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,7 +55,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerServic
 /**
  * This service loads all amy interaction model xml files and saves them inside an array list, containing
  * AmyInteractionModel instances
- * 
+ *
  * @author Felix Burk
  */
 @Service(LoadAIMService.class)
@@ -64,7 +65,7 @@ public class LoadAIMService implements DeploymentContainerService {
 
 	@Reference
 	private PluginManager pluginManager;
-	
+
 	@Reference
 	private NLProcessingManager nlManager;
 
@@ -82,30 +83,30 @@ public class LoadAIMService implements DeploymentContainerService {
 
 			String pathS = "META-INF/" + plugin.getUniqueName() + "." + METAFILENAME;
 			//this stream is gonna be closed - line 92
-			@SuppressWarnings("resource") 
+			@SuppressWarnings("resource")
 			InputStream stream = plugin.getClassLoader().getResourceAsStream(pathS);
-			
+
 			if (stream == null) {
 				this.logger.info("could not find aim meta file for plugin {}", plugin.getDisplayName());
 				continue;
 			}
-			//get all aim.xml file names 
+			//get all aim.xml file names
 			List<String> aimFiles = readMetaFile(stream, plugin);
-			
+
 			try {
 				stream.close();
 			} catch (IOException e) {
 				this.logger.info("stream could not be closed {}", e);
 			}
-			
+
 			//extract all intents
 			List<XMLAIMIntent> aimIntents = new ArrayList<>();
-			
+
 			for(String s : aimFiles) {
 				aimIntents.addAll(extractIntents(plugin, s));
 			}
-			
-			
+
+
 			matchAndRegister(aimIntents, plugin.getClassLoader());
 
 		}
@@ -115,7 +116,7 @@ public class LoadAIMService implements DeploymentContainerService {
 	/**
 	 * matches aim intents and methods of speech classes
 	 * and registeres them inside the NLProcessingManager
-	 * 
+	 *
 	 * @param aimIntents list of all intents
 	 * @param classloader matching classloader
 	 */
@@ -124,7 +125,7 @@ public class LoadAIMService implements DeploymentContainerService {
 			String ref = intent.getReference();
 			String fullClassName = ref.substring(0,ref.lastIndexOf('.'));
 			String methodName = ref.substring(ref.lastIndexOf('.')+1, ref.length());
-			
+
 			Class<?> cls;
 			try {
 				cls = Class.forName(fullClassName,true, classloader);
@@ -141,12 +142,12 @@ public class LoadAIMService implements DeploymentContainerService {
 				this.logger.error("class not found {} error {}", fullClassName, e);
 			}
 		}
-		
+
 	}
 
 	/**
 	 * extracts AIMIntents from aim xmls
-	 * 
+	 *
 	 * @param plugin to load resource from
 	 * @param fileName n
 	 * @return list of extracted aim intents
@@ -156,13 +157,17 @@ public class LoadAIMService implements DeploymentContainerService {
 
 		if (stream != null) {
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
-				XMLAmyInteractionModel model = this.extractModel(reader.lines().collect(Collectors.joining()), fileName);
+				XMLAmyInteractionModel model = extractModel(reader.lines().collect(Collectors.joining()), fileName);
 				if (model != null) {
 					return model.getIntents();
 				}
 				this.logger.error("could not read model");
-			} catch (IOException e) {
-				this.logger.error("could not read aim file {}", e);
+			}
+			catch(EOFException e) {
+				this.logger.error("end of file {}", e);
+			}
+			catch (IOException e) {
+				this.logger.debug("Could not read file!", e);
 			}
 		}
 		this.logger.error("could not read aim file");
@@ -172,7 +177,7 @@ public class LoadAIMService implements DeploymentContainerService {
 
 	/**
 	 * extracts AmyInteractionModel from
-	 * 
+	 *
 	 * @param xmlContent
 	 *            content of the xml
 	 * @param entryName
@@ -184,17 +189,17 @@ public class LoadAIMService implements DeploymentContainerService {
 			JAXBContext jc = JAXBContext.newInstance(XMLAmyInteractionModel.class);
 			Unmarshaller unmarshaller = jc.createUnmarshaller();
 			StringReader reader = new StringReader(xmlContent);
-			return (XMLAmyInteractionModel) unmarshaller.unmarshal(reader);		
+			return (XMLAmyInteractionModel) unmarshaller.unmarshal(reader);
 		} catch (JAXBException e1) {
 			this.logger.error("Amy Interaction Model for file {} could not be parsed: " +  entryName, e1);
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
-	 * simple reader for meta file data 
-	 * 
+	 * simple reader for meta file data
+	 *
 	 * @param stream input stream of file
 	 * @param plugin for debugging purposes
 	 * @return list of names from .aim.xml files
@@ -209,11 +214,11 @@ public class LoadAIMService implements DeploymentContainerService {
 			while ((line = in.readLine()) != null) {
 				if (line.matches("#") || line.matches("\\s*"))
 					continue;
-				if (line.matches(".aims:")) {
-					aimsFound = true;
-				}
 				if(aimsFound) {
 					aimFiles.add(line);
+				}
+				if (line.matches(".aims:")) {
+					aimsFound = true;
 				}
 			}
 		} catch (IOException e) {
