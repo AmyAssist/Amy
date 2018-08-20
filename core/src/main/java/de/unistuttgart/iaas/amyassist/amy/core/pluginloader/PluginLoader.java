@@ -123,15 +123,11 @@ public class PluginLoader {
 			this.logger.warn("Can't get display name of plugin {}", name);
 		}
 
-		if (plugin.getClasses().isEmpty()) {
-			this.logger.warn("Plugin contains no class: {}", name);
-		}
-
 		if (plugin.getVersion().isEmpty()) {
 			this.logger.warn("Can't get version of plugin {}", name);
 		}
 
-		this.logger.info("loaded plugin {} with {} classes", name, plugin.getClasses().size());
+		this.logger.info("loaded plugin {}", name);
 		this.plugins.put(plugin.getUniqueName(), plugin);
 	}
 
