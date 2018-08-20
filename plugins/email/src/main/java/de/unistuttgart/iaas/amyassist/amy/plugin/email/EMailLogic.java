@@ -229,28 +229,28 @@ public class EMailLogic {
 	 * @param amount
 	 *            the amount of mails, put -1 here if you want all mails
 	 * 
-	 * @return all mails in the inbox in a list, because lists are better to work with than arrays
+	 * @return array with the requested mails, from newest to oldest, empty array if there was an error
 	 */
-	public List<MessageDTO> getMailsForREST(int amount) {
-		List<MessageDTO> messagesToSend = new ArrayList<>();
-		List<Message> messages;
+	public MessageDTO[] getMailsForREST(int amount) {
+		Message[] messages;
+		MessageDTO[] messagesToSend;
 		try (Folder inbox = this.mailSession.getInbox()) {
 			int amountInInbox = inbox.getMessageCount();
 			int lowerIndex = (amount == -1) ? 1 : Math.max(amountInInbox - amount, 1);
-			messages = Arrays.asList(this.mailSession.getInbox().getMessages(lowerIndex, amountInInbox));
+			messages = this.mailSession.getInbox().getMessages(lowerIndex, amountInInbox);
+			messagesToSend = new MessageDTO[messages.length];
 
-			// we switch order because we get the messages from the inbox from oldest to newest
-			Collections.reverse(messages);
-			for (int i = 0; i < messages.size(); i++) {
-				Message m = messages.get(i);
+			for (int i = 0; i < messages.length; i++) {
+				// we switch order because we get the messages from the inbox from oldest to newest
+				Message m = messages[messages.length - 1 - i];
 				LocalDateTime sentDate = m.getSentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-				messagesToSend.add(new MessageDTO(getFrom(m), m.getSubject(), getContentFromMessage(m), sentDate,
-						isImportantMessage(m), m.isSet(Flag.SEEN)));
+				messagesToSend[i] = new MessageDTO(getFrom(m), m.getSubject(), getContentFromMessage(m), sentDate,
+						isImportantMessage(m), m.isSet(Flag.SEEN));
 			}
 			return messagesToSend;
 		} catch (MessagingException | IOException e) {
 			this.logger.error("There were problems handling the messages", e);
-			return Collections.emptyList();
+			return new MessageDTO[0];
 		}
 	}
 

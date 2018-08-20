@@ -438,10 +438,9 @@ public class EmailLogicTest {
 		Message[] messages = createMockMessages(10, 5);
 		when(this.inboxMock.getMessages(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt())).thenReturn(messages);
 
-		// careful! every call of getMailsForREST will revert the order of the messages array
-		List<MessageDTO> transferMessages = this.emailLogic.getMailsForREST(-1);
-		for (int i = 0; i < transferMessages.size(); i++) {
-			compareMessages(messages[i], transferMessages.get(i));
+		MessageDTO[] transferMessages = this.emailLogic.getMailsForREST(-1);
+		for (int i = 0; i < transferMessages.length; i++) {
+			compareMessages(messages[messages.length - 1 - i], transferMessages[i]);
 		}
 	}
 
@@ -459,10 +458,9 @@ public class EmailLogicTest {
 		Message[] messages = createMockMessages(7, 5);
 		when(this.inboxMock.getMessages(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt())).thenReturn(messages);
 
-		// careful! every call of getMailsForREST will revert the order of the messages array
-		List<MessageDTO> transferMessages = this.emailLogic.getMailsForREST(amount);
-		for (int i = 0; i < transferMessages.size(); i++) {
-			compareMessages(messages[i], transferMessages.get(i));
+		MessageDTO[] transferMessages = this.emailLogic.getMailsForREST(amount);
+		for (int i = 0; i < transferMessages.length; i++) {
+			compareMessages(messages[messages.length - 1 - i], transferMessages[i]);
 		}
 	}
 

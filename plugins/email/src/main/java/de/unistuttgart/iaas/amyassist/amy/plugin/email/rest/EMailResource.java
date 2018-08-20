@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
 
-import java.util.List;
-
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -63,7 +61,6 @@ public class EMailResource {
 	@Path("getMails")
 	@Produces(MediaType.APPLICATION_JSON)
 	public MessageDTO[] getAllMails(@QueryParam("amount") @DefaultValue("-1") int amount) {
-		List<MessageDTO> mails = this.logic.getMailsForREST(amount);
-		return mails.toArray(new MessageDTO[mails.size()]);
+		return this.logic.getMailsForREST(amount);
 	}
 }
