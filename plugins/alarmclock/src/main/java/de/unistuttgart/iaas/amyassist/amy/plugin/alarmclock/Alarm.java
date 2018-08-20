@@ -63,6 +63,7 @@ public class Alarm implements RegistryEntity {
 	 * 
 	 * @param id
 	 *            the alarmcounter
+	 * @param alarmTime
 	 * @param hour
 	 *            hour of the alarm
 	 * @param minute

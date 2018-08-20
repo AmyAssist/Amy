@@ -158,7 +158,7 @@ public class AlarmClockResource implements Resource {
 	/**
 	 * sets a alarm to a given timestamp
 	 * 
-	 * @param alarmTime
+	 * @param alarm
 	 *            the timestamp for the alarm
 	 * @return the newly created alarm
 	 */
@@ -166,15 +166,15 @@ public class AlarmClockResource implements Resource {
 	@Path("alarms/new")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Alarm newAlarm(Alarm alarmTime) {
+	public Alarm newAlarm(Alarm alarm) {
 		int day;
-		if (LocalDateTime.now().getDayOfMonth() == alarmTime.getAlarmTime().getDayOfMonth()) {
+		if (LocalDateTime.now().getDayOfMonth() == alarm.getAlarmTime().getDayOfMonth()) {
 			day = -1;
 		} else {
 			day = 1;
 		}
-		Alarm result = this.logic.setAlarm(day, alarmTime.getAlarmTime().getHour(),
-				alarmTime.getAlarmTime().getMinute());
+		Alarm result = this.logic.setAlarm(day, alarm.getAlarmTime().getHour(),
+				alarm.getAlarmTime().getMinute());
 		return result;
 	}
 

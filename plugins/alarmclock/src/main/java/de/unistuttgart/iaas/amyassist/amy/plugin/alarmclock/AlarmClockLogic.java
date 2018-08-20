@@ -245,6 +245,7 @@ public class AlarmClockLogic {
 		if (a.isActive()) {
 			this.alarmbeep.stopBeep(a);
 			a.setActive(false);
+			this.alarmStorage.save(a);
 			return "Alarm " + a.getId() + " deactivated";
 		}
 		return "Alarm " + alarmNumber + " is already inactive";
@@ -282,6 +283,7 @@ public class AlarmClockLogic {
 		Alarm a = getAlarm(alarmNumber);
 		if (!a.isActive()) {
 			a.setActive(true);
+			this.alarmStorage.save(a);
 			return "Alarm " + a.getId() + " activated";
 		}
 
@@ -374,6 +376,7 @@ public class AlarmClockLogic {
 			}
 			Alarm a = getAlarm(alarmNumber);
 			a.setAlarmTime(this.alarmTime);
+			this.alarmStorage.save(a);
 			Runnable alarmRunnable = createAlarmRunnable(alarmNumber);
 			ZonedDateTime with = this.environment.getCurrentDateTime().with(a.getAlarmTime());
 			if (with.isBefore(this.environment.getCurrentDateTime())) {
