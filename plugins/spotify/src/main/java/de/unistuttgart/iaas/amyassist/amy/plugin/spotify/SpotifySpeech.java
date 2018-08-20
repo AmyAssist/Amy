@@ -198,7 +198,7 @@ public class SpotifySpeech {
 	 */
 	@Intent()
 	public String setDeviceId(Map<String, EntityData> enties) {
-		return this.deviceLogic.setDevice(enties.get("amyinteger").getNumber());
+		return this.deviceLogic.setDevice(enties.get("deviceid").getNumber());
 	}
 
 	/**
@@ -213,10 +213,10 @@ public class SpotifySpeech {
 		PlaylistEntity playlist = null;
 		switch (enties.get("type").getString()) {
 		case "own":
-			playlist = this.playerLogic.playPlaylist(enties.get("amyinteger").getNumber(), SearchTypes.USER_PLAYLISTS);
+			playlist = this.playerLogic.playPlaylist(enties.get("songid").getNumber(), SearchTypes.USER_PLAYLISTS);
 			break;
 		case "featured":
-			playlist = this.playerLogic.playPlaylist(enties.get("amyinteger").getNumber(),
+			playlist = this.playerLogic.playPlaylist(enties.get("songid").getNumber(),
 					SearchTypes.FEATURED_PLAYLISTS);
 			break;
 		default:

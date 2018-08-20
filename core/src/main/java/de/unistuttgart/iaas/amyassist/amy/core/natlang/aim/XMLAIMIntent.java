@@ -81,7 +81,7 @@ public class XMLAIMIntent {
 	 * @return gram
 	 */
 	public String getGram() {
-		return this.gram;
+		return this.gram.toLowerCase().trim();
 	}
 
 	/**
