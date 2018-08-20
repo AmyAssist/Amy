@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -109,7 +110,13 @@ public class AlarmClockResource implements Resource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Alarm editAlarm(@PathParam("pathid") int alarmNumber, Alarm alarmInc) {
 		Alarm alarm = alarmInc;
-		this.logic.editAlarm(alarmNumber, alarm.getAlarmTime().getHour(), alarm.getAlarmTime().getMinute());
+		int day;
+		if (LocalDateTime.now().getDayOfMonth() == alarm.getAlarmTime().getDayOfMonth()) {
+			day = -1;
+		} else {
+			day = 1;
+		}
+		this.logic.editAlarm(alarmNumber, day, alarm.getAlarmTime().getHour(), alarm.getAlarmTime().getMinute());
 		return alarm;
 	}
 
@@ -160,8 +167,14 @@ public class AlarmClockResource implements Resource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Alarm newAlarm(Alarm alarmTime) {
-
-		Alarm result = this.logic.setAlarm(alarmTime.getAlarmTime().getHour(), alarmTime.getAlarmTime().getMinute());
+		int day;
+		if (LocalDateTime.now().getDayOfMonth() == alarmTime.getAlarmTime().getDayOfMonth()) {
+			day = -1;
+		} else {
+			day = 1;
+		}
+		Alarm result = this.logic.setAlarm(day, alarmTime.getAlarmTime().getHour(),
+				alarmTime.getAlarmTime().getMinute());
 		return result;
 	}
 
