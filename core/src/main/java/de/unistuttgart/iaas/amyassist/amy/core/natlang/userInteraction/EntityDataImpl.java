@@ -30,16 +30,16 @@ import javax.persistence.Entity;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 
-
 /**
  * Stores the data from one entity. Only one attribute is set at the same time
+ * 
  * @author Lars Buttgereit
  */
 public class EntityDataImpl implements EntityData {
-	
+
 	private String string;
 	private LocalDateTime time;
-	
+
 	public EntityDataImpl(String string) {
 		this.string = string;
 	}
@@ -51,8 +51,8 @@ public class EntityDataImpl implements EntityData {
 	public int getNumber() {
 		try {
 			return Integer.parseInt(this.string);
-		}catch (NumberFormatException e) {
-			
+		} catch (NumberFormatException e) {
+
 			return Integer.MIN_VALUE;
 		}
 	}
@@ -72,6 +72,5 @@ public class EntityDataImpl implements EntityData {
 	public LocalDateTime getTime() {
 		return this.time;
 	}
-	
-	
+
 }

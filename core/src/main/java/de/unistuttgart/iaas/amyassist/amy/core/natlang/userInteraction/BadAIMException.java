@@ -37,7 +37,9 @@ public class BadAIMException extends RuntimeException {
 
 	/**
 	 * constructor
-	 * @param msg to show
+	 * 
+	 * @param msg
+	 *                to show
 	 */
 	public BadAIMException(String msg) {
 		super(msg);

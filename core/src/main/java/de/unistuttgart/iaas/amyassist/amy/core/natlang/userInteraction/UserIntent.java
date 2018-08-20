@@ -73,9 +73,9 @@ public class UserIntent {
 	 * Represents an intent of a user
 	 *
 	 * @param method
-	 *            plugin method to call
+	 *                      plugin method to call
 	 * @param aimIntent
-	 *            corresponding aimintent from xml
+	 *                      corresponding aimintent from xml
 	 */
 	public UserIntent(@Nonnull Method method, @Nonnull XMLAIMIntent aimIntent) {
 		this.method = method;
@@ -115,7 +115,7 @@ public class UserIntent {
 	 * parse a string to agf
 	 *
 	 * @param toParse
-	 *            String to parse
+	 *                    String to parse
 	 * @return a agf node
 	 */
 	private AGFNode parseStringToAGF(String toParse) {
@@ -135,9 +135,9 @@ public class UserIntent {
 	 * Invoke the method of this partialNLI with an instance of the partialNLIClass
 	 *
 	 * @param instance
-	 *            the instance of the partialNLIClass
+	 *                     the instance of the partialNLIClass
 	 * @param map
-	 *            map of all entities with the id as key
+	 *                     map of all entities with the id as key
 	 * @return the result String from calling the command
 	 */
 	public String call(Object instance, Map<String, EntityDataImpl> map) {
@@ -217,8 +217,8 @@ public class UserIntent {
 		for (Entry<String, Entity> entry : this.entityList.entrySet()) {
 			if (entry.getValue().getMethod() != null) {
 				StringBuilder builder = new StringBuilder();
-				List<String> providedEntities = NLIAnnotationReader.callNLIGetEntityProviderMethod(entry.getValue().getMethod(),
-						object);
+				List<String> providedEntities = NLIAnnotationReader
+						.callNLIGetEntityProviderMethod(entry.getValue().getMethod(), object);
 				if (!providedEntities.isEmpty()) {
 					builder.append("(").append(providedEntities.get(0));
 					for (int i = 1; i < providedEntities.size(); i++) {

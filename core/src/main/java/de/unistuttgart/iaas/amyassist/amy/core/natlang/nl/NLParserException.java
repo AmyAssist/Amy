@@ -29,14 +29,15 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
  * @author Felix Burk
  */
 public class NLParserException extends RuntimeException {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4842605729226226028L;
 
 	/**
-	 * @param msg the message to display
+	 * @param msg
+	 *                the message to display
 	 */
 	public NLParserException(String msg) {
 		super(msg);

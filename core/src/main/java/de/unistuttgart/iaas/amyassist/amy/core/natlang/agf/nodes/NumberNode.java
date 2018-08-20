@@ -29,39 +29,43 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
  * @author Felix Burk
  */
 public class NumberNode extends AGFNode {
-	
+
 	private int containedNumber;
-	
+
 	private int min;
 	private int max;
 	private int stepsize;
 
 	/**
-	 * A node containing any integer number
-	 * example $(0,100,10) means any number between 0 and 100 with stepsize 10
+	 * A node containing any integer number example $(0,100,10) means any number between 0 and 100 with stepsize 10
 	 * 
-	 * @param min number
-	 * @param max number
-	 * @param stepsize of the node
+	 * @param min
+	 *                     number
+	 * @param max
+	 *                     number
+	 * @param stepsize
+	 *                     of the node
 	 * 
-	 * @throws NumberFormatException if Integer.parseInt(content) fails
+	 * @throws NumberFormatException
+	 *                                   if Integer.parseInt(content) fails
 	 */
-	public NumberNode(int min, int max, int stepsize)  {
+	public NumberNode(int min, int max, int stepsize) {
 		super("");
 		this.min = min;
 		this.max = max;
 		this.stepsize = stepsize;
 	}
-	
+
 	/**
 	 * returns the node type
+	 * 
 	 * @return the type
 	 */
 	@Override
 	public AGFNodeType getType() {
 		return AGFNodeType.NUMBER;
 	}
-	
+
 	/**
 	 * special print self method, because this node my never have children
 	 * 
@@ -84,27 +88,28 @@ public class NumberNode extends AGFNode {
 
 	/**
 	 * Get's {@link #containedNumber containedNumber}
-	 * @return  containedNumber
+	 * 
+	 * @return containedNumber
 	 */
 	public int getContainedNumber() {
 		return this.containedNumber;
 	}
-	
+
 	/**
 	 * sets the internal saved number
 	 * 
-	 * @param number to set as String
-	 * @throws NumberFormatException if the string is not a number or not inside the specified range and stepsize
+	 * @param number
+	 *                   to set as String
+	 * @throws NumberFormatException
+	 *                                   if the string is not a number or not inside the specified range and stepsize
 	 */
 	public void setContainedNumber(String number) throws NumberFormatException {
 		int nmb = Integer.parseInt(number);
-		
-		if(!(this.min <= nmb && nmb <= this.max && nmb % this.stepsize == 0)) {
-			throw new NumberFormatException(
-					"number " + number + " does not fit in range min " +
-							this.min + " max " + this.max + " stepsize " + this.stepsize);
+
+		if (!(this.min <= nmb && nmb <= this.max && nmb % this.stepsize == 0)) {
+			throw new NumberFormatException("number " + number + " does not fit in range min " + this.min + " max "
+					+ this.max + " stepsize " + this.stepsize);
 		}
 	}
-
 
 }

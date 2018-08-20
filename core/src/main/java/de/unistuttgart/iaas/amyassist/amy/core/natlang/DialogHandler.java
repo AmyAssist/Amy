@@ -56,7 +56,9 @@ public class DialogHandler {
 
 	/**
 	 * creates a new dialog
-	 * @param cons callback for consumer
+	 * 
+	 * @param cons
+	 *                 callback for consumer
 	 * @return the matching uuid
 	 */
 	public UUID createDialog(Consumer<String> cons) {
@@ -66,10 +68,10 @@ public class DialogHandler {
 	}
 
 	/**
-	 * deletes a save dialog - this should be called once in a while
-	 * if the core is running for any long amounts of time
+	 * deletes a save dialog - this should be called once in a while if the core is running for any long amounts of time
 	 *
-	 * @param uuid of fialog to delete
+	 * @param uuid
+	 *                 of fialog to delete
 	 */
 	public void deleteDialog(UUID uuid) {
 		this.map.remove(uuid);
@@ -78,8 +80,10 @@ public class DialogHandler {
 	/**
 	 * processes a dialog from a given uuid with natural language input from a user
 	 *
-	 * @param naturalLanguageText from user
-	 * @param uuid of dialog
+	 * @param naturalLanguageText
+	 *                                from user
+	 * @param uuid
+	 *                                of dialog
 	 */
 	public void process(String naturalLanguageText, UUID uuid) {
 		if (!this.map.containsKey(uuid)) {
@@ -101,7 +105,7 @@ public class DialogHandler {
 		if (intent != null && dialog.getIntent().isFinished()) {
 			Map<String, EntityDataImpl> stringToEntityData = new HashMap<>();
 
-			for(String s : dialog.getIntent().getEntityList().keySet()) {
+			for (String s : dialog.getIntent().getEntityList().keySet()) {
 				stringToEntityData.put(s, intent.getEntityList().get(s).getEntityData());
 			}
 			Object object = this.serviceLocator.createAndInitialize(intent.getPartialNLIClass());

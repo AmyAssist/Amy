@@ -24,22 +24,23 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
- * describes the smallest meaningful unit in the AGF Syntax
- * e.g. a word or a rule
+ * describes the smallest meaningful unit in the AGF Syntax e.g. a word or a rule
  * 
  * @author Felix Burk
  */
 public class MorphemeNode extends AGFNode {
 
 	/**
-	 * @param content the content 
+	 * @param content
+	 *                    the content
 	 */
 	public MorphemeNode(String content) {
 		super(content);
 	}
-	
+
 	/**
 	 * returns the node type
+	 * 
 	 * @return the type
 	 */
 	@Override

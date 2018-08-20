@@ -31,14 +31,16 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 public class ORGroupNode extends AGFNode {
 
 	/**
-	 * @param content the content
+	 * @param content
+	 *                    the content
 	 */
 	public ORGroupNode(String content) {
 		super(content);
 	}
-	
+
 	/**
 	 * returns the node type
+	 * 
 	 * @return the type
 	 */
 	@Override

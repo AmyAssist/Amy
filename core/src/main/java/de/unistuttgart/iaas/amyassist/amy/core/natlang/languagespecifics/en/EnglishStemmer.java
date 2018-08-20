@@ -38,7 +38,7 @@ public class EnglishStemmer implements IStemmer {
 	 * decide if the character at the position of the current word is a consonant
 	 * 
 	 * @param pos
-	 *            the position of the current word
+	 *                the position of the current word
 	 * @return true if a consonant, else false
 	 */
 	private boolean isConsonant(int pos) {
@@ -64,8 +64,8 @@ public class EnglishStemmer implements IStemmer {
 	 * sequences
 	 * 
 	 * @param lastCharacter
-	 *            the last character from the substring to calculate. For example you need only the amount of sequences
-	 *            from the stem
+	 *                          the last character from the substring to calculate. For example you need only the amount
+	 *                          of sequences from the stem
 	 * @return the amount of sequences
 	 */
 	private int amountOfSequences(int lastCharacter) {
@@ -73,7 +73,7 @@ public class EnglishStemmer implements IStemmer {
 		boolean wasConsonant = true;
 		boolean firstConsonants = true;
 		for (int i = 0; i < this.currentWord.substring(0, lastCharacter + 1).length(); i++) {
-			firstConsonants = (isConsonant(i) && firstConsonants) ;
+			firstConsonants = (isConsonant(i) && firstConsonants);
 			if (isConsonant(i) != wasConsonant && !firstConsonants) {
 				wasConsonant = isConsonant(i);
 				changes++;
@@ -88,7 +88,7 @@ public class EnglishStemmer implements IStemmer {
 	 * when the word ends with the given string return the end of the stem, else -1
 	 * 
 	 * @param ending
-	 *            the chracters after the stem
+	 *                   the chracters after the stem
 	 * @return the index of the last character from the stem
 	 */
 	private int stemEnd(String ending) {
@@ -102,7 +102,7 @@ public class EnglishStemmer implements IStemmer {
 	 * checks if the stem has a vocal
 	 * 
 	 * @param endOfStem
-	 *            from the current word
+	 *                      from the current word
 	 * @return true if a vocal is in the stem, else false
 	 */
 	private boolean vowelInStem(int endOfStem) {
@@ -128,7 +128,7 @@ public class EnglishStemmer implements IStemmer {
 	 * verified if the stem as the form consonant-vocal-consonant and the third character is no w, x or y
 	 * 
 	 * @param endOfStem
-	 *            the end of the stem from the current word
+	 *                      the end of the stem from the current word
 	 * @return true if the cvc condition is fulfilled, else false
 	 */
 	private boolean cvcStem(int endOfStem) {
@@ -205,7 +205,7 @@ public class EnglishStemmer implements IStemmer {
 	 * https://tartarus.org/martin/PorterStemmer/def.txt
 	 * 
 	 * @param input
-	 *            a string with one or more words
+	 *                  a string with one or more words
 	 * @return the stemmed string out of the input string
 	 */
 	@Override

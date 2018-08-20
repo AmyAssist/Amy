@@ -30,9 +30,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * TODO: Description
+ * 
  * @author Felix Burk
  */
-@XmlRootElement(name="AmyInteractionModel")
+@XmlRootElement(name = "AmyInteractionModel")
 public class XMLAmyInteractionModel {
 
 	@XmlElement(name = "Intent", required = false)
@@ -40,22 +41,24 @@ public class XMLAmyInteractionModel {
 
 	/**
 	 * Get's {@link #intents intents}
-	 * @return  intents
+	 * 
+	 * @return intents
 	 */
 	public List<XMLAIMIntent> getIntents() {
 		return this.intents;
 	}
-	
+
 	/**
 	 * convenience method
-	 * @return string representation of this object 
+	 * 
+	 * @return string representation of this object
 	 */
 	public String printSelf() {
 		StringBuilder b = new StringBuilder();
-		for(XMLAIMIntent intent : this.intents) {
+		for (XMLAIMIntent intent : this.intents) {
 			b.append(intent.printSelf());
 		}
 		return b.toString();
 	}
-	
+
 }

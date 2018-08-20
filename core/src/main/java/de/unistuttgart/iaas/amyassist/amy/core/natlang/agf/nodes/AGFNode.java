@@ -47,7 +47,7 @@ public class AGFNode {
 	 * constructor
 	 * 
 	 * @param content
-	 *            of node
+	 *                    of node
 	 */
 	public AGFNode(String content) {
 		this.childs = new ArrayList<>();
@@ -56,48 +56,58 @@ public class AGFNode {
 
 	/**
 	 * adds a new child
-	 * @param node the child
+	 * 
+	 * @param node
+	 *                 the child
 	 */
 	public void addChild(AGFNode node) {
 		this.childs.add(node);
 	}
-	
+
 	/**
 	 * returns all child nodes
+	 * 
 	 * @return the child list
 	 */
 	public List<AGFNode> getChilds() {
 		return this.childs;
 	}
-	
+
 	/**
 	 * returns the content of this node
+	 * 
 	 * @return the content as String
 	 */
 	public String getContent() {
 		return this.content;
 	}
-	
+
 	/**
 	 * returns the node type
+	 * 
 	 * @return the type
 	 */
 	public AGFNodeType getType() {
 		return AGFNodeType.AGF;
 	}
-	
+
 	/**
 	 * equal to convenience method
-	 * @param node the AGFNode to compare to
+	 * 
+	 * @param node
+	 *                 the AGFNode to compare to
 	 * @return success
 	 */
 	public boolean equalTo(AGFNode node) {
-		if(!this.getType().equals(node.getType())) return false;
-		if(!this.getContent().equals(node.getContent())) return false;
-		if(this.childs.size() != node.childs.size()) return false;
-		
-		for(int i = 0; i < this.childs.size(); i++) {
-			if(!this.childs.get(i).equalTo(node.getChilds().get(i))) {
+		if (!this.getType().equals(node.getType()))
+			return false;
+		if (!this.getContent().equals(node.getContent()))
+			return false;
+		if (this.childs.size() != node.childs.size())
+			return false;
+
+		for (int i = 0; i < this.childs.size(); i++) {
+			if (!this.childs.get(i).equalTo(node.getChilds().get(i))) {
 				return false;
 			}
 		}
@@ -106,8 +116,11 @@ public class AGFNode {
 
 	/**
 	 * helper method to pretty print
-	 * @param name the name of the node
-	 * @param indent size
+	 * 
+	 * @param name
+	 *                   the name of the node
+	 * @param indent
+	 *                   size
 	 * @return string
 	 */
 	public String printSelf(String name, int indent) {
@@ -127,40 +140,42 @@ public class AGFNode {
 
 		return b.toString();
 	}
-	
-	public List<EntityNode> getChildEntityNodes(){
+
+	public List<EntityNode> getChildEntityNodes() {
 		List<EntityNode> result = new ArrayList<>();
-		
-		for(AGFNode node : this.childs) {
-			if(node.getType() == AGFNodeType.ENTITY) {
+
+		for (AGFNode node : this.childs) {
+			if (node.getType() == AGFNodeType.ENTITY) {
 				EntityNode entity = (EntityNode) node;
 				result.add(entity);
 			}
 			result.addAll(node.getChildEntityNodes());
 		}
-		
+
 		return result;
 	}
 
 	/**
 	 * method to print the content
+	 * 
 	 * @return String to print
 	 */
 	public String printSelf() {
 		return printSelf("AGFNode", 0);
 	}
-	
+
 	/**
 	 * counts the number of words and rules this node contains
+	 * 
 	 * @return number of leafes
 	 */
 	public int countLeafes() {
 		int count = 0;
-		if(!this.childs.isEmpty()) {
-			for(AGFNode node : this.childs) {
+		if (!this.childs.isEmpty()) {
+			for (AGFNode node : this.childs) {
 				count += node.countLeafes();
 			}
-		}else {
+		} else {
 			return 1;
 		}
 		return count;

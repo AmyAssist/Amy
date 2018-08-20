@@ -39,6 +39,7 @@ public class XMLPrompt {
 	private String gram;
 	@XmlAttribute(name = "entityTemplateId")
 	private String entityTemplateId;
+
 	/**
 	 * @return string representation of this object
 	 */
@@ -66,11 +67,11 @@ public class XMLPrompt {
 
 	/**
 	 * Get's {@link #entityTemplateId entityTemplateId}
-	 * @return  entityTemplateId
+	 * 
+	 * @return entityTemplateId
 	 */
 	public String getEntityTemplateId() {
 		return this.entityTemplateId.toLowerCase().trim();
 	}
 
-	
 }

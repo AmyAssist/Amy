@@ -39,7 +39,7 @@ public interface INumberConversion {
 	 * 
 	 * 
 	 * @param subList
-	 *            the sublist containing the list of word representations
+	 *                    the sublist containing the list of word representations
 	 * @return the calculated number
 	 */
 	int calcNumber(Iterable<WordToken> subList);

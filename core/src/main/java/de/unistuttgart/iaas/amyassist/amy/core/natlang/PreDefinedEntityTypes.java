@@ -31,51 +31,54 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
- * this class contains pre defined entity types 
- * all of them have to start with "amy" to prevent double usage
+ * this class contains pre defined entity types all of them have to start with "amy" to prevent double usage
  * 
  * feel free to add more - keep in mind that they are saved in agf form
  * 
  * @author Lars Buttgereit, Felix Burk
  */
 public class PreDefinedEntityTypes {
-	
+
 	private static Map<String, AGFNode> map;
-	private static Map<String, String> grammars; 
-	
-	
-	private static final String[] ids =  {
-		"amyinteger", "amyhour", "amyminute", "amytime"
-	};
-	
+	private static Map<String, String> grammars;
+
+	private static final String[] ids = { "amyinteger", "amyhour", "amyminute", "amytime" };
+
 	private PreDefinedEntityTypes() {
-		grammars = new HashMap<>();
-		grammars.put("amyinteger", "$(0,1000000000, 1)");
-		grammars.put("amyhour", "$(0,24,1)");
-		grammars.put("amyminute", "$(0,60,1)");
-	    grammars.put("amytime", "{amyhour} oh {amyminute}");
+		//hide constructor
 	}
-		
 
 	/**
 	 * returns a hashmap of pre defined types
+	 * 
 	 * @return the hashmap
 	 */
-	public static Map<String, AGFNode> getTypes(){
-		if(map == null) {
+	public static Map<String, AGFNode> getTypes() {
+		
+		if(grammars == null) {
+			grammars = new HashMap<>();
+			grammars.put("amyinteger", "$(0,1000000000, 1)");
+			grammars.put("amyhour", "$(0,24,1)");
+			grammars.put("amyminute", "$(0,60,1)");
+			grammars.put("amytime", "{amyhour} oh {amyminute}");
+		}
+		
+		if (map == null) {
 			map = new HashMap<>();
 			generateAGFNodes(grammars);
 		}
-		
+
 		return map;
 	}
 
 	/**
 	 * helper method for generation agfNodes from strings
-	 * @param grmrs hashmap of grammars to generate
+	 * 
+	 * @param grmrs
+	 *                  hashmap of grammars to generate
 	 */
 	private static void generateAGFNodes(Map<String, String> grmrs) {
-		for(String s : ids) {
+		for (String s : ids) {
 			AGFLexer lex = new AGFLexer(grmrs.get(s));
 			AGFParser parser = new AGFParser(lex, map);
 			map.put(s.toLowerCase(), parser.parseWholeExpression());

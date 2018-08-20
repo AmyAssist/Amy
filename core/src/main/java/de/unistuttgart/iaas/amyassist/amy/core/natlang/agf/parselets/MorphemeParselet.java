@@ -37,32 +37,34 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.WordNode;
  * parses the smallest meaningful unit in the AGF Syntax
  * 
  * <Morpheme> := (<Word> | <Rule> | <Number>)+;
- *  
+ * 
  * @author Felix Burk
  */
 public class MorphemeParselet implements IAGFParselet {
-	
+
 	/**
 	 * parses a morphene parcelet
-	 * @param parser the parser
-	 * @param token the token found
+	 * 
+	 * @param parser
+	 *                   the parser
+	 * @param token
+	 *                   the token found
 	 * @return a MorpheneNode
 	 */
 	@Override
 	public AGFNode parse(Parser parser, AGFToken token) {
 		MorphemeNode morph = new MorphemeNode("");
-		
-		parseMorph(morph,token, parser);
-		
-		//first one was already consumed by the parser
-		//the following ones have to be consumed "by hand"
-		while(parser.match(AGFTokenType.OPENCBR) ||
-				parser.match(AGFTokenType.CLOSECBR) || parser.match(AGFTokenType.WORD) || parser.match(AGFTokenType.DOLLAR)) {
+
+		parseMorph(morph, token, parser);
+
+		// first one was already consumed by the parser
+		// the following ones have to be consumed "by hand"
+		while (parser.match(AGFTokenType.OPENCBR) || parser.match(AGFTokenType.CLOSECBR)
+				|| parser.match(AGFTokenType.WORD) || parser.match(AGFTokenType.DOLLAR)) {
 			AGFToken t = parser.consume();
 			parseMorph(morph, t, parser);
 		}
 
-		
 		return morph;
 	}
 
@@ -71,57 +73,62 @@ public class MorphemeParselet implements IAGFParselet {
 	 * 
 	 * <Morpheme> := (<Word> | <Entity> | <Number>);
 	 * 
-	 * @param morph the morpheme node
-	 * @param token the corresponding token
-	 * @param parser the corresponding parser
+	 * @param morph
+	 *                   the morpheme node
+	 * @param token
+	 *                   the corresponding token
+	 * @param parser
+	 *                   the corresponding parser
 	 */
 	private void parseMorph(MorphemeNode morph, AGFToken token, Parser parser) {
-		//Parse Word 
-		if(token.type == AGFTokenType.WORD) {
+		// Parse Word
+		if (token.type == AGFTokenType.WORD) {
 			morph.addChild(new WordNode(token.content));
-		//Parse Entity ex: {someId}
-		}else if(token.type == AGFTokenType.OPENCBR) {
-			if(parser.match(AGFTokenType.WORD)) {
+			// Parse Entity ex: {someId}
+		} else if (token.type == AGFTokenType.OPENCBR) {
+			if (parser.match(AGFTokenType.WORD)) {
 				AGFToken word = parser.consume();
 				AGFNode node = parser.getEntityAGF(word.content);
 				EntityNode entity = new EntityNode(word.content);
 				entity.addChild(node);
-				
-				if(parser.consume().type != AGFTokenType.CLOSECBR) {
+
+				if (parser.consume().type != AGFTokenType.CLOSECBR) {
 					throw new AGFParseException("} missing or entity name contains a whitespace");
 				}
 				morph.addChild(entity);
 
-			}else {
+			} else {
 				throw new AGFParseException("} missing or entity name contains a whitespace");
 			}
-		}else if(token.type == AGFTokenType.DOLLAR) {
+		} else if (token.type == AGFTokenType.DOLLAR) {
 			parseNumberExpression(morph, token, parser);
 		}
-		
-		
+
 	}
 
 	/**
-	 * Parse number expression ex: $(0,100,10) 
+	 * Parse number expression ex: $(0,100,10)
 	 * 
-	 * @param morph the morpheme node
-	 * @param token the corresponding token
-	 * @param parser the corresponding parser
+	 * @param morph
+	 *                   the morpheme node
+	 * @param token
+	 *                   the corresponding token
+	 * @param parser
+	 *                   the corresponding parser
 	 */
 	private void parseNumberExpression(MorphemeNode morph, AGFToken token, Parser parser) {
 		String numbersInsideExpression[] = new String[3];
 		int j = 0;
-		if(parser.match(AGFTokenType.OPENBR)) {
+		if (parser.match(AGFTokenType.OPENBR)) {
 			parser.consume();
-			for(int i=1; i <= 5; i++) {
-				if(i % 2 == 0) {
-					if(!parser.match(AGFTokenType.COMMA)) {
+			for (int i = 1; i <= 5; i++) {
+				if (i % 2 == 0) {
+					if (!parser.match(AGFTokenType.COMMA)) {
 						throw new AGFParseException("missing comma in number expression");
 					}
 					parser.consume();
-				}else {
-					if(!parser.match(AGFTokenType.WORD)) {
+				} else {
+					if (!parser.match(AGFTokenType.WORD)) {
 						throw new AGFParseException("missing number inside number expression");
 					}
 					AGFToken numberToken = parser.consume();
@@ -129,27 +136,25 @@ public class MorphemeParselet implements IAGFParselet {
 					j++;
 				}
 			}
-			
-			if(parser.match(AGFTokenType.CLOSEBR)) {
+
+			if (parser.match(AGFTokenType.CLOSEBR)) {
 				parser.consume();
 				try {
 					int min = Integer.parseInt(numbersInsideExpression[0]);
 					int max = Integer.parseInt(numbersInsideExpression[1]);
 					int stepSize = Integer.parseInt(numbersInsideExpression[2]);
-					
+
 					NumberNode numberNode = new NumberNode(min, max, stepSize);
 					morph.addChild(numberNode);
-				}catch(NumberFormatException e) {
+				} catch (NumberFormatException e) {
 					throw new AGFParseException(
 							"number inside number expression could not be converted " + e.getMessage());
 				}
-			}else {
+			} else {
 				throw new AGFParseException("missing ) in number expression");
 			}
 		}
-		
+
 	}
-	
-	
 
 }

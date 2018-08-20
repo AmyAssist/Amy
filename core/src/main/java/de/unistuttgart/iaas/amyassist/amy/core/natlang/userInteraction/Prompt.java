@@ -26,7 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
- * Prompt hold the grammar and output for a query 
+ * Prompt hold the grammar and output for a query
+ * 
  * @author Lars Buttgereit
  */
 public class Prompt {
@@ -35,8 +36,11 @@ public class Prompt {
 
 	/**
 	 * constructor for a prompt
-	 * @param grammar AGF Grammar for the prompt
-	 * @param outputText output text for the prompt
+	 * 
+	 * @param grammar
+	 *                       AGF Grammar for the prompt
+	 * @param outputText
+	 *                       output text for the prompt
 	 */
 	public Prompt(AGFNode grammar, String outputText) {
 		this.grammar = grammar;
@@ -45,7 +49,8 @@ public class Prompt {
 
 	/**
 	 * Get's {@link #outputText outputText}
-	 * @return  outputText
+	 * 
+	 * @return outputText
 	 */
 	public String getOutputText() {
 		return this.outputText;
@@ -53,11 +58,11 @@ public class Prompt {
 
 	/**
 	 * Get's {@link #grammar grammar}
-	 * @return  grammar
+	 * 
+	 * @return grammar
 	 */
 	public AGFNode getGrammar() {
 		return this.grammar;
 	}
-	
-	
+
 }

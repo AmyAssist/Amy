@@ -166,7 +166,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 			Map<String, String> entityIdToUserContent = getEntityContent(promptGrams.get(matchingNodeIndex));
 
-			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
+			for (Entry<String, String> entry : entityIdToUserContent.entrySet()) {
 				EntityDataImpl data = new EntityDataImpl(entry.getValue());
 				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
 			}
@@ -185,7 +185,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	 * helper method to extract entity contents
 	 * 
 	 * @param node
-	 *            to extract entity content from
+	 *                 to extract entity content from
 	 * @return Map which is mapping the entity id to the user provided content
 	 */
 	private Map<String, String> getEntityContent(AGFNode node) {
@@ -224,7 +224,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			dialog.setIntent(userIntent);
 
 			Map<String, String> entityIdToUserContent = getEntityContent(node);
-			for(Entry<String, String> entry : entityIdToUserContent.entrySet()) {
+			for (Entry<String, String> entry : entityIdToUserContent.entrySet()) {
 				EntityDataImpl data = new EntityDataImpl(entry.getValue());
 				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
 			}

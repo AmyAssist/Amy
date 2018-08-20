@@ -38,9 +38,9 @@ public class ChooseLanguage {
 	 * constructor for choose language
 	 * 
 	 * @param language
-	 *            which language should be used (language code after ISO 639-1)
+	 *                           which language should be used (language code after ISO 639-1)
 	 * @param stemmerEnabled
-	 *            if stemmerEnabled true the correct stemmer is set, false stemmer is null
+	 *                           if stemmerEnabled true the correct stemmer is set, false stemmer is null
 	 */
 	public ChooseLanguage(String language, boolean stemmerEnabled) {
 		switch (language.toLowerCase()) {

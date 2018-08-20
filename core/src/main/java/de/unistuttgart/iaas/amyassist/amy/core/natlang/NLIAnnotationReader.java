@@ -51,15 +51,15 @@ public class NLIAnnotationReader {
 	private NLIAnnotationReader() {
 		// hide constructor
 	}
-	
+
 	/**
 	 * Get's the methods annotated with {@link Intent}
 	 *
 	 * @param cls
-	 *            The class of which to get the grammars
+	 *                The class of which to get the grammars
 	 * @return a List of grammars
 	 * @throws IllegalArgumentException
-	 *             if a method annotated with {@link Grammar} is not a valid NLIMethod
+	 *                                      if a method annotated with {@link Grammar} is not a valid NLIMethod
 	 */
 	public static Set<Method> getValidIntentMethods(Class<?> cls) {
 		Set<Method> validMethods = new HashSet<>();
@@ -75,9 +75,9 @@ public class NLIAnnotationReader {
 	 * returns fitting method
 	 *
 	 * @param cls
-	 *            containing the method
+	 *                     containing the method
 	 * @param entityId
-	 *            value inside annotation
+	 *                     value inside annotation
 	 * @return fitting method
 	 */
 	public static Method getValidEnityProviderMethod(Class<?> cls, String entityId) {
@@ -98,10 +98,11 @@ public class NLIAnnotationReader {
 	 * Check if method is a valid annotated method. Annotated methods must not throw Exceptions.
 	 *
 	 * @param method
-	 *            the method that should be a NLIMethod
+	 *                   the method that should be a NLIMethod
 	 *
 	 * @throws IllegalArgumentException
-	 *             in case of wrong parameter types, the method throws exceptions or the return type is not a String
+	 *                                      in case of wrong parameter types, the method throws exceptions or the return
+	 *                                      type is not a String
 	 *
 	 */
 	public static void assertValid(Method method) {
@@ -122,14 +123,14 @@ public class NLIAnnotationReader {
 	 * calls the given method and handles possible exceptions
 	 *
 	 * @param method
-	 *            the method to call
+	 *                     the method to call
 	 * @param instance
-	 *            the instance of which to call the method
+	 *                     the instance of which to call the method
 	 * @param arg
-	 *            the arguments to the NLI method
+	 *                     the arguments to the NLI method
 	 * @return the result of the call to the NLI method
 	 * @throws IllegalArgumentException
-	 *             if the annotated methods not valid
+	 *                                      if the annotated methods not valid
 	 */
 	public static String callNLIMethod(@Nonnull Method method, @Nonnull Object instance, Object[] arg) {
 		assertValid(method);
@@ -153,14 +154,14 @@ public class NLIAnnotationReader {
 	 * calls the given method and handles possible exceptions
 	 *
 	 * @param method
-	 *            the method to call
+	 *                     the method to call
 	 * @param instance
-	 *            the instance of which to call the method
+	 *                     the instance of which to call the method
 	 * @param arg
-	 *            the arguments to the NLI method
+	 *                     the arguments to the NLI method
 	 * @return the result of the call to the NLI method
 	 * @throws IllegalArgumentException
-	 *             if the annotated methods not valid
+	 *                                      if the annotated methods not valid
 	 */
 	public static String callNLIMethod(@Nonnull Method method, @Nonnull Object instance) {
 		// assertValid(method);
@@ -184,12 +185,12 @@ public class NLIAnnotationReader {
 	 * calls the given method and handles possible exceptions
 	 *
 	 * @param method
-	 *            the method to call
+	 *                     the method to call
 	 * @param instance
-	 *            the instance of which to call the method
+	 *                     the instance of which to call the method
 	 * @return a list with all custom grammars
 	 * @throws IllegalArgumentException
-	 *             if the annotated methods not valid
+	 *                                      if the annotated methods not valid
 	 */
 	public static List<String> callNLIGetEntityProviderMethod(@Nonnull Method method, @Nonnull Object instance) {
 		assertValidEntityProviderAnnotation(method);
@@ -213,10 +214,11 @@ public class NLIAnnotationReader {
 	 * Exceptions.
 	 *
 	 * @param method
-	 *            the method that should be a EntityProvider Method
+	 *                   the method that should be a EntityProvider Method
 	 *
 	 * @throws IllegalArgumentException
-	 *             in case of wrong parameter types, the method throws exceptions or the return type is not a String
+	 *                                      in case of wrong parameter types, the method throws exceptions or the return
+	 *                                      type is not a String
 	 *
 	 */
 	public static void assertValidEntityProviderAnnotation(Method method) {

@@ -31,7 +31,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets.MorphemePar
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets.ORGroupParselet;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets.OptionalGroupParselet;
 
-
 /**
  * the AGF Parser implementation
  * 
@@ -43,37 +42,37 @@ public class AGFParser extends Parser {
 
 	/**
 	 * 
-	 * tells the parser which parslets to call on which token 
-	 * occurence
+	 * tells the parser which parslets to call on which token occurence
 	 * 
-	 * @param tokens the tokens
-	 * @param entityToAGF map
+	 * @param tokens
+	 *                        the tokens
+	 * @param entityToAGF
+	 *                        map
 	 */
 	public AGFParser(Iterator<AGFToken> tokens, Map<String, AGFNode> entityToAGF) {
 		super(tokens);
-		
+
 		this.entityToAGF = entityToAGF;
-		
-		super.register(AGFTokenType.DOLLAR,  new MorphemeParselet());
+
+		super.register(AGFTokenType.DOLLAR, new MorphemeParselet());
 		super.register(AGFTokenType.WORD, new MorphemeParselet());
 		super.register(AGFTokenType.OPENCBR, new MorphemeParselet());
 		super.register(AGFTokenType.OPENBR, new ORGroupParselet());
 		super.register(AGFTokenType.OPENSBR, new OptionalGroupParselet());
 
 	}
-	
-	
+
 	/**
 	 * 
-	 * tells the parser which parslets to call on which token 
-	 * occurence
+	 * tells the parser which parslets to call on which token occurence
 	 * 
-	 * @param tokens the tokens
+	 * @param tokens
+	 *                   the tokens
 	 */
 	public AGFParser(Iterator<AGFToken> tokens) {
 		super(tokens);
-		
-		super.register(AGFTokenType.DOLLAR,  new MorphemeParselet());
+
+		super.register(AGFTokenType.DOLLAR, new MorphemeParselet());
 		super.register(AGFTokenType.WORD, new MorphemeParselet());
 		super.register(AGFTokenType.OPENCBR, new MorphemeParselet());
 		super.register(AGFTokenType.OPENBR, new ORGroupParselet());

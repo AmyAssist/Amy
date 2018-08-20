@@ -54,13 +54,12 @@ public class NLParser implements INLParser {
 
 	private IStemmer stemmer;
 
-
 	/**
 	 *
 	 * @param grammars
-	 *            all possible grammars to match
+	 *                     all possible grammars to match
 	 * @param stemmer
-	 *            which stemmer should be used
+	 *                     which stemmer should be used
 	 */
 	public NLParser(List<AGFNode> grammars, IStemmer stemmer) {
 		this.grammars = grammars;
@@ -89,7 +88,7 @@ public class NLParser implements INLParser {
 	 * optional groups by number of leafes (meaning words/rules) we will be fine
 	 *
 	 * @param node
-	 *            to sort
+	 *                 to sort
 	 * @return sorted node
 	 */
 	public AGFNode sortChildsOfOrAndOp(AGFNode node) {
@@ -115,7 +114,7 @@ public class NLParser implements INLParser {
 	 * recursive method to check each node preorder style
 	 *
 	 * @param agf
-	 *            current node to check
+	 *                current node to check
 	 * @return success
 	 */
 	private boolean checkNode(AGFNode agf) {
@@ -162,25 +161,26 @@ public class NLParser implements INLParser {
 	}
 
 	/**
-	 * checks if a number is at the current index and if the number
-	 * matches the conditions of the NumberNode e.g. is in correct range and stepsize
+	 * checks if a number is at the current index and if the number matches the conditions of the NumberNode e.g. is in
+	 * correct range and stepsize
 	 *
-	 * @param agf to match
+	 * @param agf
+	 *                to match
 	 * @return true if the node matches
 	 */
 	private boolean matchNumber(AGFNode agf) {
 		WordToken token = lookAhead(0);
 
-		if(token == null || token.getContent() == null) {
+		if (token == null || token.getContent() == null) {
 			return false;
 		}
 		try {
 			NumberNode numberNode = (NumberNode) agf;
 			numberNode.setContainedNumber(token.getContent().trim());
 			consume();
-		} catch(ClassCastException e) {
+		} catch (ClassCastException e) {
 			throw new NLParserException("Node Type Number was no NumberNode " + e);
-		} catch(NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			return false;
 		}
 		return true;
@@ -189,13 +189,14 @@ public class NLParser implements INLParser {
 	/**
 	 * fills entity content and checks if the entity matches
 	 *
-	 * @param agf to match
+	 * @param agf
+	 *                to match
 	 * @return true if the entity matched
 	 */
 	private boolean fillEntity(AGFNode agf) {
 		int startIndex = this.currentIndex;
 		boolean matched = true;
-		for(AGFNode node : agf.getChilds()) {
+		for (AGFNode node : agf.getChilds()) {
 			matched = checkNode(node) && matched;
 		}
 		int endIndex = this.currentIndex;
@@ -203,12 +204,13 @@ public class NLParser implements INLParser {
 		try {
 			EntityNode entity = (EntityNode) agf;
 			StringBuilder b = new StringBuilder();
-			for(int i=startIndex; i<=endIndex-1; i++) {
-				b.append(this.mRead.get(i)+ " ");
+			for (int i = startIndex; i <= endIndex - 1; i++) {
+				b.append(this.mRead.get(i) + " ");
 			}
-			if(matched)entity.setUserProvidedContent(b.toString().trim());
+			if (matched)
+				entity.setUserProvidedContent(b.toString().trim());
 			return matched;
-		}catch(ClassCastException e) {
+		} catch (ClassCastException e) {
 			throw new NLParserException("Node Type Entity was no EntityNode " + e);
 		}
 	}
@@ -217,7 +219,7 @@ public class NLParser implements INLParser {
 	 * does the current token match the expected one?
 	 *
 	 * @param toMatch
-	 *            the node to match
+	 *                    the node to match
 	 * @return if it matched
 	 */
 	private boolean match(AGFNode toMatch) {
@@ -251,7 +253,7 @@ public class NLParser implements INLParser {
 	 * look ahead as many tokens as needed
 	 *
 	 * @param distance
-	 *            needed
+	 *                     needed
 	 * @return token at distance
 	 */
 	private WordToken lookAhead(int distance) {

@@ -61,7 +61,7 @@ public class EnglishNumberConversion implements INumberConversion {
 	 * think this is an okay way of handling this
 	 * 
 	 * @param subList
-	 *            the sublist containing the list of word representations
+	 *                    the sublist containing the list of word representations
 	 * @return the calculated number
 	 */
 	@Override
@@ -139,7 +139,7 @@ public class EnglishNumberConversion implements INumberConversion {
 	 * changes numbers from string to integer and catches + logs potential NumberFormatExceptions
 	 * 
 	 * @param numberInt
-	 *            the number as string
+	 *                      the number as string
 	 * @return number as integer
 	 */
 	private int parseNumber(String numberInt) {

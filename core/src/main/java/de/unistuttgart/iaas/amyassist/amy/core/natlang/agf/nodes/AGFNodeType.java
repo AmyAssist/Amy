@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
  * List of Node Types
+ * 
  * @author Felix Burk
  */
 public enum AGFNodeType {
@@ -39,7 +40,7 @@ public enum AGFNodeType {
 	/**
 	 * optional group
 	 */
-	OPG, 
+	OPG,
 	/**
 	 * morphene node
 	 */
@@ -51,7 +52,7 @@ public enum AGFNodeType {
 	/**
 	 * word
 	 */
-	WORD, 
+	WORD,
 	/**
 	 * any integer number
 	 */

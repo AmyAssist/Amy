@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
 /**
  * all possible TokenTypes used in AGFLexer
+ * 
  * @author Felix Burk
  */
 public enum AGFTokenType {
@@ -59,7 +60,7 @@ public enum AGFTokenType {
 	/**
 	 * or |
 	 */
-	OR, 
+	OR,
 	/**
 	 * comma ,
 	 */

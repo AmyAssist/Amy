@@ -59,7 +59,7 @@ public class NLLexer {
 	 * this class handles natural language input of any type
 	 * 
 	 * @param iNumberConversion
-	 *            language specific details
+	 *                              language specific details
 	 * 
 	 */
 	public NLLexer(INumberConversion iNumberConversion) {
@@ -67,7 +67,8 @@ public class NLLexer {
 		this.numberConverion = iNumberConversion;
 
 		if (!iNumberConversion.getWordToNumber().isEmpty()) {
-			String regex = "((\\b" + String.join("\\b|\\b", iNumberConversion.getWordToNumber().keySet()) + "\\b)\\s{0,1})+";
+			String regex = "((\\b" + String.join("\\b|\\b", iNumberConversion.getWordToNumber().keySet())
+					+ "\\b)\\s{0,1})+";
 			this.regexTokenType.put(regex, WordTokenType.NUMBER);
 		} else {
 			this.logger.error("problem with numbers file, written numbers will not be recognized");
@@ -81,7 +82,7 @@ public class NLLexer {
 	 * lexer implemented as Iterator
 	 * 
 	 * @param nlInput
-	 *            the stirng to lex
+	 *                    the stirng to lex
 	 * @return returns processed list of WordTokens
 	 */
 	public List<WordToken> tokenize(String nlInput) {
@@ -122,7 +123,7 @@ public class NLLexer {
 	 * words
 	 * 
 	 * @param list
-	 *            of all tokens containing potential written numbers that have to be merged
+	 *                 of all tokens containing potential written numbers that have to be merged
 	 * @return final list containing the correct numbers
 	 */
 	private List<WordToken> concatNumbers(List<WordToken> list) {
@@ -157,7 +158,7 @@ public class NLLexer {
 	 * sets WordTokenType
 	 * 
 	 * @param next
-	 *            the WordToken
+	 *                 the WordToken
 	 * @return the parsed WordToken
 	 */
 	private WordToken parse(WordToken next) {

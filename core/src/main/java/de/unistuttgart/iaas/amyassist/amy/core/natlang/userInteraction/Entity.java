@@ -41,8 +41,11 @@ public class Entity {
 
 	/**
 	 * constructor for a entity
-	 * @param entityId entityTemplateId from the xml file
-	 * @param grammar grammar from the entity
+	 * 
+	 * @param entityId
+	 *                     entityTemplateId from the xml file
+	 * @param grammar
+	 *                     grammar from the entity
 	 */
 	public Entity(String entityId, AGFNode grammar) {
 		this.entityId = entityId;
@@ -51,7 +54,9 @@ public class Entity {
 
 	/**
 	 * Set's {@link #entityData entityData}
-	 * @param entityData  entityData
+	 * 
+	 * @param entityData
+	 *                       entityData
 	 */
 	public void setEntityData(EntityDataImpl entityData) {
 		this.entityData = entityData;
@@ -87,7 +92,8 @@ public class Entity {
 	/**
 	 * sets {@link #grammar grammar}
 	 *
-	 * @param grammar to set
+	 * @param grammar
+	 *                    to set
 	 *
 	 */
 	public void setGrammar(AGFNode grammar) {
@@ -107,7 +113,7 @@ public class Entity {
 	 * Set's {@link #prompt prompt}
 	 *
 	 * @param prompt
-	 *            prompt
+	 *                   prompt
 	 */
 	public void setPrompt(Prompt prompt) {
 		this.prompt = prompt;
@@ -124,12 +130,12 @@ public class Entity {
 
 	/**
 	 * Set's {@link #method method}
-	 * @param method  method
+	 * 
+	 * @param method
+	 *                   method
 	 */
 	public void setMethod(Method method) {
 		this.method = method;
 	}
-
-
 
 }

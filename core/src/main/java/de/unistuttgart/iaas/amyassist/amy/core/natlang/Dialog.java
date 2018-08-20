@@ -28,19 +28,21 @@ import java.util.function.Consumer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
 
 /**
- * internal implementation of dialog interface 
+ * internal implementation of dialog interface
  * 
  * @author Felix Burk
  */
 class Dialog {
-	
+
 	private Consumer<String> consumer;
-	
+
 	/**
 	 * constructor
-	 * @param cons consumer for callback
+	 * 
+	 * @param cons
+	 *                 consumer for callback
 	 */
-	Dialog(Consumer<String> cons){
+	Dialog(Consumer<String> cons) {
 		this.consumer = cons;
 	}
 
@@ -48,11 +50,12 @@ class Dialog {
 	 * current intent - if null no intent is started
 	 */
 	private UserIntent intent = null;
-	
+
 	/**
-	 * outputs the string to the user in some way 
+	 * outputs the string to the user in some way
 	 * 
-	 * @param answerOutput the string to output
+	 * @param answerOutput
+	 *                         the string to output
 	 */
 	public void output(String answerOutput) {
 		this.consumer.accept(answerOutput);
@@ -60,7 +63,8 @@ class Dialog {
 
 	/**
 	 * Get's {@link #intent intent}
-	 * @return  intent
+	 * 
+	 * @return intent
 	 */
 	public UserIntent getIntent() {
 		return this.intent;
@@ -68,11 +72,12 @@ class Dialog {
 
 	/**
 	 * Set's {@link #intent intent}
-	 * @param intent  intent
+	 * 
+	 * @param intent
+	 *                   intent
 	 */
 	public void setIntent(UserIntent intent) {
 		this.intent = intent;
 	}
-	
-	
+
 }

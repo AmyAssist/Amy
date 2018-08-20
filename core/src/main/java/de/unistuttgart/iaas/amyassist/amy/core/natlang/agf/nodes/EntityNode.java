@@ -31,17 +31,20 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 public class EntityNode extends AGFNode {
 
 	private String userProvidedContent;
+
 	/**
 	 * constructor
 	 * 
-	 * @param content of node
+	 * @param content
+	 *                    of node
 	 */
 	public EntityNode(String content) {
 		super(content);
 	}
-	
+
 	/**
 	 * returns the node type
+	 * 
 	 * @return the type
 	 */
 	@Override
@@ -52,19 +55,20 @@ public class EntityNode extends AGFNode {
 	/**
 	 * set the content the user provided for this entity
 	 * 
-	 * @param content to set
+	 * @param content
+	 *                    to set
 	 */
-	public void  setUserProvidedContent(String content) {
+	public void setUserProvidedContent(String content) {
 		this.userProvidedContent = content;
 	}
-	
+
 	/**
 	 * get the content the user provided for this entity
+	 * 
 	 * @return the content
 	 */
 	public String getUserProvidedContent() {
 		return this.userProvidedContent;
 	}
-
 
 }
