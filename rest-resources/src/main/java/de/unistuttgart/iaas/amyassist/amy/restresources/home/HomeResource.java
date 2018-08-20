@@ -145,6 +145,7 @@ public class HomeResource {
 	public void mute() {
 		this.messageHub.publish("home/all/music/mute", "true");
 	}
+	
 	/**
 	 * unmutes amy
 	 */
