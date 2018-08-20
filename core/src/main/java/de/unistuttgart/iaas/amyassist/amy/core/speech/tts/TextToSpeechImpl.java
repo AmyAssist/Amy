@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
 
-import javax.annotation.Nonnull;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
