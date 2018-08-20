@@ -77,18 +77,6 @@ class PluginTest {
 		assertThat("Wrong path", p.getPath(), is(path));
 	}
 
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getFile()}
-	 */
-	@ParameterizedTest
-	@MethodSource("paths")
-	void testFile(Path path) {
-		Plugin p = new Plugin();
-
-		p.setPath(path);
-		assertThat("Wrong file", p.getFile(), is(path.toFile()));
-	}
-
 	static Stream<Path> paths() {
 		return Stream.of("/", "/test", "C://test", "test").map(path -> Paths.get(path));
 	}

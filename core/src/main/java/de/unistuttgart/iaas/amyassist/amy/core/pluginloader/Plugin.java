@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,16 +63,6 @@ public class Plugin implements IPlugin {
 	 * The list of all classes of this plugin
 	 */
 	private List<Class<?>> classes = new ArrayList<>();
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getFile()
-	 * @deprecated In favor to {@link #getPath()}
-	 */
-	@Override
-	@Deprecated
-	public File getFile() {
-		return this.path.toFile();
-	}
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getPath()

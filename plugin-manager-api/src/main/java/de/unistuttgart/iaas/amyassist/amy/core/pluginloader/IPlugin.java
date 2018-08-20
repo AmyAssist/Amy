@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.jar.Manifest;
@@ -34,15 +33,6 @@ import java.util.jar.Manifest;
  * @author Tim Neumann
  */
 public interface IPlugin {
-
-	/**
-	 * Get's the file of this plugin. Same location as getPath() but as file.
-	 * 
-	 * @return file
-	 * @deprecated In favor of {@link #getPath()}.
-	 */
-	@Deprecated
-	File getFile();
 
 	/**
 	 * Get's the path to the jar of this plugin. Same location as getFile() but as a path.
