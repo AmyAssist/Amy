@@ -21,22 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactoryService;
+package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
 
 /**
- * Register the MessageHub in di
+ * The interface of message topic filter.
  *
- * @author Leon Kiefer
+ * This conforms to the OASIS Standard for MQTT Version 3.1.1.
+ *
+ * @author Tim Neumann
  */
-public class ServiceLoader implements ServiceProviderLoader {
-
-	@Override
-	public void load(Configuration configuration) {
-		configuration.register(MessageHubService.class);
-		configuration.register(TopicFactoryService.class);
-	}
+public interface TopicFilter extends Topic {
+	/**
+	 * Checks whether this filter matches the given topic name
+	 *
+	 * @param name
+	 *            The name to match with.
+	 * @return Whether this filter matches the given name.
+	 */
+	boolean doesFilterMatch(TopicName name);
 }

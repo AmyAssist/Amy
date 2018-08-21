@@ -27,6 +27,9 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
+
 /**
  * The MessageHub is a programmatic API to publish and subscribe to topics.
  *
@@ -54,7 +57,7 @@ public interface MessageHub {
 	 *            A handler being called with the real topic and the message, when a message is received.
 	 * @return The identifier representing this subscription
 	 */
-	UUID subscribe(String topic, BiConsumer<String, Message> handler);
+	UUID subscribe(TopicFilter topic, BiConsumer<TopicName, Message> handler);
 
 	/**
 	 * Remove a subscription.
@@ -89,5 +92,5 @@ public interface MessageHub {
 	 *
 	 * @see <a href="https://en.wikipedia.org/wiki/MQTT#Quality_of_service_(QoS)"> quality of service </a>
 	 */
-	void publish(String topic, String payload, int qualityOfService, boolean retain);
+	void publish(TopicName topic, String payload, int qualityOfService, boolean retain);
 }

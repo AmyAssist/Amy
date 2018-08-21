@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,6 +49,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.information.InstanceInformation;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
 
 /**
  * The implementation of the MessageHub api interface as Runnable Service
@@ -71,10 +73,13 @@ public class MessageHubService implements MessageHub, RunnableService, MqttCallb
 	@Reference
 	private ConfigurationManager configManager;
 
+	@Reference
+	private TopicFactory tf;
+
 	private MqttAsyncClient client;
 
-	private Map<UUID, BiConsumer<String, Message>> eventListener = new HashMap<>();
-	private Map<String, List<UUID>> topicListeners = new HashMap<>();
+	private Map<UUID, BiConsumer<TopicName, Message>> eventListener = new HashMap<>();
+	private Map<TopicFilter, List<UUID>> topicListeners = new HashMap<>();
 
 	private String brokerAddress;
 
@@ -85,7 +90,7 @@ public class MessageHubService implements MessageHub, RunnableService, MqttCallb
 
 		try {
 			this.client = new MqttAsyncClient(this.brokerAddress, this.info.getNodeId() + "-MainJavaApp",
-					new MqttDefaultFilePersistence());
+					new MqttDefaultFilePersistence()); // TODO: Configure directory
 			this.client.setCallback(this);
 		} catch (MqttException e) {
 			fail("Initialize", e);
@@ -101,7 +106,7 @@ public class MessageHubService implements MessageHub, RunnableService, MqttCallb
 		}
 	}
 
-	private void executeHandler(BiConsumer<String, Message> handler, Message msg, String topic) {
+	private void executeHandler(BiConsumer<TopicName, Message> handler, Message msg, TopicName topic) {
 		try {
 			handler.accept(topic, msg);
 		} catch (RuntimeException e) {
@@ -111,7 +116,7 @@ public class MessageHubService implements MessageHub, RunnableService, MqttCallb
 
 	@Override
 	public void publish(String topic, String message) {
-		publish(topic, message, 2, false);
+		publish(this.tf.createTopicName(topic), message, 2, false);
 	}
 
 	@Override
@@ -158,13 +163,15 @@ public class MessageHubService implements MessageHub, RunnableService, MqttCallb
 	 */
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
-		List<UUID> toRemove = new ArrayList<>();
-		for (UUID uuid : this.topicListeners.get(topic)) {
-			if (!this.eventListener.containsKey(uuid)) {
-				toRemove.add(uuid);
+		TopicName name = this.tf.createTopicName(topic);
+
+		for (TopicFilter filter : this.topicListeners.keySet()) {
+			if (filter.doesFilterMatch(name)) {
+				for (UUID uuid : this.topicListeners.get(filter)) {
+					BiConsumer<TopicName, Message> handler = this.eventListener.get(uuid);
+					executeHandler(handler, new MessageImpl(message), name);
+				}
 			}
-			BiConsumer<String, Message> handler = this.eventListener.get(uuid);
-			executeHandler(handler, new MessageImpl(message), topic);
 		}
 	}
 
@@ -182,15 +189,15 @@ public class MessageHubService implements MessageHub, RunnableService, MqttCallb
 	 */
 	@Override
 	public UUID subscribe(String topic, Consumer<String> handler) {
-		return subscribe(topic, (t, m) -> handler.accept(m.getPayload()));
+		return subscribe(this.tf.createTopicFilter(topic), (t, m) -> handler.accept(m.getPayload()));
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(java.lang.String,
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(TopicFilter,
 	 *      java.util.function.BiConsumer)
 	 */
 	@Override
-	public UUID subscribe(String topic, BiConsumer<String, Message> handler) {
+	public UUID subscribe(TopicFilter topic, BiConsumer<TopicName, Message> handler) {
 		UUID uuid = UUID.randomUUID();
 
 		if (this.topicListeners.containsKey(topic)) {
@@ -199,6 +206,11 @@ public class MessageHubService implements MessageHub, RunnableService, MqttCallb
 			List<UUID> listeners = new LinkedList<>();
 			listeners.add(uuid);
 			this.topicListeners.put(topic, listeners);
+			try {
+				this.client.subscribe(topic.getStringRepresentation(), 0, "Subscribe", this);
+			} catch (MqttException e) {
+				fail("Subscribe", e);
+			}
 		}
 
 		this.eventListener.put(uuid, handler);
@@ -212,19 +224,32 @@ public class MessageHubService implements MessageHub, RunnableService, MqttCallb
 	@Override
 	public void unsubscribe(UUID identifier) {
 		this.eventListener.remove(identifier);
+		for (TopicFilter topic : this.topicListeners.keySet()) {
+			if (this.topicListeners.get(topic).contains(identifier)) {
+				this.topicListeners.get(topic).remove(identifier);
+				if (this.topicListeners.get(topic).isEmpty()) {
+					this.topicListeners.remove(topic);
+					try {
+						this.client.unsubscribe(topic.getStringRepresentation(), "Unsubscribe", this);
+					} catch (MqttException e) {
+						fail("Unsubscribe", e);
+					}
+				}
+				break;
+			}
+		}
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String, int,
-	 *      boolean)
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(TopicName, java.lang.String, int, boolean)
 	 */
 	@Override
-	public void publish(String topic, String payload, int qualityOfService, boolean retain) {
+	public void publish(TopicName topic, String payload, int qualityOfService, boolean retain) {
 		MqttMessage msg = new MqttMessage(payload.getBytes(StandardCharsets.UTF_8));
 		msg.setQos(qualityOfService);
 		msg.setRetained(retain);
 		try {
-			this.client.publish(topic, msg, "publish", this);
+			this.client.publish(topic.getStringRepresentation(), msg, "publish", this);
 		} catch (MqttException e) {
 			fail("Publish", e);
 		}
