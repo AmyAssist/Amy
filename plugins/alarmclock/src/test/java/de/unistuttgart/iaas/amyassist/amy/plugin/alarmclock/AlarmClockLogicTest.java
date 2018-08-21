@@ -24,8 +24,10 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.reset;
@@ -76,6 +78,10 @@ public class AlarmClockLogicTest {
 
 	private Environment env;
 
+	private List<Alarm> alarms = new ArrayList<>();
+
+	private int alarmNumber;
+
 	/**
 	 * Initializes the class variables before each test
 	 */
@@ -87,6 +93,8 @@ public class AlarmClockLogicTest {
 		this.abs = this.framework.mockService(AlarmBeepService.class);
 		this.alarmStorage = this.framework.mockService(AlarmRegistry.class);
 		this.acl = this.framework.setServiceUnderTest(AlarmClockLogic.class);
+
+		when(this.alarmStorage.getAll()).thenReturn(this.alarms);
 	}
 
 	/**
@@ -135,20 +143,7 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	public void testResetAlarms() {
-		LocalDateTime alarmTime = LocalDateTime.of(2018, 8, 15, 11, 11);
-		Alarm a1 = new Alarm(5, alarmTime, false);
-		this.alarmStorage.save(a1);
-		Alarm a2 = new Alarm(5, alarmTime, false);
-		this.alarmStorage.save(a2);
-		Alarm a3 = new Alarm(5, alarmTime, false);
-		this.alarmStorage.save(a3);
-
-		for (Alarm alarm : this.alarmStorage.getAll()) {
-			this.alarmStorage.deleteById(alarm.getPersistentId());
-		}
-
-		assertThat(this.acl.resetAlarms(), is("3 alarms deleted"));
-		assertThat(this.alarmStorage.getAll().size(), is(0));
+		assertThat(true, is(false));
 	}
 
 	/**
@@ -157,8 +152,6 @@ public class AlarmClockLogicTest {
 	@Test
 	public void testResetAlarmsNoAlarms() {
 		assertThat(this.acl.resetAlarms(), is("No alarms found"));
-		verify(this.timerStorage).putAlarmCounter(0);
-		verify(this.timerStorage, never()).deleteAlarm(ArgumentMatchers.anyInt());
 	}
 
 	/**
@@ -185,8 +178,6 @@ public class AlarmClockLogicTest {
 	@Test
 	protected void testResetTimersNoTimers() {
 		assertThat(this.acl.resetTimers(), is("No timers found"));
-		verify(this.timerStorage).putTimerCounter(0);
-		verify(this.timerStorage, never()).deleteAlarm(ArgumentMatchers.anyInt());
 	}
 
 	/**
@@ -194,11 +185,7 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testDeleteAlarm() {
-		when(this.timerStorage.hasAlarm(2)).thenReturn(true);
-		when(this.timerStorage.getAlarm(2)).thenReturn(new Alarm(2, 4, 20, true));
-		assertThat(this.acl.deleteAlarm(2), is("Alarm 2 deleted"));
-		verify(this.timerStorage, times(2)).hasAlarm(2);
-		verify(this.timerStorage).deleteAlarm(2);
+		assertThat(true, is(false));
 	}
 
 	/**
@@ -207,8 +194,6 @@ public class AlarmClockLogicTest {
 	@Test
 	protected void testDeleteAlarmNotFound() {
 		assertThrows(NoSuchElementException.class, () -> this.acl.deleteAlarm(4));
-		verify(this.timerStorage).hasAlarm(4);
-		verify(this.timerStorage, never()).deleteAlarm(4);
 	}
 
 	/**
@@ -238,16 +223,7 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testDeactivateAlarmActive() {
-		Alarm alarm2 = new Alarm(2, 12, 25, true);
-
-		when(this.timerStorage.hasAlarm(2)).thenReturn(true);
-		when(this.timerStorage.getAlarm(2)).thenReturn(alarm2);
-
-		assertThat(this.acl.deactivateAlarm(2), is("Alarm 2 deactivated"));
-		verify(this.timerStorage).hasAlarm(2);
-		verify(this.timerStorage).getAlarm(2);
-		alarm2.setActive(false);
-		verify(this.timerStorage).storeAlarm(alarm2);
+		assertThat(true, is(false));
 	}
 
 	/**
@@ -255,15 +231,7 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testDeactivateAlarmInactive() {
-		Alarm alarm8 = new Alarm(8, 22, 57, false);
-
-		when(this.timerStorage.hasAlarm(8)).thenReturn(true);
-		when(this.timerStorage.getAlarm(8)).thenReturn(alarm8);
-
-		assertThat(this.acl.deactivateAlarm(8), is("Alarm 8 is already inactive"));
-		verify(this.timerStorage).hasAlarm(8);
-		verify(this.timerStorage).getAlarm(8);
-		verify(this.timerStorage, never()).storeAlarm(ArgumentMatchers.any(Alarm.class));
+		assertThat(true, is(false));
 	}
 
 	/**
@@ -271,8 +239,7 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testDeactivateAlarmNotFound() {
-		assertThrows(NoSuchElementException.class, () -> this.acl.deactivateAlarm(10));
-		verify(this.timerStorage, only()).hasAlarm(10);
+		assertThat(true, is(false));
 	}
 
 	/**
@@ -321,15 +288,7 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testActivateAlarmActive() {
-		Alarm alarm2 = new Alarm(2, 12, 25, true);
-
-		when(this.timerStorage.hasAlarm(2)).thenReturn(true);
-		when(this.timerStorage.getAlarm(2)).thenReturn(alarm2);
-
-		assertThat(this.acl.activateAlarm(2), is("Alarm 2 is already active"));
-		verify(this.timerStorage).hasAlarm(2);
-		verify(this.timerStorage).getAlarm(2);
-		verify(this.timerStorage, never()).storeAlarm(ArgumentMatchers.any(Alarm.class));
+		assertThat(true, is(false));
 	}
 
 	/**
@@ -337,15 +296,7 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testActivateAlarmInactive() {
-		Alarm alarm8 = new Alarm(8, 22, 57, false);
-
-		when(this.timerStorage.hasAlarm(8)).thenReturn(true);
-		when(this.timerStorage.getAlarm(8)).thenReturn(alarm8);
-
-		assertThat(this.acl.activateAlarm(8), is("Alarm 8 activated"));
-		verify(this.timerStorage).hasAlarm(8);
-		verify(this.timerStorage).getAlarm(8);
-		verify(this.timerStorage).storeAlarm(alarm8);
+		assertThat(true, is(false));
 	}
 
 	/**
@@ -353,8 +304,7 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testActivateAlarmNotFound() {
-		assertThrows(NoSuchElementException.class, () -> this.acl.activateAlarm(10));
-		verify(this.timerStorage, only()).hasAlarm(10);
+		assertThat(true, is(false));
 	}
 
 	/**
@@ -371,14 +321,10 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testGetAlarm() {
-		Alarm alarm1 = new Alarm(1, 20, 15, true);
-
-		when(this.timerStorage.hasAlarm(1)).thenReturn(true);
-		when(this.timerStorage.getAlarm(1)).thenReturn(alarm1);
-		assertThat(this.acl.getAlarm(1), is(alarm1));
-		verify(this.timerStorage).hasAlarm(1);
-		verify(this.timerStorage).getAlarm(1);
-		reset(this.timerStorage);
+		createAlarms(3, true);
+		this.alarmNumber = 1;
+		Alarm returnedAlarm = this.acl.getAlarm(this.alarmNumber);
+		assertThat(returnedAlarm.getId(), is(2));
 	}
 
 	/**
@@ -386,8 +332,7 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testGetAlarmNotFound() {
-		assertThrows(NoSuchElementException.class, () -> this.acl.getAlarm(3));
-		verify(this.timerStorage, only()).hasAlarm(3);
+		assertThat(true, is(false));
 	}
 
 	/**
@@ -419,23 +364,9 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testGetAllAlarms() {
-		Alarm alarm1 = new Alarm(1, 20, 15, true);
-		Alarm alarm2 = new Alarm(2, 6, 30, false);
-		Alarm alarm5 = new Alarm(5, 10, 0, true);
-		List<Alarm> alarms = new ArrayList<Alarm>();
-		alarms.add(alarm1);
-		alarms.add(alarm2);
-		alarms.add(alarm5);
-		when(this.timerStorage.getAlarmCounter()).thenReturn(10);
-		when(this.timerStorage.hasAlarm(1)).thenReturn(true);
-		when(this.timerStorage.getAlarm(1)).thenReturn(alarm1);
-		when(this.timerStorage.hasAlarm(2)).thenReturn(true);
-		when(this.timerStorage.getAlarm(2)).thenReturn(alarm2);
-		when(this.timerStorage.hasAlarm(5)).thenReturn(true);
-		when(this.timerStorage.getAlarm(5)).thenReturn(alarm5);
-
-		assertThat(this.acl.getAllAlarms(), is(alarms));
-		verify(this.timerStorage, times(10)).hasAlarm(ArgumentMatchers.anyInt());
+		createAlarms(3, true);
+		List<Alarm> returnedAlarms = this.acl.getAllAlarms();
+		assertThat(returnedAlarms, hasSize(3));
 	}
 
 	/**
@@ -443,8 +374,8 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testGetAllAlarmsNoAlarms() {
-		when(this.timerStorage.getAlarmCounter()).thenReturn(10);
-		assertThat(this.acl.getAllAlarms(), is(new ArrayList<Alarm>()));
+		List<Alarm> returnedAlarms = this.acl.getAllAlarms();
+		assertThat(returnedAlarms, hasSize(0));
 	}
 
 	/**
@@ -485,15 +416,7 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testEditAlarm() {
-		Alarm alarm1 = new Alarm(1, 15, 50, true);
-		when(this.timerStorage.hasAlarm(1)).thenReturn(true);
-		when(this.timerStorage.getAlarm(1)).thenReturn(alarm1);
-
-		alarm1.setTime(4, 20);
-		assertThat(this.acl.editAlarm(1, 4, 20), is(alarm1));
-		verify(this.timerStorage).hasAlarm(1);
-		verify(this.timerStorage).getAlarm(1);
-		verify(this.timerStorage).storeAlarm(alarm1);
+		assertThat(true, is(false));
 	}
 
 	/**
@@ -501,6 +424,17 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testEditAlarmNotFound() {
-		assertThrows(NoSuchElementException.class, () -> this.acl.editAlarm(1, 15, 20));
+		assertThat(true, is(false));
+	}
+
+	private List<Alarm> createAlarms(int amount, boolean active) {
+		for (int i = 1; i <= amount; i++) {
+			Alarm mockAlarm = mock(Alarm.class);
+			when(mockAlarm.getId()).thenReturn(amount);
+			when(mockAlarm.getAlarmTime()).thenReturn(LocalDateTime.of(2018, 8, 21, 21, 21));
+			when(mockAlarm.isActive()).thenReturn(active);
+			this.alarms.add(mockAlarm);
+		}
+		return this.alarms;
 	}
 }
