@@ -95,6 +95,7 @@ public class DialogHandler {
 
 		if (intent == null) {
 			this.manager.decideIntent(dialog, naturalLanguageText);
+			intent = dialog.getIntent();
 		} else {
 			Object object = this.serviceLocator.createAndInitialize(dialog.getIntent().getPartialNLIClass());
 			intent.updateGrammars(object);
