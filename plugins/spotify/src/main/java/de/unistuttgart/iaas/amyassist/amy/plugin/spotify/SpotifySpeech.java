@@ -23,11 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
@@ -61,12 +63,12 @@ public class SpotifySpeech {
 	/**
 	 * speech command to get all online devices from spotify
 	 * 
-	 * @param enties
+	 * @param entites
 	 *            input. no input is expected
 	 * @return the speech output string
 	 */
 	@Intent()
-	public String getDevices(Map<String, EntityData> enties) {
+	public String getDevices(Map<String, EntityData> entites) {
 		List<DeviceEntity> devices = this.deviceLogic.getDevices();
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < devices.size(); i++) {
@@ -83,12 +85,12 @@ public class SpotifySpeech {
 	/**
 	 * speech command to get the currently song that is playing
 	 * 
-	 * @param enties
+	 * @param entites
 	 *            input. no input is expected
 	 * @return the speech output string
 	 */
 	@Intent()
-	public String getCurrentSong(Map<String, EntityData> enties) {
+	public String getCurrentSong(Map<String, EntityData> entites) {
 		TrackEntity track = this.playerLogic.getCurrentSong();
 		return (track != null) ? "track: " + track.toString() : "No song is playing";
 	}
@@ -96,15 +98,15 @@ public class SpotifySpeech {
 	/**
 	 * speech command to get own or featured playlists
 	 * 
-	 * @param enties
+	 * @param entites
 	 *            input. to get the type featured or own
 	 * @return the speech output string
 	 */
 	@Intent()
-	public String getPlaylists(Map<String, EntityData> enties) {
+	public String getPlaylists(Map<String, EntityData> entites) {
 		StringBuilder builder = new StringBuilder();
-		if (enties.get("type").getString() != null) {
-			switch (enties.get("type").getString()) {
+		if (entites.get("type").getString() != null) {
+			switch (entites.get("type").getString()) {
 			case "featured":
 				for (PlaylistEntity playlist : this.search.searchFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
 					builder = builder.append(playlist.toString()).append("\n");
@@ -131,12 +133,12 @@ public class SpotifySpeech {
 	/**
 	 * speech command for play a 'random' playlist
 	 * 
-	 * @param enties
+	 * @param entites
 	 *            input. no input is expected
 	 * @return the speech output string
 	 */
 	@Intent()
-	public String playSomething(Map<String, EntityData> enties) {
+	public String playSomething(Map<String, EntityData> entites) {
 		PlaylistEntity list = this.playerLogic.play();
 		return (list != null) ? list.toString() : "No playlist available";
 	}
@@ -144,13 +146,13 @@ public class SpotifySpeech {
 	/**
 	 * speech command for back, skip, pause, resume
 	 * 
-	 * @param enties
+	 * @param entites
 	 *            input. contains the wich command should be used
 	 * @return the speech output string
 	 */
 	@Intent()
-	public String control(Map<String, EntityData> enties) {
-		switch (enties.get("type").getString()) {
+	public String control(Map<String, EntityData> entites) {
+		switch (entites.get("type").getString()) {
 		case "back":
 			if (this.playerLogic.back()) {
 				return "back";
@@ -179,51 +181,98 @@ public class SpotifySpeech {
 	/**
 	 * speech command for the volume control
 	 * 
-	 * @param enties
+	 * @param entites
 	 *            input. contain one of the following strings: mute, max, up or down
 	 * @return the speech output string
 	 */
 	@Intent()
-	public String volume(Map<String, EntityData> enties) {
+	public String volume(Map<String, EntityData> entites) {
 		return "Volume is now on: "
-				+ Integer.toString(this.playerLogic.setVolume(enties.get("volumeoption").getString())) + " percent";
+				+ Integer.toString(this.playerLogic.setVolume(entites.get("volumeoption").getString())) + " percent";
 	}
 
 	/**
 	 * speech command to set a spotify device with id
 	 * 
-	 * @param enties
+	 * @param entites
 	 *            input. contains the id from the device
 	 * @return the speech output string
 	 */
 	@Intent()
-	public String setDeviceId(Map<String, EntityData> enties) {
-		return this.deviceLogic.setDevice(enties.get("deviceid").getNumber());
+	public String setDeviceId(Map<String, EntityData> entites) {
+		return this.deviceLogic.setDevice(entites.get("deviceid").getNumber());
+	}
+
+	/**
+	 * speech command to set a spotify device with the name of the device
+	 * 
+	 * @param entites
+	 *            input. contains the name from the device
+	 * @return the speech output string
+	 */
+	@Intent()
+	public String setDeviceName(Map<String, EntityData> entites) {
+		for (DeviceEntity device : this.deviceLogic.getDevices()) {
+			if (device.getName().equalsIgnoreCase(entites.get("devicename").getString())) {
+				this.deviceLogic.setDevice(device.getID());
+				return device.getName();
+			}
+		}
+		return "Device not found";
 	}
 
 	/**
 	 * speech command to play a playlist that was searched before
 	 * 
-	 * @param enties
+	 * @param entites
 	 *            input. type to play and id from the playlist
 	 * @return the speech output string
 	 */
 
 	@Intent()
-	public String playPlaylistId(Map<String, EntityData> enties) {
+	public String playPlaylistId(Map<String, EntityData> entites) {
 		PlaylistEntity playlist = null;
-		switch (enties.get("type").getString()) {
+		switch (entites.get("type").getString()) {
 		case "own":
-			playlist = this.playerLogic.playPlaylist(enties.get("songid").getNumber(), SearchTypes.USER_PLAYLISTS);
+			playlist = this.playerLogic.playPlaylist(entites.get("songid").getNumber(), SearchTypes.USER_PLAYLISTS);
 			break;
 		case "featured":
-			playlist = this.playerLogic.playPlaylist(enties.get("songid").getNumber(),
-					SearchTypes.FEATURED_PLAYLISTS);
+			playlist = this.playerLogic.playPlaylist(entites.get("songid").getNumber(), SearchTypes.FEATURED_PLAYLISTS);
 			break;
 		default:
 			break;
 		}
 		return (playlist != null) ? playlist.toString() : ERROR_MESSAGE_ELEMENT;
+	}
+
+	/**
+	 * speech command to search for a song and play this directly
+	 * 
+	 * @param entites
+	 *            input. songname
+	 * @return the song that is now playing
+	 */
+	@Intent()
+	public String searchASong(Map<String, EntityData> entites) {
+		List<TrackEntity> tracks = this.search.searchforTracks(entites.get("songname").getString(), 1);
+		if (tracks.get(0) != null) {
+			return this.playerLogic.playTrack(0).getName();
+		}
+		return ERROR_MESSAGE_ELEMENT;
+	}
+
+	/**
+	 * provide the device names to the speech
+	 * 
+	 * @return a list with all device names
+	 */
+	@EntityProvider("devicename")
+	public List<String> getDevicesNames() {
+		List<String> deviceNames = new ArrayList<>();
+		for (DeviceEntity device : this.deviceLogic.getDevices()) {
+			deviceNames.add(device.getName());
+		}
+		return deviceNames;
 	}
 
 }

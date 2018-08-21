@@ -62,7 +62,7 @@
 		</EntityTemplates>
 		<Prompt entityTemplateId="deviceid">
 			<text>To which device should i switch? </text>
-			<gram>[device] {amyinteger} </gram>
+			<gram>[device] {deviceid} </gram>
 		</Prompt>
 	</Intent>
 
@@ -87,6 +87,30 @@
 			<text> would you play the featured or a own playlist?
 			</text>
 			<gram>{type} playlist</gram>
+		</Prompt>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.searchASong">
+		<gram>test play following song {songname}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="songname">
+				<gram>+ now</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.setDeviceName">
+		<gram> set (spotify|music) device by name [{devicename}] </gram>
+		<EntityTemplates>
+			<EntityTemplate id="devicename">
+				<gram>name</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="devicename">
+			<text>To which device should i switch? </text>
+			<gram>[to device] {devicename} </gram>
 		</Prompt>
 	</Intent>
 </AmyInteractionModel>
