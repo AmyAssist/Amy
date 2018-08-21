@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEvents">
+		<gram>what (is|are) my next [{number}] event</gram>
+		<EntityTemplates>
+			<EntityTemplate id="number">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="number">
+			<text>How many events should i show? </text>
+			<gram> {number} [event] </gram>
+		</Prompt>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsToday">
+		<gram>[which] events [do i have] [{day}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="day">
+				<gram>(today|tomorrow)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="day">
+			<text>today or tomorrow? </text>
+			<gram> {day} </gram>
+		</Prompt>
+	</Intent>
+
+</AmyInteractionModel>
