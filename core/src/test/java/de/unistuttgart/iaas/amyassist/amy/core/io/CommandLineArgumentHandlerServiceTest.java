@@ -200,26 +200,4 @@ class CommandLineArgumentHandlerServiceTest {
 		return Streams.concat(oneName, multipleNames).map(arr -> Arguments.of((Object) arr));
 	}
 
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService#getInfo()}.
-	 * 
-	 * @param plugins
-	 *            The plugin names to test with
-	 */
-	@ParameterizedTest
-	@MethodSource("names")
-	void testGetPluginsPaths(String[] plugins) {
-
-		String[] args = new String[plugins.length * 2];
-
-		for (int i = 0; i < plugins.length; i++) {
-			args[i * 2] = "-p";
-			args[i * 2 + 1] = plugins[i];
-		}
-		this.cmaService.load(args, this.logger::info);
-		Assertions.assertTrue(this.cmaService.shouldProgramContinue());
-		List<String> correct = Arrays.asList(plugins);
-		Assertions.assertEquals(correct, this.cmaService.getInfo().getPluginPaths());
-	}
-
 }

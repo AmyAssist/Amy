@@ -13,24 +13,15 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<properties>
-		<sphinx.version>5prealpha-SNAPSHOT</sphinx.version>
+		<sphinx.version>5prealpha</sphinx.version>
 		<cliche.version>110413</cliche.version>
 	</properties>
 	<repositories>
 		<!-- used for MARY repository -->
 		<repository>
 			<id>mary-repo</id>
+			<name>Mary Repositroy</name>
 			<url>https://jcenter.bintray.com</url>
-		</repository>
-		<repository>
-			<id>snapshots-repo</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -65,18 +56,23 @@
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>deployment-descriptor-utility</artifactId>
+			<version>${deployment.descriptor.utility.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-testing-framework</artifactId>
 			<version>${amy.testing-framework.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- CMU Sphinx for SR -->
 		<dependency>
-			<groupId>edu.cmu.sphinx</groupId>
+			<groupId>net.sf.phat</groupId>
 			<artifactId>sphinx4-core</artifactId>
 			<version>${sphinx.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.cmu.sphinx</groupId>
+			<groupId>net.sf.phat</groupId>
 			<artifactId>sphinx4-data</artifactId>
 			<version>${sphinx.version}</version>
 		</dependency>

@@ -23,15 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Set;
+
+import de.unistuttgart.iaas.amyassist.amy.deployment.DeploymentDescriptorUtil;
 
 /**
  * This class name is used as deployment descriptor name.
@@ -43,53 +37,13 @@ public class Services {
 
 	/**
 	 * Loads Services using the deployment descriptor file
-	 * META-INF/de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService
+	 * META-INF/de.unistuttgart.iaas.amyassist.amy.core.di.Services
 	 * 
 	 * @param classLoader
 	 *            the classLoader from which the deployment descriptor is read is used to load the classes
 	 * @return the set of loaded classes
 	 */
 	public Set<Class<?>> loadServices(ClassLoader classLoader) {
-		Enumeration<URL> resources;
-		try {
-			resources = classLoader.getResources(SERVICE_DEPLOYMENT_DESCRIPTOR);
-		} catch (IOException e) {
-			throw new IllegalStateException("Could not read the Service deployment descriptor", e);
-		}
-		Set<Class<?>> classes = new HashSet<>();
-		while (resources.hasMoreElements()) {
-			try (InputStream resourceAsStream = resources.nextElement().openStream();
-					BufferedReader reader = new BufferedReader(
-							new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8))) {
-				String className;
-				while ((className = reader.readLine()) != null) {
-					if (className.isEmpty() || className.startsWith("#")) {
-						continue;
-					}
-					classes.add(this.getClass(className, classLoader));
-				}
-			} catch (IOException e) {
-				throw new IllegalStateException("Could not read the Service deployment descriptor", e);
-			}
-		}
-		return classes;
-	}
-
-	/**
-	 * @param className
-	 *            the name of the class
-	 * @param classLoader
-	 *            the classLoader to load the class from
-	 * @return the class with the given name from the classLoader
-	 * @throws IllegalArgumentException
-	 *             if the class could not be loaded
-	 */
-	private Class<?> getClass(String className, ClassLoader classLoader) {
-		try {
-			return Class.forName(className, true, classLoader);
-		} catch (ClassNotFoundException e) {
-			throw new IllegalArgumentException(
-					"could not load class " + className + " with the given ClassLoader " + classLoader, e);
-		}
+		return DeploymentDescriptorUtil.getClasses(classLoader, SERVICE_DEPLOYMENT_DESCRIPTOR);
 	}
 }
