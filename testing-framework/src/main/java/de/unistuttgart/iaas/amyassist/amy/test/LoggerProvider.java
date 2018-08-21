@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.test;
 
 import java.util.Collections;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,21 +51,21 @@ public class LoggerProvider implements ServiceProvider<Logger> {
 	private static final String KEY = "class";
 
 	@Override
-	public ServiceDescription<Logger> getServiceDescription() {
+	public @Nonnull ServiceDescription<Logger> getServiceDescription() {
 		return new ServiceDescriptionImpl<>(Logger.class);
 	}
 
 	@Override
-	public ServiceImplementationDescription<Logger> getServiceImplementationDescription(ContextLocator locator,
-			ServiceConsumer<Logger> serviceConsumer) {
+	public ServiceImplementationDescription<Logger> getServiceImplementationDescription(@Nonnull ContextLocator locator,
+			@Nonnull ServiceConsumer<Logger> serviceConsumer) {
 		Class<?> cls = serviceConsumer.getConsumerClass();
 		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
 				Collections.singletonMap(KEY, cls), LoggerFactory.class);
 	}
 
 	@Override
-	public ServiceHandle<Logger> createService(SimpleServiceLocator locator,
-			ServiceImplementationDescription<Logger> serviceImplementationDescription) {
+	public @Nonnull ServiceHandle<Logger> createService(@Nonnull SimpleServiceLocator locator,
+			@Nonnull ServiceImplementationDescription<Logger> serviceImplementationDescription) {
 
 		Class<?> cls = (Class<?>) serviceImplementationDescription.getContext().get(KEY);
 		return new ServiceHandleImpl<>(LoggerFactory.getLogger(cls));
