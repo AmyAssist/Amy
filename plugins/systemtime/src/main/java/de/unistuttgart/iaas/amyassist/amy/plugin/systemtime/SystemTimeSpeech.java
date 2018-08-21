@@ -23,8 +23,11 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
+import java.util.Map;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
@@ -43,8 +46,8 @@ public class SystemTimeSpeech {
 	 *
 	 * @return current time (hour minute) in a string, e.g. it is 10:30
 	 */
-	@Grammar("(what is|tell me) the time")
-	public String time(String[] s) {
+	@Intent()
+	public String time(Map<String, EntityData> entities) {
 		if (this.logic.getTime() != null && this.logic.getTime().length() > 4) {
 			return "it is " + this.logic.getTime().substring(0, 5);
 		}
@@ -56,8 +59,8 @@ public class SystemTimeSpeech {
 	 *
 	 * @return current date (day month year) in a string, e.g. it is the 20th of june
 	 */
-	@Grammar("(what is|tell me) the date")
-	public String date(String[] s) {
+	@Intent()
+	public String date(Map<String, EntityData> entities) {
 		return "it is the " + this.logic.getDate();
 	}
 
@@ -66,8 +69,8 @@ public class SystemTimeSpeech {
 	 * 
 	 * @return current year in a string, e.g. it is 2018
 	 */
-	@Grammar("(what is|tell me) the year")
-	public String year(String[] s) {
+	@Intent
+	public String year(Map<String, EntityData> entities) {
 		return "it is " + this.logic.getYear();
 	}
 
