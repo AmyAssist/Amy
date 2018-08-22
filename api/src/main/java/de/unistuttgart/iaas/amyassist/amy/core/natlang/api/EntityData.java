@@ -23,12 +23,11 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 /**
- * TODO: Description
- * @author
+ * Interface for the entity data storage
+ * @author Felix Burk, Lars Buttgereit
  */
 public interface EntityData {
 
