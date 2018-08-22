@@ -58,20 +58,20 @@ public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public ServiceDescription<T> getServiceDescription() {
+	public @Nonnull ServiceDescription<T> getServiceDescription() {
 		return new ServiceDescriptionImpl<>(this.serviceType);
 	}
 
 	@Override
-	public ServiceImplementationDescription<T> getServiceImplementationDescription(ContextLocator locator,
-			ServiceConsumer<T> serviceConsumer) {
+	public ServiceImplementationDescription<T> getServiceImplementationDescription(@Nonnull ContextLocator locator,
+			@Nonnull ServiceConsumer<T> serviceConsumer) {
 		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
 				this.instance.getClass());
 	}
 
 	@Override
-	public ServiceHandle<T> createService(SimpleServiceLocator locator,
-			ServiceImplementationDescription<T> serviceImplementationDescription) {
+	public @Nonnull ServiceHandle<T> createService(@Nonnull SimpleServiceLocator locator,
+			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
 		return new ServiceHandleImpl<>(this.instance);
 	}
 
