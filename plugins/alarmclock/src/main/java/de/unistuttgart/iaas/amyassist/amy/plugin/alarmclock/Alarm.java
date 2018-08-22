@@ -215,7 +215,7 @@ public class Alarm implements RegistryEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		Alarm other = (Alarm) obj;
-		if (this.active != other.active)
+		if (this.active != other.active || this.id != other.id || this.persistentId != other.persistentId)
 			return false;
 		if (this.alarmTime == null) {
 			if (other.alarmTime != null)
@@ -223,8 +223,6 @@ public class Alarm implements RegistryEntity {
 		} else if (!this.alarmTime.equals(other.alarmTime)) {
 			return false;
 		}
-		if (this.id != other.id || this.persistentId != other.persistentId)
-			return false;
 		return true;
 	}
 
