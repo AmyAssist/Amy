@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * TODO: Description
@@ -47,6 +48,6 @@ public interface EntityData {
 	 * Get's {@link #time time}
 	 * @return  time
 	 */
-	LocalDateTime getTime();
+	LocalTime getTime();
 
 }

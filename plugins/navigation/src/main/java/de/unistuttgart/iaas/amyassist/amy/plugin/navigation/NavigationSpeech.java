@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
 import java.time.ZoneId;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
@@ -33,7 +34,9 @@ import com.google.maps.model.TravelMode;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
@@ -60,6 +63,14 @@ public class NavigationSpeech {
 
 	@Reference
 	private TimeFormatter timeFormatter;
+
+	@Intent()
+	public String testTime(Map<String, EntityData> entities) {
+		if (entities.get("time").getTime() != null) {
+			return entities.get("time").getTime().toString();
+		}
+		return "wrong time";
+	}
 
 	/**
 	 * speech command for 'be at' feature

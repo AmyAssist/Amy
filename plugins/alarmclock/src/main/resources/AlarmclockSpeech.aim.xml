@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.">
+		<gram>[do i have] new {important}</gram>
+	</Intent>
+		<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.">
+		<gram>[do i have] new {important}</gram>
+	</Intent>
+		<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.">
+		<gram>[do i have] new {important}</gram>
+	</Intent>
+		<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.">
+		<gram>[do i have] new {important}</gram>
+	</Intent>
+	
+	
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.numberOfNewMails">
+		<gram>how many [new] {important} [do i have]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="important">
+				<gram>[important] (messages|mails)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.readRecentMails">
+		<gram>read ({number}|{all}) {important}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="important">
+				<gram>[important] (messages|mails)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="number">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="all">
+				<gram>all</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+</AmyInteractionModel>

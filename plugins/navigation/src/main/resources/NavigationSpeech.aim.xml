@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.testTime">
+		<gram>{time}</gram>
+				<EntityTemplates>
+			<EntityTemplate id="time">
+				<gram>{amytime}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		
+	</Intent>
+	
+	
+	
+
+</AmyInteractionModel>
