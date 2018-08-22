@@ -27,7 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.reset;
@@ -143,7 +142,10 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	public void testResetAlarms() {
-		assertThat(true, is(false));
+		List<Alarm> returnedAlarms = createAlarms(3, false);
+		this.alarmNumber = 2;
+		when(this.alarmStorage.getAll()).thenReturn(returnedAlarms);
+		assertThat(this.acl.resetAlarms(), is("3 alarms deleted"));
 	}
 
 	/**
@@ -185,7 +187,10 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testDeleteAlarm() {
-		assertThat(true, is(false));
+		List<Alarm> returnedAlarms = createAlarms(3, false);
+		this.alarmNumber = 2;
+		when(this.alarmStorage.getAll()).thenReturn(returnedAlarms);
+		assertThat(this.acl.deleteAlarm(2), is("Alarm " + this.alarmNumber + " deleted"));
 	}
 
 	/**
@@ -223,7 +228,10 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testDeactivateAlarmActive() {
-		assertThat(true, is(false));
+		List<Alarm> returnedAlarms = createAlarms(3, true);
+		this.alarmNumber = 2;
+		when(this.alarmStorage.getAll()).thenReturn(returnedAlarms);
+		assertThat(this.acl.deactivateAlarm(2), is("Alarm " + this.alarmNumber + " deactivated"));
 	}
 
 	/**
@@ -231,7 +239,10 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testDeactivateAlarmInactive() {
-		assertThat(true, is(false));
+		List<Alarm> returnedAlarms = createAlarms(3, false);
+		this.alarmNumber = 2;
+		when(this.alarmStorage.getAll()).thenReturn(returnedAlarms);
+		assertThat(this.acl.deactivateAlarm(2), is("Alarm " + this.alarmNumber + " is already inactive"));
 	}
 
 	/**
@@ -239,7 +250,9 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testDeactivateAlarmNotFound() {
-		assertThat(true, is(false));
+		when(this.alarmStorage.getAll()).thenReturn(createAlarms(3, true));
+		this.alarmNumber = 4;
+		assertThrows(NoSuchElementException.class, () -> this.acl.deactivateAlarm(this.alarmNumber));
 	}
 
 	/**
@@ -288,7 +301,10 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testActivateAlarmActive() {
-		assertThat(true, is(false));
+		List<Alarm> returnedAlarms = createAlarms(3, true);
+		this.alarmNumber = 2;
+		when(this.alarmStorage.getAll()).thenReturn(returnedAlarms);
+		assertThat(this.acl.activateAlarm(2), is("Alarm " + this.alarmNumber + " is already active"));
 	}
 
 	/**
@@ -296,7 +312,10 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testActivateAlarmInactive() {
-		assertThat(true, is(false));
+		List<Alarm> returnedAlarms = createAlarms(3, false);
+		this.alarmNumber = 2;
+		when(this.alarmStorage.getAll()).thenReturn(returnedAlarms);
+		assertThat(this.acl.activateAlarm(2), is("Alarm " + this.alarmNumber + " activated"));
 	}
 
 	/**
@@ -304,7 +323,9 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testActivateAlarmNotFound() {
-		assertThat(true, is(false));
+		when(this.alarmStorage.getAll()).thenReturn(createAlarms(3, true));
+		this.alarmNumber = 4;
+		assertThrows(NoSuchElementException.class, () -> this.acl.activateAlarm(this.alarmNumber));
 	}
 
 	/**
@@ -321,8 +342,8 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testGetAlarm() {
-		createAlarms(3, true);
-		this.alarmNumber = 1;
+		when(this.alarmStorage.getAll()).thenReturn(createAlarms(3, true));
+		this.alarmNumber = 2;
 		Alarm returnedAlarm = this.acl.getAlarm(this.alarmNumber);
 		assertThat(returnedAlarm.getId(), is(2));
 	}
@@ -332,7 +353,9 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testGetAlarmNotFound() {
-		assertThat(true, is(false));
+		when(this.alarmStorage.getAll()).thenReturn(createAlarms(3, true));
+		this.alarmNumber = 4;
+		assertThrows(NoSuchElementException.class, () -> this.acl.getAlarm(this.alarmNumber));
 	}
 
 	/**
@@ -416,7 +439,14 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testEditAlarm() {
-		assertThat(true, is(false));
+		List<Alarm> returnedAlarms = createAlarms(3, true);
+		when(this.alarmStorage.getAll()).thenReturn(returnedAlarms);
+		this.alarmNumber = 2;
+		Alarm a = new Alarm(this.alarmNumber, LocalDateTime.of(2018, 8, 23, 12, 12), true);
+		when(this.env.getCurrentDateTime()).thenReturn(ZonedDateTime.of(2018, 2, 1, 4, 21, 55, 987, ZoneId.of("Z")));
+		this.acl.setAlarm(1, 4, 20);
+		verify(this.scheduler).schedule(ArgumentMatchers.any(Runnable.class), ArgumentMatchers.any(Instant.class));
+		assertThat(this.acl.editAlarm(this.alarmNumber, 1, 12, 12), is(a));
 	}
 
 	/**
@@ -424,15 +454,14 @@ public class AlarmClockLogicTest {
 	 */
 	@Test
 	protected void testEditAlarmNotFound() {
-		assertThat(true, is(false));
+		when(this.alarmStorage.getAll()).thenReturn(createAlarms(3, true));
+		this.alarmNumber = 4;
+		assertThrows(NoSuchElementException.class, () -> this.acl.editAlarm(this.alarmNumber, 1, 12, 12));
 	}
 
 	private List<Alarm> createAlarms(int amount, boolean active) {
 		for (int i = 1; i <= amount; i++) {
-			Alarm mockAlarm = mock(Alarm.class);
-			when(mockAlarm.getId()).thenReturn(amount);
-			when(mockAlarm.getAlarmTime()).thenReturn(LocalDateTime.of(2018, 8, 21, 21, 21));
-			when(mockAlarm.isActive()).thenReturn(active);
+			Alarm mockAlarm = new Alarm(i, LocalDateTime.of(2018, 8, 21, 21, 21), active);
 			this.alarms.add(mockAlarm);
 		}
 		return this.alarms;
