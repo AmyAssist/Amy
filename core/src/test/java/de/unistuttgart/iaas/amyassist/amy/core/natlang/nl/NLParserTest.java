@@ -46,7 +46,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
 
 /**
  * TODO: Description

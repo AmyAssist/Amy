@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -184,7 +184,7 @@ public class LoadAIMService implements DeploymentContainerService {
 	 *                       name of the jar entry
 	 * @return AmyInteractionModel instance
 	 */
-	protected XMLAmyInteractionModel extractModel(String xmlContent, String entryName) {
+	public XMLAmyInteractionModel extractModel(String xmlContent, String entryName) {
 		try {
 			JAXBContext jc = JAXBContext.newInstance(XMLAmyInteractionModel.class);
 			Unmarshaller unmarshaller = jc.createUnmarshaller();

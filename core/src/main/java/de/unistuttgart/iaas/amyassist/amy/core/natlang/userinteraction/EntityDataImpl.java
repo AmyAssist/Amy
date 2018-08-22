@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
 
 import java.time.LocalDateTime;
 import java.util.logging.Logger;

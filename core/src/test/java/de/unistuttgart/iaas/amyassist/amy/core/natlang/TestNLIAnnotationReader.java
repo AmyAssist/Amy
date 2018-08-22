@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.EntityDataImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.EntityDataImpl;
 
 /**
  * Test Cases for the AnnotationReader
