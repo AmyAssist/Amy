@@ -59,7 +59,7 @@ public class NLParserTest {
 	@BeforeEach
 	public void setup() throws JAXBException, FileNotFoundException {
 		FileInputStream stream = new FileInputStream(
-				"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/userInteraction/testXMLUserInteraction.aim.xml");
+				"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/userinteraction/testXMLUserInteraction.aim.xml");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		String xml = reader.lines().collect(Collectors.joining());
 		JAXBContext jc = JAXBContext.newInstance(XMLAmyInteractionModel.class);
