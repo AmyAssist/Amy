@@ -60,6 +60,8 @@ public class AlarmClockLogic {
 
 	private LocalDateTime alarmTime;
 
+	private String alarmS = "Alarm ";
+
 	/**
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
 	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel Simion
@@ -213,7 +215,7 @@ public class AlarmClockLogic {
 		Alarm a = getAlarm(alarmNumber);
 		deactivateAlarm(a.getId());
 		this.alarmStorage.deleteById(a.getPersistentId());
-		return "Alarm " + a.getId() + " deleted";
+		return this.alarmS + a.getId() + " deleted";
 	}
 
 	/**
@@ -248,7 +250,7 @@ public class AlarmClockLogic {
 			this.alarmStorage.save(a);
 			return "Alarm " + a.getId() + " deactivated";
 		}
-		return "Alarm " + alarmNumber + " is already inactive";
+		return this.alarmS + alarmNumber + " is already inactive";
 	}
 
 	/**
@@ -284,10 +286,10 @@ public class AlarmClockLogic {
 		if (!a.isActive()) {
 			a.setActive(true);
 			this.alarmStorage.save(a);
-			return "Alarm " + a.getId() + " activated";
+			return this.alarmS + a.getId() + " activated";
 		}
 
-		return "Alarm " + alarmNumber + " is already active";
+		return this.alarmS + alarmNumber + " is already active";
 	}
 
 	/**

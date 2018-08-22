@@ -223,9 +223,7 @@ public class Alarm implements RegistryEntity {
 		} else if (!this.alarmTime.equals(other.alarmTime)) {
 			return false;
 		}
-		if (this.id != other.id)
-			return false;
-		if (this.persistentId != other.persistentId)
+		if (this.id != other.id || this.persistentId != other.persistentId)
 			return false;
 		return true;
 	}

@@ -173,9 +173,7 @@ public class AlarmClockResource implements Resource {
 		} else {
 			day = 1;
 		}
-		Alarm result = this.logic.setAlarm(day, alarm.getAlarmTime().getHour(),
-				alarm.getAlarmTime().getMinute());
-		return result;
+		return this.logic.setAlarm(day, alarm.getAlarmTime().getHour(), alarm.getAlarmTime().getMinute());
 	}
 
 	/**

@@ -45,6 +45,8 @@ public class TimerStorage implements ITimerStorage {
 	@Reference
 	IStorage storage;
 
+	private String timerS = "timer";
+
 	/**
 	 * Storage key for the timer counter value
 	 */
@@ -52,7 +54,7 @@ public class TimerStorage implements ITimerStorage {
 
 	@Override
 	public void storeTimer(Timer timer) {
-		this.storage.put("timer" + timer.getId(), timer.toString());
+		this.storage.put(this.timerS + timer.getId(), timer.toString());
 	}
 
 	@Override
@@ -75,21 +77,21 @@ public class TimerStorage implements ITimerStorage {
 
 	@Override
 	public boolean hasTimer(int id) {
-		return this.storage.has("timer" + id);
+		return this.storage.has(this.timerS + id);
 	}
 
 	@Override
 	public void deleteTimer(int id) {
-		if (this.storage.has("timer" + id))
-			this.storage.delete("timer" + id);
+		if (this.storage.has(this.timerS + id))
+			this.storage.delete(this.timerS + id);
 		else
 			throw new NoSuchElementException();
 	}
 
 	@Override
 	public Timer getTimer(int id) {
-		if (this.storage.has("timer" + id)) {
-			String timerString = this.storage.get("timer" + id);
+		if (this.storage.has(this.timerS + id)) {
+			String timerString = this.storage.get(this.timerS + id);
 			return Timer.reconstructObject(timerString);
 		}
 		throw new NoSuchElementException();

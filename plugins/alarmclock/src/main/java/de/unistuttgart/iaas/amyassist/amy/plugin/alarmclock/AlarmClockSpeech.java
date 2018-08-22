@@ -54,6 +54,8 @@ public class AlarmClockSpeech {
 
 	private static final int MINUTESINHOUR = 60;
 	private static final int MINUTESQUARTERHOUR = 15;
+	private static String alarmS = "Alarm ";
+	private static String tomorrow = "tomorrow";
 
 	/**
 	 * Creates new alarm
@@ -79,9 +81,9 @@ public class AlarmClockSpeech {
 			if (LocalDateTime.now().getDayOfMonth() == time.getDayOfMonth()) {
 				day = "today";
 			} else {
-				day = "tomorrow";
+				day = tomorrow;
 			}
-			return "Alarm " + alarm.getId() + " set for " + time.getHour() + ":" + time.getMinute() + " " + day;
+			return alarmS + alarm.getId() + " set for " + time.getHour() + ":" + time.getMinute() + " " + day;
 		} catch (IllegalArgumentException e) {
 			this.logException(e);
 			return PARAMSNOTVALID;
@@ -275,7 +277,7 @@ public class AlarmClockSpeech {
 			alarmTime[0] = Integer.parseInt(params[4]);
 			alarmTime[1] = Integer.parseInt(params[6]);
 			for (String s : params) {
-				if (s.equals("tomorrow")) {
+				if (s.equals(tomorrow)) {
 					alarmTime[2] = 1;
 				}
 			}
@@ -319,7 +321,7 @@ public class AlarmClockSpeech {
 	private static int[] extractAlarmTime(String[] params) {
 		int[] alarmTime = new int[] { -1, -1, -1 };
 		for (String s : params) {
-			if (s.equals("tomorrow")) {
+			if (s.equals(tomorrow)) {
 				alarmTime[2] = 1;
 			}
 		}
@@ -375,13 +377,13 @@ public class AlarmClockSpeech {
 		if (LocalDateTime.now().getDayOfMonth() == ringTime.getDayOfMonth()) {
 			day = "today";
 		} else {
-			day = "tomorrow";
+			day = tomorrow;
 		}
 		if (alarm.isActive())
-			return "Alarm " + alarm.getId() + " will ring at " + ringTime.getHour() + ":" + ringTime.getMinute() + " "
+			return alarmS + alarm.getId() + " will ring at " + ringTime.getHour() + ":" + ringTime.getMinute() + " "
 					+ day;
 
-		return "Alarm " + alarm.getId() + " is set for " + ringTime.getHour() + ":" + ringTime.getMinute() + " " + day
+		return alarmS + alarm.getId() + " is set for " + ringTime.getHour() + ":" + ringTime.getMinute() + " " + day
 				+ " but will not ring";
 	}
 
