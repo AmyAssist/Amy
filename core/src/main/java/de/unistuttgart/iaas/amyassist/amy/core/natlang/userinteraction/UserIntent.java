@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -210,7 +210,7 @@ public class UserIntent {
 	}
 
 	/**
-	 * @param object
+	 * @param object to receive new grammars from
 	 */
 	public void updateGrammars(Object object) {
 		List<Entity> toUpdate = new ArrayList<>();

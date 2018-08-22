@@ -52,9 +52,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParserException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.Entity;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.EntityDataImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.Entity;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.EntityDataImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
 /**

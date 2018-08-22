@@ -46,7 +46,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
 
 /**
  * TODO: Description
@@ -69,11 +69,12 @@ public class NLParserTest {
 		
 		UserIntent int0 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(0));
 		UserIntent int1 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(1));
+		UserIntent int2 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(2));
 		
 		this.intents = new ArrayList<>();
 		this.intents.add(int0);
 		this.intents.add(int1);
-
+		this.intents.add(int2);
 		
 	}
 	
@@ -107,6 +108,23 @@ public class NLParserTest {
 		List<WordToken> tokens = lex.tokenize("test the four sign long wildcard here");
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(1).getGrammar());
+		NLParser parser = new NLParser(nodes, null);
+		assertEquals(parser.matchingNodeIndex(tokens),0);
+	}
+	
+	
+	@Test
+	public void longWildcardTest() {
+		StringBuilder b = new StringBuilder();
+		b.append("test the wildcard");
+		for(int i=0; i < 1000; i++) {
+			b.append(" really");
+		}
+		b.append(" long");
+		NLLexer lex = new NLLexer(new EnglishNumberConversion());
+		List<WordToken> tokens = lex.tokenize(b.toString());
+		List<AGFNode> nodes = new ArrayList<>();
+		nodes.add(this.intents.get(2).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
 		System.out.println(parser.matchingNode(tokens).printSelf());
 		assertEquals(parser.matchingNodeIndex(tokens),0);

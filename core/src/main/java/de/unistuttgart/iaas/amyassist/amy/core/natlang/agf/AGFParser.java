@@ -54,6 +54,7 @@ public class AGFParser extends Parser {
 
 		this.entityToAGF = entityToAGF;
 
+		super.register(AGFTokenType.ASTERISC, new MorphemeParselet());
 		super.register(AGFTokenType.PLUS, new MorphemeParselet());
 		super.register(AGFTokenType.DOLLAR, new MorphemeParselet());
 		super.register(AGFTokenType.WORD, new MorphemeParselet());
@@ -70,9 +71,11 @@ public class AGFParser extends Parser {
 	 * @param tokens
 	 *                   the tokens
 	 */
+	@Deprecated
 	public AGFParser(Iterator<AGFToken> tokens) {
 		super(tokens);
 
+		super.register(AGFTokenType.ASTERISC, new MorphemeParselet());
 		super.register(AGFTokenType.PLUS, new MorphemeParselet());
 		super.register(AGFTokenType.DOLLAR, new MorphemeParselet());
 		super.register(AGFTokenType.WORD, new MorphemeParselet());

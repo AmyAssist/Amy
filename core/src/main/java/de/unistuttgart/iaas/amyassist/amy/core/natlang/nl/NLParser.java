@@ -118,6 +118,12 @@ public class NLParser implements INLParser {
 	int wcSkips = 0;
 	
 	/**
+	 * another ugly internal state for wildcards
+	 * if this is true everything will be skipped and return true
+	 */
+	boolean wildcardSkip = false;
+	
+	/**
 	 * recursive method to check each node preorder style
 	 *
 	 * @param agf
@@ -132,6 +138,9 @@ public class NLParser implements INLParser {
 				if (!checkNode(node)) {
 					this.currentIndex = traceBack;
 					return false;
+				}
+				if(this.wildcardSkip) {
+					return true;
 				}
 			}
 			break;
@@ -156,6 +165,12 @@ public class NLParser implements INLParser {
 			break;
 		case SHORTWC:
 			this.wcSkips = ((ShortWNode) agf).getMaxWordLength();
+			break;
+		case LONGWC:
+			this.wildcardSkip = true;
+			for(int i=this.currentIndex; i < this.mRead.size(); i++) {
+				consume();
+			}
 			break;
 		case WORD:
 			return match(agf);

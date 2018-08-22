@@ -32,12 +32,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.MorphemeNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.NumberNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.ShortWNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.LongWNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.WordNode;
 
 /**
  * parses the smallest meaningful unit in the AGF Syntax
  * 
- * <Morpheme> := (<Word> | <Rule> | <Number>)+;
+ * <Morpheme> := (<Word> | <Rule> | <Number> | <ShortWildcard> | <LongWildcard> | <Entity>)+;
  * 
  * @author Felix Burk
  */
@@ -62,7 +63,7 @@ public class MorphemeParselet implements IAGFParselet {
 		// the following ones have to be consumed "by hand"
 		while (parser.match(AGFTokenType.OPENCBR) || parser.match(AGFTokenType.CLOSECBR)
 				|| parser.match(AGFTokenType.WORD) || parser.match(AGFTokenType.DOLLAR) 
-				|| parser.match(AGFTokenType.PLUS)) {
+				|| parser.match(AGFTokenType.PLUS) || parser.match(AGFTokenType.ASTERISC)) {
 			AGFToken t = parser.consume();
 			parseMorph(morph, t, parser);
 		}
@@ -73,7 +74,7 @@ public class MorphemeParselet implements IAGFParselet {
 	/**
 	 * parses a single morpheme
 	 * 
-	 * <Morpheme> := (<Word> | <Entity> | <Number>);
+	 * <Morpheme> := (<Word> | <Rule> | <Number> | <ShortWildcard> | <LongWildcard> | <Entity>);
 	 * 
 	 * @param morph
 	 *                   the morpheme node
@@ -106,6 +107,9 @@ public class MorphemeParselet implements IAGFParselet {
 			parseNumberExpression(morph, token, parser);
 		} else if(token.type == AGFTokenType.PLUS) {
 			AGFNode node = new ShortWNode("");
+			morph.addChild(node);
+		} else if(token.type == AGFTokenType.ASTERISC) {
+			AGFNode node = new LongWNode("");
 			morph.addChild(node);
 		}
 

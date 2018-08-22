@@ -1,23 +1,18 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
- * Short Wildcard node with max wordlength
+ * Wildcard node
  * 
  * @author Felix Burk
  *
  */
-public class ShortWNode extends AGFNode {
-	
-	/**
-	 * fixed max word length
-	 */
-	final int maxWordLength = 5;
+public class LongWNode extends AGFNode {
 
 	/**
-	 * constructor 
-	 * @param content empty here
+	 * constructor
+	 * @param content of the node
 	 */
-	public ShortWNode(String content) {
+	public LongWNode(String content) {
 		super(content);
 	}
 	
@@ -28,7 +23,7 @@ public class ShortWNode extends AGFNode {
 	 */
 	@Override
 	public AGFNodeType getType() {
-		return AGFNodeType.SHORTWC;
+		return AGFNodeType.LONGWC;
 	}
 	
 	/**
@@ -41,16 +36,8 @@ public class ShortWNode extends AGFNode {
 		StringBuilder b = new StringBuilder();
 		b.append("+" + name);
 		b.append("\n");
+		
 		return b.toString();
 	}
-	
-
-	/**
-	 * @return the maxWordLength
-	 */
-	public int getMaxWordLength() {
-		return this.maxWordLength;
-	}
-
 
 }

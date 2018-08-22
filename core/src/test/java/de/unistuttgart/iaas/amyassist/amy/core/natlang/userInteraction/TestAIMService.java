@@ -39,7 +39,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.LoadAIMService;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.LoadAIMService;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;

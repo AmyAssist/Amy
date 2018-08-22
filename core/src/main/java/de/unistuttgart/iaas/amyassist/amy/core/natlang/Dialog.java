@@ -25,7 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.util.function.Consumer;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userInteraction.UserIntent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
 
 /**
  * internal implementation of dialog interface

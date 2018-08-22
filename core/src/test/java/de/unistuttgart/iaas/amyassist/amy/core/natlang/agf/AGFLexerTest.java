@@ -154,6 +154,8 @@ public class AGFLexerTest {
 		ascii.remove("}");
 		ascii.remove("$");
 		ascii.remove(",");
+		ascii.remove("*");
+		ascii.remove("+");
 		//normal whitespace
 		ascii.remove(32);
 		
