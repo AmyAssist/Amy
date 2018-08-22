@@ -210,7 +210,7 @@ public class UserIntent {
 	}
 
 	/**
-	 * @param object
+	 * @param object to receive new grammars from
 	 */
 	public void updateGrammars(Object object) {
 		List<Entity> toUpdate = new ArrayList<>();

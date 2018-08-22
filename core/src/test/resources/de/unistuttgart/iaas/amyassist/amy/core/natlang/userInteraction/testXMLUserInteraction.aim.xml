@@ -18,6 +18,11 @@
 	
 	<Intent
 	ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
-		<gram>test the + + here</gram>
+		<gram>test the + here</gram>
+	</Intent>
+	
+	<Intent
+	ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
+		<gram>test the wildcard *</gram>
 	</Intent>
 </AmyInteractionModel>

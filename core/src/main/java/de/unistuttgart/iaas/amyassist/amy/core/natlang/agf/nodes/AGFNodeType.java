@@ -60,5 +60,9 @@ public enum AGFNodeType {
 	/**
 	 * a wildcard with fixed length
 	 */
-	SHORTWC;
+	SHORTWC, 
+	/**
+	 * a greedy wildcard
+	 */
+	LONGWC, 
 }
