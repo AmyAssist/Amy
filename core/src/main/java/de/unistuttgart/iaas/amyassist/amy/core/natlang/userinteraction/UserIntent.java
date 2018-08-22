@@ -73,9 +73,9 @@ public class UserIntent {
 	 * Represents an intent of a user
 	 *
 	 * @param method
-	 *                      plugin method to call
+	 *            plugin method to call
 	 * @param aimIntent
-	 *                      corresponding aimintent from xml
+	 *            corresponding aimintent from xml
 	 */
 	public UserIntent(@Nonnull Method method, @Nonnull XMLAIMIntent aimIntent) {
 		this.method = method;
@@ -89,11 +89,12 @@ public class UserIntent {
 	private void registerEntities() {
 		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
 		for (Entry<String, AGFNode> e : customEntities.entrySet()) {
-			this.entityList.put(e.getKey(), new Entity(e.getKey(), e.getValue()));
+			this.entityList.put(e.getKey(), new Entity(e.getKey(), e.getValue(), false));
 		}
 
 		for (XMLEntityTemplate xmlEntityTemplate : this.aimIntent.getTemplates()) {
-			Entity e = new Entity(xmlEntityTemplate.getEntityId(), parseStringToAGF(xmlEntityTemplate.getGrammar()));
+			Entity e = new Entity(xmlEntityTemplate.getEntityId(), parseStringToAGF(xmlEntityTemplate.getGrammar()),
+					Boolean.parseBoolean(xmlEntityTemplate.getRequired()));
 			this.entityList.put(xmlEntityTemplate.getEntityId(), e);
 			e.setMethod(NLIAnnotationReader.getValidEnityProviderMethod(this.partialNLIClass, e.getEntityId()));
 
@@ -115,7 +116,7 @@ public class UserIntent {
 	 * parse a string to agf
 	 *
 	 * @param toParse
-	 *                    String to parse
+	 *            String to parse
 	 * @return a agf node
 	 */
 	private AGFNode parseStringToAGF(String toParse) {
@@ -135,9 +136,9 @@ public class UserIntent {
 	 * Invoke the method of this partialNLI with an instance of the partialNLIClass
 	 *
 	 * @param instance
-	 *                     the instance of the partialNLIClass
+	 *            the instance of the partialNLIClass
 	 * @param map
-	 *                     map of all entities with the id as key
+	 *            map of all entities with the id as key
 	 * @return the result String from calling the command
 	 */
 	public String call(Object instance, Map<String, EntityDataImpl> map) {
@@ -154,7 +155,8 @@ public class UserIntent {
 		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
 
 		for (Entity entity : this.entityList.values()) {
-			if (entity.getEntityData() == null && !customEntities.containsKey(entity.getEntityId())) {
+			if ((entity.getEntityData() == null && !customEntities.containsKey(entity.getEntityId()))
+					&& entity.isRequired()) {
 				return false;
 			}
 		}
@@ -210,7 +212,8 @@ public class UserIntent {
 	}
 
 	/**
-	 * @param object to receive new grammars from
+	 * @param object
+	 *            to receive new grammars from
 	 */
 	public void updateGrammars(Object object) {
 		List<Entity> toUpdate = new ArrayList<>();

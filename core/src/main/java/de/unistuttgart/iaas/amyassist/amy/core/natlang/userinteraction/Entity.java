@@ -38,6 +38,7 @@ public class Entity {
 	private EntityDataImpl entityData;
 	private Prompt prompt;
 	private Method method;
+	private final boolean required;
 
 	/**
 	 * constructor for a entity
@@ -46,10 +47,13 @@ public class Entity {
 	 *            entityTemplateId from the xml file
 	 * @param grammar
 	 *            grammar from the entity
+	 * @param required
+	 *            is entity required
 	 */
-	public Entity(String entityId, AGFNode grammar) {
+	public Entity(String entityId, AGFNode grammar, boolean required) {
 		this.entityId = entityId;
 		this.grammar = grammar;
+		this.required = required;
 	}
 
 	/**
@@ -138,4 +142,12 @@ public class Entity {
 		this.method = method;
 	}
 
+	/**
+	 * Get's {@link #required required}
+	 * 
+	 * @return required
+	 */
+	public boolean isRequired() {
+		return this.required;
+	}
 }
