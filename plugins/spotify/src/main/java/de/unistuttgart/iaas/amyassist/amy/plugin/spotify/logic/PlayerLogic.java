@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
 import java.net.URI;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
@@ -67,7 +68,7 @@ public class PlayerLogic {
 
 	@PostConstruct
 	private void init() {
-		this.messageHub.subscribe("home/all/music/mute", message -> {
+		Consumer<String> muteConsumer =  message -> {
 			switch (message) {
 			case "true":
 				this.pause();
@@ -79,7 +80,9 @@ public class PlayerLogic {
 				this.logger.warn("unkown message {}", message);
 				break;
 			}
-		});
+		};
+		this.messageHub.subscribe("home/all/music/mute", muteConsumer);
+		this.messageHub.subscribe("home/all/mute", muteConsumer);
 	}
 
 	/**

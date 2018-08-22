@@ -143,7 +143,7 @@ class HomeResourceTest {
 	void testMute() {
 		Response r = this.target.path("mute").request().post(null);
 		assertEquals(204, r.getStatus());
-		Mockito.verify(messageHub).publish("home/all/music/mute", "true");
+		Mockito.verify(messageHub).publish("home/all/mute", "true");
 	}
 
 	/**
@@ -154,6 +154,6 @@ class HomeResourceTest {
 	void testUnmute() {
 		Response r = this.target.path("unmute").request().post(null);
 		assertEquals(204, r.getStatus());
-		Mockito.verify(messageHub).publish("home/all/music/mute", "false");
+		Mockito.verify(messageHub).publish("home/all/mute", "false");
 	}
 }
