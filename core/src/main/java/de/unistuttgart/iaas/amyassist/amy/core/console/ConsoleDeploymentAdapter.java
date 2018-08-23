@@ -23,13 +23,15 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.console;
 
+import java.util.Set;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformationCLI;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerCLI;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TTSConsole;
+import de.unistuttgart.iaas.amyassist.amy.deployment.DeploymentDescriptorUtil;
 
 /**
  * The adapter that deploy all Console commands.
@@ -38,19 +40,30 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TTSConsole;
  */
 @Service(ConsoleDeploymentAdapter.class)
 public class ConsoleDeploymentAdapter implements DeploymentContainerService {
+	private static final String DEPLOYMENT_DESCRIPTOR = "META-INF/" + Console.class.getName();
+
 	@Reference
 	private Console console;
+
+	@Reference
+	private PluginManager pluginManager;
 
 	@Reference
 	private ServiceLocator serviceLocator;
 
 	@Override
 	public void deploy() {
-		this.console.register(this.serviceLocator.createAndInitialize(PluginManagerCLI.class));
-		this.console.register(this.serviceLocator.createAndInitialize(TTSConsole.class));
-		this.console.register(this.serviceLocator.createAndInitialize(SpeechConsole.class));
-		this.console.register(this.serviceLocator.createAndInitialize(ExitConsole.class));
-		this.console.register(this.serviceLocator.createAndInitialize(ProgramInformationCLI.class));
+		Set<Class<?>> all = DeploymentDescriptorUtil.getClasses(this.getClass().getClassLoader(),
+				DEPLOYMENT_DESCRIPTOR);
+
+		for (IPlugin plugin : this.pluginManager.getPlugins()) {
+			all.addAll(DeploymentDescriptorUtil.getClasses(plugin.getClassLoader(), DEPLOYMENT_DESCRIPTOR));
+		}
+		all.forEach(this::register);
+	}
+
+	private void register(Class<?> cls) {
+		this.console.register(this.serviceLocator.createAndInitialize(cls));
 	}
 
 }

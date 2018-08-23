@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -122,9 +123,14 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 		if (this.config == null) {
 			this.config = this.configurationManager.getConfiguration(CONFIG_NAME);
 		}
-		// Load pipe-separated list of allowed origins from config
-		String[] origins = this.config.getProperty(CONFIG_ORIGINS_KEY).split("\\|");
-		// Convert primitive array to list
-		return Arrays.asList(origins);
+		
+		List<String> originsList = new ArrayList<>();
+		if(this.config.getProperty(CONFIG_ORIGINS_KEY) != null) {
+			// Load pipe-separated list of allowed origins from config
+			String[] origins = this.config.getProperty(CONFIG_ORIGINS_KEY).split("\\|");
+			// Convert primitive array to list
+			originsList = Arrays.asList(origins);
+		}
+		return originsList;
 	}
 }

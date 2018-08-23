@@ -23,13 +23,15 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
+import javax.annotation.Nonnull;
+
 /**
  * The implementation of the ServiceHandle
  * 
  * @author Leon Kiefer
  */
 public class ServiceHandleImpl<T> implements ServiceHandle<T> {
-
+	@Nonnull
 	private final T service;
 
 	/**
@@ -38,10 +40,11 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
 	 * @param service
 	 *            the service instance for this ServiceHandle
 	 */
-	public ServiceHandleImpl(T service) {
+	public ServiceHandleImpl(@Nonnull T service) {
 		this.service = service;
 	}
 
+	@Nonnull
 	@Override
 	public T getService() {
 		return this.service;

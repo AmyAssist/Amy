@@ -45,7 +45,7 @@ public interface ServiceLocator {
 	 * @param <T>
 	 *            the type of the implementation class
 	 */
-	<T> T createAndInitialize(Class<T> serviceClass);
+	<T> T createAndInitialize(@Nonnull Class<T> serviceClass);
 
 	/**
 	 * Get the service of the given type. This method lookup the service provider registered for the the given service
@@ -84,7 +84,7 @@ public interface ServiceLocator {
 	 * @param <T>
 	 *            the type of the service
 	 */
-	<T> ServiceHandle<T> getService(ServiceConsumer<T> serviceConsumer);
+	<T> ServiceHandle<T> getService(@Nonnull ServiceConsumer<T> serviceConsumer);
 
 	/**
 	 * This will analyze the given object and inject into its fields. The object given will not be managed by the DI.

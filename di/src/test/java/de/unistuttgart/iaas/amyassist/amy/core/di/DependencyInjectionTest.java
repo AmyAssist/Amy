@@ -104,7 +104,10 @@ class DependencyInjectionTest {
 				() -> this.dependencyInjection.getService(Service6.class)).getMessage();
 
 		assertThat(message, equalTo("The Service " + Service7API.class.getName()
-				+ " with [] is not registered in the DI or do not exists."));
+				+ " with [] is not registered in the DI."
+				+ " So first make sure you use the Service type and not the Service implementation to find the service."
+				+ " Second is the Service implementation of the type registered in the DI."
+				+ " Either by using a deployment descriptor or by a programmatic call."));
 	}
 
 	@Test()
