@@ -176,7 +176,7 @@ public class UserIntent {
 		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
 
 		for (Entity entity : this.entityList.values()) {
-			if (entity.getEntityData() == null && !customEntities.containsKey(entity.getEntityId())) {
+			if (entity.getEntityData() == null && !customEntities.containsKey(entity.getEntityId()) && entity.isRequired()) {
 				return entity.getPrompt().getOutputText();
 			}
 		}
