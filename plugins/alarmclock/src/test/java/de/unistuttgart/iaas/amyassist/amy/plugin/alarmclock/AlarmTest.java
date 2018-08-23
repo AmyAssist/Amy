@@ -33,12 +33,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 
 /**
  * Class to test the alarm class
  * 
  * @author Patrick Singer, Leon Kiefer, Patrick Gebhardt
  */
+@ExtendWith(FrameworkExtension.class)
 public class AlarmTest {
 
 	/**

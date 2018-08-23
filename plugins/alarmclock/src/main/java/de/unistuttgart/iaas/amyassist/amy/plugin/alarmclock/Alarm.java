@@ -113,24 +113,6 @@ public class Alarm implements RegistryEntity {
 	}
 
 	/**
-	 * Give the alarm a new time
-	 * 
-	 * @param hour
-	 *            hour of the alarm
-	 * @param minute
-	 *            minute of the alarm
-	 */
-	public final void setTime(int hour, int minute) {
-		if (timeValid(hour, minute)) {
-			this.alarmTime = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonth(),
-					LocalDateTime.now().getDayOfMonth(), hour, minute);
-		} else {
-			throw new IllegalArgumentException();
-		}
-
-	}
-
-	/**
 	 * Checks if the given hour and minute are valid for an alarm
 	 * 
 	 * @param hour

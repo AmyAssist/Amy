@@ -442,11 +442,12 @@ public class AlarmClockLogicTest {
 		List<Alarm> returnedAlarms = createAlarms(3, true);
 		when(this.alarmStorage.getAll()).thenReturn(returnedAlarms);
 		this.alarmNumber = 2;
-		Alarm a = new Alarm(this.alarmNumber, LocalDateTime.of(2018, 8, 23, 12, 12), true);
+		Alarm a = new Alarm(this.alarmNumber, LocalDateTime.of(LocalDateTime.now().getYear(),
+				LocalDateTime.now().getMonthValue(), LocalDateTime.now().getDayOfMonth(), 12, 12), true);
 		when(this.env.getCurrentDateTime()).thenReturn(ZonedDateTime.of(2018, 2, 1, 4, 21, 55, 987, ZoneId.of("Z")));
 		this.acl.setAlarm(1, 4, 20);
 		verify(this.scheduler).schedule(ArgumentMatchers.any(Runnable.class), ArgumentMatchers.any(Instant.class));
-		assertThat(this.acl.editAlarm(this.alarmNumber, 1, 12, 12), is(a));
+		assertThat(this.acl.editAlarm(this.alarmNumber, -1, 12, 12), is(a));
 	}
 
 	/**
