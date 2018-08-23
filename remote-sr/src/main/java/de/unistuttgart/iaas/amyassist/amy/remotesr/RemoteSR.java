@@ -201,11 +201,16 @@ public class RemoteSR implements RunnableService {
 				while ((line = reader.readLine()) != null) {
 					logger.warn("Chrome: {}", line);
 				}
-				if (!process.isAlive()) {
-					logger.warn("Chrome quit unexpectedly");
-				}
+				process.waitFor();
+				logger.warn("Chrome quit unexpectedly");
+				launchChrome();
+
 			} catch (IOException e) {
 				logger.warn("Couldn't read output from Chrome:", e);
+			} catch(LaunchChromeException e) {
+				logger.warn("Couldn't restart Chrome: ", e);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
 			}
 		}).start();
 	}
