@@ -75,12 +75,8 @@ public class CalendarService {
 
 	private Calendar service;
 
-	/**
-	 * Output of the logger
-	 */
-	private String errorLogger = "An error occurred.";
-	private String primary = "primary";
-	private String orderBy = "startTime";
+	private static final String primary = "primary";
+	private static final String orderBy = "startTime";
 
 	/**
 	 * Creates an authorized Credential object.
@@ -132,7 +128,7 @@ public class CalendarService {
 			events = this.service.events().list(this.primary).setMaxResults(number).setTimeMin(min)
 					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
 		} catch (IOException e) {
-			this.logger.error(this.errorLogger, e);
+			this.logger.error("getEvents() failed with an IOException for DataTime: " + min.toString(), e);
 		}
 		return events;
 	}
@@ -150,7 +146,8 @@ public class CalendarService {
 			events = this.service.events().list(this.primary).setTimeMin(min).setTimeMax(max).setOrderBy(this.orderBy)
 					.setSingleEvents(true).execute();
 		} catch (IOException e) {
-			this.logger.error(this.errorLogger, e);
+			this.logger.error("getEvents() failed with an IOException for DateTime min: " + min.toString()
+					+ " and max: " + max.toString(), e);
 		}
 		return events;
 	}
@@ -167,7 +164,8 @@ public class CalendarService {
 		try {
 			this.service.events().insert(calId, event).execute();
 		} catch (IOException e) {
-			this.logger.error(this.errorLogger, e);
+			this.logger.error("addEvent() failed with an IOException for callId: " + calId
+					+ " and event: " + event.getSummary(), e);
 		}
 	}
 
