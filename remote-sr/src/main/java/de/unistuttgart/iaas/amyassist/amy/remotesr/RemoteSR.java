@@ -76,7 +76,7 @@ public class RemoteSR implements RunnableService {
 
 	@Override
 	public void start() {
-		logger.warn("Starting chrome");
+		logger.info("Starting chrome");
 		try {
 			launchChrome();
 		} catch (LaunchChromeException e) {
@@ -87,11 +87,6 @@ public class RemoteSR implements RunnableService {
 	@Override
 	public void stop() {
 		// TODO: Implement this method
-	}
-
-	public void restart() throws LaunchChromeException {
-		stop();
-		launchChrome();
 	}
 
 	/**
@@ -233,7 +228,7 @@ public class RemoteSR implements RunnableService {
 	}
 
 	void processResult(SRResult res) {
-		if (res != null && res.getText() != null && !res.getText().isEmpty() && listener != null) {
+		if (res != null && res.getText() != null && listener != null) {
 			listener.remoteSRDidRecognizeSpeech(res.getText());
 		}
 	}

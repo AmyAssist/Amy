@@ -95,10 +95,9 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 			while(!this.recognizer.requestSR()) {
 				this.logger.info("trying to reconnect");
 				try {
-					this.recognizer.restart();
 					Thread.sleep(WAITING_FOR_CHROME_TO_START_TIME);
-				} catch (LaunchChromeException | InterruptedException e) {
-					this.logger.error("Error launchiong Chrome:", e);
+				} catch (InterruptedException e) {
+					this.logger.error("Error with Chrome:", e);
 					Thread.currentThread().interrupt();
 				}
 			}
@@ -113,7 +112,11 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	 */
 	@Override
 	public void remoteSRDidRecognizeSpeech(String message) {
-		this.resultHandler.handle(message);
+		if(message.isEmpty()) {
+			getRecognition(this.resultHandler);
+		}else {
+			this.resultHandler.handle(message);
+		}
 	}
 
 	// --------------------------------------------------------------
