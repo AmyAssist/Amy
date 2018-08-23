@@ -72,6 +72,11 @@ public class CalendarLogicTest {
 		this.callog = this.framework.setServiceUnderTest(CalendarLogic.class);
 	}
 
+	/**
+	 * Tests the setEvent() method
+	 *
+	 * @param calendarEvent an Test Event of type CalendarEvent
+	 */
 	@ParameterizedTest
 	@MethodSource("testSetEvent")
 	public void testCheckSetEvent(CalendarEvent calendarEvent) {
@@ -79,22 +84,13 @@ public class CalendarLogicTest {
 		boolean allDay = calendarEvent.isAllDay();
 		Mockito.verify(this.calendarService).addEvent(ArgumentMatchers.eq("primary"),
 				ArgumentMatchers.argThat(event -> {
-					return event.getSummary().equals(calendarEvent.getSummary())
-							&& event.getLocation().equals(calendarEvent.getLocation())
-							&& event.getDescription().equals(calendarEvent.getDescription())
-							&& ((event.getStart().getDate() != null) == allDay) && allDay
-									? (event.getStart().getDate().equals(
-											EDTfromLocalDateTime(calendarEvent.getStart(), allDay).getDate())
-											&& event.getEnd().getDate()
-													.equals(EDTfromLocalDateTime(calendarEvent.getEnd(), allDay)
-															.getDate()))
-									: (event.getStart().getDateTime().equals(
-											EDTfromLocalDateTime(calendarEvent.getStart(), allDay).getDateTime())
-											&& event.getEnd().getDateTime().equals(
-													EDTfromLocalDateTime(calendarEvent.getEnd(), allDay).getDateTime()))
-											&& event.getRecurrence()
-													.equals(Arrays.asList(calendarEvent.getRecurrence()))
-											&& event.getReminders().equals(calendarEvent.getReminders());
+					return event.getSummary().equals(calendarEvent.getSummary()) // compare summary
+							&& event.getLocation().equals(calendarEvent.getLocation()) // compare location
+							&& event.getDescription().equals(calendarEvent.getDescription()) // compare description
+							&& ((event.getStart().getDate() != null) == allDay) // compare all day status
+							&& checkDates(calendarEvent, event, allDay) // compare start and end date
+							&& event.getRecurrence().equals(Arrays.asList(calendarEvent.getRecurrence())) // compare recurrence
+							&& event.getReminders().equals(calendarEvent.getReminders()); // compare reminders
 				}));
 	}
 
@@ -222,6 +218,30 @@ public class CalendarLogicTest {
 			edt.setDateTime(dt);
 		}
 		return edt;
+	}
+
+	/**
+	 *
+	 * @param calendarEvent an Event of CalendarEvent type
+	 * @param event an Event of google api Event type
+	 * @param allDay if it is an all day event
+	 * @return if both events have the exact same start and end date
+	 */
+	private static boolean checkDates(CalendarEvent calendarEvent, Event event, boolean allDay){
+		boolean startCorrect = false;
+		boolean endCorrect = false;
+		if (allDay) {
+			startCorrect = event.getStart().getDate()
+					.equals(EDTfromLocalDateTime(calendarEvent.getStart(), allDay).getDate());
+			endCorrect = event.getEnd().getDate()
+					.equals(EDTfromLocalDateTime(calendarEvent.getEnd(), allDay).getDate());
+		} else {
+			startCorrect = event.getStart().getDateTime()
+					.equals(EDTfromLocalDateTime(calendarEvent.getStart(), allDay).getDateTime());
+			endCorrect = event.getEnd().getDateTime()
+					.equals(EDTfromLocalDateTime(calendarEvent.getEnd(), allDay).getDateTime());
+		}
+		return startCorrect && endCorrect;
 	}
 
 }
