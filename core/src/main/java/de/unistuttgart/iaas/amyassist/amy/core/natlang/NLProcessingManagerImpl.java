@@ -144,11 +144,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Override
 	public void processIntent(Dialog dialog, String naturalLanguageText) {
 		List<AGFNode> promptGrams = new ArrayList<>();
-		for (Entity entity : dialog.getIntent().getEntityList().values()) {
-			if (entity.getPrompt() != null) {
-				promptGrams.add(entity.getPrompt().getGrammar());
+			if (dialog.getNextPrompt() != null) {
+				promptGrams.add(dialog.getNextPrompt().getGrammar());
 			}
-		}
 
 		promptGrams.add(this.quitIntentUserInputGram);
 
@@ -172,7 +170,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			}
 
 			if (!dialog.getIntent().isFinished()) {
-				dialog.output(dialog.getIntent().generateQuestion());
+				dialog.setNextPrompt(dialog.getIntent().getNextPrompt());
+				dialog.output(dialog.getNextPrompt().getOutputText());
 			}
 		} catch (NLParserException e) {
 			this.logger.debug("no matching grammar found " + e.getMessage());
@@ -230,7 +229,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			}
 
 			if (!dialog.getIntent().isFinished()) {
-				dialog.output(dialog.getIntent().generateQuestion());
+				dialog.setNextPrompt(dialog.getIntent().getNextPrompt());
+				dialog.output(dialog.getNextPrompt().getOutputText());
 			}
 		} catch (NLParserException e) {
 			this.logger.debug("no matching grammar found " + e.getMessage());

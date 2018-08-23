@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.util.function.Consumer;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.Prompt;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
 
 /**
@@ -52,6 +53,11 @@ class Dialog {
 	private UserIntent intent = null;
 
 	/**
+	 * next prompt to process
+	 */
+	private Prompt nextPrompt = null;
+	
+	/**
 	 * outputs the string to the user in some way
 	 * 
 	 * @param answerOutput
@@ -78,6 +84,22 @@ class Dialog {
 	 */
 	public void setIntent(UserIntent intent) {
 		this.intent = intent;
+	}
+
+	/**
+	 * Get's {@link #nextPrompt nextPrompt}
+	 * @return  nextPrompt
+	 */
+	public Prompt getNextPrompt() {
+		return this.nextPrompt;
+	}
+
+	/**
+	 * Set's {@link #nextPrompt nextPrompt}
+	 * @param nextPrompt  nextPrompt
+	 */
+	public void setNextPrompt(Prompt nextPrompt) {
+		this.nextPrompt = nextPrompt;
 	}
 
 }

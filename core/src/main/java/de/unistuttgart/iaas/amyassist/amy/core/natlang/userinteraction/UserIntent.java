@@ -164,11 +164,11 @@ public class UserIntent {
 	}
 
 	/**
-	 * generates amys answers
+	 * get the next prompt to process
 	 *
-	 * @return string of amys answer
+	 * @return the next prompt
 	 */
-	public String generateQuestion() {
+	public Prompt getNextPrompt() {
 		if (isFinished()) {
 			return null;
 		}
@@ -177,7 +177,7 @@ public class UserIntent {
 
 		for (Entity entity : this.entityList.values()) {
 			if (entity.getEntityData() == null && !customEntities.containsKey(entity.getEntityId()) && entity.isRequired()) {
-				return entity.getPrompt().getOutputText();
+				return entity.getPrompt();
 			}
 		}
 		throw new IllegalStateException(
