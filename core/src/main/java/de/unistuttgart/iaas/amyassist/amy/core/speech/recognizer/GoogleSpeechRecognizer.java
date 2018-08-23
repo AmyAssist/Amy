@@ -43,6 +43,8 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 
 	// --------------------------------------------------------------
 	// Fields
+	
+	private static final int WAITING_FOR_CHROME_TO_START_TIME = 5000;
 
 	/**
 	 * logger for all the Speech Recognition classes
@@ -84,22 +86,20 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerType#getRecognition(de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.AbstractSpeechResultHandler)
 	 */
 	@Override
-	public void getRecognition(AbstractSpeechResultHandler resultHandler) {
-		this.resultHandler = resultHandler;
+	public void getRecognition(AbstractSpeechResultHandler usedResultHandler) {
+		this.resultHandler = usedResultHandler;
 		
 		if(!this.recognizer.requestSR()) {
+			
 			this.logger.info("A problem connecting to the remote Speech Recognition has occured.");
 			while(!this.recognizer.requestSR()) {
 				this.logger.info("trying to reconnect");
 				try {
 					this.recognizer.restart();
-				} catch (LaunchChromeException e) {
-					e.printStackTrace();
-				}
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+					Thread.sleep(WAITING_FOR_CHROME_TO_START_TIME);
+				} catch (LaunchChromeException | InterruptedException e) {
+					this.logger.error("Error launchiong Chrome:", e);
+					Thread.currentThread().interrupt();
 				}
 			}
 			this.logger.info("Reconnected");

@@ -94,15 +94,25 @@ public enum SpeechRecognizer {
 
 	// RequestSR
 
-	public void requestSR(AbstractSpeechResultHandler resultHandler) {
+	/**
+	 * request an Speech To Text of the Recognizer, result will be handled by the given resultHandler
+	 * 
+	 * @param requestedResultHandler
+	 *            handles stt Result
+	 */
+	public void requestSR(AbstractSpeechResultHandler requestedResultHandler) {
 		if (isInitiated()) {
-			this.recognizer.getRecognition(resultHandler);
+			this.recognizer.getRecognition(requestedResultHandler);
 		} else {
 			throw new RecognizerNotInitiatedException("The Recognizer had not been initiated");
 		}
 
 	}
 
+	/**
+	 * request an Speech To Text of the Recognizer, result will be handled by the default resultHandler (default has to
+	 * be set prior)
+	 */
 	public void requestSR() {
 		if (isInitiated()) {
 			if (this.resultHandler != null) {
@@ -129,10 +139,21 @@ public enum SpeechRecognizer {
 
 	// Exceptions
 
+	/**
+	 * Thrown to Signal that the wanted Recognizer was not (Correctly) Initiated
+	 * 
+	 * @author Kai Menzel
+	 */
 	public class RecognizerNotInitiatedException extends NullPointerException {
 
 		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
 		 * @param string
+		 *            Exception-Message
 		 */
 		public RecognizerNotInitiatedException(String string) {
 			super(string);
@@ -140,10 +161,21 @@ public enum SpeechRecognizer {
 
 	}
 
+	/**
+	 * Thrown to Signal that no Handler was set to a Recognizer
+	 * 
+	 * @author Kai Menzel
+	 */
 	public class ResultHandlerNotSet extends NullPointerException {
 
 		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
 		 * @param string
+		 *            Exceptio-Message
 		 */
 		public ResultHandlerNotSet(String string) {
 			super(string);
