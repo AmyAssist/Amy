@@ -113,6 +113,7 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	@Override
 	public void remoteSRDidRecognizeSpeech(String message) {
 		if(message.isEmpty()) {
+			this.logger.warn("I could not understand that. Can you please repeat your Command");
 			getRecognition(this.resultHandler);
 		}else {
 			this.resultHandler.handle(message);
