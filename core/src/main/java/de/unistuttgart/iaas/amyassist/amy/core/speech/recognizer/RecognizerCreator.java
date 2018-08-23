@@ -44,7 +44,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
-import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR.LaunchChromeException;
 
 /**
  * Class that Creates all Grammar Objects sets the MainGrammar and the List of all other Grammars
@@ -120,11 +119,6 @@ public class RecognizerCreator implements DeploymentContainerService {
 		loadAndCheckProperties();
 
 		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_ENABLE))) {
-			/*try {
-				this.googleRecognition.launchChrome();
-			} catch (LaunchChromeException e) {
-				this.logger.error(e.getMessage());
-			}*/
 			SpeechRecognizer.GOOGLE.initiateAsRemoteRecognizer(this.googleRecognition);
 			// Grammar.TEMP.initiateAsSphinxRecognizer(tempGrammarFile.toFile(), getAudioinputStream())
 			SpeechRecognizer.MAIN.initiateAsSphinxRecognizer(mainGrammarFile.toFile(), getAudioinputStream());
