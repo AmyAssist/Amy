@@ -4,7 +4,7 @@
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEvents">
 		<gram>what (is|are) my next [{number}] event</gram>
 		<EntityTemplates>
-			<EntityTemplate id="number">
+			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
@@ -17,7 +17,7 @@
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsToday">
 		<gram>[which] events [do i have] [{day}]</gram>
 		<EntityTemplates>
-			<EntityTemplate id="day">
+			<EntityTemplate id="day" required="true">
 				<gram>(today|tomorrow)</gram>
 			</EntityTemplate>
 		</EntityTemplates>

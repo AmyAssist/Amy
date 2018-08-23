@@ -92,10 +92,10 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.searchASong">
-		<gram>test play following song {songname}</gram>
+		<gram>play following song {songname}</gram>
 		<EntityTemplates>
 			<EntityTemplate id="songname" required="true">
-				<gram>+ now</gram>
+				<gram>*</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>

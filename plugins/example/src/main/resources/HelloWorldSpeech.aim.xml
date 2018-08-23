@@ -9,10 +9,10 @@
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.repeat">
 		<gram>repeat {somestring} [{int} times]</gram>
 		<EntityTemplates>
-			<EntityTemplate id="somestring">
+			<EntityTemplate id="somestring" required="true">
 				<gram>(hello|good morning|something)</gram>
 			</EntityTemplate>
-			<EntityTemplate id="int">
+			<EntityTemplate id="int" required="true">
 				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
