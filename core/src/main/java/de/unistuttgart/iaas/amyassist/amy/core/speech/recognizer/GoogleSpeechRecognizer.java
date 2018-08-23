@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.AbstractSpeechResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
-import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR.LaunchChromeException;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSRListener;
 
 /**
@@ -43,7 +42,7 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 
 	// --------------------------------------------------------------
 	// Fields
-	
+
 	private static final int WAITING_FOR_CHROME_TO_START_TIME = 5000;
 
 	/**
@@ -88,11 +87,11 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	@Override
 	public void getRecognition(AbstractSpeechResultHandler usedResultHandler) {
 		this.resultHandler = usedResultHandler;
-		
-		if(!this.recognizer.requestSR()) {
-			
+
+		if (!this.recognizer.requestSR()) {
+
 			this.logger.info("A problem connecting to the remote Speech Recognition has occured.");
-			while(!this.recognizer.requestSR()) {
+			while (!this.recognizer.requestSR()) {
 				this.logger.info("trying to reconnect");
 				try {
 					Thread.sleep(WAITING_FOR_CHROME_TO_START_TIME);
@@ -103,7 +102,7 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 			}
 			this.logger.info("Reconnected");
 		}
-		
+
 		this.logger.info("waiting for speech input");
 	}
 
@@ -112,10 +111,10 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	 */
 	@Override
 	public void remoteSRDidRecognizeSpeech(String message) {
-		if(message.isEmpty()) {
+		if (message.isEmpty()) {
 			this.logger.warn("I could not understand that. Can you please repeat your Command");
 			getRecognition(this.resultHandler);
-		}else {
+		} else {
 			this.resultHandler.handle(message);
 		}
 	}
