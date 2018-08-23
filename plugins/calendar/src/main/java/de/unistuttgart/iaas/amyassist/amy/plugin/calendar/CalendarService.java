@@ -75,8 +75,8 @@ public class CalendarService {
 
 	private Calendar service;
 
-	private final String primary = "primary";
-	private final String orderBy = "startTime";
+	private String primary = "primary";
+	private String orderBy = "startTime";
 
 	/**
 	 * Creates an authorized Credential object.
