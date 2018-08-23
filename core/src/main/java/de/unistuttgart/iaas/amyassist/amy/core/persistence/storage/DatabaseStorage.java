@@ -54,7 +54,6 @@ public class DatabaseStorage implements IStorage {
 	@PostConstruct
 	private void setup() {
 		this.prefix = this.plugin.getUniqueName() + ":";
-		this.persistence.register(SimpleData.class);
 		this.entityManager = this.persistence.getEntityManager("DatabaseStorage");
 	}
 

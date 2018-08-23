@@ -33,7 +33,7 @@ import javax.annotation.Nonnull;
  * @author Benno Krauß
  */
 @Service(ContactRegistry.class)
-public class ContactRegistryImpl extends AbstractRegistry<Contact> implements ContactRegistry {
+public class ContactRegistryImpl extends AbstractTaggableRegistry<Contact> implements ContactRegistry {
 
     @Override
     protected String getPersistenceUnitName() {

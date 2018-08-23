@@ -40,7 +40,11 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.ZonedDateTimeAdap
 public class Route extends Entity {
 	
 	private String origin;
+	private String originTag;
+
 	private String destination;
+	private String destinationTag;
+
 	private String travelmode;
 	@XmlJavaTypeAdapter(ZonedDateTimeAdapter.class)
 	private ZonedDateTime time;
@@ -125,4 +129,19 @@ public class Route extends Entity {
 	}
 
 
+	public String getOriginTag() {
+		return originTag;
+	}
+
+	public void setOriginTag(String originTag) {
+		this.originTag = originTag;
+	}
+
+	public String getDestinationTag() {
+		return destinationTag;
+	}
+
+	public void setDestinationTag(String destinationTag) {
+		this.destinationTag = destinationTag;
+	}
 }

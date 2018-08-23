@@ -28,6 +28,11 @@
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-plugin-manager-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>deployment-descriptor-utility</artifactId>
+			<version>${deployment.descriptor.utility.version}</version>
+		</dependency>
 		<!-- Jersey JAX-RS -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>

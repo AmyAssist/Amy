@@ -74,6 +74,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	private final Map<ServicePoolKey<?>, ServiceCreation<?>> serviceCreationInfos;
 
+	@Nonnull
 	private final ContextLocatorImpl contextLocator;
 
 	private final Set<Extension> extensions;
@@ -124,10 +125,12 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		Service annotation = cls.getAnnotation(Service.class);
 		if (annotation == null)
 			throw new ClassIsNotAServiceException(cls);
+		@Nonnull
 		Class<?> serviceType = annotation.value();
 		if (serviceType.equals(Void.class)) {
 			Class<?>[] interfaces = cls.getInterfaces();
 			if (interfaces.length == 1) {
+				// annotations can not have null values
 				serviceType = interfaces[0];
 			} else if (interfaces.length == 0) {
 				serviceType = cls;

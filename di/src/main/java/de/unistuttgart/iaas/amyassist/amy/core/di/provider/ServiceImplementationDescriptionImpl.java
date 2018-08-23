@@ -51,8 +51,8 @@ public class ServiceImplementationDescriptionImpl<T> implements ServiceImplement
 	 * @param context
 	 * @param cls
 	 */
-	public ServiceImplementationDescriptionImpl(ServiceDescription<T> serviceDescription,
-			@Nonnull Map<String, Object> context, Class<?> cls) {
+	public ServiceImplementationDescriptionImpl(@Nonnull ServiceDescription<T> serviceDescription,
+			@Nonnull Map<String, Object> context, @Nonnull Class<?> cls) {
 		this.serviceDescription = serviceDescription;
 		this.context = context;
 		this.cls = cls;
@@ -64,24 +64,24 @@ public class ServiceImplementationDescriptionImpl<T> implements ServiceImplement
 	 * @param serviceDescription
 	 * @param cls
 	 */
-	public ServiceImplementationDescriptionImpl(ServiceDescription<T> serviceDescription, Class<?> cls) {
+	public ServiceImplementationDescriptionImpl(@Nonnull ServiceDescription<T> serviceDescription, @Nonnull Class<?> cls) {
 		this.serviceDescription = serviceDescription;
 		this.context = Collections.emptyMap();
 		this.cls = cls;
 	}
 
 	@Override
-	public ServiceDescription<T> getServiceDescription() {
+	public @Nonnull ServiceDescription<T> getServiceDescription() {
 		return this.serviceDescription;
 	}
 
 	@Override
-	public Map<String, Object> getContext() {
+	public @Nonnull Map<String, Object> getContext() {
 		return this.context;
 	}
 
 	@Override
-	public Class<?> getImplementationClass() {
+	public @Nonnull Class<?> getImplementationClass() {
 		return this.cls;
 	}
 
