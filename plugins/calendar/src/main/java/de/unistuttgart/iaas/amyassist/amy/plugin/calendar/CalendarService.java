@@ -75,8 +75,8 @@ public class CalendarService {
 
 	private Calendar service;
 
-	private static final String PRIMARY = "primary";
-	private static final String ORDERBY = "startTime";
+	private final String primary = "primary";
+	private final String orderBy = "startTime";
 
 	/**
 	 * Creates an authorized Credential object.
@@ -125,8 +125,8 @@ public class CalendarService {
 	public Events getEvents(DateTime min, int number) {
 		Events events = new Events();
 		try {
-			events = this.service.events().list(this.PRIMARY).setMaxResults(number).setTimeMin(min)
-					.setOrderBy(this.ORDERBY).setSingleEvents(true).execute();
+			events = this.service.events().list(this.primary).setMaxResults(number).setTimeMin(min)
+					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
 		} catch (IOException e) {
 			this.logger.error("getEvents() failed with an IOException for DataTime: " + min.toString(), e);
 		}
@@ -143,7 +143,7 @@ public class CalendarService {
 	public Events getEvents(DateTime min, DateTime max) {
 		Events events = new Events();
 		try {
-			events = this.service.events().list(this.PRIMARY).setTimeMin(min).setTimeMax(max).setOrderBy(this.ORDERBY)
+			events = this.service.events().list(this.primary).setTimeMin(min).setTimeMax(max).setOrderBy(this.orderBy)
 					.setSingleEvents(true).execute();
 		} catch (IOException e) {
 			this.logger.error("getEvents() failed with an IOException for DateTime min: " + min.toString()
