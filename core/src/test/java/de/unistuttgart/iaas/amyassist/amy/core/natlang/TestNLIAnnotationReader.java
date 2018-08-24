@@ -113,6 +113,35 @@ class TestNLIAnnotationReader {
 	}
 
 	@Test
+	void testGetValidEntityProviderMethod() {
+		assertThat(NLIAnnotationReader.getValidEnityProviderMethod(GoodEntityProvider.class, "test").getName(),
+				equalTo("count"));
+		assertThat(NLIAnnotationReader.getValidEnityProviderMethod(GoodEntityProvider.class, "bla").getName(),
+				equalTo("bla"));
+		assertThat(NLIAnnotationReader.getValidEnityProviderMethod(GoodEntityProvider.class, "blub").getName(),
+				equalTo("blub"));
+		assertThat(NLIAnnotationReader.getValidEnityProviderMethod(GoodEntityProvider.class, "bl"), equalTo(null));
+	}
+
+	class GoodEntityProvider {
+		@EntityProvider("bla")
+		public List<String> bla() {
+			return new ArrayList<>();
+		}
+
+		@EntityProvider("blub")
+		@EntityProvider("blubblub")
+		public List<String> blub() {
+			return new ArrayList<>();
+		}
+
+		@EntityProvider("test")
+		public List<String> count() {
+			return new ArrayList<>();
+		}
+	}
+
+	@Test
 	public void testIllegalParameterTypeEntityProvider() {
 		String message = assertThrows(IllegalArgumentException.class,
 				() -> NLIAnnotationReader.getValidEnityProviderMethod(BrokenParamterEntityProvider.class, ""))
