@@ -6,10 +6,7 @@
 		<EntityTemplates>
 			<EntityTemplate id="number"/>
 			<EntityTemplate id="greeting">
-				<Values>
-					<value> hello </value>
-					<value> good morning </value>
-				</Values>
+			<gram> hello</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 
