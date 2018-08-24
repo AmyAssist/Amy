@@ -43,11 +43,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatResource;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
- * Test Class for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource}
+ * Test Class for {@link de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatResource}
  * 
  * @author Christian Bräuner
  */
@@ -70,12 +71,12 @@ class HomeResourceTest {
 	void setUp() {
 		this.manager = this.testFramework.mockService(PluginManager.class);
 		this.speechInputHandler = this.testFramework.mockService(SpeechInputHandler.class);
-		this.target = this.testFramework.setRESTResource(HomeResource.class);
+		this.target = this.testFramework.setRESTResource(ChatResource.class);
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#useAmy(java.lang.String)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatResource#useAmy(java.lang.String)}.
 	 */
 	@Test
 	void testUseAmy() {
@@ -98,7 +99,7 @@ class HomeResourceTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#getPlugins()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatResource#getPlugins()}.
 	 */
 	@Test
 	void testGetPlugins() {

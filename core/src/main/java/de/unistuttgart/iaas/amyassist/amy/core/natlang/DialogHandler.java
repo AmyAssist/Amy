@@ -28,10 +28,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.IDialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.EntityDataImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
 
@@ -40,56 +42,50 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserInten
  *
  * @author Felix Burk
  */
-@Service()
-public class DialogHandler {
+@Service(IDialogHandler.class)
+public class DialogHandler implements IDialogHandler {
 
 	@Reference
 	private NLProcessingManager manager;
 
 	@Reference
 	private ServiceLocator serviceLocator;
+	
+	@Reference
+	private Logger logger;
 
 	/**
 	 * internal map of dialogs with corresponding uuid
 	 */
 	private Map<UUID, Dialog> map = new HashMap<>();
 
-	/**
-	 * creates a new dialog
-	 * 
-	 * @param cons
-	 *                 callback for consumer
-	 * @return the matching uuid
+	/* (non-Javadoc)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler#createDialog(java.util.function.Consumer)
 	 */
+	@Override
 	public UUID createDialog(Consumer<String> cons) {
 		UUID uuid = UUID.randomUUID();
 		this.map.put(uuid, new Dialog(cons));
 		return uuid;
 	}
 
-	/**
-	 * deletes a save dialog - this should be called once in a while if the core is running for any long amounts of time
-	 *
-	 * @param uuid
-	 *                 of fialog to delete
+	/* (non-Javadoc)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler#deleteDialog(java.util.UUID)
 	 */
+	@Override
 	public void deleteDialog(UUID uuid) {
 		this.map.remove(uuid);
 	}
 
-	/**
-	 * processes a dialog from a given uuid with natural language input from a user
-	 *
-	 * @param naturalLanguageText
-	 *                                from user
-	 * @param uuid
-	 *                                of dialog
+	/* (non-Javadoc)
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler#process(java.lang.String, java.util.UUID)
 	 */
+	@Override
 	public void process(String naturalLanguageText, UUID uuid) {
 		if (!this.map.containsKey(uuid)) {
 			throw new IllegalArgumentException("wrong UUID");
 		}
-
+		
 		Dialog dialog = this.map.get(uuid);
 		UserIntent intent = dialog.getIntent();
 

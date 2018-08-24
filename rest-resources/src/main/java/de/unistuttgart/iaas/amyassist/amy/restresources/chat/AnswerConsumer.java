@@ -21,36 +21,40 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.console;
+package de.unistuttgart.iaas.amyassist.amy.restresources.chat;
 
-import java.util.UUID;
+import java.util.LinkedList;
 
-import org.slf4j.Logger;
-
-import asg.cliche.Command;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.IDialogHandler;
 
 /**
- * Console commands to interact with Amy like speaking with her.
- * 
- * @author Leon Kiefer
+ * Helper class to add strings to queues
+ * @author Felix Burk
  */
-public class SpeechConsole {
-	@Reference
-	private Logger logger;
-	@Reference
-	private IDialogHandler handler;
-	private UUID dialog;
+class AnswerConsumer {
+		
+	private LinkedList<String> queue;
+				
+	/**
+	 * empty constructor
+	 */
+	public AnswerConsumer() {
 
-	@PostConstruct
-	private void setup() {
-		this.dialog = this.handler.createDialog(System.out::println);// NOSONAR
 	}
 
-	@Command
-	public void say(String... speechInput) {
-		this.handler.process(String.join(" ", speechInput), this.dialog);
+	/**
+	 * add a new answer to the queue
+	 * @param s the answer
+	 */
+	void addToQueue(String s){
+			this.queue.add(s);
 	}
+
+	/**
+	 * sets the internal queue
+	 * @param queue to set
+	 */
+	public void setQueue(LinkedList<String> queue) {
+		this.queue = queue;
+	}
+
 }
