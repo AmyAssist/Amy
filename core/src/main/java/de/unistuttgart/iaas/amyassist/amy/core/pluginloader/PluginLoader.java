@@ -29,18 +29,13 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -52,20 +47,20 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * @author Tim Neumann
  */
 @Service
-public class PluginLoader {
+class PluginLoader {
 	@Reference
 	private Logger logger;
 
-	private Map<String, Plugin> plugins = new HashMap<>();
+	private final List<Plugin> plugins = new ArrayList<>();
 
 	/**
 	 * Loads the plugin found at the uri
 	 * 
 	 * @param path
-	 *            The location of the plugin
+	 *                 The location of the plugin
 	 * @return Whether loading was successful
 	 * @throws IllegalArgumentException
-	 *             When the given location is not a valid plugin file
+	 *                                      When the given location is not a valid plugin file
 	 */
 	public boolean loadPlugin(Path path) {
 		this.logger.debug("try to load plugin from {}", path);
@@ -73,11 +68,8 @@ public class PluginLoader {
 		if (!Files.exists(path) || Files.isDirectory(path))
 			throw new IllegalArgumentException("Invalid file");
 
-		Plugin plugin = new Plugin();
-		plugin.setPath(path);
-
+		Plugin plugin;
 		try (JarFile jar = new JarFile(path.toFile())) {
-			Enumeration<JarEntry> jarEntries = jar.entries();
 			URL[] urls = { path.toUri().toURL() };
 
 			// We need that classLoader to stay open.
@@ -89,26 +81,8 @@ public class PluginLoader {
 				this.logger.error("Can't find manifest for plugin {}", path);
 			}
 
-			ArrayList<Class<?>> classes = new ArrayList<>();
-
-			while (jarEntries.hasMoreElements()) {
-				JarEntry jarEntry = jarEntries.nextElement();
-				if (jarEntry.getName().endsWith(".class")) {
-					String className = StringUtils.removeEnd(jarEntry.getName(), ".class");
-					className = className.replace("/", ".");
-					if (className.contains("amy")) {
-						this.logger.debug("load class {}", className);
-						Class<?> c = Class.forName(className, true, childLoader);
-						classes.add(c);
-					}
-				}
-			}
-
-			plugin.setClassLoader(childLoader);
-			plugin.setManifest(mf);
-			plugin.setClasses(classes);
-
-		} catch (IOException | ClassNotFoundException e) {
+			plugin = new Plugin(path, childLoader, mf);
+		} catch (IOException e) {
 			this.logger.error("Exception while loading plugin {}", path, e);
 			return false;
 		}
@@ -128,34 +102,16 @@ public class PluginLoader {
 		}
 
 		this.logger.info("loaded plugin {}", name);
-		this.plugins.put(plugin.getUniqueName(), plugin);
-	}
-
-	/**
-	 * Get a plugin
-	 * 
-	 * @param name
-	 *            The name of the plugin to get
-	 * @return The plugin with the given name or null, if no Plugin with this name is loaded.
-	 */
-	public IPlugin getPlugin(String name) {
-		return this.plugins.get(name);
-	}
-
-	/**
-	 * @return a list of plugin names
-	 */
-	public Set<String> getPluginNames() {
-		return this.plugins.keySet();
+		this.plugins.add(plugin);
 	}
 
 	/**
 	 * Returns a List of all Plugins.
 	 * 
-	 * @return the list of plugins.
+	 * @return the unmodifiable list of plugins.
 	 */
 	public List<IPlugin> getPlugins() {
-		return new ArrayList<>(this.plugins.values());
+		return Collections.unmodifiableList(this.plugins);
 	}
 
 	@PreDestroy

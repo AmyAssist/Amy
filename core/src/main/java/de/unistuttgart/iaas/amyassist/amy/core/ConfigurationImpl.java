@@ -23,12 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 
 /**
  * Implementation of {@link Configuration}
@@ -39,37 +41,28 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
 public class ConfigurationImpl implements Configuration {
 
 	@Reference
-	private PluginLoader loader;
+	private PluginManager pluginManager;
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.Configuration#getInstalledPlugins()
-	 */
 	@Override
 	public String[] getInstalledPlugins() {
-		Set<String> pluginNames = this.loader.getPluginNames();
+		Set<String> pluginNames = this.pluginManager.getPlugins().stream().map(IPlugin::getUniqueName)
+				.collect(Collectors.toSet());
 		return pluginNames.toArray(new String[pluginNames.size()]);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.Configuration#getPluginVersion(java.lang.String)
-	 */
 	@Override
 	public String getPluginVersion(String pluginName) {
-		IPlugin plugin = this.loader.getPlugin(pluginName);
-		if (plugin != null)
-			return plugin.getVersion();
-		return null;
+		return this.getPlugin(pluginName).map(IPlugin::getVersion).orElse(null);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.Configuration#getPluginDescription(java.lang.String)
-	 */
 	@Override
 	public String getPluginDescription(String pluginName) {
-		IPlugin plugin = this.loader.getPlugin(pluginName);
-		if (plugin != null)
-			return plugin.getDescription();
-		return null;
+		return this.getPlugin(pluginName).map(IPlugin::getDescription).orElse(null);
+	}
+
+	private Optional<IPlugin> getPlugin(String pluginName) {
+		return this.pluginManager.getPlugins().stream().filter(plugin -> plugin.getUniqueName().equals(pluginName))
+				.findFirst();
 	}
 
 }

@@ -23,12 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import static de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginMockFactory.plugin;
+import static de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginMockFactory.withUniqueName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.hamcrest.Matchers.arrayWithSize;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +38,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -54,12 +57,12 @@ class ConfigurationImplTest {
 
 	@BeforeEach
 	public void setup() {
-		PluginLoader mockService = this.framework.mockService(PluginLoader.class);
-		Set<String> hashSet = new HashSet<>();
-		hashSet.add("Plugin1");
-		hashSet.add("Plugin2");
-		hashSet.add("de.unistuttgart.iaas.amyassist.amy.plugin.example");
-		Mockito.when(mockService.getPluginNames()).thenReturn(hashSet);
+		PluginManager mockService = this.framework.mockService(PluginManager.class);
+		List<IPlugin> hashSet = new ArrayList<>();
+		hashSet.add(plugin(withUniqueName("Plugin1")));
+		hashSet.add(plugin(withUniqueName("Plugin2")));
+		hashSet.add(plugin(withUniqueName("de.unistuttgart.iaas.amyassist.amy.plugin.example")));
+		Mockito.when(mockService.getPlugins()).thenReturn(hashSet);
 
 		this.configurationImpl = this.framework.setServiceUnderTest(ConfigurationImpl.class);
 	}

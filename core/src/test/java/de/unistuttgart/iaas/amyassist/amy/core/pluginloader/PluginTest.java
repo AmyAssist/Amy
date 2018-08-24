@@ -51,7 +51,7 @@ class PluginTest {
 	 * Create a mock Manifest and stub the Attributes with a modifier
 	 * 
 	 * @param modifier
-	 *            a function that gets called with the Attributes mock and can stub the behavior
+	 *                     a function that gets called with the Attributes mock and can stub the behavior
 	 * @return the manifest
 	 */
 	static private Manifest manifest(Consumer<Attributes> modifier) {
@@ -69,9 +69,7 @@ class PluginTest {
 	@ParameterizedTest
 	@MethodSource("paths")
 	void testPath(Path path) {
-		Plugin p = new Plugin();
-
-		p.setPath(path);
+		Plugin p = new Plugin(path, null, null);
 		assertThat("Wrong path", p.getPath(), is(path));
 	}
 
@@ -85,9 +83,8 @@ class PluginTest {
 	 */
 	@Test
 	void testClassLoader() {
-		Plugin p = new Plugin();
 		ClassLoader classLoader = mock(ClassLoader.class);
-		p.setClassLoader(classLoader);
+		Plugin p = new Plugin(null, classLoader, null);
 		assertThat("Wrong class loader", p.getClassLoader(), is(theInstance(classLoader)));
 	}
 
@@ -97,10 +94,8 @@ class PluginTest {
 	@ParameterizedTest
 	@MethodSource("names")
 	void testUniqueName(String pluginId) {
-		Plugin p = new Plugin();
 		Manifest mf = manifest(attributes -> when(attributes.getValue("PluginID")).thenReturn(pluginId));
-		p.setManifest(mf);
-
+		Plugin p = new Plugin(null, null, mf);
 		assertThat("Wrong unqiue name", p.getUniqueName(), is(pluginId));
 	}
 
@@ -110,11 +105,9 @@ class PluginTest {
 	@ParameterizedTest
 	@MethodSource("names")
 	void testDispalyName(String projectName) {
-		Plugin p = new Plugin();
 		Manifest mf = manifest(
 				attributes -> when(attributes.getValue(Name.IMPLEMENTATION_TITLE)).thenReturn(projectName));
-		p.setManifest(mf);
-
+		Plugin p = new Plugin(null, null, mf);
 		assertThat("Wrong diplay name", p.getDisplayName(), is(projectName));
 	}
 
@@ -129,13 +122,10 @@ class PluginTest {
 	@ParameterizedTest
 	@MethodSource("versions")
 	void testVersion(String projectVersion) {
-		Plugin p = new Plugin();
-
 		Manifest mf = manifest(
 				attributes -> when(attributes.getValue(Name.IMPLEMENTATION_VERSION)).thenReturn(projectVersion));
 
-		p.setManifest(mf);
-
+		Plugin p = new Plugin(null, null, mf);
 		assertThat("Wrong Version", p.getVersion(), is(projectVersion));
 	}
 
@@ -150,9 +140,7 @@ class PluginTest {
 	@Test
 	void testManifest() {
 		Manifest mf = mock(Manifest.class);
-		Plugin p = new Plugin();
-		p.setManifest(mf);
+		Plugin p = new Plugin(null, null, mf);
 		assertThat("Wrong manifest", p.getManifest(), is(mf));
 	}
-
 }
