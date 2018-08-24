@@ -32,8 +32,6 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProviders;

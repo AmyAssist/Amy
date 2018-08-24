@@ -69,13 +69,13 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	/**
 	 * different possible answers
 	 */
-	private final static String[] failedToUnderstandAnswer = { "I did not understand that", "Sorry, could you repeat that?",
+	private static final String[] FAILED_TO_UNDERSTAND_ANSWER = { "I did not understand that", "Sorry, could you repeat that?",
 			"I don't know what you mean", "No idea what you are talking about",
 			"My plugin developers did not teach me this yet" };
 
-	private final static String quitIntentUserInput = "(never mind|quit|forget that)";
+	private static final String QUIT_INTENT_USER_INPUT = "(never mind|quit|forget that)";
 
-	private final static String[] quitIntentAnswer = { "ok", "sure", "what else can i do for you?" };
+	private static final String[] QUIT_INTENT_ANSWER = { "ok", "sure", "what else can i do for you?" };
 
 	@Reference
 	private Logger logger;
@@ -107,7 +107,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 				.getProperty(PROBERTY_LANGUAGE, "EN");
 		this.language = new ChooseLanguage(languageString, stemmerEnabled);
 
-		AGFLexer lex = new AGFLexer(quitIntentUserInput);
+		AGFLexer lex = new AGFLexer(QUIT_INTENT_USER_INPUT);
 		AGFParser parser = new AGFParser(lex);
 		this.quitIntentUserInputGram = parser.parseWholeExpression();
 	}
@@ -156,7 +156,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 
 			if (matchingNodeIndex == promptGrams.indexOf(this.quitIntentUserInputGram)) {
-				dialog.output(generateRandomAnswer(quitIntentAnswer));
+				dialog.output(generateRandomAnswer(QUIT_INTENT_ANSWER));
 				dialog.setIntent(null);
 				return;
 			}
@@ -174,7 +174,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			}
 		} catch (NLParserException e) {
 			this.logger.debug("no matching grammar found ", e);
-			dialog.output(generateRandomAnswer(failedToUnderstandAnswer));
+			dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
 		}
 
 	}
@@ -233,7 +233,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			}
 		} catch (NLParserException e) {
 			this.logger.debug("no matching grammar found ", e);
-			dialog.output(generateRandomAnswer(failedToUnderstandAnswer));
+			dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
 		}
 
 	}
