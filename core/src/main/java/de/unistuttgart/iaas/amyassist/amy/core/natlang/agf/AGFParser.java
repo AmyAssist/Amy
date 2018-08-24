@@ -45,9 +45,9 @@ public class AGFParser extends Parser {
 	 * tells the parser which parslets to call on which token occurence
 	 * 
 	 * @param tokens
-	 *                        the tokens
+	 *            the tokens
 	 * @param entityToAGF
-	 *                        map
+	 *            map
 	 */
 	public AGFParser(Iterator<AGFToken> tokens, Map<String, AGFNode> entityToAGF) {
 		super(tokens);
@@ -69,9 +69,9 @@ public class AGFParser extends Parser {
 	 * tells the parser which parslets to call on which token occurence
 	 * 
 	 * @param tokens
-	 *                   the tokens
+	 *            the tokens
+	 * 
 	 */
-	@Deprecated
 	public AGFParser(Iterator<AGFToken> tokens) {
 		super(tokens);
 

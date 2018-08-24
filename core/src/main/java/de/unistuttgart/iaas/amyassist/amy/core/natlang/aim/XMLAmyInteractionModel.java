@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * TODO: Description
+ * Parse the amy interaction xml
  * 
  * @author Felix Burk
  */

@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,8 +46,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
  * @author Leon Kiefer, Felix Burk
  */
 public class NLIAnnotationReader {
-
-	private static Logger logger = LoggerFactory.getLogger(NLIAnnotationReader.class);
 
 	private NLIAnnotationReader() {
 		// hide constructor
@@ -146,41 +143,9 @@ public class NLIAnnotationReader {
 	 */
 	public static String callNLIMethod(@Nonnull Method method, @Nonnull Object instance, Object[] arg) {
 		assertValid(method);
-
 		try {
 			method.setAccessible(true);
 			return (String) method.invoke(instance, arg);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("tryed to invoke method " + method + " but got an error", e);
-		} catch (InvocationTargetException e) {
-			Throwable cause = e.getCause();
-
-			if (cause instanceof RuntimeException) {
-				throw (RuntimeException) cause;
-			}
-			throw new IllegalArgumentException("method " + method + " throw an exception", cause);
-		}
-	}
-
-	/**
-	 * calls the given method and handles possible exceptions
-	 *
-	 * @param method
-	 *            the method to call
-	 * @param instance
-	 *            the instance of which to call the method
-	 * @param arg
-	 *            the arguments to the NLI method
-	 * @return the result of the call to the NLI method
-	 * @throws IllegalArgumentException
-	 *             if the annotated methods not valid
-	 */
-	public static String callNLIMethod(@Nonnull Method method, @Nonnull Object instance) {
-		// assertValid(method);
-
-		try {
-			method.setAccessible(true);
-			return (String) method.invoke(instance);
 		} catch (IllegalAccessException e) {
 			throw new IllegalArgumentException("tryed to invoke method " + method + " but got an error", e);
 		} catch (InvocationTargetException e) {

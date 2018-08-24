@@ -27,26 +27,29 @@ import java.time.LocalTime;
 
 /**
  * Interface for the entity data storage
+ * 
  * @author Felix Burk, Lars Buttgereit
  */
 public interface EntityData {
 
 	/**
 	 * Get's {@link #number number}
-	 * @return  number
+	 * 
+	 * @return number
 	 */
 	int getNumber();
 
 	/**
 	 * Get's {@link #string string}
-	 * @return  string
+	 * 
+	 * @return string
 	 */
 	String getString();
 
 	/**
 	 * Get's {@link #time time}
-	 * @return  time
+	 * 
+	 * @return time
 	 */
 	LocalTime getTime();
-
 }

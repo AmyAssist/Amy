@@ -34,7 +34,7 @@ public class ShortWNode extends AGFNode {
 	/**
 	 * fixed max word length
 	 */
-	final int maxWordLength = 5;
+	private final static int maxWordLength = 5;
 
 	/**
 	 * constructor 
@@ -72,7 +72,7 @@ public class ShortWNode extends AGFNode {
 	 * @return the maxWordLength
 	 */
 	public int getMaxWordLength() {
-		return this.maxWordLength;
+		return maxWordLength;
 	}
 
 

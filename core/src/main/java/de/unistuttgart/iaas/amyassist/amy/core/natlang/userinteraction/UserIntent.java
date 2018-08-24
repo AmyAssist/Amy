@@ -124,12 +124,9 @@ public class UserIntent {
 		for (Entry<String, Entity> e : this.entityList.entrySet()) {
 			idToGram.put(e.getKey(), e.getValue().getGrammar());
 		}
-
 		AGFLexer lex = new AGFLexer(toParse);
 		AGFParser parse = new AGFParser(lex, idToGram);
-		AGFNode node = parse.parseWholeExpression();
-
-		return node;
+		return parse.parseWholeExpression();
 	}
 
 	/**
@@ -176,7 +173,8 @@ public class UserIntent {
 		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
 
 		for (Entity entity : this.entityList.values()) {
-			if (entity.getEntityData() == null && !customEntities.containsKey(entity.getEntityId()) && entity.isRequired()) {
+			if (entity.getEntityData() == null && !customEntities.containsKey(entity.getEntityId())
+					&& entity.isRequired()) {
 				return entity.getPrompt();
 			}
 		}

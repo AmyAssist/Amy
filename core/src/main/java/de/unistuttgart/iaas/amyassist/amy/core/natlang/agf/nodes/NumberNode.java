@@ -103,7 +103,7 @@ public class NumberNode extends AGFNode {
 	 * @throws NumberFormatException
 	 *                                   if the string is not a number or not inside the specified range and stepsize
 	 */
-	public void setContainedNumber(String number) throws NumberFormatException {
+	public void setContainedNumber(String number) {
 		int nmb = Integer.parseInt(number);
 
 		if (!(this.min <= nmb && nmb <= this.max && nmb % this.stepsize == 0)) {

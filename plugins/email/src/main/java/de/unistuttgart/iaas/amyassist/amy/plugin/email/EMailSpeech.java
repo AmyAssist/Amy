@@ -59,13 +59,11 @@ public class EMailSpeech {
 	 */
 	@Intent()
 	public String newMessages(Map<String, EntityData> entities) {
-		if (entities.get(IMPORTANT) != null) {
-			if (entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
-				if (this.logic.hasNewMessages(true)) {
-					return "You have new important messages.";
-				}
-				return NOIMPMAILS;
+		if (entities.get(IMPORTANT) != null && entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
+			if (this.logic.hasNewMessages(true)) {
+				return "You have new important messages.";
 			}
+			return NOIMPMAILS;
 		}
 		if (this.logic.hasNewMessages(false)) {
 			return "You have new messages.";
@@ -82,14 +80,12 @@ public class EMailSpeech {
 	 */
 	@Intent()
 	public String numberOfNewMails(Map<String, EntityData> entities) {
-		if (entities.get(IMPORTANT) != null) {
-			if (entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
-				int count = this.logic.getNewMessageCount(true);
-				if (count > 0) {
-					return count + " new important messages";
-				}
-				return NOIMPMAILS;
+		if (entities.get(IMPORTANT) != null && entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
+			int count = this.logic.getNewMessageCount(true);
+			if (count > 0) {
+				return count + " new important messages";
 			}
+			return NOIMPMAILS;
 		}
 		int count = this.logic.getNewMessageCount(false);
 		if (count > 0) {

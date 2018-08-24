@@ -104,7 +104,7 @@ public class MorphemeParselet implements IAGFParselet {
 				throw new AGFParseException("} missing or entity name contains a whitespace");
 			}
 		} else if (token.type == AGFTokenType.DOLLAR) {
-			parseNumberExpression(morph, token, parser);
+			parseNumberExpression(morph, parser);
 		} else if(token.type == AGFTokenType.PLUS) {
 			AGFNode node = new ShortWNode("");
 			morph.addChild(node);
@@ -126,8 +126,8 @@ public class MorphemeParselet implements IAGFParselet {
 	 * @param parser
 	 *                   the corresponding parser
 	 */
-	private void parseNumberExpression(MorphemeNode morph, AGFToken token, Parser parser) {
-		String numbersInsideExpression[] = new String[3];
+	private void parseNumberExpression(MorphemeNode morph, Parser parser) {
+		String[] numbersInsideExpression = new String[3];
 		int j = 0;
 		if (parser.match(AGFTokenType.OPENBR)) {
 			parser.consume();

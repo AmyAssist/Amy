@@ -30,6 +30,7 @@ import java.lang.annotation.Target;
 
 /**
  * This is needed to use one EntityProvider multiple times in one intent
+ * 
  * @author Lars Buttgereit
  */
 @Documented
@@ -38,6 +39,7 @@ import java.lang.annotation.Target;
 public @interface EntityProviders {
 	/**
 	 * contains all annotated EntityProvicders from one method
+	 * 
 	 * @return a array with all EntityProviders
 	 */
 	EntityProvider[] value();
