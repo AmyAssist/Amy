@@ -46,7 +46,7 @@ public class ChatService {
 	 * @param uuid of user
 	 * @return the queue of answers from amy
 	 */
-	protected LinkedList<String> getQueue(String uuid) {
+	public LinkedList<String> getQueue(String uuid) {
 		UUID key = UUID.fromString(uuid);
 		if(this.userQueueMap.containsKey(key)) {
 			return this.userQueueMap.get(key);
@@ -59,7 +59,7 @@ public class ChatService {
 	 * adds a new user
 	 * @param uuid string representation of uuid
 	 */
-	protected void addUser(String uuid) {
+	public void addUser(String uuid) {
 		UUID key = UUID.fromString(uuid);
 		this.userQueueMap.put(key, new LinkedList<String>());
 	}

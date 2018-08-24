@@ -42,7 +42,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserInten
  *
  * @author Felix Burk
  */
-@Service(IDialogHandler.class)
+@Service()
 public class DialogHandler implements IDialogHandler {
 
 	@Reference
