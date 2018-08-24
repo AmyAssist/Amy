@@ -21,12 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
+package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.AbstractSpeechResultHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSRListener;
 
@@ -35,58 +36,29 @@ import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSRListener;
  * 
  * @author Kai Menzel
  */
-public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognizerType {
-
-	// --------------------------------------------------------------
-	// Dependencies
-
-	// --------------------------------------------------------------
-	// Fields
+@Service(GoogleSpeechRecognizer.class)
+public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognizer {
 
 	private static final int WAITING_FOR_CHROME_TO_START_TIME = 5000;
 
-	/**
-	 * logger for all the Speech Recognition classes
-	 */
-	private final Logger logger = LoggerFactory.getLogger(GoogleSpeechRecognizer.class);
-
-	/**
-	 * Handler who use the translated String for commanding the System
-	 */
-	private AbstractSpeechResultHandler resultHandler;
-
-	/**
-	 * The Google Speech Service
-	 */
+	@Reference
+	private Logger logger;
+	@Reference
 	private RemoteSR recognizer;
-
-	// --------------------------------------------------------------
-	// Construcor
-
-	/**
-	 * Returns Recognition Result to given Handler from Given Recognizer
-	 * 
-	 * @param recognizer
-	 *            The Remote Recognizer
-	 */
-	public GoogleSpeechRecognizer(RemoteSR recognizer) {
-		this.recognizer = recognizer;
-
+	@Reference
+	private SpeechResultPreHandler resultHandler;
+	
+	@PostConstruct
+	private void init() {
 		this.recognizer.setListener(this);
 	}
 
-	// --------------------------------------------------------------
-	// Init
-
-	// --------------------------------------------------------------
-	// Methods
-
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizerType#getRecognition(de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.AbstractSpeechResultHandler)
+	 * 
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#requestRecognition()
 	 */
 	@Override
-	public void getRecognition(AbstractSpeechResultHandler usedResultHandler) {
-		this.resultHandler = usedResultHandler;
+	public void requestRecognition() {
 
 		if (!this.recognizer.requestSR()) {
 
@@ -96,7 +68,7 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 				try {
 					Thread.sleep(WAITING_FOR_CHROME_TO_START_TIME);
 				} catch (InterruptedException e) {
-					this.logger.error("Error with Chrome:", e);
+					this.logger.error("Error while waiting for Chrome:", e);
 					Thread.currentThread().interrupt();
 				}
 			}
@@ -112,17 +84,10 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	@Override
 	public void remoteSRDidRecognizeSpeech(String message) {
 		if (message.isEmpty()) {
-			this.logger.warn("I could not understand that. Can you please repeat your Command");
-			getRecognition(this.resultHandler);
+			requestRecognition();
 		} else {
 			this.resultHandler.handle(message);
 		}
 	}
-
-	// --------------------------------------------------------------
-	// Getter
-
-	// --------------------------------------------------------------
-	// Setter
 
 }

@@ -21,20 +21,23 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
+package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.NoSuchElementException;
 
 import javax.sound.sampled.AudioInputStream;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
+import de.unistuttgart.iaas.amyassist.amy.core.audio.LocalAudio;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.RuntimeExceptionRecognizerCantBeCreated;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.AbstractSpeechResultHandler;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;
@@ -45,39 +48,35 @@ import edu.cmu.sphinx.api.StreamSpeechRecognizer;
  *
  * @author Kai Menzel
  */
-public class SphinxSpeechRecognizer implements SpeechRecognizerType {
+@Service(SphinxSpeechRecognizer.class)
+public class SphinxSpeechRecognizer implements SpeechRecognizer, Runnable {
+
+	@Reference
+	private Logger logger;
+	@Reference
+	private AudioManager audioManager;
+	@Reference
+	private LocalAudio localAudio;
+	@Reference
+	private SpeechResultPreHandler resultHandler;
+
+	private AudioInputStream audioInputStream;
+	private StreamSpeechRecognizer recognizer;
+	private String result;
+
+	private boolean recognizerActive = false;
 
 	/**
-	 * logger for all the Speech Recognition classes
-	 */
-	private final Logger logger = LoggerFactory.getLogger(SphinxSpeechRecognizer.class);
-
-	/**
-	 * The Input Stream Source
-	 */
-	private final AudioInputStream ais;
-
-	/**
-	 * The Recognizer which Handles the Recognition
-	 */
-	private final StreamSpeechRecognizer recognizer;
-
-	// -----------------------------------------------------------------------------------------------
-
-	/**
-	 * Creates the Recognizers and Configures them
 	 * 
-	 * @param file
+	 * Create a Recognizer
+	 * 
+	 * @param grammar
 	 *            Grammar to use in this Recognizer
-	 * @param ais
-	 *            set custom AudioInputStream.
 	 */
-	public SphinxSpeechRecognizer(File file, AudioInputStream ais) {
-		this.ais = ais;
-
-		// Create the Recognizer
+	public void setGrammar(File grammar) {
+		stopRecognizer();
 		try {
-			this.recognizer = new StreamSpeechRecognizer(this.createConfiguration(file));
+			this.recognizer = new StreamSpeechRecognizer(this.createConfiguration(grammar));
 		} catch (IOException e) {
 			throw new RuntimeExceptionRecognizerCantBeCreated("StreamRecognizer can't be instantiated", e);
 		}
@@ -89,51 +88,81 @@ public class SphinxSpeechRecognizer implements SpeechRecognizerType {
 	 * Starts and runs the recognizer calls makes Decision with the recognized String
 	 */
 	@Override
-	public void getRecognition(AbstractSpeechResultHandler resultHandler) {
+	public void requestRecognition() {
 
 		// starts Recognition
 		startRecognizer();
 
 		this.logger.info(":: waiting for speech input");
 
+		requestNewSrResult();
+	}
+
+	private void requestNewSrResult() {
 		// wait for input from the recognizer
 		SpeechResult speechResult = null;
 		while (speechResult == null) {
 			speechResult = this.recognizer.getResult();
 		}
+
 		/**
 		 * If Thread is not Interrupted, get and use SpeechRecognitionResult
 		 */
-		String speechRecognitionResult = speechResult.getHypothesis();
-		this.logger.debug("I recognized: {}", speechRecognitionResult);
+		this.result = speechResult.getHypothesis();
 
-		if (speechRecognitionResult.replace(" ", "").equals("") || speechRecognitionResult.equals("<unk>")) {
-			getRecognition(resultHandler);
-		} else {
+		// check empty answer
+		if (!(this.result.replace(" ", "").equals("") || this.result.equals("<unk>"))) {
 			stopRecognizer();
-			resultHandler.handle(speechRecognitionResult);
+		} else {
+			requestNewSrResult();
 		}
 	}
 
-	// ===============================================================================================
-
-	private boolean recognizerActive = false;
-
 	private void startRecognizer() {
 		if (!this.recognizerActive) {
-			this.recognizer.startRecognition(this.ais);
+			this.recognizer.startRecognition(getAudioInputStream());
 			this.recognizerActive = true;
 		}
 	}
 
 	private void stopRecognizer() {
 		if (this.recognizerActive) {
-			this.recognizer.stopRecognition();
 			this.recognizerActive = false;
+			this.recognizer.stopRecognition();
+			(new Thread(this)).start();
 		}
 	}
 
-	// ===============================================================================================
+	/**
+	 * @see java.lang.Runnable#run()
+	 */
+	@Override
+	public void run() {
+		this.resultHandler.handle(this.result);
+	}
+
+	private AudioInputStream getAudioInputStream() {
+		if (this.audioInputStream == null) {
+			this.audioInputStream = createNewAudioInputStream();
+		}
+		return this.audioInputStream;
+	}
+
+	/**
+	 * starts the default AudioInputStream
+	 * 
+	 * @return AudioInputStream from the local mic
+	 * @throws RuntimeException
+	 *             If no audio environment could be found.
+	 */
+	private AudioInputStream createNewAudioInputStream() {
+		try {
+			return this.audioManager
+					.getInputStreamOfAudioEnvironment(this.localAudio.getLocalAudioEnvironmentIdentifier());
+		} catch (NoSuchElementException e) {
+			throw new IllegalStateException("Could not get local audio environment", e);
+		}
+	}
 
 	/**
 	 * creates Configuration for the recognizers
@@ -168,7 +197,5 @@ public class SphinxSpeechRecognizer implements SpeechRecognizerType {
 		}
 		return configuration;
 	}
-
-	// ===============================================================================================
 
 }

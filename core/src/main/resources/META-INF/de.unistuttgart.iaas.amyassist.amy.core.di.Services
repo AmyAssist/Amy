@@ -22,10 +22,10 @@ de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService
 de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl
 de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskSchedulerImpl
 de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformationService
-de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreterImpl
-de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.RecognizerCreator
-de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager
-de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.MainGrammarSpeechResultHandler
-de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.TempGrammarSpeechResultHandler
 de.unistuttgart.iaas.amyassist.amy.core.speech.output.OutputImpl
 de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeechImpl
+de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreter
+de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechResultPreHandler
+de.unistuttgart.iaas.amyassist.amy.core.speech.SphinxGrammarCreator
+de.unistuttgart.iaas.amyassist.amy.core.speech.GoogleSpeechRecognizer
+de.unistuttgart.iaas.amyassist.amy.core.speech.SphinxSpeechRecognizer

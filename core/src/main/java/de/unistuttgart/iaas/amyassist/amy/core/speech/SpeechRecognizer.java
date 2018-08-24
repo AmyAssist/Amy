@@ -21,21 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer;
-
-import de.unistuttgart.iaas.amyassist.amy.core.speech.resulthandler.AbstractSpeechResultHandler;
+package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 /**
- * Interface for the Different Recognizer
+ * Interface for the different Speech Recognizers
  * 
  * @author Kai Menzel
  */
-public interface SpeechRecognizerType {
+public interface SpeechRecognizer {
+
 	/**
-	 * request a SpeechRecognition
+	 * Request a stt
 	 * 
-	 * @param resultHandler
-	 *            handler that will be called by the recognitionResult
 	 */
-	void getRecognition(AbstractSpeechResultHandler resultHandler);
+	void requestRecognition();
 }
