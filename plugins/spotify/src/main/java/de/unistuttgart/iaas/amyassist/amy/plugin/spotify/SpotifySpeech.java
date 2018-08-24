@@ -257,8 +257,8 @@ public class SpotifySpeech {
 	@Intent()
 	public String searchASong(Map<String, EntityData> entites) {
 		List<TrackEntity> tracks = this.search.searchforTracks(entites.get("songname").getString(), 1);
-		if (tracks.get(0) != null) {
-			return this.playerLogic.playTrack(0).getName();
+		if (!tracks.isEmpty() && tracks.get(0) != null) {
+			return this.playerLogic.playTrack(0).toString();
 		}
 		return ERROR_MESSAGE_ELEMENT;
 	}
@@ -269,7 +269,7 @@ public class SpotifySpeech {
 	 * @return a list with all device names
 	 */
 	@EntityProvider("devicename")
-	public List<String> getDevicesNames() {
+	public List<String> getDeviceNames() {
 		List<String> deviceNames = new ArrayList<>();
 		for (DeviceEntity device : this.deviceLogic.getDevices()) {
 			deviceNames.add(device.getName());
