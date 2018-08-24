@@ -34,6 +34,7 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.ReadableInstant;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProvider;
@@ -45,6 +46,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
  * 
  * @author Lars Buttgereit
  */
+@Service
 @SpeechCommand
 public class NavigationSpeech {
 	@Reference
@@ -69,7 +71,7 @@ public class NavigationSpeech {
 	 */
 	@Intent()
 	public String goToAt(Map<String, EntityData> entities) {
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = this.environment.getCurrentLocalDateTime();
 		LocalTime inputTime = entities.get("time").getTime();
 		if (inputTime != null) {
 			DateTime time = new DateTime(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), inputTime.getHour(),
@@ -97,7 +99,7 @@ public class NavigationSpeech {
 	 */
 	@Intent()
 	public String bestTransport(Map<String, EntityData> entities) {
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = this.environment.getCurrentLocalDateTime();
 		LocalTime inputTime = entities.get("time").getTime();
 		DateTime time = null;
 		if (inputTime != null) {
@@ -125,10 +127,9 @@ public class NavigationSpeech {
 	 */
 	@Intent()
 	public String routeFromtTo(Map<String, EntityData> entities) {
-		return this.logic
-				.fromToWithDeparture(this.registryConnection.getAddress(entities.get(START_KEY).getString()),
-						this.registryConnection.getAddress(entities.get(END_KEY).getString()),
-						this.logic.getTravelMode(entities.get("mode").getString().trim()), DateTime.now())
+		return this.logic.fromToWithDeparture(this.registryConnection.getAddress(entities.get(START_KEY).getString()),
+				this.registryConnection.getAddress(entities.get(END_KEY).getString()),
+				this.logic.getTravelMode(entities.get("mode").getString().trim()), DateTime.now())
 				.routeToShortString();
 	}
 

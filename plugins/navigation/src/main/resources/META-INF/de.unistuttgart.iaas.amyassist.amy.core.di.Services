@@ -1,4 +1,3 @@
 de.unistuttgart.iaas.amyassist.amy.plugin.navigation.RegistryConnection
 de.unistuttgart.iaas.amyassist.amy.plugin.navigation.DirectionsApiCalls
 de.unistuttgart.iaas.amyassist.amy.plugin.navigation.DirectionApiLogic
-de.unistuttgart.iaas.amyassist.amy.plugin.navigation.TimeFormatter
