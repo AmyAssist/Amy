@@ -39,6 +39,8 @@ import org.mockito.Mockito;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -55,6 +57,7 @@ class HomeResourceTest {
 
 	private WebTarget target;
 
+	private MessageHub messageHub;
 	private PluginManager manager;
 
 	/**
@@ -63,6 +66,7 @@ class HomeResourceTest {
 	@BeforeEach
 	void setUp() {
 		this.manager = this.testFramework.mockService(PluginManager.class);
+		this.messageHub = this.testFramework.mockService(MessageHub.class);
 		this.target = this.testFramework.setRESTResource(HomeResource.class);
 	}
 
@@ -86,7 +90,7 @@ class HomeResourceTest {
 		assertEquals("Configurations for this Amy instance and installed plugins",
 				spes[spes.length - 1].getDescription());
 		assertEquals(this.target.getUriBuilder().replacePath("config").toString(), spes[spes.length - 1].getLink());
-
+	
 	}
 
 	private IPlugin[] setupPlugins() {
@@ -101,5 +105,26 @@ class HomeResourceTest {
 		}
 		return plugins;
 	}
+	
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#mute()}.
+	 */
+	@Test
+	void testMute() {
+		Response r = this.target.path("mute").request().post(null);
+		assertEquals(204, r.getStatus());
+		Mockito.verify(messageHub).publish("home/all/music/mute", "true");
+	}
 
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#unmute()}.
+	 */
+	@Test
+	void testUnmute() {
+		Response r = this.target.path("unmute").request().post(null);
+		assertEquals(204, r.getStatus());
+		Mockito.verify(messageHub).publish("home/all/music/mute", "false");
+	}
 }

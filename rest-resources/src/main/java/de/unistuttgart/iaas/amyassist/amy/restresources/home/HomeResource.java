@@ -35,6 +35,8 @@ import javax.ws.rs.core.UriInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 import io.swagger.v3.oas.annotations.Operation;
 
 /**
@@ -54,6 +56,8 @@ public class HomeResource {
 	private PluginManager manager;
 	@Context
 	private UriInfo uriInfo;
+	@Reference
+	private MessageHub messageHub;
 
 	
 	/**
@@ -92,6 +96,23 @@ public class HomeResource {
 		}
 		return null;
 	}
-
-
+	
+	/**
+	 * mutes amy
+	 */
+	@POST
+	@Path("mute")
+	public void mute() {
+		this.messageHub.publish("home/all/music/mute", "true");
+	}
+	
+	/**
+	 * unmutes amy
+	 */
+	@POST
+	@Path("unmute")
+	public void unmute() {
+		this.messageHub.publish("home/all/music/mute", "false");
+	}
+	
 }
