@@ -63,7 +63,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
  *
  * @author Leon Kiefer, Felix Burk
  */
-@Service
+@Service()
 public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	/**

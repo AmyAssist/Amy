@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.lang.reflect.Method;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent;
 
 /**
