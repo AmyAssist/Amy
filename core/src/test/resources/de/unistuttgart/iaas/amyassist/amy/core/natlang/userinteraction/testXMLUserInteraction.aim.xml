@@ -4,7 +4,7 @@
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
 		<gram>greet me [with {greeting}] [test {amytime}]</gram>
 		<EntityTemplates>
-			<EntityTemplate id="greeting">
+			<EntityTemplate id="greeting" required="true">
 				<gram>(hello|good morning)</gram>
 			</EntityTemplate>
 		</EntityTemplates>

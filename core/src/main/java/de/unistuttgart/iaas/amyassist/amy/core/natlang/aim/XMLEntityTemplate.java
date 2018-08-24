@@ -38,6 +38,8 @@ public class XMLEntityTemplate {
 
 	@XmlAttribute(name = "id")
 	private String entityId;
+	@XmlAttribute(name = "required")
+	private String required;
 
 	@XmlElement(name = "gram", required = false)
 	private String grammar;
@@ -71,4 +73,13 @@ public class XMLEntityTemplate {
 	public String getGrammar() {
 		return this.grammar.toLowerCase().trim();
 	}
+
+	/**
+	 * Get's {@link #required required}
+	 * @return  required
+	 */
+	public String getRequired() {
+		return this.required;
+	}
+	
 }

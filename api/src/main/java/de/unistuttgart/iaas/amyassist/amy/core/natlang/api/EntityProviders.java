@@ -21,28 +21,26 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Thrown if AIM xml is not correct
- *
- * @author Felix Burk
+ * This is needed to use one EntityProvider multiple times in one intent
+ * 
+ * @author Lars Buttgereit
  */
-public class BadAIMException extends RuntimeException {
-
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(java.lang.annotation.ElementType.METHOD)
+public @interface EntityProviders {
 	/**
-	 *
-	 */
-	private static final long serialVersionUID = 5771538728222282851L;
-
-	/**
-	 * constructor
+	 * contains all annotated EntityProvicders from one method
 	 * 
-	 * @param msg
-	 *                to show
+	 * @return a array with all EntityProviders
 	 */
-	public BadAIMException(String msg) {
-		super(msg);
-	}
-
+	EntityProvider[] value();
 }

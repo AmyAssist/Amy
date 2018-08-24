@@ -23,10 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
@@ -39,6 +42,7 @@ public class EMailSpeech {
 
 	private static final String NOMAILS = "No new messages";
 	private static final String NOIMPMAILS = "No important new messages";
+	private static final String IMPORTANT = "important";
 
 	@Reference
 	private EMailLogic logic;
@@ -49,19 +53,17 @@ public class EMailSpeech {
 	/**
 	 * Checks if there are new messages
 	 * 
-	 * @param params
-	 *            words in the grammar annotation
+	 * @param entities
+	 *            contain if important or not
 	 * @return yes or no
 	 */
-	@Grammar("[do i have] new [important] messages")
-	public String newMessages(String... params) {
-		for (int i = 0; i < params.length; i++) {
-			if (params[i].equals("important")) {
-				if (this.logic.hasNewMessages(true)) {
-					return "You have new important messages.";
-				}
-				return NOIMPMAILS;
+	@Intent()
+	public String newMessages(Map<String, EntityData> entities) {
+		if (entities.get(IMPORTANT) != null && entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
+			if (this.logic.hasNewMessages(true)) {
+				return "You have new important messages.";
 			}
+			return NOIMPMAILS;
 		}
 		if (this.logic.hasNewMessages(false)) {
 			return "You have new messages.";
@@ -72,20 +74,18 @@ public class EMailSpeech {
 	/**
 	 * Gets number of UNREAD mails
 	 * 
-	 * @param params
-	 *            words in the grammar annotation
+	 * @param entities
+	 *            contain if important or not
 	 * @return number of unseen emails
 	 */
-	@Grammar("how many [new] [important] (emails|mails) [do i have]")
-	public String numberOfNewMails(String... params) {
-		for (int i = 0; i < params.length; i++) {
-			if (params[i].equals("important")) {
-				int count = this.logic.getNewMessageCount(true);
-				if (count > 0) {
-					return count + " new important messages";
-				}
-				return NOIMPMAILS;
+	@Intent()
+	public String numberOfNewMails(Map<String, EntityData> entities) {
+		if (entities.get(IMPORTANT) != null && entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
+			int count = this.logic.getNewMessageCount(true);
+			if (count > 0) {
+				return count + " new important messages";
 			}
+			return NOIMPMAILS;
 		}
 		int count = this.logic.getNewMessageCount(false);
 		if (count > 0) {
@@ -97,20 +97,23 @@ public class EMailSpeech {
 	/**
 	 * Reads the x most recent mails
 	 * 
-	 * @param params
-	 *            words in the grammar annotation
+	 * @param entities
+	 *            contain if important or not and how many mails should be read
 	 * @return x most recent mails
 	 */
-	@Grammar("read (#|all) [important] (emails|mails)")
-	public String readRecentMails(String... params) {
-		boolean important = params[2].equals("important");
-		if (params[1].equals("all")) {
+	@Intent()
+	public String readRecentMails(Map<String, EntityData> entities) {
+		boolean important = false;
+		if (entities.get(IMPORTANT) != null) {
+			important = entities.get(IMPORTANT).getString().contains(IMPORTANT);
+		}
+		if (entities.get("all").getString() != null) {
 			if (important) {
 				return this.logic.printMessages(-1, true);
 			}
 			return this.logic.printMessages(-1, false);
 		}
-		int amount = Integer.parseInt(params[1]);
+		int amount = entities.get("number").getNumber();
 		if (important) {
 			return this.logic.printMessages(amount, true);
 		}

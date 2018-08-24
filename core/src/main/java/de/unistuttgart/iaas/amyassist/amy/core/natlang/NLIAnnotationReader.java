@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- *
+ * 
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
+ * You may obtain a copy of the License at 
+ * 
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,10 +32,9 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProviders;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 
@@ -46,8 +45,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
  */
 public class NLIAnnotationReader {
 
-	private static Logger logger = LoggerFactory.getLogger(NLIAnnotationReader.class);
-
 	private NLIAnnotationReader() {
 		// hide constructor
 	}
@@ -56,10 +53,10 @@ public class NLIAnnotationReader {
 	 * Get's the methods annotated with {@link Intent}
 	 *
 	 * @param cls
-	 *                The class of which to get the grammars
+	 *            The class of which to get the grammars
 	 * @return a List of grammars
 	 * @throws IllegalArgumentException
-	 *                                      if a method annotated with {@link Grammar} is not a valid NLIMethod
+	 *             if a method annotated with {@link Grammar} is not a valid NLIMethod
 	 */
 	public static Set<Method> getValidIntentMethods(Class<?> cls) {
 		Set<Method> validMethods = new HashSet<>();
@@ -75,20 +72,31 @@ public class NLIAnnotationReader {
 	 * returns fitting method
 	 *
 	 * @param cls
-	 *                     containing the method
+	 *            containing the method
 	 * @param entityId
-	 *                     value inside annotation
+	 *            value inside annotation
 	 * @return fitting method
 	 */
 	public static Method getValidEnityProviderMethod(Class<?> cls, String entityId) {
-		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, EntityProvider.class);
-		for (Method m : methodsWithAnnotation) {
+		Method[] methodsWithEntityProviderAnnotation = MethodUtils.getMethodsWithAnnotation(cls, EntityProvider.class);
+		for (Method m : methodsWithEntityProviderAnnotation) {
 			assertValidEntityProviderAnnotation(m);
 			EntityProvider plch = m.getAnnotation(EntityProvider.class);
 			if (plch.value().equals(entityId)) {
 				return m;
 			}
+		}
+		Method[] methodsWithEntityProvidersAnnotation = MethodUtils.getMethodsWithAnnotation(cls,
+				EntityProviders.class);
+		for (Method m : methodsWithEntityProvidersAnnotation) {
+			assertValidEntityProviderAnnotation(m);
+			EntityProviders plch = m.getAnnotation(EntityProviders.class);
+			for (EntityProvider provider : plch.value()) {
+				if (provider.value().equals(entityId)) {
+					return m;
+				}
 
+			}
 		}
 
 		return null;
@@ -98,11 +106,10 @@ public class NLIAnnotationReader {
 	 * Check if method is a valid annotated method. Annotated methods must not throw Exceptions.
 	 *
 	 * @param method
-	 *                   the method that should be a NLIMethod
+	 *            the method that should be a NLIMethod
 	 *
 	 * @throws IllegalArgumentException
-	 *                                      in case of wrong parameter types, the method throws exceptions or the return
-	 *                                      type is not a String
+	 *             in case of wrong parameter types, the method throws exceptions or the return type is not a String
 	 *
 	 */
 	public static void assertValid(Method method) {
@@ -123,18 +130,17 @@ public class NLIAnnotationReader {
 	 * calls the given method and handles possible exceptions
 	 *
 	 * @param method
-	 *                     the method to call
+	 *            the method to call
 	 * @param instance
-	 *                     the instance of which to call the method
+	 *            the instance of which to call the method
 	 * @param arg
-	 *                     the arguments to the NLI method
+	 *            the arguments to the NLI method
 	 * @return the result of the call to the NLI method
 	 * @throws IllegalArgumentException
-	 *                                      if the annotated methods not valid
+	 *             if the annotated methods not valid
 	 */
 	public static String callNLIMethod(@Nonnull Method method, @Nonnull Object instance, Object[] arg) {
 		assertValid(method);
-
 		try {
 			method.setAccessible(true);
 			return (String) method.invoke(instance, arg);
@@ -154,43 +160,12 @@ public class NLIAnnotationReader {
 	 * calls the given method and handles possible exceptions
 	 *
 	 * @param method
-	 *                     the method to call
+	 *            the method to call
 	 * @param instance
-	 *                     the instance of which to call the method
-	 * @param arg
-	 *                     the arguments to the NLI method
-	 * @return the result of the call to the NLI method
-	 * @throws IllegalArgumentException
-	 *                                      if the annotated methods not valid
-	 */
-	public static String callNLIMethod(@Nonnull Method method, @Nonnull Object instance) {
-		// assertValid(method);
-
-		try {
-			method.setAccessible(true);
-			return (String) method.invoke(instance);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("tryed to invoke method " + method + " but got an error", e);
-		} catch (InvocationTargetException e) {
-			Throwable cause = e.getCause();
-
-			if (cause instanceof RuntimeException) {
-				throw (RuntimeException) cause;
-			}
-			throw new IllegalArgumentException("method " + method + " throw an exception", cause);
-		}
-	}
-
-	/**
-	 * calls the given method and handles possible exceptions
-	 *
-	 * @param method
-	 *                     the method to call
-	 * @param instance
-	 *                     the instance of which to call the method
+	 *            the instance of which to call the method
 	 * @return a list with all custom grammars
 	 * @throws IllegalArgumentException
-	 *                                      if the annotated methods not valid
+	 *             if the annotated methods not valid
 	 */
 	public static List<String> callNLIGetEntityProviderMethod(@Nonnull Method method, @Nonnull Object instance) {
 		assertValidEntityProviderAnnotation(method);
@@ -214,11 +189,10 @@ public class NLIAnnotationReader {
 	 * Exceptions.
 	 *
 	 * @param method
-	 *                   the method that should be a EntityProvider Method
+	 *            the method that should be a EntityProvider Method
 	 *
 	 * @throws IllegalArgumentException
-	 *                                      in case of wrong parameter types, the method throws exceptions or the return
-	 *                                      type is not a String
+	 *             in case of wrong parameter types, the method throws exceptions or the return type is not a String
 	 *
 	 */
 	public static void assertValidEntityProviderAnnotation(Method method) {

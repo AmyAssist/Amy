@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- *
+ * 
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
+ * You may obtain a copy of the License at 
+ * 
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,9 +58,9 @@ public class NLParser implements INLParser {
 	/**
 	 *
 	 * @param grammars
-	 *                     all possible grammars to match
+	 *            all possible grammars to match
 	 * @param stemmer
-	 *                     which stemmer should be used
+	 *            which stemmer should be used
 	 */
 	public NLParser(List<AGFNode> grammars, IStemmer stemmer) {
 		this.grammars = grammars;
@@ -89,7 +89,7 @@ public class NLParser implements INLParser {
 	 * optional groups by number of leafes (meaning words/rules) we will be fine
 	 *
 	 * @param node
-	 *                 to sort
+	 *            to sort
 	 * @return sorted node
 	 */
 	public AGFNode sortChildsOfOrAndOp(AGFNode node) {
@@ -110,24 +110,22 @@ public class NLParser implements INLParser {
 	public int matchingNodeIndex(List<WordToken> nl) {
 		return this.grammars.indexOf(matchingNode(nl));
 	}
-	
+
 	/**
-	 * ugly internal state variable to show how many
-	 * skips are allowed currently
+	 * ugly internal state variable to show how many skips are allowed currently
 	 */
 	int wcSkips = 0;
-	
+
 	/**
-	 * another ugly internal state for wildcards
-	 * if this is true everything will be skipped and return true
+	 * another ugly internal state for wildcards if this is true everything will be skipped and return true
 	 */
 	boolean wildcardSkip = false;
-	
+
 	/**
 	 * recursive method to check each node preorder style
 	 *
 	 * @param agf
-	 *                current node to check
+	 *            current node to check
 	 * @return success
 	 */
 	private boolean checkNode(AGFNode agf) {
@@ -139,7 +137,7 @@ public class NLParser implements INLParser {
 					this.currentIndex = traceBack;
 					return false;
 				}
-				if(this.wildcardSkip) {
+				if (this.wildcardSkip) {
 					return true;
 				}
 			}
@@ -168,7 +166,7 @@ public class NLParser implements INLParser {
 			break;
 		case LONGWC:
 			this.wildcardSkip = true;
-			for(int i=this.currentIndex; i < this.mRead.size(); i++) {
+			for (int i = this.currentIndex; i < this.mRead.size(); i++) {
 				consume();
 			}
 			break;
@@ -190,7 +188,7 @@ public class NLParser implements INLParser {
 	 * correct range and stepsize
 	 *
 	 * @param agf
-	 *                to match
+	 *            to match
 	 * @return true if the node matches
 	 */
 	private boolean matchNumber(AGFNode agf) {
@@ -215,7 +213,7 @@ public class NLParser implements INLParser {
 	 * fills entity content and checks if the entity matches
 	 *
 	 * @param agf
-	 *                to match
+	 *            to match
 	 * @return true if the entity matched
 	 */
 	private boolean fillEntity(AGFNode agf) {
@@ -244,48 +242,44 @@ public class NLParser implements INLParser {
 	 * does the current token match the expected one?
 	 *
 	 * @param toMatch
-	 *                    the node to match
+	 *            the node to match
 	 * @return if it matched
 	 */
 	private boolean match(AGFNode toMatch) {
 		WordToken token = lookAhead(0);
 
-		if(compareWord(toMatch, token)) {
+		if (compareWord(toMatch, token)) {
 			consume();
 			return true;
 		}
-		
-		//greedy match words with fixed size of skips for wildcards
-		if(this.wcSkips != 0) {
+
+		// greedy match words with fixed size of skips for wildcards
+		if (this.wcSkips != 0) {
 			int lookaheadSize = 0;
-			for(int i=1; i <= this.wcSkips; i++) {
+			for (int i = 1; i <= this.wcSkips; i++) {
 				WordToken temp = lookAhead(i);
-				if(compareWord(toMatch, temp)) {
+				if (compareWord(toMatch, temp)) {
 					lookaheadSize = i;
 					break;
 				}
 			}
-			for(int i=0; i < lookaheadSize+1; i++) {
+			for (int i = 0; i < lookaheadSize + 1; i++) {
 				consume();
 			}
-			if(lookaheadSize != 0) {
+			if (lookaheadSize != 0) {
 				return true;
 			}
 		}
 		this.wcSkips = 0;
 		return false;
 	}
-	
-	
+
 	private boolean compareWord(AGFNode toMatch, WordToken token) {
 		if (this.stemmer != null && token != null
 				&& this.stemmer.stem(toMatch.getContent()).equals(this.stemmer.stem(token.getContent()))) {
 			return true;
 		}
-		if (this.stemmer == null && token != null && toMatch.getContent().equals(token.getContent())) {
-			return true;
-		}
-		return false;
+		return this.stemmer == null && token != null && toMatch.getContent().equals(token.getContent());
 	}
 
 	/**
@@ -304,7 +298,7 @@ public class NLParser implements INLParser {
 	 * look ahead as many tokens as needed
 	 *
 	 * @param distance
-	 *                     needed
+	 *            needed
 	 * @return token at distance
 	 */
 	private WordToken lookAhead(int distance) {

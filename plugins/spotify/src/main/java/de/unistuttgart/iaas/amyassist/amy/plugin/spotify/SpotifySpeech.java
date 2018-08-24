@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
@@ -45,6 +46,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.SearchTypes;
  * 
  * @author Lars Buttgereit
  */
+@Service
 @SpeechCommand
 public class SpotifySpeech {
 	private static final String ERROR_MESSAGE = "An error occurred";
@@ -274,5 +276,4 @@ public class SpotifySpeech {
 		}
 		return deviceNames;
 	}
-
 }

@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- *
+ * 
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
+ * You may obtain a copy of the License at 
+ * 
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -73,9 +73,9 @@ public class UserIntent {
 	 * Represents an intent of a user
 	 *
 	 * @param method
-	 *                      plugin method to call
+	 *            plugin method to call
 	 * @param aimIntent
-	 *                      corresponding aimintent from xml
+	 *            corresponding aimintent from xml
 	 */
 	public UserIntent(@Nonnull Method method, @Nonnull XMLAIMIntent aimIntent) {
 		this.method = method;
@@ -89,11 +89,12 @@ public class UserIntent {
 	private void registerEntities() {
 		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
 		for (Entry<String, AGFNode> e : customEntities.entrySet()) {
-			this.entityList.put(e.getKey(), new Entity(e.getKey(), e.getValue()));
+			this.entityList.put(e.getKey(), new Entity(e.getKey(), e.getValue(), false));
 		}
 
 		for (XMLEntityTemplate xmlEntityTemplate : this.aimIntent.getTemplates()) {
-			Entity e = new Entity(xmlEntityTemplate.getEntityId(), parseStringToAGF(xmlEntityTemplate.getGrammar()));
+			Entity e = new Entity(xmlEntityTemplate.getEntityId(), parseStringToAGF(xmlEntityTemplate.getGrammar()),
+					Boolean.parseBoolean(xmlEntityTemplate.getRequired()));
 			this.entityList.put(xmlEntityTemplate.getEntityId(), e);
 			e.setMethod(NLIAnnotationReader.getValidEnityProviderMethod(this.partialNLIClass, e.getEntityId()));
 
@@ -115,7 +116,7 @@ public class UserIntent {
 	 * parse a string to agf
 	 *
 	 * @param toParse
-	 *                    String to parse
+	 *            String to parse
 	 * @return a agf node
 	 */
 	private AGFNode parseStringToAGF(String toParse) {
@@ -123,21 +124,18 @@ public class UserIntent {
 		for (Entry<String, Entity> e : this.entityList.entrySet()) {
 			idToGram.put(e.getKey(), e.getValue().getGrammar());
 		}
-
 		AGFLexer lex = new AGFLexer(toParse);
 		AGFParser parse = new AGFParser(lex, idToGram);
-		AGFNode node = parse.parseWholeExpression();
-
-		return node;
+		return parse.parseWholeExpression();
 	}
 
 	/**
 	 * Invoke the method of this partialNLI with an instance of the partialNLIClass
 	 *
 	 * @param instance
-	 *                     the instance of the partialNLIClass
+	 *            the instance of the partialNLIClass
 	 * @param map
-	 *                     map of all entities with the id as key
+	 *            map of all entities with the id as key
 	 * @return the result String from calling the command
 	 */
 	public String call(Object instance, Map<String, EntityDataImpl> map) {
@@ -154,7 +152,8 @@ public class UserIntent {
 		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
 
 		for (Entity entity : this.entityList.values()) {
-			if (entity.getEntityData() == null && !customEntities.containsKey(entity.getEntityId())) {
+			if ((entity.getEntityData() == null && !customEntities.containsKey(entity.getEntityId()))
+					&& entity.isRequired()) {
 				return false;
 			}
 		}
@@ -162,11 +161,11 @@ public class UserIntent {
 	}
 
 	/**
-	 * generates amys answers
+	 * get the next prompt to process
 	 *
-	 * @return string of amys answer
+	 * @return the next prompt
 	 */
-	public String generateQuestion() {
+	public Prompt getNextPrompt() {
 		if (isFinished()) {
 			return null;
 		}
@@ -174,8 +173,9 @@ public class UserIntent {
 		Map<String, AGFNode> customEntities = PreDefinedEntityTypes.getTypes();
 
 		for (Entity entity : this.entityList.values()) {
-			if (entity.getEntityData() == null && !customEntities.containsKey(entity.getEntityId())) {
-				return entity.getPrompt().getOutputText();
+			if (entity.getEntityData() == null && !customEntities.containsKey(entity.getEntityId())
+					&& entity.isRequired()) {
+				return entity.getPrompt();
 			}
 		}
 		throw new IllegalStateException(
@@ -210,7 +210,8 @@ public class UserIntent {
 	}
 
 	/**
-	 * @param object to receive new grammars from
+	 * @param object
+	 *            to receive new grammars from
 	 */
 	public void updateGrammars(Object object) {
 		List<Entity> toUpdate = new ArrayList<>();

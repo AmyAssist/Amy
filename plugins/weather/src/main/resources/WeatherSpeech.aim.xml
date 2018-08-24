@@ -20,7 +20,7 @@
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherSpeechCommand.setLocation">
 		<gram>set weather location [to {weatherlocation}]</gram>
 		<EntityTemplates>
-			<EntityTemplate id="weatherlocation">
+			<EntityTemplate id="weatherlocation" required="true">
 				<gram>loc</gram>
 			</EntityTemplate>
 		</EntityTemplates>

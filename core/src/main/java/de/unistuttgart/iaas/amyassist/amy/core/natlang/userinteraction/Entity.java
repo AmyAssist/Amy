@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- *
+ * 
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
+ * You may obtain a copy of the License at 
+ * 
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,25 +38,29 @@ public class Entity {
 	private EntityDataImpl entityData;
 	private Prompt prompt;
 	private Method method;
+	private final boolean required;
 
 	/**
 	 * constructor for a entity
 	 * 
 	 * @param entityId
-	 *                     entityTemplateId from the xml file
+	 *            entityTemplateId from the xml file
 	 * @param grammar
-	 *                     grammar from the entity
+	 *            grammar from the entity
+	 * @param required
+	 *            is entity required
 	 */
-	public Entity(String entityId, AGFNode grammar) {
+	public Entity(String entityId, AGFNode grammar, boolean required) {
 		this.entityId = entityId;
 		this.grammar = grammar;
+		this.required = required;
 	}
 
 	/**
 	 * Set's {@link #entityData entityData}
 	 * 
 	 * @param entityData
-	 *                       entityData
+	 *            entityData
 	 */
 	public void setEntityData(EntityDataImpl entityData) {
 		this.entityData = entityData;
@@ -93,7 +97,7 @@ public class Entity {
 	 * sets {@link #grammar grammar}
 	 *
 	 * @param grammar
-	 *                    to set
+	 *            to set
 	 *
 	 */
 	public void setGrammar(AGFNode grammar) {
@@ -113,7 +117,7 @@ public class Entity {
 	 * Set's {@link #prompt prompt}
 	 *
 	 * @param prompt
-	 *                   prompt
+	 *            prompt
 	 */
 	public void setPrompt(Prompt prompt) {
 		this.prompt = prompt;
@@ -132,10 +136,18 @@ public class Entity {
 	 * Set's {@link #method method}
 	 * 
 	 * @param method
-	 *                   method
+	 *            method
 	 */
 	public void setMethod(Method method) {
 		this.method = method;
 	}
 
+	/**
+	 * Get's {@link #required required}
+	 * 
+	 * @return required
+	 */
+	public boolean isRequired() {
+		return this.required;
+	}
 }

@@ -1,17 +1,17 @@
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
- *
+ * 
  * Copyright (c) 2018 the Amy project authors.
  *
  * SPDX-License-Identifier: Apache-2.0
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
+ * You may obtain a copy of the License at 
+ * 
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,7 +52,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParserException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.Entity;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.EntityDataImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
@@ -70,13 +69,13 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	/**
 	 * different possible answers
 	 */
-	private final String[] failedToUnderstandAnswer = { "I did not understand that", "Sorry, could you repeat that?",
+	private static final String[] FAILED_TO_UNDERSTAND_ANSWER = { "I did not understand that", "Sorry, could you repeat that?",
 			"I don't know what you mean", "No idea what you are talking about",
 			"My plugin developers did not teach me this yet" };
 
-	private final String quitIntentUserInput = "(never mind|quit|forget that)";
+	private static final String QUIT_INTENT_USER_INPUT = "(never mind|quit|forget that)";
 
-	private final String[] quitIntentAnswer = { "ok", "sure", "what else can i do for you?" };
+	private static final String[] QUIT_INTENT_ANSWER = { "ok", "sure", "what else can i do for you?" };
 
 	@Reference
 	private Logger logger;
@@ -108,7 +107,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 				.getProperty(PROBERTY_LANGUAGE, "EN");
 		this.language = new ChooseLanguage(languageString, stemmerEnabled);
 
-		AGFLexer lex = new AGFLexer(this.quitIntentUserInput);
+		AGFLexer lex = new AGFLexer(QUIT_INTENT_USER_INPUT);
 		AGFParser parser = new AGFParser(lex);
 		this.quitIntentUserInputGram = parser.parseWholeExpression();
 	}
@@ -144,11 +143,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Override
 	public void processIntent(Dialog dialog, String naturalLanguageText) {
 		List<AGFNode> promptGrams = new ArrayList<>();
-		for (Entity entity : dialog.getIntent().getEntityList().values()) {
-			if (entity.getPrompt() != null) {
-				promptGrams.add(entity.getPrompt().getGrammar());
+			if (dialog.getNextPrompt() != null) {
+				promptGrams.add(dialog.getNextPrompt().getGrammar());
 			}
-		}
 
 		promptGrams.add(this.quitIntentUserInputGram);
 
@@ -159,7 +156,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 
 			if (matchingNodeIndex == promptGrams.indexOf(this.quitIntentUserInputGram)) {
-				dialog.output(generateRandomAnswer(this.quitIntentAnswer));
+				dialog.output(generateRandomAnswer(QUIT_INTENT_ANSWER));
 				dialog.setIntent(null);
 				return;
 			}
@@ -172,11 +169,12 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			}
 
 			if (!dialog.getIntent().isFinished()) {
-				dialog.output(dialog.getIntent().generateQuestion());
+				dialog.setNextPrompt(dialog.getIntent().getNextPrompt());
+				dialog.output(dialog.getNextPrompt().getOutputText());
 			}
 		} catch (NLParserException e) {
-			this.logger.debug("no matching grammar found " + e.getMessage());
-			dialog.output(generateRandomAnswer(this.failedToUnderstandAnswer));
+			this.logger.debug("no matching grammar found ", e);
+			dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
 		}
 
 	}
@@ -230,11 +228,12 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			}
 
 			if (!dialog.getIntent().isFinished()) {
-				dialog.output(dialog.getIntent().generateQuestion());
+				dialog.setNextPrompt(dialog.getIntent().getNextPrompt());
+				dialog.output(dialog.getNextPrompt().getOutputText());
 			}
 		} catch (NLParserException e) {
-			this.logger.debug("no matching grammar found " + e.getMessage());
-			dialog.output(generateRandomAnswer(this.failedToUnderstandAnswer));
+			this.logger.debug("no matching grammar found ", e);
+			dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
 		}
 
 	}

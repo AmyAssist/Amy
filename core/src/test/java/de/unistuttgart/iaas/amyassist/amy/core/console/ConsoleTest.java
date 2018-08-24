@@ -35,6 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManage
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.IDialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.LoggerProvider;
 
 /**
@@ -68,7 +69,7 @@ class ConsoleTest {
 
 		Mockito.when(handler.createDialog(ArgumentMatchers.any())).thenReturn(uuid);
 
-		this.dependencyInjection.register(new SingletonServiceProvider<>(DialogHandler.class, handler));
+		this.dependencyInjection.register(new SingletonServiceProvider<>(IDialogHandler.class, handler));
 		SpeechConsole console = this.dependencyInjection.createAndInitialize(SpeechConsole.class);
 
 		console.say(testInput);

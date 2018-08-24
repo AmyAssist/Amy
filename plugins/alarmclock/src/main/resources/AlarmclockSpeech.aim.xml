@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.">
+		<gram>[do i have] new {important}</gram>
+	</Intent>
+		<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.">
+		<gram>[do i have] new {important}</gram>
+	</Intent>
+		<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.">
+		<gram>[do i have] new {important}</gram>
+	</Intent>
+		<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.">
+		<gram>[do i have] new {important}</gram>
+	</Intent>
+	
+
+
+</AmyInteractionModel>

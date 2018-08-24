@@ -60,7 +60,9 @@ public class PreDefinedEntityTypes {
 			grammars.put("amyinteger", "$(0,1000000000, 1)");
 			grammars.put("amyhour", "$(0,24,1)");
 			grammars.put("amyminute", "$(0,60,1)");
-			grammars.put("amytime", "{amyhour} oh {amyminute}");
+			grammars.put("amytime", "({amyhour} [x|oh] {amyminute} [pm|am]|  (( ({amyhour}|quarter|half)"
+					+ " (past|to) {amyminute} ) | ( {amyhour} o clock )) [am|pm])");
+			grammars.put("amydate", "");
 		}
 		
 		if (map == null) {

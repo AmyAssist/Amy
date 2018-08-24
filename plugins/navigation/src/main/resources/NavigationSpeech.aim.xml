@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.goToAt">
+		<gram>when [do] i have to go [by {mode}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="time" required="true">
+				<gram>{amytime}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="startregistry" required="false">
+				<gram>start</gram>
+			</EntityTemplate>
+			<EntityTemplate id="endregistry" required="false">
+				<gram>end</gram>
+			</EntityTemplate>
+			<EntityTemplate id="startwildcard" required="false">
+				<gram>*</gram>
+			</EntityTemplate>
+			<EntityTemplate id="endwildcard" required="false">
+				<gram>*</gram>
+			</EntityTemplate>
+			<EntityTemplate id="start" required="true">
+				<gram>({startregistry}|{startwildcard})</gram>
+			</EntityTemplate>
+			<EntityTemplate id="end" required="true">
+				<gram>({endregistry}|{endwildcard})</gram>
+			</EntityTemplate>
+			<EntityTemplate id="mode" required="true">
+				<gram>(car|transit)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="mode">
+			<text>by car or transit?</text>
+			<gram>[by] {mode} </gram>
+		</Prompt>
+		<Prompt entityTemplateId="start">
+			<text>from which location?</text>
+			<gram>[from] {start}</gram>
+		</Prompt>
+
+		<Prompt entityTemplateId="end">
+			<text>to which location? </text>
+			<gram>[to] {end}</gram>
+		</Prompt>
+		<Prompt entityTemplateId="time">
+			<text>when do you want to arrive? </text>
+			<gram>[at] {time}</gram>
+		</Prompt>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.bestTransport">
+		<gram>best transport</gram>
+		<EntityTemplates>
+			<EntityTemplate id="time" required="true">
+				<gram>({amytime}|now)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="startregistry" required="false">
+				<gram>start</gram>
+			</EntityTemplate>
+			<EntityTemplate id="endregistry" required="false">
+				<gram>end</gram>
+			</EntityTemplate>
+			<EntityTemplate id="startwildcard" required="false">
+				<gram>*</gram>
+			</EntityTemplate>
+			<EntityTemplate id="endwildcard" required="false">
+				<gram>*</gram>
+			</EntityTemplate>
+			<EntityTemplate id="start" required="true">
+				<gram>({startregistry}|{startwildcard})</gram>
+			</EntityTemplate>
+			<EntityTemplate id="end" required="true">
+				<gram>({endregistry}|{endwildcard})</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="start">
+			<text>from which location?</text>
+			<gram>[from] {start}</gram>
+		</Prompt>
+
+		<Prompt entityTemplateId="end">
+			<text>to which location? </text>
+			<gram>[to] {end}</gram>
+		</Prompt>
+		<Prompt entityTemplateId="time">
+			<text>When are you leaving?</text>
+			<gram>[at] {time}</gram>
+		</Prompt>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.routeFromtTo">
+		<gram>get route [by {mode}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="startregistry" required="false">
+				<gram>start</gram>
+			</EntityTemplate>
+			<EntityTemplate id="endregistry" required="false">
+				<gram>end</gram>
+			</EntityTemplate>
+			<EntityTemplate id="startwildcard" required="false">
+				<gram>*</gram>
+			</EntityTemplate>
+			<EntityTemplate id="endwildcard" required="false">
+				<gram>*</gram>
+			</EntityTemplate>
+			<EntityTemplate id="start" required="true">
+				<gram>({startregistry}|{startwildcard})</gram>
+			</EntityTemplate>
+			<EntityTemplate id="end" required="true">
+				<gram>({endregistry}|{endwildcard})</gram>
+			</EntityTemplate>
+			<EntityTemplate id="mode" required="true">
+				<gram>(car|transit|bike)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="start">
+			<text>from which location?</text>
+			<gram>[from] {start}</gram>
+		</Prompt>
+
+		<Prompt entityTemplateId="end">
+			<text>to which location? </text>
+			<gram>[to] {end}</gram>
+		</Prompt>
+		<Prompt entityTemplateId="mode">
+			<text>by car, transit or bike?</text>
+			<gram>[by] {mode} </gram>
+		</Prompt>
+	</Intent>
+
+
+
+</AmyInteractionModel>

@@ -23,30 +23,33 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
- * TODO: Description
- * @author
+ * Interface for the entity data storage
+ * 
+ * @author Felix Burk, Lars Buttgereit
  */
 public interface EntityData {
 
 	/**
 	 * Get's {@link #number number}
-	 * @return  number
+	 * 
+	 * @return number
 	 */
 	int getNumber();
 
 	/**
 	 * Get's {@link #string string}
-	 * @return  string
+	 * 
+	 * @return string
 	 */
 	String getString();
 
 	/**
 	 * Get's {@link #time time}
-	 * @return  time
+	 * 
+	 * @return time
 	 */
-	LocalDateTime getTime();
-
+	LocalTime getTime();
 }
