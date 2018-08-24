@@ -44,10 +44,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 /**
  * The class responsible for loading plugins.
  * 
- * @author Tim Neumann
+ * @author Tim Neumann, Leon Kiefer
  */
 @Service
-class PluginLoader {
+public class PluginLoader {
 	@Reference
 	private Logger logger;
 
