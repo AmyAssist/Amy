@@ -79,7 +79,7 @@ class TestAIMService {
 		builder = builder.append(
 				"\n Intent ref=de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes"
 						+ " gram= say {greeting} {number} \n ")
-				.append("Entity id=number\n ").append("Entity id=greeting\n ")
+				.append("Entity id=number\n ").append("Entity id=greeting grammar= hello\n ")
 				.append("Prompt text= how many times should i say {greeting}?  gram= {number} [times] ");
 		assertThat(this.interactionModel.printSelf(), equalTo(builder.toString()));
 	}

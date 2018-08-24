@@ -28,6 +28,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
@@ -37,6 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
  * 
  * @author Patrick Singer, Felix Burk
  */
+@Service
 @SpeechCommand
 public class EMailSpeech {
 
@@ -107,16 +109,19 @@ public class EMailSpeech {
 		if (entities.get(IMPORTANT) != null) {
 			important = entities.get(IMPORTANT).getString().contains(IMPORTANT);
 		}
-		if (entities.get("all").getString() != null) {
+		if (entities.get("all") != null && entities.get("all").getString() != null) {
 			if (important) {
 				return this.logic.printMessages(-1, true);
 			}
 			return this.logic.printMessages(-1, false);
 		}
-		int amount = entities.get("number").getNumber();
-		if (important) {
-			return this.logic.printMessages(amount, true);
+		if (entities.get("number") != null) {
+			int amount = entities.get("number").getNumber();
+			if (important) {
+				return this.logic.printMessages(amount, true);
+			}
+			return this.logic.printMessages(amount, false);
 		}
-		return this.logic.printMessages(amount, false);
+		return "";
 	}
 }
