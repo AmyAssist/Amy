@@ -29,8 +29,6 @@ import static org.mockito.Mockito.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.jar.Attributes;
@@ -144,21 +142,6 @@ class PluginTest {
 	static Stream<String> versions() {
 		return Stream.concat(new Random().ints(100).mapToObj(number -> "Version" + number),
 				Stream.of("0", "no version"));
-	}
-
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setClasses(java.util.List)}
-	 * and {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getClasses()}.
-	 */
-	@Test
-	void testClasses() {
-		List<Class<?>> list = new ArrayList<>();
-		Plugin p = new Plugin();
-		list.add(this.getClass());
-		list.add(Plugin.class);
-		p.setClasses(list);
-		assertThat("Wrong list of classes", p.getClasses(), contains(this.getClass(), Plugin.class));
-		assertThat("Wrong list of classes", p.getClasses(), hasSize(list.size()));
 	}
 
 	/**

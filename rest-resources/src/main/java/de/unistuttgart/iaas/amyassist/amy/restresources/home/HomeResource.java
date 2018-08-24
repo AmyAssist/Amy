@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.restresources.home;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -125,7 +126,7 @@ public class HomeResource {
 	}
 
 	private String createPath(IPlugin iPlugin) {
-		List<Class<?>> classes = iPlugin.getClasses();
+		List<Class<?>> classes = new ArrayList<>();
 		for (Class<?> cls : classes) {
 			if (cls.isAnnotationPresent(Path.class)) { // TODO change to has parent class
 				return this.uriInfo.getBaseUriBuilder().path(cls).build().toString();

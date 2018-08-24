@@ -23,9 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.restresources.home;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
@@ -126,8 +126,6 @@ class HomeResourceTest {
 			plugins[i] = Mockito.mock(IPlugin.class);
 			Mockito.when(plugins[i].getDisplayName()).thenReturn("Display" + i);
 			Mockito.when(plugins[i].getDescription()).thenReturn("Description" + i);
-
-			Mockito.when(plugins[i].getClasses()).thenReturn(new ArrayList<>());
 
 		}
 		return plugins;

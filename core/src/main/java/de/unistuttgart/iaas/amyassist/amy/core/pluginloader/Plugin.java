@@ -125,14 +125,6 @@ public class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getClasses()
-	 */
-	@Override
-	public List<Class<?>> getClasses() {
-		return new ArrayList<>(this.classes);
-	}
-
-	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getManifest()
 	 */
 	@Override

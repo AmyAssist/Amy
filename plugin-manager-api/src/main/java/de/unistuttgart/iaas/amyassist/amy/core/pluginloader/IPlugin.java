@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.jar.Manifest;
 
 /**
@@ -75,16 +74,6 @@ public interface IPlugin {
 	 * @return the description
 	 */
 	String getDescription();
-
-	/**
-	 * Get's a list of all classes of this plugin
-	 * 
-	 * @return classes
-	 * @deprecated Because it will not be possible to get this list when we start to use multiple deployment
-	 *             descriptors.
-	 */
-	@Deprecated
-	List<Class<?>> getClasses();
 
 	/**
 	 * Get's the manifest of this plugin

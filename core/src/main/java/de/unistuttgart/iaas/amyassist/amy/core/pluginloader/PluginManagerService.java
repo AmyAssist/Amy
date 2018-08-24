@@ -45,7 +45,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * Manages the plugin integration.
@@ -164,19 +163,13 @@ public class PluginManagerService implements PluginManager {
 	 * Process the plugin components and register them at the right Services
 	 *
 	 * @param plugin
-	 *            the plugin to process
+	 *                   the plugin to process
 	 */
 	private void processPlugin(IPlugin plugin) {
 		ClassLoader classLoader = plugin.getClassLoader();
 		Set<Class<?>> loadServices = new Services().loadServices(classLoader);
 		loadServices.removeIf(cls -> cls.getClassLoader() != classLoader);
 		loadServices.forEach(this.di::register);
-
-		for (Class<?> cls : plugin.getClasses()) {
-			if (cls.isAnnotationPresent(SpeechCommand.class)) {
-				this.nlProcessingManager.register(cls);
-			}
-		}
 	}
 
 	/**
