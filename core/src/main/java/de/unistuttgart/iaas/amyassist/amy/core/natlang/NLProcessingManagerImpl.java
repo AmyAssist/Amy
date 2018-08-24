@@ -69,7 +69,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	/**
 	 * different possible answers
 	 */
-	private static final String[] FAILED_TO_UNDERSTAND_ANSWER = { "I did not understand that", "Sorry, could you repeat that?",
+	private static final String[] FAILED_TO_UNDERSTAND_ANSWER = { "I did not understand that",
+			"Sorry, could you repeat that?",
 			"I don't know what you mean", "No idea what you are talking about",
 			"My plugin developers did not teach me this yet" };
 
