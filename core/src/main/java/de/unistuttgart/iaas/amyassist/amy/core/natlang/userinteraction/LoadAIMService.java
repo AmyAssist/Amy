@@ -83,30 +83,27 @@ public class LoadAIMService implements DeploymentContainerService {
 
 			String pathS = "META-INF/" + plugin.getUniqueName() + "." + METAFILENAME;
 			// this stream is gonna be closed - line 92
-			@SuppressWarnings("resource")
-			InputStream stream = plugin.getClassLoader().getResourceAsStream(pathS);
+			try (InputStream stream = plugin.getClassLoader().getResourceAsStream(pathS);) {
 
-			if (stream == null) {
-				this.logger.info("could not find aim meta file for plugin {}", plugin.getDisplayName());
-				continue;
-			}
-			// get all aim.xml file names
-			List<String> aimFiles = readMetaFile(stream, plugin);
+				if (stream == null) {
+					this.logger.info("could not find aim meta file for plugin {}", plugin.getDisplayName());
+					continue;
+				}
+				// get all aim.xml file names
+				List<String> aimFiles = readMetaFile(stream, plugin);
 
-			try {
-				stream.close();
+				// extract all intents
+				List<XMLAIMIntent> aimIntents = new ArrayList<>();
+
+				for (String s : aimFiles) {
+					aimIntents.addAll(extractIntents(plugin, s));
+				}
+
+				matchAndRegister(aimIntents, plugin.getClassLoader());
+
 			} catch (IOException e) {
 				this.logger.info("stream could not be closed {}", e);
 			}
-
-			// extract all intents
-			List<XMLAIMIntent> aimIntents = new ArrayList<>();
-
-			for (String s : aimFiles) {
-				aimIntents.addAll(extractIntents(plugin, s));
-			}
-
-			matchAndRegister(aimIntents, plugin.getClassLoader());
 
 		}
 
@@ -158,7 +155,8 @@ public class LoadAIMService implements DeploymentContainerService {
 		InputStream stream = plugin.getClassLoader().getResourceAsStream(fileName);
 
 		if (stream != null) {
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+			try (InputStreamReader inputStream = new InputStreamReader(stream);
+					BufferedReader reader = new BufferedReader(inputStream);) {
 				XMLAmyInteractionModel model = extractModel(reader.lines().collect(Collectors.joining()), fileName);
 				if (model != null) {
 					return model.getIntents();
@@ -207,7 +205,8 @@ public class LoadAIMService implements DeploymentContainerService {
 	 */
 	private List<String> readMetaFile(InputStream stream, IPlugin plugin) {
 		List<String> aimFiles = new ArrayList<>();
-		BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+		InputStreamReader reader = new InputStreamReader(stream);
+		BufferedReader in = new BufferedReader(reader);
 
 		try {
 			String line = null;

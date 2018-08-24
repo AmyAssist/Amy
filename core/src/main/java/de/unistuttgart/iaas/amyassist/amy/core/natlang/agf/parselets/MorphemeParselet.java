@@ -128,24 +128,9 @@ public class MorphemeParselet implements IAGFParselet {
 	 */
 	private void parseNumberExpression(MorphemeNode morph, Parser parser) {
 		String[] numbersInsideExpression = new String[3];
-		int j = 0;
 		if (parser.match(AGFTokenType.OPENBR)) {
 			parser.consume();
-			for (int i = 1; i <= 5; i++) {
-				if (i % 2 == 0) {
-					if (!parser.match(AGFTokenType.COMMA)) {
-						throw new AGFParseException("missing comma in number expression");
-					}
-					parser.consume();
-				} else {
-					if (!parser.match(AGFTokenType.WORD)) {
-						throw new AGFParseException("missing number inside number expression");
-					}
-					AGFToken numberToken = parser.consume();
-					numbersInsideExpression[j] = numberToken.content;
-					j++;
-				}
-			}
+			numbersInsideExpression = getNumberExpressionContent(parser);
 
 			if (parser.match(AGFTokenType.CLOSEBR)) {
 				parser.consume();
@@ -165,6 +150,32 @@ public class MorphemeParselet implements IAGFParselet {
 			}
 		}
 
+	}
+
+	/**
+	 * parses (0,10,1)
+	 * @param parser instance
+	 * @return String[3] for the three numbers ex: (0,10,1)
+	 */
+	private String[] getNumberExpressionContent(Parser parser) {
+		String[] numbersInsideExpression = new String[3];
+		int j = 0;
+		for (int i = 1; i <= 5; i++) {
+			if (i % 2 == 0) {
+				if (!parser.match(AGFTokenType.COMMA)) {
+					throw new AGFParseException("missing comma in number expression");
+				}
+				parser.consume();
+			} else {
+				if (!parser.match(AGFTokenType.WORD)) {
+					throw new AGFParseException("missing number inside number expression");
+				}
+				AGFToken numberToken = parser.consume();
+				numbersInsideExpression[j] = numberToken.content;
+				j++;
+			}
+		}
+		return numbersInsideExpression;
 	}
 
 }
