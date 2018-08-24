@@ -66,8 +66,6 @@ public class AlarmClockLogic {
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
 	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel Simion
 	 * 
-	 * @param alarm
-	 * 
 	 * @param alarmNumber
 	 *            alarm id of the corresponding alarm object
 	 * 
@@ -354,12 +352,8 @@ public class AlarmClockLogic {
 	 * 
 	 * @param alarmNumber
 	 *            name of the alarm
-	 * @param year
-	 *            year of the alarmtime
-	 * @param month
-	 *            month of the alarmtime
-	 * @param day
-	 *            day of the alarmtime
+	 * @param tomorrow
+	 *            if the value for tomorrow is 1, tha alarm is set for tomorrow else the alarm is set for today
 	 * @param hour
 	 *            new hour of the alarm
 	 * @param minute

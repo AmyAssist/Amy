@@ -54,6 +54,9 @@ public class Alarm implements RegistryEntity {
 	private LocalDateTime alarmTime;
 	private boolean active;
 
+	/**
+	 * Empty constructor for the alarm
+	 */
 	public Alarm() {
 
 	}
@@ -64,10 +67,7 @@ public class Alarm implements RegistryEntity {
 	 * @param id
 	 *            the alarmcounter
 	 * @param alarmTime
-	 * @param hour
-	 *            hour of the alarm
-	 * @param minute
-	 *            minute of the alarm
+	 *            the alarmtime
 	 * @param active
 	 *            alarm active
 	 */

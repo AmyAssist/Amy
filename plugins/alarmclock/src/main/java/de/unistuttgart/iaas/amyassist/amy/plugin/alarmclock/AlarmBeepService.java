@@ -91,7 +91,7 @@ public class AlarmBeepService {
 	/**
 	 * @param alarm
 	 *            alarm from the alarm class
-	 * @return
+	 * @return returns the list of alarms
 	 */
 	public Set<Integer> beep(Alarm alarm) {
 		this.alarmList.add(alarm.getId());
@@ -102,7 +102,7 @@ public class AlarmBeepService {
 	/**
 	 * @param timer
 	 *            timer from the timer class
-	 * @return
+	 * @return returns the list of timers
 	 */
 	public Set<Integer> beep(Timer timer) {
 		this.timerList.add(timer.getId());
@@ -113,7 +113,7 @@ public class AlarmBeepService {
 	/**
 	 * @param alarm
 	 *            alarm from the alarm class
-	 * @return
+	 * @return returns the list of alarms
 	 */
 	public Set<Integer> stopBeep(Alarm alarm) {
 		this.alarmList.remove(alarm.getId());
@@ -124,7 +124,7 @@ public class AlarmBeepService {
 	/**
 	 * @param timer
 	 *            timer from the timer class
-	 * @return
+	 * @return returns the list of timers
 	 */
 	public Set<Integer> stopBeep(Timer timer) {
 		this.timerList.remove(timer.getId());

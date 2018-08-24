@@ -37,8 +37,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -51,17 +49,7 @@ public class AlarmBeepServiceTest {
 	@Reference
 	private TestFramework framework;
 
-	private AlarmClockLogic acl;
-
 	private AlarmBeepService abs;
-
-	private TaskScheduler scheduler;
-
-	private AlarmRegistry alarmStorage;
-
-	private ITimerStorage timerStorage;
-
-	private Environment env;
 
 	private Set<Integer> alarms = new HashSet<>();
 
@@ -72,12 +60,7 @@ public class AlarmBeepServiceTest {
 	 */
 	@BeforeEach
 	public void setup() {
-		this.env = this.framework.mockService(Environment.class);
-		this.scheduler = this.framework.mockService(TaskScheduler.class);
-		this.timerStorage = this.framework.mockService(ITimerStorage.class);
 		this.abs = this.framework.mockService(AlarmBeepService.class);
-		this.alarmStorage = this.framework.mockService(AlarmRegistry.class);
-		this.acl = this.framework.setServiceUnderTest(AlarmClockLogic.class);
 	}
 
 	/**

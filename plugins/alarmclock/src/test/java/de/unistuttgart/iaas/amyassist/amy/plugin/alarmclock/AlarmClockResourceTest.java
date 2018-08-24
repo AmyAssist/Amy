@@ -45,8 +45,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -65,14 +63,11 @@ class AlarmClockResourceTest {
 
 	private WebTarget target;
 
-	private Environment env;
-	private AlarmBeepService abs;
-
-	private TaskScheduler scheduler;
-
 	private AlarmRegistry alarmStorage;
 
 	private List<Alarm> alarms = new ArrayList<>();
+
+	private Response r;
 
 	/**
 	 * setup server and client for requests and responses
@@ -81,9 +76,6 @@ class AlarmClockResourceTest {
 	public void setUp() {
 		this.acl = this.framework.mockService(AlarmClockLogic.class);
 		this.target = this.framework.setRESTResource(AlarmClockResource.class);
-		this.env = this.framework.mockService(Environment.class);
-		this.scheduler = this.framework.mockService(TaskScheduler.class);
-		this.abs = this.framework.mockService(AlarmBeepService.class);
 		this.alarmStorage = this.framework.mockService(AlarmRegistry.class);
 
 		when(this.alarmStorage.getAll()).thenReturn(this.alarms);
@@ -96,9 +88,9 @@ class AlarmClockResourceTest {
 	void testGetAllAlarms() {
 		List<Alarm> returnedAlarms = createAlarms(3, true);
 		when(this.acl.getAllAlarms()).thenReturn(returnedAlarms);
-		Response r = this.target.path("alarms").request().get();
+		this.r = this.target.path("alarms").request().get();
 		assertThat(returnedAlarms.size(), is(3));
-		assertEquals(200, r.getStatus());
+		assertEquals(200, this.r.getStatus());
 
 	}
 
@@ -120,16 +112,16 @@ class AlarmClockResourceTest {
 		when(this.acl.getAlarm(2)).thenReturn(returnedAlarms.get(1));
 		when(this.acl.getAlarm(5)).thenThrow(new NoSuchElementException());
 
-		Response r = this.target.path("alarms/0").request().get();
-		assertEquals(204, r.getStatus());
+		this.r = this.target.path("alarms/0").request().get();
+		assertEquals(204, this.r.getStatus());
 
-		r = this.target.path("alarms/2").request().get();
-		assertEquals(200, r.getStatus());
+		this.r = this.target.path("alarms/2").request().get();
+		assertEquals(200, this.r.getStatus());
 		assertEquals(this.acl.getAlarm(2).getId(), 2);
 
-		r = this.target.path("alarms/5").request().get();
-		assertEquals(404, r.getStatus());
-		assertTrue(r.readEntity(String.class).startsWith("there is no alarm5"));
+		this.r = this.target.path("alarms/5").request().get();
+		assertEquals(404, this.r.getStatus());
+		assertTrue(this.r.readEntity(String.class).startsWith("there is no alarm5"));
 	}
 
 	/**
@@ -137,14 +129,13 @@ class AlarmClockResourceTest {
 	 */
 	@Test
 	void testResetAlarms() {
-		Response r = this.target.path("alarms/reset").request().post(null);
-		assertEquals(204, r.getStatus());
+		this.r = this.target.path("alarms/reset").request().post(null);
+		assertEquals(204, this.r.getStatus());
 		verify(this.acl).resetAlarms();
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#newAlarm(de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp)}.
+	 * Test method for new Alarms
 	 */
 	@Test
 	void testNewAlarm() {
@@ -152,15 +143,14 @@ class AlarmClockResourceTest {
 		when(this.acl.setAlarm(1, 21, 21)).thenReturn(newAlarm);
 		Entity<Alarm> entity = Entity.entity(newAlarm, MediaType.APPLICATION_JSON);
 
-		Response r = this.target.path("alarms/new").request().post(entity);
-		assertEquals(200, r.getStatus());
-		Alarm alarmread = r.readEntity(Alarm.class);
+		this.r = this.target.path("alarms/new").request().post(entity);
+		assertEquals(200, this.r.getStatus());
+		Alarm alarmread = this.r.readEntity(Alarm.class);
 		assertEquals(newAlarm, alarmread);
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockResource#editAlarm(int, java.lang.String, de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.rest.Timestamp)}.
+	 * Test method for editing the alarm
 	 */
 	@Test
 	void testEditAlarm() {
@@ -170,8 +160,8 @@ class AlarmClockResourceTest {
 		Entity<Alarm> entity = Entity.entity(new Alarm(1, LocalDateTime.of(2018, 8, 23, 12, 12), true),
 				MediaType.APPLICATION_JSON);
 
-		Response r = this.target.path("alarms/delete/1").request().post(entity);
-		assertEquals(204, r.getStatus());
+		this.r = this.target.path("alarms/delete/1").request().post(entity);
+		assertEquals(204, this.r.getStatus());
 		verify(this.acl).deleteAlarm(1);
 	}
 
@@ -184,8 +174,8 @@ class AlarmClockResourceTest {
 		when(this.acl.getAlarm(1)).thenReturn(returnedAlarms.get(0));
 		Entity<Alarm> entity = Entity.entity(returnedAlarms.get(0), MediaType.APPLICATION_JSON);
 
-		Response r = this.target.path("alarms/de.activate/1").request().post(entity);
-		assertEquals(204, r.getStatus());
+		this.r = this.target.path("alarms/de.activate/1").request().post(entity);
+		assertEquals(204, this.r.getStatus());
 		verify(this.acl).activateAlarm(1);
 	}
 
@@ -198,8 +188,8 @@ class AlarmClockResourceTest {
 		when(this.acl.getAlarm(1)).thenReturn(returnedAlarms.get(0));
 		Entity<Alarm> entity = Entity.entity(returnedAlarms.get(0), MediaType.APPLICATION_JSON);
 
-		Response r = this.target.path("alarms/de.activate/1").request().post(entity);
-		assertEquals(204, r.getStatus());
+		this.r = this.target.path("alarms/de.activate/1").request().post(entity);
+		assertEquals(204, this.r.getStatus());
 		verify(this.acl).deactivateAlarm(1);
 	}
 
@@ -212,8 +202,8 @@ class AlarmClockResourceTest {
 		when(this.acl.getAlarm(1)).thenReturn(returnedAlarms.get(0));
 		Entity<Alarm> entity = Entity.entity(returnedAlarms.get(0), MediaType.APPLICATION_JSON);
 
-		Response r = this.target.path("alarms/delete/1").request().post(entity);
-		assertEquals(204, r.getStatus());
+		this.r = this.target.path("alarms/delete/1").request().post(entity);
+		assertEquals(204, this.r.getStatus());
 		verify(this.acl).deleteAlarm(1);
 	}
 

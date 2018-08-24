@@ -60,6 +60,9 @@ public class AlarmTest {
 		assertThat(a1.isActive(), is(false));
 	}
 
+	/**
+	 * Tests whether the input parameters of the alarm are correct
+	 */
 	@Test
 	public void testBadAlarmInput() {
 		LocalDateTime alarmTime = LocalDateTime.of(2018, 8, 15, 11, 11);

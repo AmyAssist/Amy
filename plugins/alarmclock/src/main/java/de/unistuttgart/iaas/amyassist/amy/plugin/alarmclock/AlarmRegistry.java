@@ -34,6 +34,7 @@ public interface AlarmRegistry extends IRegistry<Alarm> {
 
 	/**
 	 * @param alarm
+	 *            the alarm which should be saved
 	 */
 	@Override
 	void save(Alarm alarm);

@@ -89,7 +89,7 @@ public class AlarmClockLogicTest {
 		this.env = this.framework.mockService(Environment.class);
 		this.scheduler = this.framework.mockService(TaskScheduler.class);
 		this.timerStorage = this.framework.mockService(ITimerStorage.class);
-		this.abs = this.framework.mockService(AlarmBeepService.class);
+		this.setAbs(this.framework.mockService(AlarmBeepService.class));
 		this.alarmStorage = this.framework.mockService(AlarmRegistry.class);
 		this.acl = this.framework.setServiceUnderTest(AlarmClockLogic.class);
 
@@ -409,7 +409,7 @@ public class AlarmClockLogicTest {
 		Timer timer1 = new Timer(1, 20, 5, 15, true);
 		Timer timer2 = new Timer(2, 0, 6, 30, false);
 		Timer timer5 = new Timer(5, 30, 10, 0, true);
-		List<Timer> timers = new ArrayList<Timer>();
+		List<Timer> timers = new ArrayList<>();
 		timers.add(timer1);
 		timers.add(timer2);
 		timers.add(timer5);
@@ -466,5 +466,24 @@ public class AlarmClockLogicTest {
 			this.alarms.add(mockAlarm);
 		}
 		return this.alarms;
+	}
+
+	/**
+	 * Get's {@link #abs abs}
+	 * 
+	 * @return abs
+	 */
+	public AlarmBeepService getAbs() {
+		return this.abs;
+	}
+
+	/**
+	 * Set's {@link #abs abs}
+	 * 
+	 * @param abs
+	 *            abs
+	 */
+	public void setAbs(AlarmBeepService abs) {
+		this.abs = abs;
 	}
 }
