@@ -160,11 +160,11 @@ public class CalendarResource {
 
 	private boolean checkEvents(String events) {
 		switch (events) {
-		case "No upcoming events found.":
+		case NO_EVENTS_FOUND:
 			throw new WebApplicationException(NO_EVENTS_FOUND, Status.NOT_FOUND);
-		case "There are no events today.":
+		case NO_EVENTS_TODAY:
 			throw new WebApplicationException(NO_EVENTS_TODAY, Status.NOT_FOUND);
-		case "There are no events tomorrow.":
+		case NO_EVENTS_TOMORROW:
 			throw new WebApplicationException(NO_EVENTS_TOMORROW, Status.NOT_FOUND);
 		default:
 			return true;
