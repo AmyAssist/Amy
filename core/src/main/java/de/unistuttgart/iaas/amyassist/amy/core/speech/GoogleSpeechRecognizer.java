@@ -41,6 +41,7 @@ import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSRListener;
 public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognizer {
 
 	private static final int WAITING_FOR_CHROME_TO_START_TIME = 5000;
+	private static final int MAX_WAIT_TIME = 50000;
 
 	@Reference
 	private Logger logger;
@@ -48,7 +49,7 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 	private RemoteSR recognizer;
 	@Reference
 	private SpeechResultPreHandler resultHandler;
-	
+
 	@PostConstruct
 	private void init() {
 		this.recognizer.setListener(this);
@@ -63,18 +64,28 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 
 		if (!this.recognizer.requestSR()) {
 
-			this.logger.info("Connecting to RemoteSR.");
-			while (!this.recognizer.requestSR()) {
-				this.logger.info("connecting...");
-				try {
-					this.recognizer.launchChrome();
-					Thread.sleep(WAITING_FOR_CHROME_TO_START_TIME);
-				} catch (InterruptedException | LaunchChromeException e) {
-					this.logger.error("Error while waiting for Chrome:", e);
-					Thread.currentThread().interrupt();
+			try {
+				this.recognizer.launchChrome();
+
+				this.logger.info("Connecting to RemoteSR.");
+				long t = 1;
+				while (!this.recognizer.requestSR()) {
+					this.logger.info("connecting...");
+
+					Thread.sleep(t * WAITING_FOR_CHROME_TO_START_TIME);
+
+					if (t++ > MAX_WAIT_TIME / WAITING_FOR_CHROME_TO_START_TIME) {
+						requestRecognition();
+						break;
+					}
 				}
+				this.logger.info("Connected");
+
+			} catch (LaunchChromeException | InterruptedException e) {
+				this.logger.error("Error while waiting for Chrome:", e);
+				Thread.currentThread().interrupt();
 			}
-			this.logger.info("Connected");
+
 		}
 
 		this.logger.info("waiting for speech input");
