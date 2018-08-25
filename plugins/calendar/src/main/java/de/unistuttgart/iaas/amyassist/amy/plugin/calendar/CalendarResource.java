@@ -54,25 +54,9 @@ public class CalendarResource {
 	@Reference
 	private CalendarLogic logic;
 
-	/**
-	 * Natural language response of Amy when the event list is empty.
-	 */
-	String noEventsFound = "No upcoming events found.";
-
-	/**
-	 * Natural language response of Amy when the event list of today is empty.
-	 */
-	private String noEventsToday = "There are no events today.";
-
-	/**
-	 * Natural language response of Amy when the event list of tomorrow is empty.
-	 */
-	private String noEventsTomorrow = "There are no events tomorrow.";
-
-	/**
-	 * Output of the logger
-	 */
-	private String errorLogger = "An error occurred.";
+	private static final String NO_EVENTS_FOUND = "No upcoming events found.";
+	private static final String NO_EVENTS_TODAY = "There are no events today.";
+	private static final String NO_EVENTS_TOMORROW = "There are no events tomorrow.";
 
 	/**
 	 * This method creates an event for the connected google calendar
@@ -171,19 +155,17 @@ public class CalendarResource {
 		if (!events.isEmpty()) {
 			return events;
 		}
-		throw new WebApplicationException(this.errorLogger, Status.CONFLICT);
+		throw new WebApplicationException(NO_EVENTS_FOUND, Status.CONFLICT);
 	}
 
 	private boolean checkEvents(String events) {
 		switch (events) {
 		case "No upcoming events found.":
-			throw new WebApplicationException(this.noEventsFound, Status.NOT_FOUND);
+			throw new WebApplicationException(NO_EVENTS_FOUND, Status.NOT_FOUND);
 		case "There are no events today.":
-			throw new WebApplicationException(this.noEventsToday, Status.NOT_FOUND);
+			throw new WebApplicationException(NO_EVENTS_TODAY, Status.NOT_FOUND);
 		case "There are no events tomorrow.":
-			throw new WebApplicationException(this.noEventsTomorrow, Status.NOT_FOUND);
-		case "An error occurred.":
-			throw new WebApplicationException(this.errorLogger, Status.CONFLICT);
+			throw new WebApplicationException(NO_EVENTS_TOMORROW, Status.NOT_FOUND);
 		default:
 			return true;
 		}
