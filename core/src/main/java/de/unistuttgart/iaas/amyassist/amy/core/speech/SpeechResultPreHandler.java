@@ -28,7 +28,6 @@ import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreter.ListeningState;
@@ -51,15 +50,17 @@ public class SpeechResultPreHandler {
 	private SpeechInputHandler inputHandler;
 
 	private LocalSpeechInterpreter localSpeechInterpreter;
-	
+
 	/**
 	 * Set's {@link #localSpeechInterpreter localSpeechInterpreter}
-	 * @param localSpeechInterpreter  localSpeechInterpreter
+	 * 
+	 * @param localSpeechInterpreter
+	 *            localSpeechInterpreter
 	 */
 	public void setLocalSpeechInterpreter(LocalSpeechInterpreter localSpeechInterpreter) {
 		this.localSpeechInterpreter = localSpeechInterpreter;
 	}
-	
+
 	/**
 	 * Method that handles the direct SR output
 	 * 

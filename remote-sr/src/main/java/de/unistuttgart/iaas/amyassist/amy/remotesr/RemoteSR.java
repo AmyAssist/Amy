@@ -54,7 +54,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
  * @author Benno Krauß
  */
 @Service(RemoteSR.class)
-public class RemoteSR implements RunnableService {
+public class RemoteSR {
 
 	private static final String CONFIG_NAME = "remotesr.config";
 	private static final String CHROME_DIRECTORY_CONFIG_KEY = "chrome";
@@ -66,7 +66,7 @@ public class RemoteSR implements RunnableService {
 	private Logger logger;
 
 	@Reference
-	public ConfigurationManager configurationManager;
+	private ConfigurationManager configurationManager;
 
 	private static final String START_SR_EVENT = "START";
 
@@ -74,32 +74,18 @@ public class RemoteSR implements RunnableService {
 
 	private RemoteSRListener listener;
 
-	@Override
-	public void start() {
-		logger.info("Starting chrome");
-		try {
-			launchChrome();
-		} catch (LaunchChromeException e) {
-			logger.error("Error launching chrome: ", e);
-		}
-	}
-
-	@Override
-	public void stop() {
-		// TODO: Implement this method
-	}
-
 	/**
 	 * launch the chrome browser, open the remote-SR url immediately and prevent microphone permission dialog by using a
 	 * prepared user profile
 	 *
 	 * @throws LaunchChromeException
+	 *             Exception Signaling that something went wrong with launching Chrome
 	 */
 	public void launchChrome() throws LaunchChromeException {
 		try {
 			String file = generateTempProfile();
 
-			String chromePath = configurationManager.getConfigurationWithDefaults(CONFIG_NAME)
+			String chromePath = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME)
 					.getProperty(CHROME_DIRECTORY_CONFIG_KEY);
 
 			if (chromePath == null || chromePath.isEmpty()) {
@@ -108,8 +94,9 @@ public class RemoteSR implements RunnableService {
 				} else if (SystemUtils.IS_OS_WINDOWS) {
 					chromePath = WINDOWS_CHROME_PATH;
 				} else {
-					logger.error("No directory for chrome installation found. Set your chrome installation directory "
-							+ "in {}.properties", CONFIG_NAME);
+					this.logger
+							.error("No directory for chrome installation found. Set your chrome installation directory "
+									+ "in {}.properties", CONFIG_NAME);
 				}
 			}
 
@@ -194,16 +181,16 @@ public class RemoteSR implements RunnableService {
 			try {
 				String line;
 				while ((line = reader.readLine()) != null) {
-					logger.warn("Chrome: {}", line);
+					this.logger.warn("Chrome: {}", line);
 				}
 				process.waitFor();
-				logger.warn("Chrome quit unexpectedly");
+				this.logger.warn("Chrome quit unexpectedly");
 				launchChrome();
 
 			} catch (IOException e) {
-				logger.warn("Couldn't read output from Chrome:", e);
-			} catch(LaunchChromeException e) {
-				logger.warn("Couldn't restart Chrome: ", e);
+				this.logger.warn("Couldn't read output from Chrome:", e);
+			} catch (LaunchChromeException e) {
+				this.logger.warn("Couldn't restart Chrome: ", e);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
@@ -212,7 +199,7 @@ public class RemoteSR implements RunnableService {
 
 	void setClient(SSEClient client) {
 		if (this.client != null && this.client.isConnected()) {
-			logger.warn("New SSE client connected before the old one disconnected");
+			this.logger.warn("New SSE client connected before the old one disconnected");
 			this.client.disconnect();
 		}
 		this.client = client;
@@ -224,12 +211,12 @@ public class RemoteSR implements RunnableService {
 	 * @return true if the request was successful
 	 */
 	public boolean requestSR() {
-		return client != null && client.sendEvent(START_SR_EVENT);
+		return this.client != null && client.sendEvent(START_SR_EVENT);
 	}
 
 	void processResult(SRResult res) {
-		if (res != null && res.getText() != null && listener != null) {
-			listener.remoteSRDidRecognizeSpeech(res.getText());
+		if (res != null && res.getText() != null && this.listener != null) {
+			this.listener.remoteSRDidRecognizeSpeech(res.getText());
 		}
 	}
 

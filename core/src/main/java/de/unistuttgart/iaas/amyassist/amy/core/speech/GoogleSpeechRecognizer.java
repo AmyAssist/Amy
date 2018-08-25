@@ -29,6 +29,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
+import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR.LaunchChromeException;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSRListener;
 
 /**
@@ -62,17 +63,18 @@ public class GoogleSpeechRecognizer implements RemoteSRListener, SpeechRecognize
 
 		if (!this.recognizer.requestSR()) {
 
-			this.logger.info("A problem connecting to the remote Speech Recognition has occured.");
+			this.logger.info("Connecting to RemoteSR.");
 			while (!this.recognizer.requestSR()) {
-				this.logger.info("trying to reconnect");
+				this.logger.info("connecting...");
 				try {
+					this.recognizer.launchChrome();
 					Thread.sleep(WAITING_FOR_CHROME_TO_START_TIME);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException | LaunchChromeException e) {
 					this.logger.error("Error while waiting for Chrome:", e);
 					Thread.currentThread().interrupt();
 				}
 			}
-			this.logger.info("Reconnected");
+			this.logger.info("Connected");
 		}
 
 		this.logger.info("waiting for speech input");
