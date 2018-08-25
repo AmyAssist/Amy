@@ -79,24 +79,6 @@ public class AlarmTest {
 	}
 
 	/**
-	 * Tests reconstructObject
-	 */
-	@Test
-	public void reconstructObjectTest() {
-		assertThrows(IllegalArgumentException.class, () -> Alarm.reconstructObject("foo"));
-
-		Alarm a1 = Alarm.reconstructObject("10:2018-08-15T10:41:false");
-		assertEquals(10, a1.getId());
-		assertEquals(2018, a1.getAlarmTime().getYear());
-		assertEquals(8, a1.getAlarmTime().getMonthValue());
-		assertEquals(15, a1.getAlarmTime().getDayOfMonth());
-		assertEquals(10, a1.getAlarmTime().getHour());
-		assertEquals(41, a1.getAlarmTime().getMinute());
-		assertEquals(0, a1.getAlarmTime().getSecond());
-		assertEquals(false, a1.isActive());
-	}
-
-	/**
 	 * Tests timeValid
 	 */
 	@Test

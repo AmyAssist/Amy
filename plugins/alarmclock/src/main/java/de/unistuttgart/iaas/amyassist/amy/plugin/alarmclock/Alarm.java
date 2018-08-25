@@ -95,24 +95,6 @@ public class Alarm implements RegistryEntity {
 	}
 
 	/**
-	 * Construct an alarm object from the String that was made by the convertToString method
-	 * 
-	 * @param input
-	 *            the String made by convertToString method
-	 * @return the corresponding alarm object
-	 */
-	public static Alarm reconstructObject(String input) {
-		String[] params = input.split(":|\\-|T");
-		if (params.length == 7) {
-			final LocalDateTime newAlarmTime = LocalDateTime.of(Integer.parseInt(params[1]),
-					Integer.parseInt(params[2]), Integer.parseInt(params[3]), Integer.parseInt(params[4]),
-					Integer.parseInt(params[5]));
-			return new Alarm(Integer.parseInt(params[0]), newAlarmTime, Boolean.parseBoolean(params[6]));
-		}
-		throw new IllegalArgumentException();
-	}
-
-	/**
 	 * Checks if the given hour and minute are valid for an alarm
 	 * 
 	 * @param hour
