@@ -29,5 +29,5 @@ package de.unistuttgart.iaas.amyassist.amy.registry;
  * @author Benno Krauß
  */
 
-public interface ContactRegistry extends IRegistry<Contact> {
+public interface ContactRegistry extends ITaggableRegistry<Contact> {
 }

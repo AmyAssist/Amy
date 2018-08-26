@@ -28,8 +28,6 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import javax.ws.rs.client.WebTarget;
@@ -75,7 +73,7 @@ class EMailRestTest {
 	@Test
 	public void testGetAllMails() {
 		final int amountOfMails = 15;
-		List<MessageDTO> mails = createMessages(amountOfMails);
+		MessageDTO[] mails = createMessages(amountOfMails);
 		when(this.logic.getMailsForREST(-1)).thenReturn(mails);
 
 		try (Response response = this.target.path("getMails").request().get()) {
@@ -84,7 +82,7 @@ class EMailRestTest {
 			assertThat(messages.length, is(amountOfMails));
 			for (int i = 0; i < messages.length; i++) {
 				// test equality of objects
-				MessageDTO message1 = mails.get(i);
+				MessageDTO message1 = mails[i];
 				MessageDTO message2 = messages[i];
 
 				assertThat(message1.getFrom(), is(message2.getFrom()));
@@ -96,15 +94,15 @@ class EMailRestTest {
 		}
 	}
 
-	private List<MessageDTO> createMessages(int amount) {
-		List<MessageDTO> messages = new ArrayList<>();
+	private MessageDTO[] createMessages(int amount) {
+		MessageDTO[] messages = new MessageDTO[amount];
 		Random random = new Random();
 		for (int i = 0; i < amount; i++) {
 			byte[] bytes = new byte[5];
 			random.nextBytes(bytes);
 			String randomString = new String(bytes);
-			messages.add(new MessageDTO(randomString, randomString, randomString, LocalDateTime.now(),
-					random.nextBoolean(), random.nextBoolean()));
+			messages[i] = new MessageDTO(randomString, randomString, randomString, LocalDateTime.now(),
+					random.nextBoolean(), random.nextBoolean());
 		}
 		return messages;
 	}

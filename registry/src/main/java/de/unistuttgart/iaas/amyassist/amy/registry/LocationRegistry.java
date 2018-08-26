@@ -27,7 +27,7 @@ package de.unistuttgart.iaas.amyassist.amy.registry;
  * Location registry with special home, work functionality
  * @author Benno Krauß
  */
-public interface LocationRegistry extends IRegistry<Location> {
+public interface LocationRegistry extends ITaggableRegistry<Location> {
     Location getHome();
     Location getWork();
 }
