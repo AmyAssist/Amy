@@ -23,63 +23,77 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email.session;
 
-import javax.annotation.Nonnull;
 import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 
+import org.slf4j.Logger;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+
 /**
- * This interface defines the basic behavior every session that connects to a mail provider must have
+ * Session class for the google mail provider
  * 
  * @author Patrick Singer
  */
-public abstract class MailSession {
+@Service
+public class MailSession {
+
+	@Reference
+	private Logger logger;
+
+	private Store store;
+
+	private static final String PROTOCOL = "imaps";
+
+	private static final String INBOX_NAME = "INBOX";
 
 	/**
-	 * The mail store
-	 */
-	protected Store store;
-
-	/**
-	 * Get inbox of this class. If the inbox is non-existent, or not opened, it will be created and opened
+	 * Get the inbox from the currently connected mail server
 	 * 
-	 * @return opened inbox
+	 * @return inbox folder
 	 * @throws MessagingException
-	 *             if the folder couldn't be opened
+	 *             if folder couldn't be found or couldn't be opened
 	 */
-	public abstract Folder getInbox() throws MessagingException;
+	public Folder getInbox() throws MessagingException {
+		Folder folderToOpen = this.store.getFolder(INBOX_NAME);
+		folderToOpen.open(Folder.READ_ONLY);
+		return folderToOpen;
+	}
 
 	/**
-	 * Set up connection to an email service
+	 * Set up connection to an email service with given parameters
 	 * 
 	 * @param username
 	 *            email address
 	 * @param password
 	 *            password
-	 * @param protocol
-	 *            email protocol, e.g. imap, pop3
 	 * @param hostAddress
 	 *            address of the mail provider, e.g. imap.gmail.com
-	 * @throws MessagingException
-	 *             if connecting fails
 	 */
-	void connect(@Nonnull String username, @Nonnull String password, @Nonnull String protocol,
-			@Nonnull String hostAddress) throws MessagingException {
-
-		Session session = Session.getInstance(System.getProperties(), null);
-		this.store = session.getStore(protocol);
-		this.store.connect(hostAddress, username, password);
-
+	public void connect(String username, String password, String hostAddress) {
+		endSession();
+		try {
+			Session session = Session.getInstance(System.getProperties(), null);
+			this.store = session.getStore(PROTOCOL);
+			this.store.connect(hostAddress, username, password);
+		} catch (MessagingException e) {
+			this.logger.error("Connecting to service failed", e);
+		}
 	}
 
-	/**
-	 * Close all folders
-	 * 
-	 * @throws MessagingException
-	 *             if closing a folder failed
-	 */
-	protected void endSession() throws MessagingException {
-		this.store.close();
+	@PreDestroy
+	private void endSession() {
+		if (this.store != null) {
+			try {
+				this.store.close();
+				this.store = null;
+			} catch (MessagingException e) {
+				this.logger.error("Couldn't close mail store", e);
+			}
+		}
 	}
 }

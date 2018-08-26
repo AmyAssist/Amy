@@ -58,7 +58,7 @@ import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.GMailSession;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -75,7 +75,7 @@ public class EmailLogicTest {
 	@Reference
 	private TestFramework framework;
 
-	private GMailSession mailSession;
+	private MailSession mailSession;
 
 	private ContactRegistry contactRegistry;
 
@@ -93,7 +93,7 @@ public class EmailLogicTest {
 	 */
 	@BeforeEach
 	public void setup() throws MessagingException {
-		this.mailSession = this.framework.mockService(GMailSession.class);
+		this.mailSession = this.framework.mockService(MailSession.class);
 		this.contactRegistry = this.framework.mockService(ContactRegistry.class);
 		this.emailLogic = this.framework.setServiceUnderTest(EMailLogic.class);
 

@@ -23,8 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -48,6 +50,17 @@ public class EMailResource {
 
 	@Reference
 	private EMailLogic logic;
+
+	/**
+	 * Connect to a mail service with the given parameters
+	 */
+	@POST
+	@Path("connect")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void connect() {
+		// TODO
+		this.logic.startMailSession();
+	}
 
 	/**
 	 * REST implementation of {@link EMailLogic#getMailsForREST(int)}

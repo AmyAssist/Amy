@@ -37,14 +37,27 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 @SpeechCommand
 public class EMailSpeech {
 
-	private static final String NOMAILS = "No new messages";
-	private static final String NOIMPMAILS = "No important new messages";
+	private static final String NO_MAILS = "No new messages";
+	private static final String NO_IMP_MAILS = "No important new messages";
 
 	@Reference
 	private EMailLogic logic;
 
 	@Reference
 	private Logger logger;
+
+	/**
+	 * Connects to the Amy Mail
+	 * 
+	 * @param params
+	 *            words in the grammar annotation
+	 * @return connected
+	 */
+	@Grammar("connect")
+	public String connectToAmyMail(String... params) {
+		this.logic.startMailSession();
+		return "connected";
+	}
 
 	/**
 	 * Checks if there are new messages
@@ -60,13 +73,13 @@ public class EMailSpeech {
 				if (this.logic.hasNewMessages(true)) {
 					return "You have new important messages.";
 				}
-				return NOIMPMAILS;
+				return NO_IMP_MAILS;
 			}
 		}
 		if (this.logic.hasNewMessages(false)) {
 			return "You have new messages.";
 		}
-		return NOMAILS;
+		return NO_MAILS;
 	}
 
 	/**
@@ -84,14 +97,14 @@ public class EMailSpeech {
 				if (count > 0) {
 					return count + " new important messages";
 				}
-				return NOIMPMAILS;
+				return NO_IMP_MAILS;
 			}
 		}
 		int count = this.logic.getNewMessageCount(false);
 		if (count > 0) {
 			return count + " new mails.";
 		}
-		return NOMAILS;
+		return NO_MAILS;
 	}
 
 	/**

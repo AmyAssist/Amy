@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.mail.Flags;
@@ -48,7 +49,7 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.GMailSession;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 
@@ -61,13 +62,22 @@ import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 public class EMailLogic {
 
 	@Reference
-	private GMailSession mailSession;
+	private MailSession mailSession;
 
 	@Reference
 	private ContactRegistry contactRegistry;
 
 	@Reference
+	private Properties configLoader;
+
+	@Reference
 	private Logger logger;
+
+	private static final String AMY_MAIL_ADDRESS_KEY = "email_usr";
+
+	private static final String AMY_MAIL_PW_KEY = "email_pw";
+
+	private static final String AMY_MAIL_HOST = "imap.gmail.com";
 
 	/**
 	 * returns if unread messages have been found
@@ -237,7 +247,7 @@ public class EMailLogic {
 		try (Folder inbox = this.mailSession.getInbox()) {
 			int amountInInbox = inbox.getMessageCount();
 			int lowerIndex = (amount == -1) ? 1 : Math.max(amountInInbox - amount, 1);
-			messages = this.mailSession.getInbox().getMessages(lowerIndex, amountInInbox);
+			messages = inbox.getMessages(lowerIndex, amountInInbox);
 			messagesToSend = new MessageDTO[messages.length];
 
 			for (int i = 0; i < messages.length; i++) {
@@ -283,6 +293,29 @@ public class EMailLogic {
 		// we can't use getFrom() because it may return a personal name, but a mail address is needed here
 		InternetAddress address = (InternetAddress) message.getFrom()[0];
 		return importantAddresses.contains(address.getAddress());
+	}
+
+	/**
+	 * Set up connection to mail server with given parameters
+	 * 
+	 * @param username
+	 *            email address
+	 * @param password
+	 *            password for the mail account
+	 * @param hostAddress
+	 *            address of the imap mail server, something like "imap.gmail.com"
+	 */
+	public void startMailSession(String username, String password, String hostAddress) {
+		this.mailSession.connect(username, password, hostAddress);
+	}
+
+	/**
+	 * Set up connection to Amy mail
+	 */
+	public void startMailSession() {
+		String username = this.configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
+		String password = this.configLoader.getProperty(AMY_MAIL_PW_KEY);
+		this.mailSession.connect(username, password, AMY_MAIL_HOST);
 	}
 
 	/**
