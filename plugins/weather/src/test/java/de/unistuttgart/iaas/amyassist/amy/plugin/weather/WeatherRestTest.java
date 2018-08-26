@@ -24,9 +24,9 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
 import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.equalTo;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -64,6 +64,9 @@ public class WeatherRestTest {
 
 	private WebTarget target;
 
+	/**
+	 * setUp
+	 */
 	@BeforeEach
 	public void setUp() {
 		this.target = this.testFramework.setRESTResource(WeatherResource.class);
@@ -76,13 +79,13 @@ public class WeatherRestTest {
 	private void createDay() {
 		FIODataPoint p = Mockito.mock(FIODataPoint.class);
 		Mockito.when(p.summary()).thenReturn("Clear throughout the day");
-		Mockito.when(p.precipProbability()).thenReturn((double) 0);
+		Mockito.when(p.precipProbability()).thenReturn(Double.valueOf(0));
 		Mockito.when(p.precipType()).thenReturn("no data");
-		Mockito.when(p.temperatureMin()).thenReturn((double) 15);
-		Mockito.when(p.temperatureMax()).thenReturn((double) 25);
+		Mockito.when(p.temperatureMin()).thenReturn(Double.valueOf(25));
+		Mockito.when(p.temperatureMax()).thenReturn(Double.valueOf(25));
 		Mockito.when(p.sunriseTime()).thenReturn("05:00:00");
 		Mockito.when(p.sunsetTime()).thenReturn("21:00:00");
-		Mockito.when(p.timestamp()).thenReturn((long) 12345);
+		Mockito.when(p.timestamp()).thenReturn(Long.valueOf(12345));
 		Mockito.when(p.icon()).thenReturn("rainIcon");
 
 		this.day = new WeatherReportDay("This is the weather report for today.", p);
@@ -114,11 +117,11 @@ public class WeatherRestTest {
 	@Test
 	void testGetWeatherToday() {
 		Mockito.when(this.logic.getReportToday()).thenReturn(this.day);
-
-		Response response = this.target.path("today").request().get();
-
-		assertThat(response, status(200));
-		assertEquals(this.obj.toString(), response.readEntity(String.class));
+		try (Response response = this.target.path("today").request().get()) {
+			assertThat(response.readEntity(String.class), equalTo(this.obj.toString()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).getReportToday();
+		}
 	}
 
 	/**
@@ -127,11 +130,11 @@ public class WeatherRestTest {
 	@Test
 	void testGetWeatherTomorrow() {
 		Mockito.when(this.logic.getReportTomorrow()).thenReturn(this.day);
-
-		Response response = this.target.path("tomorrow").request().get();
-
-		assertThat(response, status(200));
-		assertEquals(this.obj.toString(), response.readEntity(String.class));
+		try (Response response = this.target.path("tomorrow").request().get()) {
+			assertThat(response.readEntity(String.class), equalTo(this.obj.toString()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).getReportTomorrow();
+		}
 	}
 
 	/**
@@ -140,18 +143,23 @@ public class WeatherRestTest {
 	@Test
 	void testGetWeatherWeek() {
 		Mockito.when(this.logic.getReportWeek()).thenReturn(this.week);
-
-		Response response = this.target.path("week").request().get();
-
-		assertThat(response, status(200));
-		assertTrue(response.readEntity(String.class).contains(this.week.summary));
+		try (Response response = this.target.path("week").request().get()) {
+			assertTrue(response.readEntity(String.class).contains(this.week.summary));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).getReportWeek();
+		}
 	}
-	
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#setLocation(String)}.
+	 */
 	@Test
 	void testSetLocation() {
-		Response response = this.target.path("setLocation").request().put(Entity.entity("1", MediaType.TEXT_PLAIN));
-		assertThat(response, status(204));
-		verify(this.logic).setLocation(1);
-
+		try (Response response = this.target.path("setLocation").request()
+				.put(Entity.entity("1", MediaType.TEXT_PLAIN))) {
+			assertThat(response, status(204));
+			Mockito.verify(this.logic).setLocation(1);
+		}
 	}
+
 }
