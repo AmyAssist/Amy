@@ -33,7 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * This is the speech class, which contains the commands for the calendar
- * 
+ *
  * @author Patrick Gebhardt, Florian Bauer
  */
 @Service
@@ -62,7 +62,6 @@ public class CalendarSpeech {
 	 */
 	@Intent()
 	public String getEventsToday(Map<String, EntityData> entites) {
-
 		if (entites.get("day").getString().equalsIgnoreCase("today")) {
 			return this.calendar.getEventsToday();
 		}
