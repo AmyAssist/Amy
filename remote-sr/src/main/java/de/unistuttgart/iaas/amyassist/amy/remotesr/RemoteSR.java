@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -102,7 +103,7 @@ public class RemoteSR {
 			Process process = new ProcessBuilder(chromePath, "http://localhost:8080/rest/remotesr",
 					"--user-data-dir=" + file).start();
 
-			watchProcess(process, new BufferedReader(new InputStreamReader(process.getInputStream())));
+			watchProcess(process, new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)));
 		} catch (IOException e) {
 			throw new LaunchChromeException("Couldn't start Chrome:", e);
 		}
