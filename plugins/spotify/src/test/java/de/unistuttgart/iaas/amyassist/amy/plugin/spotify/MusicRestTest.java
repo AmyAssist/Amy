@@ -82,7 +82,7 @@ class MusicRestTest {
 	private static final String ARTIST_NAME1 = "David Guetta";
 
 	/**
-	 * 
+	 * setUp
 	 */
 	@BeforeEach
 	public void setUp() {
@@ -230,14 +230,14 @@ class MusicRestTest {
 			Mockito.verify(this.deviceLogic).setDevice(2);
 		}
 
-		Mockito.when(this.deviceLogic.setDevice("abc123")).thenReturn(Boolean.TRUE);
+		Mockito.when(this.deviceLogic.setDevice("abc123")).thenReturn(true);
 		try (Response response = this.target.path("setDevice/abc123").request().post(null)) {
 			assertThat(response.readEntity(String.class), equalTo("Device: 'abc123' is selected now"));
 			assertThat(response, status(200));
 			Mockito.verify(this.deviceLogic).setDevice("abc123");
 		}
 
-		Mockito.when(this.deviceLogic.setDevice("xyz789")).thenReturn(Boolean.FALSE);
+		Mockito.when(this.deviceLogic.setDevice("xyz789")).thenReturn(false);
 		try (Response response = this.target.path("setDevice/xyz789").request().post(null)) {
 			assertThat(response.readEntity(String.class), equalTo("Device: 'xyz789' is not available"));
 			assertThat(response, status(409));
@@ -252,8 +252,8 @@ class MusicRestTest {
 	@Test
 	void testSearchTrack() {
 		Mockito.when(this.search.searchforTracks(SONG_NAME1, 1)).thenReturn(this.trackList);
-		try (Response response = this.target.path("search/track/" + SONG_NAME1).queryParam("limit", Integer.valueOf(1))
-				.request().get()) {
+		try (Response response = this.target.path("search/track/" + SONG_NAME1).queryParam("limit", 1).request()
+				.get()) {
 			TrackEntity[] actual = response.readEntity(TrackEntity[].class);
 			assertThat(actual[0].getName(), equalTo(this.trackList.get(0).getName()));
 			assertThat(response, status(200));
@@ -268,8 +268,8 @@ class MusicRestTest {
 	@Test
 	void testSearchTrackEmpty() {
 		Mockito.when(this.search.searchforTracks(SONG_NAME1, 1)).thenReturn(new ArrayList<>());
-		try (Response response = this.target.path("search/track/" + SONG_NAME1).queryParam("limit", Integer.valueOf(1))
-				.request().get()) {
+		try (Response response = this.target.path("search/track/" + SONG_NAME1).queryParam("limit", 1).request()
+				.get()) {
 			assertThat(response, status(204));
 			Mockito.verify(this.search).searchforTracks(SONG_NAME1, 1);
 		}
@@ -282,8 +282,8 @@ class MusicRestTest {
 	@Test
 	void testSearchAlbum() {
 		Mockito.when(this.search.searchforAlbums(SONG_NAME1, 1)).thenReturn(this.albumList);
-		try (Response response = this.target.path("search/album/" + SONG_NAME1).queryParam("limit", Integer.valueOf(1))
-				.request().get()) {
+		try (Response response = this.target.path("search/album/" + SONG_NAME1).queryParam("limit", 1).request()
+				.get()) {
 			AlbumEntity[] actual = response.readEntity(AlbumEntity[].class);
 			assertThat(actual[0].getName(), equalTo(this.albumList.get(0).getName()));
 			assertThat(response, status(200));
@@ -298,8 +298,8 @@ class MusicRestTest {
 	@Test
 	void testSearchAlbumEmpty() {
 		Mockito.when(this.search.searchforAlbums(SONG_NAME1, 1)).thenReturn(new ArrayList<>());
-		try (Response response = this.target.path("search/album/" + SONG_NAME1).queryParam("limit", Integer.valueOf(1))
-				.request().get()) {
+		try (Response response = this.target.path("search/album/" + SONG_NAME1).queryParam("limit", 1).request()
+				.get()) {
 			assertThat(response, status(204));
 			Mockito.verify(this.search).searchforAlbums(SONG_NAME1, 1);
 		}
@@ -312,8 +312,8 @@ class MusicRestTest {
 	@Test
 	void testSearchArtist() {
 		Mockito.when(this.search.searchforArtists(ARTIST_NAME1, 1)).thenReturn(this.artistList);
-		try (Response response = this.target.path("search/artist/" + ARTIST_NAME1)
-				.queryParam("limit", Integer.valueOf(1)).request().get()) {
+		try (Response response = this.target.path("search/artist/" + ARTIST_NAME1).queryParam("limit", 1).request()
+				.get()) {
 			ArtistEntity[] actual = response.readEntity(ArtistEntity[].class);
 			assertThat(actual[0].getName(), equalTo(this.artistList.get(0).getName()));
 			assertThat(response, status(200));
@@ -328,8 +328,8 @@ class MusicRestTest {
 	@Test
 	void testSearchArtistEmpty() {
 		Mockito.when(this.search.searchforTracks(ARTIST_NAME1, 1)).thenReturn(new ArrayList<>());
-		try (Response response = this.target.path("search/artist/" + ARTIST_NAME1)
-				.queryParam("limit", Integer.valueOf(1)).request().get()) {
+		try (Response response = this.target.path("search/artist/" + ARTIST_NAME1).queryParam("limit", 1).request()
+				.get()) {
 			assertThat(response, status(204));
 		}
 	}
@@ -341,8 +341,8 @@ class MusicRestTest {
 	@Test
 	void testSearchPlaylist() {
 		Mockito.when(this.search.searchforPlaylists(SONG_NAME1, 1)).thenReturn(this.playlistList);
-		try (Response response = this.target.path("search/playlist/" + SONG_NAME1)
-				.queryParam("limit", Integer.valueOf(1)).request().get()) {
+		try (Response response = this.target.path("search/playlist/" + SONG_NAME1).queryParam("limit", 1).request()
+				.get()) {
 			PlaylistEntity[] actual = response.readEntity(PlaylistEntity[].class);
 			assertThat(actual[0].getName(), equalTo(this.playlistList.get(0).getName()));
 			assertThat(response, status(200));
@@ -357,8 +357,8 @@ class MusicRestTest {
 	@Test
 	void testSearchPlaylistEmpty() {
 		Mockito.when(this.search.searchforPlaylists(SONG_NAME1, 1)).thenReturn(new ArrayList<>());
-		try (Response response = this.target.path("search/playlist/" + SONG_NAME1)
-				.queryParam("limit", Integer.valueOf(1)).request().get()) {
+		try (Response response = this.target.path("search/playlist/" + SONG_NAME1).queryParam("limit", 1).request()
+				.get()) {
 			assertThat(response, status(204));
 			Mockito.verify(this.search).searchforPlaylists(SONG_NAME1, 1);
 		}
@@ -371,8 +371,8 @@ class MusicRestTest {
 	@Test
 	void playPlaylistUser() {
 		Mockito.when(this.logic.playPlaylist(0, SearchTypes.USER_PLAYLISTS)).thenReturn(this.userPlaylists.get(0));
-		try (Response response = this.target.path("play/playlist").queryParam("type", "user")
-				.queryParam("index", Integer.valueOf(0)).request().post(null)) {
+		try (Response response = this.target.path("play/playlist").queryParam("type", "user").queryParam("index", 0)
+				.request().post(null)) {
 			PlaylistEntity actual = response.readEntity(PlaylistEntity.class);
 			assertThat(actual.getName(), equalTo(this.userPlaylists.get(0).getName()));
 			assertThat(response, status(200));
@@ -380,8 +380,8 @@ class MusicRestTest {
 		}
 
 		Mockito.when(this.logic.playPlaylist(0, SearchTypes.USER_PLAYLISTS)).thenReturn(null);
-		try (Response response = this.target.path("play/playlist").queryParam("type", "user")
-				.queryParam("index", Integer.valueOf(0)).request().post(null)) {
+		try (Response response = this.target.path("play/playlist").queryParam("type", "user").queryParam("index", 0)
+				.request().post(null)) {
 			assertThat(response, status(409));
 		}
 	}
@@ -394,8 +394,8 @@ class MusicRestTest {
 	void playPlaylistFeatured() {
 		Mockito.when(this.logic.playPlaylist(0, SearchTypes.FEATURED_PLAYLISTS))
 				.thenReturn(this.featuredPlaylists.get(0));
-		try (Response response = this.target.path("play/playlist").queryParam("type", "featured")
-				.queryParam("index", Integer.valueOf(0)).request().post(null)) {
+		try (Response response = this.target.path("play/playlist").queryParam("type", "featured").queryParam("index", 0)
+				.request().post(null)) {
 			PlaylistEntity actual = response.readEntity(PlaylistEntity.class);
 			assertThat(actual.getName(), equalTo(this.featuredPlaylists.get(0).getName()));
 			assertThat(response, status(200));
@@ -403,8 +403,8 @@ class MusicRestTest {
 		}
 
 		Mockito.when(this.logic.playPlaylist(0, SearchTypes.FEATURED_PLAYLISTS)).thenReturn(null);
-		try (Response response = this.target.path("play/playlist").queryParam("type", "featured")
-				.queryParam("index", Integer.valueOf(0)).request().post(null)) {
+		try (Response response = this.target.path("play/playlist").queryParam("type", "featured").queryParam("index", 0)
+				.request().post(null)) {
 			assertThat(response, status(409));
 		}
 	}
@@ -416,8 +416,8 @@ class MusicRestTest {
 	@Test
 	void playPlaylistSearch() {
 		Mockito.when(this.logic.playPlaylist(0, SearchTypes.SEARCH_PLAYLISTS)).thenReturn(this.playlistList.get(0));
-		try (Response response = this.target.path("play/playlist").queryParam("type", "search")
-				.queryParam("index", Integer.valueOf(0)).request().post(null)) {
+		try (Response response = this.target.path("play/playlist").queryParam("type", "search").queryParam("index", 0)
+				.request().post(null)) {
 			PlaylistEntity actual = response.readEntity(PlaylistEntity.class);
 			assertThat(actual.getName(), equalTo(this.playlistList.get(0).getName()));
 			assertThat(response, status(200));
@@ -425,8 +425,8 @@ class MusicRestTest {
 		}
 
 		when(this.logic.playPlaylist(0, SearchTypes.SEARCH_PLAYLISTS)).thenReturn(null);
-		try (Response response = this.target.path("play/playlist").queryParam("type", "search")
-				.queryParam("index", Integer.valueOf(0)).request().post(null)) {
+		try (Response response = this.target.path("play/playlist").queryParam("type", "search").queryParam("index", 0)
+				.request().post(null)) {
 			assertThat(response, status(409));
 		}
 	}
@@ -437,8 +437,7 @@ class MusicRestTest {
 	@Test
 	void playAlbum() {
 		Mockito.when(this.logic.playAlbum(0)).thenReturn(this.albumList.get(0));
-		try (Response response = this.target.path("play/album").queryParam("index", Integer.valueOf(0)).request()
-				.post(null)) {
+		try (Response response = this.target.path("play/album").queryParam("index", 0).request().post(null)) {
 			AlbumEntity actual = response.readEntity(AlbumEntity.class);
 			assertThat(actual.getName(), equalTo(this.albumList.get(0).getName()));
 			assertThat(response, status(200));
@@ -446,8 +445,7 @@ class MusicRestTest {
 		}
 
 		Mockito.when(this.logic.playAlbum(0)).thenReturn(null);
-		try (Response response = this.target.path("play/album").queryParam("index", Integer.valueOf(0)).request()
-				.post(null)) {
+		try (Response response = this.target.path("play/album").queryParam("index", 0).request().post(null)) {
 			assertThat(response, status(409));
 		}
 	}
@@ -458,8 +456,7 @@ class MusicRestTest {
 	@Test
 	void playTrack() {
 		Mockito.when(this.logic.playTrack(0)).thenReturn(this.trackList.get(0));
-		try (Response response = this.target.path("play/track").queryParam("index", Integer.valueOf(0)).request()
-				.post(null)) {
+		try (Response response = this.target.path("play/track").queryParam("index", 0).request().post(null)) {
 			TrackEntity actual = response.readEntity(TrackEntity.class);
 			assertThat(actual.getName(), equalTo(this.trackList.get(0).getName()));
 			assertThat(response, status(200));
@@ -467,8 +464,7 @@ class MusicRestTest {
 		}
 
 		Mockito.when(this.logic.playTrack(0)).thenReturn(null);
-		try (Response response = this.target.path("play/track").queryParam("index", Integer.valueOf(0)).request()
-				.post(null)) {
+		try (Response response = this.target.path("play/track").queryParam("index", 0).request().post(null)) {
 			assertThat(response, status(409));
 		}
 	}
@@ -479,8 +475,7 @@ class MusicRestTest {
 	@Test
 	void playArtist() {
 		Mockito.when(this.logic.playArtist(0)).thenReturn(this.artistList.get(0));
-		try (Response response = this.target.path("play/artist").queryParam("index", Integer.valueOf(0)).request()
-				.post(null)) {
+		try (Response response = this.target.path("play/artist").queryParam("index", 0).request().post(null)) {
 			ArtistEntity actual = response.readEntity(ArtistEntity.class);
 			assertThat(actual.getName(), equalTo(this.artistList.get(0).getName()));
 			assertThat(response, status(200));
@@ -488,8 +483,7 @@ class MusicRestTest {
 		}
 
 		Mockito.when(this.logic.playArtist(0)).thenReturn(null);
-		try (Response response = this.target.path("play/artist").queryParam("index", Integer.valueOf(0)).request()
-				.post(null)) {
+		try (Response response = this.target.path("play/artist").queryParam("index", 0).request().post(null)) {
 			assertThat(response, status(409));
 		}
 	}
@@ -499,14 +493,14 @@ class MusicRestTest {
 	 */
 	@Test
 	void testResume() {
-		Mockito.when(this.logic.resume()).thenReturn(Boolean.TRUE);
+		Mockito.when(this.logic.resume()).thenReturn(true);
 		try (Response response = this.target.path("resume").request().post(null)) {
 			assertThat(response.readEntity(String.class), equalTo("resume"));
 			assertThat(response, status(200));
 			Mockito.verify(this.logic).resume();
 		}
 
-		Mockito.when(this.logic.resume()).thenReturn(Boolean.FALSE);
+		Mockito.when(this.logic.resume()).thenReturn(false);
 		try (Response response = this.target.path("resume").request().post(null)) {
 			assertThat(response, status(409));
 			assertThat(response.readEntity(String.class), equalTo("Check player state"));
@@ -518,14 +512,14 @@ class MusicRestTest {
 	 */
 	@Test
 	void testPause() {
-		Mockito.when(this.logic.pause()).thenReturn(Boolean.TRUE);
+		Mockito.when(this.logic.pause()).thenReturn(true);
 		try (Response response = this.target.path("pause").request().post(null)) {
 			assertThat(response.readEntity(String.class), equalTo("pause"));
 			assertThat(response, status(200));
 			Mockito.verify(this.logic).pause();
 		}
 
-		Mockito.when(this.logic.pause()).thenReturn(Boolean.FALSE);
+		Mockito.when(this.logic.pause()).thenReturn(false);
 		try (Response response = this.target.path("pause").request().post(null)) {
 			assertThat(response, status(409));
 			assertThat(response.readEntity(String.class), equalTo("Check player state"));
@@ -556,14 +550,14 @@ class MusicRestTest {
 	 */
 	@Test
 	void testBack() {
-		Mockito.when(this.logic.back()).thenReturn(Boolean.TRUE);
+		Mockito.when(this.logic.back()).thenReturn(true);
 		try (Response response = this.target.path("back").request().post(null)) {
 			assertThat(response.readEntity(String.class), equalTo("back"));
 			assertThat(response, status(200));
 			Mockito.verify(this.logic).back();
 		}
 
-		Mockito.when(this.logic.back()).thenReturn(Boolean.FALSE);
+		Mockito.when(this.logic.back()).thenReturn(false);
 		try (Response response = this.target.path("back").request().post(null)) {
 			assertThat(response, status(409));
 			assertThat(response.readEntity(String.class), equalTo("Check player state"));
@@ -597,8 +591,7 @@ class MusicRestTest {
 	@Test
 	void testGetPlaylistUser() {
 		when(this.search.searchOwnPlaylists(1)).thenReturn(this.userPlaylists);
-		try (Response response = this.target.path("playlists/user").queryParam("limit", Integer.valueOf(1)).request()
-				.get()) {
+		try (Response response = this.target.path("playlists/user").queryParam("limit", 1).request().get()) {
 			PlaylistEntity[] actual = response.readEntity(PlaylistEntity[].class);
 			assertThat(actual[0].getName(), equalTo(this.userPlaylists.get(0).getName()));
 			assertThat(response, status(200));
@@ -613,8 +606,7 @@ class MusicRestTest {
 	@Test
 	void testGetPlaylistFeatured() {
 		Mockito.when(this.search.searchFeaturedPlaylists(1)).thenReturn(this.featuredPlaylists);
-		try (Response response = this.target.path("playlists/featured").queryParam("limit", Integer.valueOf(1))
-				.request().get()) {
+		try (Response response = this.target.path("playlists/featured").queryParam("limit", 1).request().get()) {
 			PlaylistEntity[] actual = response.readEntity(PlaylistEntity[].class);
 			assertThat(actual[0].getName(), equalTo(this.featuredPlaylists.get(0).getName()));
 			assertThat(response, status(200));
@@ -629,8 +621,7 @@ class MusicRestTest {
 	@Test
 	void testGetPlaylistEmpty() {
 		Mockito.when(this.search.searchFeaturedPlaylists(1)).thenReturn(new ArrayList<>());
-		try (Response response = this.target.path("playlists/featured").queryParam("limit", Integer.valueOf(1))
-				.request().get()) {
+		try (Response response = this.target.path("playlists/featured").queryParam("limit", 1).request().get()) {
 			assertThat(response, status(204));
 		}
 	}
@@ -674,34 +665,34 @@ class MusicRestTest {
 			assertThat(response, status(400));
 		}
 
-		Mockito.when(this.logic.setVolume("mute")).thenReturn(Integer.valueOf(0));
+		Mockito.when(this.logic.setVolume("mute")).thenReturn(0);
 		try (Response response = this.target.path("volume/mute").request().post(null)) {
 			assertThat(response.readEntity(String.class), equalTo("0"));
 			assertThat(response, status(200));
 			Mockito.verify(this.logic).setVolume("mute");
 		}
-		Mockito.when(this.logic.setVolume("max")).thenReturn(Integer.valueOf(100));
+		Mockito.when(this.logic.setVolume("max")).thenReturn(100);
 		try (Response response = this.target.path("volume/max").request().post(null)) {
 			assertThat(response.readEntity(String.class), equalTo("100"));
 			assertThat(response, status(200));
 			Mockito.verify(this.logic).setVolume("max");
 		}
 
-		Mockito.when(this.logic.setVolume("up")).thenReturn(Integer.valueOf(60));
+		Mockito.when(this.logic.setVolume("up")).thenReturn(60);
 		try (Response response = this.target.path("volume/up").request().post(null)) {
 			assertThat(response, status(200));
 			assertThat(response.readEntity(String.class), equalTo("60"));
 			Mockito.verify(this.logic).setVolume("up");
 		}
 
-		Mockito.when(this.logic.setVolume("down")).thenReturn(Integer.valueOf(40));
+		Mockito.when(this.logic.setVolume("down")).thenReturn(40);
 		try (Response response = this.target.path("volume/down").request().post(null)) {
 			assertThat(response, status(200));
 			assertThat(response.readEntity(String.class), equalTo("40"));
 			Mockito.verify(this.logic).setVolume("down");
 		}
 
-		Mockito.when(this.logic.setVolume("mute")).thenReturn(Integer.valueOf(-1));
+		Mockito.when(this.logic.setVolume("mute")).thenReturn(-1);
 		try (Response response = this.target.path("volume/mute").request().post(null)) {
 			assertThat(response, status(409));
 			assertThat(response.readEntity(String.class), equalTo("Check player state"));

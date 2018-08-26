@@ -79,13 +79,13 @@ public class WeatherRestTest {
 	private void createDay() {
 		FIODataPoint p = Mockito.mock(FIODataPoint.class);
 		Mockito.when(p.summary()).thenReturn("Clear throughout the day");
-		Mockito.when(p.precipProbability()).thenReturn(Double.valueOf(0));
+		Mockito.when(p.precipProbability()).thenReturn(0.0);
 		Mockito.when(p.precipType()).thenReturn("no data");
-		Mockito.when(p.temperatureMin()).thenReturn(Double.valueOf(25));
-		Mockito.when(p.temperatureMax()).thenReturn(Double.valueOf(25));
+		Mockito.when(p.temperatureMin()).thenReturn(25.0);
+		Mockito.when(p.temperatureMax()).thenReturn(25.0);
 		Mockito.when(p.sunriseTime()).thenReturn("05:00:00");
 		Mockito.when(p.sunsetTime()).thenReturn("21:00:00");
-		Mockito.when(p.timestamp()).thenReturn(Long.valueOf(12345));
+		Mockito.when(p.timestamp()).thenReturn(12345L);
 		Mockito.when(p.icon()).thenReturn("rainIcon");
 
 		this.day = new WeatherReportDay("This is the weather report for today.", p);
