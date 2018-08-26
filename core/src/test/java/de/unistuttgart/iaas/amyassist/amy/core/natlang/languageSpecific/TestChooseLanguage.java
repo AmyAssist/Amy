@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishStemmer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishTimeUtility;
 
 /**
  * Test class for ChooseLanguage
@@ -45,6 +46,7 @@ public class TestChooseLanguage {
 		assertThat(chooseLanguage.getNumberConversion().getClass().getName(),
 				equalTo(EnglishNumberConversion.class.getName()));
 		assertThat(chooseLanguage.getStemmer().getClass().getName(), equalTo(EnglishStemmer.class.getName()));
+		assertThat(chooseLanguage.getTimeUtility().getClass().getName(), equalTo(EnglishTimeUtility.class.getName()));
 	}
 
 }

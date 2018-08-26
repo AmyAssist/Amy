@@ -150,7 +150,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 		promptGrams.add(this.quitIntentUserInputGram);
 
-		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
+		NLLexer nlLexer = new NLLexer(this.language);
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
 		INLParser nlParser = new NLParser(promptGrams, this.language.getStemmer());
 		try {
@@ -165,7 +165,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			Map<String, String> entityIdToUserContent = getEntityContent(promptGrams.get(matchingNodeIndex));
 
 			for (Entry<String, String> entry : entityIdToUserContent.entrySet()) {
-				EntityDataImpl data = new EntityDataImpl(entry.getValue());
+				EntityDataImpl data = new EntityDataImpl(entry.getValue(), this.language.getTimeUtility());
 				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
 			}
 
@@ -211,7 +211,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	 */
 	@Override
 	public void decideIntent(Dialog dialog, String naturalLanguageText) {
-		NLLexer nlLexer = new NLLexer(this.language.getNumberConversion());
+		NLLexer nlLexer = new NLLexer(this.language);
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
 		INLParser nlParser = new NLParser(new ArrayList<>(this.nodeToMethodAIMPair.keySet()),
 				this.language.getStemmer());
@@ -224,7 +224,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 			Map<String, String> entityIdToUserContent = getEntityContent(node);
 			for (Entry<String, String> entry : entityIdToUserContent.entrySet()) {
-				EntityDataImpl data = new EntityDataImpl(entry.getValue());
+				EntityDataImpl data = new EntityDataImpl(entry.getValue(), this.language.getTimeUtility());
 				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
 			}
 

@@ -45,6 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
 
@@ -81,7 +82,7 @@ public class NLParserTest {
 	
 	@Test
 	public void test() {
-		NLLexer lex = new NLLexer(new EnglishNumberConversion());
+		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
 		List<WordToken> tokens = lex.tokenize("greet me");
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(0).getGrammar());
@@ -92,7 +93,7 @@ public class NLParserTest {
 	
 	@Test
 	public void finished() {
-		NLLexer lex = new NLLexer(new EnglishNumberConversion());
+		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
 		List<WordToken> tokens = lex.tokenize("greet me with good morning test ten oh twenty");
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(0).getGrammar());
@@ -104,7 +105,7 @@ public class NLParserTest {
 	
 	@Test
 	public void shortWildcardTest() {
-		NLLexer lex = new NLLexer(new EnglishNumberConversion());
+		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
 		List<WordToken> tokens = lex.tokenize("test the four sign long wildcard here");
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(1).getGrammar());
@@ -121,7 +122,7 @@ public class NLParserTest {
 			b.append(" really");
 		}
 		b.append(" long");
-		NLLexer lex = new NLLexer(new EnglishNumberConversion());
+		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
 		List<WordToken> tokens = lex.tokenize(b.toString());
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(2).getGrammar());

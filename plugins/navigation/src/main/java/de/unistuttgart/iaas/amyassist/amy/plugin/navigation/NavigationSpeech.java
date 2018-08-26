@@ -112,8 +112,10 @@ public class NavigationSpeech {
 			BestTransportResult result = this.logic.getBestTransportInTime(
 					this.registryConnection.getAddress(entities.get(START_KEY).getString()),
 					this.registryConnection.getAddress(entities.get(END_KEY).getString()), time);
-			return "The best transport Mode is ".concat(result.getMode().toString()).concat(".\n")
-					.concat(result.routeToShortString());
+			if (result != null) {
+				return "The best transport Mode is ".concat(result.getMode().toString()).concat(".\n")
+						.concat(result.routeToShortString());
+			}
 		}
 		return WRONG_PLACE;
 	}
@@ -127,9 +129,10 @@ public class NavigationSpeech {
 	 */
 	@Intent()
 	public String routeFromtTo(Map<String, EntityData> entities) {
-		return this.logic.fromToWithDeparture(this.registryConnection.getAddress(entities.get(START_KEY).getString()),
-				this.registryConnection.getAddress(entities.get(END_KEY).getString()),
-				this.logic.getTravelMode(entities.get("mode").getString().trim()), DateTime.now())
+		return this.logic
+				.fromToWithDeparture(this.registryConnection.getAddress(entities.get(START_KEY).getString()),
+						this.registryConnection.getAddress(entities.get(END_KEY).getString()),
+						this.logic.getTravelMode(entities.get("mode").getString().trim()), DateTime.now())
 				.routeToShortString();
 	}
 

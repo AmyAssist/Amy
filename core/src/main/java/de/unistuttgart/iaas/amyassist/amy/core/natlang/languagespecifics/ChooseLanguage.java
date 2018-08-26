@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishStemmer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishTimeUtility;
 
 /**
  * 
@@ -33,6 +34,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.Engl
 public class ChooseLanguage {
 	private IStemmer stemmer;
 	private INumberConversion numberConversion;
+	private ITimeUtility timeUtility;
 
 	/**
 	 * constructor for choose language
@@ -50,6 +52,7 @@ public class ChooseLanguage {
 				this.stemmer = new EnglishStemmer();
 			}
 			this.numberConversion = new EnglishNumberConversion();
+			this.timeUtility = new EnglishTimeUtility();
 			break;
 		}
 	}
@@ -71,4 +74,14 @@ public class ChooseLanguage {
 	public INumberConversion getNumberConversion() {
 		return this.numberConversion;
 	}
+
+	/**
+	 * Get's {@link #timeUtility timeUtility}
+	 * @return  timeUtility
+	 */
+	public ITimeUtility getTimeUtility() {
+		return this.timeUtility;
+	}
+	
+	
 }
