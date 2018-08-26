@@ -60,21 +60,28 @@ public class PlayerLogic {
 	@Reference
 	private MessageHub messageHub;
 
+	private boolean wasPlaying = false;
+
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
-	
+
 	private static final String ITME_NOT_FOUND = "Item not found";
 
 	@PostConstruct
 	private void init() {
-		Consumer<String> muteConsumer =  message -> {
+		Consumer<String> muteConsumer = message -> {
 			switch (message) {
 			case "true":
-				this.pause();
+				this.wasPlaying = this.spotifyAPICalls.getCurrentPlayingContext().getIs_playing().booleanValue();
+				if (this.wasPlaying) {
+					this.pause();
+				}
 				break;
 			case "false":
-				this.resume();
+				if (this.wasPlaying) {
+					this.resume();
+				}
 				break;
 			default:
 				this.logger.warn("unkown message {}", message);
@@ -145,22 +152,23 @@ public class PlayerLogic {
 	 * @return a PlaylistEntity
 	 */
 	public PlaylistEntity playPlaylist(int playlistNumber, SearchTypes type) {
-		if(type.equals(SearchTypes.FEATURED_PLAYLISTS) && this.search.getFeaturedPlaylists().size() > playlistNumber) {
+		if (type.equals(SearchTypes.FEATURED_PLAYLISTS) && this.search.getFeaturedPlaylists().size() > playlistNumber) {
 			this.spotifyAPICalls.playListFromUri(this.search.getFeaturedPlaylists().get(playlistNumber).getUri());
 			return this.search.getFeaturedPlaylists().get(playlistNumber);
 		}
-		if(type.equals(SearchTypes.USER_PLAYLISTS) && this.search.getOwnPlaylists().size() > playlistNumber) {
+		if (type.equals(SearchTypes.USER_PLAYLISTS) && this.search.getOwnPlaylists().size() > playlistNumber) {
 			this.spotifyAPICalls.playListFromUri(this.search.getOwnPlaylists().get(playlistNumber).getUri());
 			return this.search.getOwnPlaylists().get(playlistNumber);
 		}
-		if(type.equals(SearchTypes.SEARCH_PLAYLISTS) && this.search.getPlaylistSearchResults().size() > playlistNumber) {
+		if (type.equals(SearchTypes.SEARCH_PLAYLISTS)
+				&& this.search.getPlaylistSearchResults().size() > playlistNumber) {
 			this.spotifyAPICalls.playListFromUri(this.search.getPlaylistSearchResults().get(playlistNumber).getUri());
 			return this.search.getPlaylistSearchResults().get(playlistNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
 		return null;
 	}
-	
+
 	/**
 	 * this method play a track from a track search. Use only after a search
 	 * 
@@ -169,14 +177,14 @@ public class PlayerLogic {
 	 * @return a TrackEntity
 	 */
 	public TrackEntity playTrack(int trackNumber) {
-		if(this.search.getTrackSearchResults().size() > trackNumber) {
+		if (this.search.getTrackSearchResults().size() > trackNumber) {
 			this.spotifyAPICalls.playSongFromUri(this.search.getTrackSearchResults().get(trackNumber).getUri());
 			return this.search.getTrackSearchResults().get(trackNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
 		return null;
 	}
-	
+
 	/**
 	 * this method play a album from a album search. Use only after a search
 	 * 
@@ -185,14 +193,14 @@ public class PlayerLogic {
 	 * @return a AlbumEntity
 	 */
 	public AlbumEntity playAlbum(int albumNumber) {
-		if(this.search.getAlbumSearchResults().size() > albumNumber) {
+		if (this.search.getAlbumSearchResults().size() > albumNumber) {
 			this.spotifyAPICalls.playSongFromUri(this.search.getAlbumSearchResults().get(albumNumber).getUri());
 			return this.search.getAlbumSearchResults().get(albumNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
 		return null;
 	}
-	
+
 	/**
 	 * this method play a artist from a artist search. Use only after a search
 	 * 
@@ -201,7 +209,7 @@ public class PlayerLogic {
 	 * @return a ArtistEntity
 	 */
 	public ArtistEntity playArtist(int artistNumber) {
-		if(this.search.getArtistSearchResults().size() > artistNumber) {
+		if (this.search.getArtistSearchResults().size() > artistNumber) {
 			this.spotifyAPICalls.playSongFromUri(this.search.getArtistSearchResults().get(artistNumber).getUri());
 			return this.search.getArtistSearchResults().get(artistNumber);
 		}
@@ -251,7 +259,7 @@ public class PlayerLogic {
 	 * @return a hashMap with the keys name and artist
 	 */
 	public TrackEntity getCurrentSong() {
-		CurrentlyPlayingContext currentlyPlayingContext = this.spotifyAPICalls.getCurrentSong();
+		CurrentlyPlayingContext currentlyPlayingContext = this.spotifyAPICalls.getCurrentPlayingContext();
 		if (currentlyPlayingContext != null) {
 			Track[] track = { currentlyPlayingContext.getItem() };
 			return this.search.createTrackData(new Paging.Builder<Track>().setItems(track).build()).get(0);
