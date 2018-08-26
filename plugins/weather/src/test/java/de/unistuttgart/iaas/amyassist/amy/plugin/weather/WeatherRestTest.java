@@ -81,7 +81,7 @@ public class WeatherRestTest {
 		Mockito.when(p.summary()).thenReturn("Clear throughout the day");
 		Mockito.when(p.precipProbability()).thenReturn(0.0);
 		Mockito.when(p.precipType()).thenReturn("no data");
-		Mockito.when(p.temperatureMin()).thenReturn(25.0);
+		Mockito.when(p.temperatureMin()).thenReturn(15.0);
 		Mockito.when(p.temperatureMax()).thenReturn(25.0);
 		Mockito.when(p.sunriseTime()).thenReturn("05:00:00");
 		Mockito.when(p.sunsetTime()).thenReturn("21:00:00");
