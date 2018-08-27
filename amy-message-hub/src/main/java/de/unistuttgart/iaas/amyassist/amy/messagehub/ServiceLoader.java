@@ -25,10 +25,11 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactoryService;
 
 /**
  * Register the MessageHub in di
- * 
+ *
  * @author Leon Kiefer
  */
 public class ServiceLoader implements ServiceProviderLoader {
@@ -36,5 +37,6 @@ public class ServiceLoader implements ServiceProviderLoader {
 	@Override
 	public void load(Configuration configuration) {
 		configuration.register(MessageHubService.class);
+		configuration.register(TopicFactoryService.class);
 	}
 }
