@@ -31,15 +31,7 @@ import java.util.NoSuchElementException;
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  *
  */
-public interface IAlarmClockStorage {
-
-	/**
-	 * Stores an alarm in the storage
-	 * 
-	 * @param alarm
-	 *            the alarm to be stored
-	 */
-	public void storeAlarm(Alarm alarm);
+public interface ITimerStorage {
 
 	/**
 	 * Stores a timer in the storage
@@ -50,26 +42,11 @@ public interface IAlarmClockStorage {
 	public void storeTimer(Timer timer);
 
 	/**
-	 * Returns the current value of the alarm counter in the storage
-	 * 
-	 * @return alarm counter
-	 */
-	public int getAlarmCounter();
-
-	/**
 	 * Returns the current value of the timer counter in the storage
 	 * 
 	 * @return timer counter
 	 */
 	public int getTimerCounter();
-
-	/**
-	 * Sets the alarm counter in the storage
-	 * 
-	 * @param number
-	 *            new number for the alarm counter
-	 */
-	public void putAlarmCounter(int number);
 
 	/**
 	 * Sets the timer counter in the storage
@@ -80,27 +57,11 @@ public interface IAlarmClockStorage {
 	public void putTimerCounter(int number);
 
 	/**
-	 * Increments and returns the incremented alarm counter
-	 * 
-	 * @return incremented alarm counter
-	 */
-	public int incrementAlarmCounter();
-
-	/**
 	 * Increments and returns the incremented timer counter
 	 * 
 	 * @return incremented timer counter
 	 */
 	public int incrementTimerCounter();
-
-	/**
-	 * Checks if storage has an alarm with given id
-	 * 
-	 * @param id
-	 *            alarm id
-	 * @return true, if alarm with given id exists
-	 */
-	public boolean hasAlarm(int id);
 
 	/**
 	 * Checks if storage has a timer with given id
@@ -115,32 +76,11 @@ public interface IAlarmClockStorage {
 	 * Deletes timer with given id
 	 * 
 	 * @param id
-	 *            alarm id
-	 * @throws NoSuchElementException
-	 *             if alarm with given id is non existent
-	 */
-	public void deleteAlarm(int id);
-
-	/**
-	 * Deletes timer with given id
-	 * 
-	 * @param id
 	 *            timer id
 	 * @throws NoSuchElementException
 	 *             if timer with given id is non existent
 	 */
 	public void deleteTimer(int id);
-
-	/**
-	 * Returns the alarm with the given id from the storage
-	 * 
-	 * @param id
-	 *            id of the alarm
-	 * @return alarm with the given id
-	 * @throws NoSuchElementException
-	 *             if alarm with given id is non existent
-	 */
-	public Alarm getAlarm(int id);
 
 	/**
 	 * Returns the timer with the given id from the storage

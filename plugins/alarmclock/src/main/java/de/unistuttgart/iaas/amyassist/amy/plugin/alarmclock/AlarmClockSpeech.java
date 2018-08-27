@@ -24,6 +24,14 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.slf4j.Logger;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * Speech class for alarm clock
@@ -42,10 +50,12 @@ public class AlarmClockSpeech {
 	private static final String ELEMENTNOTFOUND = "Element not found";
 	private static final String PARAMSNOTVALID = "Parameters not valid.";
 	private static final String SETALARMGRAMMAR = "(set|create) alarm (at|for|on)" + "( ( # x # )" + "| ( # oh # )"
-			+ "| ( (#|quarter|half) (past|to) # )" + "| ( # oh clock ) )" + "[am|pm]";
+			+ "| ( (#|quarter|half) (past|to) # )" + "| ( # oh clock ) )" + "[am|pm]" + "[today|tomorrow]";
 
 	private static final int MINUTESINHOUR = 60;
 	private static final int MINUTESQUARTERHOUR = 15;
+	private static String alarmS = "Alarm ";
+	private static String tomorrow = "tomorrow";
 
 	/**
 	 * Creates new alarm
@@ -60,9 +70,15 @@ public class AlarmClockSpeech {
 	public String setAlarm(String[] params) {
 		int[] alarmTime = extractAlarmTime(params);
 		try {
-			Alarm alarm = this.logic.setAlarm(alarmTime[0], alarmTime[1]);
-			LocalTime time = alarm.getAlarmTime();
-			return "Alarm " + alarm.getId() + " set for " + time.getHour() + ":" + time.getMinute();
+			Alarm alarm = this.logic.setAlarm(alarmTime[2], alarmTime[0], alarmTime[1]);
+			LocalDateTime time = alarm.getAlarmTime();
+			String day;
+			if (LocalDateTime.now().getDayOfMonth() == time.getDayOfMonth()) {
+				day = "today";
+			} else {
+				day = tomorrow;
+			}
+			return alarmS + alarm.getId() + " set for " + time.getHour() + ":" + time.getMinute() + " " + day;
 		} catch (IllegalArgumentException e) {
 			this.logException(e);
 			return PARAMSNOTVALID;
@@ -261,14 +277,23 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation
 	 * @return edit Alarm
 	 */
-	/*
-	@Grammar("edit alarm # to # oh #")
+
+	@Grammar("edit alarm # to # oh # [today|tomorrow]")
 	public String editAlarm(String[] params) {
 		try {
-			if (Integer.parseInt(params[4]) > 23 || Integer.parseInt(params[6]) > 59)
+			if (Integer.parseInt(params[4]) > 23 || Integer.parseInt(params[6]) > 59) {
 				return "Not a valid time of day.";
-			return outputAlarm(this.logic.editAlarm(Integer.parseInt(params[2]), Integer.parseInt(params[4]),
-					Integer.parseInt(params[6])));
+			}
+			int[] alarmTime = new int[] { -1, -1, -1 };
+			alarmTime[0] = Integer.parseInt(params[4]);
+			alarmTime[1] = Integer.parseInt(params[6]);
+			for (String s : params) {
+				if (s.equals(tomorrow)) {
+					alarmTime[2] = 1;
+				}
+			}
+			return outputAlarm(
+					this.logic.editAlarm(Integer.parseInt(params[2]), alarmTime[2], alarmTime[0], alarmTime[1]));
 		} catch (NoSuchElementException e) {
 			this.logException(e);
 			return ELEMENTNOTFOUND;
@@ -309,13 +334,16 @@ public class AlarmClockSpeech {
 	 */
 	/*
 	private static int[] extractAlarmTime(String[] params) {
-		int[] alarmTime = new int[] { -1, -1 };
-
+		int[] alarmTime = new int[] { -1, -1, -1 };
+		for (String s : params) {
+			if (s.equals(tomorrow)) {
+				alarmTime[2] = 1;
+			}
+		}
 		if (params[4].equals("x")) {
 			// google notation
 			alarmTime[0] = Integer.parseInt(params[3]);
 			alarmTime[1] = Integer.parseInt(params[5]);
-
 		} else if (params[4].equals("oh")) {
 			if (params[5].equals("clock")) {
 				// whole hour notation
@@ -326,7 +354,6 @@ public class AlarmClockSpeech {
 				alarmTime[0] = Integer.parseInt(params[3]);
 				alarmTime[1] = Integer.parseInt(params[5]);
 			}
-
 		} else {
 			// past/to notation
 			int minuteAddition = 0;
@@ -357,11 +384,18 @@ public class AlarmClockSpeech {
 	}
 
 	private static String outputAlarm(Alarm alarm) {
-		LocalTime ringTime = alarm.getAlarmTime();
+		LocalDateTime ringTime = alarm.getAlarmTime();
+		String day;
+		if (LocalDateTime.now().getDayOfMonth() == ringTime.getDayOfMonth()) {
+			day = "today";
+		} else {
+			day = tomorrow;
+		}
 		if (alarm.isActive())
-			return "Alarm " + alarm.getId() + " will ring at " + ringTime.getHour() + ":" + ringTime.getMinute();
+			return alarmS + alarm.getId() + " will ring at " + ringTime.getHour() + ":" + ringTime.getMinute() + " "
+					+ day;
 
-		return "Alarm " + alarm.getId() + " is set for " + ringTime.getHour() + ":" + ringTime.getMinute()
+		return alarmS + alarm.getId() + " is set for " + ringTime.getHour() + ":" + ringTime.getMinute() + " " + day
 				+ " but will not ring";
 	}
 
