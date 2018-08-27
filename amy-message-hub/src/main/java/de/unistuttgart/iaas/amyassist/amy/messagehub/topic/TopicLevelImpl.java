@@ -8,7 +8,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -44,6 +44,9 @@ public class TopicLevelImpl implements TopicLevel {
 	 */
 	protected TopicLevelImpl(String levelString) throws TopicFormatException {
 		this.levelS = levelString;
+		if (levelString.contains(Character.toString(Topic.TOPIC_LEVEL_SEPERATOR)))
+			throw new IllegalArgumentException("A topic level can't contain topic level seperators.");
+
 		if (levelString.equals(Character.toString(Topic.SINGLE_LEVEL_WILDCARD))) {
 			this.singleWildcard = true;
 		} else if (levelString.equals(Character.toString(Topic.MULTI_LEVEL_WILDCARD))) {

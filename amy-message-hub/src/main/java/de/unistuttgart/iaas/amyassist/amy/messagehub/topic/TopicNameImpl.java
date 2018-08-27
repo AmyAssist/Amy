@@ -8,7 +8,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -46,13 +46,13 @@ public class TopicNameImpl extends AbstractTopic implements TopicName {
 	 */
 	protected TopicNameImpl(String topicString) throws TopicFormatException {
 		super(topicString);
+		validateTopicString(topicString);
 	}
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicString(java.lang.String)
 	 */
-	@Override
-	protected void validateTopicString(String topicString) throws TopicFormatException {
+	protected final void validateTopicStringForName(String topicString) throws TopicFormatException {
 		super.validateTopicString(topicString);
 		if (topicString.contains(Character.toString(Topic.SINGLE_LEVEL_WILDCARD)))
 			throw new TopicFormatException("A topic name can't contain a single level wildcard.");

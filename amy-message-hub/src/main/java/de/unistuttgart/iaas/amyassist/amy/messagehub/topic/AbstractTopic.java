@@ -8,7 +8,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -53,15 +53,13 @@ public abstract class AbstractTopic implements Topic {
 
 		validateTopicString(topicString);
 
-		String usedString = topicString;
-		if (usedString.charAt(0) == Topic.SPECIAL_TOPIC_PREFIX) {
+		if (topicString.charAt(0) == Topic.SPECIAL_TOPIC_PREFIX) {
 			this.special = true;
-			usedString = usedString.substring(1);
 		}
 
 		this.topicLevels = new ArrayList<>();
 
-		String[] tokens = usedString.split(Character.toString(Topic.TOPIC_LEVEL_SEPERATOR), -1);
+		String[] tokens = topicString.split(Character.toString(Topic.TOPIC_LEVEL_SEPERATOR), -1);
 
 		for (String token : tokens) {
 			this.topicLevels.add(new TopicLevelImpl(token));
@@ -81,7 +79,7 @@ public abstract class AbstractTopic implements Topic {
 	 *             When the given String is invalid.
 	 *
 	 */
-	protected void validateTopicString(String topicString) throws TopicFormatException {
+	protected final void validateTopicString(String topicString) throws TopicFormatException {
 		if (topicString.isEmpty())
 			throw new TopicFormatException("The topic String must be at least one character long.");
 
@@ -102,7 +100,7 @@ public abstract class AbstractTopic implements Topic {
 	 * @throws TopicFormatException
 	 *             When the given levels are invalid
 	 */
-	protected void validateTopicLevels(List<TopicLevel> levels) throws TopicFormatException {
+	protected final void validateTopicLevels(List<TopicLevel> levels) throws TopicFormatException {
 		for (int i = 0; i < (levels.size() - 1); i++) {
 			if (levels.get(i).isMultiLevelWildcard())
 				throw new TopicFormatException("Only the last level may be a multi level wildcard");
@@ -115,9 +113,6 @@ public abstract class AbstractTopic implements Topic {
 	@Override
 	public String getStringRepresentation() {
 		StringBuilder result = new StringBuilder();
-		if (this.special) {
-			result.append(Topic.SPECIAL_TOPIC_PREFIX);
-		}
 
 		result.append(this.topicLevels.get(0).getStringRepresentation());
 		for (int i = 1; i < this.topicLevels.size(); i++) {

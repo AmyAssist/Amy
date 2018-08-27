@@ -8,7 +8,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -23,32 +23,15 @@
 
 package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.information.InstanceInformation;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
@@ -59,51 +42,22 @@ import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
  * @author Kai Menzel, Leon Kiefer
  */
 @Service(MessageHub.class)
-public class MessageHubService implements MessageHub, RunnableService, MqttCallback, IMqttActionListener {
-
-	private static final String CONFIG_NAME = "messaging.config";
-	private static final String KEY_BROKER_ADDRESS = "brokerAddress";
-
+public class MessageHubService implements MessageHub {
 	@Reference
 	private Logger logger;
 
 	@Reference
-	private InstanceInformation info;
-
-	@Reference
-	private ConfigurationManager configManager;
-
-	@Reference
 	private TopicFactory tf;
 
-	private MqttAsyncClient client;
+	@Reference
+	private MessagingAdapter adapter;
 
 	private Map<UUID, BiConsumer<TopicName, Message>> eventListener = new HashMap<>();
 	private Map<TopicFilter, List<UUID>> topicListeners = new HashMap<>();
 
-	private String brokerAddress;
-
 	@PostConstruct
 	private void init() {
-		Properties config = this.configManager.getConfigurationWithDefaults(CONFIG_NAME);
-		this.brokerAddress = config.getProperty(KEY_BROKER_ADDRESS);
-
-		try {
-			this.client = new MqttAsyncClient(this.brokerAddress, this.info.getNodeId() + "-MainJavaApp",
-					new MqttDefaultFilePersistence()); // TODO: Configure directory
-			this.client.setCallback(this);
-		} catch (MqttException e) {
-			fail("Initialize", e);
-		}
-	}
-
-	@Override
-	public void start() {
-		try {
-			this.client.connect("Connect", this);
-		} catch (MqttException e) {
-			fail("Connect", e);
-		}
+		this.adapter.setCallback(this::messageArrived);
 	}
 
 	private void executeHandler(BiConsumer<TopicName, Message> handler, Message msg, TopicName topic) {
@@ -119,68 +73,15 @@ public class MessageHubService implements MessageHub, RunnableService, MqttCallb
 		publish(this.tf.createTopicName(topic), message, 2, false);
 	}
 
-	@Override
-	public void stop() {
-		try {
-			this.client.disconnect();
-		} catch (MqttException e) {
-			fail("Disconnect", e);
-		}
-	}
-
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.IMqttActionListener#onSuccess(org.eclipse.paho.client.mqttv3.IMqttToken)
-	 */
-	@Override
-	public void onSuccess(IMqttToken asyncActionToken) {
-		// Don't do anything
-	}
-
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.IMqttActionListener#onFailure(org.eclipse.paho.client.mqttv3.IMqttToken,
-	 *      java.lang.Throwable)
-	 */
-	@Override
-	public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-		fail(asyncActionToken.getUserContext().toString(), exception);
-	}
-
-	private void fail(String action, Throwable exception) {
-		throw new IllegalStateException("Error during action " + action + ".", exception);
-	}
-
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.MqttCallback#connectionLost(java.lang.Throwable)
-	 */
-	@Override
-	public void connectionLost(Throwable cause) {
-		throw new IllegalStateException("Connection lost.", cause);
-	}
-
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.MqttCallback#messageArrived(java.lang.String,
-	 *      org.eclipse.paho.client.mqttv3.MqttMessage)
-	 */
-	@Override
-	public void messageArrived(String topic, MqttMessage message) throws Exception {
-		TopicName name = this.tf.createTopicName(topic);
-
+	private void messageArrived(TopicName topic, Message message) {
 		for (TopicFilter filter : this.topicListeners.keySet()) {
-			if (filter.doesFilterMatch(name)) {
+			if (filter.doesFilterMatch(topic)) {
 				for (UUID uuid : this.topicListeners.get(filter)) {
 					BiConsumer<TopicName, Message> handler = this.eventListener.get(uuid);
-					executeHandler(handler, new MessageImpl(message), name);
+					executeHandler(handler, message, topic);
 				}
 			}
 		}
-	}
-
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.MqttCallback#deliveryComplete(org.eclipse.paho.client.mqttv3.IMqttDeliveryToken)
-	 */
-	@Override
-	public void deliveryComplete(IMqttDeliveryToken token) {
-		// Don't do anything
 	}
 
 	/**
@@ -206,11 +107,7 @@ public class MessageHubService implements MessageHub, RunnableService, MqttCallb
 			List<UUID> listeners = new LinkedList<>();
 			listeners.add(uuid);
 			this.topicListeners.put(topic, listeners);
-			try {
-				this.client.subscribe(topic.getStringRepresentation(), 0, "Subscribe", this);
-			} catch (MqttException e) {
-				fail("Subscribe", e);
-			}
+			this.adapter.subscribe(topic);
 		}
 
 		this.eventListener.put(uuid, handler);
@@ -229,11 +126,7 @@ public class MessageHubService implements MessageHub, RunnableService, MqttCallb
 				this.topicListeners.get(topic).remove(identifier);
 				if (this.topicListeners.get(topic).isEmpty()) {
 					this.topicListeners.remove(topic);
-					try {
-						this.client.unsubscribe(topic.getStringRepresentation(), "Unsubscribe", this);
-					} catch (MqttException e) {
-						fail("Unsubscribe", e);
-					}
+					this.adapter.unsubscribe(topic);
 				}
 				break;
 			}
@@ -245,13 +138,6 @@ public class MessageHubService implements MessageHub, RunnableService, MqttCallb
 	 */
 	@Override
 	public void publish(TopicName topic, String payload, int qualityOfService, boolean retain) {
-		MqttMessage msg = new MqttMessage(payload.getBytes(StandardCharsets.UTF_8));
-		msg.setQos(qualityOfService);
-		msg.setRetained(retain);
-		try {
-			this.client.publish(topic.getStringRepresentation(), msg, "publish", this);
-		} catch (MqttException e) {
-			fail("Publish", e);
-		}
+		this.adapter.publish(topic, payload, qualityOfService, retain);
 	}
 }

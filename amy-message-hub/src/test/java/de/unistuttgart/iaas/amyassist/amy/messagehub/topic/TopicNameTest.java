@@ -69,10 +69,10 @@ class TopicNameTest {
 	 *             When an error occurs.
 	 */
 	@ParameterizedTest
-	@MethodSource("invalidNames")
+	@MethodSource("namesWithWildcard")
 	void testValidateTopicStringNot(String name) throws Exception {
 		TopicNameImpl topicName = new TopicNameImpl("test");
-		Assertions.assertThrows(TopicFormatException.class, () -> topicName.validateTopicString(name),
+		Assertions.assertThrows(TopicFormatException.class, () -> topicName.validateTopicStringForName(name),
 				"Expected topic format exception");
 	}
 
