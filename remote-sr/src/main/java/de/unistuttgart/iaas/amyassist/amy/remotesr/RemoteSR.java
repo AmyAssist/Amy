@@ -40,6 +40,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
+import java.util.Properties;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
@@ -58,9 +59,8 @@ public class RemoteSR {
 
 	private static final String CONFIG_NAME = "remotesr.config";
 	private static final String CHROME_DIRECTORY_CONFIG_KEY = "chrome";
-
-	private static final String MAC_CHROME_PATH = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" + "";
-	private static final String WINDOWS_CHROME_PATH = "/Program Files (x86)/Google/Chrome/Application/chrome.exe" + "";
+	private static final String CHROME_DIRECTORY_DEFAULT_MAC = "chrome_default_mac";
+	private static final String CHROME_DIRECTORY_DEFAULT_WINDOWS = "chrome_default_windows";
 
 	@Reference
 	private Logger logger;
@@ -85,14 +85,15 @@ public class RemoteSR {
 		try {
 			String file = generateTempProfile();
 
-			String chromePath = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME)
-					.getProperty(CHROME_DIRECTORY_CONFIG_KEY);
+			Properties config = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
+
+			String chromePath = config.getProperty(CHROME_DIRECTORY_CONFIG_KEY);
 
 			if (chromePath == null || chromePath.isEmpty()) {
 				if (SystemUtils.IS_OS_MAC_OSX) {
-					chromePath = MAC_CHROME_PATH;
+					chromePath = config.getProperty(CHROME_DIRECTORY_DEFAULT_MAC);
 				} else if (SystemUtils.IS_OS_WINDOWS) {
-					chromePath = WINDOWS_CHROME_PATH;
+					chromePath = config.getProperty(CHROME_DIRECTORY_DEFAULT_WINDOWS);
 				} else {
 					this.logger
 							.error("No directory for chrome installation found. Set your chrome installation directory "
@@ -103,7 +104,8 @@ public class RemoteSR {
 			Process process = new ProcessBuilder(chromePath, "http://localhost:8080/rest/remotesr",
 					"--user-data-dir=" + file).start();
 
-			watchProcess(process, new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)));
+			watchProcess(process, new BufferedReader(new InputStreamReader(process.getInputStream(),
+					StandardCharsets.UTF_8)));
 		} catch (IOException e) {
 			throw new LaunchChromeException("Couldn't start Chrome:", e);
 		}
