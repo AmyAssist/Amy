@@ -70,8 +70,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	 * different possible answers
 	 */
 	private static final String[] FAILED_TO_UNDERSTAND_ANSWER = { "I did not understand that",
-			"Sorry, could you repeat that?",
-			"I don't know what you mean", "No idea what you are talking about",
+			"Sorry, could you repeat that?", "I don't know what you mean", "No idea what you are talking about",
 			"My plugin developers did not teach me this yet" };
 
 	private static final String QUIT_INTENT_USER_INPUT = "(never mind|quit|forget that)";
@@ -124,8 +123,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		}
 
 		UserIntentTemplate template = new UserIntentTemplate(method, intent);
-		
-		//unfortunately we have to use UserIntent here because enity data has to be present 
+
+		// unfortunately we have to use UserIntent here because enity data has to be present
 		UserIntent userIntent = new UserIntent(method, intent);
 		this.nodeToMethodAIMPair.put(userIntent.getGrammar(), template);
 	}
@@ -147,9 +146,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Override
 	public void processIntent(Dialog dialog, String naturalLanguageText) {
 		List<AGFNode> promptGrams = new ArrayList<>();
-			if (dialog.getNextPrompt() != null) {
-				promptGrams.add(dialog.getNextPrompt().getGrammar());
-			}
+		if (dialog.getNextPrompt() != null) {
+			promptGrams.add(dialog.getNextPrompt().getGrammar());
+		}
 
 		promptGrams.add(this.quitIntentUserInputGram);
 
@@ -164,8 +163,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 				dialog.setIntent(null);
 				return;
 			}
-			
-			setEntities(promptGrams.get(matchingNodeIndex),dialog);
+
+			setEntities(promptGrams.get(matchingNodeIndex), dialog);
 
 		} catch (NLParserException e) {
 			this.logger.debug("no matching grammar found ", e);
@@ -173,7 +172,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		}
 
 	}
-	
+
 	private void setEntities(AGFNode gram, Dialog dialog) {
 		Map<String, String> entityIdToUserContent = getEntityContent(gram);
 
@@ -192,7 +191,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	 * helper method to extract entity contents
 	 * 
 	 * @param node
-	 *                 to extract entity content from
+	 *            to extract entity content from
 	 * @return Map which is mapping the entity id to the user provided content
 	 */
 	private Map<String, String> getEntityContent(AGFNode node) {
@@ -230,7 +229,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			UserIntent userIntent = new UserIntent(left, right);
 			dialog.setIntent(userIntent);
 
-			setEntities(node,dialog);
+			setEntities(node, dialog);
 
 		} catch (NLParserException e) {
 			this.logger.debug("no matching grammar found ", e);

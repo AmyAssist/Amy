@@ -41,7 +41,7 @@ class Dialog {
 	 * constructor
 	 * 
 	 * @param cons
-	 *                 consumer for callback
+	 *            consumer for callback
 	 */
 	Dialog(Consumer<String> cons) {
 		this.consumer = cons;
@@ -56,12 +56,12 @@ class Dialog {
 	 * next prompt to process
 	 */
 	private Prompt nextPrompt = null;
-	
+
 	/**
 	 * outputs the string to the user in some way
 	 * 
 	 * @param answerOutput
-	 *                         the string to output
+	 *            the string to output
 	 */
 	public void output(String answerOutput) {
 		this.consumer.accept(answerOutput);
@@ -80,7 +80,7 @@ class Dialog {
 	 * Set's {@link #intent intent}
 	 * 
 	 * @param intent
-	 *                   intent
+	 *            intent
 	 */
 	public void setIntent(UserIntent intent) {
 		this.intent = intent;
@@ -88,7 +88,8 @@ class Dialog {
 
 	/**
 	 * Get's {@link #nextPrompt nextPrompt}
-	 * @return  nextPrompt
+	 * 
+	 * @return nextPrompt
 	 */
 	public Prompt getNextPrompt() {
 		return this.nextPrompt;
@@ -96,7 +97,9 @@ class Dialog {
 
 	/**
 	 * Set's {@link #nextPrompt nextPrompt}
-	 * @param nextPrompt  nextPrompt
+	 * 
+	 * @param nextPrompt
+	 *            nextPrompt
 	 */
 	public void setNextPrompt(Prompt nextPrompt) {
 		this.nextPrompt = nextPrompt;

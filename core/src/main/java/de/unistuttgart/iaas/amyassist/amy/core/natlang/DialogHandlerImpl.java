@@ -49,7 +49,7 @@ public class DialogHandlerImpl implements DialogHandler {
 
 	@Reference
 	private ServiceLocator serviceLocator;
-	
+
 	@Reference
 	private Logger logger;
 
@@ -75,7 +75,7 @@ public class DialogHandlerImpl implements DialogHandler {
 		if (!this.map.containsKey(uuid)) {
 			throw new IllegalArgumentException("wrong UUID");
 		}
-		
+
 		Dialog dialog = this.map.get(uuid);
 		UserIntent intent = dialog.getIntent();
 

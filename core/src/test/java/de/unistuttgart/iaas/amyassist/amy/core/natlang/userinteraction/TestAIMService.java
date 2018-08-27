@@ -109,7 +109,7 @@ class TestAIMService {
 	@Test
 	void testPromptGram() {
 		assertThat(this.interactionModel.getIntents().get(0).getPrompts().get(0).getGram(),
-				equalTo("{number} [times]"));
+				equalTo(" {number} [times] "));
 	}
 
 }

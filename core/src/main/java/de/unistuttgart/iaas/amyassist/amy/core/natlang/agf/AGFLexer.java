@@ -43,11 +43,11 @@ public class AGFLexer implements Iterator<AGFToken> {
 	 * constructor
 	 * 
 	 * @param toLex
-	 *                  the string to lex
+	 *            the string to lex
 	 */
 	public AGFLexer(String toLex) {
 		this.mIndex = 0;
-		this.mToLex = toLex.toLowerCase();
+		this.mToLex = toLex.toLowerCase().trim();
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class AGFLexer implements Iterator<AGFToken> {
 				if (!currentWord.toString().isEmpty()) {
 					return new AGFToken(AGFTokenType.WORD, currentWord.toString());
 				}
-				throw new AGFLexerException("wrong character " + c);
+				throw new AGFLexerException("wrong character or upper case letter  " + c);
 
 			}
 		}

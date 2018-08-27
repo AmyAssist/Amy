@@ -62,7 +62,7 @@ public class XMLEntityTemplate {
 	 * @return entityId
 	 */
 	public String getEntityId() {
-		return this.entityId.toLowerCase().trim();
+		return this.entityId;
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class XMLEntityTemplate {
 	 * @return grammar
 	 */
 	public String getGrammar() {
-		return this.grammar.toLowerCase().trim();
+		return this.grammar;
 	}
 
 	/**

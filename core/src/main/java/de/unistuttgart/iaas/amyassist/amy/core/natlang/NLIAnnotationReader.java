@@ -55,7 +55,7 @@ public class NLIAnnotationReader {
 	 *             if a method annotated with {@link Grammar} is not a valid NLIMethod
 	 */
 	public static Set<Method> getValidIntentMethods(Class<?> cls) {
-		if(cls.getAnnotation(SpeechCommand.class) != null) {
+		if (cls.getAnnotation(SpeechCommand.class) != null) {
 			Set<Method> validMethods = new HashSet<>();
 			Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Intent.class);
 			for (Method method : methodsWithAnnotation) {
