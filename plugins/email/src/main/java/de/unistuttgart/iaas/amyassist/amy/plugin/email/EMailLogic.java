@@ -304,18 +304,23 @@ public class EMailLogic {
 	 *            password for the mail account
 	 * @param hostAddress
 	 *            address of the imap mail server, something like "imap.gmail.com"
+	 * @throws MessagingException
+	 *             if connecting to mail server fails
 	 */
-	public void startMailSession(String username, String password, String hostAddress) {
+	public void startMailSession(String username, String password, String hostAddress) throws MessagingException {
 		this.mailSession.connect(username, password, hostAddress);
 	}
 
 	/**
-	 * Set up connection to Amy mail
+	 * Set up connection to Amy mail (default)
+	 * 
+	 * @throws MessagingException
+	 *             if connecting to mail server fails
 	 */
-	public void startMailSession() {
+	public void startMailSession() throws MessagingException {
 		String username = this.configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
 		String password = this.configLoader.getProperty(AMY_MAIL_PW_KEY);
-		this.mailSession.connect(username, password, AMY_MAIL_HOST);
+		startMailSession(username, password, AMY_MAIL_HOST);
 	}
 
 	/**

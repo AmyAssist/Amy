@@ -73,16 +73,17 @@ public class MailSession {
 	 *            password
 	 * @param hostAddress
 	 *            address of the mail provider, e.g. imap.gmail.com
+	 * @throws MessagingException
+	 *             if connecting to service failed
 	 */
-	public void connect(String username, String password, String hostAddress) {
+	public void connect(String username, String password, String hostAddress) throws MessagingException {
 		endSession();
-		try {
-			Session session = Session.getInstance(System.getProperties(), null);
-			this.store = session.getStore(PROTOCOL);
-			this.store.connect(hostAddress, username, password);
-		} catch (MessagingException e) {
-			this.logger.error("Connecting to service failed", e);
-		}
+
+		// set up new session
+		Session session = Session.getInstance(System.getProperties(), null);
+		this.store = session.getStore(PROTOCOL);
+		this.store.connect(hostAddress, username, password);
+
 	}
 
 	@PreDestroy
@@ -92,7 +93,7 @@ public class MailSession {
 				this.store.close();
 				this.store = null;
 			} catch (MessagingException e) {
-				this.logger.error("Couldn't close mail store", e);
+				this.logger.error("Couldn't close previously opened mail store", e);
 			}
 		}
 	}

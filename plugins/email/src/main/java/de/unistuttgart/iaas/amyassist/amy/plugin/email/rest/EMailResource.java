@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
 
+import javax.mail.MessagingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -53,13 +54,28 @@ public class EMailResource {
 
 	/**
 	 * Connect to a mail service with the given parameters
+	 * 
+	 * @param username
+	 *            the mail address
+	 * @param password
+	 *            the password for the mail account
+	 * @param imapServer
+	 *            the imap mail server
+	 * 
+	 * @throws MessagingException
+	 *             if connecting to mail server failed
 	 */
 	@POST
 	@Path("connect")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public void connect() {
-		// TODO
-		this.logic.startMailSession();
+	@Consumes(MediaType.TEXT_PLAIN)
+	public void connect(@QueryParam("username") @DefaultValue("") String username,
+			@QueryParam("password") @DefaultValue("") String password,
+			@QueryParam("imapServer") @DefaultValue("") String imapServer) throws MessagingException {
+
+		if (username.isEmpty() && password.isEmpty() && imapServer.isEmpty()) {
+			this.logic.startMailSession();
+		}
+		this.logic.startMailSession(username, password, imapServer);
 	}
 
 	/**

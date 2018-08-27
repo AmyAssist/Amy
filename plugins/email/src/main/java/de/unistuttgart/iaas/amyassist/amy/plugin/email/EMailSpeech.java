@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
+import javax.mail.MessagingException;
+
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -53,10 +55,15 @@ public class EMailSpeech {
 	 *            words in the grammar annotation
 	 * @return connected
 	 */
-	@Grammar("connect")
+	@Grammar("connect to amy mail")
 	public String connectToAmyMail(String... params) {
-		this.logic.startMailSession();
-		return "connected";
+		try {
+			this.logic.startMailSession();
+			return "Connected to mail server";
+		} catch (MessagingException e) {
+			this.logger.error("Connecting failed", e);
+			return "Couldn't connect to mail server";
+		}
 	}
 
 	/**
