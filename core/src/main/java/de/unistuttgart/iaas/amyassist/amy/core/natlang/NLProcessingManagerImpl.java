@@ -165,23 +165,28 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 				dialog.setIntent(null);
 				return;
 			}
+			
+			setEntities(promptGrams.get(matchingNodeIndex),dialog);
 
-			Map<String, String> entityIdToUserContent = getEntityContent(promptGrams.get(matchingNodeIndex));
-
-			for (Entry<String, String> entry : entityIdToUserContent.entrySet()) {
-				EntityDataImpl data = new EntityDataImpl(entry.getValue(), this.language.getTimeUtility());
-				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
-			}
-
-			if (!dialog.getIntent().isFinished()) {
-				dialog.setNextPrompt(dialog.getIntent().getNextPrompt());
-				dialog.output(dialog.getNextPrompt().getOutputText());
-			}
 		} catch (NLParserException e) {
 			this.logger.debug("no matching grammar found ", e);
 			dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
 		}
 
+	}
+	
+	private void setEntities(AGFNode gram, Dialog dialog) {
+		Map<String, String> entityIdToUserContent = getEntityContent(gram);
+
+		for (Entry<String, String> entry : entityIdToUserContent.entrySet()) {
+			EntityDataImpl data = new EntityDataImpl(entry.getValue(), this.language.getTimeUtility());
+			dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
+		}
+
+		if (!dialog.getIntent().isFinished()) {
+			dialog.setNextPrompt(dialog.getIntent().getNextPrompt());
+			dialog.output(dialog.getNextPrompt().getOutputText());
+		}
 	}
 
 	/**
@@ -226,16 +231,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			UserIntent userIntent = new UserIntent(left, right);
 			dialog.setIntent(userIntent);
 
-			Map<String, String> entityIdToUserContent = getEntityContent(node);
-			for (Entry<String, String> entry : entityIdToUserContent.entrySet()) {
-				EntityDataImpl data = new EntityDataImpl(entry.getValue(), this.language.getTimeUtility());
-				dialog.getIntent().getEntityList().get(entry.getKey()).setEntityData(data);
-			}
+			setEntities(node,dialog);
 
-			if (!dialog.getIntent().isFinished()) {
-				dialog.setNextPrompt(dialog.getIntent().getNextPrompt());
-				dialog.output(dialog.getNextPrompt().getOutputText());
-			}
 		} catch (NLParserException e) {
 			this.logger.debug("no matching grammar found ", e);
 			dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
