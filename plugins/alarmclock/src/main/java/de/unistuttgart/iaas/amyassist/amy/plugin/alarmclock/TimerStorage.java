@@ -37,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
  *
  */
 @Service
-public class AlarmClockStorage implements IAlarmClockStorage {
+public class TimerStorage implements ITimerStorage {
 
 	/**
 	 * Core storage object that is instantiated via Dependency Injection
@@ -45,10 +45,7 @@ public class AlarmClockStorage implements IAlarmClockStorage {
 	@Reference
 	IStorage storage;
 
-	/**
-	 * Storage key for the alarm counter value
-	 */
-	protected static final String ALARMCOUNTER = "alarmCounter";
+	private String timerS = "timer";
 
 	/**
 	 * Storage key for the timer counter value
@@ -56,43 +53,18 @@ public class AlarmClockStorage implements IAlarmClockStorage {
 	protected static final String TIMERCOUNTER = "timerCounter";
 
 	@Override
-	public void storeAlarm(Alarm alarm) {
-		this.storage.put("alarm" + alarm.getId(), alarm.toString());
-	}
-
-	@Override
 	public void storeTimer(Timer timer) {
-		this.storage.put("timer" + timer.getId(), timer.toString());
-	}
-
-	@Override
-	public int getAlarmCounter() {
-		return Integer.parseInt(this.storage.get(ALARMCOUNTER));
-
+		this.storage.put(this.timerS + timer.getId(), timer.toString());
 	}
 
 	@Override
 	public int getTimerCounter() {
 		return Integer.parseInt(this.storage.get(TIMERCOUNTER));
-
-	}
-
-	@Override
-	public void putAlarmCounter(int number) {
-		this.storage.put(ALARMCOUNTER, number + "");
 	}
 
 	@Override
 	public void putTimerCounter(int number) {
 		this.storage.put(TIMERCOUNTER, number + "");
-	}
-
-	@Override
-	public int incrementAlarmCounter() {
-		int counter = Integer.parseInt(this.storage.get(ALARMCOUNTER));
-		counter++;
-		this.storage.put(ALARMCOUNTER, Integer.toString(counter));
-		return counter;
 	}
 
 	@Override
@@ -104,44 +76,22 @@ public class AlarmClockStorage implements IAlarmClockStorage {
 	}
 
 	@Override
-	public boolean hasAlarm(int id) {
-		return this.storage.has("alarm" + id);
-	}
-
-	@Override
 	public boolean hasTimer(int id) {
-		return this.storage.has("timer" + id);
-	}
-
-	@Override
-	public void deleteAlarm(int id) {
-		if (this.storage.has("alarm" + id))
-			this.storage.delete("alarm" + id);
-		else
-			throw new NoSuchElementException();
+		return this.storage.has(this.timerS + id);
 	}
 
 	@Override
 	public void deleteTimer(int id) {
-		if (this.storage.has("timer" + id))
-			this.storage.delete("timer" + id);
+		if (this.storage.has(this.timerS + id))
+			this.storage.delete(this.timerS + id);
 		else
 			throw new NoSuchElementException();
 	}
 
 	@Override
-	public Alarm getAlarm(int id) {
-		if (this.storage.has("alarm" + id)) {
-			String alarmString = this.storage.get("alarm" + id);
-			return Alarm.reconstructObject(alarmString);
-		}
-		throw new NoSuchElementException();
-	}
-
-	@Override
 	public Timer getTimer(int id) {
-		if (this.storage.has("timer" + id)) {
-			String timerString = this.storage.get("timer" + id);
+		if (this.storage.has(this.timerS + id)) {
+			String timerString = this.storage.get(this.timerS + id);
 			return Timer.reconstructObject(timerString);
 		}
 		throw new NoSuchElementException();
@@ -153,8 +103,6 @@ public class AlarmClockStorage implements IAlarmClockStorage {
 	 */
 	@PostConstruct
 	public void init() {
-		if (!this.storage.has(ALARMCOUNTER))
-			this.storage.put(ALARMCOUNTER, "0");
 		if (!this.storage.has(TIMERCOUNTER))
 			this.storage.put(TIMERCOUNTER, "0");
 	}

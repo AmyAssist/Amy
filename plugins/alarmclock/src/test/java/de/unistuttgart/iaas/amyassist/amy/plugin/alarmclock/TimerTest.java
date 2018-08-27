@@ -30,12 +30,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Calendar;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 
 /**
  * Class to test the Timer class
  * 
  * @author Patrick Singer
  */
+@ExtendWith(FrameworkExtension.class)
 public class TimerTest {
 
 	/**
