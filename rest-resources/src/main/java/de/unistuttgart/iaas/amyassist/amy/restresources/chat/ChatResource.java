@@ -100,7 +100,7 @@ public class ChatResource {
 	public void useAmy(@QueryParam("langInput") String input, @QueryParam("clientUUID") String uuid) {
 		try {
 			this.handler.process(input, UUID.fromString(uuid));
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			throw new WebApplicationException("can't handle input: " + input, e, Status.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -119,8 +119,8 @@ public class ChatResource {
 	public String receiveResponse(String uuidString) {
 		try {
 			UUID uuid = UUID.fromString(uuidString);
-			if (this.chatService.userQueueMap.containsKey(uuid)) {
-				String s = this.chatService.userQueueMap.get(uuid).poll();
+			if (this.chatService.getQueue(uuid) != null) {
+				String s = this.chatService.getQueue(uuid).poll();
 				if (s == null) {
 					return "";
 				}
@@ -128,7 +128,7 @@ public class ChatResource {
 			}
 			return "";
 
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			throw new WebApplicationException("can't handle input: " + uuidString, e, Status.INTERNAL_SERVER_ERROR);
 		}
 	}

@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.restresources.chat;
 
-import java.util.LinkedList;
+import java.util.Queue;
 
 
 /**
@@ -32,13 +32,15 @@ import java.util.LinkedList;
  */
 class AnswerConsumer {
 		
-	private LinkedList<String> queue;
+	private Queue<String> queue;
 				
 	/**
 	 * empty constructor
 	 */
 	public AnswerConsumer() {
-
+		/**
+		 * not needed here
+		 */
 	}
 
 	/**
@@ -53,7 +55,7 @@ class AnswerConsumer {
 	 * sets the internal queue
 	 * @param queue to set
 	 */
-	public void setQueue(LinkedList<String> queue) {
+	public void setQueue(Queue<String> queue) {
 		this.queue = queue;
 	}
 

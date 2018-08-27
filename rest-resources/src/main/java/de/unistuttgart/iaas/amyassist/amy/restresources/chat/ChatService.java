@@ -24,8 +24,10 @@
 package de.unistuttgart.iaas.amyassist.amy.restresources.chat;
 
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
@@ -39,14 +41,14 @@ public class ChatService {
 	/**
 	 * maps uuids from users to a LinkedList<String> containing answers from amy
 	 */
-	public ConcurrentHashMap<UUID, LinkedList<String>> userQueueMap = new ConcurrentHashMap<>();
+	private ConcurrentMap<UUID, LinkedList<String>> userQueueMap = new ConcurrentHashMap<>();
 	
 	/**
 	 * retrieve queue from user with uuid
 	 * @param uuid of user
 	 * @return the queue of answers from amy
 	 */
-	public LinkedList<String> getQueue(UUID uuid) {
+	public Queue<String> getQueue(UUID uuid) {
 		if(this.userQueueMap.containsKey(uuid)) {
 			return this.userQueueMap.get(uuid);
 		}
