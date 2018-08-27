@@ -525,20 +525,24 @@ public class EmailLogicTest {
 
 	/**
 	 * Tests {@link EMailLogic#connectToMailServer(EMailCredentials)}
-	 * 
-	 * @throws MessagingException
-	 *             if something goes wrong
 	 */
 	@Test
-	protected void testConnectToMailServer() throws MessagingException {
-		when(this.mailSession.startNewMailSession(ArgumentMatchers.any(EMailCredentials.class))).thenReturn(true);
-		assertTrue(this.emailLogic.connectToMailServer(new EMailCredentials()));
+	protected void testConnectToMailServerStandardCredentials() {
+		EMailCredentials credentials = new EMailCredentials("testUsername", "testPassword", "testHostAddress");
 
-		when(this.mailSession
-				.startNewMailSession(new EMailCredentials("testUsername", "testPassword", "testHostAddress")))
-						.thenReturn(true);
-		assertTrue(this.emailLogic
-				.connectToMailServer(new EMailCredentials("testUsername", "testPassword", "testHostAddress")));
+		when(this.mailSession.startNewMailSession(credentials)).thenReturn(true);
+		assertTrue(this.emailLogic.connectToMailServer(credentials));
+	}
+
+	/**
+	 * Tests {@link EMailLogic#connectToMailServer(EMailCredentials)}
+	 */
+	@Test
+	protected void testConnectToMailServerEmptyCredentials() {
+		when(this.mailSession.startNewMailSession(ArgumentMatchers.any(EMailCredentials.class))).thenReturn(true);
+		assertTrue(this.emailLogic.connectToMailServer(new EMailCredentials("", "", "")));
+		Mockito.verify(this.properties).getProperty(EMailLogic.AMY_MAIL_ADDRESS_KEY);
+		Mockito.verify(this.properties).getProperty(EMailLogic.AMY_MAIL_PW_KEY);
 	}
 
 	/**

@@ -89,15 +89,43 @@ class EMailRestTest {
 	}
 
 	/**
-	 * Test method for {@link EMailResource#getAllMails(int)}
+	 * Test method for {@link EMailResource#getMails(int)}
 	 */
 	@Test
-	public void testGetAllMails() {
-		final int amountOfMails = 15;
-		MessageDTO[] mails = createMessages(amountOfMails);
-		Mockito.when(this.logic.getMailsForREST(-1)).thenReturn(mails);
+	public void testGetMailsAll() {
+		final int amountOfMails = -1;
+		MessageDTO[] mails = createMessages(20);
+		Mockito.when(this.logic.getMailsForREST(amountOfMails)).thenReturn(mails);
 
-		try (Response response = this.target.path("getMails").request().get()) {
+		try (Response response = this.target.path("getMails/" + amountOfMails).request().get()) {
+			assertThat(response, status(200));
+			MessageDTO[] messages = response.readEntity(MessageDTO[].class);
+			assertThat(messages.length, is(20));
+			for (int i = 0; i < messages.length; i++) {
+				// test equality of objects
+				MessageDTO message1 = mails[i];
+				MessageDTO message2 = messages[i];
+
+				assertThat(message1.getFrom(), equalTo(message2.getFrom()));
+				assertThat(message1.getSubject(), equalTo(message2.getSubject()));
+				assertThat(message1.getContent(), equalTo(message2.getContent()));
+				assertThat(message1.getSentDate(), equalTo(message2.getSentDate()));
+				assertThat(message1.isImportant(), equalTo(message2.isImportant()));
+			}
+			Mockito.verify(this.logic).getMailsForREST(amountOfMails);
+		}
+	}
+
+	/**
+	 * Test method for {@link EMailResource#getMails(int)}
+	 */
+	@Test
+	public void testGetMailsAmount() {
+		final int amountOfMails = 20;
+		MessageDTO[] mails = createMessages(amountOfMails);
+		Mockito.when(this.logic.getMailsForREST(amountOfMails)).thenReturn(mails);
+
+		try (Response response = this.target.path("getMails/" + amountOfMails).request().get()) {
 			assertThat(response, status(200));
 			MessageDTO[] messages = response.readEntity(MessageDTO[].class);
 			assertThat(messages.length, is(amountOfMails));
@@ -112,7 +140,7 @@ class EMailRestTest {
 				assertThat(message1.getSentDate(), equalTo(message2.getSentDate()));
 				assertThat(message1.isImportant(), equalTo(message2.isImportant()));
 			}
-			Mockito.verify(this.logic).getMailsForREST(-1);
+			Mockito.verify(this.logic).getMailsForREST(amountOfMails);
 		}
 	}
 

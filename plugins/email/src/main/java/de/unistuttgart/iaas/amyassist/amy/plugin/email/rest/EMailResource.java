@@ -24,12 +24,11 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -76,9 +75,18 @@ public class EMailResource {
 	 * @return Array of all mails in inbox
 	 */
 	@GET
-	@Path("getMails")
+	@Path("getMails/{amount}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public MessageDTO[] getAllMails(@QueryParam("amount") @DefaultValue("-1") int amount) {
+	public MessageDTO[] getMails(@PathParam("amount") int amount) {
 		return this.logic.getMailsForREST(amount);
+	}
+
+	/**
+	 * Disconnect the currently running connection to the mail server
+	 */
+	@POST
+	@Path("disconnect")
+	public void disconnect() {
+		this.logic.disconnectFromMailServer();
 	}
 }

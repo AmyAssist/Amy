@@ -84,10 +84,7 @@ public class EMailLogic {
 	 */
 	protected static final String AMY_MAIL_PW_KEY = "email_pw";
 
-	/**
-	 * Amy mail server host - declared protected for tests
-	 */
-	protected static final String AMY_MAIL_HOST = "imap.gmail.com";
+	private static final String AMY_MAIL_HOST = "imap.gmail.com";
 
 	/**
 	 * returns if unread messages have been found
@@ -317,14 +314,21 @@ public class EMailLogic {
 	public boolean connectToMailServer(EMailCredentials credentials) {
 		if (credentials.getUsername().isEmpty() && credentials.getPassword().isEmpty()
 				&& credentials.getImapServer().isEmpty()) {
+			// if no credentials are given, use the standard ones for Amy
 			String amyUsername = this.configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
 			String amyPassword = this.configLoader.getProperty(AMY_MAIL_PW_KEY);
 			String amyHost = AMY_MAIL_HOST;
-			EMailCredentials amyCredentials = new EMailCredentials(amyUsername, amyPassword, amyHost);
 
-			return this.mailSession.startNewMailSession(amyCredentials);
+			return this.mailSession.startNewMailSession(new EMailCredentials(amyUsername, amyPassword, amyHost));
 		}
 		return this.mailSession.startNewMailSession(credentials);
+	}
+
+	/**
+	 * Disconnect from currently connected mail service
+	 */
+	public void disconnectFromMailServer() {
+		this.mailSession.endSession();
 	}
 
 	/**

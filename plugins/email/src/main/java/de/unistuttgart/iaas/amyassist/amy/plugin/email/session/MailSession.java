@@ -88,8 +88,11 @@ public class MailSession {
 		return false;
 	}
 
+	/**
+	 * End the currently running mail session and disconnect from server
+	 */
 	@PreDestroy
-	private void endSession() {
+	public void endSession() {
 		if (this.store != null) {
 			try {
 				this.store.close();
