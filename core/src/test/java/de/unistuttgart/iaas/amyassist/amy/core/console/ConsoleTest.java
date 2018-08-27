@@ -34,8 +34,8 @@ import org.mockito.Mockito;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandlerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.LoggerProvider;
 
 /**
@@ -65,11 +65,11 @@ class ConsoleTest {
 		final String expected = "Hello world say hello";
 
 		UUID uuid = UUID.randomUUID();
-		DialogHandler handler = Mockito.mock(DialogHandler.class);
+		DialogHandlerImpl handler = Mockito.mock(DialogHandlerImpl.class);
 
 		Mockito.when(handler.createDialog(ArgumentMatchers.any())).thenReturn(uuid);
 
-		this.dependencyInjection.register(new SingletonServiceProvider<>(IDialogHandler.class, handler));
+		this.dependencyInjection.register(new SingletonServiceProvider<>(DialogHandler.class, handler));
 		SpeechConsole console = this.dependencyInjection.createAndInitialize(SpeechConsole.class);
 
 		console.say(testInput);

@@ -35,7 +35,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -55,7 +55,7 @@ public class ChatResource {
 	public static final String PATH = "chat";
 	
 	@Reference
-	private IDialogHandler handler;
+	private DialogHandler handler;
 	
 	@Reference
 	private ChatService chatService;
@@ -71,8 +71,8 @@ public class ChatResource {
 	public String registerUser() {
 		AnswerConsumer w = new AnswerConsumer();
 		UUID uuid = this.handler.createDialog(w::addToQueue);
-		this.chatService.addUser(uuid.toString());
-		w.setQueue(this.chatService.getQueue(uuid.toString()));
+		this.chatService.addUser(uuid);
+		w.setQueue(this.chatService.getQueue(uuid));
 		return uuid.toString();
 	}
 
@@ -116,10 +116,11 @@ public class ChatResource {
 	@Path("response")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String receiveResponse(String uuid) {
+	public String receiveResponse(String uuidString) {
 		try {
-			if (this.chatService.userQueueMap.containsKey(UUID.fromString(uuid))) {
-				String s = this.chatService.userQueueMap.get(UUID.fromString(uuid)).poll();
+			UUID uuid = UUID.fromString(uuidString);
+			if (this.chatService.userQueueMap.containsKey(uuid)) {
+				String s = this.chatService.userQueueMap.get(uuid).poll();
 				if (s == null) {
 					return "";
 				}
@@ -128,7 +129,7 @@ public class ChatResource {
 			return "";
 
 		} catch (Exception e) {
-			throw new WebApplicationException("can't handle input: " + uuid, e, Status.INTERNAL_SERVER_ERROR);
+			throw new WebApplicationException("can't handle input: " + uuidString, e, Status.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

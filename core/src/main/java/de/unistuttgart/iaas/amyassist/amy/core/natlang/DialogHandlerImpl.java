@@ -42,7 +42,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserInten
  * @author Felix Burk
  */
 @Service()
-public class DialogHandler implements IDialogHandler {
+public class DialogHandlerImpl implements DialogHandler {
 
 	@Reference
 	private NLProcessingManager manager;
@@ -58,9 +58,6 @@ public class DialogHandler implements IDialogHandler {
 	 */
 	private Map<UUID, Dialog> map = new HashMap<>();
 
-	/* (non-Javadoc)
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler#createDialog(java.util.function.Consumer)
-	 */
 	@Override
 	public UUID createDialog(Consumer<String> cons) {
 		UUID uuid = UUID.randomUUID();
@@ -68,17 +65,11 @@ public class DialogHandler implements IDialogHandler {
 		return uuid;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler#deleteDialog(java.util.UUID)
-	 */
 	@Override
 	public void deleteDialog(UUID uuid) {
 		this.map.remove(uuid);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler#process(java.lang.String, java.util.UUID)
-	 */
 	@Override
 	public void process(String naturalLanguageText, UUID uuid) {
 		if (!this.map.containsKey(uuid)) {

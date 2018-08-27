@@ -54,6 +54,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.NLParserException;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.EntityDataImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntentTemplate;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
 /**
@@ -87,7 +88,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Reference
 	private ServiceLocator serviceLocator;
 
-	private Map<AGFNode, Pair<Method, XMLAIMIntent>> nodeToMethodAIMPair = new HashMap<>();
+	private Map<AGFNode, UserIntentTemplate> nodeToMethodAIMPair = new HashMap<>();
 
 	@Reference
 	private ConfigurationManager configurationLoader;
@@ -123,8 +124,11 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			throw new IllegalArgumentException("annotation is not present in " + method.getName());
 		}
 
+		UserIntentTemplate template = new UserIntentTemplate(method, intent);
+		
+		//unfortunately we have to use UserIntent here because enity data has to be present 
 		UserIntent userIntent = new UserIntent(method, intent);
-		this.nodeToMethodAIMPair.put(userIntent.getGrammar(), Pair.of(method, intent));
+		this.nodeToMethodAIMPair.put(userIntent.getGrammar(), template);
 	}
 
 	/**
@@ -217,8 +221,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 				this.language.getStemmer());
 		try {
 			AGFNode node = nlParser.matchingNode(tokens);
-			Method left = this.nodeToMethodAIMPair.get(node).getLeft();
-			XMLAIMIntent right = this.nodeToMethodAIMPair.get(node).getRight();
+			Method left = this.nodeToMethodAIMPair.get(node).getMethod();
+			XMLAIMIntent right = this.nodeToMethodAIMPair.get(node).getXml();
 			UserIntent userIntent = new UserIntent(left, right);
 			dialog.setIntent(userIntent);
 

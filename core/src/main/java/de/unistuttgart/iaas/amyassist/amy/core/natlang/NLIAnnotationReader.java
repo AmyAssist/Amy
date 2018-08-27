@@ -27,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -109,7 +110,8 @@ public class NLIAnnotationReader {
 	 */
 	public static void assertValid(Method method) {
 		Class<?>[] parameterTypes = method.getParameterTypes();
-		if (parameterTypes.length != 1 || !parameterTypes[0].getTypeName().equals("java.util.Map")) {
+		if (parameterTypes.length != 1 || !parameterTypes[0].equals(Map.class)) {
+			System.out.println(parameterTypes[0].getClass());
 			throw new IllegalArgumentException("The method " + method.toString()
 					+ " does not have the correct parameter type. It should be a Map.");
 		}
@@ -195,7 +197,7 @@ public class NLIAnnotationReader {
 		if (parameterTypes.length != 0) {
 			throw new IllegalArgumentException("The method " + method.toString() + " should not have paramters");
 		}
-		if (!method.getReturnType().getTypeName().equals("java.util.List")) {
+		if (!method.getReturnType().equals(List.class)) {
 			throw new IllegalArgumentException(
 					"The returntype of a method annotated with @EntityProvider should be List<String>.");
 		}

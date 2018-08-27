@@ -36,7 +36,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 
 
 /**
- * TODO: Description
+ * Test for AGFParser
  * @author Felix Burk
  */
 public class AGFParserTest {

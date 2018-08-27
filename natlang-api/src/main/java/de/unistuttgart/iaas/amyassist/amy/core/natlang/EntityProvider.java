@@ -30,20 +30,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The definition of a grammar annotation.
+ * Marks methods returning a custom string array as a grammar replacement
+ * e.g. String[] example = {"test","test2"}; 
+ * represents the grammar (test|test2)
  * 
- * @author Felix Burk
+ * @author Felix Burk, Lars Buttgereit
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Target(java.lang.annotation.ElementType.METHOD)
 @Repeatable(EntityProviders.class)
 public @interface EntityProvider {
+	
 	/**
-	 * The string inside this annotation has to be in Amy Grammar Format (AGF), a description and examples can be found
-	 * in the amy-assist wiki https://github.com/AmyAssist/Amy/wiki/Annotations
-	 * 
-	 * @return the grammar in AGF - Amy Grammar Format
+	 * contains the unique entity key name
+	 * @return the key name
 	 */
 	String value();
 }

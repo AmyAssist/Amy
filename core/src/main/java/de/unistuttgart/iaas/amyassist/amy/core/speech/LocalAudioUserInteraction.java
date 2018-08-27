@@ -37,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManage
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.LocalSpeechRecognizerManager;
@@ -59,7 +59,7 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	private Logger logger;
 
 	@Reference
-	private IDialogHandler dialogHandler;
+	private DialogHandler dialogHandler;
 
 	@Reference
 	private Output tts;

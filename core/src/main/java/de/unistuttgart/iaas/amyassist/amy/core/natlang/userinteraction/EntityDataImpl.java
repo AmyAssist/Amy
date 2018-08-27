@@ -24,8 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
 
 import java.time.LocalTime;
-import java.util.regex.Pattern;
-
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUtility;
 
@@ -37,11 +35,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUt
 public class EntityDataImpl implements EntityData {
 
 	private String string;
-	private LocalTime time;
 	private ITimeUtility timeUtility;
 
-	
-
+	/**
+	 * constructor
+	 * @param string content
+	 * @param timeUtility time converter
+	 */
 	public EntityDataImpl(String string, ITimeUtility timeUtility) {
 		this.string = string;
 		this.timeUtility = timeUtility;

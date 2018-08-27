@@ -41,25 +41,25 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.EntityDat
 /**
  * Test Cases for the AnnotationReader
  *
- * @author Felix Burk
+ * @author Leon Kiefer, Felix Burk
  */
 class TestNLIAnnotationReader {
 
 	@Test
-	public void testIntent() {
-		Set<Method> intents = NLIAnnotationReader.getValidIntentMethods(Plugin.class);
+	public void testGrammar() {
+		Set<Method> grammars = NLIAnnotationReader.getValidIntentMethods(Plugin.class);
 
-		assertThat(intents, hasSize(2));
+		assertThat(grammars, hasSize(2));
 	}
 
 	@SpeechCommand
 	class Plugin {
-		@Intent
+		@Intent()
 		public String count(Map<String, EntityDataImpl> test) {
 			return "1";
 		}
 
-		@Intent
+		@Intent()
 		public String say(Map<String, EntityDataImpl> test) {
 			return "";
 		}
@@ -72,7 +72,7 @@ class TestNLIAnnotationReader {
 
 	@SpeechCommand
 	class Broken {
-		@Intent
+		@Intent()
 		public String count(String s) {
 			return "";
 		}
@@ -87,7 +87,7 @@ class TestNLIAnnotationReader {
 
 	@SpeechCommand
 	class BrokenReturnType {
-		@Intent
+		@Intent()
 		public int count(Map<String, EntityDataImpl> tes) {
 			return 0;
 		}

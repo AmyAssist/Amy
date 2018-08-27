@@ -3,7 +3,12 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public interface IDialogHandler {
+/**
+ * entry point for natural language interpretation
+ *  
+ * @author Lars Buttgereit, Felix Burk
+ */
+public interface DialogHandler {
 
 	/**
 	 * creates a new dialog

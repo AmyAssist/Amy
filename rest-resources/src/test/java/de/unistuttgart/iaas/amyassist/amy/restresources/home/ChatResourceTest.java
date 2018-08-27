@@ -39,7 +39,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatResource;
 import de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatService;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -58,7 +58,7 @@ public class ChatResourceTest {
 	
 	private ChatService chatService;
 	
-	private IDialogHandler handler;
+	private DialogHandler handler;
 	
 	private WebTarget target;
 	
@@ -69,7 +69,7 @@ public class ChatResourceTest {
 	 */
 	@BeforeEach()
 	public void init() {
-		this.handler =this.testFramework.mockService(IDialogHandler.class);
+		this.handler =this.testFramework.mockService(DialogHandler.class);
 		this.chatService = this.testFramework.mockService(ChatService.class);
 		UUID uuid = UUID.randomUUID();
 		this.uuidString = uuid.toString();

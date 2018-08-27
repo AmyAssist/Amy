@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import asg.cliche.Command;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 
 /**
  * Console commands to interact with Amy like speaking with her.
@@ -41,7 +41,7 @@ public class SpeechConsole {
 	@Reference
 	private Logger logger;
 	@Reference
-	private IDialogHandler handler;
+	private DialogHandler handler;
 	private UUID dialog;
 
 	@PostConstruct
