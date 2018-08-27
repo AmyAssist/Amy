@@ -23,10 +23,11 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.status;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.equalTo;
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.Random;
