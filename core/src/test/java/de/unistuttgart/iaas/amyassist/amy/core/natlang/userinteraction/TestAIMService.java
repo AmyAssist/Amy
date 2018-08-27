@@ -92,7 +92,7 @@ class TestAIMService {
 
 	@Test
 	void testGram() {
-		assertThat(this.interactionModel.getIntents().get(0).getGram(), equalTo("say {greeting} {number}"));
+		assertThat(this.interactionModel.getIntents().get(0).getGram().trim(), equalTo("say {greeting} {number}"));
 	}
 
 	@Test

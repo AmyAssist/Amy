@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 
 /**
  * Marks methods returning a custom string array as a grammar replacement
- * e.g. String[] example = {"test","test2"}; 
+ * e.g. List<String> example = {"test","test2"}; 
  * represents the grammar (test|test2)
  * 
  * @author Felix Burk, Lars Buttgereit

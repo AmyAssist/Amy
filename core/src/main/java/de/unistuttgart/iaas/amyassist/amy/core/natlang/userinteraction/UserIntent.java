@@ -83,7 +83,7 @@ public class UserIntent {
 		this.aimIntent = aimIntent;
 
 		registerEntities();
-		this.grammar = parseStringToAGF(this.aimIntent.getGram());
+		this.grammar = parseStringToAGF(this.aimIntent.getGram().toLowerCase().trim());
 	}
 
 	private void registerEntities() {

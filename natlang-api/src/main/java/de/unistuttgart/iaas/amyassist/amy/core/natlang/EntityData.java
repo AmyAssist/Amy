@@ -33,21 +33,21 @@ import java.time.LocalTime;
 public interface EntityData {
 
 	/**
-	 * Get's {@link #number number}
+	 * Get's integer representation
 	 * 
 	 * @return number
 	 */
 	int getNumber();
 
 	/**
-	 * Get's {@link #string string}
+	 * Get's string representation
 	 * 
 	 * @return string
 	 */
 	String getString();
 
 	/**
-	 * Get's {@link #time time}
+	 * Get's time represenation
 	 * 
 	 * @return time
 	 */

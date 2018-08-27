@@ -120,6 +120,7 @@ class TestNLIAnnotationReader {
 		assertThat(NLIAnnotationReader.getValidEnityProviderMethod(GoodEntityProvider.class, "bl"), equalTo(null));
 	}
 
+	@SpeechCommand
 	class GoodEntityProvider {
 		@EntityProvider("bla")
 		public List<String> bla() {
@@ -147,6 +148,7 @@ class TestNLIAnnotationReader {
 				+ " should not have paramters"));
 	}
 
+	@SpeechCommand
 	class BrokenParamterEntityProvider {
 		@EntityProvider("test")
 		public List<String> count(int i) {

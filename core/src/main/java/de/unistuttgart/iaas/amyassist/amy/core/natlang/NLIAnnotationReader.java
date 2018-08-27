@@ -55,13 +55,16 @@ public class NLIAnnotationReader {
 	 *             if a method annotated with {@link Grammar} is not a valid NLIMethod
 	 */
 	public static Set<Method> getValidIntentMethods(Class<?> cls) {
-		Set<Method> validMethods = new HashSet<>();
-		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Intent.class);
-		for (Method method : methodsWithAnnotation) {
-			assertValid(method);
-			validMethods.add(method);
+		if(cls.getAnnotation(SpeechCommand.class) != null) {
+			Set<Method> validMethods = new HashSet<>();
+			Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Intent.class);
+			for (Method method : methodsWithAnnotation) {
+				assertValid(method);
+				validMethods.add(method);
+			}
+			return validMethods;
 		}
-		return validMethods;
+		throw new IllegalArgumentException("class has no @SpeechCommand annotation");
 	}
 
 	/**

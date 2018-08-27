@@ -27,7 +27,13 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
- * entry point for natural language interpretation
+ * entry point for natural language interpretation. 
+ * To create a new dialog use {@link #createDialog(Consumer)}
+ * and store the returned UUID. This uuid represents a running dialog of a single user.
+ * If the user closes the current session use {@linkp #deleteDialog(UUID)}. 
+ * 
+ * To process new natural language input use {@link #process(String, UUID)}. The corresponding
+ * output will be called from the specified consumer in {@link #createDialog(Consumer)}
  *  
  * @author Lars Buttgereit, Felix Burk
  */
@@ -46,7 +52,7 @@ public interface DialogHandler {
 	 * deletes a save dialog - this should be called once in a while if the core is running for any long amounts of time
 	 *
 	 * @param uuid
-	 *                 of fialog to delete
+	 *                 of dialog to delete
 	 */
 	void deleteDialog(UUID uuid);
 
