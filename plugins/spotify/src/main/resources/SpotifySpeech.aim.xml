@@ -92,9 +92,12 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.searchASong">
-		<gram>play following song {songname}</gram>
+		<gram>play following {mode} {name}</gram>
 		<EntityTemplates>
-			<EntityTemplate id="songname" required="true">
+			<EntityTemplate id="mode" required="true">
+				<gram>(track|playlist|album|song)</gram>
+			</EntityTemplate>		
+			<EntityTemplate id="name" required="true">
 				<gram>*</gram>
 			</EntityTemplate>
 		</EntityTemplates>
@@ -102,7 +105,7 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.setDeviceName">
-		<gram> set (spotify|music) device by name [{devicename}] </gram>
+		<gram> set (spotify|music) device by name</gram>
 		<EntityTemplates>
 			<EntityTemplate id="devicename" required="true">
 				<gram>name</gram>

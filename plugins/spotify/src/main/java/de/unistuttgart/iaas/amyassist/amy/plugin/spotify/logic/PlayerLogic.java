@@ -183,7 +183,7 @@ public class PlayerLogic {
 	 */
 	public AlbumEntity playAlbum(int albumNumber) {
 		if(this.search.getAlbumSearchResults().size() > albumNumber) {
-			this.spotifyAPICalls.playSongFromUri(this.search.getAlbumSearchResults().get(albumNumber).getUri());
+			this.spotifyAPICalls.playListFromUri(this.search.getAlbumSearchResults().get(albumNumber).getUri());
 			return this.search.getAlbumSearchResults().get(albumNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
@@ -199,7 +199,7 @@ public class PlayerLogic {
 	 */
 	public ArtistEntity playArtist(int artistNumber) {
 		if(this.search.getArtistSearchResults().size() > artistNumber) {
-			this.spotifyAPICalls.playSongFromUri(this.search.getArtistSearchResults().get(artistNumber).getUri());
+			this.spotifyAPICalls.playListFromUri(this.search.getArtistSearchResults().get(artistNumber).getUri());
 			return this.search.getArtistSearchResults().get(artistNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
