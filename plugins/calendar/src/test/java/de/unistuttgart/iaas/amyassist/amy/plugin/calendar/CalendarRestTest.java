@@ -24,7 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.equalTo;
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -105,14 +106,14 @@ class CalendarRestTest {
 	void testSetEvents() {
 		Entity<CalendarEvent> entity = Entity.entity(this.setEvent, MediaType.APPLICATION_JSON);
 		try (Response response = this.target.path("events/set").request().post(entity)) {
-			assertThat(response.getStatus(), is(204));
+			assertThat(response, status(204));
 			Mockito.verify(this.logic).setEvent(this.setEvent);
 		}
 
 		try (Response response = this.target.path("events/set").request().post(null)) {
 			String actualMsg = response.readEntity(String.class);
-			assertThat(actualMsg, is("Enter valid event information"));
-			assertThat(response.getStatus(), is(409));
+			assertThat(actualMsg, equalTo("Enter valid event information"));
+			assertThat(response, status(409));
 		}
 	}
 
@@ -127,13 +128,13 @@ class CalendarRestTest {
 				Response response2 = this.target.path("events/2").request().get()) {
 
 			String actual = response.readEntity(String.class);
-			assertThat(actual, is(EVENT_UPCOMING));
-			assertThat(response.getStatus(), is(200));
+			assertThat(actual, equalTo(EVENT_UPCOMING));
+			assertThat(response, status(200));
 			Mockito.verify(this.logic).getEvents(1);
 
 			actual = response2.readEntity(String.class);
-			assertThat(actual, is(NO_EVENTS_FOUND));
-			assertThat(response2.getStatus(), is(404));
+			assertThat(actual, equalTo(NO_EVENTS_FOUND));
+			assertThat(response2, status(404));
 			Mockito.verify(this.logic).getEvents(2);
 		}
 	}
@@ -146,15 +147,15 @@ class CalendarRestTest {
 		Mockito.when(this.logic.getEventsToday()).thenReturn(EVENT_TODAY);
 		try (Response response = this.target.path("events/today").request().get()) {
 			String actual = response.readEntity(String.class);
-			assertThat(actual, is(EVENT_TODAY));
-			assertThat(response.getStatus(), is(200));
+			assertThat(actual, equalTo(EVENT_TODAY));
+			assertThat(response, status(200));
 		}
 
 		Mockito.when(this.logic.getEventsToday()).thenReturn(NO_EVENTS_TODAY);
 		try (Response response = this.target.path("events/today").request().get()) {
 			String actual = response.readEntity(String.class);
-			assertThat(actual, is(NO_EVENTS_TODAY));
-			assertThat(response.getStatus(), is(404));
+			assertThat(actual, equalTo(NO_EVENTS_TODAY));
+			assertThat(response, status(404));
 		}
 
 		Mockito.verify(this.logic, Mockito.times(2)).getEventsToday();
@@ -168,15 +169,15 @@ class CalendarRestTest {
 		Mockito.when(this.logic.getEventsTomorrow()).thenReturn(EVENT_TOMORROW);
 		try (Response response = this.target.path("events/tomorrow").request().get()) {
 			String actual = response.readEntity(String.class);
-			assertThat(actual, is(EVENT_TOMORROW));
-			assertThat(response.getStatus(), is(200));
+			assertThat(actual, equalTo(EVENT_TOMORROW));
+			assertThat(response, status(200));
 		}
 
 		Mockito.when(this.logic.getEventsTomorrow()).thenReturn(NO_EVENTS_TOMORROW);
 		try (Response response = this.target.path("events/tomorrow").request().get()) {
 			String actual = response.readEntity(String.class);
-			assertThat(actual, is(NO_EVENTS_TOMORROW));
-			assertThat(response.getStatus(), is(404));
+			assertThat(actual, equalTo(NO_EVENTS_TOMORROW));
+			assertThat(response, status(404));
 		}
 
 		Mockito.verify(this.logic, Mockito.times(2)).getEventsTomorrow();
@@ -191,15 +192,15 @@ class CalendarRestTest {
 		Mockito.when(this.logic.getEventsAtAsString(this.ldt)).thenReturn(EVENT_AT_DATE);
 		try (Response response = this.target.path("eventsAtString/2015-05-28T08:00:00").request().get()) {
 			String actual = response.readEntity(String.class);
-			assertThat(actual, is(EVENT_AT_DATE));
-			assertThat(response.getStatus(), is(200));
+			assertThat(actual, equalTo(EVENT_AT_DATE));
+			assertThat(response, status(200));
 		}
 
 		Mockito.when(this.logic.getEventsAtAsString(this.ldt)).thenReturn(NO_EVENTS_AT_DATE);
 		try (Response response = this.target.path("eventsAtString/2015-05-28T08:00:00").request().get()) {
 			String actual = response.readEntity(String.class);
-			assertThat(actual, is(NO_EVENTS_AT_DATE));
-			assertThat(response.getStatus(), is(404));
+			assertThat(actual, equalTo(NO_EVENTS_AT_DATE));
+			assertThat(response, status(404));
 		}
 
 		Mockito.verify(this.logic, Mockito.times(2)).getEventsAtAsString(this.ldt);
@@ -213,7 +214,7 @@ class CalendarRestTest {
 	void testGetEventsAt() {
 		Mockito.when(this.logic.getEventsAt(this.ldt)).thenReturn(this.eventList);
 		try (Response response = this.target.path("eventsAt/2015-05-28T08:00:00").request().get()) {
-			assertThat(response.getStatus(), is(200));
+			assertThat(response, status(200));
 			List<CalendarEvent> actualEvents = response.readEntity(List.class);
 			// assertThat(actualEvents, is(this.eventList));
 		}
@@ -221,8 +222,8 @@ class CalendarRestTest {
 		Mockito.when(this.logic.getEventsAt(this.ldt)).thenReturn(new ArrayList<>());
 		try (Response response = this.target.path("eventsAt/2015-05-28T08:00:00").request().get()) {
 			String actualMsg = response.readEntity(String.class);
-			assertThat(actualMsg, is(NO_EVENTS_FOUND));
-			assertThat(response.getStatus(), is(409));
+			assertThat(actualMsg, equalTo(NO_EVENTS_FOUND));
+			assertThat(response, status(409));
 		}
 
 		Mockito.verify(this.logic, Mockito.times(2)).getEventsAt(this.ldt);
