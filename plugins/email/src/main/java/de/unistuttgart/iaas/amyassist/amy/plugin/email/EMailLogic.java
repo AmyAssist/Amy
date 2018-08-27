@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
@@ -308,23 +309,22 @@ public class EMailLogic {
 	 * Set up connection to mail server with given parameters. Put empty strings into all parameters if you want to
 	 * connect with the Amy mail account
 	 * 
-	 * @param username
-	 *            email address
-	 * @param password
-	 *            password for the mail account
-	 * @param hostAddress
-	 *            address of the imap mail server, something like "imap.gmail.com"
+	 * @param credentials
+	 *            the email credentials
+	 * 
 	 * @return true if connecting was successful, else false
 	 */
-	public boolean connectToMailServer(String username, String password, String hostAddress) {
-		if (username.isEmpty() && password.isEmpty() && hostAddress.isEmpty()) {
+	public boolean connectToMailServer(EMailCredentials credentials) {
+		if (credentials.getUsername().isEmpty() && credentials.getPassword().isEmpty()
+				&& credentials.getImapServer().isEmpty()) {
 			String amyUsername = this.configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
 			String amyPassword = this.configLoader.getProperty(AMY_MAIL_PW_KEY);
 			String amyHost = AMY_MAIL_HOST;
+			EMailCredentials amyCredentials = new EMailCredentials(amyUsername, amyPassword, amyHost);
 
-			return this.mailSession.startNewMailSession(amyUsername, amyPassword, amyHost);
+			return this.mailSession.startNewMailSession(amyCredentials);
 		}
-		return this.mailSession.startNewMailSession(username, password, hostAddress);
+		return this.mailSession.startNewMailSession(credentials);
 	}
 
 	/**

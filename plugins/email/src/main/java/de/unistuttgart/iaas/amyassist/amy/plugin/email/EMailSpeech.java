@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
 
 /**
  * Class that defines the speech commands for the email functionality and calls the logic methods
@@ -55,7 +56,7 @@ public class EMailSpeech {
 	 */
 	@Grammar("connect to amy mail")
 	public String connectToAmyMail(String... params) {
-		if (this.logic.connectToMailServer("", "", "")) {
+		if (this.logic.connectToMailServer(new EMailCredentials())) {
 			return "Connected to mail server";
 		}
 		return "Couldn't connect to mail server";

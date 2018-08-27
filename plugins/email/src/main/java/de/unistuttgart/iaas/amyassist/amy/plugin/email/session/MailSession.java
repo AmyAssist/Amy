@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
 
 /**
  * Session class for the google mail provider
@@ -67,22 +68,19 @@ public class MailSession {
 	/**
 	 * Set up connection to an email service with given parameters
 	 * 
-	 * @param username
-	 *            email address
-	 * @param password
-	 *            password
-	 * @param hostAddress
-	 *            address of the mail provider, e.g. imap.gmail.com
+	 * @param credentials
+	 *            the mail credentials
+	 * 
 	 * @return if connecting was successful
 	 */
-	public boolean startNewMailSession(String username, String password, String hostAddress) {
+	public boolean startNewMailSession(EMailCredentials credentials) {
 		endSession();
 
 		// set up new session
 		Session session = Session.getInstance(System.getProperties(), null);
 		try {
 			this.store = session.getStore(PROTOCOL);
-			this.store.connect(hostAddress, username, password);
+			this.store.connect(credentials.getImapServer(), credentials.getUsername(), credentials.getPassword());
 			return true;
 		} catch (MessagingException e) {
 			this.logger.error("Couldn't connect to service", e);

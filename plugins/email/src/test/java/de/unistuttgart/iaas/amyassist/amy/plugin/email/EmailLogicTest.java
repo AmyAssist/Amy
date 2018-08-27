@@ -29,6 +29,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -58,6 +59,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
@@ -522,21 +524,21 @@ public class EmailLogicTest {
 	}
 
 	/**
-	 * Tests {@link EMailLogic#connectToMailServer(String, String, String)}
+	 * Tests {@link EMailLogic#connectToMailServer(EMailCredentials)}
 	 * 
 	 * @throws MessagingException
 	 *             if something goes wrong
 	 */
 	@Test
 	protected void testConnectToMailServer() throws MessagingException {
-		when(this.properties.getProperty(EMailLogic.AMY_MAIL_ADDRESS_KEY)).thenReturn("amyMail");
-		when(this.properties.getProperty(EMailLogic.AMY_MAIL_PW_KEY)).thenReturn("amyPassword");
-		String amyHost = EMailLogic.AMY_MAIL_HOST;
-		when(this.mailSession.startNewMailSession("amyMail", "amyPassword", amyHost)).thenReturn(true);
-		assertThat(this.emailLogic.connectToMailServer("", "", ""), is(true));
+		when(this.mailSession.startNewMailSession(ArgumentMatchers.any(EMailCredentials.class))).thenReturn(true);
+		assertTrue(this.emailLogic.connectToMailServer(new EMailCredentials()));
 
-		when(this.mailSession.startNewMailSession("testUsername", "testPassword", "testHostAddress")).thenReturn(true);
-		assertThat(this.emailLogic.connectToMailServer("testUsername", "testPassword", "testHostAddress"), is(true));
+		when(this.mailSession
+				.startNewMailSession(new EMailCredentials("testUsername", "testPassword", "testHostAddress")))
+						.thenReturn(true);
+		assertTrue(this.emailLogic
+				.connectToMailServer(new EMailCredentials("testUsername", "testPassword", "testHostAddress")));
 	}
 
 	/**

@@ -54,22 +54,17 @@ public class EMailResource {
 	/**
 	 * Connect to a mail service with the given parameters
 	 * 
-	 * @param username
-	 *            the mail address
-	 * @param password
-	 *            the password for the mail account
-	 * @param imapServer
-	 *            the imap mail server
+	 * @param credentials
+	 *            the email credentials
+	 * 
 	 * @return true if connecting was successful, else false
 	 */
 	@POST
 	@Path("connect")
-	@Consumes(MediaType.TEXT_PLAIN)
-	public boolean connect(@QueryParam("username") @DefaultValue("") String username,
-			@QueryParam("password") @DefaultValue("") String password,
-			@QueryParam("imapServer") @DefaultValue("") String imapServer) {
-
-		return this.logic.connectToMailServer(username, password, imapServer);
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean connect(EMailCredentials credentials) {
+		return this.logic.connectToMailServer(credentials);
 	}
 
 	/**
