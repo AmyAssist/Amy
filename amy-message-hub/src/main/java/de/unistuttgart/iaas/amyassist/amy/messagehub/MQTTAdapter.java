@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 
@@ -36,6 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.information.InstanceInformation;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
@@ -51,6 +53,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 
 	private static final String CONFIG_NAME = "mqtt.config";
 	private static final String KEY_BROKER_ADDRESS = "brokerAddress";
+	private static final String KEY_PERSITENCE_LOCATION = "persitenceLocation";
 
 	@Reference
 	private Logger logger;
@@ -64,19 +67,24 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	@Reference
 	private TopicFactory tf;
 
+	@Reference
+	private Environment env;
+
 	private MqttAsyncClient client;
-	private String brokerAddress;
 
 	private BiConsumer<TopicName, Message> handler;
 
 	@PostConstruct
 	private void init() {
 		Properties config = this.configManager.getConfigurationWithDefaults(CONFIG_NAME);
-		this.brokerAddress = config.getProperty(KEY_BROKER_ADDRESS);
+		String brokerAddress = config.getProperty(KEY_BROKER_ADDRESS);
+		String persitanceLocation = config.getProperty(KEY_PERSITENCE_LOCATION);
+
+		Path persistencePath = this.env.getWorkingDirectory().resolve(persitanceLocation);
 
 		try {
-			this.client = new MqttAsyncClient(this.brokerAddress, this.info.getNodeId() + "-MainJavaApp",
-					new MqttDefaultFilePersistence()); // TODO: Configure directory
+			this.client = new MqttAsyncClient(brokerAddress, this.info.getNodeId() + "-MainJavaApp",
+					new MqttDefaultFilePersistence(persistencePath.toAbsolutePath().toString()));
 			this.client.setCallback(this);
 		} catch (MqttException e) {
 			fail("Initialize", e);

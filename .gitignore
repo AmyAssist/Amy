@@ -33,4 +33,6 @@ dependency-reduced-pom.xml
 !.docker/config/**
 !.dev/config/**
 
+#Ignore db and persistence files.
 *.db
+.mqtt-persitence/**

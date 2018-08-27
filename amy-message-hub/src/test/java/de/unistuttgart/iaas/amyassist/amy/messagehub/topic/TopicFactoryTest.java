@@ -52,6 +52,12 @@ class TopicFactoryTest {
 	private TestFramework testFramework;
 	private TopicFactory tf;
 
+	/**
+	 * Init the test
+	 * 
+	 * @throws Exception
+	 *             When an error occurs
+	 */
 	@BeforeEach
 	void init() throws Exception {
 		this.tf = this.testFramework.setServiceUnderTest(TopicFactoryService.class);

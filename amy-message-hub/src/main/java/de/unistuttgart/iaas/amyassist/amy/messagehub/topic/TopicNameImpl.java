@@ -50,6 +50,12 @@ public class TopicNameImpl extends AbstractTopic implements TopicName {
 	}
 
 	/**
+	 * Validates the topic string for topic names
+	 * 
+	 * @param topicString
+	 *            The topic string to validate
+	 * @throws TopicFormatException
+	 *             When the validation fails.
 	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicString(java.lang.String)
 	 */
 	protected final void validateTopicStringForName(String topicString) throws TopicFormatException {
