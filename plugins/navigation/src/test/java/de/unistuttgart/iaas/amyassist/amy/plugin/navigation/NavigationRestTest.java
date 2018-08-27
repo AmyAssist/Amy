@@ -24,8 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.equalTo;
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
 
 import java.time.ZonedDateTime;
 
@@ -105,7 +105,7 @@ class NavigationRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationResource#routeFromTo(String, String, String, Timestamp)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationResource#routeFromTo(Route)}.
 	 */
 	@Test
 	void testRouteFromTo() {
@@ -114,59 +114,60 @@ class NavigationRestTest {
 
 		this.route.setTime(null);
 		Entity<Route> entity = Entity.entity(this.route, MediaType.APPLICATION_JSON);
-		Response response = this.target.path("fromTo").request().post(entity);
-		BestTransportResult actual = response.readEntity(BestTransportResult.class);
-		assertTrue(actual.getMode().equals(this.bestResult.getMode()));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).fromTo(this.origin, this.destination, this.travelMode);
+		try (Response response = this.target.path("fromTo").request().post(entity)) {
+			assertThat(response.readEntity(BestTransportResult.class).getMode(), equalTo(this.bestResult.getMode()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).fromTo(this.origin, this.destination, this.travelMode);
+		}
 
 		this.route.setTime(ZonedDateTime.parse("2020-01-02T20:20:20+00:00"));
 		entity = Entity.entity(this.route, MediaType.APPLICATION_JSON);
 		Mockito.when(this.logic.fromToWithDeparture(this.origin, this.destination, this.travelMode, this.dateTime))
 				.thenReturn(this.bestResult);
-		response = this.target.path("fromTo").request().post(entity);
-		actual = response.readEntity(BestTransportResult.class);
-		assertTrue(actual.getMode().equals(this.bestResult.getMode()));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).fromToWithDeparture(this.origin, this.destination, this.travelMode, this.dateTime);
+		try (Response response = this.target.path("fromTo").request().post(entity)) {
+			assertThat(response.readEntity(BestTransportResult.class).getMode(), equalTo(this.bestResult.getMode()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).fromToWithDeparture(this.origin, this.destination, this.travelMode,
+					this.dateTime);
+		}
 
-		response = this.target.path("fromTo").request().post(null);
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Missing origin and/or destination input."));
-		assertThat(response.getStatus(), is(409));
+		try (Response response = this.target.path("fromTo").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("Missing origin and/or destination input."));
+			assertThat(response, status(409));
+		}
 
 		Mockito.when(this.logic.getTravelMode("blabla")).thenReturn(null);
 		this.route.setTravelmode(null);
 		entity = Entity.entity(this.route, MediaType.APPLICATION_JSON);
-		response = this.target.path("fromTo").request().post(entity);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Enter a correct travel mode."));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic, Mockito.times(4)).getTravelMode("driving");
+		try (Response response = this.target.path("fromTo").request().post(entity)) {
+			assertThat(response.readEntity(String.class), equalTo("Enter a correct travel mode."));
+			assertThat(response, status(409));
+			Mockito.verify(this.logic, Mockito.times(4)).getTravelMode("driving");
+		}
 
 		this.route.setTime(null);
 		this.route.setTravelmode(TravelMode.WALKING.toString());
 		entity = Entity.entity(this.route, MediaType.APPLICATION_JSON);
 		Mockito.when(this.logic.getTravelMode("walking")).thenReturn(TravelMode.WALKING);
 		Mockito.when(this.logic.fromTo(this.origin, this.destination, TravelMode.WALKING)).thenReturn(null);
-		response = this.target.path("fromTo").request().post(entity);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("No route found."));
-		assertThat(response.getStatus(), is(404));
+		try (Response response = this.target.path("fromTo").request().post(entity)) {
+			assertThat(response.readEntity(String.class), equalTo("No route found."));
+			assertThat(response, status(404));
+		}
 
 		this.route.setTime(ZonedDateTime.parse("1960-01-02T20:20:20+00:00"));
 		this.route.setTravelmode(TravelMode.WALKING.toString());
 		entity = Entity.entity(this.route, MediaType.APPLICATION_JSON);
-		response = this.target.path("fromTo").request().post(entity);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("No route found."));
-		assertThat(response.getStatus(), is(404));
-		Mockito.verify(this.logic, Mockito.times(4)).getTravelMode("walking");
+		try (Response response = this.target.path("fromTo").request().post(entity)) {
+			assertThat(response.readEntity(String.class), equalTo("No route found."));
+			assertThat(response, status(404));
+			Mockito.verify(this.logic, Mockito.times(4)).getTravelMode("walking");
+		}
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationResource#whenIHaveToGo(String, String, String, Timestamp)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationResource#whenIHaveToGo(Route)}.
 	 */
 	@Test
 	void testWhenIHaveToGo() {
@@ -175,59 +176,59 @@ class NavigationRestTest {
 				.thenReturn(this.instant);
 
 		Entity<Route> entity = Entity.entity(this.route, MediaType.APPLICATION_JSON);
-		Response response = this.target.path("when").request().post(entity);
-		String actual = response.readEntity(String.class);
-		assertThat(actual, is(ZonedDateTime.parse(this.dateTime.toString()).toString()));
-		assertThat(response.getStatus(), is(200));
+		try (Response response = this.target.path("when").request().post(entity)) {
+			assertThat(response.readEntity(String.class),
+					equalTo(ZonedDateTime.parse(this.dateTime.toString()).toString()));
+			assertThat(response, status(200));
+		}
 
 		Mockito.when(this.logic.whenIHaveToGo(this.origin, this.destination, this.travelMode, this.dateTime))
 				.thenReturn(null);
-		response = this.target.path("when").request().post(entity);
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("No latest starttime found."));
-		assertThat(response.getStatus(), is(404));
+		try (Response response = this.target.path("when").request().post(entity)) {
+			assertThat(response.readEntity(String.class), equalTo("No latest starttime found."));
+			assertThat(response, status(404));
+		}
 
-		response = this.target.path("when").request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Missing origin and/or destination input."));
-		assertThat(response.getStatus(), is(409));
+		try (Response response = this.target.path("when").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("Missing origin and/or destination input."));
+			assertThat(response, status(409));
+		}
 
 		this.route.setTravelmode(null);
 		entity = Entity.entity(this.route, MediaType.APPLICATION_JSON);
 		Mockito.when(this.logic.getTravelMode("blabla")).thenReturn(null);
-		response = this.target.path("when").request().post(entity);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Enter a correct travel mode."));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic, Mockito.times(4)).getTravelMode("driving");
+		try (Response response = this.target.path("when").request().post(entity)) {
+			assertThat(response.readEntity(String.class), equalTo("Enter a correct travel mode."));
+			assertThat(response, status(409));
+			Mockito.verify(this.logic, Mockito.times(4)).getTravelMode("driving");
+		}
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationResource#getBestTransportInTime(String, String, Timestamp)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationResource#getBestTransportInTime(Route)}.
 	 */
 	@Test
 	void testGetBestTransportInTime() {
 		Mockito.when(this.logic.getBestTransportInTime(this.origin, this.destination, this.dateTime))
 				.thenReturn(this.bestResult);
 		Entity<Route> entity = Entity.entity(this.route, MediaType.APPLICATION_JSON);
-		Response response = this.target.path("best").request().post(entity);
-		BestTransportResult actual = response.readEntity(BestTransportResult.class);
-		assertTrue(actual.getMode().equals(this.bestResult.getMode()));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).getBestTransportInTime(this.origin, this.destination, this.dateTime);
+		try (Response response = this.target.path("best").request().post(entity)) {
+			assertThat(response.readEntity(BestTransportResult.class).getMode(), equalTo(this.bestResult.getMode()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).getBestTransportInTime(this.origin, this.destination, this.dateTime);
+		}
 
-		
-		response = this.target.path("best").request().post(null);
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Missing origin and/or destination input."));
-		assertThat(response.getStatus(), is(409));
+		try (Response response = this.target.path("best").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("Missing origin and/or destination input."));
+			assertThat(response, status(409));
+		}
 
 		Mockito.when(this.logic.getBestTransportInTime(this.origin, this.destination, this.dateTime)).thenReturn(null);
-		response = this.target.path("best").request().post(entity);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("No best transport type found."));
-		assertThat(response.getStatus(), is(404));
+		try (Response response = this.target.path("best").request().post(entity)) {
+			assertThat(response.readEntity(String.class), equalTo("No best transport type found."));
+			assertThat(response, status(404));
+		}
 	}
 
 }

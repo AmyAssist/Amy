@@ -29,7 +29,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * This is the speech class, which contains the commands for the calendar
- * 
+ *
  * @author Patrick Gebhardt, Florian Bauer
  */
 @SpeechCommand
@@ -63,15 +63,7 @@ public class CalendarSpeech {
 	 */
 	@Grammar("[which] events [do i have] (today|tomorrow)")
 	public String getEventsToday(String[] params) {
-		int position = 1;
-		if (params[0].contains("which") && params[2].contains("do")) {
-			position = 5;
-		} else if (params[0].contains("which")) {
-			position = 2;
-		} else if (params[1].contains("do")) {
-			position = 4;
-		}
-		if (params[position].contains("today")) {
+		if (params[params.length-1].contains("today")) {
 			return this.calendar.getEventsToday();
 		}
 		return this.calendar.getEventsTomorrow();
