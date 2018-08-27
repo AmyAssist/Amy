@@ -51,6 +51,9 @@ class HelloWorldRestTest {
 
 	private WebTarget target;
 
+	/**
+	 * setUp
+	 */
 	@BeforeEach
 	public void setUp() {
 		this.target = this.testFramework.setRESTResource(HelloWorldRest.class);

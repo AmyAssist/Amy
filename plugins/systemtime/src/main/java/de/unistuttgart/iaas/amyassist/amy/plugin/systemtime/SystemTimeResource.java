@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
+import java.time.LocalDateTime;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -37,12 +39,41 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
  * 
  * @author Muhammed Kaya
  */
-@Path("systemtime")
+@Path(SystemTimeResource.PATH)
 public class SystemTimeResource implements Resource {
 
+	/**
+	 * the resource path for this plugin
+	 */
+	public static final String PATH = "systemtime";
+	
 	@Reference
 	private SystemTimeLogic logic;
 
+	/**
+	 * get the current LocalDatetime as object
+	 * 
+	 * @return object of type Date
+	 */
+	@GET
+	@Path("timeStamp")
+	@Produces(MediaType.TEXT_PLAIN)
+	public LocalDateTime getTimeStamp() {
+		return this.logic.getTimeStamp();
+	}
+
+	/**
+	 *get the current system year
+	 *
+	 * @return current year, e.g. 2018
+	 */
+	@GET
+	@Path("year")
+	@Produces(MediaType.TEXT_PLAIN)
+	public int getYear() {
+		return this.logic.getYear();
+	}
+	
 	/**
 	 * get the current system time
 	 * 
