@@ -113,7 +113,7 @@ class AlarmClockResourceTest {
 		when(this.acl.getAlarm(5)).thenThrow(new NoSuchElementException());
 
 		this.r = this.target.path("alarms/0").request().get();
-		assertEquals(204, this.r.getStatus());
+		assertEquals(500, this.r.getStatus());
 
 		this.r = this.target.path("alarms/2").request().get();
 		assertEquals(200, this.r.getStatus());
