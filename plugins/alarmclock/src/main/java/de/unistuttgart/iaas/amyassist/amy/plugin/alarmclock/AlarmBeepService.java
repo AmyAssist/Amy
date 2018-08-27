@@ -72,9 +72,7 @@ public class AlarmBeepService {
 
 	private Sound beepSound;
 	private SoundPlayer beepPlayer;
-
 	private Set<Integer> alarmList = new HashSet<>();
-
 	private Set<Integer> timerList = new HashSet<>();
 
 	@PostConstruct
@@ -168,5 +166,4 @@ public class AlarmBeepService {
 	private void preDestroy() {
 		this.stopBeeping();
 	}
-
 }

@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -71,6 +72,12 @@ public class AlarmClockResource implements Resource {
 	@Path("alarms")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Alarm> getAllAlarms() {
+
+		List<Alarm> alarmlist = this.logic.getAllAlarms();
+		for (Alarm a : alarmlist) {
+			a.setLink(createAlarmPath(a.getId()));
+		}
+
 		return this.logic.getAllAlarms();
 	}
 
@@ -91,7 +98,7 @@ public class AlarmClockResource implements Resource {
 		} catch (NoSuchElementException e) {
 			throw new WebApplicationException("there is no alarm" + alarmnumber, e, Status.NOT_FOUND);
 		}
-
+		alarm.setLink(createAlarmPath(alarmnumber));
 		return alarm;
 	}
 
@@ -173,6 +180,7 @@ public class AlarmClockResource implements Resource {
 		} else {
 			day = 1;
 		}
+		alarm.setLink(createAlarmPath(alarm.getId()));
 		return this.logic.setAlarm(day, alarm.getAlarmTime().getHour(), alarm.getAlarmTime().getMinute());
 	}
 
@@ -192,4 +200,10 @@ public class AlarmClockResource implements Resource {
 	public ResourceEntity getPluginDescripion() {
 		return null;
 	}
+
+	private URI createAlarmPath(int id) {
+		return this.uri.getBaseUriBuilder().path(AlarmClockResource.class).path(AlarmClockResource.class, "getAlarm")
+				.build(Integer.valueOf(id));
+	}
+
 }

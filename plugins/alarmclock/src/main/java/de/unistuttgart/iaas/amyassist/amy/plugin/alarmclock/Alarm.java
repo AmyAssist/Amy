@@ -43,7 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdap
  */
 @Entity
 @PersistenceUnit(unitName = "AlarmRegistry")
-public class Alarm implements RegistryEntity {
+public class Alarm extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity implements RegistryEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -58,7 +58,6 @@ public class Alarm implements RegistryEntity {
 	 * Empty constructor for the alarm
 	 */
 	public Alarm() {
-
 	}
 
 	/**
@@ -74,11 +73,8 @@ public class Alarm implements RegistryEntity {
 	public Alarm(int id, LocalDateTime alarmTime, boolean active) {
 		if (id < 0)
 			throw new IllegalArgumentException();
-
 		this.id = id;
-
 		this.alarmTime = alarmTime;
-
 		this.active = active;
 	}
 
@@ -105,7 +101,6 @@ public class Alarm implements RegistryEntity {
 	 */
 	public static boolean timeValid(int hour, int minute) {
 		return hour <= 23 && hour >= 0 && minute <= 59 && minute >= 0;
-
 	}
 
 	/**
