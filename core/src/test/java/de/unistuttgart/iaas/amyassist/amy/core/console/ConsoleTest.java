@@ -35,7 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManage
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.IDialogHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.LoggerProvider;
 
 /**

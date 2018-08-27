@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import asg.cliche.Command;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.IDialogHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler;
 
 /**
  * Console commands to interact with Amy like speaking with her.

@@ -21,29 +21,21 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The definition of a grammar annotation.
+ * The definition of a speech command annotation
  * 
- * @author Felix Burk
+ * @author Leon Kiefer
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Target(java.lang.annotation.ElementType.METHOD)
-@Repeatable(EntityProviders.class)
-public @interface EntityProvider {
-	/**
-	 * The string inside this annotation has to be in Amy Grammar Format (AGF), a description and examples can be found
-	 * in the amy-assist wiki https://github.com/AmyAssist/Amy/wiki/Annotations
-	 * 
-	 * @return the grammar in AGF - Amy Grammar Format
-	 */
-	String value();
+@Target(java.lang.annotation.ElementType.TYPE)
+public @interface SpeechCommand {
+
 }

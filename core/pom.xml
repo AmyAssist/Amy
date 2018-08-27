@@ -44,6 +44,10 @@
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-natlang-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-message-hub-api</artifactId>
 		</dependency>
 		<dependency>

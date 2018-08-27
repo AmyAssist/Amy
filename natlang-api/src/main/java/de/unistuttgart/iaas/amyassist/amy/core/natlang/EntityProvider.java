@@ -21,9 +21,10 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -31,11 +32,18 @@ import java.lang.annotation.Target;
 /**
  * The definition of a grammar annotation.
  * 
- * @author Leon Kiefer, Felix Burk
+ * @author Felix Burk
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Target(java.lang.annotation.ElementType.METHOD)
-public @interface Intent {
-
+@Repeatable(EntityProviders.class)
+public @interface EntityProvider {
+	/**
+	 * The string inside this annotation has to be in Amy Grammar Format (AGF), a description and examples can be found
+	 * in the amy-assist wiki https://github.com/AmyAssist/Amy/wiki/Annotations
+	 * 
+	 * @return the grammar in AGF - Amy Grammar Format
+	 */
+	String value();
 }

@@ -20,6 +20,7 @@
 
 		<!-- Amy versions to depend on -->
 		<amy.di.api.version>0.5.0-Snapshot</amy.di.api.version>
+		<amy.natlang.api.version>0.5.0-Snapshot</amy.natlang.api.version>
 		<amy.di.version>0.5.0-Snapshot</amy.di.version>
 		<amy.message-hub.api.version>0.5.0-Snapshot</amy.message-hub.api.version>
 		<amy.message-hub.version>0.5.0-Snapshot</amy.message-hub.version>
@@ -70,6 +71,7 @@
 		<module>amy-message-hub-api</module>
 		<module>amy-message-hub</module>
 		<module>deployment-descriptor-utility</module>
+		<module>natlang-api</module>
 	</modules>
 	<licenses>
 		<license>
@@ -154,6 +156,11 @@
 	</build>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<artifactId>amy-natlang-api</artifactId>
+				<version>${amy.natlang.api.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>de.unistuttgart.iaas.amyassist</groupId>
 				<artifactId>amy-di-api</artifactId>

@@ -21,35 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
-import java.time.LocalTime;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Interface for the entity data storage
+ * The definition of a grammar annotation.
  * 
- * @author Felix Burk, Lars Buttgereit
+ * @author Leon Kiefer
  */
-public interface EntityData {
-
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Target(java.lang.annotation.ElementType.METHOD)
+public @interface Grammar {
 	/**
-	 * Get's {@link #number number}
-	 * 
-	 * @return number
+	 * The string inside this annotation has to be in
+	 * Amy Grammar Format (AGF), a description and examples
+	 * can be found in the amy-assist wiki 
+	 * https://github.com/AmyAssist/Amy/wiki/Annotations
+	 *  
+	 * @return the grammar in AGF - Amy Grammar Format
 	 */
-	int getNumber();
-
-	/**
-	 * Get's {@link #string string}
-	 * 
-	 * @return string
-	 */
-	String getString();
-
-	/**
-	 * Get's {@link #time time}
-	 * 
-	 * @return time
-	 */
-	LocalTime getTime();
+	String value();
 }

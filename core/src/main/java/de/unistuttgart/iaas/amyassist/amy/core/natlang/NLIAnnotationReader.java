@@ -33,11 +33,6 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProviders;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
-
 /**
  * This class is responsible to read the annotations of a given class
  *

@@ -39,7 +39,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.IDialogHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.IDialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatResource;
 import de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatService;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;

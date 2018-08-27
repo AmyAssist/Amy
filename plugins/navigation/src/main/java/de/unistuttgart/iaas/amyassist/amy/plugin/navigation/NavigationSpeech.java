@@ -36,10 +36,10 @@ import org.joda.time.ReadableInstant;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * Speech class for the navigation plugin

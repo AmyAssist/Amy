@@ -26,7 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
 import java.time.LocalTime;
 import java.util.regex.Pattern;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUtility;
 
 /**
@@ -48,7 +48,7 @@ public class EntityDataImpl implements EntityData {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData#getNumber()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData#getNumber()
 	 */
 	@Override
 	public int getNumber() {
@@ -61,7 +61,7 @@ public class EntityDataImpl implements EntityData {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData#getString()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData#getString()
 	 */
 	@Override
 	public String getString() {
@@ -69,7 +69,7 @@ public class EntityDataImpl implements EntityData {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData#getTime()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData#getTime()
 	 */
 	@Override
 	public LocalTime getTime() {

@@ -30,8 +30,8 @@ import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Grammar;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * Speech class for alarm clock

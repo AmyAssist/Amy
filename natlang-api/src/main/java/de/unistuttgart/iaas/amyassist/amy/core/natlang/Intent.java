@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -29,13 +29,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The definition of a speech command annotation
+ * The definition of a grammar annotation.
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Felix Burk
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Target(java.lang.annotation.ElementType.TYPE)
-public @interface SpeechCommand {
+@Target(java.lang.annotation.ElementType.METHOD)
+public @interface Intent {
 
 }

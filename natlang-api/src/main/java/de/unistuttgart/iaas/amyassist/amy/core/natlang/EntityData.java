@@ -21,26 +21,35 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.time.LocalTime;
 
 /**
- * This is needed to use one EntityProvider multiple times in one intent
+ * Interface for the entity data storage
  * 
- * @author Lars Buttgereit
+ * @author Felix Burk, Lars Buttgereit
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(java.lang.annotation.ElementType.METHOD)
-public @interface EntityProviders {
+public interface EntityData {
+
 	/**
-	 * contains all annotated EntityProvicders from one method
+	 * Get's {@link #number number}
 	 * 
-	 * @return a array with all EntityProviders
+	 * @return number
 	 */
-	EntityProvider[] value();
+	int getNumber();
+
+	/**
+	 * Get's {@link #string string}
+	 * 
+	 * @return string
+	 */
+	String getString();
+
+	/**
+	 * Get's {@link #time time}
+	 * 
+	 * @return time
+	 */
+	LocalTime getTime();
 }

@@ -1,4 +1,4 @@
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.util.UUID;
 import java.util.function.Consumer;

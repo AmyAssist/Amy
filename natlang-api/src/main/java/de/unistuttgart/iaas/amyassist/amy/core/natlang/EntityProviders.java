@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.api;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -29,21 +29,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The definition of a grammar annotation.
+ * This is needed to use one EntityProvider multiple times in one intent
  * 
- * @author Leon Kiefer
+ * @author Lars Buttgereit
  */
-@Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Retention(RetentionPolicy.RUNTIME)
 @Target(java.lang.annotation.ElementType.METHOD)
-public @interface Grammar {
+public @interface EntityProviders {
 	/**
-	 * The string inside this annotation has to be in
-	 * Amy Grammar Format (AGF), a description and examples
-	 * can be found in the amy-assist wiki 
-	 * https://github.com/AmyAssist/Amy/wiki/Annotations
-	 *  
-	 * @return the grammar in AGF - Amy Grammar Format
+	 * contains all annotated EntityProvicders from one method
+	 * 
+	 * @return a array with all EntityProviders
 	 */
-	String value();
+	EntityProvider[] value();
 }

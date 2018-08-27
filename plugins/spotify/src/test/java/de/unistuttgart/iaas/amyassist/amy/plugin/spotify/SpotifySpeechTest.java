@@ -42,7 +42,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;

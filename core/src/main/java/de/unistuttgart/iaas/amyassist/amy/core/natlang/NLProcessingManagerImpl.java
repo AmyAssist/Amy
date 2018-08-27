@@ -119,7 +119,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	 */
 	@Override
 	public void register(Method method, XMLAIMIntent intent) {
-		if (!method.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Intent.class)) {
+		if (!method.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent.class)) {
 			throw new IllegalArgumentException("annotation is not present in " + method.getName());
 		}
 

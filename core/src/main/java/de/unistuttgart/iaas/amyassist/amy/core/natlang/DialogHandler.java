@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.IDialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.EntityDataImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
 
