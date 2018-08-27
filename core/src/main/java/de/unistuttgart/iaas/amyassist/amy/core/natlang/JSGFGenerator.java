@@ -49,15 +49,15 @@ public class JSGFGenerator {
 	 * constructor, generates a JSGF file
 	 * 
 	 * @param name
-	 *                                   the name of the grammar file
+	 *            the name of the grammar file
 	 * @param multiCallStart
-	 *                                   the wakeup command
+	 *            the wakeup command
 	 * @param singleCallStart
-	 *                                   wakeup command for a single command
+	 *            wakeup command for a single command
 	 * @param multiCallStop
-	 *                                   the sleep command
+	 *            the sleep command
 	 * @param voiceOutputStopCommand
-	 *                                   the shut up command
+	 *            the shut up command
 	 */
 	public JSGFGenerator(String name, String multiCallStart, String singleCallStart, String multiCallStop,
 			String voiceOutputStopCommand) {
@@ -117,9 +117,9 @@ public class JSGFGenerator {
 	 * generateGrammarFileString() is called added rules are included
 	 * 
 	 * @param node
-	 *                     root node
+	 *            root node
 	 * @param ruleName
-	 *                     the name of the rule
+	 *            the name of the rule
 	 * @return the rule as String
 	 */
 	public String addRule(AGFNode node, String ruleName) {
@@ -135,9 +135,9 @@ public class JSGFGenerator {
 	 * traverses the tree
 	 * 
 	 * @param b
-	 *                 the string builder
+	 *            the string builder
 	 * @param node
-	 *                 the current root node
+	 *            the current root node
 	 * @return the current string representation of the rule
 	 */
 	private String handleNode(StringBuilder b, AGFNode node) {
@@ -178,9 +178,9 @@ public class JSGFGenerator {
 	 * convenience method to handle brace content
 	 * 
 	 * @param node
-	 *                 the AGFNode
+	 *            the AGFNode
 	 * @param b
-	 *                 the StringBuilder
+	 *            the StringBuilder
 	 */
 	private void handleBraceContent(AGFNode node, StringBuilder b) {
 		for (int i = 0; i < node.getChilds().size(); i++) {

@@ -38,15 +38,15 @@ public interface NLProcessingManager {
 	 * registers the given class
 	 * 
 	 * @param method
-	 *                   to call
+	 *            to call
 	 * @param intent
-	 *                   to register
+	 *            to register
 	 */
 	void register(Method method, XMLAIMIntent intent);
 
 	/**
 	 * @param grammarName
-	 *                        name of the grammar
+	 *            name of the grammar
 	 * @return the grammar file string
 	 */
 	String getGrammarFileString(String grammarName);
@@ -55,9 +55,9 @@ public interface NLProcessingManager {
 	 * decides which intent matches
 	 * 
 	 * @param dialog
-	 *                                containing intents
+	 *            containing intents
 	 * @param naturalLanguageText
-	 *                                text to match
+	 *            text to match
 	 */
 	void decideIntent(Dialog dialog, String naturalLanguageText);
 
@@ -65,9 +65,9 @@ public interface NLProcessingManager {
 	 * processes an intent
 	 * 
 	 * @param dialog
-	 *                                containing current intent
+	 *            containing current intent
 	 * @param naturalLanguageText
-	 *                                input text
+	 *            input text
 	 */
 	void processIntent(Dialog dialog, String naturalLanguageText);
 

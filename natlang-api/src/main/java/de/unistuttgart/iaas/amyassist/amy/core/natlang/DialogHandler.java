@@ -27,14 +27,13 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
- * entry point for natural language interpretation. 
- * To create a new dialog use {@link #createDialog(Consumer)}
- * and store the returned UUID. This uuid represents a running dialog of a single user.
- * If the user closes the current session use {@linkp #deleteDialog(UUID)}. 
+ * entry point for natural language interpretation. To create a new dialog use {@link #createDialog(Consumer)} and store
+ * the returned UUID. This uuid represents a running dialog of a single user. If the user closes the current session use
+ * {@linkp #deleteDialog(UUID)}.
  * 
- * To process new natural language input use {@link #process(String, UUID)}. The corresponding
- * output will be called from the specified consumer in {@link #createDialog(Consumer)}
- *  
+ * To process new natural language input use {@link #process(String, UUID)}. The corresponding output will be called
+ * from the specified consumer in {@link #createDialog(Consumer)}
+ * 
  * @author Lars Buttgereit, Felix Burk
  */
 public interface DialogHandler {
@@ -43,7 +42,7 @@ public interface DialogHandler {
 	 * creates a new dialog
 	 * 
 	 * @param cons
-	 *                 callback for consumer
+	 *            callback for consumer
 	 * @return the matching uuid
 	 */
 	UUID createDialog(Consumer<String> cons);
@@ -52,7 +51,7 @@ public interface DialogHandler {
 	 * deletes a save dialog - this should be called once in a while if the core is running for any long amounts of time
 	 *
 	 * @param uuid
-	 *                 of dialog to delete
+	 *            of dialog to delete
 	 */
 	void deleteDialog(UUID uuid);
 
@@ -60,9 +59,9 @@ public interface DialogHandler {
 	 * processes a dialog from a given uuid with natural language input from a user
 	 *
 	 * @param naturalLanguageText
-	 *                                from user
+	 *            from user
 	 * @param uuid
-	 *                                of dialog
+	 *            of dialog
 	 */
 	void process(String naturalLanguageText, UUID uuid);
 

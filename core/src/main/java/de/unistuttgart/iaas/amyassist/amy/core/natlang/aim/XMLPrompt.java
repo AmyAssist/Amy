@@ -62,7 +62,7 @@ public class XMLPrompt {
 	 * @return gram
 	 */
 	public String getGram() {
-		return this.gram.toLowerCase().trim();
+		return this.gram;
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class XMLPrompt {
 	 * @return entityTemplateId
 	 */
 	public String getEntityTemplateId() {
-		return this.entityTemplateId.toLowerCase().trim();
+		return this.entityTemplateId;
 	}
 
 }
