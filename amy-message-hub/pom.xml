@@ -37,5 +37,16 @@
 			<artifactId>cliche</artifactId>
 			<version>${cliche.version}</version>
 		</dependency>
+		<!-- Tests -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-testing-framework</artifactId>
+			<version>${amy.testing-framework.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>
