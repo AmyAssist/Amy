@@ -35,4 +35,4 @@ dependency-reduced-pom.xml
 
 #Ignore db and persistence files.
 *.db
-.mqtt-persitence/**
+.mqtt-persistence/**
