@@ -127,7 +127,7 @@ public class MorphemeParselet implements IAGFParselet {
 	 *                   the corresponding parser
 	 */
 	private void parseNumberExpression(MorphemeNode morph, Parser parser) {
-		String[] numbersInsideExpression = new String[3];
+		String[] numbersInsideExpression;
 		if (parser.match(AGFTokenType.OPENBR)) {
 			parser.consume();
 			numbersInsideExpression = getNumberExpressionContent(parser);
