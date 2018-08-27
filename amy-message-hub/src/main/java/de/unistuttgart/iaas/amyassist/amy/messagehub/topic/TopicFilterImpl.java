@@ -69,6 +69,6 @@ public class TopicFilterImpl extends AbstractTopic implements TopicFilter {
 
 		}
 
-		return (filterLevels.size() == nameLevels.size())
+		return (filterLevels.size() == nameLevels.size());
 	}
 }
