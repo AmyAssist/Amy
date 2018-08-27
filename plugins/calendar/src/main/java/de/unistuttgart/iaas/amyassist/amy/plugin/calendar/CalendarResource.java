@@ -54,10 +54,6 @@ public class CalendarResource {
 	@Reference
 	private CalendarLogic logic;
 
-	private static final String NO_EVENTS_FOUND = "No upcoming events found.";
-	private static final String NO_EVENTS_TODAY = "There are no events today.";
-	private static final String NO_EVENTS_TOMORROW = "There are no events tomorrow.";
-
 	/**
 	 * This method creates an event for the connected google calendar
 	 *
@@ -76,70 +72,6 @@ public class CalendarResource {
 	}
 
 	/**
-	 * This method lists the next events from the calendar
-	 *
-	 * @param number
-	 *            number of events the user wants to get
-	 * @return event summary
-	 */
-	@GET
-	@Path("events/{number}")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getEvents(@PathParam("number") int number) {
-		String events = this.logic.getEvents(number);
-		checkEvents(events);
-		return events;
-	}
-
-	/**
-	 * This method contains the logic to show the calendar events today
-	 *
-	 * @return the events of today
-	 */
-	@GET
-	@Path("events/today")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getEventsToday() {
-		String events = this.logic.getEventsToday();
-		checkEvents(events);
-		return events;
-	}
-
-	/**
-	 * This method contains the logic to show the calendar events tomorrow
-	 *
-	 * @return the events of tomorrow
-	 */
-	@GET
-	@Path("events/tomorrow")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getEventsTomorrow() {
-		String events = this.logic.getEventsTomorrow();
-		checkEvents(events);
-		return events;
-	}
-
-	/**
-	 * This method contains the logic to show the calendar events on a specific date as a list of Events
-	 *
-	 * @param ldt
-	 *            LocalDateTime variable
-	 * @return the events of the chosen day as a List<Event>
-	 */
-	@GET
-	@Path("eventsAtString/{ldt}")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getEventsAtAsString(@PathParam("ldt") LocalDateTime ldt) {
-		String events = this.logic.getEventsAtAsString(ldt);
-		if (events.contains("There are no events on the ")) {
-			throw new WebApplicationException(events, Status.NOT_FOUND);
-		}
-		return events;
-	}
-
-	/**
 	 * This method contains the logic to show the calendar events on a specific date as natural language output
 	 *
 	 * @param ldt
@@ -152,23 +84,7 @@ public class CalendarResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<CalendarEvent> getEventsAt(@PathParam("ldt") LocalDateTime ldt) {
 		List<CalendarEvent> events = this.logic.getEventsAt(ldt);
-		if (!events.isEmpty()) {
-			return events;
-		}
-		throw new WebApplicationException(NO_EVENTS_FOUND, Status.CONFLICT);
-	}
-
-	private boolean checkEvents(String events) {
-		switch (events) {
-		case NO_EVENTS_FOUND:
-			throw new WebApplicationException(NO_EVENTS_FOUND, Status.NOT_FOUND);
-		case NO_EVENTS_TODAY:
-			throw new WebApplicationException(NO_EVENTS_TODAY, Status.NOT_FOUND);
-		case NO_EVENTS_TOMORROW:
-			throw new WebApplicationException(NO_EVENTS_TOMORROW, Status.NOT_FOUND);
-		default:
-			return true;
-		}
+		return events;
 	}
 
 }
