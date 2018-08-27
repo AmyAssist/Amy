@@ -56,7 +56,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerServic
 @Service(LoadAIMService.class)
 public class LoadAIMService implements DeploymentContainerService {
 
-	private static final String METAFILENAME = "SpeechMeta";
+	private static final String METAFILENAME = "natlangMeta";
 
 	@Reference
 	private PluginManager pluginManager;
@@ -216,7 +216,7 @@ public class LoadAIMService implements DeploymentContainerService {
 				}
 			}
 		} catch (IOException e) {
-			this.logger.error("could not read speech meta file of {}: " + plugin.getDisplayName(), e);
+			this.logger.error("could not read speech meta file of {} {}",  plugin.getDisplayName(), e);
 		}
 		return aimFiles;
 

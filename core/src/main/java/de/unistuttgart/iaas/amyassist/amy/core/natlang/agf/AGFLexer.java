@@ -47,7 +47,7 @@ public class AGFLexer implements Iterator<AGFToken> {
 	 */
 	public AGFLexer(String toLex) {
 		this.mIndex = 0;
-		this.mToLex = toLex.toLowerCase();
+		this.mToLex = toLex.toLowerCase().trim();
 	}
 
 	/**
