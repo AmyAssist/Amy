@@ -205,7 +205,7 @@ public class LoadAIMService implements DeploymentContainerService {
 	 */
 	private List<String> readMetaFile(InputStream stream, IPlugin plugin) {
 		List<String> aimFiles = new ArrayList<>();
-		InputStreamReader reader = new InputStreamReader(stream);
+		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
 		BufferedReader in = new BufferedReader(reader);
 
 		try {
