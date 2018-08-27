@@ -73,11 +73,20 @@ public class EMailLogic {
 	@Reference
 	private Logger logger;
 
-	private static final String AMY_MAIL_ADDRESS_KEY = "email_usr";
+	/**
+	 * Key for the Amy mail address in the config - declared protected for tests
+	 */
+	protected static final String AMY_MAIL_ADDRESS_KEY = "email_usr";
 
-	private static final String AMY_MAIL_PW_KEY = "email_pw";
+	/**
+	 * Key for the Amy mail password in the config - declared protected for tests
+	 */
+	protected static final String AMY_MAIL_PW_KEY = "email_pw";
 
-	private static final String AMY_MAIL_HOST = "imap.gmail.com";
+	/**
+	 * Amy mail server host - declared protected for tests
+	 */
+	protected static final String AMY_MAIL_HOST = "imap.gmail.com";
 
 	/**
 	 * returns if unread messages have been found
@@ -296,7 +305,8 @@ public class EMailLogic {
 	}
 
 	/**
-	 * Set up connection to mail server with given parameters
+	 * Set up connection to mail server with given parameters. Put empty strings into all parameters if you want to
+	 * connect with the Amy mail account
 	 * 
 	 * @param username
 	 *            email address
@@ -304,23 +314,17 @@ public class EMailLogic {
 	 *            password for the mail account
 	 * @param hostAddress
 	 *            address of the imap mail server, something like "imap.gmail.com"
-	 * @throws MessagingException
-	 *             if connecting to mail server fails
+	 * @return true if connecting was successful, else false
 	 */
-	public void startMailSession(String username, String password, String hostAddress) throws MessagingException {
-		this.mailSession.connect(username, password, hostAddress);
-	}
+	public boolean connectToMailServer(String username, String password, String hostAddress) {
+		if (username.isEmpty() && password.isEmpty() && hostAddress.isEmpty()) {
+			String amyUsername = this.configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
+			String amyPassword = this.configLoader.getProperty(AMY_MAIL_PW_KEY);
+			String amyHost = AMY_MAIL_HOST;
 
-	/**
-	 * Set up connection to Amy mail (default)
-	 * 
-	 * @throws MessagingException
-	 *             if connecting to mail server fails
-	 */
-	public void startMailSession() throws MessagingException {
-		String username = this.configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
-		String password = this.configLoader.getProperty(AMY_MAIL_PW_KEY);
-		startMailSession(username, password, AMY_MAIL_HOST);
+			return this.mailSession.startNewMailSession(amyUsername, amyPassword, amyHost);
+		}
+		return this.mailSession.startNewMailSession(username, password, hostAddress);
 	}
 
 	/**

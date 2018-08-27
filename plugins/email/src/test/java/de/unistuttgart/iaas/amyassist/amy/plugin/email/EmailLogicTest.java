@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.mail.BodyPart;
@@ -79,6 +80,8 @@ public class EmailLogicTest {
 
 	private ContactRegistry contactRegistry;
 
+	private Properties properties;
+
 	private EMailLogic emailLogic;
 
 	private Folder inboxMock;
@@ -95,6 +98,7 @@ public class EmailLogicTest {
 	public void setup() throws MessagingException {
 		this.mailSession = this.framework.mockService(MailSession.class);
 		this.contactRegistry = this.framework.mockService(ContactRegistry.class);
+		this.properties = this.framework.mockService(Properties.class);
 		this.emailLogic = this.framework.setServiceUnderTest(EMailLogic.class);
 
 		// initialize mocks
@@ -515,6 +519,24 @@ public class EmailLogicTest {
 		for (Message message : importantMessages) {
 			assertThat(this.emailLogic.isImportantMessage(message), is(true));
 		}
+	}
+
+	/**
+	 * Tests {@link EMailLogic#connectToMailServer(String, String, String)}
+	 * 
+	 * @throws MessagingException
+	 *             if something goes wrong
+	 */
+	@Test
+	protected void testConnectToMailServer() throws MessagingException {
+		when(this.properties.getProperty(EMailLogic.AMY_MAIL_ADDRESS_KEY)).thenReturn("amyMail");
+		when(this.properties.getProperty(EMailLogic.AMY_MAIL_PW_KEY)).thenReturn("amyPassword");
+		String amyHost = EMailLogic.AMY_MAIL_HOST;
+		when(this.mailSession.startNewMailSession("amyMail", "amyPassword", amyHost)).thenReturn(true);
+		assertThat(this.emailLogic.connectToMailServer("", "", ""), is(true));
+
+		when(this.mailSession.startNewMailSession("testUsername", "testPassword", "testHostAddress")).thenReturn(true);
+		assertThat(this.emailLogic.connectToMailServer("testUsername", "testPassword", "testHostAddress"), is(true));
 	}
 
 	/**

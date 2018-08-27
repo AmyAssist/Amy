@@ -36,6 +36,7 @@ import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailResource;
@@ -65,6 +66,30 @@ class EMailRestTest {
 	public void setUp() {
 		this.target = this.testFramework.setRESTResource(EMailResource.class);
 		this.logic = this.testFramework.mockService(EMailLogic.class);
+	}
+
+	/**
+	 * Test method for {@link EMailResource#connect(String, String, String)}
+	 */
+	@Test
+	public void testConnect() {
+		when(this.logic.connectToMailServer(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+				ArgumentMatchers.anyString())).thenReturn(true);
+		try (Response response = this.target.path("connect").queryParam("username", "amyMail")
+				.queryParam("password", "amyPassword").queryParam("imapServer", "amyServer").request().post(null)) {
+			assertThat(response.getStatus(), is(200));
+			boolean successful = response.readEntity(Boolean.class);
+			assertThat(successful, is(true));
+		}
+
+		when(this.logic.connectToMailServer(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+				ArgumentMatchers.anyString())).thenReturn(false);
+		try (Response response = this.target.path("connect").queryParam("username", "amyMail")
+				.queryParam("password", "amyPassword").queryParam("imapServer", "amyServer").request().post(null)) {
+			assertThat(response.getStatus(), is(200));
+			boolean successful = response.readEntity(Boolean.class);
+			assertThat(successful, is(false));
+		}
 	}
 
 	/**

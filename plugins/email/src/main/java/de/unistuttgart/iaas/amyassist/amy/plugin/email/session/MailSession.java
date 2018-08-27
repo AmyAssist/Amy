@@ -73,17 +73,21 @@ public class MailSession {
 	 *            password
 	 * @param hostAddress
 	 *            address of the mail provider, e.g. imap.gmail.com
-	 * @throws MessagingException
-	 *             if connecting to service failed
+	 * @return if connecting was successful
 	 */
-	public void connect(String username, String password, String hostAddress) throws MessagingException {
+	public boolean startNewMailSession(String username, String password, String hostAddress) {
 		endSession();
 
 		// set up new session
 		Session session = Session.getInstance(System.getProperties(), null);
-		this.store = session.getStore(PROTOCOL);
-		this.store.connect(hostAddress, username, password);
-
+		try {
+			this.store = session.getStore(PROTOCOL);
+			this.store.connect(hostAddress, username, password);
+			return true;
+		} catch (MessagingException e) {
+			this.logger.error("Couldn't connect to service", e);
+		}
+		return false;
 	}
 
 	@PreDestroy
