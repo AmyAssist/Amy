@@ -32,6 +32,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.ReadableInstant;
+import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -57,6 +58,9 @@ public class NavigationSpeech {
 
 	@Reference
 	private RegistryConnection registryConnection;
+	
+	@Reference
+	private Logger logger;
 
 	private static final String WRONG_PLACE = "One or more places are not in the registry";
 	private static final String END_KEY = "end";
@@ -79,7 +83,7 @@ public class NavigationSpeech {
 			ReadableInstant outputTime = null;
 			outputTime = this.logic.whenIHaveToGo(
 					cutEndWords(this.registryConnection.getAddress(entities.get(START_KEY).getString()), "to"),
-					cutEndWords(this.registryConnection.getAddress(entities.get(END_KEY).getString()), "at"),
+					cutEndWords(this.registryConnection.getAddress(entities.get(END_KEY).getString()), "by"),
 					this.logic.getTravelMode(entities.get("mode").getString().trim()), time);
 			if (outputTime != null) {
 				return "You should go at ".concat(String.valueOf(outputTime.get(DateTimeFieldType.hourOfDay())))
