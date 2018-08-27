@@ -46,7 +46,7 @@ public class TopicNameImpl extends AbstractTopic implements TopicName {
 	 */
 	protected TopicNameImpl(String topicString) throws TopicFormatException {
 		super(topicString);
-		validateTopicString(topicString);
+		validateTopicStringForName(topicString);
 	}
 
 	/**
@@ -59,7 +59,6 @@ public class TopicNameImpl extends AbstractTopic implements TopicName {
 	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicString(java.lang.String)
 	 */
 	protected final void validateTopicStringForName(String topicString) throws TopicFormatException {
-		super.validateTopicString(topicString);
 		if (topicString.contains(Character.toString(Topic.SINGLE_LEVEL_WILDCARD)))
 			throw new TopicFormatException("A topic name can't contain a single level wildcard.");
 		if (topicString.contains(Character.toString(Topic.MULTI_LEVEL_WILDCARD)))
