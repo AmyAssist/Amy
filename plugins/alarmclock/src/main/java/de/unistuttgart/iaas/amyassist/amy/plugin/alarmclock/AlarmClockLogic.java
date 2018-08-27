@@ -115,14 +115,7 @@ public class AlarmClockLogic {
 	 */
 	protected Alarm setAlarm(int tomorrow, int hour, int minute) {
 		if (Alarm.timeValid(hour, minute)) {
-			if (tomorrow == 1) {
-				LocalDateTime date = LocalDateTime.now().plusDays(1);
-				this.alarmTime = LocalDateTime.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), hour,
-						minute);
-			} else {
-				this.alarmTime = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(),
-						LocalDateTime.now().getDayOfMonth(), hour, minute);
-			}
+			tomorrowCheck(tomorrow, hour, minute);
 			int id = this.alarmStorage.getAll().size() + 1;
 			Alarm alarm = new Alarm(id, this.alarmTime, true);
 			this.alarmStorage.save(alarm);
@@ -362,14 +355,7 @@ public class AlarmClockLogic {
 	 */
 	protected Alarm editAlarm(int alarmNumber, int tomorrow, int hour, int minute) {
 		if (Alarm.timeValid(hour, minute)) {
-			if (tomorrow == 1) {
-				LocalDateTime date = LocalDateTime.now().plusDays(1);
-				this.alarmTime = LocalDateTime.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), hour,
-						minute);
-			} else {
-				this.alarmTime = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(),
-						LocalDateTime.now().getDayOfMonth(), hour, minute);
-			}
+			tomorrowCheck(tomorrow, hour, minute);
 			Alarm a = getAlarm(alarmNumber);
 			a.setAlarmTime(this.alarmTime);
 			this.alarmStorage.save(a);
@@ -382,5 +368,24 @@ public class AlarmClockLogic {
 			return a;
 		}
 		throw new NoSuchElementException();
+	}
+
+	/**
+	 * @param tomorrow
+	 *            number of the day
+	 * @param hour
+	 *            hour of the day
+	 * @param minute
+	 *            minute of the hour
+	 * @return Date and Time of the alarm
+	 */
+	private LocalDateTime tomorrowCheck(int tomorrow, int hour, int minute) {
+		if (tomorrow == 1) {
+			LocalDateTime date = LocalDateTime.now().plusDays(1);
+			return this.alarmTime = LocalDateTime.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), hour,
+					minute);
+		}
+		return this.alarmTime = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(),
+				LocalDateTime.now().getDayOfMonth(), hour, minute);
 	}
 }

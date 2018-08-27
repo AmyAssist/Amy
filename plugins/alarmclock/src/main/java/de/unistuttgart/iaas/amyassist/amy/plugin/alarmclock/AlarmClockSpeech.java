@@ -65,12 +65,6 @@ public class AlarmClockSpeech {
 	 * 
 	 * @return info if creation was successful
 	 */
-	/*
-	 * Änderungen später hier, um Datum anzuzeigen
-	 * 
-	 * 
-	 * 
-	 */
 	@Grammar(SETALARMGRAMMAR)
 	public String setAlarm(String[] params) {
 		int[] alarmTime = extractAlarmTime(params);
@@ -325,12 +319,10 @@ public class AlarmClockSpeech {
 				alarmTime[2] = 1;
 			}
 		}
-
 		if (params[4].equals("x")) {
 			// google notation
 			alarmTime[0] = Integer.parseInt(params[3]);
 			alarmTime[1] = Integer.parseInt(params[5]);
-
 		} else if (params[4].equals("oh")) {
 			if (params[5].equals("clock")) {
 				// whole hour notation
@@ -341,7 +333,6 @@ public class AlarmClockSpeech {
 				alarmTime[0] = Integer.parseInt(params[3]);
 				alarmTime[1] = Integer.parseInt(params[5]);
 			}
-
 		} else {
 			// past/to notation
 			int minuteAddition = 0;
