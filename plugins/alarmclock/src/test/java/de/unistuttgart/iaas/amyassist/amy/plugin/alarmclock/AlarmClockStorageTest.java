@@ -25,13 +25,13 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -47,20 +47,20 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 /**
  * Test class for the alarm clock storage class
  * 
- * @author Patrick Singer
+ * @author Patrick Singer, Patrick Gebhardt
  *
  */
 @ExtendWith(FrameworkExtension.class)
 public class AlarmClockStorageTest {
 
+	private AlarmRegistry alarmStorage;
+
 	@Reference
 	private TestFramework framework;
 
-	private AlarmClockStorage acs;
+	private TimerStorage acs;
 
 	private IStorage storage;
-
-	private static final String ALARMCOUNTER = "alarmCounter";
 
 	private static final String TIMERCOUNTER = "timerCounter";
 
@@ -70,8 +70,11 @@ public class AlarmClockStorageTest {
 	@BeforeEach
 	void setup() {
 		this.storage = this.framework.storage();
-		this.acs = this.framework.setServiceUnderTest(AlarmClockStorage.class);
+		this.acs = this.framework.setServiceUnderTest(TimerStorage.class);
+		this.alarmStorage = this.framework.mockService(AlarmRegistry.class);
+
 		reset(this.storage);
+		reset(this.alarmStorage);
 	}
 
 	/**
@@ -79,10 +82,11 @@ public class AlarmClockStorageTest {
 	 */
 	@Test
 	void testStoreAlarm() {
-		Alarm alarm = new Alarm(2, 15, 30, true);
+		LocalDateTime alarmTime = LocalDateTime.of(2018, 8, 15, 11, 11);
+		Alarm alarm = new Alarm(2, alarmTime, true);
 
-		this.acs.storeAlarm(alarm);
-		verify(this.storage).put("alarm2", "2:15:30:true");
+		this.alarmStorage.save(alarm);
+		verify(this.alarmStorage).save(alarm);
 	}
 
 	/**
@@ -97,18 +101,6 @@ public class AlarmClockStorageTest {
 	}
 
 	/**
-	 * Tests the getAlarmCounter method
-	 */
-	@Test
-	void testGetAlarmCounter() {
-		this.storage.put(ALARMCOUNTER, "1");
-		reset(this.storage);
-
-		assertEquals(this.acs.getAlarmCounter(), 1);
-		verify(this.storage, only()).get(ALARMCOUNTER);
-	}
-
-	/**
 	 * Tests the getTimerCounter method
 	 */
 	@Test
@@ -118,19 +110,6 @@ public class AlarmClockStorageTest {
 
 		assertThat(this.acs.getTimerCounter(), is(20));
 		verify(this.storage, only()).get(TIMERCOUNTER);
-	}
-
-	/**
-	 * Tests the putAlarmCounter method
-	 */
-	@Test
-	void testPutAlarmCounter() {
-		this.storage.put(ALARMCOUNTER, "10");
-		reset(this.storage);
-
-		this.acs.putAlarmCounter(20);
-		verify(this.storage, only()).put(ALARMCOUNTER, "20");
-		assertThat(this.storage.get(ALARMCOUNTER), is("20"));
 	}
 
 	/**
@@ -147,20 +126,6 @@ public class AlarmClockStorageTest {
 	}
 
 	/**
-	 * Tests the incrementAlarmCounter method
-	 */
-	@Test
-	void testIncrementAlarmCounter() {
-		this.storage.put(ALARMCOUNTER, "9");
-		reset(this.storage);
-
-		assertThat(10, is(this.acs.incrementAlarmCounter()));
-		verify(this.storage).get(ALARMCOUNTER);
-		verify(this.storage).put(ALARMCOUNTER, "10");
-		assertThat(this.storage.get(ALARMCOUNTER), is("10"));
-	}
-
-	/**
 	 * Tests the incrementTimerCounter method
 	 */
 	@Test
@@ -172,17 +137,6 @@ public class AlarmClockStorageTest {
 		verify(this.storage).get(TIMERCOUNTER);
 		verify(this.storage).put(TIMERCOUNTER, "10");
 		assertThat(this.storage.get(TIMERCOUNTER), is("10"));
-	}
-
-	/**
-	 * Tests hasAlarm
-	 */
-	@Test
-	public void testHasAlarm() {
-		this.storage.put("alarm1", "foo");
-		assertThat(true, is(this.acs.hasAlarm(1)));
-		assertThat(false, is(this.acs.hasAlarm(2)));
-		verify(this.storage, times(2)).has(ArgumentMatchers.anyString());
 	}
 
 	/**
@@ -201,11 +155,13 @@ public class AlarmClockStorageTest {
 	 */
 	@Test
 	public void testDeleteAlarm() {
-		this.storage.put("alarm1", "foo");
-		this.acs.deleteAlarm(1);
-		verify(this.storage).has("alarm1");
-		verify(this.storage).delete("alarm1");
-		assertThat(false, is(this.storage.has("alarm1")));
+
+		LocalDateTime alarmTime = LocalDateTime.of(2018, 8, 15, 11, 11);
+		Alarm alarm = new Alarm(1, alarmTime, true);
+		this.alarmStorage.save(alarm);
+		this.alarmStorage.deleteById(alarm.getPersistentId());
+		verify(this.alarmStorage).deleteById(alarm.getPersistentId());
+		assertThat(true, is(this.alarmStorage.getAll().isEmpty()));
 	}
 
 	/**
@@ -213,8 +169,11 @@ public class AlarmClockStorageTest {
 	 */
 	@Test
 	public void testDeleteAlarmNotFound() {
-		assertThrows(NoSuchElementException.class, () -> this.acs.deleteAlarm(1));
-		verify(this.storage, only()).has("alarm1");
+		LocalDateTime alarmTime = LocalDateTime.of(2018, 8, 15, 11, 11);
+		Alarm alarm = new Alarm(1, alarmTime, true);
+		this.alarmStorage.save(alarm);
+		this.alarmStorage.deleteById(alarm.getPersistentId() + 1);
+		assertThat(true, is(this.alarmStorage.getAll().isEmpty()));
 	}
 
 	/**
@@ -243,12 +202,11 @@ public class AlarmClockStorageTest {
 	 */
 	@Test
 	void testGetAlarm() {
-		// wrong id
-		assertThrows(NoSuchElementException.class, () -> this.acs.getAlarm(1));
+		LocalDateTime alarmTime = LocalDateTime.of(2018, 8, 15, 11, 11);
+		Alarm alarm = new Alarm(1, alarmTime, true);
+		this.alarmStorage.save(alarm);
 
-		// usual case
-		this.storage.put("alarm1", "1:15:20:true");
-		assertThat(this.acs.getAlarm(1).toString(), is("1:15:20:true"));
+		assertThat(alarm.toString(), is("1:2018-08-15T11:11:true"));
 	}
 
 	/**

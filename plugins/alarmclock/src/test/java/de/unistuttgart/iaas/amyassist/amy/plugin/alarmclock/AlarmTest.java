@@ -30,15 +30,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 
 /**
  * Class to test the alarm class
  * 
- * @author Patrick Singer, Leon Kiefer
+ * @author Patrick Singer, Leon Kiefer, Patrick Gebhardt
  */
+@ExtendWith(FrameworkExtension.class)
 public class AlarmTest {
 
 	/**
@@ -46,18 +50,23 @@ public class AlarmTest {
 	 */
 	@Test
 	public void alarmTest() {
-		Alarm a1 = new Alarm(5, 4, 20, false);
+		LocalDateTime alarmTime = LocalDateTime.of(2018, 8, 15, 11, 11);
+		Alarm a1 = new Alarm(5, alarmTime, false);
 		assertEquals(5, a1.getId());
 
-		LocalTime of = LocalTime.of(4, 20);
+		LocalDateTime of = LocalDateTime.of(2018, 8, 15, 11, 11);
 
 		assertThat(a1.getAlarmTime(), is(equalTo(of)));
 		assertThat(a1.isActive(), is(false));
 	}
 
+	/**
+	 * Tests whether the input parameters of the alarm are correct
+	 */
 	@Test
 	public void testBadAlarmInput() {
-		assertThrows(IllegalArgumentException.class, () -> new Alarm(-1, 15, 20, true));
+		LocalDateTime alarmTime = LocalDateTime.of(2018, 8, 15, 11, 11);
+		assertThrows(IllegalArgumentException.class, () -> new Alarm(-1, alarmTime, true));
 	}
 
 	/**
@@ -65,22 +74,8 @@ public class AlarmTest {
 	 */
 	@Test
 	public void toStringTest() {
-		assertEquals("1:4:20:true", new Alarm(1, 4, 20, true).toString());
-	}
-
-	/**
-	 * Tests reconstructObject
-	 */
-	@Test
-	public void reconstructObjectTest() {
-		assertThrows(IllegalArgumentException.class, () -> Alarm.reconstructObject("foo"));
-
-		Alarm a1 = Alarm.reconstructObject("10:4:20:false");
-		assertEquals(10, a1.getId());
-		assertEquals(4, a1.getAlarmTime().getHour());
-		assertEquals(20, a1.getAlarmTime().getMinute());
-		assertEquals(0, a1.getAlarmTime().getSecond());
-		assertEquals(false, a1.isActive());
+		LocalDateTime alarmTime = LocalDateTime.of(2018, 8, 15, 11, 11);
+		assertEquals("1:2018-08-15T11:11:true", new Alarm(1, alarmTime, true).toString());
 	}
 
 	/**
