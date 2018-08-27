@@ -67,14 +67,8 @@ public class ThrowableExceptionMapper implements ExceptionMapper<Throwable> {
 		ResponseBuilder rb = Response.status(Status.INTERNAL_SERVER_ERROR);
 		String message = t.toString();
 		this.logger.error("Error while HTTP Request on the Server", t);
-		// TODO change later only for debugging/ testing
-		try {
-			message = message + " " + t.getStackTrace()[0].toString();
-		} catch (Exception e) {
-			// no stacktrace
-		}
-		Response r = rb.entity(message).type(MediaType.TEXT_PLAIN).build();
-		return r;
+
+		return rb.entity(message).type(MediaType.TEXT_PLAIN).build();
 	}
 
 }

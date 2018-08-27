@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -39,7 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * REST Resource for calendar
- * 
+ *
  * @author Muhammed Kaya
  */
 @Path(CalendarResource.PATH)
@@ -53,25 +54,26 @@ public class CalendarResource {
 	@Reference
 	private CalendarLogic logic;
 
-	/**
-	 * Natural language response of Amy when the event list is empty.
-	 */
-	String noEventsFound = "No upcoming events found.";
+	private static final String NO_EVENTS_FOUND = "No upcoming events found.";
+	private static final String NO_EVENTS_TODAY = "There are no events today.";
+	private static final String NO_EVENTS_TOMORROW = "There are no events tomorrow.";
 
 	/**
-	 * Natural language response of Amy when the event list of today is empty.
+	 * This method creates an event for the connected google calendar
+	 *
+	 * @param calendarEvent
+	 *            the event which will be created in the google calendar
 	 */
-	private String noEventsToday = "There are no events today.";
-
-	/**
-	 * Natural language response of Amy when the event list of tomorrow is empty.
-	 */
-	private String noEventsTomorrow = "There are no events tomorrow.";
-
-	/**
-	 * Output of the logger
-	 */
-	private String errorLogger = "An error occurred.";
+	@POST
+	@Path("events/set")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void setEvent(CalendarEvent calendarEvent) {
+		if (calendarEvent != null) {
+			this.logic.setEvent(calendarEvent);
+		} else {
+			throw new WebApplicationException("Enter valid event information", Status.CONFLICT);
+		}
+	}
 
 	/**
 	 * This method lists the next events from the calendar
@@ -153,19 +155,17 @@ public class CalendarResource {
 		if (!events.isEmpty()) {
 			return events;
 		}
-		throw new WebApplicationException(this.errorLogger, Status.CONFLICT);
+		throw new WebApplicationException(NO_EVENTS_FOUND, Status.CONFLICT);
 	}
 
 	private boolean checkEvents(String events) {
 		switch (events) {
-		case "No upcoming events found.":
-			throw new WebApplicationException(this.noEventsFound, Status.NOT_FOUND);
-		case "There are no events today.":
-			throw new WebApplicationException(this.noEventsToday, Status.NOT_FOUND);
-		case "There are no events tomorrow.":
-			throw new WebApplicationException(this.noEventsTomorrow, Status.NOT_FOUND);
-		case "An error occurred.":
-			throw new WebApplicationException(this.errorLogger, Status.CONFLICT);
+		case NO_EVENTS_FOUND:
+			throw new WebApplicationException(NO_EVENTS_FOUND, Status.NOT_FOUND);
+		case NO_EVENTS_TODAY:
+			throw new WebApplicationException(NO_EVENTS_TODAY, Status.NOT_FOUND);
+		case NO_EVENTS_TOMORROW:
+			throw new WebApplicationException(NO_EVENTS_TOMORROW, Status.NOT_FOUND);
 		default:
 			return true;
 		}
