@@ -111,7 +111,6 @@ public class NLIAnnotationReader {
 	public static void assertValid(Method method) {
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		if (parameterTypes.length != 1 || !parameterTypes[0].equals(Map.class)) {
-			System.out.println(parameterTypes[0].getClass());
 			throw new IllegalArgumentException("The method " + method.toString()
 					+ " does not have the correct parameter type. It should be a Map.");
 		}
