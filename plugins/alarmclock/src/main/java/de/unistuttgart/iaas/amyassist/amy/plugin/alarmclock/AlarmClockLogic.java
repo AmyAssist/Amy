@@ -382,10 +382,11 @@ public class AlarmClockLogic {
 	private LocalDateTime tomorrowCheck(int tomorrow, int hour, int minute) {
 		if (tomorrow == 1) {
 			LocalDateTime date = LocalDateTime.now().plusDays(1);
-			return this.alarmTime = LocalDateTime.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), hour,
-					minute);
+			this.alarmTime = LocalDateTime.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), hour, minute);
+			return this.alarmTime;
 		}
-		return this.alarmTime = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(),
+		this.alarmTime = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(),
 				LocalDateTime.now().getDayOfMonth(), hour, minute);
+		return this.alarmTime;
 	}
 }
