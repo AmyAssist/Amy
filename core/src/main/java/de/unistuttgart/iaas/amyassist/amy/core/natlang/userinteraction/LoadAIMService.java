@@ -23,12 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
 
-import java.io.BufferedReader;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -205,10 +200,9 @@ public class LoadAIMService implements DeploymentContainerService {
 	 */
 	private List<String> readMetaFile(InputStream stream, IPlugin plugin) {
 		List<String> aimFiles = new ArrayList<>();
-		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
-		BufferedReader in = new BufferedReader(reader);
 
-		try {
+		try (InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+				BufferedReader in = new BufferedReader(reader);){
 			String line = null;
 			boolean aimsFound = false;
 			while ((line = in.readLine()) != null) {
