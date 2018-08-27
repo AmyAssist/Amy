@@ -23,7 +23,15 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
+
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.status;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.equalTo;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
@@ -52,10 +60,43 @@ class SystemTimeRestTest {
 
 	private WebTarget target;
 
+	private LocalDateTime ldt;
+
+	/**
+	 * setUp
+	 */
 	@BeforeEach
 	public void setUp() {
 		this.target = this.testFramework.setRESTResource(SystemTimeResource.class);
 		this.logic = this.testFramework.mockService(SystemTimeLogic.class);
+
+		this.ldt = LocalDateTime.parse("2015-05-29T08:00:00");
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeResource#getTimeStamp()}.
+	 */
+	@Test
+	void testGetTimeStamp() {
+		Mockito.when(this.logic.getTimeStamp()).thenReturn(this.ldt);
+		try (Response response = this.target.path("timeStamp").request().get()) {
+			assertThat(response.readEntity(String.class), equalTo(this.ldt.toString()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).getTimeStamp();
+		}
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeResource#getYear()()}.
+	 */
+	@Test
+	void testGetYear() {
+		Mockito.when(this.logic.getYear()).thenReturn(this.ldt.getYear());
+		try (Response response = this.target.path("year").request().get()) {
+			assertThat(response.readEntity(int.class), is(this.ldt.getYear()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).getYear();
+		}
 	}
 
 	/**
@@ -63,14 +104,13 @@ class SystemTimeRestTest {
 	 */
 	@Test
 	void testGetTime() {
-		Mockito.when(this.logic.getTime()).thenReturn("12 34 56");
-
-		Response response = this.target.path("time").request().get();
-		String responseMsg = this.target.path("time").request().get(String.class);
-
-		assertEquals("12 34 56", responseMsg);
-		assertEquals(200, response.getStatus());
-		assertNotNull(response.getEntity());
+		Mockito.when(this.logic.getTime()).thenReturn(this.ldt.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+		try (Response response = this.target.path("time").request().get()) {
+			assertThat(
+					response.readEntity(String.class), equalTo(this.ldt.format(DateTimeFormatter.ofPattern("HH:mm:ss"))));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).getTime();
+		}
 	}
 
 	/**
@@ -78,14 +118,15 @@ class SystemTimeRestTest {
 	 */
 	@Test
 	void testGetDate() {
-		Mockito.when(this.logic.getDate()).thenReturn("31 12 18");
-
-		Response response = this.target.path("date").request().get();
-		String responseMsg = this.target.path("date").request().get(String.class);
-
-		assertEquals("31 12 18", responseMsg);
-		assertEquals(200, response.getStatus());
-		assertNotNull(response.getEntity());
+		this.ldt.toLocalDate();
+		String date = this.ldt.getDayOfMonth() + " of "
+				+ this.ldt.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+		Mockito.when(this.logic.getDate()).thenReturn(date);
+		try (Response response = this.target.path("date").request().get()) {
+			assertThat(response.readEntity(String.class), equalTo(date.toString()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).getDate();
+		}
 	}
 
 }
