@@ -64,16 +64,11 @@ public class TopicFilterImpl extends AbstractTopic implements TopicFilter {
 				return true;
 			else if (nameLevels.size() <= i)
 				return false;
-			else if (filterLevels.get(i).isNormalLevel()) {
-				if (!filterLevels.get(i).equals(nameLevels.get(i)))
-					return false;
-			}
+			else if (filterLevels.get(i).isNormalLevel() && !filterLevels.get(i).equals(nameLevels.get(i)))
+				return false;
 
 		}
 
-		if (filterLevels.size() != nameLevels.size())
-			return false;
-
-		return true;
+		return (filterLevels.size() == nameLevels.size())
 	}
 }

@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -74,9 +75,10 @@ public class MessageHubService implements MessageHub {
 	}
 
 	private void messageArrived(TopicName topic, Message message) {
-		for (TopicFilter filter : this.topicListeners.keySet()) {
+		for (Entry<TopicFilter, List<UUID>> entry : this.topicListeners.entrySet()) {
+			TopicFilter filter = entry.getKey();
 			if (filter.doesFilterMatch(topic)) {
-				for (UUID uuid : this.topicListeners.get(filter)) {
+				for (UUID uuid : entry.getValue()) {
 					BiConsumer<TopicName, Message> handler = this.eventListener.get(uuid);
 					executeHandler(handler, message, topic);
 				}
