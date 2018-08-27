@@ -155,7 +155,7 @@ public class LoadAIMService implements DeploymentContainerService {
 		InputStream stream = plugin.getClassLoader().getResourceAsStream(fileName);
 
 		if (stream != null) {
-			try (InputStreamReader inputStream = new InputStreamReader(stream);
+			try (InputStreamReader inputStream = new InputStreamReader(stream, "UTF-8");
 					BufferedReader reader = new BufferedReader(inputStream);) {
 				XMLAmyInteractionModel model = extractModel(reader.lines().collect(Collectors.joining()), fileName);
 				if (model != null) {
