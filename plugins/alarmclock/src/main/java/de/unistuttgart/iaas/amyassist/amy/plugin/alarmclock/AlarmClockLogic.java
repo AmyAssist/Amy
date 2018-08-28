@@ -132,9 +132,6 @@ public class AlarmClockLogic {
 
 	private int searchId() {
 		int id = 1;
-		if (this.alarmStorage.getAll().isEmpty()) {
-			return id;
-		}
 		List<Alarm> alarmList = this.alarmStorage.getAll();
 		alarmList.sort((alarm1, alarm2) -> alarm1.getId() - alarm2.getId());
 		for (Alarm a : alarmList) {
