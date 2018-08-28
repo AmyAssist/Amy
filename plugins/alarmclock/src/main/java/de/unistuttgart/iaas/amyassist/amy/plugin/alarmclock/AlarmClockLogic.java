@@ -116,7 +116,7 @@ public class AlarmClockLogic {
 	protected Alarm setAlarm(int tomorrow, int hour, int minute) {
 		if (Alarm.timeValid(hour, minute)) {
 			tomorrowCheck(tomorrow, hour, minute);
-			int id = this.alarmStorage.getAll().size() + 1;
+			int id = searchId();
 			Alarm alarm = new Alarm(id, this.alarmTime, true);
 			this.alarmStorage.save(alarm);
 			Runnable alarmRunnable = createAlarmRunnable(id);
@@ -128,6 +128,20 @@ public class AlarmClockLogic {
 			return alarm;
 		}
 		throw new IllegalArgumentException();
+	}
+
+	private int searchId() {
+		int id = 1;
+		List<Alarm> alarmList = this.alarmStorage.getAll();
+		alarmList.sort((alarm1, alarm2) -> alarm1.getId() - alarm2.getId());
+		for (Alarm a : alarmList) {
+			if (a.getId() == id) {
+				id++;
+			} else {
+				return id;
+			}
+		}
+		return id;
 	}
 
 	/**
@@ -318,9 +332,8 @@ public class AlarmClockLogic {
 	 * @return List of all alarms
 	 */
 	protected List<Alarm> getAllAlarms() {
-		List<Alarm> alarmList = new ArrayList<>();
-		for (Alarm a : this.alarmStorage.getAll())
-			alarmList.add(a);
+		List<Alarm> alarmList = this.alarmStorage.getAll();
+		alarmList.sort((alarm1, alarm2) -> alarm1.getId() - alarm2.getId());
 		return alarmList;
 	}
 
