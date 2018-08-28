@@ -41,9 +41,12 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.Events;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -53,8 +56,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 /**
  * This class authorizes Amy to connect to the google calendar, this is a modified version from
  * https://developers.google.com/calendar/quickstart/java
- * 
- * @author Florian Bauer. Patrick Gebhardt
+ *
+ * @author Florian Bauer
  */
 @Service
 public class CalendarService {
@@ -72,9 +75,12 @@ public class CalendarService {
 
 	private Calendar service;
 
+	private String primary = "primary";
+	private String orderBy = "startTime";
+
 	/**
 	 * Creates an authorized Credential object.
-	 * 
+	 *
 	 * @param xHTTPTRANSPORT
 	 *            The network HTTP Transport.
 	 * @return An authorized Credential object.
@@ -110,11 +116,57 @@ public class CalendarService {
 	}
 
 	/**
-	 * 
-	 * @return service
+	 * @param min
+	 *            the time at which the calendar starts to check for events
+	 * @param number
+	 *            the number of events it should return
+	 * @return the next events after the min time
 	 */
-	public Calendar getService() {
-		return this.service;
+	public Events getEvents(DateTime min, int number) {
+		Events events = new Events();
+		try {
+			events = this.service.events().list(this.primary).setMaxResults(number).setTimeMin(min)
+					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
+		} catch (IOException e) {
+			this.logger.error("getEvents() failed with an IOException for DataTime: " + min.toString(), e);
+		}
+		return events;
+	}
+
+	/**
+	 * @param min
+	 *            the time at which the calendar starts to check for events
+	 * @param max
+	 *            the time at which the calendar stops looking for events
+	 * @return the events between min and max
+	 */
+	public Events getEvents(DateTime min, DateTime max) {
+		Events events = new Events();
+		try {
+			events = this.service.events().list(this.primary).setTimeMin(min).setTimeMax(max).setOrderBy(this.orderBy)
+					.setSingleEvents(true).execute();
+		} catch (IOException e) {
+			this.logger.error("getEvents() failed with an IOException for DateTime min: " + min.toString()
+					+ " and max: " + max.toString(), e);
+		}
+		return events;
+	}
+
+	/**
+	 * This method adds an event to the calendar
+	 *
+	 * @param calId
+	 *            the ID of the calendar the event should be added to
+	 * @param event
+	 *            the event that should be added
+	 */
+	public void addEvent(String calId, Event event) {
+		try {
+			this.service.events().insert(calId, event).execute();
+		} catch (IOException e) {
+			this.logger.error("addEvent() failed with an IOException for callId: " + calId
+					+ " and event: " + event.getSummary(), e);
+		}
 	}
 
 }

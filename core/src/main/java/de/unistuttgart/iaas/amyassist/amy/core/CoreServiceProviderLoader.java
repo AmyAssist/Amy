@@ -8,7 +8,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -31,11 +31,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Services;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarName;
 
 /**
  * Register the Services of Core
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Tim Neumann
  */
 public class CoreServiceProviderLoader implements ServiceProviderLoader {
 
@@ -47,7 +48,11 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 		di.register(new LoggerProvider());
 		di.register(new PropertiesProvider());
 
-		di.registerContextProvider(Context.CLASSLOADER, Class::getClassLoader);
+		di.registerContextProvider(Context.CLASSLOADER, consumer -> consumer.getConsumerClass().getClassLoader());
+		di.registerContextProvider(Context.SPHINX_GRAMMAR,
+				consumer -> consumer.getServiceDescription().getAnnotations().stream()
+						.filter(annotation -> annotation instanceof SphinxGrammarName).findFirst()
+						.map(annotation -> ((SphinxGrammarName) annotation).value()).orElse(null));
 	}
 
 }

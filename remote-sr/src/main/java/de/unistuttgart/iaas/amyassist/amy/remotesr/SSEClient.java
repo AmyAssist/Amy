@@ -8,7 +8,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -23,54 +23,71 @@
 
 package de.unistuttgart.iaas.amyassist.amy.remotesr;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
-import java.util.concurrent.ExecutionException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SSE client module object
  *
- * @author Benno Krauß
+ * @author Benno Krauß, Tim Neumann
  */
 class SSEClient {
 
-    private final Logger logger = LoggerFactory.getLogger(SSEClient.class);
+	private final Logger logger = LoggerFactory.getLogger(SSEClient.class);
 
-    private final SseEventSink sink;
-    private final Sse sse;
+	private final SseEventSink sink;
+	private final Sse sse;
 
-    SSEClient(SseEventSink sink, Sse sse) {
-        this.sink = sink;
-        this.sse = sse;
-    }
+	/**
+	 * Creates a new SSE Client
+	 * 
+	 * @param sink
+	 *            The sse event sink
+	 * @param sse
+	 *            The sse
+	 */
+	SSEClient(SseEventSink sink, Sse sse) {
+		this.sink = sink;
+		this.sse = sse;
+	}
 
-    boolean isConnected() {
-        return !sink.isClosed();
-    }
+	/**
+	 * @return Whether this client is connected.
+	 */
+	boolean isConnected() {
+		return this.sink != null && !this.sink.isClosed();
+	}
 
-    void disconnect() {
-        sink.close();
-    }
+	/**
+	 * Disconnect this client.
+	 */
+	void disconnect() {
+		this.sink.close();
+	}
 
-    /**
-     * Send an event to a connected client
-     * @param event the name of the event
-     * @return true if the client is connected and the transmission was successful, otherwise false
-     */
-    boolean sendEvent(String event) {
-        if (sink != null && !sink.isClosed()) {
-            try {
-                sink.send(sse.newEvent(event, event)).toCompletableFuture().get();
-                return true;
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (ExecutionException e) {
-                logger.warn("Couldn't send SSE", e);
-            }
-        }
-        return false;
-    }
+	/**
+	 * Send an event to a connected client
+	 * 
+	 * @param event
+	 *            the name of the event
+	 * @return true if the client is connected and the transmission was successful, otherwise false
+	 */
+	boolean sendEvent(String event) {
+		if (isConnected()) {
+			try {
+				this.sink.send(this.sse.newEvent(event, event)).toCompletableFuture().get();
+				return true;
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			} catch (ExecutionException e) {
+				this.logger.warn("Couldn't send SSE", e);
+			}
+		}
+		return false;
+	}
 }

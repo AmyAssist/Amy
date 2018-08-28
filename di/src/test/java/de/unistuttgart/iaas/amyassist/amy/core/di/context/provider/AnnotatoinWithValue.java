@@ -21,17 +21,19 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.remotesr;
+package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Remote SR listener interface
- * @author Benno Krauß
+ * Annotation to the context
+ * 
+ * @author Leon Kiefer
  */
-public interface RemoteSRListener {
-
-    /**
-     * Called when the remote SR recognizes a sentence
-     * @param message the recognized phrase
-     */
-    void remoteSRDidRecognizeSpeech(String message);
+@Retention(RetentionPolicy.RUNTIME)
+@Target(java.lang.annotation.ElementType.FIELD)
+public @interface AnnotatoinWithValue {
+	String value();
 }

@@ -21,22 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.result.handler;
+package de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
+import java.time.LocalTime;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * Dummy test class
+ * An adapter for LocalDateTime objects to parse and get Strings according to ISO-8601
  * 
- * @author Leon Kiefer
+ * @author Felix Burk
  */
-@SpeechCommand
-public class TestSpeechCommand {
+public class LocalTimeAdapter extends XmlAdapter<String, LocalTime> {
 
-	@Grammar("simple #")
-	public String simpleCommand(String... s) {
-		return s[1];
+	/**
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
+	@Override
+	public String marshal(LocalTime v) throws Exception {
+		return v.toString();
+	}
+
+	/**
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
+	@Override
+	public LocalTime unmarshal(String v) throws Exception {
+		return LocalTime.parse(v);
 	}
 
 }

@@ -8,7 +8,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -26,7 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 /**
  * Context key constants
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Tim Neumann
  */
 public final class Context {
 	private Context() {
@@ -39,4 +39,5 @@ public final class Context {
 	public static final String PLUGIN = "plugin";
 	public static final String CLASS = "class";
 	public static final String CLASSLOADER = "classLoader";
+	public static final String SPHINX_GRAMMAR = "sphinx_grammar";
 }
