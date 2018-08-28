@@ -104,7 +104,7 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 		HashMap<String, Object> map = new HashMap<>();
 		for (ContextInjectionPoint c : this.contextInjectionPoints) {
 			String key = c.getContextIdentifier();
-			map.put(key, locator.getContextProvider(key).getContext(serviceConsumer.getConsumerClass()));
+			map.put(key, locator.getContextProvider(key).getContext(serviceConsumer));
 		}
 
 		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(), map, this.cls);
