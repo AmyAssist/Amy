@@ -82,9 +82,6 @@ class PluginManagerTest {
 		when(environment.getWorkingDirectory()).thenReturn(this.tempDir);
 
 		Files.createDirectory(this.tempDir.resolve("plugins"));
-		
-		Files.createFile(this.tempDir
-				.resolve("plugins").resolve("testxml.xml"));
 
 		ConfigurationManager configurationManager = this.testFramework.mockService(ConfigurationManager.class);
 		this.properties = new Properties();
@@ -108,11 +105,6 @@ class PluginManagerTest {
 	void testCantLoadTwice() throws IOException {
 		this.serviceUnderTest.loadPlugins();
 		assertThrows(IllegalStateException.class, () -> this.serviceUnderTest.loadPlugins());
-	}
-	
-	@Test
-	void testGetXML() {
-
 	}
 
 	/**

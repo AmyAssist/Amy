@@ -77,7 +77,7 @@ public class LoadAIMService implements DeploymentContainerService {
 		for (IPlugin plugin : plugins) {
 
 			String pathS = "META-INF/" + plugin.getUniqueName() + "." + METAFILENAME;
-			// this stream is gonna be closed - line 92
+
 			try (InputStream stream = plugin.getClassLoader().getResourceAsStream(pathS);) {
 
 				if (stream == null) {
@@ -198,7 +198,7 @@ public class LoadAIMService implements DeploymentContainerService {
 	 *                   for debugging purposes
 	 * @return list of names from .aim.xml files
 	 */
-	private List<String> readMetaFile(InputStream stream, IPlugin plugin) {
+	protected List<String> readMetaFile(InputStream stream, IPlugin plugin) {
 		List<String> aimFiles = new ArrayList<>();
 
 		try (InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
@@ -206,16 +206,19 @@ public class LoadAIMService implements DeploymentContainerService {
 			String line = null;
 			boolean aimsFound = false;
 			while ((line = in.readLine()) != null) {
-				if (line.matches("#") || line.matches("\\s*"))
+				if (line.startsWith("#") || line.trim().isEmpty())
 					continue;
-				if (aimsFound) {
+				if (aimsFound) 
 					aimFiles.add(line);
-				}
-				if (line.matches(".aims:")) {
-					aimsFound = true;
+				if(line.startsWith(".")) {
+					if (line.matches(".aims:")) {
+						aimsFound = true;
+					} else {
+						aimsFound = false;
+					}
 				}
 			}
-		} catch (IOException e) {
+		} catch (NullPointerException | IOException e) {
 			this.logger.error("could not read speech meta file of {} {}",  plugin.getDisplayName(), e);
 		}
 		return aimFiles;

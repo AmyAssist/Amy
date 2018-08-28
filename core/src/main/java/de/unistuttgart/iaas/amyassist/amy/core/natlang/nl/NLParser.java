@@ -230,7 +230,7 @@ public class NLParser implements INLParser {
 			for (int i = startIndex; i <= endIndex - 1; i++) {
 				b.append(this.mRead.get(i) + " ");
 			}
-			if (matched)
+			if (matched) 
 				entity.setUserProvidedContent(b.toString().trim());
 			return matched;
 		} catch (ClassCastException e) {
