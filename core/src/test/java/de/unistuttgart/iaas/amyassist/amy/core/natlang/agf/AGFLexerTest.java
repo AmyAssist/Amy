@@ -31,15 +31,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 
-
-
 /**
  * Test lexer implementation
+ * 
  * @author Felix Burk
  */
 public class AGFLexerTest {
-	
-	
+
 	private List<AGFToken> getListFromLexer(String toLex) {
 		AGFLexer lex = new AGFLexer(toLex);
 		List<AGFToken> result = new ArrayList<>();
@@ -55,13 +53,13 @@ public class AGFLexerTest {
 		List<AGFToken> toCheck = getListFromLexer("x");
 		assertThat(toCheck.get(0).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(0).content, equalTo("x"));
-		
+
 		toCheck = getListFromLexer("test");
 		assertThat(toCheck.get(0).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(0).content, equalTo("test"));
 
 	}
-	
+
 	/**
 	 * tests multiple words
 	 */
@@ -71,16 +69,16 @@ public class AGFLexerTest {
 		assertThat(toCheck.get(0).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(1).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(2).type, equalTo(AGFTokenType.WORD));
-		assertThat(toCheck.get(3).type, equalTo(AGFTokenType.WORD));		
+		assertThat(toCheck.get(3).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(4).type, equalTo(AGFTokenType.WORD));
-		
+
 		assertThat(toCheck.get(0).content, equalTo("hello"));
 		assertThat(toCheck.get(1).content, equalTo("x"));
 		assertThat(toCheck.get(2).content, equalTo("y"));
-		assertThat(toCheck.get(3).content, equalTo("a"));		
+		assertThat(toCheck.get(3).content, equalTo("a"));
 		assertThat(toCheck.get(4).content, equalTo("b"));
 	}
-	
+
 	/**
 	 * tests optional groups like [x|y] and [x]
 	 */
@@ -90,18 +88,17 @@ public class AGFLexerTest {
 		assertThat(toCheck.get(0).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(1).type, equalTo(AGFTokenType.OPENSBR));
 		assertThat(toCheck.get(2).type, equalTo(AGFTokenType.WORD));
-		assertThat(toCheck.get(3).type, equalTo(AGFTokenType.OR));		
+		assertThat(toCheck.get(3).type, equalTo(AGFTokenType.OR));
 		assertThat(toCheck.get(4).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(5).type, equalTo(AGFTokenType.CLOSESBR));
-		
-		
+
 		toCheck = getListFromLexer("hello [x|y] [z]");
 		assertThat(toCheck.get(6).type, equalTo(AGFTokenType.OPENSBR));
 		assertThat(toCheck.get(7).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(8).type, equalTo(AGFTokenType.CLOSESBR));
 
 	}
-	
+
 	/**
 	 * tests or groups like (x|y) and (x)
 	 */
@@ -111,18 +108,17 @@ public class AGFLexerTest {
 		assertThat(toCheck.get(0).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(1).type, equalTo(AGFTokenType.OPENBR));
 		assertThat(toCheck.get(2).type, equalTo(AGFTokenType.WORD));
-		assertThat(toCheck.get(3).type, equalTo(AGFTokenType.OR));		
+		assertThat(toCheck.get(3).type, equalTo(AGFTokenType.OR));
 		assertThat(toCheck.get(4).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(5).type, equalTo(AGFTokenType.CLOSEBR));
-		
-		
+
 		toCheck = getListFromLexer("hello [x|y] (z)");
 		assertThat(toCheck.get(6).type, equalTo(AGFTokenType.OPENBR));
 		assertThat(toCheck.get(7).type, equalTo(AGFTokenType.WORD));
 		assertThat(toCheck.get(8).type, equalTo(AGFTokenType.CLOSEBR));
 
 	}
-	
+
 	/**
 	 * check all ascii characters not compliant with AGF throw an exception
 	 */
@@ -130,21 +126,21 @@ public class AGFLexerTest {
 	public void exceptions() {
 		List<String> ascii = new ArrayList<>();
 		char c = 0;
-		for(c = 0; c <= 127; c++) {
+		// start by character 33. Trim delete all characters before
+		for (c = 33; c <= 127; c++) {
 			ascii.add(String.valueOf(c));
 		}
-		
-		//remove characters okay to use
-		for(c = 'a'; c <= 'z'; c++) {
-			ascii.remove(String.valueOf(c));
-		}
-		for(c = 'A'; c <= 'Z'; c++) {
-			ascii.remove(String.valueOf(c));
-		}
-		for(c = '0'; c <= '9'; c++) {
-			ascii.remove(String.valueOf(c));
-		}
 
+		// remove characters okay to use
+		for (c = 'a'; c <= 'z'; c++) {
+			ascii.remove(String.valueOf(c));
+		}
+		for (c = 'A'; c <= 'Z'; c++) {
+			ascii.remove(String.valueOf(c));
+		}
+		for (c = '0'; c <= '9'; c++) {
+			ascii.remove(String.valueOf(c));
+		}
 		ascii.remove("(");
 		ascii.remove(")");
 		ascii.remove("[");
@@ -156,13 +152,10 @@ public class AGFLexerTest {
 		ascii.remove(",");
 		ascii.remove("*");
 		ascii.remove("+");
-		//normal whitespace
-		ascii.remove(32);
-		
-		for(String s : ascii) {
+
+		for (String s : ascii) {
 			assertThrows(AGFLexerException.class, () -> getListFromLexer(s));
 		}
 	}
-	
 
 }
