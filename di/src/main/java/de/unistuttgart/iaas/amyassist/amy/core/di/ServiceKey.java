@@ -45,6 +45,7 @@ class ServiceKey<T> {
 	public ServiceKey(ServiceDescription<T> description) {
 		this.serviceType = description.getServiceType();
 		this.annotations = new HashSet<>(description.getAnnotations());
+		this.annotations.removeIf(annotation -> true);
 	}
 
 	@Override
