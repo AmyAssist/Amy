@@ -1,22 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AmyInteractionModel>
 	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.setAlarm">
+		<gram>(set|create) (alarm|alam) [(at|for|on) {time}] [{day}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="time" required="true">
+				<gram>{amytime}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="day" required="false">
+				<gram>(today|tomorrow)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="time">
+			<text>On what time of day should I set?</text>
+			<gram>[(at|for|on)] {time}</gram>
+		</Prompt>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.setTimer">
+		<gram>(set|create) timer (for|on) [{hour} hour] [{minute} minute] [{second}second]
+		</gram>
+		<EntityTemplates>
+			<EntityTemplate id="hour" required="false">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="minute" required="false">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="second" required="false">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.">
 		<gram>[do i have] new {important}</gram>
 	</Intent>
-		<Intent
+	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.">
 		<gram>[do i have] new {important}</gram>
 	</Intent>
-		<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.">
-		<gram>[do i have] new {important}</gram>
-	</Intent>
-		<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.">
-		<gram>[do i have] new {important}</gram>
-	</Intent>
-	
+
 
 
 </AmyInteractionModel>

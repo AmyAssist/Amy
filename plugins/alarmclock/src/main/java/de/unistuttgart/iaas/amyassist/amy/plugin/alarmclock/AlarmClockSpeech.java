@@ -23,15 +23,17 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 
 /**
  * Speech class for alarm clock
@@ -40,7 +42,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
  */
 @SpeechCommand
 public class AlarmClockSpeech {
-	/*
+
 	@Reference
 	private AlarmClockLogic logic;
 
@@ -65,12 +67,15 @@ public class AlarmClockSpeech {
 	 * 
 	 * @return info if creation was successful
 	 */
-	/*
-	@Grammar(SETALARMGRAMMAR)
-	public String setAlarm(String[] params) {
-		int[] alarmTime = extractAlarmTime(params);
+	@Intent
+	public String setAlarm(Map<String, EntityData> entities) {
 		try {
-			Alarm alarm = this.logic.setAlarm(alarmTime[2], alarmTime[0], alarmTime[1]);
+			int tomoro = -1;
+			if (entities.get("day") != null && entities.get("day").getString().equals(tomorrow)) {
+				tomoro = 1;
+			}
+			Alarm alarm = this.logic.setAlarm(tomoro, entities.get("time").getTime().getHour(),
+					entities.get("time").getTime().getMinute());
 			LocalDateTime time = alarm.getAlarmTime();
 			String day;
 			if (LocalDateTime.now().getDayOfMonth() == time.getDayOfMonth()) {
@@ -84,7 +89,6 @@ public class AlarmClockSpeech {
 			return PARAMSNOTVALID;
 		}
 	}
-	*/
 
 	/**
 	 * Sets a new timer. You can select between hours, minutes and seconds or combinate them
@@ -93,47 +97,26 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation
 	 * @return params for the timer
 	 */
-	/*
-	@Grammar("(set|create) timer (for|on) [# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")
-	public String setTimer(String[] params) {
+	@Intent
+	public String setTimer(Map<String, EntityData> entities) {
 		int hours = 0;
 		int minutes = 0;
 		int seconds = 0;
-		try {
-			if (params.length == 9) {
-				hours = Integer.parseInt(params[3]);
-				minutes = Integer.parseInt(params[5]);
-				seconds = Integer.parseInt(params[7]);
-			} else if (params.length == 7) {
-				if (params[4].contains("hour") && params[6].contains("minute")) {
-					hours = Integer.parseInt(params[3]);
-					minutes = Integer.parseInt(params[5]);
-				} else if (params[4].contains("hour") && params[6].contains("second")) {
-					hours = Integer.parseInt(params[3]);
-					seconds = Integer.parseInt(params[5]);
-				} else if (params[4].contains("minute") && params[6].contains("second")) {
-					minutes = Integer.parseInt(params[3]);
-					seconds = Integer.parseInt(params[5]);
-				}
-			} else if (params.length == 5) {
-				if (params[4].contains("hour")) {
-					hours = Integer.parseInt(params[3]);
-				} else if (params[4].contains("minute")) {
-					minutes = Integer.parseInt(params[3]);
-				} else if (params[4].contains("second")) {
-					seconds = Integer.parseInt(params[3]);
-				}
-			} else {
-				return "Speech Command not valid.";
-			}
-		} catch (IllegalArgumentException e) {
-			this.logException(e);
-			return PARAMSNOTVALID;
+		if (entities.get("hour") != null) {
+			hours = entities.get("hour").getNumber();
+		}
+		if (entities.get("minute") != null) {
+			minutes = entities.get("minute").getNumber();
+		}
+		if (entities.get("second") != null) {
+			seconds = entities.get("second").getNumber();
+		}
+		if (hours == 0 && minutes == 0 && seconds == 0) {
+			return "No value is set";
 		}
 		Timer timer = this.logic.setTimer(hours, minutes, seconds);
 		return "Timer " + timer.getId() + " set";
 	}
-	*/
 
 	/**
 	 * Resets all alarms or timers
@@ -142,14 +125,12 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation
 	 * @return resetAlarms or resetTimers
 	 */
-	/*
-	@Grammar("reset [all] (alarms|timers)")
+	//@Grammar("reset [all] (alarms|timers)")
 	public String resetAlarmClockObjects(String[] params) {
 		if (params[1].equals("alarms") || (params.length == 3 && params[2].equals("alarms")))
 			return this.logic.resetAlarms();
 		return this.logic.resetTimers();
 	}
-	*/
 
 	/**
 	 * Deletes one specific alarm or timer
@@ -158,8 +139,7 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation
 	 * @return deleteAlarm or deleteTimer
 	 */
-	/*
-	@Grammar("delete (alarm|timer) #")
+//	@Grammar("delete (alarm|timer) #")
 	public String deleteAlarmClockObject(String[] params) {
 		try {
 			if (params[1].equals("alarm"))
@@ -170,7 +150,6 @@ public class AlarmClockSpeech {
 			return ELEMENTNOTFOUND;
 		}
 	}
-	*/
 
 	/**
 	 * deactivates one specific alarm or timer
@@ -179,8 +158,7 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation
 	 * @return deactivateAlarm or deactivateTimer
 	 */
-	/*
-	@Grammar("deactivate (alarm|timer) #")
+//	@Grammar("deactivate (alarm|timer) #")
 	public String deactivateAlarmClockObject(String[] params) {
 		try {
 			if (params[1].equals("alarm"))
@@ -192,7 +170,6 @@ public class AlarmClockSpeech {
 			return ELEMENTNOTFOUND;
 		}
 	}
-	*/
 
 	/**
 	 * Activates one specific alarm or timer
@@ -201,8 +178,8 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation
 	 * @return activateAlarm or activateTimer
 	 */
-	/*
-	@Grammar("activate alarm #")
+
+//	@Grammar("activate alarm #")
 	public String activateAlarm(String[] params) {
 		try {
 			return this.logic.activateAlarm(Integer.parseInt(params[2]));
@@ -211,7 +188,6 @@ public class AlarmClockSpeech {
 			return ELEMENTNOTFOUND;
 		}
 	}
-	*/
 
 	/**
 	 * gets one specific alarm or timer
@@ -220,8 +196,8 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation
 	 * @return getAlarm or getTimer
 	 */
-	/*
-	@Grammar("get (alarm|timer) #")
+
+//	@Grammar("get (alarm|timer) #")
 	public String getAlarmClockObject(String[] params) {
 		try {
 			if (params[1].equals("alarm")) {
@@ -235,7 +211,6 @@ public class AlarmClockSpeech {
 			return ELEMENTNOTFOUND;
 		}
 	}
-	*/
 
 	/**
 	 * gets all alarms or timers
@@ -244,8 +219,8 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation
 	 * @return getAllAlarms or getAllTimers
 	 */
-	/*
-	@Grammar("get all (alarms|timers)")
+
+//	@Grammar("get all (alarms|timers)")
 	public String getAllAlarmClockObjects(String[] params) {
 		if (params[2].equals("alarms")) {
 			List<Alarm> alarms = this.logic.getAllAlarms();
@@ -268,7 +243,6 @@ public class AlarmClockSpeech {
 		}
 		return String.join("\n", stringTimers);
 	}
-	*/
 
 	/**
 	 * edits a specific alarm
@@ -278,7 +252,7 @@ public class AlarmClockSpeech {
 	 * @return edit Alarm
 	 */
 
-	@Grammar("edit alarm # to # oh # [today|tomorrow]")
+//	@Grammar("edit alarm # to # oh # [today|tomorrow]")
 	public String editAlarm(String[] params) {
 		try {
 			if (Integer.parseInt(params[4]) > 23 || Integer.parseInt(params[6]) > 59) {
@@ -299,7 +273,6 @@ public class AlarmClockSpeech {
 			return ELEMENTNOTFOUND;
 		}
 	}
-	*/
 
 	/**
 	 * Gets remaining timer delay
@@ -308,8 +281,8 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation
 	 * @return remaining timer delay
 	 */
-	/*
-	@Grammar("when (does|is) timer # (ringing|ring)")
+
+//	@Grammar("when (does|is) timer # (ringing|ring)")
 	public String getRemainingTimerDelay(String[] params) {
 		try {
 			return outputTimer(this.logic.getTimer(Integer.parseInt(params[3])));
@@ -322,7 +295,6 @@ public class AlarmClockSpeech {
 	private void logException(Exception e) {
 		this.logger.error("Exception Thrown!", e);
 	}
-	*/
 
 	/**
 	 * Extracts the alarm time of the speech command given to the setAlarm function Parsing is based on following
@@ -332,7 +304,7 @@ public class AlarmClockSpeech {
 	 *            words in the grammar annotation {@link #setAlarm(String[] params)}
 	 * @return array with hour and minute of the alarm
 	 */
-	/*
+
 	private static int[] extractAlarmTime(String[] params) {
 		int[] alarmTime = new int[] { -1, -1, -1 };
 		for (String s : params) {
@@ -414,5 +386,5 @@ public class AlarmClockSpeech {
 		return "Timer " + timerNumber + " will ring in " + timeDiff[0] + " hours and " + timeDiff[1] + " minutes and "
 				+ timeDiff[2] + " seconds";
 	}
-	*/
+
 }
