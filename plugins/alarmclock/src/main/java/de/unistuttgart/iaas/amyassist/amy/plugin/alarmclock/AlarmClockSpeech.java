@@ -1,6 +1,5 @@
 /*
- * This source file is part of the Am
-y open source project.
+ * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
  * 
  * Copyright (c) 2018 the Amy project authors.
