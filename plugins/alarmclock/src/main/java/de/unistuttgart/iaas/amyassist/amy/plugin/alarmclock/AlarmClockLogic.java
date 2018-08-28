@@ -135,7 +135,9 @@ public class AlarmClockLogic {
 		if (this.alarmStorage.getAll().isEmpty()) {
 			return id;
 		}
-		for (Alarm a : this.alarmStorage.getAll()) {
+		List<Alarm> alarmList = this.alarmStorage.getAll();
+		alarmList.sort((alarm1, alarm2) -> alarm1.getId() - alarm2.getId());
+		for (Alarm a : alarmList) {
 			if (a.getId() == id) {
 				id++;
 			} else {
@@ -333,9 +335,8 @@ public class AlarmClockLogic {
 	 * @return List of all alarms
 	 */
 	protected List<Alarm> getAllAlarms() {
-		List<Alarm> alarmList = new ArrayList<>();
-		for (Alarm a : this.alarmStorage.getAll())
-			alarmList.add(a);
+		List<Alarm> alarmList = this.alarmStorage.getAll();
+		alarmList.sort((alarm1, alarm2) -> alarm1.getId() - alarm2.getId());
 		return alarmList;
 	}
 
