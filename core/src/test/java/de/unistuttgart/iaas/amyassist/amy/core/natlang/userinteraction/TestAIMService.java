@@ -49,7 +49,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 /**
  * Test class for the amy interaction model service class
  * 
- * @author Lars Buttgereit
+ * @author Lars Buttgereit, Felix Burk
  */
 @ExtendWith(FrameworkExtension.class)
 class TestAIMService {
