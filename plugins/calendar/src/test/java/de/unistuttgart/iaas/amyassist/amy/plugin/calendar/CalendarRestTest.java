@@ -60,15 +60,6 @@ class CalendarRestTest {
 
 	private WebTarget target;
 
-	private static final String NO_EVENTS_FOUND = "No upcoming events found.";
-	private static final String NO_EVENTS_TODAY = "There are no events today.";
-	private static final String NO_EVENTS_TOMORROW = "There are no events tomorrow.";
-	private static final String NO_EVENTS_AT_DATE = "There are no events on the 2015-05-28T08:00:00.";
-	private static final String EVENT_UPCOMING = "You have following upcoming " + 1 + " events: Meeting with Amy.";
-	private static final String EVENT_TODAY = "You have following events today: Meeting with Amy.";
-	private static final String EVENT_TOMORROW = "You have following events tomorrow: Meeting with Amy.";
-	private static final String EVENT_AT_DATE = "You have following events on the 2015-05-28T08:00:00: Meeting with Amy.";
-
 	private LocalDateTime ldt = LocalDateTime.parse("2015-05-28T08:00:00");
 	private CalendarEvent event;
 	private CalendarEvent setEvent;
@@ -126,9 +117,17 @@ class CalendarRestTest {
 		Mockito.when(this.logic.getEventsAt(this.ldt)).thenReturn(this.eventList);
 		try (Response response = this.target.path("eventsAt/2015-05-28T08:00:00").request().get()) {
 			assertThat(response, status(200));
-			List<CalendarEvent> actualEvents = response.readEntity(List.class);
-			// assertThat(actualEvents, is(this.eventList));
 		}
+		
+        Mockito.when(this.logic.getEventsAt(this.ldt)).thenReturn(null);
+        try (Response response = this.target.path("eventsAt/2015-05-28T08:00:00").request().get()) {
+            String actualMsg = response.readEntity(String.class);
+            assertThat(actualMsg, equalTo("Couldn't get events"));
+            assertThat(response, status(409));
+        }
+
+        Mockito.verify(this.logic, Mockito.times(2)).getEventsAt(this.ldt);
+
 	}
 
 }
