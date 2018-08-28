@@ -218,7 +218,7 @@ public class LoadAIMService implements DeploymentContainerService {
 					}
 				}
 			}
-		} catch (NullPointerException | IOException e) {
+		} catch (IOException e) {
 			this.logger.error("could not read speech meta file of {} {}",  plugin.getDisplayName(), e);
 		}
 		return aimFiles;
