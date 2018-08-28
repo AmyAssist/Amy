@@ -21,20 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
+package de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import java.time.LocalTime;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * A ContextProvider which provides the class of the consumer
+ * An adapter for LocalDateTime objects to parse and get Strings according to ISO-8601
  * 
- * @author Leon Kiefer
+ * @author Felix Burk
  */
-public class ClassProvider implements StaticProvider<Class<?>> {
+public class LocalTimeAdapter extends XmlAdapter<String, LocalTime> {
 
+	/**
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
 	@Override
-	public Class<?> getContext(ServiceConsumer<?> consumer) {
-		return consumer.getConsumerClass();
+	public String marshal(LocalTime v) throws Exception {
+		return v.toString();
+	}
+
+	/**
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
+	@Override
+	public LocalTime unmarshal(String v) throws Exception {
+		return LocalTime.parse(v);
 	}
 
 }

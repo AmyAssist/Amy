@@ -82,6 +82,13 @@ public class ConsoleImpl implements RunnableService, Runnable, Console {
 	public void run() {
 		try {
 			Shell shell = ShellFactory.createConsoleShell("amy", "", this.mainHandlers.toArray());
+			shell.getOutputConverter().addConverter(toBeFormatted -> {
+				if (toBeFormatted instanceof Throwable) {
+					this.logger.error("Error while handling console command", (Throwable) toBeFormatted);
+					return "";
+				}
+				return null;
+			});
 			shell.commandLoop();
 		} catch (IOException e) {
 			this.logger.error("Error while running the console", e);

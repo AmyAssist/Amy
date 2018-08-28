@@ -57,7 +57,7 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 	public ServiceImplementationDescription<Properties> getServiceImplementationDescription(
 			@Nonnull ContextLocator locator, @Nonnull ServiceConsumer<Properties> serviceConsumer) {
 		IPlugin plugin = (IPlugin) locator.getContextProvider(Context.PLUGIN)
-				.getContext(serviceConsumer.getConsumerClass());
+				.getContext(serviceConsumer);
 		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
 				Collections.singletonMap(Context.PLUGIN, plugin), Properties.class);
 	}

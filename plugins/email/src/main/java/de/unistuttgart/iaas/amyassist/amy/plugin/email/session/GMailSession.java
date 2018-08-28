@@ -60,16 +60,10 @@ public class GMailSession extends MailSession {
 	private static final String INBOX_NAME = "INBOX";
 
 	@Override
-	public Folder getInbox() {
-		Folder folderToOpen;
-		try {
-			folderToOpen = this.store.getFolder(INBOX_NAME);
-			folderToOpen.open(Folder.READ_ONLY);
-			return folderToOpen;
-		} catch (MessagingException e) {
-			this.logger.error("Couldn't access inbox", e);
-		}
-		return null;
+	public Folder getInbox() throws MessagingException {
+		Folder folderToOpen = this.store.getFolder(INBOX_NAME);
+		folderToOpen.open(Folder.READ_ONLY);
+		return folderToOpen;
 	}
 
 	@PostConstruct

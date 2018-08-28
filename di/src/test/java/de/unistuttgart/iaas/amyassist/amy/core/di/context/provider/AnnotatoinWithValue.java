@@ -23,18 +23,17 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A ContextProvider which provides the class of the consumer
+ * Annotation to the context
  * 
  * @author Leon Kiefer
  */
-public class ClassProvider implements StaticProvider<Class<?>> {
-
-	@Override
-	public Class<?> getContext(ServiceConsumer<?> consumer) {
-		return consumer.getConsumerClass();
-	}
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(java.lang.annotation.ElementType.FIELD)
+public @interface AnnotatoinWithValue {
+	String value();
 }

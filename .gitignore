@@ -4,6 +4,7 @@ bin/
 *.gram
 .classpath
 .project
+org.eclipse.core.resources.prefs
 
 temp/
 
