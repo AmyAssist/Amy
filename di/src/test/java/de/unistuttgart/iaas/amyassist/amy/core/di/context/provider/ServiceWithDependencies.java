@@ -23,18 +23,28 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * A ContextProvider which provides the class of the consumer
+ * Service with two references to the same Service type with different annotations
  * 
  * @author Leon Kiefer
  */
-public class ClassProvider implements StaticProvider<Class<?>> {
+@Service
+public class ServiceWithDependencies {
+	@AnnotatoinWithValue("1")
+	@Reference
+	private ServiceWithAnnotationContext service1;
+	@AnnotatoinWithValue("2")
+	@Reference
+	private ServiceWithAnnotationContext service2;
 
-	@Override
-	public Class<?> getContext(ServiceConsumer<?> consumer) {
-		return consumer.getConsumerClass();
+	public String getValueOfService1() {
+		return this.service1.getValue();
 	}
 
+	public String getValueOfService2() {
+		return this.service2.getValue();
+	}
 }
