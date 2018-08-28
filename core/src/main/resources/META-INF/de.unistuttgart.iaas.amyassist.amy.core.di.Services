@@ -24,8 +24,6 @@ de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskSchedulerImpl
 de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformationService
 de.unistuttgart.iaas.amyassist.amy.core.speech.output.OutputImpl
 de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeechImpl
-de.unistuttgart.iaas.amyassist.amy.core.speech.LocalSpeechInterpreter
-de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechResultPreHandler
-de.unistuttgart.iaas.amyassist.amy.core.speech.SphinxGrammarCreator
-de.unistuttgart.iaas.amyassist.amy.core.speech.GoogleSpeechRecognizer
-de.unistuttgart.iaas.amyassist.amy.core.speech.SphinxSpeechRecognizer
+de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechManager
+de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarCreator
+de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxRecognizer

@@ -8,7 +8,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -21,17 +21,26 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.remotesr;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx;
+
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- * Remote SR listener interface
- * @author Benno Krauß
+ * A annotation containing a sphinx grammar name
+ * 
+ * @author Tim Neumann
  */
-public interface RemoteSRListener {
-
-    /**
-     * Called when the remote SR recognizes a sentence
-     * @param message the recognized phrase
-     */
-    void remoteSRDidRecognizeSpeech(String message);
+@Documented
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface SphinxGrammarName {
+	/**
+	 * @return The grammar name
+	 */
+	String value();
 }

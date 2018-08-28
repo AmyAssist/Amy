@@ -8,7 +8,7 @@
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at 
+ * You may obtain a copy of the License at
  * 
  *   http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -30,37 +30,30 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.function.Consumer;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer;
 
 /**
  * Class to initiate the remote SR
  * 
- * @author Benno Krauß
+ * @author Benno Krauß, Tim Neumann
  */
 @Service(RemoteSR.class)
-public class RemoteSR {
+public class RemoteSR implements SpeechRecognizer, RunnableService {
 
 	private static final String CONFIG_NAME = "remotesr.config";
-	private static final String CHROME_DIRECTORY_CONFIG_KEY = "chrome";
-	private static final String CHROME_DIRECTORY_DEFAULT_MAC = "chrome_default_mac";
-	private static final String CHROME_DIRECTORY_DEFAULT_WINDOWS = "chrome_default_windows";
+	private static final String CHROME_DIRECTORY_CONFIG_KEY = "chromeCmd";
 
 	@Reference
 	private Logger logger;
@@ -72,7 +65,57 @@ public class RemoteSR {
 
 	private SSEClient client = null;
 
-	private RemoteSRListener listener;
+	private Consumer<String> listener;
+
+	private Process chromeProcess;
+
+	private volatile boolean continuous;
+	private volatile boolean currentlyRecognizing;
+	private volatile boolean stop;
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#recognizeOnce(java.util.function.Consumer)
+	 */
+	@Override
+	public void recognizeOnce(Consumer<String> resultHandler) {
+		if (this.currentlyRecognizing)
+			throw new IllegalStateException("Already recognizing");
+		this.listener = resultHandler;
+		this.continuous = false;
+
+		this.tryToRecognize();
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#recognizeContinuously(java.util.function.Consumer)
+	 */
+	@Override
+	public void recognizeContinuously(Consumer<String> resultHandler) {
+		if (this.currentlyRecognizing)
+			throw new IllegalStateException("Already recognizing");
+		this.listener = resultHandler;
+		this.continuous = true;
+
+		this.tryToRecognize();
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#stopContinuousRecognition()
+	 */
+	@Override
+	public void stopContinuousRecognition() {
+		if (!this.continuous)
+			throw new IllegalStateException("Not recognizing continuously");
+		this.continuous = false;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#isCurrentlyRecognizing()
+	 */
+	@Override
+	public boolean isCurrentlyRecognizing() {
+		return this.currentlyRecognizing;
+	}
 
 	/**
 	 * launch the chrome browser, open the remote-SR url immediately and prevent microphone permission dialog by using a
@@ -81,7 +124,7 @@ public class RemoteSR {
 	 * @throws LaunchChromeException
 	 *             Exception Signaling that something went wrong with launching Chrome
 	 */
-	public void launchChrome() throws LaunchChromeException {
+	private void launchChrome() throws LaunchChromeException {
 		try {
 			String file = generateTempProfile();
 
@@ -90,22 +133,15 @@ public class RemoteSR {
 			String chromePath = config.getProperty(CHROME_DIRECTORY_CONFIG_KEY);
 
 			if (chromePath == null || chromePath.isEmpty()) {
-				if (SystemUtils.IS_OS_MAC_OSX) {
-					chromePath = config.getProperty(CHROME_DIRECTORY_DEFAULT_MAC);
-				} else if (SystemUtils.IS_OS_WINDOWS) {
-					chromePath = config.getProperty(CHROME_DIRECTORY_DEFAULT_WINDOWS);
-				} else {
-					this.logger
-							.error("No directory for chrome installation found. Set your chrome installation directory "
-									+ "in {}.properties", CONFIG_NAME);
-				}
+				this.logger.error("Chrome command not set. Set your chrome installation directory in {}.properties",
+						CONFIG_NAME);
 			}
 
-			Process process = new ProcessBuilder(chromePath, "http://localhost:8080/rest/remotesr",
+			this.chromeProcess = new ProcessBuilder(chromePath, "http://localhost:8080/rest/remotesr",
 					"--user-data-dir=" + file).start();
 
-			watchProcess(process, new BufferedReader(new InputStreamReader(process.getInputStream(),
-					StandardCharsets.UTF_8)));
+			watchProcess(new BufferedReader(
+					new InputStreamReader(this.chromeProcess.getInputStream(), StandardCharsets.UTF_8)));
 		} catch (IOException e) {
 			throw new LaunchChromeException("Couldn't start Chrome:", e);
 		}
@@ -120,9 +156,8 @@ public class RemoteSR {
 	private String generateTempProfile() throws LaunchChromeException {
 		try {
 			URL chromeProfileJarDir = getClass().getClassLoader().getResource("chrome_profile");
-			if (chromeProfileJarDir == null) {
+			if (chromeProfileJarDir == null)
 				throw new LaunchChromeException("Couldn't get chrome_profile resource");
-			}
 
 			Path tempDir = Files.createTempDirectory(getClass().getSimpleName());
 
@@ -152,7 +187,6 @@ public class RemoteSR {
 			if (sourceURI.getScheme().equals("jar")) {
 				fs = FileSystems.newFileSystem(sourceURI, Collections.<String, String> emptyMap());
 			}
-
 			final Path jarPath = Paths.get(sourceURI);
 
 			Files.walkFileTree(jarPath, new SimpleFileVisitor<Path>() {
@@ -178,17 +212,18 @@ public class RemoteSR {
 		}
 	}
 
-	private void watchProcess(Process process, BufferedReader reader) {
+	private void watchProcess(BufferedReader reader) {
 		new Thread(() -> {
 			try {
 				String line;
 				while ((line = reader.readLine()) != null) {
 					this.logger.warn("Chrome: {}", line);
 				}
-				process.waitFor();
-				this.logger.warn("Chrome quit unexpectedly");
-				launchChrome();
-
+				this.chromeProcess.waitFor();
+				if (!this.stop) {
+					this.logger.warn("Chrome quit unexpectedly");
+					launchChrome();
+				}
 			} catch (IOException e) {
 				this.logger.warn("Couldn't read output from Chrome:", e);
 			} catch (LaunchChromeException e) {
@@ -199,6 +234,12 @@ public class RemoteSR {
 		}).start();
 	}
 
+	/**
+	 * Set the sse client
+	 * 
+	 * @param client
+	 *            The client to set
+	 */
 	void setClient(SSEClient client) {
 		if (this.client != null && this.client.isConnected()) {
 			this.logger.warn("New SSE client connected before the old one disconnected");
@@ -212,18 +253,35 @@ public class RemoteSR {
 	 *
 	 * @return true if the request was successful
 	 */
-	public boolean requestSR() {
-		return this.client != null && client.sendEvent(START_SR_EVENT);
-	}
-
-	void processResult(SRResult res) {
-		if (res != null && res.getText() != null && this.listener != null) {
-			this.listener.remoteSRDidRecognizeSpeech(res.getText());
+	boolean tryToRecognize() {
+		if (this.client == null) {
+			this.logger.error("Could not start recognition, because I have no client.");
+			return false;
+		} else if (!this.client.isConnected()) {
+			this.logger.error("Could not start recognition, because the client is not connected.");
+			return false;
 		}
+		this.currentlyRecognizing = true;
+		return this.client.sendEvent(START_SR_EVENT);
 	}
 
-	public void setListener(RemoteSRListener listener) {
-		this.listener = listener;
+	/**
+	 * Processes a result from the speech recognition.
+	 * 
+	 * @param res
+	 *            The result.
+	 */
+	void processResult(SRResult res) {
+		if (res != null && res.getText() != null && this.listener != null && !res.getText().isEmpty()) {
+			this.listener.accept(res.getText());
+			if (this.continuous) {
+				tryToRecognize();
+			} else {
+				this.currentlyRecognizing = false;
+			}
+		} else {
+			tryToRecognize();
+		}
 	}
 
 	/**
@@ -254,6 +312,28 @@ public class RemoteSR {
 		LaunchChromeException(String string, Exception e) {
 			super(string, e);
 		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
+	 */
+	@Override
+	public void start() {
+		try {
+			launchChrome();
+		} catch (LaunchChromeException e) {
+			throw new IllegalStateException("Unable to launch chrome", e);
+		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
+	 */
+	@Override
+	public void stop() {
+		this.continuous = false;
+		this.stop = true;
+		this.chromeProcess.destroy();
 	}
 
 }
