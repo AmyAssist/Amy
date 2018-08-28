@@ -13,8 +13,10 @@
 		 * Simple Speech Recognition website.
 		 * @author Benno Krauß
 		 */
+		const textBox = document.getElementById('textBox');
+
 		if (!('webkitSpeechRecognition' in window)) {
-			console.log('Browser doesn\'t support SR!');
+			throw new Error('Browser doesn\'t support SR!');
 		}
 		const recognition = new webkitSpeechRecognition();
 		recognition.lang = 'en-US';
@@ -36,10 +38,12 @@
 
 		recognition.onstart = function() {
 			console.log('onstart');
+			textBoxMessage('Listening');
 		}
 
 		recognition.onerror = function(event) {
 			console.log('onerror: ', event);
+            textBoxMessage('Error: ', event.error);
 			if (event.error === "no-speech") {
 			    sendResult("");
 			}
@@ -54,6 +58,7 @@
 			console.log('onresult: ', result);
 
 			sendResult(result);
+            textBoxMessage('Sent result');
 		}
 
 		function sendResult(text) {
@@ -78,6 +83,10 @@
 		function startSR(event) {
 			console.log('Starting SR');
 			recognition.start();
+		}
+
+		function textBoxMessage(message) {
+		    textBox.textContent = message;
 		}
 
 		source.addEventListener('START', startSR, false);
