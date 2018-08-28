@@ -83,8 +83,7 @@ public class CalendarResource {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<CalendarEvent> getEventsAt(@PathParam("ldt") LocalDateTime ldt) {
-		List<CalendarEvent> events = this.logic.getEventsAt(ldt);
-		return events;
+		return this.logic.getEventsAt(ldt);
 	}
 
 }
