@@ -64,7 +64,7 @@ public class CalendarService {
 	private static final String APPLICATION_NAME = "Amy Google Calendar API";
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
-	private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR_READONLY);
+	private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR);
 
 	@Reference
 	private Properties configuration;
