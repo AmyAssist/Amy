@@ -47,7 +47,7 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 		di.register(new LoggerProvider());
 		di.register(new PropertiesProvider());
 
-		di.registerContextProvider(Context.CLASSLOADER, Class::getClassLoader);
+		di.registerContextProvider(Context.CLASSLOADER, consumer -> consumer.getConsumerClass().getClassLoader());
 	}
 
 }

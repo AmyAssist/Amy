@@ -324,14 +324,14 @@ class PlayerLogicTest {
 	
 	@Test
 	void testCurrentSong() {
-		when(this.spotifyAPICalls.getCurrentSong()).thenReturn(this.currentlyPlayingContext);
+		when(this.spotifyAPICalls.getCurrentPlayingContext()).thenReturn(this.currentlyPlayingContext);
 		when(this.search.createTrackData(any())).thenCallRealMethod();
 		TrackEntity track = this.playerLogic.getCurrentSong();
 		assertThat(track.getUri(), equalTo(ID1));
 	}
 	@Test
 	void testNoCurrentSong() {
-		when(this.spotifyAPICalls.getCurrentSong()).thenReturn(null);
+		when(this.spotifyAPICalls.getCurrentPlayingContext()).thenReturn(null);
 		assertThat(this.playerLogic.getCurrentSong(), equalTo(null));
 	}
 }

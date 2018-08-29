@@ -103,7 +103,7 @@ public class HomeResource {
 	@POST
 	@Path("mute")
 	public void mute() {
-		this.messageHub.publish("home/all/music/mute", "true");
+		this.messageHub.publish("home/all/mute", "true");
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public class HomeResource {
 	@POST
 	@Path("unmute")
 	public void unmute() {
-		this.messageHub.publish("home/all/music/mute", "false");
+		this.messageHub.publish("home/all/mute", "false");
 	}
 	
 }

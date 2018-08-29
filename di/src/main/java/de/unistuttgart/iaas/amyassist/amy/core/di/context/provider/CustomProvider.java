@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
 
 import java.util.Map;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 
 /**
@@ -41,8 +42,8 @@ public class CustomProvider<T> implements StaticProvider<T> {
 	}
 
 	@Override
-	public T getContext(Class<?> consumer) {
-		return this.mapping.get(consumer);
+	public T getContext(ServiceConsumer<?> consumer) {
+		return this.mapping.get(consumer.getConsumerClass());
 	}
 
 }
