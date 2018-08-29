@@ -121,7 +121,7 @@ public class HomeResource {
 
 	private String createPath(IPlugin iPlugin) {
 		Class<?> cls = this.server.getPluginClass(iPlugin.getUniqueName());
-		if (cls.isAnnotationPresent(Path.class)) {
+		if (cls != null && cls.isAnnotationPresent(Path.class)) {
 			return this.uriInfo.getBaseUriBuilder().path(cls).build().toString();
 		}
 		return null;

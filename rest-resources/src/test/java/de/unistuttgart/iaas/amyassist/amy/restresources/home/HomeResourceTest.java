@@ -107,16 +107,12 @@ class HomeResourceTest {
 		Response r = this.target.request().get();
 		assertEquals(200, r.getStatus());
 		SimplePluginEntity[] spes = r.readEntity(SimplePluginEntity[].class);
-		assertEquals(plugins.length + 1, spes.length);
+		assertEquals(plugins.length, spes.length);
 		for (int i = 0; i < plugins.length; i++) {
 			assertEquals(plugins[i].getDisplayName(), spes[i].getName());
 			assertEquals(plugins[i].getDescription(), spes[i].getDescription());
 			assertEquals(null, spes[i].getLink());
 		}
-		assertEquals("Configuration", spes[spes.length - 1].getName());
-		assertEquals("Configurations for this Amy instance and installed plugins",
-				spes[spes.length - 1].getDescription());
-		assertEquals(this.target.getUriBuilder().replacePath("config").toString(), spes[spes.length - 1].getLink());
 
 	}
 
@@ -126,7 +122,7 @@ class HomeResourceTest {
 			plugins[i] = Mockito.mock(IPlugin.class);
 			Mockito.when(plugins[i].getDisplayName()).thenReturn("Display" + i);
 			Mockito.when(plugins[i].getDescription()).thenReturn("Description" + i);
-
+			
 		}
 		return plugins;
 	}
