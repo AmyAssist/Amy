@@ -14,7 +14,6 @@
 	</parent>
 	<properties>
 		<sphinx.version>5prealpha</sphinx.version>
-		<cliche.version>110413</cliche.version>
 	</properties>
 	<repositories>
 		<!-- used for MARY repository -->

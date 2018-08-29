@@ -47,6 +47,7 @@
 		<httpcore.version>4.4.9</httpcore.version>
 		<swagger.version>2.0.2</swagger.version>
 		<commons-lang3.version>3.7</commons-lang3.version>
+		<cliche.version>110413</cliche.version>
 	</properties>
 	<modules>
 		<module>amy-master-node</module>

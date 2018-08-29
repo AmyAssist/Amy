@@ -27,3 +27,4 @@ de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskSchedulerImpl
 de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.LoadAIMService
 de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandlerImpl
 de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformationService
+de.unistuttgart.iaas.amyassist.amy.core.information.InstanceInformationService
