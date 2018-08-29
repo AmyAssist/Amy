@@ -60,16 +60,17 @@ public class PreDefinedEntityTypes {
 			grammars.put("amyinteger", "$(0,1000000000, 1)");
 			grammars.put("amyhour", "$(0,24,1)");
 			grammars.put("amyminute", "$(0,60,1)");
+			grammars.put("amydayofmonth", "$(1,31,1)");
+			grammars.put("amymonth", "(january|february|march|april|may|june|july|august|september|october|november|december)");
 			grammars.put("amytime", "({amyhour} (x|oh) {amyminute}| (({amyhour}|quarter|half)"
 					+ " (past|to) {amyminute} )|{amyhour}  [o clock])[am|pm]");
-			grammars.put("amydate", "");
+			grammars.put("amydate", " amydayofmonth[st|nd|rd|th] [of] amymonth [amyinteger]");
 		}
 
 		if (map == null) {
 			map = new HashMap<>();
 			generateAGFNodes(grammars);
 		}
-
 		return map;
 	}
 

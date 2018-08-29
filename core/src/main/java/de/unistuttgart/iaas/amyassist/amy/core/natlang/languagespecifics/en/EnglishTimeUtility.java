@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.regex.Pattern;
 
@@ -139,6 +140,15 @@ public class EnglishTimeUtility implements ITimeUtility {
 			output = output.replace("p.m.", "pm");
 		}
 		return output;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUtility#parseDate(java.lang.String)
+	 */
+	@Override
+	public LocalDate parseDate(String toParse) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
