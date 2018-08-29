@@ -86,10 +86,26 @@ public abstract class AbstractSpeechRecognizerManager
 		this.output = output;
 		this.mainGrammarName = grammarData.getMainGrammar().getName();
 		this.messageHub = messageHub;
-
+		initMessageHandling();
 		createRecognizers(grammarData, ais);
 
 		this.currentRecognizer = new Thread(this.mainRecognizer, "MainRecognizer");
+	}
+
+	private void initMessageHandling() {
+		this.messageHub.subscribe("home/all/mute", message -> {
+			switch (message) {
+			case "true":
+				this.stopOutput();
+				break;
+			case "false":
+				//do nothing
+				break;
+			default:
+				this.logger.warn("unkown message {}", message);
+				break;
+			}
+		});
 	}
 
 	private void createRecognizers(GrammarObjectsCreator grammarData, AudioInputStream ais) {
@@ -174,6 +190,7 @@ public abstract class AbstractSpeechRecognizerManager
 			this.voiceOutput("now sleeping");
 		}
 		this.messageHub.publish("home/all/music/mute", listening ? "true" : "false");
+		this.messageHub.publish("home/all/alarm/mute", listening ? "true" : "false");
 	}
 
 	@Override
@@ -190,6 +207,7 @@ public abstract class AbstractSpeechRecognizerManager
 			this.soundOutput(Sounds.SINGLE_CALL_STOP_BEEP);
 		}
 		this.messageHub.publish("home/all/music/mute", singleCommand ? "true" : "false");
+		this.messageHub.publish("home/all/alarm/mute", singleCommand ? "true" : "false");
 	}
 
 	/**
