@@ -424,6 +424,6 @@ public class AlarmClockLogic implements RunnableService {
 	 */
 	@Override
 	public void stop() {
-
+		throw new UnsupportedOperationException("We don't need to stop the runnable.");
 	}
 }
