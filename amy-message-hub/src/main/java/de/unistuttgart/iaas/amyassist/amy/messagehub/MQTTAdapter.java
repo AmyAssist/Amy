@@ -27,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.UnaryOperator;
@@ -118,8 +117,8 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 
 		this.options = new MqttConnectOptions();
 		this.options.setCleanSession(false);
-		this.options.setConnectionTimeout((int) CONNECTION_TIMEOUT.get(ChronoUnit.SECONDS));
-		this.options.setKeepAliveInterval((int) KEEP_ALIVE_INTERVAL.get(ChronoUnit.SECONDS));
+		this.options.setConnectionTimeout((int) CONNECTION_TIMEOUT.getSeconds());
+		this.options.setKeepAliveInterval((int) KEEP_ALIVE_INTERVAL.getSeconds());
 	}
 
 	/**
@@ -157,7 +156,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 
 	private void disconnect() {
 		try {
-			this.client.disconnect(DISCONNECT_TIMEOUT.get(ChronoUnit.MILLIS));
+			this.client.disconnect(DISCONNECT_TIMEOUT.toMillis());
 		} catch (MqttException | IllegalStateException e) {
 			this.logger.error("Error while stopping mqtt adapter", e);
 		}
