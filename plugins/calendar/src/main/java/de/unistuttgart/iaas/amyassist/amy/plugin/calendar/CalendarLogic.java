@@ -32,7 +32,6 @@ import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -104,8 +103,6 @@ public class CalendarLogic {
 
 		event.setStart(start);
 		event.setEnd(end);
-
-//		event.setRecurrence(Arrays.asList(calendarEvent.getRecurrence()));
 
 		event.setReminders(calendarEvent.getReminders());
 		this.calendarService.addEvent("primary", event);
