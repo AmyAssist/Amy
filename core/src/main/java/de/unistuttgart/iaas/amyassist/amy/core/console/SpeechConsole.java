@@ -23,13 +23,14 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.console;
 
-import java.util.concurrent.ExecutionException;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 
 import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 
 /**
  * Console commands to interact with Amy like speaking with her.
@@ -40,17 +41,16 @@ public class SpeechConsole {
 	@Reference
 	private Logger logger;
 	@Reference
-	private SpeechInputHandler handler;
+	private DialogHandler handler;
+	private UUID dialog;
+
+	@PostConstruct
+	private void setup() {
+		this.dialog = this.handler.createDialog(System.out::println);// NOSONAR
+	}
 
 	@Command
-	public String say(String... speechInput) {
-		try {
-			return this.handler.handle(String.join(" ", speechInput)).get();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		} catch (ExecutionException e) {
-			this.logger.error("Error while handling input {}", speechInput, e.getCause());
-		}
-		return "";
+	public void say(String... speechInput) {
+		this.handler.process(String.join(" ", speechInput), this.dialog);
 	}
 }

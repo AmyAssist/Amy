@@ -44,8 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 
 /**
  * Manages the plugin integration.
@@ -68,7 +67,7 @@ public class PluginManagerService implements PluginManager {
 	private PluginLoader pluginLoader;
 
 	@Reference
-	private NLProcessingManager nlProcessingManager;
+	private Persistence persistence;
 	@Reference
 	private ConfigurationManager configurationManager;
 	@Reference
@@ -172,11 +171,6 @@ public class PluginManagerService implements PluginManager {
 		loadServices.removeIf(cls -> cls.getClassLoader() != classLoader);
 		loadServices.forEach(this.di::register);
 
-		for (Class<?> cls : plugin.getClasses()) {
-			if (cls.isAnnotationPresent(SpeechCommand.class)) {
-				this.nlProcessingManager.register(cls);
-			}
-		}
 	}
 
 	/**

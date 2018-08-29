@@ -39,8 +39,10 @@ public interface IAGFParselet {
 	/**
 	 * parses the parslet
 	 * 
-	 * @param parser the parser
-	 * @param token the token
+	 * @param parser
+	 *                   the parser
+	 * @param token
+	 *                   the token
 	 * @return the generated node
 	 */
 	public AGFNode parse(Parser parser, AGFToken token);

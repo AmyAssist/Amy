@@ -25,13 +25,10 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
 /**
  * all possible TokenTypes used in AGFLexer
+ * 
  * @author Felix Burk
  */
 public enum AGFTokenType {
-	/**
-	 * Rule
-	 */
-	RULE,
 	/**
 	 * a word
 	 */
@@ -53,7 +50,31 @@ public enum AGFTokenType {
 	 */
 	CLOSESBR,
 	/**
+	 * open curly bracket {
+	 */
+	OPENCBR,
+	/**
+	 * close curly bracket }
+	 */
+	CLOSECBR,
+	/**
 	 * or |
 	 */
-	OR;
+	OR,
+	/**
+	 * comma ,
+	 */
+	COMMA,
+	/**
+	 * $ sign for $(0,100,10)
+	 */
+	DOLLAR,
+	/**
+	 * + sign als wildcard for 0 to 5 words
+	 */
+	PLUS,
+	/**
+	 * * asterisc used as a wildcard at the end of a sentence
+	 */
+	ASTERISC
 }

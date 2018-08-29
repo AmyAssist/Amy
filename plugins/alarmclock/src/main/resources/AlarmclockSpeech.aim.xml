@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.setAlarm">
+		<gram>(set|create) (alarm) [(at|for|on) {time}] [{day}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="time" required="true">
+				<gram>{amytime}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="day" required="false">
+				<gram>(today|tomorrow)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="time">
+			<text>On what time of day should I set?</text>
+			<gram>[(at|for|on)] {time}</gram>
+		</Prompt>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.setTimer">
+		<gram>(set|create) timer (for|on|at) [{hour} hour] [{minute} minute] [{second}second]
+		</gram>
+		<EntityTemplates>
+			<EntityTemplate id="hour" required="false">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="minute" required="false">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="second" required="false">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.resetAlarmClockObjects">
+		<gram>delete all {type}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="type" required="true">
+				<gram>(alarms|timers)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.deleteAlarmClockObject">
+		<gram>delete {type} {number}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="type" required="true">
+				<gram>(alarm|timer)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="number" required="true">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.deactivateAlarmClockObject">
+		<gram>deactivate {type} {number}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="type" required="true">
+				<gram>(alarm|timer)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="number" required="true">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.activateAlarm">
+		<gram>activate alarm {number}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="number" required="true">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getAlarmClockObject">
+		<gram>get {type} {number}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="type" required="true">
+				<gram>(alarm|timer)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="number" required="true">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getAllAlarmClockObjects">
+		<gram>get all {type}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="type" required="true">
+				<gram>(alarms|timers)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.editAlarm">
+		<gram>edit alarm {number} to {time} [{day}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="number" required="true">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="time" required="true">
+				<gram>{amytime}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="day" required="false">
+				<gram>(today|tomorrow)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getRemainingTimerDelay">
+		<gram>when (does|is) timer {number} (ringing|ring)</gram>
+		<EntityTemplates>
+			<EntityTemplate id="number" required="true">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+</AmyInteractionModel>

@@ -193,8 +193,8 @@ public class PlayerLogic {
 	 * @return a AlbumEntity
 	 */
 	public AlbumEntity playAlbum(int albumNumber) {
-		if (this.search.getAlbumSearchResults().size() > albumNumber) {
-			this.spotifyAPICalls.playSongFromUri(this.search.getAlbumSearchResults().get(albumNumber).getUri());
+		if(this.search.getAlbumSearchResults().size() > albumNumber) {
+			this.spotifyAPICalls.playListFromUri(this.search.getAlbumSearchResults().get(albumNumber).getUri());
 			return this.search.getAlbumSearchResults().get(albumNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
@@ -209,8 +209,8 @@ public class PlayerLogic {
 	 * @return a ArtistEntity
 	 */
 	public ArtistEntity playArtist(int artistNumber) {
-		if (this.search.getArtistSearchResults().size() > artistNumber) {
-			this.spotifyAPICalls.playSongFromUri(this.search.getArtistSearchResults().get(artistNumber).getUri());
+		if(this.search.getArtistSearchResults().size() > artistNumber) {
+			this.spotifyAPICalls.playListFromUri(this.search.getArtistSearchResults().get(artistNumber).getUri());
 			return this.search.getArtistSearchResults().get(artistNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
@@ -260,7 +260,7 @@ public class PlayerLogic {
 	 */
 	public TrackEntity getCurrentSong() {
 		CurrentlyPlayingContext currentlyPlayingContext = this.spotifyAPICalls.getCurrentPlayingContext();
-		if (currentlyPlayingContext != null) {
+		if (currentlyPlayingContext != null && currentlyPlayingContext.getItem() != null) {
 			Track[] track = { currentlyPlayingContext.getItem() };
 			return this.search.createTrackData(new Paging.Builder<Track>().setItems(track).build()).get(0);
 		}

@@ -23,9 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager;
 
+import java.util.function.Consumer;
+
 import javax.sound.sampled.AudioInputStream;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
@@ -57,7 +58,7 @@ public class LocalSpeechRecognizerManager extends AbstractSpeechRecognizerManage
 	 *            Message Hub
 	 * 
 	 */
-	public LocalSpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
+	public LocalSpeechRecognizerManager(AudioInputStream ais, Consumer<String> inputHandler, Output output,
 			GrammarObjectsCreator grammarData, MessageHub messageHub) {
 		super(ais, inputHandler, output, grammarData, messageHub);
 	}

@@ -34,7 +34,7 @@ public interface IStemmer {
 	 * this method stem the input string.
 	 * 
 	 * @param input
-	 *            a string with one or more words
+	 *                  a string with one or more words
 	 * @return the stemmed string out of the input string
 	 */
 	String stem(String input);

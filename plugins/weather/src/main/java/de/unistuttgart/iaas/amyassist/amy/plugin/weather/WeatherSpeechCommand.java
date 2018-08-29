@@ -24,42 +24,81 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.registry.Location;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * 
+ * Speech class for the weather plugin
+ * 
+ * @author Benno Krauss
+ */
 @SpeechCommand
 public class WeatherSpeechCommand {
 
 	@Reference
-	WeatherDarkSkyAPI weatherAPI;
+	private WeatherDarkSkyAPI weatherAPI;
 
 	@Reference
-	LocationRegistry locationRegistry;
+	private LocationRegistry locationRegistry;
 
-	@Grammar("weather today")
-	public String weatherToday(String... words) {
-		return weatherAPI.getReportToday().toString();
+	/**
+	 * speech command for the weather forecast for today
+	 * 
+	 * @param entities
+	 *            not set here
+	 * @return the weather forecast
+	 */
+	@Intent()
+	public String weatherToday(Map<String, EntityData> entities) {
+		return this.weatherAPI.getReportToday().toString();
 	}
 
-	@Grammar("weather tomorrow")
-	public String weatherTomorrow(String... words) {
-		return weatherAPI.getReportTomorrow().toString();
+	/**
+	 * speech command for the weather forecast for tomorrow
+	 * 
+	 * @param entities
+	 *            not set here
+	 * @return the weather forecast
+	 */
+	@Intent()
+	public String weatherTomorrow(Map<String, EntityData> entities) {
+		return this.weatherAPI.getReportTomorrow().toString();
 	}
 
-	@Grammar("weather week")
-	public String weatherWeek(String... words) {
-		return weatherAPI.getReportWeek().toString();
+	/**
+	 * speech command for the weather forecast for the week
+	 * 
+	 * @param entities
+	 *            not set here
+	 * @return the weather forecast
+	 */
+	@Intent()
+	public String weatherWeek(Map<String, EntityData> entities) {
+		return this.weatherAPI.getReportWeek().toString();
 	}
 
-	@Grammar("weather weekend")
-	public String weatherWeekend(String... words) {
+	/**
+	 * speech command for the weather forecast for the weekend
+	 * 
+	 * @param entities
+	 *            not set here
+	 * @return the weather forecast
+	 */
+	@Intent()
+	public String weatherWeekend(Map<String, EntityData> entities) {
 
-		WeatherReportWeek report = weatherAPI.getReportWeek();
+		WeatherReportWeek report = this.weatherAPI.getReportWeek();
 		Calendar c = Calendar.getInstance();
 
 		int weekday = c.get(Calendar.DAY_OF_WEEK);
@@ -89,19 +128,33 @@ public class WeatherSpeechCommand {
 		}
 	}
 
-	@Grammar("set weather location (home|work)")
-	public String setLocation(String... words) {
-		Location location = null;
-		if (words[3].equals("home")) {
-			location = this.locationRegistry.getHome();
-		}
-		if (words[3].equals("work")) {
-			location = this.locationRegistry.getWork();
-		}
-		if (location != null) {
-			this.weatherAPI.setLocation(location.getPersistentId());
-			return "new Location ist " + location.getName();
+	/**
+	 * speech command to set a new weather location. only registry entries are allowed
+	 * 
+	 * @param entities input. contains the name of the tag
+	 * @return return the name of the location
+	 */
+	@Intent()
+	public String setLocation(Map<String, EntityData> entities) {
+		for (Location loc : this.locationRegistry.getAll()) {
+			if (loc.getTag().equalsIgnoreCase(entities.get("weatherlocation").getString())) {
+				this.weatherAPI.setLocation(loc.getPersistentId());
+				return loc.getName();
+			}
 		}
 		return "new location not found";
+	}
+	
+	/**
+	 * provide all location tags to the speech
+	 * @return all tags
+	 */
+	@EntityProvider("weatherlocation")
+	public List<String> getAllLocationTags(){
+		List<String> locationNames = new ArrayList<>();
+		for(Location loc : this.locationRegistry.getAll()) {
+			locationNames.add(loc.getTag());
+		}
+		return locationNames;
 	}
 }
