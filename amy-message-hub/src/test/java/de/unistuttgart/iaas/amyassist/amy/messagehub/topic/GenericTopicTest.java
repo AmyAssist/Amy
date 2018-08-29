@@ -37,15 +37,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.google.common.collect.Streams;
 
 /**
- * Tests {@link AbstractTopic}
+ * Tests {@link GenericTopic}
  * 
  * @author Tim Neumann
  */
-class AbstractTopicTest {
+class GenericTopicTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicString(java.lang.String)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.GenericTopic#validateTopicString(java.lang.String)}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -56,12 +56,12 @@ class AbstractTopicTest {
 	@ParameterizedTest
 	@MethodSource("validNames")
 	void testValidateTopicString(String name) throws Exception {
-		AbstractTopic.validateTopicString(name);
+		GenericTopic.validateTopicString(name);
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicString(java.lang.String)}
+	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.GenericTopic#validateTopicString(java.lang.String)}
 	 * when they are not valid.
 	 * 
 	 * @param name
@@ -71,50 +71,50 @@ class AbstractTopicTest {
 	@ParameterizedTest
 	@MethodSource("invalidNames")
 	void testValidateTopicStringNot(String name) {
-		Assertions.assertThrows(TopicFormatException.class, () -> AbstractTopic.validateTopicString(name),
+		Assertions.assertThrows(TopicFormatException.class, () -> GenericTopic.validateTopicString(name),
 				"Expected a topic format exception.");
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicLevels(java.util.List)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.GenericTopic#validateTopicLevels(java.util.List)}.
 	 * 
 	 * @throws Exception
 	 *             When an error occurs.
 	 */
 	@Test
 	void testValidateTopicLevels() throws Exception {
-		AbstractTopic.validateTopicLevels(toTopicLevels("test", "", "level"));
-		AbstractTopic.validateTopicLevels(toTopicLevels("", "test", ""));
-		AbstractTopic.validateTopicLevels(toTopicLevels("test", "+", "level"));
-		AbstractTopic.validateTopicLevels(toTopicLevels("test", "level", "#"));
-		AbstractTopic.validateTopicLevels(toTopicLevels("+", "+", "#"));
-		AbstractTopic.validateTopicLevels(toTopicLevels("#"));
-		AbstractTopic.validateTopicLevels(toTopicLevels("+"));
-		AbstractTopic.validateTopicLevels(toTopicLevels("", "#"));
+		GenericTopic.validateTopicLevels(toTopicLevels("test", "", "level"));
+		GenericTopic.validateTopicLevels(toTopicLevels("", "test", ""));
+		GenericTopic.validateTopicLevels(toTopicLevels("test", "+", "level"));
+		GenericTopic.validateTopicLevels(toTopicLevels("test", "level", "#"));
+		GenericTopic.validateTopicLevels(toTopicLevels("+", "+", "#"));
+		GenericTopic.validateTopicLevels(toTopicLevels("#"));
+		GenericTopic.validateTopicLevels(toTopicLevels("+"));
+		GenericTopic.validateTopicLevels(toTopicLevels("", "#"));
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicLevels(java.util.List)} for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.GenericTopic#validateTopicLevels(java.util.List)} for
 	 * invalid levels.
 	 */
 	@Test
 	void testValidateTopicLevelsNot() {
 		Assertions.assertThrows(TopicFormatException.class,
-				() -> AbstractTopic.validateTopicLevels(toTopicLevels("test", "#", "level")),
+				() -> GenericTopic.validateTopicLevels(toTopicLevels("test", "#", "level")),
 				"Expected topic format excpetion");
 		Assertions.assertThrows(TopicFormatException.class,
-				() -> AbstractTopic.validateTopicLevels(toTopicLevels("", "#", "")), "Expected topic format excpetion");
+				() -> GenericTopic.validateTopicLevels(toTopicLevels("", "#", "")), "Expected topic format excpetion");
 		Assertions.assertThrows(TopicFormatException.class,
-				() -> AbstractTopic.validateTopicLevels(toTopicLevels("#", "level")),
+				() -> GenericTopic.validateTopicLevels(toTopicLevels("#", "level")),
 				"Expected topic format excpetion");
 		Assertions.assertThrows(TopicFormatException.class,
-				() -> AbstractTopic.validateTopicLevels(toTopicLevels("#", "")), "Expected topic format excpetion");
+				() -> GenericTopic.validateTopicLevels(toTopicLevels("#", "")), "Expected topic format excpetion");
 		Assertions.assertThrows(TopicFormatException.class,
-				() -> AbstractTopic.validateTopicLevels(toTopicLevels("", "#", "")), "Expected topic format excpetion");
+				() -> GenericTopic.validateTopicLevels(toTopicLevels("", "#", "")), "Expected topic format excpetion");
 		Assertions.assertThrows(TopicFormatException.class,
-				() -> AbstractTopic.validateTopicLevels(toTopicLevels("#", "+")), "Expected topic format excpetion");
+				() -> GenericTopic.validateTopicLevels(toTopicLevels("#", "+")), "Expected topic format excpetion");
 	}
 
 	private List<TopicLevel> toTopicLevels(String... names) throws Exception {
@@ -127,7 +127,7 @@ class AbstractTopicTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#getStringRepresentation()}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.GenericTopic#getStringRepresentation()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -138,13 +138,13 @@ class AbstractTopicTest {
 	@ParameterizedTest
 	@MethodSource("validNames")
 	void testGetStringRepresentation(String name) throws Exception {
-		AbstractTopic t = new TestingTopic(name);
+		GenericTopic t = new GenericTopic(name);
 		Assertions.assertEquals(name, t.getStringRepresentation(),
 				"String representation should be the same as the name.");
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#getTopicLevels()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.GenericTopic#getTopicLevels()}.
 	 * 
 	 * @param levels
 	 *            The levels to use.
@@ -161,7 +161,7 @@ class AbstractTopicTest {
 			topicName += levels.get(i);
 		}
 
-		AbstractTopic t = new TestingTopic(topicName);
+		GenericTopic t = new GenericTopic(topicName);
 
 		String[] topicLevelNames = levels.toArray(new String[levels.size()]);
 		List<TopicLevel> topicLevels = toTopicLevels(topicLevelNames);
@@ -170,7 +170,7 @@ class AbstractTopicTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#isSpecialTopic()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.GenericTopic#isSpecialTopic()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -181,12 +181,12 @@ class AbstractTopicTest {
 	@ParameterizedTest
 	@MethodSource("specialNames")
 	void testIsSpecialTopic(String name) throws Exception {
-		AbstractTopic t = new TestingTopic(name);
+		GenericTopic t = new GenericTopic(name);
 		Assertions.assertTrue(t.isSpecialTopic(), "Should be a special topic");
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#toString()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.GenericTopic#toString()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -197,12 +197,12 @@ class AbstractTopicTest {
 	@ParameterizedTest
 	@MethodSource("validNames")
 	void testToString(String name) throws Exception {
-		AbstractTopic t = new TestingTopic(name);
+		GenericTopic t = new GenericTopic(name);
 		Assertions.assertEquals(name, t.toString(), "toString should be the same as the name.");
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#hashCode()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.GenericTopic#hashCode()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -213,14 +213,14 @@ class AbstractTopicTest {
 	@ParameterizedTest
 	@MethodSource("validNames")
 	void testHashCode(String name) throws Exception {
-		AbstractTopic t1 = new TestingTopic(name);
-		AbstractTopic t2 = new TestingTopic(new String(name));
+		GenericTopic t1 = new GenericTopic(name);
+		GenericTopic t2 = new GenericTopic(new String(name));
 		Assertions.assertEquals(t1.hashCode(), t2.hashCode(), "Hashcodes should match.");
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#equals(java.lang.Object)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.GenericTopic#equals(java.lang.Object)}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -231,14 +231,14 @@ class AbstractTopicTest {
 	@ParameterizedTest
 	@MethodSource("validNames")
 	void testEquals(String name) throws Exception {
-		AbstractTopic t1 = new TestingTopic(name);
-		AbstractTopic t2 = new TestingTopic(new String(name));
+		GenericTopic t1 = new GenericTopic(name);
+		GenericTopic t2 = new GenericTopic(new String(name));
 		Assertions.assertTrue(t1.equals(t2), "A topic should be equal to another topic with the same name.");
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#equals(java.lang.Object)} when they are
+	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.GenericTopic#equals(java.lang.Object)} when they are
 	 * not equal.
 	 * 
 	 * @throws Exception
@@ -246,10 +246,10 @@ class AbstractTopicTest {
 	 */
 	@Test
 	void testEqualsNot() throws Exception {
-		AbstractTopic t1 = new TestingTopic("home/test");
-		AbstractTopic t2 = new TestingTopic("Home/Test");
-		AbstractTopic t3 = new TestingTopic("+/+");
-		AbstractTopic t4 = new TestingTopic("#");
+		GenericTopic t1 = new GenericTopic("home/test");
+		GenericTopic t2 = new GenericTopic("Home/Test");
+		GenericTopic t3 = new GenericTopic("+/+");
+		GenericTopic t4 = new GenericTopic("#");
 		Assertions.assertFalse(t1.equals(t2), t1 + " and " + t2 + " should not be equal");
 		Assertions.assertFalse(t1.equals(t3), t1 + " and " + t3 + " should not be equal");
 		Assertions.assertFalse(t1.equals(t4), t1 + " and " + t4 + " should not be equal");
@@ -260,7 +260,7 @@ class AbstractTopicTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#equals(java.lang.Object)} when they are
+	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.GenericTopic#equals(java.lang.Object)} when they are
 	 * not the same type.
 	 * 
 	 * @throws Exception
@@ -268,9 +268,9 @@ class AbstractTopicTest {
 	 */
 	@Test
 	void testEqualsNotSameType() throws Exception {
-		AbstractTopic t1 = new TestingTopic("home/test");
-		AbstractTopic t2 = new TestingTopic("+/+");
-		AbstractTopic t3 = new TestingTopic("#");
+		GenericTopic t1 = new GenericTopic("home/test");
+		GenericTopic t2 = new GenericTopic("+/+");
+		GenericTopic t3 = new GenericTopic("#");
 		Assertions.assertFalse(t1.equals(new Object()), t1 + " should not be equal to a empty object.");
 		Assertions.assertFalse(t2.equals(new Object()), t2 + " should not be equal to a empty object.");
 		Assertions.assertFalse(t3.equals(new Object()), t3 + " should not be equal to a empty object.");
@@ -306,14 +306,14 @@ class AbstractTopicTest {
 	 * @return A stream of special topic names
 	 */
 	static Stream<String> specialNames() {
-		return AbstractTopicTest.normalNames().filter(s -> !(s.equals("+") || s.equals("#"))).map(s -> "$" + s);
+		return GenericTopicTest.normalNames().filter(s -> !(s.equals("+") || s.equals("#"))).map(s -> "$" + s);
 	}
 
 	/**
 	 * @return A stream of valid topic names
 	 */
 	static Stream<String> validNames() {
-		return Streams.concat(AbstractTopicTest.normalNames(), AbstractTopicTest.specialNames());
+		return Streams.concat(GenericTopicTest.normalNames(), GenericTopicTest.specialNames());
 	}
 
 	/**
@@ -333,7 +333,7 @@ class AbstractTopicTest {
 	 * @return A stream of valid topic names split into the levels
 	 */
 	static Stream<List<String>> validLevelLists() {
-		return AbstractTopicTest.validNames().map(s -> Arrays.asList(s.split("/", -1)));
+		return GenericTopicTest.validNames().map(s -> Arrays.asList(s.split("/", -1)));
 	}
 
 }

@@ -37,6 +37,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.Topic;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
@@ -63,6 +65,8 @@ public class PlayerLogic {
 	private Logger logger;
 	@Reference
 	private MessageHub messageHub;
+	@Reference
+	private TopicFactory tf;
 
 	private boolean wasPlaying = false;
 
@@ -92,12 +96,13 @@ public class PlayerLogic {
 				break;
 			}
 		};
-		String topicGeneral = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
-		String topicMusic = SmarthomeFunctionTopics.getTopicString(LocationTopics.ALL, RoomTopics.ALL,
-				MUSIC_MUTE_TOPIC_FUNCTION);
+		Topic topicGeneral = this.tf.smarthomeTopic().resolve(LocationTopics.ALL).resolve(RoomTopics.ALL)
+				.resolve(SmarthomeFunctionTopics.MUTE);
+		Topic topicMusic = this.tf.smarthomeTopic().resolve(LocationTopics.ALL).resolve(RoomTopics.ALL)
+				.resolve(MUSIC_MUTE_TOPIC_FUNCTION);
 
-		this.messageHub.subscribe(topicGeneral, muteConsumer);
-		this.messageHub.subscribe(topicMusic, muteConsumer);
+		this.messageHub.subscribe(topicGeneral.getTopicFilter(), muteConsumer);
+		this.messageHub.subscribe(topicMusic.getTopicFilter(), muteConsumer);
 	}
 
 	/**

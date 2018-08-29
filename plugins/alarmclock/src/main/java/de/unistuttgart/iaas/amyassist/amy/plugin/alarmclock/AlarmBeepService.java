@@ -47,6 +47,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.Topic;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
@@ -78,6 +80,9 @@ public class AlarmBeepService {
 	@Reference
 	private MessageHub messageHub;
 
+	@Reference
+	private TopicFactory tf;
+
 	private Sound beepSound;
 	private SoundPlayer beepPlayer;
 	private Set<Integer> alarmList = new HashSet<>();
@@ -105,8 +110,9 @@ public class AlarmBeepService {
 				break;
 			}
 		};
-		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
-		this.messageHub.subscribe(topic, muteConsumer);
+		Topic topic = this.tf.smarthomeTopic().resolve(LocationTopics.ALL).resolve(RoomTopics.ALL)
+				.resolve(SmarthomeFunctionTopics.MUTE);
+		this.messageHub.subscribe(topic.getTopicFilter(), muteConsumer);
 	}
 
 	/**

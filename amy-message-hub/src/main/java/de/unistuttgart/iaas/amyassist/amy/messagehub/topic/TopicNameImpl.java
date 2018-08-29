@@ -28,7 +28,7 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
  *
  * @author Tim Neumann
  */
-class TopicNameImpl extends AbstractTopic implements TopicName {
+class TopicNameImpl extends GenericTopic implements TopicName {
 
 	/**
 	 * Create a new topic name with the given string
@@ -47,6 +47,19 @@ class TopicNameImpl extends AbstractTopic implements TopicName {
 	protected TopicNameImpl(String topicString) throws TopicFormatException {
 		super(topicString);
 		validateTopicStringForName(topicString);
+	}
+
+	/**
+	 * Creates a new topic filter from the original topic.
+	 * 
+	 * @param orig
+	 *            The orig.
+	 * @throws TopicFormatException
+	 *             When the given orig can't be turned into a topic name.
+	 */
+	protected TopicNameImpl(Topic orig) throws TopicFormatException {
+		super(orig);
+		validateTopicStringForName(orig.getStringRepresentation());
 	}
 
 	/**

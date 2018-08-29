@@ -30,9 +30,9 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
  */
 class TopicLevelImpl implements TopicLevel {
 
-	private String levelS;
-	private boolean singleWildcard;
-	private boolean multiWildcard;
+	private final String levelS;
+	private final boolean singleWildcard;
+	private final boolean multiWildcard;
 
 	/**
 	 * Creates a new level from the given level string
@@ -49,11 +49,17 @@ class TopicLevelImpl implements TopicLevel {
 
 		if (levelString.equals(Character.toString(Constants.SINGLE_LEVEL_WILDCARD))) {
 			this.singleWildcard = true;
+			this.multiWildcard = false;
 		} else if (levelString.equals(Character.toString(Constants.MULTI_LEVEL_WILDCARD))) {
 			this.multiWildcard = true;
+			this.singleWildcard = false;
 		} else if (levelString.contains(Character.toString(Constants.SINGLE_LEVEL_WILDCARD))
 				|| levelString.contains(Character.toString(Constants.MULTI_LEVEL_WILDCARD)))
 			throw new TopicFormatException("A level can not contain a wildcard and another character.");
+		else {
+			this.multiWildcard = false;
+			this.singleWildcard = false;
+		}
 	}
 
 	/**

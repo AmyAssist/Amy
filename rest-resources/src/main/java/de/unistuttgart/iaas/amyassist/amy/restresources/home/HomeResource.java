@@ -37,6 +37,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.Topic;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
@@ -62,6 +64,9 @@ public class HomeResource {
 
 	@Reference
 	private MessageHub messageHub;
+
+	@Reference
+	private TopicFactory tf;
 
 	/**
 	 * returns all installed plugins
@@ -91,8 +96,9 @@ public class HomeResource {
 	@POST
 	@Path("mute")
 	public void mute() {
-		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
-		this.messageHub.publish(topic, "true", true);
+		Topic topic = this.tf.smarthomeTopic().resolve(LocationTopics.ALL).resolve(RoomTopics.ALL)
+				.resolve(SmarthomeFunctionTopics.MUTE);
+		this.messageHub.publish(topic.getTopicName(), "true", true);
 	}
 
 	/**
@@ -101,8 +107,9 @@ public class HomeResource {
 	@POST
 	@Path("unmute")
 	public void unmute() {
-		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
-		this.messageHub.publish(topic, "false", true);
+		Topic topic = this.tf.smarthomeTopic().resolve(LocationTopics.ALL).resolve(RoomTopics.ALL)
+				.resolve(SmarthomeFunctionTopics.MUTE);
+		this.messageHub.publish(topic.getTopicName(), "false", true);
 	}
 
 }
