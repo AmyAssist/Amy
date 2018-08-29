@@ -84,10 +84,6 @@ class HomeResourceTest {
 			assertEquals(plugins[i].getDescription(), spes[i].getDescription());
 			assertEquals(null, spes[i].getLink());
 		}
-		assertEquals("Configuration", spes[spes.length - 1].getName());
-		assertEquals("Configurations for this Amy instance and installed plugins",
-				spes[spes.length - 1].getDescription());
-		assertEquals(this.target.getUriBuilder().replacePath("config").toString(), spes[spes.length - 1].getLink());
 	}
 
 	private IPlugin[] setupPlugins() {

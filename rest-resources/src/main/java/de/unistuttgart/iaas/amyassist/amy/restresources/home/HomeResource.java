@@ -33,7 +33,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
@@ -57,8 +56,6 @@ public class HomeResource {
 	private PluginManager manager;
 	@Context
 	private UriInfo uriInfo;
-	@Reference
-	private Server server;
 	
 	@Reference
 	private MessageHub messageHub;
@@ -82,10 +79,6 @@ public class HomeResource {
 	}
 
 	private String createPath(IPlugin iPlugin) {
-		Class<?> cls = this.server.getPluginClass(iPlugin.getUniqueName());
-		if (cls != null && cls.isAnnotationPresent(Path.class)) {
-			return this.uriInfo.getBaseUriBuilder().path(cls).build().toString();
-		}
 		return null;
 	}
 

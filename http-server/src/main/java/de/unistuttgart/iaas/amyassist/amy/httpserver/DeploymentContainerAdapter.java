@@ -55,11 +55,7 @@ public class DeploymentContainerAdapter implements DeploymentContainerService {
 				SERVICE_DEPLOYMENT_DESCRIPTOR);
 
 		for (IPlugin plugin : this.pluginManager.getPlugins()) {
-			Set<Class<?>> classes = DeploymentDescriptorUtil.getClasses(plugin.getClassLoader(), SERVICE_DEPLOYMENT_DESCRIPTOR);
-			if(classes.size() > 0) {
-				this.server.addPlugin(plugin.getUniqueName(), classes.iterator().next());
-			}
-			all.addAll(classes);
+			all.addAll(DeploymentDescriptorUtil.getClasses(plugin.getClassLoader(), SERVICE_DEPLOYMENT_DESCRIPTOR));
 		}
 		all.forEach(this.server::register);
 	}
