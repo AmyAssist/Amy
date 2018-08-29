@@ -58,8 +58,9 @@ public interface NLProcessingManager {
 	 *            containing intents
 	 * @param naturalLanguageText
 	 *            text to match
+	 * @return the input dialog. now the intent is set
 	 */
-	void decideIntent(Dialog dialog, String naturalLanguageText);
+	Dialog decideIntent(Dialog dialog, String naturalLanguageText);
 
 	/**
 	 * processes an intent

@@ -217,7 +217,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	 *      java.lang.String)
 	 */
 	@Override
-	public void decideIntent(Dialog dialog, String naturalLanguageText) {
+	public Dialog decideIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language);
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
 		INLParser nlParser = new NLParser(new ArrayList<>(this.nodeToMethodAIMPair.keySet()),
@@ -235,7 +235,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			this.logger.debug("no matching grammar found ", e);
 			dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
 		}
-
+		return dialog;
 	}
 
 	private String generateRandomAnswer(String[] strings) {

@@ -80,7 +80,7 @@ public class DialogHandlerImpl implements DialogHandler {
 		UserIntent intent = dialog.getIntent();
 
 		if (intent == null) {
-			this.manager.decideIntent(dialog, naturalLanguageText);
+			dialog = this.manager.decideIntent(dialog, naturalLanguageText);
 			intent = dialog.getIntent();
 		} else {
 			Object object = this.serviceLocator.createAndInitialize(dialog.getIntent().getPartialNLIClass());
@@ -95,9 +95,12 @@ public class DialogHandlerImpl implements DialogHandler {
 			for (String s : dialog.getIntent().getEntityList().keySet()) {
 				stringToEntityData.put(s, intent.getEntityList().get(s).getEntityData());
 			}
-			Object object = this.serviceLocator.createAndInitialize(intent.getPartialNLIClass());
-			dialog.output(dialog.getIntent().call(object, stringToEntityData));
+			if (intent.getPartialNLIClass() != null) {
+				Object object = this.serviceLocator.createAndInitialize(intent.getPartialNLIClass());
+				dialog.output(dialog.getIntent().call(object, stringToEntityData));
+			}
 			dialog.setIntent(null);
 		}
 	}
+
 }
