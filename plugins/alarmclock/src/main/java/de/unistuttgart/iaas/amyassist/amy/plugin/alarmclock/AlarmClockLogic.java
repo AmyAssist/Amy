@@ -33,6 +33,7 @@ import java.util.NoSuchElementException;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 
 /**
@@ -40,8 +41,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
  * 
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
-@Service
-public class AlarmClockLogic {
+@Service(AlarmClockLogic.class)
+public class AlarmClockLogic implements RunnableService {
 
 	@Reference
 	private AlarmBeepService alarmbeep;
@@ -401,5 +402,28 @@ public class AlarmClockLogic {
 		this.alarmTime = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(),
 				LocalDateTime.now().getDayOfMonth(), hour, minute);
 		return this.alarmTime;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
+	 */
+	@Override
+	public void start() {
+
+		List<Alarm> alarmList = getAllAlarms();
+		for (Alarm a : alarmList) {
+			Runnable alarmRunnable = createAlarmRunnable(a.getId());
+			ZonedDateTime with = this.environment.getCurrentDateTime().with(a.getAlarmTime());
+
+			this.taskScheduler.schedule(alarmRunnable, with.toInstant());
+		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
+	 */
+	@Override
+	public void stop() {
+
 	}
 }
