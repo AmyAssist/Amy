@@ -17,7 +17,7 @@ RUN mv amy-master-node/target/amy-master-node.jar /dist/amy.jar
 RUN mv build/plugins/ /dist/
 
 # production
-FROM openjdk:8-jre
+FROM openjdk:8-jre-slim
 
 COPY --from=builder /dist/amy.jar /app/amy.jar
 COPY --from=builder /dist/plugins /app/plugins
@@ -31,5 +31,6 @@ ENV AMY_SERVER_CONFIG_SERVER_URL http://localhost:80/
 EXPOSE $AMY_SERVER_CONFIG_SERVER_SOCKET_PORT
 
 RUN mkdir /config
+RUN mkdir /data
 
 CMD ["java", "-jar", "amy.jar", "-c", "/config"]
