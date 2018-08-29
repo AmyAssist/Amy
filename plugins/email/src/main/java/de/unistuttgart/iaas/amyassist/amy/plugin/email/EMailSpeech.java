@@ -28,7 +28,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
@@ -56,16 +55,25 @@ public class EMailSpeech {
 	/**
 	 * Connects to the Amy Mail
 	 * 
-	 * @param params
-	 *            words in the grammar annotation
 	 * @return connected
 	 */
 	@Intent
 	public String connectToAmyMail(Map<String, EntityData> entities) {
-		if (this.logic.connectToMailServer(new EMailCredentials("","",""))) {
+		if (this.logic.connectToMailServer(null)) {
 			return "Connected to mail server";
 		}
 		return "Couldn't connect to mail server";
+	}
+
+	/**
+	 * Disconnect from currently connected mail server
+	 * 
+	 * @return disconnected
+	 */
+	@Intent
+	public String disconnect(Map<String, EntityData> entities) {
+		this.logic.disconnectFromMailServer();
+		return "disconnected";
 	}
 
 	/**

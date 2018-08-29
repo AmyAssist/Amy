@@ -51,6 +51,18 @@ public class EMailResource {
 	private EMailLogic logic;
 
 	/**
+	 * Get the currently saved mail credentials
+	 * 
+	 * @return mail credentials
+	 */
+	@GET
+	@Path("getCredentials")
+	@Produces(MediaType.APPLICATION_JSON)
+	public EMailCredentials getCredentials() {
+		return this.logic.getCredentials();
+	}
+
+	/**
 	 * Connect to a mail service with the given parameters
 	 * 
 	 * @param credentials

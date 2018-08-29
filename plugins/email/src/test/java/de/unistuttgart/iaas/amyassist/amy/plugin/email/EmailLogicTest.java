@@ -540,7 +540,7 @@ public class EmailLogicTest {
 	@Test
 	protected void testConnectToMailServerEmptyCredentials() {
 		when(this.mailSession.startNewMailSession(ArgumentMatchers.any(EMailCredentials.class))).thenReturn(true);
-		assertTrue(this.emailLogic.connectToMailServer(new EMailCredentials("", "", "")));
+		assertTrue(this.emailLogic.connectToMailServer(null));
 		Mockito.verify(this.properties).getProperty(EMailLogic.AMY_MAIL_ADDRESS_KEY);
 		Mockito.verify(this.properties).getProperty(EMailLogic.AMY_MAIL_PW_KEY);
 	}

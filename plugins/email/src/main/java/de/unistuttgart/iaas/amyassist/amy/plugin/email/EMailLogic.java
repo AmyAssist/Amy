@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
@@ -72,6 +73,9 @@ public class EMailLogic {
 	private Properties configLoader;
 
 	@Reference
+	private IStorage storage;
+
+	@Reference
 	private Logger logger;
 
 	/**
@@ -85,6 +89,12 @@ public class EMailLogic {
 	protected static final String AMY_MAIL_PW_KEY = "email_pw";
 
 	private static final String AMY_MAIL_HOST = "imap.gmail.com";
+
+	private static final String USERNAME_CRED_KEY = "usernameCred";
+
+	private static final String PASSOWRD_CRED_KEY = "passwordCred";
+
+	private static final String IMAPSERVER_CRED_KEY = "imapServerCred";
 
 	/**
 	 * returns if unread messages have been found
@@ -312,15 +322,17 @@ public class EMailLogic {
 	 * @return true if connecting was successful, else false
 	 */
 	public boolean connectToMailServer(EMailCredentials credentials) {
-		if (credentials.getUsername().isEmpty() && credentials.getPassword().isEmpty()
-				&& credentials.getImapServer().isEmpty()) {
+		if (credentials == null) {
 			// if no credentials are given, use the standard ones for Amy
 			String amyUsername = this.configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
 			String amyPassword = this.configLoader.getProperty(AMY_MAIL_PW_KEY);
 			String amyHost = AMY_MAIL_HOST;
 
-			return this.mailSession.startNewMailSession(new EMailCredentials(amyUsername, amyPassword, amyHost));
+			credentials = new EMailCredentials(amyUsername, amyPassword, amyHost);
 		}
+		this.storage.put(USERNAME_CRED_KEY, credentials.getUsername());
+		this.storage.put(PASSOWRD_CRED_KEY, credentials.getPassword());
+		this.storage.put(IMAPSERVER_CRED_KEY, credentials.getImapServer());
 		return this.mailSession.startNewMailSession(credentials);
 	}
 
@@ -329,6 +341,25 @@ public class EMailLogic {
 	 */
 	public void disconnectFromMailServer() {
 		this.mailSession.endSession();
+		this.storage.delete(USERNAME_CRED_KEY);
+		this.storage.delete(PASSOWRD_CRED_KEY);
+		this.storage.delete(IMAPSERVER_CRED_KEY);
+	}
+
+	/**
+	 * Get the currently saved mail credentials
+	 * 
+	 * @return mail credentials if existing, else null
+	 */
+	public EMailCredentials getCredentials() {
+		if (!this.storage.has(USERNAME_CRED_KEY) || !this.storage.has(PASSOWRD_CRED_KEY)
+				|| !this.storage.has(IMAPSERVER_CRED_KEY)) {
+			return null;
+		}
+		final String username = this.storage.get(USERNAME_CRED_KEY);
+		final String password = this.storage.get(PASSOWRD_CRED_KEY);
+		final String imapServer = this.storage.get(IMAPSERVER_CRED_KEY);
+		return new EMailCredentials(username, password, imapServer);
 	}
 
 	/**

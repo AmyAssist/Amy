@@ -40,7 +40,6 @@ import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -79,8 +78,8 @@ class EMailRestTest {
 	 */
 	@Test
 	public void testConnect() {
-		when(this.logic.connectToMailServer(ArgumentMatchers.any(EMailCredentials.class))).thenReturn(true);
-		Entity<EMailCredentials> entity = Entity.entity(new EMailCredentials(), MediaType.APPLICATION_JSON);
+		when(this.logic.connectToMailServer(null)).thenReturn(true);
+		Entity<EMailCredentials> entity = Entity.entity(null, MediaType.APPLICATION_JSON);
 		try (Response response = this.target.path("connect").request().post(entity)) {
 			assertThat(response.getStatus(), is(200));
 			boolean successful = response.readEntity(Boolean.class);
