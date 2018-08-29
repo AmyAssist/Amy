@@ -30,7 +30,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Properties;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
@@ -65,7 +65,9 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	private static final Duration DISCONNECT_TIMEOUT = Duration.ofSeconds(2);
 	private static final Duration INITIAL_RECONNECT_TIME = Duration.ofSeconds(3);
 
-	private static final Function<Duration, Duration> RECONNECT_MODIFIER = amount -> (amount.multipliedBy(4));
+	private static final String OPERATION_CONNECT = "Connect";
+
+	private static final UnaryOperator<Duration> RECONNECT_MODIFIER = amount -> (amount.multipliedBy(4));
 	private static final int MAX_RECONNECT_ATTEMPTS = 3;
 
 	@Reference
@@ -134,7 +136,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 
 	private void connect() {
 		try {
-			this.client.connect(this.options, "Connect", this);
+			this.client.connect(this.options, OPERATION_CONNECT, this);
 		} catch (MqttException e) {
 			throw new IllegalStateException("Error while connecting", e);
 		}
@@ -201,7 +203,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	 */
 	@Override
 	public void onSuccess(IMqttToken asyncActionToken) {
-		if (asyncActionToken.isComplete() && asyncActionToken.getUserContext().toString().equals("Connect")) {
+		if (asyncActionToken.isComplete() && asyncActionToken.getUserContext().toString().equals(OPERATION_CONNECT)) {
 			this.logger.info("MQTT Adapter connected.");
 			this.reconnectAttempt = 0;
 		}
@@ -213,7 +215,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	 */
 	@Override
 	public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-		if (this.reconnectAttempt > 0 && asyncActionToken.getUserContext().toString().equals("Connect")) {
+		if (this.reconnectAttempt > 0 && asyncActionToken.getUserContext().toString().equals(OPERATION_CONNECT)) {
 			this.logger.info("Reconnect failed.");
 			tryReconnect();
 		} else {

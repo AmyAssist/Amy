@@ -58,10 +58,10 @@ public class TopicNameImpl extends AbstractTopic implements TopicName {
 	 *             When the validation fails.
 	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicString(java.lang.String)
 	 */
-	protected final void validateTopicStringForName(String topicString) throws TopicFormatException {
-		if (topicString.contains(Character.toString(Topic.SINGLE_LEVEL_WILDCARD)))
+	protected static void validateTopicStringForName(String topicString) throws TopicFormatException {
+		if (topicString.contains(Character.toString(Constants.SINGLE_LEVEL_WILDCARD)))
 			throw new TopicFormatException("A topic name can't contain a single level wildcard.");
-		if (topicString.contains(Character.toString(Topic.MULTI_LEVEL_WILDCARD)))
+		if (topicString.contains(Character.toString(Constants.MULTI_LEVEL_WILDCARD)))
 			throw new TopicFormatException("A topic name can't contain a multi-level wildcard.");
 	}
 

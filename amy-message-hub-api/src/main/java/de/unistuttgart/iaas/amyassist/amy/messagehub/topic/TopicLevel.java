@@ -41,8 +41,8 @@ public interface TopicLevel {
 	/**
 	 * Check whether this is a normal topic level without any special meaning.
 	 * <p>
-	 * This is true if this level is neither equal to {@link Topic#SINGLE_LEVEL_WILDCARD} nor to
-	 * {@link Topic#MULTI_LEVEL_WILDCARD}.
+	 * This is true if this level is neither equal to {@link Constants#SINGLE_LEVEL_WILDCARD} nor to
+	 * {@link Constants#MULTI_LEVEL_WILDCARD}.
 	 *
 	 * @return Whether this is a normal topic level.
 	 */
@@ -51,7 +51,7 @@ public interface TopicLevel {
 	/**
 	 * Check whether this level is a single level wildcard, which matches any single level.
 	 * <p>
-	 * This is true if this level is equal to {@link Topic#SINGLE_LEVEL_WILDCARD}.
+	 * This is true if this level is equal to {@link Constants#SINGLE_LEVEL_WILDCARD}.
 	 *
 	 * @return Whether this is a single level wildcard.
 	 */
@@ -60,7 +60,7 @@ public interface TopicLevel {
 	/**
 	 * Check whether this level is a multi level wildcard, which matches any amount of levels.
 	 * <p>
-	 * This is true if this level is equal to {@link Topic#MULTI_LEVEL_WILDCARD}.
+	 * This is true if this level is equal to {@link Constants#MULTI_LEVEL_WILDCARD}.
 	 *
 	 * @return Whether this is a multi level wildcard.
 	 */

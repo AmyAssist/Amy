@@ -56,7 +56,7 @@ class AbstractTopicTest {
 	@ParameterizedTest
 	@MethodSource("validNames")
 	void testValidateTopicString(String name) throws Exception {
-		new TestingTopic("test").validateTopicString(name);
+		AbstractTopic.validateTopicString(name);
 	}
 
 	/**
@@ -67,13 +67,11 @@ class AbstractTopicTest {
 	 * @param name
 	 *            The name of the topic to test.
 	 * 
-	 * @throws Exception
-	 *             When an error occurs.
 	 */
 	@ParameterizedTest
 	@MethodSource("invalidNames")
-	void testValidateTopicStringNot(String name) throws Exception {
-		Assertions.assertThrows(TopicFormatException.class, () -> new TestingTopic("test").validateTopicString(name),
+	void testValidateTopicStringNot(String name) {
+		Assertions.assertThrows(TopicFormatException.class, () -> AbstractTopic.validateTopicString(name),
 				"Expected a topic format exception.");
 	}
 
@@ -86,42 +84,37 @@ class AbstractTopicTest {
 	 */
 	@Test
 	void testValidateTopicLevels() throws Exception {
-		AbstractTopic t = new TestingTopic("test");
-
-		t.validateTopicLevels(toTopicLevels("test", "", "level"));
-		t.validateTopicLevels(toTopicLevels("", "test", ""));
-		t.validateTopicLevels(toTopicLevels("test", "+", "level"));
-		t.validateTopicLevels(toTopicLevels("test", "level", "#"));
-		t.validateTopicLevels(toTopicLevels("+", "+", "#"));
-		t.validateTopicLevels(toTopicLevels("#"));
-		t.validateTopicLevels(toTopicLevels("+"));
-		t.validateTopicLevels(toTopicLevels("", "#"));
+		AbstractTopic.validateTopicLevels(toTopicLevels("test", "", "level"));
+		AbstractTopic.validateTopicLevels(toTopicLevels("", "test", ""));
+		AbstractTopic.validateTopicLevels(toTopicLevels("test", "+", "level"));
+		AbstractTopic.validateTopicLevels(toTopicLevels("test", "level", "#"));
+		AbstractTopic.validateTopicLevels(toTopicLevels("+", "+", "#"));
+		AbstractTopic.validateTopicLevels(toTopicLevels("#"));
+		AbstractTopic.validateTopicLevels(toTopicLevels("+"));
+		AbstractTopic.validateTopicLevels(toTopicLevels("", "#"));
 	}
 
 	/**
 	 * Test method for
 	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicLevels(java.util.List)} for
 	 * invalid levels.
-	 * 
-	 * @throws Exception
-	 *             When an error occurs.
 	 */
 	@Test
-	void testValidateTopicLevelsNot() throws Exception {
-		AbstractTopic t = new TestingTopic("test");
-
+	void testValidateTopicLevelsNot() {
 		Assertions.assertThrows(TopicFormatException.class,
-				() -> t.validateTopicLevels(toTopicLevels("test", "#", "level")), "Expected topic format excpetion");
-		Assertions.assertThrows(TopicFormatException.class, () -> t.validateTopicLevels(toTopicLevels("", "#", "")),
+				() -> AbstractTopic.validateTopicLevels(toTopicLevels("test", "#", "level")),
 				"Expected topic format excpetion");
-		Assertions.assertThrows(TopicFormatException.class, () -> t.validateTopicLevels(toTopicLevels("#", "level")),
+		Assertions.assertThrows(TopicFormatException.class,
+				() -> AbstractTopic.validateTopicLevels(toTopicLevels("", "#", "")), "Expected topic format excpetion");
+		Assertions.assertThrows(TopicFormatException.class,
+				() -> AbstractTopic.validateTopicLevels(toTopicLevels("#", "level")),
 				"Expected topic format excpetion");
-		Assertions.assertThrows(TopicFormatException.class, () -> t.validateTopicLevels(toTopicLevels("#", "")),
-				"Expected topic format excpetion");
-		Assertions.assertThrows(TopicFormatException.class, () -> t.validateTopicLevels(toTopicLevels("", "#", "")),
-				"Expected topic format excpetion");
-		Assertions.assertThrows(TopicFormatException.class, () -> t.validateTopicLevels(toTopicLevels("#", "+")),
-				"Expected topic format excpetion");
+		Assertions.assertThrows(TopicFormatException.class,
+				() -> AbstractTopic.validateTopicLevels(toTopicLevels("#", "")), "Expected topic format excpetion");
+		Assertions.assertThrows(TopicFormatException.class,
+				() -> AbstractTopic.validateTopicLevels(toTopicLevels("", "#", "")), "Expected topic format excpetion");
+		Assertions.assertThrows(TopicFormatException.class,
+				() -> AbstractTopic.validateTopicLevels(toTopicLevels("#", "+")), "Expected topic format excpetion");
 	}
 
 	private List<TopicLevel> toTopicLevels(String... names) throws Exception {

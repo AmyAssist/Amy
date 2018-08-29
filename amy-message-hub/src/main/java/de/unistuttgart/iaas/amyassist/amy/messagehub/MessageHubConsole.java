@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
+import java.util.UUID;
+
 import org.slf4j.Logger;
 
 import asg.cliche.Command;
@@ -48,13 +50,26 @@ public class MessageHubConsole {
 	 *
 	 * @param topic
 	 *            The topic to subscribe to
+	 * @return The UUID of the subscription
 	 */
 	@Command(name = "MessageHub Subscribe", abbrev = "msgh:sub", description = "Subsscribe to the given topic")
-	public void subscribe(@Param(name = "topic") String topic) {
-		this.msgHub.subscribe(this.tf.createTopicFilter(topic),
+	public String subscribe(@Param(name = "topic") String topic) {
+		return this.msgHub.subscribe(this.tf.createTopicFilter(topic),
 				(t, m) -> this.logger.info("MQTT message" + (m.wasRetained() ? " (retained)" : "")
 						+ (m.mayBeDuplicate() ? " (maybe duplicate)" : "") + " on topic " + t.getStringRepresentation()
-						+ "with QOS " + m.getQualityOfService() + " with message " + m.getPayload()));
+						+ "with QOS " + m.getQualityOfService() + " with message " + m.getPayload()))
+				.toString();
+	}
+
+	/**
+	 * Unsubscribe
+	 * 
+	 * @param uuid
+	 *            the subscription identifier to unsubscribe from
+	 */
+	@Command(name = "MessageHub Unsubscribe", abbrev = "msgh:usub", description = "Unsubscribes a given subscription")
+	public void unsubscribe(@Param(name = "UUID") String uuid) {
+		this.msgHub.unsubscribe(UUID.fromString(uuid));
 	}
 
 	/**
@@ -66,7 +81,7 @@ public class MessageHubConsole {
 	 *            The message to publish
 	 */
 	@Command(name = "MessageHub Publish", abbrev = "msgh:pub", description = "Publish a message to the given topic")
-	public void subscribe(@Param(name = "topic") String topic, @Param(name = "message") String message) {
+	public void publish(@Param(name = "topic") String topic, @Param(name = "message") String message) {
 		this.msgHub.publish(topic, message);
 	}
 
@@ -84,7 +99,7 @@ public class MessageHubConsole {
 	 */
 	@Command(name = "MessageHub Publish Advanced", abbrev = "msgh:pubA",
 			description = "Publish a message to the given topic with more advanced control")
-	public void subscribeAdvanced(@Param(name = "topic") String topic, @Param(name = "message") String message,
+	public void publishAdvanced(@Param(name = "topic") String topic, @Param(name = "message") String message,
 			@Param(name = "quality of service") int qos, @Param(name = "retain") boolean retain) {
 		this.msgHub.publish(this.tf.createTopicName(topic), message, qos, retain);
 	}

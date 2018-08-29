@@ -34,32 +34,6 @@ import java.util.List;
  */
 public interface Topic {
 	/**
-	 * The topic level separator '{@value #TOPIC_LEVEL_SEPERATOR}' as defined in chapter 4.7.1.1 of the standard.
-	 */
-	char TOPIC_LEVEL_SEPERATOR = 0x002F;
-
-	/**
-	 * The multi-level wildcard '{@value #MULTI_LEVEL_WILDCARD}' as defined in chapter 4.7.1.2 of the standard.
-	 */
-	char MULTI_LEVEL_WILDCARD = 0x0023;
-
-	/**
-	 * The single level wildcard '{@value #SINGLE_LEVEL_WILDCARD}' as defined in chapter 4.7.1.3 of the standard.
-	 */
-	char SINGLE_LEVEL_WILDCARD = 0x002B;
-
-	/**
-	 * The character indicating that any topic beginning with it is a special topic '{@value #SPECIAL_TOPIC_PREFIX}' as
-	 * defined in chapter 4.7.2 of the standard.
-	 */
-	char SPECIAL_TOPIC_PREFIX = '$';
-
-	/**
-	 * The illegal null character as defined in chapter 4.7.3 of the standard.
-	 */
-	char ILLEGAL_NULL_CHARACTER = 0x0000;
-
-	/**
 	 * Get the string representation of this topic.
 	 *
 	 * @return The string representation of this topic.
@@ -71,7 +45,7 @@ public interface Topic {
 	 * <p>
 	 * The first element is left most level in the string representation.
 	 * <p>
-	 * The first element does not include the leading {@link #SPECIAL_TOPIC_PREFIX}, if it is part of this topic. But
+	 * The first element does not include the leading {@link Constants#SPECIAL_TOPIC_PREFIX}, if it is part of this topic. But
 	 * any level may still contain that character, because it is only special as the first character of the topic.
 	 *
 	 * @return A list of the levels of this topic.
@@ -79,7 +53,7 @@ public interface Topic {
 	List<TopicLevel> getTopicLevels();
 
 	/**
-	 * Check if this is a special topic (starting with the '{@link #SPECIAL_TOPIC_PREFIX}').
+	 * Check if this is a special topic (starting with the '{@link Constants#SPECIAL_TOPIC_PREFIX}').
 	 *
 	 * @return Whether this is a special topic.
 	 */

@@ -31,6 +31,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
@@ -59,6 +60,11 @@ public class MessageHubService implements MessageHub {
 	@PostConstruct
 	private void init() {
 		this.adapter.setCallback(this::messageArrived);
+	}
+
+	@PreDestroy
+	private void destroy() {
+		this.adapter.setCallback(null);
 	}
 
 	private void executeHandler(BiConsumer<TopicName, Message> handler, Message msg, TopicName topic) {
@@ -123,12 +129,12 @@ public class MessageHubService implements MessageHub {
 	@Override
 	public void unsubscribe(UUID identifier) {
 		this.eventListener.remove(identifier);
-		for (TopicFilter topic : this.topicListeners.keySet()) {
-			if (this.topicListeners.get(topic).contains(identifier)) {
-				this.topicListeners.get(topic).remove(identifier);
-				if (this.topicListeners.get(topic).isEmpty()) {
-					this.topicListeners.remove(topic);
-					this.adapter.unsubscribe(topic);
+		for (Entry<TopicFilter, List<UUID>> entry : this.topicListeners.entrySet()) {
+			if (entry.getValue().contains(identifier)) {
+				entry.getValue().remove(identifier);
+				if (entry.getValue().isEmpty()) {
+					this.topicListeners.remove(entry.getKey());
+					this.adapter.unsubscribe(entry.getKey());
 				}
 				break;
 			}

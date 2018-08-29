@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @author Tim Neumann
  */
-public abstract class AbstractTopic implements Topic {
+abstract class AbstractTopic implements Topic {
 	private final List<TopicLevel> topicLevels;
 	private boolean special = false;
 
@@ -53,13 +53,13 @@ public abstract class AbstractTopic implements Topic {
 
 		validateTopicString(topicString);
 
-		if (topicString.charAt(0) == Topic.SPECIAL_TOPIC_PREFIX) {
+		if (topicString.charAt(0) == Constants.SPECIAL_TOPIC_PREFIX) {
 			this.special = true;
 		}
 
 		this.topicLevels = new ArrayList<>();
 
-		String[] tokens = topicString.split(Character.toString(Topic.TOPIC_LEVEL_SEPERATOR), -1);
+		String[] tokens = topicString.split(Character.toString(Constants.TOPIC_LEVEL_SEPERATOR), -1);
 
 		for (String token : tokens) {
 			this.topicLevels.add(new TopicLevelImpl(token));
@@ -79,11 +79,11 @@ public abstract class AbstractTopic implements Topic {
 	 *             When the given String is invalid.
 	 *
 	 */
-	protected final void validateTopicString(String topicString) throws TopicFormatException {
+	protected static void validateTopicString(String topicString) throws TopicFormatException {
 		if (topicString.isEmpty())
 			throw new TopicFormatException("The topic String must be at least one character long.");
 
-		if (topicString.contains(Character.toString(Topic.ILLEGAL_NULL_CHARACTER)))
+		if (topicString.contains(Character.toString(Constants.ILLEGAL_NULL_CHARACTER)))
 			throw new TopicFormatException("The topic String can't contain a Null character(U+0000).");
 
 		if (topicString.getBytes(StandardCharsets.UTF_8).length > 65535)
@@ -100,7 +100,7 @@ public abstract class AbstractTopic implements Topic {
 	 * @throws TopicFormatException
 	 *             When the given levels are invalid
 	 */
-	protected final void validateTopicLevels(List<TopicLevel> levels) throws TopicFormatException {
+	protected static void validateTopicLevels(List<TopicLevel> levels) throws TopicFormatException {
 		for (int i = 0; i < (levels.size() - 1); i++) {
 			if (levels.get(i).isMultiLevelWildcard())
 				throw new TopicFormatException("Only the last level may be a multi level wildcard");
@@ -116,7 +116,7 @@ public abstract class AbstractTopic implements Topic {
 
 		result.append(this.topicLevels.get(0).getStringRepresentation());
 		for (int i = 1; i < this.topicLevels.size(); i++) {
-			result.append(Topic.TOPIC_LEVEL_SEPERATOR);
+			result.append(Constants.TOPIC_LEVEL_SEPERATOR);
 			result.append(this.topicLevels.get(i).getStringRepresentation());
 		}
 

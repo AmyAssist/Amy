@@ -41,7 +41,7 @@ public class TopicFactoryService implements TopicFactory {
 		try {
 			return new TopicFilterImpl(topicFilterString);
 		} catch (TopicFormatException e) {
-			throw new IllegalArgumentException(e);
+			throw new IllegalArgumentException("Illegal topic filter string", e);
 		}
 	}
 
@@ -53,7 +53,7 @@ public class TopicFactoryService implements TopicFactory {
 		try {
 			return new TopicNameImpl(topicNameString);
 		} catch (TopicFormatException e) {
-			throw new IllegalArgumentException(e);
+			throw new IllegalArgumentException("Illegal topic name string", e);
 		}
 	}
 
