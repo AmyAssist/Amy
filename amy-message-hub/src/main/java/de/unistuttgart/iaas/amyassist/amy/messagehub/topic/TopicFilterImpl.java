@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author Tim Neumann
  */
-public class TopicFilterImpl extends AbstractTopic implements TopicFilter {
+class TopicFilterImpl extends AbstractTopic implements TopicFilter {
 
 	/**
 	 * Create a new topic filter with the given string

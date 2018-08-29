@@ -28,7 +28,7 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
  *
  * @author Tim Neumann
  */
-public class TopicNameImpl extends AbstractTopic implements TopicName {
+class TopicNameImpl extends AbstractTopic implements TopicName {
 
 	/**
 	 * Create a new topic name with the given string

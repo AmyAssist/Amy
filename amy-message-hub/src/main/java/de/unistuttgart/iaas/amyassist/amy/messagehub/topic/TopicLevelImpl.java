@@ -28,7 +28,7 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
  *
  * @author Tim Neumann
  */
-public class TopicLevelImpl implements TopicLevel {
+class TopicLevelImpl implements TopicLevel {
 
 	private String levelS;
 	private boolean singleWildcard;
