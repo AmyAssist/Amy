@@ -93,8 +93,8 @@ public class CalendarLogic {
 		ZonedDateTime endZDT = calendarEvent.getEnd().atZone(ZoneId.systemDefault());
 		DateTime endDT = new DateTime(endZDT.toInstant().toEpochMilli());
 		if (calendarEvent.isAllDay()) {
-			start.setDate(startDT);
-			end.setDate(endDT);
+			start.setDate(new DateTime(true, startZDT.toInstant().toEpochMilli(), 0));
+			end.setDate(new DateTime(true, endZDT.toInstant().toEpochMilli(), 0));
 		} else {
 			start.setDateTime(startDT);
 			end.setDateTime(endDT);
@@ -105,7 +105,7 @@ public class CalendarLogic {
 		event.setStart(start);
 		event.setEnd(end);
 
-		event.setRecurrence(Arrays.asList(calendarEvent.getRecurrence()));
+//		event.setRecurrence(Arrays.asList(calendarEvent.getRecurrence()));
 
 		event.setReminders(calendarEvent.getReminders());
 		this.calendarService.addEvent("primary", event);
