@@ -409,12 +409,10 @@ public class AlarmClockLogic implements RunnableService {
 	 */
 	@Override
 	public void start() {
-
 		List<Alarm> alarmList = getAllAlarms();
 		for (Alarm a : alarmList) {
 			Runnable alarmRunnable = createAlarmRunnable(a.getId());
 			ZonedDateTime with = this.environment.getCurrentDateTime().with(a.getAlarmTime());
-
 			this.taskScheduler.schedule(alarmRunnable, with.toInstant());
 		}
 	}
@@ -424,6 +422,6 @@ public class AlarmClockLogic implements RunnableService {
 	 */
 	@Override
 	public void stop() {
-		throw new UnsupportedOperationException("We don't need to stop the runnable.");
+		// Nothing happens here.
 	}
 }
