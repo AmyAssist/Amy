@@ -200,7 +200,6 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		for (AGFNode child : node.getChildEntityNodes()) {
 			if (child.getType() == AGFNodeType.ENTITY) {
 				EntityNode entity = (EntityNode) child;
-				System.out.println("entity " + entity.getContent() + " content " + entity.getUserProvidedContent());
 				if (entity.getUserProvidedContent() != null) {
 					result.put(entity.getContent(), entity.getUserProvidedContent());
 				}
