@@ -91,14 +91,15 @@ public class Server implements RunnableService {
 	/**
 	 * The dependency injection instance, needed for binding the di to the server
 	 */
-	@Reference ServiceLocator di;
+	@Reference
+	private ServiceLocator di;
 
 	private Set<Class<?>> restResources = new HashSet<>();
 	private HttpServer httpServer;
 
 	@Reference
 	private ConfigurationManager configurationManager;
-	
+
 	private Map<String, Class<?>> plugins = new HashMap<>();
 
 	/**
@@ -216,21 +217,24 @@ public class Server implements RunnableService {
 			throw new IllegalStateException("The Server is already started");
 		this.restResources.add(cls);
 	}
-	
+
 	/**
 	 * sets a resource class for a plugin
 	 * 
-	 * @param uniqueName the unique name of the plugin
-	 * @param pluginClass the resource class of the plugin
+	 * @param uniqueName
+	 *            the unique name of the plugin
+	 * @param pluginClass
+	 *            the resource class of the plugin
 	 */
 	public void addPlugin(String uniqueName, Class<?> pluginClass) {
 		this.plugins.put(uniqueName, pluginClass);
 	}
-	
+
 	/**
-	 * gets the resource class of a plugin 
+	 * gets the resource class of a plugin
 	 * 
-	 * @param uniqueName the unique name of the plugin
+	 * @param uniqueName
+	 *            the unique name of the plugin
 	 * @return the resource class of the plugin
 	 */
 	public Class<?> getPluginClass(String uniqueName) {
