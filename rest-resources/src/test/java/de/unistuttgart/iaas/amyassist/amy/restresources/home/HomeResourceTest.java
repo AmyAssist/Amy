@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.restresources.home;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.ws.rs.client.WebTarget;
@@ -79,17 +78,12 @@ class HomeResourceTest {
 		Response r = this.target.request().get();
 		assertEquals(200, r.getStatus());
 		SimplePluginEntity[] spes = r.readEntity(SimplePluginEntity[].class);
-		assertEquals(plugins.length + 1, spes.length);
+		assertEquals(plugins.length, spes.length);
 		for (int i = 0; i < plugins.length; i++) {
 			assertEquals(plugins[i].getDisplayName(), spes[i].getName());
 			assertEquals(plugins[i].getDescription(), spes[i].getDescription());
 			assertEquals(null, spes[i].getLink());
 		}
-		assertEquals("Configuration", spes[spes.length - 1].getName());
-		assertEquals("Configurations for this Amy instance and installed plugins",
-				spes[spes.length - 1].getDescription());
-		assertEquals(this.target.getUriBuilder().replacePath("config").toString(), spes[spes.length - 1].getLink());
-	
 	}
 
 	private IPlugin[] setupPlugins() {
@@ -99,15 +93,12 @@ class HomeResourceTest {
 			Mockito.when(plugins[i].getDisplayName()).thenReturn("Display" + i);
 			Mockito.when(plugins[i].getDescription()).thenReturn("Description" + i);
 
-			Mockito.when(plugins[i].getClasses()).thenReturn(new ArrayList<>());
-
 		}
 		return plugins;
 	}
-	
+
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#mute()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#mute()}.
 	 */
 	@Test
 	void testMute() {
@@ -117,8 +108,7 @@ class HomeResourceTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#unmute()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#unmute()}.
 	 */
 	@Test
 	void testUnmute() {

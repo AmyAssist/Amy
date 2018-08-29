@@ -23,10 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
 
-import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
 
@@ -38,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Tim Neumann
  */
-public class Plugin implements IPlugin {
+class Plugin implements IPlugin {
 
 	private static final String UNIQUE_NAME_KEY = "PluginID";
 	private static final String DESCRIPTION_KEY = "PluginDescription";
@@ -48,31 +45,22 @@ public class Plugin implements IPlugin {
 	/**
 	 * The path to the jar of the plugin.
 	 */
-	private Path path;
+	private final Path path;
 
 	/**
 	 * The class loader that loads this jar.
 	 */
-	private ClassLoader classLoader;
+	private final ClassLoader classLoader;
 
 	/**
 	 * The manifest file of the loaded jar.
 	 */
-	private Manifest manifest;
+	private final Manifest manifest;
 
-	/**
-	 * The list of all classes of this plugin
-	 */
-	private List<Class<?>> classes = new ArrayList<>();
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getFile()
-	 * @deprecated In favor to {@link #getPath()}
-	 */
-	@Override
-	@Deprecated
-	public File getFile() {
-		return this.path.toFile();
+	public Plugin(Path path, ClassLoader classLoader, Manifest manifest) {
+		this.path = path;
+		this.classLoader = classLoader;
+		this.manifest = manifest;
 	}
 
 	/**
@@ -136,59 +124,11 @@ public class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getClasses()
-	 */
-	@Override
-	public List<Class<?>> getClasses() {
-		return new ArrayList<>(this.classes);
-	}
-
-	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getManifest()
 	 */
 	@Override
 	public Manifest getManifest() {
 		return this.manifest;
-	}
-
-	/**
-	 * Set's {@link #path path}
-	 * 
-	 * @param path
-	 *            path
-	 */
-	protected void setPath(Path path) {
-		this.path = path;
-	}
-
-	/**
-	 * Set's {@link #classLoader classLoader}
-	 * 
-	 * @param classLoader
-	 *            classLoader
-	 */
-	protected void setClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
-	}
-
-	/**
-	 * Set's {@link #classes classes}
-	 * 
-	 * @param classes
-	 *            classes
-	 */
-	protected void setClasses(List<Class<?>> classes) {
-		this.classes = classes;
-	}
-
-	/**
-	 * Set's {@link #manifest manifest}
-	 * 
-	 * @param manifest
-	 *            manifest
-	 */
-	protected void setManifest(Manifest manifest) {
-		this.manifest = manifest;
 	}
 
 }
