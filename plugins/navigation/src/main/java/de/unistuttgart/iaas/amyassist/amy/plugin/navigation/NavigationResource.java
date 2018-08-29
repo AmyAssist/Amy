@@ -137,7 +137,7 @@ public class NavigationResource implements Resource {
 	@Path("tags")
 	@Produces(APPLICATION_JSON)
 	public String[] getTags() {
-		return registryConnection.getAllLocationTags();
+		return this.registryConnection.getAllLocationTags();
 	}
 
 	/**
@@ -177,11 +177,11 @@ public class NavigationResource implements Resource {
 		}
 
 		if ((r.getDestination() == null || r.getDestination().isEmpty()) && r.getDestinationTag() != null) {
-			r.setDestination(registryConnection.getAddress(r.getDestinationTag()));
+			r.setDestination(this.registryConnection.getAddress(r.getDestinationTag()));
 		}
 
 		if ((r.getOrigin() == null || r.getOrigin().isEmpty()) && r.getOriginTag() != null) {
-			r.setOrigin(registryConnection.getAddress(r.getOriginTag()));
+			r.setOrigin(this.registryConnection.getAddress(r.getOriginTag()));
 		}
 	}
 

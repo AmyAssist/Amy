@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.newMessages">
+		<gram>[do i have] new [{important}] (messages|mails)</gram>
+		<EntityTemplates>
+			<EntityTemplate id="important" required="false">
+				<gram>important </gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.numberOfNewMails">
+		<gram>how many [new] [{important}] (messages|mails) [do i have]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="important" required="false">
+				<gram>important</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.readRecentMails">
+		<gram>read ({selection}) [{important}] (messages|mails)</gram>
+		<EntityTemplates>
+			<EntityTemplate id="important" required="false">
+				<gram>important</gram>
+			</EntityTemplate>
+			<EntityTemplate id="number" required="false">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="all" required="false">
+				<gram>all</gram>
+			</EntityTemplate>
+
+			<EntityTemplate id="selection" required="true">
+				<gram>({all}|{number})</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+</AmyInteractionModel>

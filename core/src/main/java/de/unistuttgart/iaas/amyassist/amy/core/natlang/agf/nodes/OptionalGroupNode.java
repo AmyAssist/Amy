@@ -24,22 +24,23 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
- * describes an optional group node
- * it contains optional AGF Syntax 
+ * describes an optional group node it contains optional AGF Syntax
  *
  * @author Felix Burk
  */
 public class OptionalGroupNode extends AGFNode {
 
 	/**
-	 * @param content the content
+	 * @param content
+	 *                    the content
 	 */
 	public OptionalGroupNode(String content) {
 		super(content);
 	}
-	
+
 	/**
 	 * returns the node type
+	 * 
 	 * @return the type
 	 */
 	@Override

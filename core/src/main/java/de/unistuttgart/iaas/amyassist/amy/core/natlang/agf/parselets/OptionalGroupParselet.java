@@ -30,13 +30,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.OptionalGroupNode;
 
 /**
- * optional group parselet 
+ * optional group parselet
  * 
  * <ORGroupParselet> := "[" <AGFNode>+ ( "|" <AGFNode>+ )* "]";
  * 
  * @author Felix Burk
  */
-public class OptionalGroupParselet implements IAGFParselet{
+public class OptionalGroupParselet implements IAGFParselet {
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.parselets.IAGFParselet#parse(de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.Parser,
@@ -45,12 +45,12 @@ public class OptionalGroupParselet implements IAGFParselet{
 	@Override
 	public OptionalGroupNode parse(Parser parser, AGFToken token) {
 		// Parse the |-separated arguments until we hit, "]".
-		OptionalGroupNode node = new OptionalGroupNode("");		
+		OptionalGroupNode node = new OptionalGroupNode("");
 
 		AGFNode agfNode = new AGFNode("");
-		
-		while(!parser.match(AGFTokenType.CLOSESBR)) {
-			if(parser.match(AGFTokenType.OR)) {
+
+		while (!parser.match(AGFTokenType.CLOSESBR)) {
+			if (parser.match(AGFTokenType.OR)) {
 				parser.consume();
 				node.addChild(agfNode);
 				agfNode = new AGFNode("");

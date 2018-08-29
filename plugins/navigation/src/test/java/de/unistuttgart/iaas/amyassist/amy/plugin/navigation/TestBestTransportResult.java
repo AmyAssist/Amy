@@ -53,19 +53,19 @@ public class TestBestTransportResult {
 	public void testRoutToShortStringCar() {
 		this.bestResult = new BestTransportResult(TravelMode.DRIVING, this.data.carRoutes[0]);
 		assertThat(this.bestResult.routeToShortString(),
-				equalTo("The route is 2 km long and need 5 min time in traffic"));
+				equalTo("The route is 2 km long and you will need 5 min time in traffic"));
 	}
 
 	@Test
 	public void testRoutToShortStringCarwithoutTraffic() {
 		this.bestResult = new BestTransportResult(TravelMode.DRIVING, this.data.carRoutes[1]);
-		assertThat(this.bestResult.routeToShortString(), equalTo("The route is 2 km long and need 5 min time"));
+		assertThat(this.bestResult.routeToShortString(), equalTo("The route is 2 km long and you will need 5 min time"));
 	}
 
 	@Test
 	public void testRoutToShortStringBike() {
 		this.bestResult = new BestTransportResult(TravelMode.BICYCLING, this.data.bicycleRoutes[0]);
-		assertThat(this.bestResult.routeToShortString(), equalTo("The route is 2 km long and need 5 min time"));
+		assertThat(this.bestResult.routeToShortString(), equalTo("The route is 2 km long and you will need 5 min time"));
 	}
 
 	@Test

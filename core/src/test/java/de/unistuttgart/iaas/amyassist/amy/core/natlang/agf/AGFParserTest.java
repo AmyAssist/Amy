@@ -26,6 +26,9 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
@@ -33,7 +36,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 
 
 /**
- * TODO: Description
+ * Test for AGFParser
  * @author Felix Burk
  */
 public class AGFParserTest {
@@ -46,8 +49,31 @@ public class AGFParserTest {
 	public void testBracketGroups() {
 		bracketGroup('(', ')', AGFNodeType.ORG);
 		bracketGroup('[', ']', AGFNodeType.OPG);
+		testEntities();
 	}
 	
+	/**
+	 * 
+	 */
+	private void testEntities() {
+		Map<String, AGFNode> map = new HashMap<>();
+		map.put("x", new AGFNode("test"));
+		map.put("timer", new AGFNode("test"));
+		AGFParser parser = new AGFParser(new AGFLexer("set timer on {x"), map);
+		assertThrows(AGFParseException.class, () -> parser.parseWholeExpression());
+
+		AGFLexer lex = new AGFLexer("set {timer} on x");
+		while(lex.hasNext()) {
+			System.out.println(lex.next().type);
+		}
+		AGFParser parser2 = new AGFParser(new AGFLexer("set {timer} on x"), map);
+		AGFNode node = parser2.parseWholeExpression();
+		System.out.println(node.printSelf());
+		AGFNode morph = node.getChilds().get(0);
+		assertEquals(morph.getType(), AGFNodeType.MORPH);
+		assertEquals(morph.getChilds().get(1).getType(), AGFNodeType.ENTITY);
+	}
+
 	/**
 	 * tests groups surrounded by characters
 	 * @param brO open bracket character
@@ -87,6 +113,33 @@ public class AGFParserTest {
 		AGFNode secndOr = nestedNode.getChilds().get(0).getChilds().get(0).getChilds().get(1);
 		assertEquals(secndOr.getType(), type);
 		
+	}
+	
+	/**
+	 * tests parsing number expressions eg: $(0,1000,1)
+	 */
+	@Test
+	public void testNumberExpressions() {
+		//okay i know this is really bad practice but it's 1 AM i'll fix this later... - Felix B 
+		AGFParser parser = new AGFParser(new AGFLexer("test $(0,100,10)"));
+		assertEquals(AGFNodeType.NUMBER, parser.parseExpression().getChilds().get(1).getType());
+		AGFParser parser2 = new AGFParser(new AGFLexer("test $(0,100,10) test"));
+		assertEquals(AGFNodeType.NUMBER, parser2.parseExpression().getChilds().get(1).getType());
+		
+		AGFParser parser3 = new AGFParser(new AGFLexer("test $(0,100,10 test"));
+		assertThrows(AGFParseException.class, () -> parser3.parseWholeExpression());
+		AGFParser parser4 = new AGFParser(new AGFLexer("test $(0,100,) test"));
+		assertThrows(AGFParseException.class, () -> parser4.parseWholeExpression());
+
+		AGFParser parser5 = new AGFParser(new AGFLexer("test $(0,100) test"));
+		assertThrows(AGFParseException.class, () -> parser5.parseWholeExpression());
+
+		AGFParser parser6 = new AGFParser(new AGFLexer("test $(0,10010) test"));
+		assertThrows(AGFParseException.class, () -> parser6.parseWholeExpression());
+
+		AGFParser parser7 = new AGFParser(new AGFLexer("test (0,100,10) test"));
+		assertThrows(AGFParseException.class, () -> parser7.parseWholeExpression());
+
 	}
 
 }

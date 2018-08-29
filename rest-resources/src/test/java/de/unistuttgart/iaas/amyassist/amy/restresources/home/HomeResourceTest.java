@@ -27,11 +27,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
 
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -42,13 +39,12 @@ import org.mockito.Mockito;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
- * Test Class for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource}
+ * Test Class for {@link de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatResource}
  * 
  * @author Christian Bräuner
  */
@@ -60,7 +56,6 @@ class HomeResourceTest {
 
 	private WebTarget target;
 
-	private SpeechInputHandler speechInputHandler;
 	private MessageHub messageHub;
 	private PluginManager manager;
 
@@ -70,37 +65,12 @@ class HomeResourceTest {
 	@BeforeEach
 	void setUp() {
 		this.manager = this.testFramework.mockService(PluginManager.class);
-		this.speechInputHandler = this.testFramework.mockService(SpeechInputHandler.class);
 		this.messageHub = this.testFramework.mockService(MessageHub.class);
 		this.target = this.testFramework.setRESTResource(HomeResource.class);
 	}
 
 	/**
-	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#useAmy(java.lang.String)}.
-	 */
-	@Test
-	void testUseAmy() {
-		String consoleInput = "Amy do something";
-		String result = "I did something";
-		Mockito.when(this.speechInputHandler.handle(consoleInput))
-				.thenReturn(CompletableFuture.completedFuture(result));
-		Entity<String> entity = Entity.entity(consoleInput, MediaType.TEXT_PLAIN);
-		Response r = this.target.path("console").request().post(entity);
-		assertEquals(200, r.getStatus());
-		assertEquals(result, r.readEntity(String.class));
-		Mockito.verify(this.speechInputHandler).handle(consoleInput);
-
-		consoleInput = "wrong input";
-		Mockito.when(this.speechInputHandler.handle(consoleInput)).thenThrow(new RuntimeException("some exception"));
-		entity = Entity.entity(consoleInput, MediaType.TEXT_PLAIN);
-		r = this.target.path("console").request().post(entity);
-		assertEquals(500, r.getStatus());
-		assertTrue(r.readEntity(String.class).startsWith("can't handle input: " + consoleInput));
-	}
-
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#getPlugins()}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatResource#getPlugins()}.
 	 */
 	@Test
 	void testGetPlugins() {
