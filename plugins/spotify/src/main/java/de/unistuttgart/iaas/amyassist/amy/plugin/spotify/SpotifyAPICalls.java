@@ -437,7 +437,7 @@ public class SpotifyAPICalls {
 	 * 
 	 * @return a CurrentlyPlayingContext object from the spotify library, null if a problem occur
 	 */
-	public CurrentlyPlayingContext getCurrentSong() {
+	public CurrentlyPlayingContext getCurrentPlayingContext() {
 		if (checkPlayerState()) {
 			GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = getSpotifyApi()
 					.getInformationAboutUsersCurrentPlayback().build();
