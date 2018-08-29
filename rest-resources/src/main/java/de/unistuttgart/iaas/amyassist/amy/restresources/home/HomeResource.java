@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.restresources.home;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -41,6 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -65,6 +65,8 @@ public class HomeResource {
 	private SpeechInputHandler speechInputHandler;
 	@Context
 	private UriInfo uriInfo;
+	@Reference
+	private Server server;
 
 	/**
 	 * handles consoleInput from a client
@@ -108,29 +110,19 @@ public class HomeResource {
 	@Operation(tags = "home")
 	public SimplePluginEntity[] getPlugins() {
 		List<IPlugin> pluginList = this.manager.getPlugins();
-		SimplePluginEntity[] plugins = new SimplePluginEntity[pluginList.size() + 1];
+		SimplePluginEntity[] plugins = new SimplePluginEntity[pluginList.size()];
 		for (int i = 0; i < pluginList.size(); i++) {
 			plugins[i] = new SimplePluginEntity(pluginList.get(i));
 			plugins[i].setLink(createPath(pluginList.get(i)));
 		}
-		plugins[pluginList.size()] = createConfig();
 		return plugins;
 	}
 
-	private SimplePluginEntity createConfig() {
-		SimplePluginEntity config = new SimplePluginEntity();
-		config.setName("Configuration");
-		config.setDescription("Configurations for this Amy instance and installed plugins");
-		config.setLink(this.uriInfo.getBaseUriBuilder().path("config").toString());
-		return config;
-	}
 
 	private String createPath(IPlugin iPlugin) {
-		List<Class<?>> classes = new ArrayList<>();
-		for (Class<?> cls : classes) {
-			if (cls.isAnnotationPresent(Path.class)) { // TODO change to has parent class
-				return this.uriInfo.getBaseUriBuilder().path(cls).build().toString();
-			}
+		Class<?> cls = this.server.getPluginClass(iPlugin.getUniqueName());
+		if (cls.isAnnotationPresent(Path.class)) {
+			return this.uriInfo.getBaseUriBuilder().path(cls).build().toString();
 		}
 		return null;
 	}

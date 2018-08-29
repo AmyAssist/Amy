@@ -26,8 +26,10 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -89,14 +91,15 @@ public class Server implements RunnableService {
 	/**
 	 * The dependency injection instance, needed for binding the di to the server
 	 */
-	@Reference
-	private ServiceLocator di;
+	@Reference ServiceLocator di;
 
 	private Set<Class<?>> restResources = new HashSet<>();
 	private HttpServer httpServer;
 
 	@Reference
 	private ConfigurationManager configurationManager;
+	
+	private Map<String, Class<?>> plugins = new HashMap<>();
 
 	/**
 	 * @return the URI of the server
@@ -212,5 +215,25 @@ public class Server implements RunnableService {
 		if (this.httpServer != null)
 			throw new IllegalStateException("The Server is already started");
 		this.restResources.add(cls);
+	}
+	
+	/**
+	 * sets a resource class for a plugin
+	 * 
+	 * @param uniqueName the unique name of the plugin
+	 * @param pluginClass the resource class of the plugin
+	 */
+	public void addPlugin(String uniqueName, Class<?> pluginClass) {
+		this.plugins.put(uniqueName, pluginClass);
+	}
+	
+	/**
+	 * gets the resource class of a plugin 
+	 * 
+	 * @param uniqueName the unique name of the plugin
+	 * @return the resource class of the plugin
+	 */
+	public Class<?> getPluginClass(String uniqueName) {
+		return this.plugins.get(uniqueName);
 	}
 }
