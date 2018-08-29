@@ -435,7 +435,7 @@ public class SpotifyAPICalls {
 	/**
 	 * get the current song from the active spotify client
 	 * 
-	 * @return a CurrentlyPlayingContext object from the spotify library, null if a problem occur
+	 * @return a CurrentlyPlayingContext object from the spotify library, null if a problem occurs
 	 */
 	public CurrentlyPlayingContext getCurrentSong() {
 		if (checkPlayerState()) {
@@ -444,6 +444,14 @@ public class SpotifyAPICalls {
 			return exceptionHandlingWithResults(getInformationAboutUsersCurrentPlaybackRequest::execute);
 		}
 		return null;
+	}
+
+	/**
+	 * get the current playback state
+	 * @return true if currently playing, false otherwise
+	 */
+	public boolean getIsPlaying() {
+		return getCurrentSong().getIs_playing();
 	}
 
 	/**

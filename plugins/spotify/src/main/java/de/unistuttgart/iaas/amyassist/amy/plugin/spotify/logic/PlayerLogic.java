@@ -59,6 +59,14 @@ public class PlayerLogic {
 	@Reference
 	private MessageHub messageHub;
 
+	private boolean suppressed = false;
+	private PostSuppressionAction postSuppressionAction = PostSuppressionAction.None;
+
+	private enum PostSuppressionAction {
+		None,
+		Pause
+	}
+
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
@@ -70,13 +78,13 @@ public class PlayerLogic {
 		this.messageHub.subscribe("home/all/music/mute", message -> {
 			switch (message) {
 			case "true":
-				this.pause();
+				setSuppressed(true);
 				break;
 			case "false":
-				this.resume();
+				setSuppressed(false);
 				break;
 			default:
-				this.logger.warn("unkown message {}", message);
+				this.logger.warn("unknown message {}", message);
 				break;
 			}
 		});
@@ -221,7 +229,12 @@ public class PlayerLogic {
 	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean pause() {
-		return this.spotifyAPICalls.pause();
+		if (this.suppressed) {
+			postSuppressionAction = PostSuppressionAction.Pause;
+			return true;
+		} else {
+			return this.spotifyAPICalls.pause();
+		}
 	}
 
 	/**
@@ -310,4 +323,32 @@ public class PlayerLogic {
 		return this.spotifyAPICalls.getVolume();
 	}
 
+	/**
+	 * Suppress music playback temporarily.
+	 * @param suppressed 'true' to suppress playback, 'false' to restore it
+	 */
+	private void setSuppressed(boolean suppressed) {
+		logger.warn("setSuppressed({})", suppressed);
+		if (suppressed != this.suppressed) {
+
+			boolean isPlaying = spotifyAPICalls.getIsPlaying();
+
+			if (!suppressed && !isPlaying) {
+				// Consider resuming playback
+				if (postSuppressionAction == PostSuppressionAction.Pause) {
+					// Already paused, do nothing
+					postSuppressionAction = PostSuppressionAction.None;
+				}
+				else {
+					resume();
+				}
+				this.suppressed = false;
+			}
+			else if (suppressed && isPlaying) {
+				// Consider pausing playback
+				pause();
+				this.suppressed = true;
+			}
+		}
+	}
 }
