@@ -23,8 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
@@ -40,9 +40,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.LoadAIMService;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginMockFactory;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -77,7 +77,7 @@ class TestAIMService {
 	void testMetaFile() {
 		
 		//correct meta file
-		Plugin p = new Plugin();
+		IPlugin p = PluginMockFactory.plugin();
 		InputStream streamMeta = this.getClass().getResourceAsStream("testPlugin.natlangMeta");
 
 		try {
@@ -90,7 +90,7 @@ class TestAIMService {
 	@ParameterizedTest
 	@MethodSource("badMetaFileContent")
 	void testBadMetaFile(String content) {
-		Plugin p = new Plugin();
+		IPlugin p = PluginMockFactory.plugin();
 		
 		InputStream streamMetaBad = new ByteArrayInputStream(content.getBytes());
 		assertEquals(true ,this.loadAIMService.readMetaFile(streamMetaBad, p).isEmpty());

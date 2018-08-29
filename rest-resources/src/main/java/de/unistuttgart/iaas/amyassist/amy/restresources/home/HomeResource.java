@@ -46,20 +46,20 @@ import io.swagger.v3.oas.annotations.Operation;
  */
 @Path(HomeResource.PATH)
 public class HomeResource {
-	
+
 	/**
 	 * the Path of this resource
 	 */
 	public static final String PATH = "home";
-	
+
 	@Reference
 	private PluginManager manager;
 	@Context
 	private UriInfo uriInfo;
+	
 	@Reference
 	private MessageHub messageHub;
 
-	
 	/**
 	 * returns all installed plugins
 	 * 
@@ -70,33 +70,18 @@ public class HomeResource {
 	@Operation(tags = "home")
 	public SimplePluginEntity[] getPlugins() {
 		List<IPlugin> pluginList = this.manager.getPlugins();
-		SimplePluginEntity[] plugins = new SimplePluginEntity[pluginList.size() + 1];
+		SimplePluginEntity[] plugins = new SimplePluginEntity[pluginList.size()];
 		for (int i = 0; i < pluginList.size(); i++) {
 			plugins[i] = new SimplePluginEntity(pluginList.get(i));
 			plugins[i].setLink(createPath(pluginList.get(i)));
 		}
-		plugins[pluginList.size()] = createConfig();
 		return plugins;
 	}
 
-	private SimplePluginEntity createConfig() {
-		SimplePluginEntity config = new SimplePluginEntity();
-		config.setName("Configuration");
-		config.setDescription("Configurations for this Amy instance and installed plugins");
-		config.setLink(this.uriInfo.getBaseUriBuilder().path("config").toString());
-		return config;
-	}
-
 	private String createPath(IPlugin iPlugin) {
-		List<Class<?>> classes = iPlugin.getClasses();
-		for (Class<?> cls : classes) {
-			if (cls.isAnnotationPresent(Path.class)) { // TODO change to has parent class
-				return this.uriInfo.getBaseUriBuilder().path(cls).build().toString();
-			}
-		}
 		return null;
 	}
-	
+
 	/**
 	 * mutes amy
 	 */
@@ -105,7 +90,7 @@ public class HomeResource {
 	public void mute() {
 		this.messageHub.publish("home/all/mute", "true");
 	}
-	
+
 	/**
 	 * unmutes amy
 	 */
@@ -114,5 +99,5 @@ public class HomeResource {
 	public void unmute() {
 		this.messageHub.publish("home/all/mute", "false");
 	}
-	
+
 }

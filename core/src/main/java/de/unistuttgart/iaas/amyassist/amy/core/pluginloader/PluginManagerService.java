@@ -27,12 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -170,7 +165,6 @@ public class PluginManagerService implements PluginManager {
 		Set<Class<?>> loadServices = new Services().loadServices(classLoader);
 		loadServices.removeIf(cls -> cls.getClassLoader() != classLoader);
 		loadServices.forEach(this.di::register);
-
 	}
 
 	/**

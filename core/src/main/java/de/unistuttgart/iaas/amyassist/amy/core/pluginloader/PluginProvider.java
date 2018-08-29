@@ -48,8 +48,9 @@ public class PluginProvider implements StaticProvider<IPlugin> {
 
 	@Override
 	public IPlugin getContext(ServiceConsumer<?> consumer) {
+		ClassLoader classLoader = consumer.getConsumerClass().getClassLoader();
 		for (IPlugin p : this.plugins) {
-			if (p.getClasses().contains(consumer.getConsumerClass())) {
+			if (classLoader.equals(p.getClassLoader())) {
 				return p;
 			}
 		}
