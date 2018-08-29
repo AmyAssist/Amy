@@ -93,7 +93,7 @@ public abstract class AbstractSpeechRecognizerManager
 	}
 
 	private void initMessageHandling() {
-	/*	this.messageHub.subscribe("home/all/mute", message -> {
+		this.messageHub.subscribe("home/all/mute", message -> {
 			switch (message) {
 			case "true":
 				this.stopOutput();
@@ -105,7 +105,7 @@ public abstract class AbstractSpeechRecognizerManager
 				this.logger.warn("unkown message {}", message);
 				break;
 			}
-		});*/
+		});
 	}
 
 	private void createRecognizers(GrammarObjectsCreator grammarData, AudioInputStream ais) {
