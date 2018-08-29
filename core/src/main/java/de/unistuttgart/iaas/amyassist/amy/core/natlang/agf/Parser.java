@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,10 +50,15 @@ public class Parser {
 	private List<AGFToken> mRead;
 
 	/**
+	 * maps entity id to corresponding AGFNode
+	 */
+	protected Map<String, AGFNode> entityToAGF = new HashMap<>();
+
+	/**
 	 * constructor
 	 * 
 	 * @param tokens
-	 *            to consume
+	 *                   to consume
 	 */
 	public Parser(Iterator<AGFToken> tokens) {
 		this.mTokens = tokens;
@@ -63,7 +69,7 @@ public class Parser {
 	 * does the current token match the expected one?
 	 * 
 	 * @param expected
-	 *            AGFToken
+	 *                     AGFToken
 	 * @return if it matched
 	 */
 	public boolean match(AGFTokenType expected) {
@@ -79,16 +85,16 @@ public class Parser {
 	 * register parselets
 	 * 
 	 * @param token
-	 *            to register
+	 *                  to register
 	 * @param node
-	 *            to register
+	 *                  to register
 	 */
 	public void register(AGFTokenType token, IAGFParselet node) {
 		this.mAGFParselets.put(token, node);
 	}
 
 	/**
-	 * tries to parse the whole expression 
+	 * tries to parse the whole expression
 	 * 
 	 * @return generated AGFNode
 	 */
@@ -101,8 +107,7 @@ public class Parser {
 	}
 
 	/**
-	 * parses only a part of the expression
-	 * meaning only one agf parselet
+	 * parses only a part of the expression meaning only one agf parselet
 	 * 
 	 * @return the node
 	 */
@@ -121,7 +126,7 @@ public class Parser {
 	 * consume the right token
 	 * 
 	 * @param expected
-	 *            token
+	 *                     token
 	 * @return the AGFToken that was consumed
 	 */
 	public AGFToken consume(AGFTokenType expected) {
@@ -152,7 +157,7 @@ public class Parser {
 	 * look ahead as many tokens as needed
 	 * 
 	 * @param distance
-	 *            needed
+	 *                     needed
 	 * @return token at distance
 	 */
 	private AGFToken lookAhead(int distance) {
@@ -166,5 +171,19 @@ public class Parser {
 		}
 
 		return null;
+	}
+
+	/**
+	 * returns corresponding AGFNode for entity id
+	 * 
+	 * @param id
+	 *               of entity
+	 * @return corresponding AGFNode
+	 */
+	public AGFNode getEntityAGF(String id) {
+		if (this.entityToAGF != null && this.entityToAGF.get(id) != null) {
+			return this.entityToAGF.get(id);
+		}
+		throw new AGFParseException("no matching entity found for id " + id);
 	}
 }

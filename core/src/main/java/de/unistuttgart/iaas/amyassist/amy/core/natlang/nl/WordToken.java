@@ -38,7 +38,7 @@ public class WordToken {
 	 * constructor for word token
 	 * 
 	 * @param content
-	 *            the content
+	 *                    the content
 	 */
 	public WordToken(String content) {
 		this.content = content;
@@ -57,7 +57,7 @@ public class WordToken {
 	 * setter for type
 	 * 
 	 * @param type
-	 *            the type to set
+	 *                 the type to set
 	 */
 	public void setType(WordTokenType type) {
 		this.type = type;

@@ -14,7 +14,6 @@
 	</parent>
 	<properties>
 		<sphinx.version>5prealpha</sphinx.version>
-		<cliche.version>110413</cliche.version>
 	</properties>
 	<repositories>
 		<!-- used for MARY repository -->
@@ -41,6 +40,10 @@
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-di</artifactId>
 			<version>${amy.di.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-natlang-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>

@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+
 /**
  * A Static Context Provider which provides context information from then consumer class.
  * 
@@ -31,9 +33,9 @@ package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
 public interface StaticProvider<T> {
 	/**
 	 * 
-	 * @param consumer
-	 *            the class of the consumer
+	 * @param serviceConsumer
+	 *            the consumer of the service, this contains the consumer class and annotations
 	 * @return the context information
 	 */
-	T getContext(Class<?> consumer);
+	T getContext(ServiceConsumer<?> serviceConsumer);
 }

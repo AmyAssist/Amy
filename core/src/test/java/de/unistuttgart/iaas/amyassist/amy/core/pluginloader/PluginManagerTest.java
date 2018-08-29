@@ -42,7 +42,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManage
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
@@ -88,7 +87,6 @@ class PluginManagerTest {
 		this.properties = new Properties();
 		when(configurationManager.getConfigurationWithDefaults("plugin.config")).thenReturn(this.properties);
 
-		this.testFramework.mockService(NLProcessingManager.class);
 		this.testFramework.mockService(Persistence.class);
 
 		this.properties.setProperty("pluginDir", "plugins");

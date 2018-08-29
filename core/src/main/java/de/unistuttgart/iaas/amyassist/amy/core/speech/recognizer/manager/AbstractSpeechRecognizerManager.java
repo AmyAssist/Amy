@@ -25,15 +25,13 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 import javax.sound.sampled.AudioInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.Grammar;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
@@ -52,7 +50,7 @@ public abstract class AbstractSpeechRecognizerManager
 
 	private final Logger logger = LoggerFactory.getLogger(AbstractSpeechRecognizerManager.class);
 
-	private SpeechInputHandler inputHandler;
+	private Consumer<String> inputHandler;
 	private Output output;
 	private String mainGrammarName;
 	private MessageHub messageHub;
@@ -82,16 +80,32 @@ public abstract class AbstractSpeechRecognizerManager
 	 *            MessageHub
 	 * 
 	 */
-	public AbstractSpeechRecognizerManager(AudioInputStream ais, SpeechInputHandler inputHandler, Output output,
+	public AbstractSpeechRecognizerManager(AudioInputStream ais, Consumer<String> inputHandler, Output output,
 			GrammarObjectsCreator grammarData, MessageHub messageHub) {
 		this.inputHandler = inputHandler;
 		this.output = output;
 		this.mainGrammarName = grammarData.getMainGrammar().getName();
 		this.messageHub = messageHub;
-
+		initMessageHandling();
 		createRecognizers(grammarData, ais);
 
 		this.currentRecognizer = new Thread(this.mainRecognizer, "MainRecognizer");
+	}
+
+	private void initMessageHandling() {
+	/*	this.messageHub.subscribe("home/all/mute", message -> {
+			switch (message) {
+			case "true":
+				this.stopOutput();
+				break;
+			case "false":
+				//do nothing
+				break;
+			default:
+				this.logger.warn("unkown message {}", message);
+				break;
+			}
+		});*/
 	}
 
 	private void createRecognizers(GrammarObjectsCreator grammarData, AudioInputStream ais) {
@@ -143,27 +157,10 @@ public abstract class AbstractSpeechRecognizerManager
 		this.recognitionThreadRunning = false;
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognitionResultManager#handleCommand(java.lang.String)
-	 */
 	@Override
 	public void handleCommand(String result) {
 		this.logger.info("I understood: {}", result);
-		Future<String> handle = this.inputHandler.handle(result);
-		try {
-			voiceOutput(handle.get());
-		} catch (ExecutionException e) {
-			if (e.getCause() != null && e.getCause().getClass().equals(IllegalArgumentException.class)) {
-				voiceOutput("unknown command");
-			} else {
-				this.logger.error("unknown error", e);
-			}
-		} catch (InterruptedException e) {
-			this.logger.error("[Recognition Stopped] Error with SpeechInputhandler Return", e);
-			stop();
-			Thread.currentThread().interrupt();
-		}
-
+		this.inputHandler.accept(result);
 	}
 
 	/**
@@ -193,6 +190,7 @@ public abstract class AbstractSpeechRecognizerManager
 			this.voiceOutput("now sleeping");
 		}
 		this.messageHub.publish("home/all/music/mute", listening ? "true" : "false");
+		this.messageHub.publish("home/all/alarm/mute", listening ? "true" : "false");
 	}
 
 	@Override
@@ -209,6 +207,7 @@ public abstract class AbstractSpeechRecognizerManager
 			this.soundOutput(Sounds.SINGLE_CALL_STOP_BEEP);
 		}
 		this.messageHub.publish("home/all/music/mute", singleCommand ? "true" : "false");
+		this.messageHub.publish("home/all/alarm/mute", singleCommand ? "true" : "false");
 	}
 
 	/**

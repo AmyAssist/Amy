@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
 /**
  * Custom NL Lexer Exception
+ * 
  * @author Felix Burk
  */
 public class NLLexerException extends RuntimeException {
@@ -33,11 +34,12 @@ public class NLLexerException extends RuntimeException {
 	 * 
 	 */
 	private static final long serialVersionUID = 246443566789353922L;
-	
-	
+
 	/**
 	 * constructor
-	 * @param message the string msg
+	 * 
+	 * @param message
+	 *                    the string msg
 	 */
 	public NLLexerException(String message) {
 		super(message);

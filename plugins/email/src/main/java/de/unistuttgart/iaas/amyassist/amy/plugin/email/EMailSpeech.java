@@ -23,23 +23,29 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * Class that defines the speech commands for the email functionality and calls the logic methods
  * 
  * @author Patrick Singer, Felix Burk
  */
+@Service
 @SpeechCommand
 public class EMailSpeech {
 
 	private static final String NO_MAILS = "No new messages";
 	private static final String NO_IMP_MAILS = "No important new messages";
+	private static final String IMPORTANT = "important";
 
 	@Reference
 	private EMailLogic logic;
@@ -54,9 +60,9 @@ public class EMailSpeech {
 	 *            words in the grammar annotation
 	 * @return connected
 	 */
-	@Grammar("connect to amy mail")
-	public String connectToAmyMail(String... params) {
-		if (this.logic.connectToMailServer(new EMailCredentials())) {
+	@Intent
+	public String connectToAmyMail(Map<String, EntityData> entities) {
+		if (this.logic.connectToMailServer(new EMailCredentials("","",""))) {
 			return "Connected to mail server";
 		}
 		return "Couldn't connect to mail server";
@@ -65,19 +71,17 @@ public class EMailSpeech {
 	/**
 	 * Checks if there are new messages
 	 * 
-	 * @param params
-	 *            words in the grammar annotation
+	 * @param entities
+	 *            contain if important or not
 	 * @return yes or no
 	 */
-	@Grammar("[do i have] new [important] messages")
-	public String newMessages(String... params) {
-		for (int i = 0; i < params.length; i++) {
-			if (params[i].equals("important")) {
-				if (this.logic.hasNewMessages(true)) {
-					return "You have new important messages.";
-				}
-				return NO_IMP_MAILS;
+	@Intent()
+	public String newMessages(Map<String, EntityData> entities) {
+		if (entities.get(IMPORTANT) != null && entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
+			if (this.logic.hasNewMessages(true)) {
+				return "You have new important messages.";
 			}
+			return NO_IMP_MAILS;
 		}
 		if (this.logic.hasNewMessages(false)) {
 			return "You have new messages.";
@@ -88,20 +92,18 @@ public class EMailSpeech {
 	/**
 	 * Gets number of UNREAD mails
 	 * 
-	 * @param params
-	 *            words in the grammar annotation
+	 * @param entities
+	 *            contain if important or not
 	 * @return number of unseen emails
 	 */
-	@Grammar("how many [new] [important] (emails|mails) [do i have]")
-	public String numberOfNewMails(String... params) {
-		for (int i = 0; i < params.length; i++) {
-			if (params[i].equals("important")) {
-				int count = this.logic.getNewMessageCount(true);
-				if (count > 0) {
-					return count + " new important messages";
-				}
-				return NO_IMP_MAILS;
+	@Intent()
+	public String numberOfNewMails(Map<String, EntityData> entities) {
+		if (entities.get(IMPORTANT) != null && entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
+			int count = this.logic.getNewMessageCount(true);
+			if (count > 0) {
+				return count + " new important messages";
 			}
+			return NO_IMP_MAILS;
 		}
 		int count = this.logic.getNewMessageCount(false);
 		if (count > 0) {
@@ -113,23 +115,29 @@ public class EMailSpeech {
 	/**
 	 * Reads the x most recent mails
 	 * 
-	 * @param params
-	 *            words in the grammar annotation
+	 * @param entities
+	 *            contain if important or not and how many mails should be read
 	 * @return x most recent mails
 	 */
-	@Grammar("read (#|all) [important] (emails|mails)")
-	public String readRecentMails(String... params) {
-		boolean important = params[2].equals("important");
-		if (params[1].equals("all")) {
+	@Intent()
+	public String readRecentMails(Map<String, EntityData> entities) {
+		boolean important = false;
+		if (entities.get(IMPORTANT) != null) {
+			important = entities.get(IMPORTANT).getString().contains(IMPORTANT);
+		}
+		if (entities.get("all") != null && entities.get("all").getString() != null) {
 			if (important) {
 				return this.logic.printMessages(-1, true);
 			}
 			return this.logic.printMessages(-1, false);
 		}
-		int amount = Integer.parseInt(params[1]);
-		if (important) {
-			return this.logic.printMessages(amount, true);
+		if (entities.get("number") != null) {
+			int amount = entities.get("number").getNumber();
+			if (important) {
+				return this.logic.printMessages(amount, true);
+			}
+			return this.logic.printMessages(amount, false);
 		}
-		return this.logic.printMessages(amount, false);
+		return "";
 	}
 }

@@ -15,6 +15,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-natlang-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-di-api</artifactId>
 			<scope>provided</scope>
 		</dependency>

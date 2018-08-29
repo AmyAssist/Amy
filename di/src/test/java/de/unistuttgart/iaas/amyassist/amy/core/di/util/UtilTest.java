@@ -46,6 +46,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.Service5;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Service7API;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Service8;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceWithConstructor;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceWithPrivateConstructor;
 
 /**
  * Tests for the DI Util
@@ -75,7 +76,7 @@ class UtilTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(classes = { ServiceWithConstructor.class, Service8.class })
+	@ValueSource(classes = { ServiceWithConstructor.class, ServiceWithPrivateConstructor.class, Service8.class })
 	void testHasValidConstructorsFalse(Class<?> testClass) {
 		assertThat(Util.hasValidConstructors(testClass), is(false));
 	}

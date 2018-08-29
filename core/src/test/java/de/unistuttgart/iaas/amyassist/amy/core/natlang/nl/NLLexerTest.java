@@ -41,6 +41,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.google.common.collect.Lists;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
 
 /**
@@ -50,14 +51,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.Engl
  */
 public class NLLexerTest {
 	
-	private EnglishNumberConversion lang;
+	private ChooseLanguage lang;
 	
 	/**
 	 * handles language specifics setup
 	 */
 	@BeforeEach
 	public void setup() {
-		this.lang = new EnglishNumberConversion();
+		this.lang = new ChooseLanguage("en", false);
 	}
 
 	/**
@@ -153,7 +154,7 @@ public class NLLexerTest {
 	@ParameterizedTest
 	@MethodSource("fileNumbers")
 	public void testNumbersFileReader(int number) {
-		Map<String, Integer> numbers = this.lang.getWordToNumber();
+		Map<String, Integer> numbers = this.lang.getNumberConversion().getWordToNumber();
 		assertThat(new Boolean(true), is(numbers.values().contains(number)));
 	}
 	

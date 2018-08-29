@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes;
 
 /**
  * List of Node Types
+ * 
  * @author Felix Burk
  */
 public enum AGFNodeType {
@@ -39,17 +40,29 @@ public enum AGFNodeType {
 	/**
 	 * optional group
 	 */
-	OPG, 
+	OPG,
 	/**
-	 * morphene node
+	 * morpheme node
 	 */
 	MORPH,
 	/**
 	 * rule
 	 */
-	RULE,
+	ENTITY,
 	/**
 	 * word
 	 */
-	WORD
+	WORD,
+	/**
+	 * any integer number
+	 */
+	NUMBER, 
+	/**
+	 * a wildcard with fixed length
+	 */
+	SHORTWC, 
+	/**
+	 * a greedy wildcard
+	 */
+	LONGWC, 
 }

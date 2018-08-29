@@ -33,14 +33,16 @@ public class WordNode extends AGFNode {
 	/**
 	 * constructor
 	 * 
-	 * @param content of node
+	 * @param content
+	 *                    of node
 	 */
 	public WordNode(String content) {
 		super(content);
 	}
-	
+
 	/**
 	 * returns the node type
+	 * 
 	 * @return the type
 	 */
 	@Override

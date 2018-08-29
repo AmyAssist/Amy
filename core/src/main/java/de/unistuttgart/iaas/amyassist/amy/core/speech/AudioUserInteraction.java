@@ -41,6 +41,7 @@ public interface AudioUserInteraction extends RunnableService {
 	/**
 	 * Stop the Recognition System
 	 */
+	@Override
 	void stop();
 
 }

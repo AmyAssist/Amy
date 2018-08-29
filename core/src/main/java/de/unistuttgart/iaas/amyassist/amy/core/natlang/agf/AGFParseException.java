@@ -25,10 +25,11 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
 /**
  * custom parse exception
+ * 
  * @author Felix Burk
  */
 public class AGFParseException extends RuntimeException {
-	
+
 	/**
 	 * serial version uid
 	 */
@@ -36,7 +37,9 @@ public class AGFParseException extends RuntimeException {
 
 	/**
 	 * constructor
-	 * @param content of RuntimeException
+	 * 
+	 * @param content
+	 *                    of RuntimeException
 	 */
 	public AGFParseException(String content) {
 		super(content);

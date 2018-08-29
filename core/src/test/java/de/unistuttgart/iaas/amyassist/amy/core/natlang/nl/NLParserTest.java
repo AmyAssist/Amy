@@ -23,178 +23,126 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFLexer;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishStemmer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
 
 /**
- * test method for NL Parser, uses predefined grammars and nl
- * 
- * @author Felix Burk
+ * TODO: Description
+ * @author Felix Burk, Lars Buttgereit
  */
 public class NLParserTest {
 	
-	private EnglishNumberConversion lang;
+	private List<UserIntent> intents;
 	
-	/**
-	 * handles language specifics setup
-	 */
 	@BeforeEach
-	public void setup() {
-		this.lang = new EnglishNumberConversion();
-	}
-
-	/**
-	 * contains a stream of pairs, containing natural language strings and matching AGFNodes
-	 * @return Stream containing pairs of natural language strings and matching AGFNodes
-	 */
-	public static Stream<Pair<String, AGFNode>> testData() {
-		AGFNode gram = grammars.get(0);
-		AGFNode weather = grammars.get(1);
-		AGFNode badGram = grammars.get(5);
+	public void setup() throws JAXBException, FileNotFoundException {
+		FileInputStream stream = new FileInputStream(
+				"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/userinteraction/testXMLUserInteraction.aim.xml");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+		String xml = reader.lines().collect(Collectors.joining());
+		JAXBContext jc = JAXBContext.newInstance(XMLAmyInteractionModel.class);
+		Unmarshaller unmarshaller = jc.createUnmarshaller();
+		StringReader stringReader = new StringReader(xml);
+		XMLAmyInteractionModel aimmodel = (XMLAmyInteractionModel) unmarshaller.unmarshal(stringReader);
 		
-		return Stream.of(Pair.of("test 10 minutes", gram), Pair.of("test 10 minute", gram), Pair.of("weather", weather),
-				Pair.of("weather today", weather), Pair.of("delete alarm 10", grammars.get(2)),
-				Pair.of("when does timer 10 ring", grammars.get(3)), Pair.of("spotify play", grammars.get(4)),
-				Pair.of("alarm clock create timer on 10 hours 2 minute 10 seconds", badGram),
-				Pair.of("alarm clock create timer on 10 hours 11 seconds", badGram));
+		UserIntent int0 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(0));
+		UserIntent int1 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(1));
+		UserIntent int2 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(2));
+		
+		this.intents = new ArrayList<>();
+		this.intents.add(int0);
+		this.intents.add(int1);
+		this.intents.add(int2);
+		
 	}
-
-	private static List<AGFNode> grammars = Arrays.asList(
-			new AGFParser(new AGFLexer("test [# (minutes|minute)]")).parseWholeExpression(),
-			new AGFParser(new AGFLexer("weather [today]")).parseWholeExpression(),
-			new AGFParser(new AGFLexer("delete (alarm|timer) #")).parseWholeExpression(),
-			new AGFParser(new AGFLexer("when (does|is) timer # (ringing|ring)")).parseWholeExpression(),
-			new AGFParser(new AGFLexer("spotify play")).parseWholeExpression(),
-			new AGFParser(new AGFLexer("alarm clock (set|create) timer (for|on) "
-					+ "[# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")).parseWholeExpression());
 	
-	/**
-	 * this methods tests the grammar 
-	 * "alarm clock (set|create) timer (for|on) [# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]"
-	 * which needs traces back
-	 * 
-	 * for example: natlang input = "alarm clock create timer on 10 hours 11 seconds"
-	 * 
-	 * here the first sign in the second optional group matches, but not the or group inside the optional group (minute|minutes)
-	 * this means we need to set back the counter to test for the last optional group
-	 */
+	
 	@Test
-	public void testGrammarWithTraceBack() {
-		AGFNode node = new AGFParser(new AGFLexer("alarm clock (set|create) timer (for|on) "
-				+ "[# (hour|hours)] [# (minute|minutes)] [# (second|seconds)]")).parseWholeExpression();
-		List<AGFNode> list = new ArrayList<>();
-		list.add(node);
-		NLParser nlParser = new NLParser(list, new EnglishStemmer(), false);
-		NLLexer lex = new NLLexer(this.lang);
-		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 10 hours 1 minute 11 seconds")), equalTo(node));
-		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 10 hours 11 seconds")), equalTo(node));
-		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 11 seconds")), equalTo(node));
-		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 1 minute")), equalTo(node));
-		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 22 hours")), equalTo(node));
-		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 10 hours 1 minutes")), equalTo(node));
-		assertThat(nlParser.matchingNode(lex.tokenize("alarm clock create timer on 1 minute 11 seconds")), equalTo(node));
-
+	public void test() {
+		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
+		List<WordToken> tokens = lex.tokenize("greet me");
+		List<AGFNode> nodes = new ArrayList<>();
+		nodes.add(this.intents.get(0).getGrammar());
+		NLParser parser = new NLParser(nodes, null);
+		assertEquals(parser.matchingNodeIndex(tokens),0);
+		assertEquals(this.intents.get(0).isFinished(), false);
 	}
 	
-	/**
-	 * tests multiple nested groups
-	 */
 	@Test
-	public void testNestedGroups() {
-		AGFNode node = new AGFParser(new AGFLexer("this [text make (no|[hello] (#|nothing|nothing nothing [else|to do]))] sense")).parseWholeExpression();
-		List<AGFNode> list = new ArrayList<>();
-		list.add(node);
-		NLParser nlParser = new NLParser(list, new EnglishStemmer(), false);
-		NLLexer lex = new NLLexer(this.lang);
-		assertThat(nlParser.matchingNode(lex.tokenize("this text make hello nothing nothing else sense")), equalTo(node));
+	public void finished() {
+		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
+		List<WordToken> tokens = lex.tokenize("greet me with good morning test ten oh twenty");
+		List<AGFNode> nodes = new ArrayList<>();
+		nodes.add(this.intents.get(0).getGrammar());
+		NLParser parser = new NLParser(nodes, null);
+		
+		assertEquals(parser.matchingNodeIndex(tokens),0);
+		assertEquals(getEntityNodeContent(parser.matchingNode(tokens)), "good morning10 oh 20");
 	}
 	
-	/**
-	 * this checks if longer options in optional groups are used
-	 */
 	@Test
-	public void testPreferLongOptionsOP() {
-		AGFNode node = new AGFParser(new AGFLexer("this grammar is [very |very very] bad")).parseWholeExpression();
-		List<AGFNode> list = new ArrayList<>();
-		list.add(node);
-		NLParser nlParser = new NLParser(list, new EnglishStemmer(), false);
-		NLLexer lex = new NLLexer(this.lang);
-
-		assertThat(nlParser.matchingNode(lex.tokenize("this grammar is very very bad")), equalTo(node));
-		assertThat(nlParser.matchingNode(lex.tokenize("this grammar is bad")), equalTo(node));
-		assertThat(nlParser.matchingNode(lex.tokenize("this grammar is very bad")), equalTo(node));
+	public void shortWildcardTest() {
+		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
+		List<WordToken> tokens = lex.tokenize("test the four sign long wildcard here");
+		List<AGFNode> nodes = new ArrayList<>();
+		nodes.add(this.intents.get(1).getGrammar());
+		NLParser parser = new NLParser(nodes, null);
+		assertEquals(parser.matchingNodeIndex(tokens),0);
 	}
 	
-	/**
-	 * this checks if longer options in or groups are used
-	 */
+	
 	@Test
-	public void testPreferLongOptionsOR() {
-		AGFNode node = new AGFParser(new AGFLexer("this grammar is (very |very very) bad")).parseWholeExpression();
-		List<AGFNode> list = new ArrayList<>();
-		list.add(node);
-		NLParser nlParser = new NLParser(list, new EnglishStemmer(), false);
-		NLLexer lex = new NLLexer(this.lang);
-
-		assertThat(nlParser.matchingNode(lex.tokenize("this grammar is very very bad")), equalTo(node));
-		assertThat(nlParser.matchingNode(lex.tokenize("this grammar is very bad")), equalTo(node));
+	public void longWildcardTest() {
+		StringBuilder b = new StringBuilder();
+		b.append("test the wildcard");
+		for(int i=0; i < 1000; i++) {
+			b.append(" really");
+		}
+		b.append(" long");
+		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
+		List<WordToken> tokens = lex.tokenize(b.toString());
+		List<AGFNode> nodes = new ArrayList<>();
+		nodes.add(this.intents.get(2).getGrammar());
+		NLParser parser = new NLParser(nodes, null);
+		System.out.println(parser.matchingNode(tokens).printSelf());
+		assertEquals(parser.matchingNodeIndex(tokens),0);
 	}
 	
+	StringBuilder b = new StringBuilder();
+	public String getEntityNodeContent(AGFNode node) {
+		for(AGFNode child : node.getChilds()) {
+			if(child.getType() == AGFNodeType.ENTITY) {
+				EntityNode entity = (EntityNode) child;
+				this.b.append(entity.getUserProvidedContent());
+			}else {
+				getEntityNodeContent(child);
+			}
+		}
 	
-	/**
-	 * tests hard coded nls and grammars
-	 * @param testcase all pairs of natlang strings and grammars
-	*/
-	@ParameterizedTest
-	@MethodSource("testData")
-	public void testParser(Pair<String, AGFNode> testcase) {
-		NLParser nlParser = new NLParser(grammars, new EnglishStemmer(), false);
-		NLLexer lex = new NLLexer(this.lang);
-
-		List<WordToken> tokenize = lex.tokenize(testcase.getLeft());
-		assertThat(nlParser.matchingNode(tokenize), equalTo(testcase.getRight()));
-	}
-	
-	
-	/**
-	 * contains natural language strings not matching any grammars
-	 * @return a stream of strings, containing natural language strings
-	 */
-	public static Stream<String> testWrongData() {
-		return Stream.of("test 10 blah minutes", "test 10 minute blah blah", "blah blah test 10 minute");
-	}
-
-	/**
-	 * tests wrong hard coded natural language strings not matching any grammar
-	 * @param natLang natural language strings
-	*/
-	@ParameterizedTest
-	@MethodSource("testWrongData")
-	public void testWrongGrammar(String natLang) {
-		NLParser nlParser = new NLParser(grammars, new EnglishStemmer(), false);
-		NLLexer lex = new NLLexer(this.lang);
-		List<WordToken> tokenize = lex.tokenize(natLang);
-
-		assertThrows(NLParserException.class, () -> nlParser.matchingNodeIndex(tokenize));
-
+		return this.b.toString();
 	}
 
 }

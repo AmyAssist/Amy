@@ -44,7 +44,8 @@ public class RegistryConnection {
 	private LocationRegistry locationRegistry;
 
 	/**
-	 * get the address from the registry with the given name
+	 * get the address from the registry with the given name. if now adress in registry found the input string is
+	 * returned
 	 * 
 	 * @param name
 	 *            name of the location
@@ -68,7 +69,7 @@ public class RegistryConnection {
 		}
 
 		if (address == null) {
-			return null;
+			return name;
 		}
 
 		return address.getAddressString();

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.say">
+		<gram>say hello</gram>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.repeat">
+		<gram>repeat {somestring} [{int} times]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="somestring" required="true">
+				<gram>(hello|good morning|something)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="int" required="true">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+
+		<Prompt entityTemplateId="int">
+			<text> how many times should i say hello? </text>
+			<gram>{int} times</gram>
+		</Prompt>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.getContacts">
+		<gram>get contacts</gram>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.testContacts">
+		<gram>test contacts registry</gram>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.testLocation">
+		<gram>test location registry</gram>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.testCustom">
+		<gram>test custom registry</gram>
+	</Intent>
+</AmyInteractionModel>

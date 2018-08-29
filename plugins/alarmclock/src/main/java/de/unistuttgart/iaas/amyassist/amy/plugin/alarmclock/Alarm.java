@@ -23,39 +23,58 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.PersistenceUnit;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
 
 /**
  * Class that defines timer attributes and behaviour
  * 
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer, Leon Kiefer
  */
-public class Alarm {
+@Entity
+@PersistenceUnit(unitName = "AlarmRegistry")
+public class Alarm extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity implements RegistryEntity {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(updatable = false, nullable = false)
+	private int persistentId;
 	private int id;
-	private LocalTime alarmTime;
+	@XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
+	private LocalDateTime alarmTime;
 	private boolean active;
+
+	/**
+	 * Empty constructor for the alarm
+	 */
+	public Alarm() {
+	}
 
 	/**
 	 * Constructor for the alarm. Every alarm is initially set active
 	 * 
 	 * @param id
 	 *            the alarmcounter
-	 * @param hour
-	 *            hour of the alarm
-	 * @param minute
-	 *            minute of the alarm
+	 * @param alarmTime
+	 *            the alarmtime
 	 * @param active
 	 *            alarm active
 	 */
-	public Alarm(int id, int hour, int minute, boolean active) {
+	public Alarm(int id, LocalDateTime alarmTime, boolean active) {
 		if (id < 0)
 			throw new IllegalArgumentException();
-
 		this.id = id;
-
-		setTime(hour, minute);
-
+		this.alarmTime = alarmTime;
 		this.active = active;
 	}
 
@@ -68,39 +87,7 @@ public class Alarm {
 	 */
 	@Override
 	public String toString() {
-		return this.id + ":" + this.alarmTime.getHour() + ":" + this.alarmTime.getMinute() + ":" + this.active;
-	}
-
-	/**
-	 * Construct an alarm object from the String that was made by the convertToString method
-	 * 
-	 * @param input
-	 *            the String made by convertToString method
-	 * @return the corresponding alarm object
-	 */
-	public static Alarm reconstructObject(String input) {
-		String[] params = input.split(":");
-		if (params.length == 4)
-			return new Alarm(Integer.parseInt(params[0]), Integer.parseInt(params[1]), Integer.parseInt(params[2]),
-					Boolean.parseBoolean(params[3]));
-		throw new IllegalArgumentException();
-	}
-
-	/**
-	 * Give the alarm a new time
-	 * 
-	 * @param hour
-	 *            hour of the alarm
-	 * @param minute
-	 *            minute of the alarm
-	 */
-	public final void setTime(int hour, int minute) {
-		if (timeValid(hour, minute)) {
-			this.alarmTime = LocalTime.of(hour, minute);
-		} else {
-			throw new IllegalArgumentException();
-		}
-
+		return this.id + ":" + this.alarmTime + ":" + this.active;
 	}
 
 	/**
@@ -114,7 +101,6 @@ public class Alarm {
 	 */
 	public static boolean timeValid(int hour, int minute) {
 		return hour <= 23 && hour >= 0 && minute <= 59 && minute >= 0;
-
 	}
 
 	/**
@@ -135,7 +121,7 @@ public class Alarm {
 	/**
 	 * @return alarmDate
 	 */
-	public LocalTime getAlarmTime() {
+	public LocalDateTime getAlarmTime() {
 		return this.alarmTime;
 	}
 
@@ -152,6 +138,59 @@ public class Alarm {
 	 */
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity#getPersistentId()
+	 */
+	@Override
+	public int getPersistentId() {
+		return this.persistentId;
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (this.active ? 1231 : 1237);
+		result = prime * result + ((this.alarmTime == null) ? 0 : this.alarmTime.hashCode());
+		result = prime * result + this.id;
+		result = prime * result + this.persistentId;
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Alarm other = (Alarm) obj;
+		if (this.active != other.active || this.id != other.id || this.persistentId != other.persistentId)
+			return false;
+		if (this.alarmTime == null) {
+			if (other.alarmTime != null)
+				return false;
+		} else if (!this.alarmTime.equals(other.alarmTime)) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @param alarmTime
+	 *            the date and time of the alarm
+	 */
+	public void setAlarmTime(LocalDateTime alarmTime) {
+		this.alarmTime = alarmTime;
 	}
 
 }
