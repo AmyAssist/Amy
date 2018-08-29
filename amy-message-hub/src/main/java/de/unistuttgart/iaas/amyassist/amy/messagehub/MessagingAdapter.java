@@ -78,4 +78,17 @@ public interface MessagingAdapter {
 	 *            The function called when a message is received.
 	 */
 	void setCallback(BiConsumer<TopicName, Message> callback);
+
+	/**
+	 * Set a callback which is run once the adapter has started successfully
+	 * 
+	 * @param callback
+	 *            The runnable called when the adapter has started
+	 */
+	void setStartCallback(Runnable callback);
+
+	/**
+	 * @return whether the adapter is running.
+	 */
+	boolean isRunning();
 }

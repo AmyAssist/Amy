@@ -23,15 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.slf4j.Logger;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
@@ -39,58 +34,18 @@ import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
 
 /**
- * The implementation of the MessageHub api interface as Runnable Service
- *
- * @author Kai Menzel, Leon Kiefer
+ * The implementation of {@link MessageHub}. Uses the internal message hub service.
+ * 
+ * @author Tim Neumann
  */
 @Service(MessageHub.class)
 public class MessageHubService implements MessageHub {
+
 	@Reference
-	private Logger logger;
+	private InternalMessageHubService internalMessageHub;
 
 	@Reference
 	private TopicFactory tf;
-
-	@Reference
-	private MessagingAdapter adapter;
-
-	private Map<UUID, BiConsumer<TopicName, Message>> eventListener = new HashMap<>();
-	private Map<TopicFilter, List<UUID>> topicListeners = new HashMap<>();
-
-	@PostConstruct
-	private void init() {
-		this.adapter.setCallback(this::messageArrived);
-	}
-
-	@PreDestroy
-	private void destroy() {
-		this.adapter.setCallback(null);
-	}
-
-	private void executeHandler(BiConsumer<TopicName, Message> handler, Message msg, TopicName topic) {
-		try {
-			handler.accept(topic, msg);
-		} catch (RuntimeException e) {
-			this.logger.error("Error in event handler", e);
-		}
-	}
-
-	@Override
-	public void publish(String topic, String message) {
-		publish(this.tf.createTopicName(topic), message, 2, false);
-	}
-
-	private void messageArrived(TopicName topic, Message message) {
-		for (Entry<TopicFilter, List<UUID>> entry : this.topicListeners.entrySet()) {
-			TopicFilter filter = entry.getKey();
-			if (filter.doesFilterMatch(topic)) {
-				for (UUID uuid : entry.getValue()) {
-					BiConsumer<TopicName, Message> handler = this.eventListener.get(uuid);
-					executeHandler(handler, message, topic);
-				}
-			}
-		}
-	}
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(java.lang.String,
@@ -102,25 +57,30 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(TopicFilter,
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(java.lang.String,
+	 *      java.util.function.BiConsumer)
+	 */
+	@Override
+	public UUID subscribe(String topic, BiConsumer<TopicName, Message> handler) {
+		return subscribe(this.tf.createTopicFilter(topic), handler);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter,
 	 *      java.util.function.BiConsumer)
 	 */
 	@Override
 	public UUID subscribe(TopicFilter topic, BiConsumer<TopicName, Message> handler) {
-		UUID uuid = UUID.randomUUID();
+		return this.internalMessageHub.subscribe(topic, handler);
+	}
 
-		if (this.topicListeners.containsKey(topic)) {
-			this.topicListeners.get(topic).add(uuid);
-		} else {
-			List<UUID> listeners = new LinkedList<>();
-			listeners.add(uuid);
-			this.topicListeners.put(topic, listeners);
-			this.adapter.subscribe(topic);
-		}
-
-		this.eventListener.put(uuid, handler);
-
-		return uuid;
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter,
+	 *      java.util.function.Consumer)
+	 */
+	@Override
+	public UUID subscribe(TopicFilter topic, Consumer<String> handler) {
+		return subscribe(topic, (t, m) -> handler.accept(m.getPayload()));
 	}
 
 	/**
@@ -128,24 +88,78 @@ public class MessageHubService implements MessageHub {
 	 */
 	@Override
 	public void unsubscribe(UUID identifier) {
-		this.eventListener.remove(identifier);
-		for (Entry<TopicFilter, List<UUID>> entry : this.topicListeners.entrySet()) {
-			if (entry.getValue().contains(identifier)) {
-				entry.getValue().remove(identifier);
-				if (entry.getValue().isEmpty()) {
-					this.topicListeners.remove(entry.getKey());
-					this.adapter.unsubscribe(entry.getKey());
-				}
-				break;
-			}
-		}
+		this.internalMessageHub.unsubscribe(identifier);
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(TopicName, java.lang.String, int, boolean)
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String, int,
+	 *      boolean)
+	 */
+	@Override
+	public void publish(String topic, String payload, int qualityOfService, boolean retain) {
+		publish(this.tf.createTopicName(topic), payload, qualityOfService, retain);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String,
+	 *      boolean)
+	 */
+	@Override
+	public void publish(String topic, String payload, boolean retain) {
+		publish(topic, payload, 2, retain);
+
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String, int)
+	 */
+	@Override
+	public void publish(String topic, String payload, int qualityOfService) {
+		publish(topic, payload, qualityOfService, false);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void publish(String topic, String payload) {
+		publish(topic, payload, 2, false);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName,
+	 *      java.lang.String, int, boolean)
 	 */
 	@Override
 	public void publish(TopicName topic, String payload, int qualityOfService, boolean retain) {
-		this.adapter.publish(topic, payload, qualityOfService, retain);
+		this.internalMessageHub.publish(topic, payload, qualityOfService, retain);
 	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName,
+	 *      java.lang.String, boolean)
+	 */
+	@Override
+	public void publish(TopicName topic, String payload, boolean retain) {
+		publish(topic, payload, 2, retain);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName,
+	 *      java.lang.String, int)
+	 */
+	@Override
+	public void publish(TopicName topic, String payload, int qualityOfService) {
+		publish(topic, payload, qualityOfService, false);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName,
+	 *      java.lang.String)
+	 */
+	@Override
+	public void publish(TopicName topic, String payload) {
+		publish(topic, payload, 2, false);
+	}
+
 }
