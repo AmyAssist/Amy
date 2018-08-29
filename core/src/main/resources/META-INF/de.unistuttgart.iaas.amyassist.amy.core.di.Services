@@ -26,3 +26,4 @@ de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction
 de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator
 de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskSchedulerImpl
 de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformationService
+de.unistuttgart.iaas.amyassist.amy.core.information.InstanceInformationService

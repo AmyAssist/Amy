@@ -21,45 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub;
+package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
 
 /**
- * This is a internal used representation of a Message. It contains the topic and the data of a message.
- * 
- * @author Leon Kiefer
- * @param <T>
- *            the type of the message payload
+ * The interface of message topic filter.
+ *
+ * This conforms to the OASIS Standard for MQTT Version 3.1.1.
+ *
+ * @author Tim Neumann
  */
-public class Message<T> {
-	private final String topic;
-	private final T data;
-
+public interface TopicFilter extends Topic {
 	/**
-	 * @param topic
-	 *            the topic the message was published
-	 * @param data
-	 *            the payload of the message
+	 * Checks whether this filter matches the given topic name
+	 *
+	 * @param name
+	 *            The name to match with.
+	 * @return Whether this filter matches the given name.
 	 */
-	public Message(String topic, T data) {
-		this.topic = topic;
-		this.data = data;
-	}
-
-	/**
-	 * Get the topic.
-	 * 
-	 * @return the topic of the message
-	 */
-	public String getTopic() {
-		return this.topic;
-	}
-
-	/**
-	 * Get the data.
-	 * 
-	 * @return the payload of the message
-	 */
-	public T getData() {
-		return this.data;
-	}
+	boolean doesFilterMatch(TopicName name);
 }
