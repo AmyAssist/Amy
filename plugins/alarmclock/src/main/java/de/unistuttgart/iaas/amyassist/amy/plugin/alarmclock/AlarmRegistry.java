@@ -21,20 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
+package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.registry.IRegistry;
 
 /**
- * A ContextProvider which provides the class of the consumer
+ * Interface for the alarm registry
  * 
- * @author Leon Kiefer
+ * @author Patrick Gebhardt
  */
-public class ClassProvider implements StaticProvider<Class<?>> {
+public interface AlarmRegistry extends IRegistry<Alarm> {
 
+	/**
+	 * @param alarm
+	 *            the alarm which should be saved
+	 */
 	@Override
-	public Class<?> getContext(ServiceConsumer<?> consumer) {
-		return consumer.getConsumerClass();
-	}
+	void save(Alarm alarm);
 
 }

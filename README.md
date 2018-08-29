@@ -25,6 +25,7 @@ To get started with Amy, either clone or download the project from the [main pag
 
 We handle our dependencies within the project with [Apache Maven](https://maven.apache.org/) so to build the project you have to have Maven installed. You can find the archive to download on [this website](https://maven.apache.org/download.cgi).
 
+Additionaly we need a running MQTT Broker on the system. See the [wiki](https://github.com/AmyAssist/Amy/wiki/MessageHub) for more information.
 
 ### Installing and running
 

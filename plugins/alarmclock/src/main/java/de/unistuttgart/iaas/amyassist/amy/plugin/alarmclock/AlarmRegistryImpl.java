@@ -21,20 +21,30 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
+package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import javax.annotation.Nonnull;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry;
 
 /**
- * A ContextProvider which provides the class of the consumer
+ * The alarm registry
  * 
- * @author Leon Kiefer
+ * @author Patrick Gebhardt
  */
-public class ClassProvider implements StaticProvider<Class<?>> {
+@Service(AlarmRegistry.class)
+public class AlarmRegistryImpl extends AbstractRegistry<Alarm> implements AlarmRegistry {
 
 	@Override
-	public Class<?> getContext(ServiceConsumer<?> consumer) {
-		return consumer.getConsumerClass();
+	protected String getPersistenceUnitName() {
+		return "AlarmRegistry";
+	}
+
+	@Nonnull
+	@Override
+	public Class<? extends Alarm> getEntityClass() {
+		return Alarm.class;
 	}
 
 }

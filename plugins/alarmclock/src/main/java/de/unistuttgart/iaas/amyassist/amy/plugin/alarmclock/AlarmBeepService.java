@@ -77,9 +77,7 @@ public class AlarmBeepService {
 
 	private Sound beepSound;
 	private SoundPlayer beepPlayer;
-
 	private Set<Integer> alarmList = new HashSet<>();
-
 	private Set<Integer> timerList = new HashSet<>();
 
 	@PostConstruct
@@ -111,37 +109,45 @@ public class AlarmBeepService {
 	/**
 	 * @param alarm
 	 *            alarm from the alarm class
+	 * @return returns the list of alarms
 	 */
-	public void beep(Alarm alarm) {
+	public Set<Integer> beep(Alarm alarm) {
 		this.alarmList.add(alarm.getId());
 		this.update();
+		return this.alarmList;
 	}
 
 	/**
 	 * @param timer
 	 *            timer from the timer class
+	 * @return returns the list of timers
 	 */
-	public void beep(Timer timer) {
+	public Set<Integer> beep(Timer timer) {
 		this.timerList.add(timer.getId());
 		this.update();
+		return this.timerList;
 	}
 
 	/**
 	 * @param alarm
 	 *            alarm from the alarm class
+	 * @return returns the list of alarms
 	 */
-	public void stopBeep(Alarm alarm) {
+	public Set<Integer> stopBeep(Alarm alarm) {
 		this.alarmList.remove(alarm.getId());
 		this.update();
+		return this.alarmList;
 	}
 
 	/**
 	 * @param timer
 	 *            timer from the timer class
+	 * @return returns the list of timers
 	 */
-	public void stopBeep(Timer timer) {
+	public Set<Integer> stopBeep(Timer timer) {
 		this.timerList.remove(timer.getId());
 		this.update();
+		return this.timerList;
 	}
 
 	private void update() {
@@ -180,5 +186,4 @@ public class AlarmBeepService {
 	private void preDestroy() {
 		this.stopBeeping();
 	}
-
 }
