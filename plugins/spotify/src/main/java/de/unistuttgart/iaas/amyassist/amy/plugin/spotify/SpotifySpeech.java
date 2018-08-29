@@ -33,10 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.*;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
@@ -275,6 +272,13 @@ public class SpotifySpeech {
 			List<AlbumEntity> albums = this.search.searchforAlbums(entites.get("name").getString(), 1);
 			if (!albums.isEmpty() && albums.get(0) != null) {
 				return this.playerLogic.playAlbum(0).toString();
+			}
+			break;
+		case "artist":
+		case "artists":
+			List<ArtistEntity> artists = this.search.searchforArtists(entites.get("name").getString(), 1);
+			if (!artists.isEmpty() && artists.get(0) != null) {
+				return this.playerLogic.playArtist(0).toString();
 			}
 			break;
 		default:
