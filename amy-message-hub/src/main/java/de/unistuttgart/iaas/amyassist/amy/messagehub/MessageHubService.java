@@ -23,122 +23,129 @@
 
 package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
 
 /**
  * The implementation of the MessageHub api interface as Runnable Service
- * 
+ *
  * @author Kai Menzel, Leon Kiefer
  */
 @Service(MessageHub.class)
-public class MessageHubService implements MessageHub, Runnable, RunnableService {
-
+public class MessageHubService implements MessageHub {
 	@Reference
 	private Logger logger;
 
-	private Map<String, List<Consumer<String>>> eventListener = new ConcurrentHashMap<>();
+	@Reference
+	private TopicFactory tf;
 
-	private BlockingQueue<Message<String>> queue = new LinkedBlockingQueue<>();
+	@Reference
+	private MessagingAdapter adapter;
 
-	private Thread thread;
+	private Map<UUID, BiConsumer<TopicName, Message>> eventListener = new HashMap<>();
+	private Map<TopicFilter, List<UUID>> topicListeners = new HashMap<>();
 
-	@Override
-	public void start() {
-		this.thread = new Thread(this, "MessageHub");
-		this.thread.start();
+	@PostConstruct
+	private void init() {
+		this.adapter.setCallback(this::messageArrived);
 	}
 
-	@Override
-	public void run() {
-		while (!Thread.currentThread().isInterrupted()) {
-			try {
-				Message<String> event = this.queue.take();
-				if (this.eventListener.containsKey(event.getTopic())) {
-					List<Consumer<String>> list = this.eventListener.get(event.getTopic());
-					for (Consumer<String> eventExecuter : list) {
-						executeHandler(eventExecuter, event);
-					}
-				}
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				break;
-			}
-		}
-
+	@PreDestroy
+	private void destroy() {
+		this.adapter.setCallback(null);
 	}
 
-	private <T> void executeHandler(Consumer<T> handler, Message<T> event) {
+	private void executeHandler(BiConsumer<TopicName, Message> handler, Message msg, TopicName topic) {
 		try {
-			handler.accept(event.getData());
+			handler.accept(topic, msg);
 		} catch (RuntimeException e) {
 			this.logger.error("Error in event handler", e);
 		}
 	}
 
-	/**
-	 * Subscribe to a topic
-	 * 
-	 * @param topic
-	 *            to subscribe to
-	 * @param eventExecuter
-	 *            Class that gets called shoud sth gets published on given Topic
-	 */
-	@Override
-	public void subscribe(String topic, Consumer<String> eventExecuter) {
-		if (this.eventListener.containsKey(topic)) {
-			this.eventListener.get(topic).add(eventExecuter);
-		} else {
-			List<Consumer<String>> listeners = new LinkedList<>();
-			listeners.add(eventExecuter);
-			this.eventListener.put(topic, listeners);
-		}
-
-	}
-
-	/**
-	 * Unsubscribe to a topic
-	 * 
-	 * @param topic
-	 *            to unsubscribe to
-	 * @param eventExecuter
-	 *            class that will be unsubscribed to the Topic
-	 */
-	@Override
-	public void unsubscribe(String topic, Consumer<String> eventExecuter) {
-		if (this.eventListener.containsKey(topic)) {
-			this.eventListener.get(topic).remove(eventExecuter);
-		}
-
-	}
-
-	/**
-	 * Publish a message to a Topic
-	 * 
-	 * @param topic
-	 *            Topic of the Message
-	 * @param message
-	 *            containing the Information
-	 */
 	@Override
 	public void publish(String topic, String message) {
-		this.queue.add(new Message<>(topic, message));
+		publish(this.tf.createTopicName(topic), message, 2, false);
 	}
 
+	private void messageArrived(TopicName topic, Message message) {
+		for (Entry<TopicFilter, List<UUID>> entry : this.topicListeners.entrySet()) {
+			TopicFilter filter = entry.getKey();
+			if (filter.doesFilterMatch(topic)) {
+				for (UUID uuid : entry.getValue()) {
+					BiConsumer<TopicName, Message> handler = this.eventListener.get(uuid);
+					executeHandler(handler, message, topic);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(java.lang.String,
+	 *      java.util.function.Consumer)
+	 */
 	@Override
-	public void stop() {
-		this.thread.interrupt();
+	public UUID subscribe(String topic, Consumer<String> handler) {
+		return subscribe(this.tf.createTopicFilter(topic), (t, m) -> handler.accept(m.getPayload()));
 	}
 
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(TopicFilter,
+	 *      java.util.function.BiConsumer)
+	 */
+	@Override
+	public UUID subscribe(TopicFilter topic, BiConsumer<TopicName, Message> handler) {
+		UUID uuid = UUID.randomUUID();
+
+		if (this.topicListeners.containsKey(topic)) {
+			this.topicListeners.get(topic).add(uuid);
+		} else {
+			List<UUID> listeners = new LinkedList<>();
+			listeners.add(uuid);
+			this.topicListeners.put(topic, listeners);
+			this.adapter.subscribe(topic);
+		}
+
+		this.eventListener.put(uuid, handler);
+
+		return uuid;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#unsubscribe(java.util.UUID)
+	 */
+	@Override
+	public void unsubscribe(UUID identifier) {
+		this.eventListener.remove(identifier);
+		for (Entry<TopicFilter, List<UUID>> entry : this.topicListeners.entrySet()) {
+			if (entry.getValue().contains(identifier)) {
+				entry.getValue().remove(identifier);
+				if (entry.getValue().isEmpty()) {
+					this.topicListeners.remove(entry.getKey());
+					this.adapter.unsubscribe(entry.getKey());
+				}
+				break;
+			}
+		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(TopicName, java.lang.String, int, boolean)
+	 */
+	@Override
+	public void publish(TopicName topic, String payload, int qualityOfService, boolean retain) {
+		this.adapter.publish(topic, payload, qualityOfService, retain);
+	}
 }

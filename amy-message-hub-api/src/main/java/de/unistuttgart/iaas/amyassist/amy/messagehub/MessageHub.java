@@ -23,42 +23,74 @@
 
 package de.unistuttgart.iaas.amyassist.amy.messagehub;
 
+import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
+
 /**
- * The MessageHub is a programatic API to publish and subsribe to topics.
- * 
- * @author Kai Menzel, Leon Kiefer
+ * The MessageHub is a programmatic API to publish and subscribe to topics.
+ *
+ * @author Kai Menzel, Leon Kiefer, Tim Neumann
  */
 public interface MessageHub {
 
 	/**
 	 * Subscribe to a topic
-	 * 
+	 *
 	 * @param topic
-	 *            to subscribe to
+	 *            The topic to subscribe to. This may contain wildcards.
 	 * @param handler
-	 *            the handler that gets called shoud sth gets published on given Topic
+	 *            A handler being called with the payload of the message, when a message is received.
+	 * @return The identifier representing this subscription
 	 */
-	void subscribe(String topic, Consumer<String> handler);
+	UUID subscribe(String topic, Consumer<String> handler);
 
 	/**
-	 * Unsubscribe to a topic
-	 * 
+	 * Subscribe to a topic
+	 *
 	 * @param topic
-	 *            to unsubscribe to
+	 *            The topic to subscribe to. This may contain wildcards.
 	 * @param handler
-	 *            the handler that will be unsubscribed to the Topic
+	 *            A handler being called with the real topic and the message, when a message is received.
+	 * @return The identifier representing this subscription
 	 */
-	void unsubscribe(String topic, Consumer<String> handler);
+	UUID subscribe(TopicFilter topic, BiConsumer<TopicName, Message> handler);
 
 	/**
-	 * Publish a message to a Topic
-	 * 
-	 * @param topic
-	 *            Topic of the Message
-	 * @param message
-	 *            containing the Information
+	 * Remove a subscription.
+	 *
+	 * @param identifier
+	 *            The identifier representing the subscription to remove
 	 */
-	void publish(String topic, String message);
+	void unsubscribe(UUID identifier);
+
+	/**
+	 * Publish a message to a topic
+	 *
+	 * @param topic
+	 *            The topic to publish to,
+	 * @param payload
+	 *            The payload of the message.
+	 */
+	void publish(String topic, String payload);
+
+	/**
+	 * Publish a message to a topic with a given quality of service.
+	 *
+	 * @param topic
+	 *            The topic to publish to
+	 * @param payload
+	 *            The payload of the message.
+	 * @param qualityOfService
+	 *            The quality of service(0-2) of the message.
+	 * @param retain
+	 *            Whether the server should retain this message for new subscribes until a new retained message is sent
+	 *            over this topic.
+	 *
+	 * @see <a href="https://en.wikipedia.org/wiki/MQTT#Quality_of_service_(QoS)"> quality of service </a>
+	 */
+	void publish(TopicName topic, String payload, int qualityOfService, boolean retain);
 }
