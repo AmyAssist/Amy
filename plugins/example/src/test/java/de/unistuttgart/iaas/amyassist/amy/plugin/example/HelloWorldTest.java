@@ -53,37 +53,33 @@ public class HelloWorldTest {
 
 	@BeforeEach
 	public void setup() {
-		testFramework.mockService(ContactRegistry.class);
-		testFramework.mockService(LocationRegistry.class);
-		testFramework.mockService(ColorRegistry.class);
-		helloWorld = this.testFramework.setServiceUnderTest(HelloWorldImpl.class);
+		this.testFramework.mockService(ContactRegistry.class);
+		this.testFramework.mockService(LocationRegistry.class);
+		this.testFramework.mockService(ColorRegistry.class);
+		this.helloWorld = this.testFramework.setServiceUnderTest(HelloWorldImpl.class);
 	}
 
 	@Test
 	public void testInit() {
-
 		IStorage storage = this.testFramework.storage();
 
-		assertThat(helloWorld.helloWorld(), equalTo("hello1"));
+		assertThat(this.helloWorld.helloWorld(), equalTo("hello 1"));
 
 		Mockito.verify(storage).put("hellocount", "1");
 	}
 
 	@Test
 	public void testcount() {
-
 		IStorage storage = this.testFramework.storage();
 		storage.put("hellocount", "10");
 
-		assertThat(helloWorld.helloWorld(), equalTo("hello11"));
+		assertThat(this.helloWorld.helloWorld(), equalTo("hello 11"));
 
 		Mockito.verify(storage).put("hellocount", "11");
 	}
 
 	@Test
 	public void textHelloWorldXTimes() {
-
-		assertThat(helloWorld.helloWorldXTimes(3), equalTo("hello hello hello"));
-
+		assertThat(this.helloWorld.helloWorldXTimes(3), equalTo("hello hello hello"));
 	}
 }
