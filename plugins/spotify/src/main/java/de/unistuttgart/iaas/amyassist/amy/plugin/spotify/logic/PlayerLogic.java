@@ -37,6 +37,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
@@ -51,6 +54,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
  */
 @Service(PlayerLogic.class)
 public class PlayerLogic {
+	private static final String MUSIC_MUTE_TOPIC_FUNCTION = "muteMusic";
 	@Reference
 	private SpotifyAPICalls spotifyAPICalls;
 	@Reference
@@ -88,8 +92,12 @@ public class PlayerLogic {
 				break;
 			}
 		};
-		this.messageHub.subscribe("home/all/music/mute", muteConsumer);
-		this.messageHub.subscribe("home/all/mute", muteConsumer);
+		String topicGeneral = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
+		String topicMusic = SmarthomeFunctionTopics.getTopicString(LocationTopics.ALL, RoomTopics.ALL,
+				MUSIC_MUTE_TOPIC_FUNCTION);
+
+		this.messageHub.subscribe(topicGeneral, muteConsumer);
+		this.messageHub.subscribe(topicMusic, muteConsumer);
 	}
 
 	/**
@@ -135,9 +143,8 @@ public class PlayerLogic {
 		List<PlaylistEntity> playLists;
 		playLists = this.search.searchFeaturedPlaylists(5);
 		if (!playLists.isEmpty() && 1 < playLists.size()
-				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).getUri())) {
+				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).getUri()))
 			return playLists.get(1);
-		}
 		this.logger.warn("no featured playlist found");
 		return null;
 	}
@@ -193,7 +200,7 @@ public class PlayerLogic {
 	 * @return a AlbumEntity
 	 */
 	public AlbumEntity playAlbum(int albumNumber) {
-		if(this.search.getAlbumSearchResults().size() > albumNumber) {
+		if (this.search.getAlbumSearchResults().size() > albumNumber) {
 			this.spotifyAPICalls.playListFromUri(this.search.getAlbumSearchResults().get(albumNumber).getUri());
 			return this.search.getAlbumSearchResults().get(albumNumber);
 		}
@@ -209,7 +216,7 @@ public class PlayerLogic {
 	 * @return a ArtistEntity
 	 */
 	public ArtistEntity playArtist(int artistNumber) {
-		if(this.search.getArtistSearchResults().size() > artistNumber) {
+		if (this.search.getArtistSearchResults().size() > artistNumber) {
 			this.spotifyAPICalls.playListFromUri(this.search.getArtistSearchResults().get(artistNumber).getUri());
 			return this.search.getArtistSearchResults().get(artistNumber);
 		}

@@ -37,6 +37,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
 import io.swagger.v3.oas.annotations.Operation;
 
 /**
@@ -56,7 +59,7 @@ public class HomeResource {
 	private PluginManager manager;
 	@Context
 	private UriInfo uriInfo;
-	
+
 	@Reference
 	private MessageHub messageHub;
 
@@ -88,7 +91,8 @@ public class HomeResource {
 	@POST
 	@Path("mute")
 	public void mute() {
-		this.messageHub.publish("home/all/mute", "true");
+		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
+		this.messageHub.publish(topic, "true", true);
 	}
 
 	/**
@@ -97,7 +101,8 @@ public class HomeResource {
 	@POST
 	@Path("unmute")
 	public void unmute() {
-		this.messageHub.publish("home/all/mute", "false");
+		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
+		this.messageHub.publish(topic, "false", true);
 	}
 
 }
