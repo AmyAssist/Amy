@@ -27,12 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -44,7 +39,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
+import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
 
 /**
  * Manages the plugin integration.
@@ -67,7 +62,7 @@ public class PluginManagerService implements PluginManager {
 	private PluginLoader pluginLoader;
 
 	@Reference
-	private NLProcessingManager nlProcessingManager;
+	private Persistence persistence;
 	@Reference
 	private ConfigurationManager configurationManager;
 	@Reference
@@ -163,7 +158,7 @@ public class PluginManagerService implements PluginManager {
 	 * Process the plugin components and register them at the right Services
 	 *
 	 * @param plugin
-	 *                   the plugin to process
+	 *            the plugin to process
 	 */
 	private void processPlugin(IPlugin plugin) {
 		ClassLoader classLoader = plugin.getClassLoader();

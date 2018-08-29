@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -45,6 +46,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 
 /**
  * This class controls the alarm sound file, which is used for the alarm clock
@@ -69,12 +71,13 @@ public class AlarmBeepService {
 
 	@Reference
 	private LocalAudio la;
+	
+	@Reference
+	private MessageHub messageHub;
 
 	private Sound beepSound;
 	private SoundPlayer beepPlayer;
-
 	private Set<Integer> alarmList = new HashSet<>();
-
 	private Set<Integer> timerList = new HashSet<>();
 
 	@PostConstruct
@@ -86,42 +89,65 @@ public class AlarmBeepService {
 		} catch (IOException | UnsupportedAudioFileException e) {
 			this.logger.error("Cant load alarm sound", e);
 		}
+		Consumer<String> muteConsumer = message -> {
+			switch (message) {
+			case "true":
+				this.stopBeeping();
+				break;
+			case "false":
+				//do nothing
+				break;
+			default:
+				this.logger.warn("unkown message {}", message);
+				break;
+			}
+		};
+		this.messageHub.subscribe("home/all/mute", muteConsumer);
+		this.messageHub.subscribe("home/all/alarm/mute", muteConsumer);
 	}
 
 	/**
 	 * @param alarm
 	 *            alarm from the alarm class
+	 * @return returns the list of alarms
 	 */
-	public void beep(Alarm alarm) {
+	public Set<Integer> beep(Alarm alarm) {
 		this.alarmList.add(alarm.getId());
 		this.update();
+		return this.alarmList;
 	}
 
 	/**
 	 * @param timer
 	 *            timer from the timer class
+	 * @return returns the list of timers
 	 */
-	public void beep(Timer timer) {
+	public Set<Integer> beep(Timer timer) {
 		this.timerList.add(timer.getId());
 		this.update();
+		return this.timerList;
 	}
 
 	/**
 	 * @param alarm
 	 *            alarm from the alarm class
+	 * @return returns the list of alarms
 	 */
-	public void stopBeep(Alarm alarm) {
+	public Set<Integer> stopBeep(Alarm alarm) {
 		this.alarmList.remove(alarm.getId());
 		this.update();
+		return this.alarmList;
 	}
 
 	/**
 	 * @param timer
 	 *            timer from the timer class
+	 * @return returns the list of timers
 	 */
-	public void stopBeep(Timer timer) {
+	public Set<Integer> stopBeep(Timer timer) {
 		this.timerList.remove(timer.getId());
 		this.update();
+		return this.timerList;
 	}
 
 	private void update() {
@@ -160,5 +186,4 @@ public class AlarmBeepService {
 	private void preDestroy() {
 		this.stopBeeping();
 	}
-
 }

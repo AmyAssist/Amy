@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -39,7 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * REST Resource for calendar
- * 
+ *
  * @author Muhammed Kaya
  */
 @Path(CalendarResource.PATH)
@@ -54,87 +55,20 @@ public class CalendarResource {
 	private CalendarLogic logic;
 
 	/**
-	 * Natural language response of Amy when the event list is empty.
-	 */
-	String noEventsFound = "No upcoming events found.";
-
-	/**
-	 * Natural language response of Amy when the event list of today is empty.
-	 */
-	private String noEventsToday = "There are no events today.";
-
-	/**
-	 * Natural language response of Amy when the event list of tomorrow is empty.
-	 */
-	private String noEventsTomorrow = "There are no events tomorrow.";
-
-	/**
-	 * Output of the logger
-	 */
-	private String errorLogger = "An error occurred.";
-
-	/**
-	 * This method lists the next events from the calendar
+	 * This method creates an event for the connected google calendar
 	 *
-	 * @param number
-	 *            number of events the user wants to get
-	 * @return event summary
+	 * @param calendarEvent
+	 *            the event which will be created in the google calendar
 	 */
-	@GET
-	@Path("events/{number}")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getEvents(@PathParam("number") int number) {
-		String events = this.logic.getEvents(number);
-		checkEvents(events);
-		return events;
-	}
-
-	/**
-	 * This method contains the logic to show the calendar events today
-	 *
-	 * @return the events of today
-	 */
-	@GET
-	@Path("events/today")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getEventsToday() {
-		String events = this.logic.getEventsToday();
-		checkEvents(events);
-		return events;
-	}
-
-	/**
-	 * This method contains the logic to show the calendar events tomorrow
-	 *
-	 * @return the events of tomorrow
-	 */
-	@GET
-	@Path("events/tomorrow")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getEventsTomorrow() {
-		String events = this.logic.getEventsTomorrow();
-		checkEvents(events);
-		return events;
-	}
-
-	/**
-	 * This method contains the logic to show the calendar events on a specific date as a list of Events
-	 *
-	 * @param ldt
-	 *            LocalDateTime variable
-	 * @return the events of the chosen day as a List<Event>
-	 */
-	@GET
-	@Path("eventsAtString/{ldt}")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getEventsAtAsString(@PathParam("ldt") LocalDateTime ldt) {
-		String events = this.logic.getEventsAtAsString(ldt);
-		if (events.contains("There are no events on the ")) {
-			throw new WebApplicationException(events, Status.NOT_FOUND);
+	@POST
+	@Path("events/set")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void setEvent(CalendarEvent calendarEvent) {
+		if (calendarEvent != null) {
+			this.logic.setEvent(calendarEvent);
+		} else {
+			throw new WebApplicationException("Enter valid event information", Status.CONFLICT);
 		}
-		return events;
 	}
 
 	/**
@@ -149,26 +83,12 @@ public class CalendarResource {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<CalendarEvent> getEventsAt(@PathParam("ldt") LocalDateTime ldt) {
-		List<CalendarEvent> events = this.logic.getEventsAt(ldt);
-		if (!events.isEmpty()) {
-			return events;
-		}
-		throw new WebApplicationException(this.errorLogger, Status.CONFLICT);
-	}
-
-	private boolean checkEvents(String events) {
-		switch (events) {
-		case "No upcoming events found.":
-			throw new WebApplicationException(this.noEventsFound, Status.NOT_FOUND);
-		case "There are no events today.":
-			throw new WebApplicationException(this.noEventsToday, Status.NOT_FOUND);
-		case "There are no events tomorrow.":
-			throw new WebApplicationException(this.noEventsTomorrow, Status.NOT_FOUND);
-		case "An error occurred.":
-			throw new WebApplicationException(this.errorLogger, Status.CONFLICT);
-		default:
-			return true;
-		}
+        List<CalendarEvent> events = this.logic.getEventsAt(ldt);
+        if(events != null) {
+    		return events;        	
+        } else {
+        	throw new WebApplicationException("Couldn't get events", Status.CONFLICT);
+        }
 	}
 
 }

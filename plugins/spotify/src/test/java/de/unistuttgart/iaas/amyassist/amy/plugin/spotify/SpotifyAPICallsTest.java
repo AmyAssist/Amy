@@ -171,9 +171,9 @@ class SpotifyAPICallsTest {
 		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
-		assertThat(this.spotifyAPICalls.getCurrentSong(), equalTo(null));
+		assertThat(this.spotifyAPICalls.getCurrentPlayingContext(), equalTo(null));
 		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
-		assertThat(this.spotifyAPICalls.getCurrentSong(), equalTo(null));
+		assertThat(this.spotifyAPICalls.getCurrentPlayingContext(), equalTo(null));
 	}
 
 	@Test

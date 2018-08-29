@@ -32,6 +32,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.INumberConversion;
 
 /**
@@ -50,10 +51,9 @@ public class NLLexer {
 	 */
 	private final Map<String, WordTokenType> regexTokenType = new HashMap<>();
 
-	/**
-	 * helper class handling language specific numbers
-	 */
-	INumberConversion numberConverion;
+	private ChooseLanguage language;
+
+	private INumberConversion numberConversion;
 
 	/**
 	 * this class handles natural language input of any type
@@ -62,12 +62,12 @@ public class NLLexer {
 	 *            language specific details
 	 * 
 	 */
-	public NLLexer(INumberConversion iNumberConversion) {
-
-		this.numberConverion = iNumberConversion;
-
-		if (!iNumberConversion.getWordToNumber().isEmpty()) {
-			String regex = "((\\b" + String.join("\\b|\\b", iNumberConversion.getWordToNumber().keySet()) + "\\b)\\s{0,1})+";
+	public NLLexer(ChooseLanguage language) {
+		this.language = language;
+		this.numberConversion = language.getNumberConversion();
+		if (!this.numberConversion.getWordToNumber().isEmpty()) {
+			String regex = "((\\b" + String.join("\\b|\\b", this.numberConversion.getWordToNumber().keySet())
+					+ "\\b)\\s{0,1})+";
 			this.regexTokenType.put(regex, WordTokenType.NUMBER);
 		} else {
 			this.logger.error("problem with numbers file, written numbers will not be recognized");
@@ -87,6 +87,7 @@ public class NLLexer {
 	public List<WordToken> tokenize(String nlInput) {
 		List<WordToken> list = new LinkedList<>();
 		String toLex = nlInput.toLowerCase();
+		toLex = this.language.getTimeUtility().formatTime(toLex);
 
 		StringBuilder currentWord = new StringBuilder();
 		for (int mIndex = 0; mIndex < toLex.length(); mIndex++) {
@@ -147,7 +148,7 @@ public class NLLexer {
 	}
 
 	private WordToken fromNumbers(List<WordToken> numbers) {
-		int finalNumber = this.numberConverion.calcNumber(numbers);
+		int finalNumber = this.numberConversion.calcNumber(numbers);
 		WordToken t = new WordToken(String.valueOf(finalNumber));
 		t.setType(WordTokenType.NUMBER);
 		return t;
@@ -169,5 +170,4 @@ public class NLLexer {
 		}
 		throw new NLLexerException("no matching word type found");
 	}
-
 }

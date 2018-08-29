@@ -28,6 +28,7 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 
 /**
@@ -46,14 +47,14 @@ public class PluginProvider implements StaticProvider<IPlugin> {
 	}
 
 	@Override
-	public IPlugin getContext(Class<?> consumer) {
-		ClassLoader classLoader = consumer.getClassLoader();
+	public IPlugin getContext(ServiceConsumer<?> consumer) {
+		ClassLoader classLoader = consumer.getConsumerClass().getClassLoader();
 		for (IPlugin p : this.plugins) {
 			if (classLoader.equals(p.getClassLoader())) {
 				return p;
 			}
 		}
-		this.logger.error("The class {} does not seem to belong to any plugin.", consumer.getName());
+		this.logger.error("The class {} does not seem to belong to any plugin.", consumer.getConsumerClass().getName());
 		return null;
 	}
 

@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -35,6 +36,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
@@ -57,15 +60,51 @@ public class CalendarLogicTest {
 	private TestFramework framework;
 
 	private CalendarLogic callog;
+	private CalendarService calendarService;
 
 	/**
 	 * Initializes the class variables before each test
 	 */
 	@BeforeEach
 	public void setup() {
-		this.framework.mockService(CalendarService.class);
+		this.calendarService = this.framework.mockService(CalendarService.class);
 		this.framework.mockService(Environment.class);
 		this.callog = this.framework.setServiceUnderTest(CalendarLogic.class);
+	}
+
+	/**
+	 * Tests the setEvent() method
+	 *
+	 * @param calendarEvent an Test Event of type CalendarEvent
+	 */
+	@ParameterizedTest
+	@MethodSource("testSetEvent")
+	public void testCheckSetEvent(CalendarEvent calendarEvent) {
+		this.callog.setEvent(calendarEvent);
+		boolean allDay = calendarEvent.isAllDay();
+		Mockito.verify(this.calendarService).addEvent(ArgumentMatchers.eq("primary"),
+				ArgumentMatchers.argThat(event -> {
+					return event.getSummary().equals(calendarEvent.getSummary()) // compare summary
+							&& event.getLocation().equals(calendarEvent.getLocation()) // compare location
+							&& event.getDescription().equals(calendarEvent.getDescription()) // compare description
+							&& ((event.getStart().getDate() != null) == allDay) // compare all day status
+							&& checkDates(calendarEvent, event, allDay) // compare start and end date
+							&& event.getRecurrence().equals(Arrays.asList(calendarEvent.getRecurrence())) // compare recurrence
+							&& event.getReminders().equals(calendarEvent.getReminders()); // compare reminders
+				}));
+	}
+
+	/**
+	 *
+	 * @return the test cases used in the {@link #testCheckSetEvent(CalendarEvent)} test
+	 */
+	public static Stream<CalendarEvent> testSetEvent() {
+		return Stream.of(
+				new CalendarEvent(LocalDateTime.parse("2018-08-12T15:00:00"),
+						LocalDateTime.parse("2018-08-12T18:00:00"), "Testing", "home", "test the addEvent code", "mail",
+						20, "RRULE:FREQ=WEEKLY", false),
+				new CalendarEvent(LocalDateTime.parse("2018-08-15T00:00"), LocalDateTime.parse("2018-08-16T00:00"),
+						"Testing", "home", "test the addEvent code", "popup", 85, "", true));
 	}
 
 	/**
@@ -152,7 +191,57 @@ public class CalendarLogicTest {
 		return fromLocalDateTime(LocalDateTime.parse(iso));
 	}
 
+	/**
+	 *
+	 * @param localDateTime
+	 *            the LocalDateTime which will be converted into EventDateTime
+	 * @return DateTime
+	 */
 	private static DateTime fromLocalDateTime(LocalDateTime localDateTime) {
 		return new DateTime(localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
 	}
+
+	/**
+	 *
+	 * @param localDateTime
+	 *            the LocalDateTime which will be converted into EventDateTime
+	 * @param allDay
+	 *            differentiate between only Date oder DateTime
+	 * @return EventDateTime
+	 */
+	private static EventDateTime EDTfromLocalDateTime(LocalDateTime localDateTime, boolean allDay) {
+		DateTime dt = fromLocalDateTime(localDateTime);
+		EventDateTime edt = new EventDateTime();
+		if (allDay) {
+			edt.setDate(dt);
+		} else {
+			edt.setDateTime(dt);
+		}
+		return edt;
+	}
+
+	/**
+	 *
+	 * @param calendarEvent an Event of CalendarEvent type
+	 * @param event an Event of google api Event type
+	 * @param allDay if it is an all day event
+	 * @return if both events have the exact same start and end date
+	 */
+	private static boolean checkDates(CalendarEvent calendarEvent, Event event, boolean allDay){
+		boolean startCorrect = false;
+		boolean endCorrect = false;
+		if (allDay) {
+			startCorrect = event.getStart().getDate()
+					.equals(EDTfromLocalDateTime(calendarEvent.getStart(), allDay).getDate());
+			endCorrect = event.getEnd().getDate()
+					.equals(EDTfromLocalDateTime(calendarEvent.getEnd(), allDay).getDate());
+		} else {
+			startCorrect = event.getStart().getDateTime()
+					.equals(EDTfromLocalDateTime(calendarEvent.getStart(), allDay).getDateTime());
+			endCorrect = event.getEnd().getDateTime()
+					.equals(EDTfromLocalDateTime(calendarEvent.getEnd(), allDay).getDateTime());
+		}
+		return startCorrect && endCorrect;
+	}
+
 }

@@ -26,6 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 import java.util.Collections;
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ContextLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
@@ -47,22 +49,22 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
  */
 public class PropertiesProvider implements ServiceProvider<Properties> {
 	@Override
-	public ServiceDescription<Properties> getServiceDescription() {
+	public @Nonnull ServiceDescription<Properties> getServiceDescription() {
 		return new ServiceDescriptionImpl<>(Properties.class);
 	}
 
 	@Override
-	public ServiceImplementationDescription<Properties> getServiceImplementationDescription(ContextLocator locator,
-			ServiceConsumer<Properties> serviceConsumer) {
+	public ServiceImplementationDescription<Properties> getServiceImplementationDescription(
+			@Nonnull ContextLocator locator, @Nonnull ServiceConsumer<Properties> serviceConsumer) {
 		IPlugin plugin = (IPlugin) locator.getContextProvider(Context.PLUGIN)
-				.getContext(serviceConsumer.getConsumerClass());
+				.getContext(serviceConsumer);
 		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
 				Collections.singletonMap(Context.PLUGIN, plugin), Properties.class);
 	}
 
 	@Override
-	public ServiceHandle<Properties> createService(SimpleServiceLocator locator,
-			ServiceImplementationDescription<Properties> serviceImplementationDescription) {
+	public @Nonnull ServiceHandle<Properties> createService(@Nonnull SimpleServiceLocator locator,
+			@Nonnull ServiceImplementationDescription<Properties> serviceImplementationDescription) {
 		ConfigurationLoader configurationLoader = locator.getService(ConsumerFactory.build(PropertiesProvider.class,
 				new ServiceDescriptionImpl<>(ConfigurationLoader.class))).getService();
 		IPlugin plugin = (IPlugin) serviceImplementationDescription.getContext().get(Context.PLUGIN);

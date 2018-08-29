@@ -94,27 +94,27 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public ServiceDescription<T> getServiceDescription() {
+	public @Nonnull ServiceDescription<T> getServiceDescription() {
 		return this.serviceDescription;
 	}
 
 	@Override
-	public ServiceImplementationDescription<T> getServiceImplementationDescription(ContextLocator locator,
-			ServiceConsumer<T> serviceConsumer) {
+	public ServiceImplementationDescription<T> getServiceImplementationDescription(@Nonnull ContextLocator locator,
+			@Nonnull ServiceConsumer<T> serviceConsumer) {
 		HashMap<String, Object> map = new HashMap<>();
 		for (ContextInjectionPoint c : this.contextInjectionPoints) {
 			String key = c.getContextIdentifier();
-			map.put(key, locator.getContextProvider(key).getContext(serviceConsumer.getConsumerClass()));
+			map.put(key, locator.getContextProvider(key).getContext(serviceConsumer));
 		}
 
 		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(), map, this.cls);
 	}
 
 	@Override
-	public ServiceHandle<T> createService(SimpleServiceLocator locator,
-			ServiceImplementationDescription<T> serviceImplementationDescription) {
+	public @Nonnull ServiceHandle<T> createService(@Nonnull SimpleServiceLocator locator,
+			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
 
-		T serviceInstance = this.createService();
+		@Nonnull T serviceInstance = this.createService();
 		for (InjectionPoint injectionPoint : this.injectionPoints) {
 			ServiceConsumer<?> serviceConsumer = injectionPoint.getServiceConsumer();
 			ServiceHandle<?> serviceHandle = locator.getService(serviceConsumer);

@@ -25,27 +25,20 @@ package de.unistuttgart.iaas.amyassist.amy.restresources.home;
 
 import java.util.List;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechInputHandler;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * The home resource of Amy
@@ -59,46 +52,16 @@ public class HomeResource {
 	 * the Path of this resource
 	 */
 	public static final String PATH = "home";
+
 	@Reference
 	private PluginManager manager;
-	@Reference
-	private SpeechInputHandler speechInputHandler;
 	@Context
 	private UriInfo uriInfo;
 	@Reference
 	private Server server;
-
-	/**
-	 * handles consoleInput from a client
-	 * 
-	 * @param input
-	 *            the input from the client
-	 * @return the response from Amy
-	 */
-	@POST
-	@Path("console")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	@Operation(summary = "Process natural language text input",
-			description = "This is the remote amy chatbot."
-					+ " It can be used to interact with the natural language interface of amy."
-					+ " The possible intents are the same as using the local console or the speech interaction",
-			tags = "home")
-	@ApiResponse(responseCode = "200",
-			description = "the natural language text input has been processed successfully and the response contain the answer",
-			content = @Content(
-					examples = @ExampleObject(summary = "This response represent that you don't have new mails.",
-							name = "new mails", value = "You don't have new mails.")))
-	@ApiResponse(responseCode = "500", description = "the input could not be precessed")
-	public String useAmy(@RequestBody(description = "The natural language text", required = true,
-			content = @Content(examples = @ExampleObject(name = "new mails", summary = "Ask Amy if you have new mails",
-					value = "how many new emails do i have"))) String input) {
-		try {
-			return this.speechInputHandler.handle(input).get();
-		} catch (Exception e) {
-			throw new WebApplicationException("can't handle input: " + input, e, Status.INTERNAL_SERVER_ERROR);
-		}
-	}
+	
+	@Reference
+	private MessageHub messageHub;
 
 	/**
 	 * returns all installed plugins
@@ -118,13 +81,30 @@ public class HomeResource {
 		return plugins;
 	}
 
-
 	private String createPath(IPlugin iPlugin) {
 		Class<?> cls = this.server.getPluginClass(iPlugin.getUniqueName());
 		if (cls != null && cls.isAnnotationPresent(Path.class)) {
 			return this.uriInfo.getBaseUriBuilder().path(cls).build().toString();
 		}
 		return null;
+	}
+
+	/**
+	 * mutes amy
+	 */
+	@POST
+	@Path("mute")
+	public void mute() {
+		this.messageHub.publish("home/all/mute", "true");
+	}
+
+	/**
+	 * unmutes amy
+	 */
+	@POST
+	@Path("unmute")
+	public void unmute() {
+		this.messageHub.publish("home/all/mute", "false");
 	}
 
 }

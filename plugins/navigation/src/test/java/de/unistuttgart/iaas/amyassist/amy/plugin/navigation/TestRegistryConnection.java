@@ -103,16 +103,6 @@ public class TestRegistryConnection {
 		locations.add(this.location);
 		when(this.location2.getName()).thenReturn("other");
 		when(this.registry.getAll()).thenReturn(locations);
-		assertThat(this.connection.getAddress("bla"), equalTo(null));
-	}
-	
-	@Test
-	public void testGetAdressNoHome() {
-		assertThat(this.connection.getAddress("home"), equalTo(null));
-	}
-	
-	@Test
-	public void testGetAdressNoWork() {
-		assertThat(this.connection.getAddress("work"), equalTo(null));
+		assertThat(this.connection.getAddress("bla"), equalTo("bla"));
 	}
 }
