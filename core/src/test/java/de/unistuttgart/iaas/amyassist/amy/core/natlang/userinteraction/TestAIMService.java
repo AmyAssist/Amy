@@ -25,21 +25,23 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.LoadAIMService;
+import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
@@ -47,16 +49,14 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 /**
  * Test class for the amy interaction model service class
  * 
- * @author Lars Buttgereit
+ * @author Lars Buttgereit, Felix Burk
  */
 @ExtendWith(FrameworkExtension.class)
 class TestAIMService {
 
 	@Reference
 	private TestFramework testFramework;
-	
-	
-	private NLProcessingManager nlProcessingManager;
+
 	private LoadAIMService loadAIMService;
 	private XMLAmyInteractionModel interactionModel;
 
@@ -64,13 +64,40 @@ class TestAIMService {
 	void init() throws FileNotFoundException {
 		this.testFramework.mockService(PluginManager.class);
 		this.testFramework.mockService(NLProcessingManager.class);
+
 		this.loadAIMService = this.testFramework.setServiceUnderTest(LoadAIMService.class);
-		FileInputStream stream = new FileInputStream(
-				"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/de.unistuttgart.iaas."
-						+ "amyassist.amy.plugin.example.HelloWorldSpeech.aim.xml");
+		InputStream stream = this.getClass().getResourceAsStream("HelloWorldSpeech.aim.xml");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		this.interactionModel = this.loadAIMService.extractModel(reader.lines().collect(Collectors.joining()),
-				"de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.aim.xml");
+				"HelloWorldSpeech.aim.xml");
+
+	}
+
+	@Test
+	void testMetaFile() {
+		
+		//correct meta file
+		Plugin p = new Plugin();
+		InputStream streamMeta = this.getClass().getResourceAsStream("testPlugin.natlangMeta");
+
+		try {
+			assertEquals(false, this.loadAIMService.readMetaFile(streamMeta, p).isEmpty());
+		} catch (Exception e) {
+			fail("exception was thrown " + e.getMessage());
+		}
+	}
+	
+	@ParameterizedTest
+	@MethodSource("badMetaFileContent")
+	void testBadMetaFile(String content) {
+		Plugin p = new Plugin();
+		
+		InputStream streamMetaBad = new ByteArrayInputStream(content.getBytes());
+		assertEquals(true ,this.loadAIMService.readMetaFile(streamMetaBad, p).isEmpty());
+	}
+	
+	static Stream<String> badMetaFileContent() {
+		return Stream.of("", " ", " # blub", " .aims: \\n", ".bad: \\n wrong.aim.xml", "something bad");
 	}
 
 	@Test

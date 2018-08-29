@@ -197,14 +197,12 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private Map<String, String> getEntityContent(AGFNode node) {
 		Map<String, String> result = new HashMap<>();
 
-		for (AGFNode child : node.getChilds()) {
+		for (AGFNode child : node.getChildEntityNodes()) {
 			if (child.getType() == AGFNodeType.ENTITY) {
 				EntityNode entity = (EntityNode) child;
 				if (entity.getUserProvidedContent() != null) {
 					result.put(entity.getContent(), entity.getUserProvidedContent());
 				}
-			} else {
-				result.putAll(getEntityContent(child));
 			}
 		}
 
