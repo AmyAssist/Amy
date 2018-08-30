@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.getDevices">
+		<gram> get (music|spotify) devices </gram>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.getCurrentSong">
+		<gram> get current [playing] (song|track) </gram>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.getPlaylists">
+		<gram> get [{type}] playlists </gram>
+		<EntityTemplates>
+			<EntityTemplate id="type" required="true">
+				<gram>(own|featured)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+
+		<Prompt entityTemplateId="type">
+			<text> what type of playlists would you search? </text>
+			<gram>{type} playlist
+			</gram>
+		</Prompt>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.playSomething">
+		<gram> play some music </gram>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.control">
+		<gram>[go] {type} [(a track|the music)]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="type" required="true">
+				<gram>(back|skip|pause|resume)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.volume">
+		<gram> (set [music] volume [to] |spotify) {volumeoption}
+		</gram>
+		<EntityTemplates>
+			<EntityTemplate id="volumeoption" required="true">
+				<gram>(max|mute|up|down)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.setDeviceId">
+		<gram> set (spotify|music) device [to {deviceid}] </gram>
+		<EntityTemplates>
+			<EntityTemplate id="deviceid" required="true">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="deviceid">
+			<text>To which device should i switch? </text>
+			<gram>[device] {deviceid} </gram>
+		</Prompt>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.playPlaylistId">
+		<gram> [spotify] play [{type}] [playlist] [{songid}]</gram>
+
+		<EntityTemplates>
+			<EntityTemplate id="type" required="true">
+				<gram>(own|featured)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="songid" required="true">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="songid">
+			<text> which playlist id would you play? </text>
+			<gram>[playlist] {songid}</gram>
+		</Prompt>
+
+		<Prompt entityTemplateId="type">
+			<text> would you play the featured or a own playlist?
+			</text>
+			<gram>{type} playlist</gram>
+		</Prompt>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.searchASong">
+		<gram>play this {mode} [{name}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="mode" required="true">
+				<gram>(track|playlist|album|song|artist)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="name" required="true">
+				<gram>*</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.searchASong">
+		<gram>play following {mode} </gram>
+		<EntityTemplates>
+			<EntityTemplate id="mode" required="true">
+				<gram>(track|playlist|album|song|artist)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="name" required="true">
+				<gram>*</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="name">
+			<text>Which one? </text>
+			<gram>{name}</gram>
+		</Prompt>
+
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.setDeviceName">
+		<gram> set (spotify|music) device by name</gram>
+		<EntityTemplates>
+			<EntityTemplate id="devicename" required="true">
+				<gram>name</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="devicename">
+			<text>To which device should i switch? </text>
+			<gram>[to device] {devicename} </gram>
+		</Prompt>
+	</Intent>
+</AmyInteractionModel>

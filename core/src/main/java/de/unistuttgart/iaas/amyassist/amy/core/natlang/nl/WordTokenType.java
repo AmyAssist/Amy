@@ -29,14 +29,14 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
  * @author Felix Burk
  */
 public enum WordTokenType {
-	
+
 	/**
 	 * just some word
 	 */
-	WORD, 
-	
+	WORD,
+
 	/**
-	 * some number, written or as digit 
+	 * some number, written or as digit
 	 */
 	NUMBER;
 

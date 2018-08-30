@@ -24,12 +24,11 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
 /**
- * custom lexer exception
- * used for things like "character not recognized" etc
+ * custom lexer exception used for things like "character not recognized" etc
+ * 
  * @author Felix Burk
  */
 public class AGFLexerException extends RuntimeException {
-
 
 	/**
 	 * generated serial version UID
@@ -37,7 +36,8 @@ public class AGFLexerException extends RuntimeException {
 	private static final long serialVersionUID = -8618145709696288795L;
 
 	/**
-	 * @param content string to print
+	 * @param content
+	 *                    string to print
 	 */
 	public AGFLexerException(String content) {
 		super(content);

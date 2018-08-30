@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
 
 /**
  * Token used by the agf lexer
+ * 
  * @author Felix Burk
  */
 public class AGFToken {
@@ -36,25 +37,30 @@ public class AGFToken {
 	 * content
 	 */
 	public final String content;
-	
+
 	/**
 	 * constructor
-	 * @param type agf token type
-	 * @param content the content
+	 * 
+	 * @param type
+	 *                    agf token type
+	 * @param content
+	 *                    the content
 	 */
 	public AGFToken(AGFTokenType type, String content) {
 		this.type = type;
 		this.content = content;
 	}
-	
+
 	/**
 	 * constructor
-	 * @param type agf token type
+	 * 
+	 * @param type
+	 *                 agf token type
 	 */
 	public AGFToken(AGFTokenType type) {
 		this.type = type;
-		
-		switch(type) {
+
+		switch (type) {
 		case OPENBR:
 			this.content = "(";
 			break;
@@ -67,19 +73,35 @@ public class AGFToken {
 		case CLOSESBR:
 			this.content = "]";
 			break;
+		case OPENCBR:
+			this.content = "{";
+			break;
+		case CLOSECBR:
+			this.content = "}";
+			break;
 		case OR:
 			this.content = "|";
 			break;
-		case RULE:
-			this.content = "#";
+		case DOLLAR:
+			this.content = "$";
+			break;
+		case COMMA:
+			this.content = ",";
+			break;
+		case PLUS:
+			this.content = "+";
+			break;
+		case ASTERISC:
+			this.content = "*";
 			break;
 		default:
 			throw new AGFLexerException("type could not be set because there is no matching content");
 		}
 	}
-	
+
 	/**
 	 * convenience method prints type as string
+	 * 
 	 * @return the type as string
 	 */
 	public String getType() {

@@ -23,9 +23,12 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.example;
 
+import java.util.Map;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
 
 /**
@@ -35,7 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
  */
 @SpeechCommand
 public class HelloWorldSpeech {
-
+	
 	/**
 	 * The logic class of this plugin.
 	 */
@@ -49,33 +52,37 @@ public class HelloWorldSpeech {
 	 *            [Not used] The parameters of the sentence.
 	 * @return The response of the system
 	 */
-	@Grammar("say hello")
-	public String say(String... params) {
+	@Intent
+	public String say(Map<String, EntityData> entities) {
 		return this.helloWorld.helloWorld();
 	}
-
-	@Grammar("say hello # times")
-	public String sayHelloXTimes(String... params) {
-		return this.helloWorld.helloWorldXTimes(Integer.parseInt(params[2]));
+	
+	@Intent
+	public String repeat(Map<String, EntityData> entities) {
+		StringBuilder b = new StringBuilder();
+		for(int i=0; i < entities.get("int").getNumber(); i++) {
+			b.append(entities.get("somestring").getString() + " ");
+		}
+		return b.toString();
 	}
 
-	@Grammar("get contacts")
-	public String getContacts(String... params) {
+	@Intent
+	public String getContacts(Map<String, EntityData> entities) {
 		return this.helloWorld.demonstrateContactRegistry();
 	}
 
-	@Grammar("test contacts registry")
-	public String testContacts(String... params) {
+	@Intent
+	public String testContacts(Map<String, EntityData> entities) {
 		return this.helloWorld.testContactRegistry();
 	}
 
-	@Grammar("test location registry")
-	public String testLocation(String... params) {
+	@Intent
+	public String testLocation(Map<String, EntityData> entities) {
 		return this.helloWorld.testLocationRegistry();
 	}
 
-	@Grammar("test custom registry")
-	public String testCustom(String... params) {
+	@Intent
+	public String testCustom(Map<String, EntityData> entities) {
 		return this.helloWorld.testCustomRegistry();
 	}
 }

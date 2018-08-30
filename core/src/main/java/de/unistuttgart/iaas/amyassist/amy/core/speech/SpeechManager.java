@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.core.speech;
 
 import java.util.Properties;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 
@@ -31,6 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManage
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
@@ -74,7 +76,9 @@ public class SpeechManager implements RunnableService {
 	@Reference
 	private NLProcessingManager nlProcessingManager;
 	@Reference
-	private SpeechInputHandler inputHandler;
+	private DialogHandler dialogHandler;
+
+	private UUID dialogId;
 
 	private boolean recognitionEnabled;
 
@@ -87,6 +91,8 @@ public class SpeechManager implements RunnableService {
 		loadAndCheckProperties();
 		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_ENABLE))) {
 			this.recognitionEnabled = true;
+
+			this.dialogId = this.dialogHandler.createDialog(this.output::voiceOutput);
 
 			this.sphinxGrammarCreator.createGrammar(SPHINX_MAIN_GARMMAR_NAME,
 					this.nlProcessingManager.getGrammarFileString(SPHINX_MAIN_GARMMAR_NAME));
@@ -203,16 +209,10 @@ public class SpeechManager implements RunnableService {
 			return;
 		this.logger.info("I understood: {}", result);
 
-		this.inputHandler.handle(result).exceptionally(t -> {
-			if (t.getClass().equals(IllegalArgumentException.class)) {
-				this.logger.info("Illegal speech command:", t);
-				return ("unknown command");
-			}
+		this.dialogHandler.process(result, this.dialogId);
 
-			this.logger.error("Unknown error while processing speech result.", t);
-			return "error";
-		}).thenAccept(this.output::voiceOutput).thenRun(this::resetListeningStateAfterSingleCall);
-
+		// TODO reset listening state after end of dialog.
+		// For that some changes in the NL System and AudioManager are required.
 	}
 
 	/**

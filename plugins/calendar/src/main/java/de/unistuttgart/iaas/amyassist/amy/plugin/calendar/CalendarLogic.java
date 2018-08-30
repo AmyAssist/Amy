@@ -32,7 +32,6 @@ import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -93,8 +92,8 @@ public class CalendarLogic {
 		ZonedDateTime endZDT = calendarEvent.getEnd().atZone(ZoneId.systemDefault());
 		DateTime endDT = new DateTime(endZDT.toInstant().toEpochMilli());
 		if (calendarEvent.isAllDay()) {
-			start.setDate(startDT);
-			end.setDate(endDT);
+			start.setDate(new DateTime(true, startZDT.toInstant().toEpochMilli(), 0));
+			end.setDate(new DateTime(true, endZDT.toInstant().toEpochMilli(), 0));
 		} else {
 			start.setDateTime(startDT);
 			end.setDateTime(endDT);
@@ -104,8 +103,6 @@ public class CalendarLogic {
 
 		event.setStart(start);
 		event.setEnd(end);
-
-		event.setRecurrence(Arrays.asList(calendarEvent.getRecurrence()));
 
 		event.setReminders(calendarEvent.getReminders());
 		this.calendarService.addEvent("primary", event);

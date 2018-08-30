@@ -25,11 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;

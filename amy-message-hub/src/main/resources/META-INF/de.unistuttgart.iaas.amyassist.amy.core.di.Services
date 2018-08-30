@@ -1,0 +1,4 @@
+de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHubService
+de.unistuttgart.iaas.amyassist.amy.messagehub.InternalMessageHubService
+de.unistuttgart.iaas.amyassist.amy.messagehub.MQTTAdapter
+de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactoryService

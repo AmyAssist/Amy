@@ -21,11 +21,6 @@
  * For more information see notice.md
  */
 
-/**
- * Test class for the TrackEntity
- * 
- * @author Lars Buttgereit
- */
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
 
 import static org.hamcrest.MatcherAssert.assertThat;

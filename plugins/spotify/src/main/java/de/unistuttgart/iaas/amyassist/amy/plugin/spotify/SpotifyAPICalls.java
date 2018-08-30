@@ -48,14 +48,7 @@ import com.wrapper.spotify.requests.authorization.authorization_code.Authorizati
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import com.wrapper.spotify.requests.data.browse.GetListOfFeaturedPlaylistsRequest;
-import com.wrapper.spotify.requests.data.player.GetInformationAboutUsersCurrentPlaybackRequest;
-import com.wrapper.spotify.requests.data.player.GetUsersAvailableDevicesRequest;
-import com.wrapper.spotify.requests.data.player.PauseUsersPlaybackRequest;
-import com.wrapper.spotify.requests.data.player.SetVolumeForUsersPlaybackRequest;
-import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToNextTrackRequest;
-import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrackRequest;
-import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
-import com.wrapper.spotify.requests.data.player.TransferUsersPlaybackRequest;
+import com.wrapper.spotify.requests.data.player.*;
 import com.wrapper.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import com.wrapper.spotify.requests.data.search.SearchItemRequest;
 
@@ -278,9 +271,8 @@ public class SpotifyAPICalls {
 			GetUsersAvailableDevicesRequest getUsersAvailableDevicesRequest = getSpotifyApi().getUsersAvailableDevices()
 					.build();
 			devices = exceptionHandlingWithResults(getUsersAvailableDevicesRequest::execute);
-			if (devices != null) {
+			if (devices != null)
 				return devices;
-			}
 		}
 		return new Device[0];
 	}
@@ -292,9 +284,8 @@ public class SpotifyAPICalls {
 	 */
 	public Device getActiveDevice() {
 		for (Device device : getDevices()) {
-			if (device.getIs_active().booleanValue()) {
+			if (device.getIs_active().booleanValue())
 				return device;
-			}
 		}
 		return null;
 	}
@@ -308,9 +299,8 @@ public class SpotifyAPICalls {
 	 */
 	public boolean checkDeviceIsLoggedIn(String deviceId) {
 		for (Device device : getDevices()) {
-			if (device.getId().equals(deviceId)) {
+			if (device.getId().equals(deviceId))
 				return true;
-			}
 		}
 		return false;
 	}
@@ -426,9 +416,8 @@ public class SpotifyAPICalls {
 	 * @return int between 0-100 for the volume and -1 if the volume is unknown
 	 */
 	public int getVolume() {
-		if (getActiveDevice() != null && getActiveDevice().getVolume_percent() != null) {
+		if (getActiveDevice() != null && getActiveDevice().getVolume_percent() != null)
 			return getActiveDevice().getVolume_percent().intValue();
-		}
 		return -1;
 	}
 
@@ -437,7 +426,7 @@ public class SpotifyAPICalls {
 	 * 
 	 * @return a CurrentlyPlayingContext object from the spotify library, null if a problem occurs
 	 */
-	public CurrentlyPlayingContext getCurrentSong() {
+	public CurrentlyPlayingContext getCurrentPlayingContext() {
 		if (checkPlayerState()) {
 			GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = getSpotifyApi()
 					.getInformationAboutUsersCurrentPlayback().build();
@@ -448,10 +437,11 @@ public class SpotifyAPICalls {
 
 	/**
 	 * get the current playback state
+	 * 
 	 * @return true if currently playing, false otherwise
 	 */
 	public boolean getIsPlaying() {
-		return getCurrentSong().getIs_playing();
+		return getCurrentPlayingContext().getIs_playing();
 	}
 
 	/**
@@ -493,9 +483,11 @@ public class SpotifyAPICalls {
 	}
 
 	/**
-	 * Functional interface for Spotify API calls
-	 * SonarLint detects some warnings that cannot be fixed, therefore suppressed
-	 * @param <T> the return type of the API call
+	 * Functional interface for Spotify API calls SonarLint detects some warnings that cannot be fixed, therefore
+	 * suppressed
+	 * 
+	 * @param <T>
+	 *            the return type of the API call
 	 */
 	@FunctionalInterface
 	public interface SpotifyCallLambda<T> {

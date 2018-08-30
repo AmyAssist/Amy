@@ -30,7 +30,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
 
 /**
  * This class generates JSGF grammars from AGF Syntax Trees
- * 
+ *  
  * @author Felix Burk, Leon Kiefer
  */
 public class JSGFGenerator {
@@ -134,6 +134,12 @@ public class JSGFGenerator {
 	/**
 	 * traverses the tree
 	 * 
+	 * ------THIS IS BROKEN------
+	 * this method does not support entities or any wildcards at the moment
+	 * don't use it if the grammars are using any of these features.
+	 * Wildcards are not supported by the jsgf standard, 
+	 * but entities will be added in the near future
+	 * 
 	 * @param b
 	 *            the string builder
 	 * @param node
@@ -146,8 +152,8 @@ public class JSGFGenerator {
 			case WORD:
 				b.append(" " + node.getContent());
 				break;
-			case RULE:
-				b.append(" <number>");
+			case ENTITY:
+				// nothing right now
 				break;
 			case ORG:
 				b.append(" (");

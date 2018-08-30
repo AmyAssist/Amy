@@ -75,7 +75,7 @@ public class HelloWorldImpl implements HelloWorldService {
 		this.logger.debug("put {} into storage", countString);
 		this.storage.put(KEY, countString);
 
-		return "hello" + countString;
+		return "hello " + countString;
 	}
 
 	@Override

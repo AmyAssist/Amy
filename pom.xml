@@ -20,6 +20,7 @@
 
 		<!-- Amy versions to depend on -->
 		<amy.di.api.version>0.5.0-Snapshot</amy.di.api.version>
+		<amy.natlang.api.version>0.5.0-Snapshot</amy.natlang.api.version>
 		<amy.di.version>0.5.0-Snapshot</amy.di.version>
 		<amy.message-hub.api.version>0.5.0-Snapshot</amy.message-hub.api.version>
 		<amy.message-hub.version>0.5.0-Snapshot</amy.message-hub.version>
@@ -33,6 +34,7 @@
 		<amy.registry.version>0.5.0-Snapshot</amy.registry.version>
 		<amy.remote-sr.version>0.5.0-Snapshot</amy.remote-sr.version>
 		<deployment.descriptor.utility.version>0.5.0-Snapshot</deployment.descriptor.utility.version>
+
 		<!-- External dependency versions. Only project wide or core dependencies 
 			here -->
 		<junit.jupiter.version>5.1.0</junit.jupiter.version>
@@ -46,6 +48,7 @@
 		<httpcore.version>4.4.9</httpcore.version>
 		<swagger.version>2.0.2</swagger.version>
 		<commons-lang3.version>3.7</commons-lang3.version>
+		<cliche.version>110413</cliche.version>
 		<jersey-media-sse.version>2.27</jersey-media-sse.version>
 	</properties>
 	<modules>
@@ -72,6 +75,7 @@
 		<module>amy-message-hub</module>
 		<module>remote-sr</module>
 		<module>deployment-descriptor-utility</module>
+		<module>natlang-api</module>
 	</modules>
 	<licenses>
 		<license>
@@ -156,6 +160,11 @@
 	</build>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<artifactId>amy-natlang-api</artifactId>
+				<version>${amy.natlang.api.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>de.unistuttgart.iaas.amyassist</groupId>
 				<artifactId>amy-di-api</artifactId>
