@@ -72,9 +72,8 @@ public class DialogHandlerImpl implements DialogHandler {
 
 	@Override
 	public void process(String naturalLanguageText, UUID uuid) {
-		if (!this.map.containsKey(uuid)) {
+		if (!this.map.containsKey(uuid))
 			throw new IllegalArgumentException("wrong UUID");
-		}
 
 		Dialog dialog = this.map.get(uuid);
 		UserIntent intent = dialog.getIntent();
@@ -101,6 +100,19 @@ public class DialogHandlerImpl implements DialogHandler {
 			}
 			dialog.setIntent(null);
 		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler#hasDialogUnfinishedIntent(java.util.UUID)
+	 */
+	@Override
+	public boolean hasDialogUnfinishedIntent(UUID uuid) {
+		if (!this.map.containsKey(uuid))
+			throw new IllegalArgumentException("wrong UUID");
+
+		UserIntent intent = this.map.get(uuid).getIntent();
+
+		return (intent != null && intent.isFinished());
 	}
 
 }
