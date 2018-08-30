@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
@@ -46,7 +48,7 @@ public class InternalDefaultConfigurationLoader {
 	 * @throws ConfigurationNotFoundException
 	 *             if the configuration can't be loaded with the given ClassLoader.
 	 */
-	public Properties load(ClassLoader loader, String configurationName) {
+	public @Nonnull Properties load(ClassLoader loader, String configurationName) {
 		try (InputStream resourceAsStream = loader
 				.getResourceAsStream("META-INF/" + configurationName + ".properties")) {
 			if (resourceAsStream == null) {

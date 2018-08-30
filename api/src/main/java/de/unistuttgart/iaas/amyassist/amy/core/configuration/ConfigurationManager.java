@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+
 /**
  * High level abstraction over different ConfigurationLoaders.
  * 
@@ -38,6 +40,7 @@ public interface ConfigurationManager {
 	 *            the name of the configuration without the file ending .properties
 	 * @return the properties
 	 */
+	@Nonnull
 	Properties getConfiguration(String configurationName);
 
 	/**
@@ -49,6 +52,7 @@ public interface ConfigurationManager {
 	 * @throws ConfigurationNotFoundException
 	 *             if the default configuration cloud not be found
 	 */
+	@Nonnull
 	Properties getConfigurationWithDefaults(String configurationName);
 
 }
