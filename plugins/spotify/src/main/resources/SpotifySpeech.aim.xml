@@ -92,15 +92,33 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.searchASong">
-		<gram>play following {mode} {name}</gram>
+		<gram>play this {mode} [{name}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="mode" required="true">
-				<gram>(track|playlist|album|song)</gram>
-			</EntityTemplate>		
+				<gram>(track|playlist|album|song|artist)</gram>
+			</EntityTemplate>
 			<EntityTemplate id="name" required="true">
 				<gram>*</gram>
 			</EntityTemplate>
 		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.searchASong">
+		<gram>play following {mode} </gram>
+		<EntityTemplates>
+			<EntityTemplate id="mode" required="true">
+				<gram>(track|playlist|album|song|artist)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="name" required="true">
+				<gram>*</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="name">
+			<text>Which one? </text>
+			<gram>{name}</gram>
+		</Prompt>
+
 	</Intent>
 
 	<Intent
