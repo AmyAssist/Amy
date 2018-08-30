@@ -59,7 +59,12 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
 	@Override
 	public @Nonnull Properties getConfigurationWithDefaults(String configurationName) {
-		Properties defaults = this.internalDefaultConfigurationLoader.load(this.classLoader, configurationName);
+		return this.getConfigurationWithDefaults(configurationName, this.classLoader);
+	}
+
+	@Override
+	public @Nonnull Properties getConfigurationWithDefaults(String configurationName, ClassLoader loader) {
+		Properties defaults = this.internalDefaultConfigurationLoader.load(loader, configurationName);
 		Properties p = this.configurationLoader.load(configurationName, defaults);
 		if (this.environmentConfiguratinLoader.isAllowedName(configurationName)) {
 			p = this.environmentConfiguratinLoader.load(configurationName, p);

@@ -23,7 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.Nonnull;
@@ -43,6 +44,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
  * @author Leon Kiefer
  */
 public class PropertiesProvider implements ServiceProvider<Properties> {
+
+	private static final String CONTEXT_WITH_DEFAULT = "WithDefault";
+
 	@Override
 	public @Nonnull ServiceDescription<Properties> getServiceDescription() {
 		return new ServiceDescriptionImpl<>(Properties.class);
@@ -51,9 +55,13 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 	@Override
 	public ServiceImplementationDescription<Properties> getServiceImplementationDescription(
 			@Nonnull ContextLocator locator, @Nonnull ServiceConsumer<Properties> serviceConsumer) {
-		IPlugin plugin = (IPlugin) locator.getContextProvider(Context.PLUGIN).getContext(serviceConsumer);
-		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
-				Collections.singletonMap(Context.PLUGIN, plugin), Properties.class);
+		Map<String, Object> context = new HashMap<>();
+		context.put(Context.PLUGIN, locator.getContextProvider(Context.PLUGIN).getContext(serviceConsumer));
+		context.put(Context.CLASSLOADER, locator.getContextProvider(Context.CLASSLOADER).getContext(serviceConsumer));
+		context.put(CONTEXT_WITH_DEFAULT, serviceConsumer.getServiceDescription().getAnnotations().stream()
+				.anyMatch(a -> a instanceof WithDefault));
+		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(), context,
+				Properties.class);
 	}
 
 	@Override
@@ -63,6 +71,13 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 				new ServiceDescriptionImpl<>(ConfigurationManager.class))).getService();
 		IPlugin plugin = (IPlugin) serviceImplementationDescription.getContext().get(Context.PLUGIN);
 		String uniqueName = plugin.getUniqueName();
+		boolean withDefault = (boolean) serviceImplementationDescription.getContext().get(CONTEXT_WITH_DEFAULT);
+
+		if (withDefault) {
+			ClassLoader classLoader = (ClassLoader) serviceImplementationDescription.getContext()
+					.get(Context.CLASSLOADER);
+			return new ServiceHandleImpl<>(configurationLoader.getConfigurationWithDefaults(uniqueName, classLoader));
+		}
 		return new ServiceHandleImpl<>(configurationLoader.getConfiguration(uniqueName));
 	}
 

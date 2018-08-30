@@ -55,4 +55,18 @@ public interface ConfigurationManager {
 	@Nonnull
 	Properties getConfigurationWithDefaults(String configurationName);
 
+	/**
+	 * Get the configuration from the config dirs but fallback to the defaults using the given classloader.
+	 * 
+	 * @param configurationName
+	 *            the name of the configuration without the file ending .properties
+	 * @param classLoader
+	 *            the classLoader to use to find the default config
+	 * @return the configuration with the defaults from the default configuration
+	 * @throws ConfigurationNotFoundException
+	 *             if the default configuration cloud not be found
+	 */
+	@Nonnull
+	Properties getConfigurationWithDefaults(String configurationName, ClassLoader classLoader);
+
 }
