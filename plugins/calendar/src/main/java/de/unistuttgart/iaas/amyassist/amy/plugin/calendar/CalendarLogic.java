@@ -314,7 +314,12 @@ public class CalendarLogic {
 	 */
 	public String eventToString(LocalDateTime startDate, LocalDateTime endDate, Event event, boolean withStartDate,
 			boolean withEndDate, boolean withTime, OutputCase outputCase) {
-		String eventData = event.getSummary();
+		String eventData = "";
+		if (event.getSummary() == null || event.getSummary() == "") {
+			eventData += "An event without a title";
+		} else {
+			eventData += event.getSummary();
+		}		 
 		String eventStartDate = dateOutput(startDate, withStartDate, withTime);
 		String eventEndDate = dateOutput(endDate, withEndDate, withTime);
 		String eventStartTime = "";

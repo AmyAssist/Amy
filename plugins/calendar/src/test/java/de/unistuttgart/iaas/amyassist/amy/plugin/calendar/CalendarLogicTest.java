@@ -150,7 +150,11 @@ public class CalendarLogicTest {
 				Pair.of(event("event start today end tomorrow", "2015-05-28T15:30:00", "2015-05-29T15:30:00"),
 						"event start today end tomorrow from the 28th of may at 15:30 until the 29th of may at 15:30."),
 				Pair.of(eventAllDay("event tomorrow all day", "2015-05-29", "2015-05-30"),
-						"event tomorrow all day on the 29th of may all day long."));
+						"event tomorrow all day on the 29th of may all day long."),
+				Pair.of(eventAllDay("", "2015-05-29", "2015-05-30"),
+						"An event without a title on the 29th of may all day long."),
+				Pair.of(eventAllDay(null, "2015-05-29", "2015-05-30"),
+						"An event without a title on the 29th of may all day long."));
 	}
 
 	/**
