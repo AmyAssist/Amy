@@ -30,6 +30,8 @@ import com.github.dvdme.ForecastIOLib.FIODaily;
 import com.github.dvdme.ForecastIOLib.FIODataPoint;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.WithDefault;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
@@ -43,6 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
  */
 @Service
 public class WeatherDarkSkyAPI {
+	@WithDefault
 	@Reference
 	private Properties configuration;
 
@@ -63,10 +66,22 @@ public class WeatherDarkSkyAPI {
 	private FIODaily dailyReports;
 	private Calendar lastRequest;
 
+	private String apiSecret;
+
+	@PostConstruct
+	private void checkAPIKey() {
+		this.apiSecret = this.configuration.getProperty(API_SECRET_CONFIG_KEY);
+		if (this.apiSecret.isEmpty()) {
+			throw new IllegalStateException(
+					"DarkSky API SECRET is missing. Set it in the config of the plugin with the key '"
+							+ API_SECRET_CONFIG_KEY + "'.");
+		}
+	}
+
 	private FIODaily getDailyReports() {
 		if (this.dailyReports == null || checkTime() || this.locationChanged) {
 			loadLocation();
-			ForecastIO fio = new ForecastIO(this.configuration.getProperty(API_SECRET_CONFIG_KEY));
+			ForecastIO fio = new ForecastIO(this.apiSecret);
 			fio.setUnits(ForecastIO.UNITS_SI);
 			fio.getForecast(this.coordinateLat, this.coordinateLong);
 
