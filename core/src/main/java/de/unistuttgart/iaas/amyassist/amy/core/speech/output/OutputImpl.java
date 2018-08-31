@@ -95,8 +95,7 @@ public class OutputImpl implements Output {
 
 	@Override
 	public boolean isCurrentlyOutputting() {
-		if (!this.la.isLocalAudioAvailable())
-			return this.am.isAudioEnvironmentCurrentlyOutputting(this.la.getLocalAudioEnvironmentIdentifier());
-		return false;
+		return this.la.isLocalAudioAvailable()
+				&& this.am.isAudioEnvironmentCurrentlyOutputting(this.la.getLocalAudioEnvironmentIdentifier());
 	}
 }
