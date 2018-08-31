@@ -57,7 +57,6 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 			@Nonnull ContextLocator locator, @Nonnull ServiceConsumer<Properties> serviceConsumer) {
 		Map<String, Object> context = new HashMap<>();
 		context.put(Context.PLUGIN, locator.getContextProvider(Context.PLUGIN).getContext(serviceConsumer));
-		context.put(Context.CLASSLOADER, locator.getContextProvider(Context.CLASSLOADER).getContext(serviceConsumer));
 		context.put(CONTEXT_WITH_DEFAULT, serviceConsumer.getServiceDescription().getAnnotations().stream()
 				.anyMatch(a -> a instanceof WithDefault));
 		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(), context,
@@ -74,8 +73,7 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 		boolean withDefault = (boolean) serviceImplementationDescription.getContext().get(CONTEXT_WITH_DEFAULT);
 
 		if (withDefault) {
-			ClassLoader classLoader = (ClassLoader) serviceImplementationDescription.getContext()
-					.get(Context.CLASSLOADER);
+			ClassLoader classLoader = plugin.getClassLoader();
 			return new ServiceHandleImpl<>(configurationLoader.getConfigurationWithDefaults(uniqueName, classLoader));
 		}
 		return new ServiceHandleImpl<>(configurationLoader.getConfiguration(uniqueName));
