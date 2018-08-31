@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -47,7 +49,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	private ClassLoader classLoader;
 
 	@Override
-	public Properties getConfiguration(String configurationName) {
+	public @Nonnull Properties getConfiguration(String configurationName) {
 		Properties p = this.configurationLoader.load(configurationName);
 		if (this.environmentConfiguratinLoader.isAllowedName(configurationName)) {
 			p = this.environmentConfiguratinLoader.load(configurationName, p);
@@ -56,8 +58,13 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	}
 
 	@Override
-	public Properties getConfigurationWithDefaults(String configurationName) {
-		Properties defaults = this.internalDefaultConfigurationLoader.load(this.classLoader, configurationName);
+	public @Nonnull Properties getConfigurationWithDefaults(String configurationName) {
+		return this.getConfigurationWithDefaults(configurationName, this.classLoader);
+	}
+
+	@Override
+	public @Nonnull Properties getConfigurationWithDefaults(String configurationName, ClassLoader loader) {
+		Properties defaults = this.internalDefaultConfigurationLoader.load(loader, configurationName);
 		Properties p = this.configurationLoader.load(configurationName, defaults);
 		if (this.environmentConfiguratinLoader.isAllowedName(configurationName)) {
 			p = this.environmentConfiguratinLoader.load(configurationName, p);

@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+
 /**
  * Load a default configuration from the classpath. Changes can't be stored with this ConfigurationLoader.
  * 
@@ -40,5 +42,6 @@ public interface DefaultConfigurationLoader {
 	 * @throws ConfigurationNotFoundException
 	 *             if the default configuration is not on the classpath
 	 */
+	@Nonnull
 	Properties load(String configurationName);
 }
