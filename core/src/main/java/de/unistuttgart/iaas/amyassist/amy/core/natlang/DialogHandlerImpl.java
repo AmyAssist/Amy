@@ -112,7 +112,7 @@ public class DialogHandlerImpl implements DialogHandler {
 
 		UserIntent intent = this.map.get(uuid).getIntent();
 
-		return (intent != null && intent.isFinished());
+		return (intent != null && !intent.isFinished());
 	}
 
 }
