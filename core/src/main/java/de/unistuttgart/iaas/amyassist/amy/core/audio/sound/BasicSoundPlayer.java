@@ -23,7 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.audio.sound;
 
+import java.lang.Thread.State;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -38,13 +40,17 @@ import de.unistuttgart.iaas.amyassist.amy.core.audio.QueuedInputStream;
  */
 public class BasicSoundPlayer implements Runnable, SoundPlayer {
 
-	private QueuedInputStream stream;
-	private AudioInputStream audioStream;
-	private byte[] data;
-	private int pos;
-	private int remainingLoopCount;
+	private final QueuedInputStream stream;
+	private final AudioInputStream audioStream;
+
+	private volatile boolean shouldStop = false;
+	private volatile byte[] data;
+	private volatile int pos;
+	private volatile int remainingLoopCount;
 
 	private Thread playingThread;
+
+	private Consumer<SoundPlayer.StopReason> listener;
 
 	/**
 	 * Creates a new SoundPlayer for the given audioData with the given format and the given frameLength.
@@ -87,11 +93,11 @@ public class BasicSoundPlayer implements Runnable, SoundPlayer {
 	}
 
 	/**
-	 * Does the output work.
+	 * Does the output work. At the and calls listener.
 	 */
 	@Override
 	public void run() {
-		while (!Thread.interrupted() && this.remainingLoopCount != 0 && !this.stream.isClosed()) {
+		while (!this.shouldStop && !Thread.interrupted() && this.remainingLoopCount != 0 && !this.stream.isClosed()) {
 			try {
 				if (!this.stream.getQueue().offer(Byte.toUnsignedInt(this.data[this.pos]), 100,
 						TimeUnit.MILLISECONDS)) {
@@ -109,6 +115,21 @@ public class BasicSoundPlayer implements Runnable, SoundPlayer {
 			}
 		}
 		this.stream.setAutoEnding(true);
+		runListener();
+	}
+
+	private void runListener() {
+		if (this.listener != null) {
+			if (this.remainingLoopCount == 0) {
+				this.listener.accept(StopReason.END_OF_AUDIO);
+			} else if (this.stream.isClosed()) {
+				this.listener.accept(StopReason.STREAM_CLOSED);
+			} else if (this.shouldStop) {
+				this.listener.accept(StopReason.PLAYER_STOPPED);
+			} else {
+				this.listener.accept(StopReason.OTHER);
+			}
+		}
 	}
 
 	@Override
@@ -118,11 +139,20 @@ public class BasicSoundPlayer implements Runnable, SoundPlayer {
 
 	@Override
 	public void stop() {
+		this.shouldStop = true;
 		this.playingThread.interrupt();
 	}
 
 	@Override
 	public boolean isRunning() {
 		return this.playingThread.isAlive();
+	}
+
+	@Override
+	public void setOnStopHook(Consumer<StopReason> callback) {
+		if (this.playingThread.getState() != State.NEW)
+			throw new IllegalStateException("Player is already started");
+
+		this.listener = callback;
 	}
 }
