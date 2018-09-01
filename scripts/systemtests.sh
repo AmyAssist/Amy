@@ -6,7 +6,7 @@ curl -I localhost
 docker stop system-test
 docker stop broker
 docker logs system-test | tee system-test.log | grep -i -E "(Error|Exception)"
-ERROR = $?
+ERROR=$?
 cat system-test.log
 if $ERROR; then
 	exit 1;
