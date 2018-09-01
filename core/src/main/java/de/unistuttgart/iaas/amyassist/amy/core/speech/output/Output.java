@@ -26,9 +26,9 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 
 /**
- * Interface for the TextToSpeech
+ * A class used by the speech system to output audio.
  * 
- * @author Kai Menzel
+ * @author Kai Menzel, Tim Neumann
  */
 public interface Output {
 
@@ -41,12 +41,32 @@ public interface Output {
 	void voiceOutput(String s);
 
 	/**
+	 * Method to Voice and Log output the input String
+	 * 
+	 * @param s
+	 *            String that shall be said
+	 * @param callback
+	 *            A callback being called when the output is done
+	 */
+	void voiceOutput(String s, Runnable callback);
+
+	/**
 	 * Method that outputs a sound
 	 * 
 	 * @param sound
 	 *            to output
 	 */
 	void soundOutput(Sounds sound);
+
+	/**
+	 * Method that outputs a sound
+	 * 
+	 * @param sound
+	 *            to output
+	 * @param callback
+	 *            A callback being called when the output is done
+	 */
+	void soundOutput(Sounds sound, Runnable callback);
 
 	/**
 	 * stop the OutputClip

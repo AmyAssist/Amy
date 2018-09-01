@@ -42,6 +42,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarCreato
 import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarName;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
 
 /**
@@ -56,7 +59,8 @@ public class SpeechManager implements RunnableService {
 
 	private static final String CONFIG_NAME = "localSpeech.config";
 	private static final String PROPERTY_ENABLE = "enable";
-	private static final String MESSAGE_TOPIC_MUTE = "home/all/music/mute";
+	private static final String MESSAGE_TOPIC_MUTE = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL,
+			RoomTopics.ALL);
 
 	@Reference
 	private Logger logger;
@@ -84,7 +88,7 @@ public class SpeechManager implements RunnableService {
 
 	private Properties config;
 
-	private ListeningState currentListeningState = ListeningState.NOT_LISTENING;
+	private volatile ListeningState currentListeningState = ListeningState.NOT_LISTENING;
 
 	@PostConstruct
 	private void init() {
@@ -92,7 +96,7 @@ public class SpeechManager implements RunnableService {
 		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_ENABLE))) {
 			this.recognitionEnabled = true;
 
-			this.dialogId = this.dialogHandler.createDialog(this.output::voiceOutput);
+			this.dialogId = this.dialogHandler.createDialog(this::voiceOutput);
 
 			this.sphinxGrammarCreator.createGrammar(SPHINX_MAIN_GARMMAR_NAME,
 					this.nlProcessingManager.getGrammarFileString(SPHINX_MAIN_GARMMAR_NAME));
@@ -114,14 +118,9 @@ public class SpeechManager implements RunnableService {
 	 */
 	@Override
 	public void stop() {
-		if (this.currentListeningState == ListeningState.MULTI_CALL_LISTENING) {
-			try {
-				this.googleSpeechRecognizer.stopContinuousRecognition();
-			} catch (IllegalStateException e) {
-				this.logger.warn("Error when stopping remote sr", e);
-			}
-		}
+		this.currentListeningState = ListeningState.NOT_LISTENING;
 		this.sphinxSpeechRecognizer.stopContinuousRecognition();
+		this.output.stopOutput();
 	}
 
 	private void keywordRecognized(String word) {
@@ -164,7 +163,7 @@ public class SpeechManager implements RunnableService {
 
 			this.messageHub.publish(MESSAGE_TOPIC_MUTE, "true");
 			this.output.voiceOutput("waking up");
-			this.googleSpeechRecognizer.recognizeContinuously(this::processNormalInput);
+			this.googleSpeechRecognizer.recognizeOnce(this::processNormalInput);
 			break;
 
 		case SINGLE_CALL_LISTENING:
@@ -179,7 +178,6 @@ public class SpeechManager implements RunnableService {
 			// Depends on Current Listening State
 			switch (this.currentListeningState) {
 			case MULTI_CALL_LISTENING:
-				this.googleSpeechRecognizer.stopContinuousRecognition();
 				this.output.voiceOutput("now sleeping");
 				break;
 			case SINGLE_CALL_LISTENING:
@@ -198,21 +196,12 @@ public class SpeechManager implements RunnableService {
 		this.currentListeningState = newListeningState;
 	}
 
-	private void resetListeningStateAfterSingleCall() {
-		if (this.getCurrentListeningState() == ListeningState.SINGLE_CALL_LISTENING) {
-			this.setListeningState(ListeningState.NOT_LISTENING);
-		}
-	}
-
 	private void processNormalInput(String result) {
 		if (this.currentListeningState == ListeningState.NOT_LISTENING)
 			return;
 		this.logger.info("I understood: {}", result);
 
 		this.dialogHandler.process(result, this.dialogId);
-
-		// TODO reset listening state after end of dialog.
-		// For that some changes in the NL System and AudioManager are required.
 	}
 
 	/**
@@ -240,6 +229,24 @@ public class SpeechManager implements RunnableService {
 		this.config = this.configManager.getConfigurationWithDefaults(CONFIG_NAME);
 		if (this.config.getProperty(PROPERTY_ENABLE) == null)
 			throw new IllegalStateException("Property " + PROPERTY_ENABLE + " missing in audio manager config.");
+	}
+
+	private void voiceOutput(String text) {
+		this.output.voiceOutput(text, this::voiceOutputFinished);
+	}
+
+	private void voiceOutputFinished() {
+		if (this.currentListeningState == ListeningState.NOT_LISTENING)
+			return;
+		if (this.dialogHandler.hasDialogUnfinishedIntent(this.dialogId)) {
+			this.googleSpeechRecognizer.recognizeOnce(this::processNormalInput);
+		} else {
+			if (this.currentListeningState == ListeningState.MULTI_CALL_LISTENING) {
+				this.googleSpeechRecognizer.recognizeOnce(this::processNormalInput);
+			} else if (this.currentListeningState == ListeningState.SINGLE_CALL_LISTENING) {
+				this.setListeningState(ListeningState.NOT_LISTENING);
+			}
+		}
 	}
 
 	/**

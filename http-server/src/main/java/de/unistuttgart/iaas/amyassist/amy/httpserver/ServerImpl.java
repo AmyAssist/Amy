@@ -169,7 +169,7 @@ public class ServerImpl implements RunnableService, Server {
 		if (this.httpServer == null)
 			throw new IllegalStateException("The Server is not running");
 		this.logger.info("shutdown the server");
-		this.httpServer.shutdown();
+		this.httpServer.shutdownNow();
 		this.httpServer = null;
 	}
 

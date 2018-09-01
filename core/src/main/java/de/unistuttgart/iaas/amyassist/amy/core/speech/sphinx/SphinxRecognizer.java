@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,6 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;
+import edu.cmu.sphinx.frontend.DataProcessingException;
 
 /**
  * Class that translate Audio-Input into Strings, powered by CMU Sphinx - https://cmusphinx.github.io/ which is Licenced
@@ -102,13 +104,14 @@ public class SphinxRecognizer implements SpeechRecognizer, Runnable {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#stopContinuousRecgonition()
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#stopContinuousRecognition()
 	 */
 	@Override
 	public void stopContinuousRecognition() {
 		if (!this.recognizeContinous)
 			throw new IllegalStateException("Not running continuous.");
 		this.stop = true;
+		this.thread.interrupt();
 	}
 
 	/**
@@ -151,8 +154,14 @@ public class SphinxRecognizer implements SpeechRecognizer, Runnable {
 		this.logger.info("Sphinx listening");
 		String result;
 		while (!Thread.currentThread().isInterrupted() && !this.stop) {
-			result = processResult(this.recognizer.getResult());
-			if (result != "") {
+			try {
+				result = processResult(this.recognizer.getResult());
+			} catch (DataProcessingException e) {
+				if (!e.getCause().getClass().equals(InterruptedIOException.class))
+					throw e;
+				break;
+			}
+			if (!result.isEmpty()) {
 				this.handler.accept(result);
 				if (!this.recognizeContinous) {
 					this.stop = true;
@@ -164,6 +173,8 @@ public class SphinxRecognizer implements SpeechRecognizer, Runnable {
 	}
 
 	private String processResult(SpeechResult r) {
+		if (r == null)
+			return "";
 		String hypothesis = r.getHypothesis();
 		hypothesis = hypothesis.trim();
 		if (hypothesis.equals("<unk>"))

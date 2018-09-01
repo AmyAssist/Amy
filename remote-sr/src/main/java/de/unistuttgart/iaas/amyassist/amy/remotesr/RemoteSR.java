@@ -65,11 +65,9 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 
 	private SSEClient client = null;
 
-	private Consumer<String> listener;
-
 	private Process chromeProcess;
 
-	private volatile boolean continuous;
+	private volatile Consumer<String> listener;
 	private volatile boolean currentlyRecognizing;
 	private volatile boolean stop;
 
@@ -81,7 +79,6 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 		if (this.currentlyRecognizing)
 			throw new IllegalStateException("Already recognizing");
 		this.listener = resultHandler;
-		this.continuous = false;
 
 		this.tryToRecognize();
 	}
@@ -91,12 +88,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	 */
 	@Override
 	public void recognizeContinuously(Consumer<String> resultHandler) {
-		if (this.currentlyRecognizing)
-			throw new IllegalStateException("Already recognizing");
-		this.listener = resultHandler;
-		this.continuous = true;
-
-		this.tryToRecognize();
+		throw new UnsupportedOperationException("Continuous recognition is not supported");
 	}
 
 	/**
@@ -104,9 +96,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	 */
 	@Override
 	public void stopContinuousRecognition() {
-		if (!this.continuous)
-			throw new IllegalStateException("Not recognizing continuously");
-		this.continuous = false;
+		throw new UnsupportedOperationException("Continuous recognition is not supported");
 	}
 
 	/**
@@ -274,11 +264,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	void processResult(SRResult res) {
 		if (res != null && res.getText() != null && this.listener != null && !res.getText().isEmpty()) {
 			this.listener.accept(res.getText());
-			if (this.continuous) {
-				tryToRecognize();
-			} else {
-				this.currentlyRecognizing = false;
-			}
+			this.currentlyRecognizing = false;
 		} else {
 			tryToRecognize();
 		}
@@ -331,7 +317,6 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	 */
 	@Override
 	public void stop() {
-		this.continuous = false;
 		this.stop = true;
 		this.chromeProcess.destroy();
 	}
