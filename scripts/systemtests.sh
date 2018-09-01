@@ -1,14 +1,14 @@
 #!/bin/bash
 docker run -d -p 1883:1883 -p 9001:9001 --name=broker eclipse-mosquitto
-docker run -d -p 80:80 --name=system-test amy-master-node
+docker run -d -p 80:80 -e "AMY_MQTT_CONFIG_BROKERADDRESS=tcp://broker" --name=system-test amy-master-node
 sleep 10
 curl -I localhost
 docker stop system-test
 docker stop broker
-docker logs system-test | tee system-test.log | grep -i -E --color=auto "(Error|Exception)"
+echo system test log:
+docker logs system-test
+docker logs system-test | grep -i -E "(Error|Exception)"
 ERROR=$?
-echo system-test.log:
-cat system-test.log
 if [ $ERROR -eq "0" ]; then
 	exit 1;
 else
