@@ -48,6 +48,8 @@ public class MailSession {
 
 	private Store store;
 
+	private boolean connected = false;
+
 	private static final String PROTOCOL = "imaps";
 
 	private static final String INBOX_NAME = "INBOX";
@@ -81,11 +83,22 @@ public class MailSession {
 		try {
 			this.store = session.getStore(PROTOCOL);
 			this.store.connect(credentials.getImapServer(), credentials.getUsername(), credentials.getPassword());
+			this.connected = true;
 			return true;
 		} catch (MessagingException e) {
 			this.logger.error("Couldn't connect to service", e);
 		}
+		this.connected = false;
 		return false;
+	}
+
+	/**
+	 * Check if this mail session is connected to any mail server
+	 * 
+	 * @return true, if connected to mail server, else false
+	 */
+	public boolean isConnected() {
+		return this.connected;
 	}
 
 	/**
@@ -101,5 +114,6 @@ public class MailSession {
 				this.logger.error("Couldn't close previously opened mail store", e);
 			}
 		}
+		this.connected = false;
 	}
 }

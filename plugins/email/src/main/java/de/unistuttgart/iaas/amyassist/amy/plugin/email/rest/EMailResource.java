@@ -23,12 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -51,15 +46,15 @@ public class EMailResource {
 	private EMailLogic logic;
 
 	/**
-	 * Get the currently saved mail credentials
+	 * Check, if currently connected to mail server
 	 * 
-	 * @return mail credentials
+	 * @return true, if currently connected to mail server, else false
 	 */
 	@GET
-	@Path("getCredentials")
+	@Path("isConnected")
 	@Produces(MediaType.APPLICATION_JSON)
-	public EMailCredentials getCredentials() {
-		return this.logic.getCredentials();
+	public boolean isConnected() {
+		return this.logic.isConnectedToMailServer();
 	}
 
 	/**

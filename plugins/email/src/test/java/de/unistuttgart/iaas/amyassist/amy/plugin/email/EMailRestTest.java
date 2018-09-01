@@ -23,11 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.status;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -71,6 +70,19 @@ class EMailRestTest {
 	public void setUp() {
 		this.target = this.testFramework.setRESTResource(EMailResource.class);
 		this.logic = this.testFramework.mockService(EMailLogic.class);
+	}
+
+	/**
+	 * Tests {@link EMailResource#isConnected()}
+	 */
+	@Test
+	public void testIsConnected() {
+		when(this.logic.isConnectedToMailServer()).thenReturn(true);
+		try (Response response = this.target.path("isConnected").request().get()) {
+			assertThat(response.getStatus(), is(200));
+			boolean successful = response.readEntity(Boolean.class);
+			assertThat(successful, is(true));
+		}
 	}
 
 	/**
@@ -140,6 +152,16 @@ class EMailRestTest {
 				assertThat(message1.isImportant(), equalTo(message2.isImportant()));
 			}
 			Mockito.verify(this.logic).getMailsForREST(amountOfMails);
+		}
+	}
+
+	/**
+	 * Tests {@link EMailResource#disconnect()}
+	 */
+	@Test
+	public void testDisconnect() {
+		try (Response response = this.target.path("disconnect").request().post(null)) {
+			assertThat(response.getStatus(), is(204));
 		}
 	}
 

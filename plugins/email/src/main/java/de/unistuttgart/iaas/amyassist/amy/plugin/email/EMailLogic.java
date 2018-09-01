@@ -26,26 +26,16 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
-import javax.mail.Flags;
+import javax.mail.*;
 import javax.mail.Flags.Flag;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
 import javax.mail.internet.InternetAddress;
 import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
@@ -337,6 +327,15 @@ public class EMailLogic {
 	}
 
 	/**
+	 * Check if mail is currently connected to a mail server
+	 * 
+	 * @return true, if connected to mail server, else false
+	 */
+	public boolean isConnectedToMailServer() {
+		return this.mailSession.isConnected();
+	}
+
+	/**
 	 * Disconnect from currently connected mail service
 	 */
 	public void disconnectFromMailServer() {
@@ -375,5 +374,16 @@ public class EMailLogic {
 		InternetAddress address = (InternetAddress) message.getFrom()[0];
 		String personal = address.getPersonal();
 		return (personal == null) ? address.getAddress() : personal;
+	}
+
+	/**
+	 * Connect to mail server with stored credentials, if there are any
+	 */
+	@PostConstruct
+	public void connectToMailServer() {
+		final EMailCredentials credentials = getCredentials();
+		if (credentials != null) {
+			connectToMailServer(credentials);
+		}
 	}
 }
