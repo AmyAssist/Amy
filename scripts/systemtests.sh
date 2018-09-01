@@ -5,10 +5,11 @@ sleep 10
 curl -I localhost
 docker stop system-test
 docker stop broker
-docker logs system-test | tee system-test.log | grep -i -E "(Error|Exception)"
+docker logs system-test | tee system-test.log | grep -i -E --color=auto "(Error|Exception)"
 ERROR=$?
+echo system-test.log:
 cat system-test.log
-if $ERROR; then
+if [ $ERROR -eq "0" ]; then
 	exit 1;
 else
 	exit 0;
