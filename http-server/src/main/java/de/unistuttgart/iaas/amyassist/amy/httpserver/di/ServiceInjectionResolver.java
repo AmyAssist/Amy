@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package de.unistuttgart.iaas.amyassist.amy.httpserver.di;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -48,6 +48,12 @@ public class ServiceInjectionResolver implements InjectionResolver<Reference> {
 
 	private ServiceLocator serviceLocator;
 
+	/**
+	 * Create a new hk2 InjectionResolver
+	 * 
+	 * @param serviceLocator
+	 *            the ServiceLocator of the di to use for Service lookups
+	 */
 	ServiceInjectionResolver(ServiceLocator serviceLocator) {
 		this.serviceLocator = serviceLocator;
 	}
@@ -75,8 +81,9 @@ public class ServiceInjectionResolver implements InjectionResolver<Reference> {
 	@Override
 	public Object resolve(Injectee arg0, ServiceHandle<?> arg1) {
 		Type requiredType = arg0.getRequiredType();
-		return this.serviceLocator.getService(this.getServiceCosumer((Class<?>) requiredType, arg0.getInjecteeClass(),
-				arg0.getRequiredQualifiers())).getService();
+		return this.serviceLocator.getService(
+				this.getServiceCosumer((Class<?>) requiredType, arg0.getInjecteeClass(), arg0.getRequiredQualifiers()))
+				.getService();
 	}
 
 	private <T> ServiceConsumer<T> getServiceCosumer(Class<T> serviceType, Class<?> consumerClass,
