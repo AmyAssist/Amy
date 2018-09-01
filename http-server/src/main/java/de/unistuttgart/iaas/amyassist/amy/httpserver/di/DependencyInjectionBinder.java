@@ -21,20 +21,37 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.httpserver.di;
 
-import java.util.concurrent.CompletableFuture;
+import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
+ * Allow the use of {@link Reference} in Rest Resource classes.
  * 
  * @author Leon Kiefer
  */
-public interface SpeechInputHandler {
+public class DependencyInjectionBinder extends AbstractBinder {
+
+	private final ServiceLocator di;
+
 	/**
+	 * Create a new Binder for the dependencyInjection
 	 * 
-	 * @param speechInput
-	 *            the user input
-	 * @return a Future, that completes with the result of processing the user input
+	 * @param di
+	 *            the ServiceLocator to use to resolve Services in Rest classes
 	 */
-	CompletableFuture<String> handle(String speechInput);
+	public DependencyInjectionBinder(ServiceLocator di) {
+		this.di = di;
+	}
+
+	@Override
+	protected void configure() {
+		this.bind(new ServiceInjectionResolver(this.di)).to(new TypeLiteral<Reference>() {
+		});
+	}
+
 }

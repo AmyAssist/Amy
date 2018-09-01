@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -55,7 +57,7 @@ public class EnvironmentConfigurationLoaderImpl implements EnvironmentConfigurat
 	}
 
 	@Override
-	public Properties load(String configurationName, Properties original) {
+	public @Nonnull Properties load(String configurationName, @Nonnull Properties original) {
 		if (!isAllowedName(configurationName))
 			throw new IllegalArgumentException("Illegal configuration name for loading from the environment.");
 		Properties ret = new Properties(original);

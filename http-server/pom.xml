@@ -26,6 +26,10 @@
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-http-server-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-plugin-manager-api</artifactId>
 		</dependency>
 		<dependency>
@@ -61,6 +65,7 @@
 			<artifactId>jersey-media-json-jackson</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
+		<!-- Tests -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>

@@ -23,11 +23,10 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
-import static java.time.Duration.ofSeconds;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTimeout;
+import static java.time.Duration.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Properties;
 
@@ -51,22 +50,23 @@ class ServerTest {
 	@BeforeEach
 	void setup() {
 		Properties serverConfig = new Properties();
-		serverConfig.setProperty(Server.PROPERTY_PORT, "50080");
-		serverConfig.setProperty(Server.PROPERTY_CONTEXT_PATH, "test");
-		serverConfig.setProperty(Server.PROPERTY_LOCALHOST, "true");
+		serverConfig.setProperty(ServerImpl.PROPERTY_PORT, "50080");
+		serverConfig.setProperty(ServerImpl.PROPERTY_CONTEXT_PATH, "test");
+		serverConfig.setProperty(ServerImpl.PROPERTY_LOCALHOST, "true");
+		serverConfig.setProperty(ServerImpl.PROPERTY_SERVER_URL, "");
 
 		ConfigurationManager configManager = Mockito.mock(ConfigurationManager.class);
-		Mockito.when(configManager.getConfigurationWithDefaults(Server.CONFIG_NAME)).thenReturn(serverConfig);
+		Mockito.when(configManager.getConfigurationWithDefaults(ServerImpl.CONFIG_NAME)).thenReturn(serverConfig);
 
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(ConfigurationManager.class, configManager);
-		this.dependencyInjection.addExternalService(Logger.class, LoggerFactory.getLogger(Server.class));
+		this.dependencyInjection.addExternalService(Logger.class, LoggerFactory.getLogger(ServerImpl.class));
 	}
 
 	@Test
 	void test() {
 		assertTimeout(ofSeconds(2), () -> {
-			Server server = this.dependencyInjection.createAndInitialize(Server.class);
+			ServerImpl server = this.dependencyInjection.createAndInitialize(ServerImpl.class);
 			server.startWithResources(TestRestResource.class);
 			server.stop();
 		}, "The Server start and shotdown takes longer then 2 Seconds");
@@ -75,7 +75,7 @@ class ServerTest {
 
 	@Test
 	void testCantStartServerTwice() {
-		Server server = this.dependencyInjection.createAndInitialize(Server.class);
+		ServerImpl server = this.dependencyInjection.createAndInitialize(ServerImpl.class);
 		String message = assertThrows(IllegalStateException.class, () -> {
 			server.startWithResources(TestRestResource.class);
 			server.startWithResources(TestRestResource.class);
@@ -86,7 +86,7 @@ class ServerTest {
 
 	@Test
 	void testRegister() {
-		Server server = this.dependencyInjection.createAndInitialize(Server.class);
+		ServerImpl server = this.dependencyInjection.createAndInitialize(ServerImpl.class);
 		server.register(TestRestResource.class);
 		server.start();
 		server.stop();
@@ -94,7 +94,7 @@ class ServerTest {
 
 	@Test
 	void testRegisterNonResourceClass() {
-		Server server = this.dependencyInjection.createAndInitialize(Server.class);
+		ServerImpl server = this.dependencyInjection.createAndInitialize(ServerImpl.class);
 		assertThrows(IllegalArgumentException.class, () -> {
 			server.register(ServerTest.class);
 		}, "The Server dont throw an IllegalArgumentException if a registered class is not a Rest Resource");

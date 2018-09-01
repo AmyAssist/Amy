@@ -65,4 +65,13 @@ public interface DialogHandler {
 	 */
 	void process(String naturalLanguageText, UUID uuid);
 
+	/**
+	 * Checks whether the dialog with the given id currently has an unfinished intent.
+	 * 
+	 * @param uuid
+	 *            The id of the dialog to check
+	 * 
+	 * @return Whether the it has a unfinished intent.
+	 */
+	boolean hasDialogUnfinishedIntent(UUID uuid);
 }
