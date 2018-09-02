@@ -9,5 +9,6 @@ services:
       - AMY_MQTT_CONFIG_BROKERADDRESS=tcp://broker
     ports:
      - "80:80"
+    container_name: master-node
   broker:
     image: "eclipse-mosquitto"
