@@ -14,7 +14,7 @@ while [ "$stop" == "false" ] ;do
 done
 docker-compose stop
 docker-compose logs master-node
-contCode=$(docker inspect -f '{{.State.ExitCode}}' vibrant_elbakyan)
+contCode=$(docker inspect -f '{{.State.ExitCode}}' master-node)
 errorCount=$(docker-compose logs master-node | grep -i -E -c "(Error|Exception)")
 
 if [ $curlCode -ne 0 ] ;then echo "Curl:$curlCode" ;fi
