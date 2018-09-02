@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishContraction;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishStemmer;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishTimeUtility;
@@ -32,17 +33,18 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.Engl
  * @author Lars Buttgereit
  */
 public class ChooseLanguage {
-	private IStemmer stemmer;
-	private INumberConversion numberConversion;
-	private ITimeUtility timeUtility;
+	private final Stemmer stemmer;
+	private final NumberConversion numberConversion;
+	private final TimeUtility timeUtility;
+	private final Contraction contraction;
 
 	/**
 	 * constructor for choose language
 	 * 
 	 * @param language
-	 *                           which language should be used (language code after ISO 639-1)
+	 *            which language should be used (language code after ISO 639-1)
 	 * @param stemmerEnabled
-	 *                           if stemmerEnabled true the correct stemmer is set, false stemmer is null
+	 *            if stemmerEnabled true the correct stemmer is set, false stemmer is null
 	 */
 	public ChooseLanguage(String language, boolean stemmerEnabled) {
 		switch (language.toLowerCase()) {
@@ -50,9 +52,12 @@ public class ChooseLanguage {
 		default:
 			if (stemmerEnabled) {
 				this.stemmer = new EnglishStemmer();
+			} else {
+				this.stemmer = null;
 			}
 			this.numberConversion = new EnglishNumberConversion();
 			this.timeUtility = new EnglishTimeUtility();
+			this.contraction = new EnglishContraction();
 			break;
 		}
 	}
@@ -62,7 +67,7 @@ public class ChooseLanguage {
 	 * 
 	 * @return stemmer
 	 */
-	public IStemmer getStemmer() {
+	public Stemmer getStemmer() {
 		return this.stemmer;
 	}
 
@@ -71,17 +76,25 @@ public class ChooseLanguage {
 	 * 
 	 * @return numberConversion
 	 */
-	public INumberConversion getNumberConversion() {
+	public NumberConversion getNumberConversion() {
 		return this.numberConversion;
 	}
 
 	/**
 	 * Get's {@link #timeUtility timeUtility}
-	 * @return  timeUtility
+	 * 
+	 * @return timeUtility
 	 */
-	public ITimeUtility getTimeUtility() {
+	public TimeUtility getTimeUtility() {
 		return this.timeUtility;
 	}
-	
-	
+
+	/**
+	 * Get's {@link #contraction contraction}
+	 * 
+	 * @return contraction
+	 */
+	public Contraction getContraction() {
+		return this.contraction;
+	}
 }

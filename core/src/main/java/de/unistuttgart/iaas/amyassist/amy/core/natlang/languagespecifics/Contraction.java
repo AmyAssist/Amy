@@ -23,31 +23,18 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
 
-import java.time.LocalTime;
-
 /**
- * 
- * this interface provide methods for time processing
+ * This interface has methods to disassembling contracted words to the full words. e.g. I'm -> I am
  * 
  * @author Lars Buttgereit
  */
-public interface ITimeUtility {
+public interface Contraction {
 	/**
-	 * parse a string to a localTime
+	 * this method disassembling contracted words to the full words.
 	 * 
-	 * @param toParse
-	 *            String to parse
-	 * @return a LocalTime object
+	 * @param toDisassemble
+	 *            string to disassembling
+	 * @return the disassembled string
 	 */
-	LocalTime parseTime(String toParse);
-
-	/**
-	 * format the time from google speech to a more parser friendly format. for example english time: 1:00 p.m. to 1 x
-	 * 00 pm
-	 * 
-	 * @param input
-	 *            the string to replace the time
-	 * @return the input string with replaced time
-	 */
-	String formatTime(String input);
+	String disassemblingContraction(String toDisassemble);
 }

@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.INumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.NumberConversion;
 
 /**
  * Lexer for language input from speechs
@@ -53,7 +53,7 @@ public class NLLexer {
 
 	private ChooseLanguage language;
 
-	private INumberConversion numberConversion;
+	private NumberConversion numberConversion;
 
 	/**
 	 * this class handles natural language input of any type
@@ -88,6 +88,9 @@ public class NLLexer {
 		List<WordToken> list = new LinkedList<>();
 		String toLex = nlInput.toLowerCase();
 		toLex = this.language.getTimeUtility().formatTime(toLex);
+		toLex = this.language.getContraction().disassemblingContraction(toLex);
+		//replace all punctuation
+		toLex = toLex.replaceAll("\\,|\\.|\\:|\\;|\\?", "");
 
 		StringBuilder currentWord = new StringBuilder();
 		for (int mIndex = 0; mIndex < toLex.length(); mIndex++) {

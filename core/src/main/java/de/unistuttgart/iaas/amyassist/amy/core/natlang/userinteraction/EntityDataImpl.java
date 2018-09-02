@@ -25,7 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
 
 import java.time.LocalTime;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUtility;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.TimeUtility;
 
 /**
  * Stores the data from one entity. Only one attribute is set at the same time
@@ -35,14 +35,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUt
 public class EntityDataImpl implements EntityData {
 
 	private String string;
-	private ITimeUtility timeUtility;
+	private TimeUtility timeUtility;
 
 	/**
 	 * constructor
 	 * @param string content
 	 * @param timeUtility time converter
 	 */
-	public EntityDataImpl(String string, ITimeUtility timeUtility) {
+	public EntityDataImpl(String string, TimeUtility timeUtility) {
 		this.string = string;
 		this.timeUtility = timeUtility;
 	}
