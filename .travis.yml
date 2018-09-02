@@ -16,7 +16,7 @@ jobs:
     - name: "Docker system test"
       if: branch IN (dev, master)
       install: travis_retry docker build . -t amy-master-node
-      script: ./scripts/systemtests.sh
+      script: ./scripts/systemtest/systemtests.sh
     - stage: dev deploy
       name: "Deploy Docker image"
       install: travis_retry docker build . -t amy-master-node
