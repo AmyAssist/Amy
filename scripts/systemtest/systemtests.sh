@@ -7,7 +7,7 @@ stop=false
 remainingTries=20
 while [ "$stop" == "false" ] ;do
   sleep 1
-  curl -I localhost
+  curl -I -S --show-error localhost
   curlCode=$?
   if [ $curlCode -eq 0 ] || [ $remainingTries -eq 0 ] ;then stop=true ;fi
   let "remainingTries=$remainingTries - 1"
