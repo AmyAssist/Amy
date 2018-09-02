@@ -314,7 +314,7 @@ public class CalendarLogic {
 	 */
 	public String eventToString(LocalDateTime startDate, LocalDateTime endDate, Event event, boolean withStartDate,
 			boolean withEndDate, boolean withTime, OutputCase outputCase) {
-		String eventData = event.getSummary();
+		String eventData = convertEventTitle(event.getSummary());
 		String eventStartDate = dateOutput(startDate, withStartDate, withTime);
 		String eventEndDate = dateOutput(endDate, withEndDate, withTime);
 		String eventStartTime = "";
@@ -359,6 +359,19 @@ public class CalendarLogic {
 		}
 
 		return eventData;
+	}
+	
+	/**
+	 * Checks if given event summary is empty/ null and returns an alternative String or the title
+	 * 
+	 * @param title the title String of the event
+	 * @return the title part of the event for Amy output
+	 */
+	private String convertEventTitle(String title) {
+		if(title == null || title.equals("")) {
+			return "An event without a title";
+		}
+		return title;
 	}
 
 	/**

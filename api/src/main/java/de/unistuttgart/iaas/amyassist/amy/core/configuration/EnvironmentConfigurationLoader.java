@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+
 /**
  * A configuration loader that will load configurations from the environment variables. Changes can't be stored with
  * this ConfigurationLoader.
@@ -57,7 +59,8 @@ public interface EnvironmentConfigurationLoader {
 	 * @return A new Properties object with the original Properties set as the defaults and the properties from the
 	 *         environment.
 	 */
-	Properties load(String configurationName, Properties original);
+	@Nonnull
+	Properties load(String configurationName, @Nonnull Properties original);
 
 	/**
 	 * Checks whether the given string is an allowed name for configurations to load from the environment.

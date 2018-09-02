@@ -31,8 +31,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.hk2.api.TypeLiteral;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.servlet.GrizzlyWebContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -48,6 +46,7 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.LocalDateTimeProvid
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeMessageBodyWriter;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeProvider;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.di.DependencyInjectionBinder;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -58,7 +57,7 @@ import io.swagger.v3.oas.models.OpenAPI;
  * @author Christian Bräuner, Leon Kiefer, Tim Neumann
  */
 @Service(Server.class)
-public class Server implements RunnableService {
+public class ServerImpl implements RunnableService, Server {
 	/** The name of the config used by this class */
 	public static final String CONFIG_NAME = "server.config";
 	/** The name of the property, which specifies the port */
@@ -99,8 +98,8 @@ public class Server implements RunnableService {
 	 */
 	private URI socketURI() {
 		Properties conf = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
-		int port = Integer.parseInt(conf.getProperty(PROPERTY_PORT, "8080"));
-		String contextPath = conf.getProperty(PROPERTY_CONTEXT_PATH, "");
+		int port = Integer.parseInt(conf.getProperty(PROPERTY_PORT));
+		String contextPath = conf.getProperty(PROPERTY_CONTEXT_PATH);
 		String local = conf.getProperty(PROPERTY_LOCALHOST);
 
 		if (contextPath.indexOf('/') != -1) {
@@ -111,14 +110,8 @@ public class Server implements RunnableService {
 			contextPath = "/";
 		}
 
-		if (local == null) {
-			this.logger.warn("Server config missing key {}.", PROPERTY_LOCALHOST);
-			local = "true";
-		}
-
-		if (Boolean.parseBoolean(local))
-			return UriBuilder.fromPath(contextPath).scheme("http").host(IP_LOCAL).port(port).build();
-		return UriBuilder.fromPath(contextPath).scheme("http").host(IP_GLOBAL).port(port).build();
+		String ip = Boolean.parseBoolean(local) ? IP_LOCAL : IP_GLOBAL;
+		return UriBuilder.fromPath(contextPath).scheme("http").host(ip).port(port).build();
 	}
 
 	@Override
@@ -126,12 +119,7 @@ public class Server implements RunnableService {
 		this.startWithResources();
 	}
 
-	/**
-	 * creates and starts the HttpServer
-	 * 
-	 * @param classes
-	 *            the resource classes
-	 */
+	@Override
 	public void startWithResources(Class<?>... classes) {
 		if (this.httpServer != null)
 			throw new IllegalStateException("The Server is already started");
@@ -142,10 +130,18 @@ public class Server implements RunnableService {
 
 		OpenApiResource openApiResource = new OpenApiResource();
 		OpenAPI openapi = new OpenAPI();
-		List<io.swagger.v3.oas.models.servers.Server> servers = Collections
-				.singletonList(new io.swagger.v3.oas.models.servers.Server().url(this.configurationManager
-						.getConfigurationWithDefaults(CONFIG_NAME).getProperty(PROPERTY_SERVER_URL)));
-		openapi.servers(servers);
+
+		String serverURL = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME)
+				.getProperty(PROPERTY_SERVER_URL);
+		if (serverURL.isEmpty()) {
+			this.logger.warn("Missing public server URL."
+					+ " The Url is required to create links to the server itself, that are valid in the global scope.");
+		} else {
+			List<io.swagger.v3.oas.models.servers.Server> servers = Collections
+					.singletonList(new io.swagger.v3.oas.models.servers.Server().url(serverURL));
+			openapi.servers(servers);
+		}
+
 		SwaggerConfiguration oasConfig = new SwaggerConfiguration().openAPI(openapi).prettyPrint(true)
 				.scannerClass("io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner");
 		openApiResource.openApiConfiguration(oasConfig);
@@ -157,13 +153,7 @@ public class Server implements RunnableService {
 		resourceConfig.register(LocalDateTimeProvider.class);
 		resourceConfig.register(LocalDateTimeMessageBodyWriter.class);
 		resourceConfig.register(CORSFilter.class);
-		resourceConfig.register(new AbstractBinder() {
-			@Override
-			protected void configure() {
-				this.bind(new ServiceInjectionResolver(Server.this.di)).to(new TypeLiteral<Reference>() {
-				});
-			}
-		});
+		resourceConfig.register(new DependencyInjectionBinder(this.di));
 		try {
 			URI socketURI = this.socketURI();
 			this.httpServer = GrizzlyWebContainerFactory.create(socketURI, new ServletContainer(resourceConfig), null,
@@ -174,9 +164,6 @@ public class Server implements RunnableService {
 		this.logger.info("started the server");
 	}
 
-	/**
-	 * shutdown the server if the server is running
-	 */
 	@Override
 	public void stop() {
 		if (this.httpServer == null)
@@ -186,19 +173,12 @@ public class Server implements RunnableService {
 		this.httpServer = null;
 	}
 
-	/**
-	 * Checks whether the server is running
-	 * 
-	 * @return whether the server is running
-	 */
+	@Override
 	public boolean isRunning() {
 		return (this.httpServer != null);
 	}
 
-	/**
-	 * @param cls
-	 *            a resource class
-	 */
+	@Override
 	public void register(Class<?> cls) {
 		if (!cls.isAnnotationPresent(Path.class)) {
 			this.logger.error("can't register class {}, because it dont have the Path annotation", cls);
