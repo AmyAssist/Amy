@@ -42,8 +42,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 @SpeechCommand
 public class EMailSpeech {
 
-	private static final String NOMAILS = "No new messages";
-	private static final String NOIMPMAILS = "No important new messages";
+	private static final String NO_MAILS = "No new messages";
+	private static final String NO_IMP_MAILS = "No important new messages";
 	private static final String IMPORTANT = "important";
 
 	@Reference
@@ -51,6 +51,30 @@ public class EMailSpeech {
 
 	@Reference
 	private Logger logger;
+
+	/**
+	 * Connects to the Amy Mail
+	 * 
+	 * @return connected
+	 */
+	@Intent
+	public String connectToAmyMail(Map<String, EntityData> entities) {
+		if (this.logic.connectToMailServer(null)) {
+			return "Connected to mail server";
+		}
+		return "Couldn't connect to mail server";
+	}
+
+	/**
+	 * Disconnect from currently connected mail server
+	 * 
+	 * @return disconnected
+	 */
+	@Intent
+	public String disconnect(Map<String, EntityData> entities) {
+		this.logic.disconnectFromMailServer();
+		return "disconnected";
+	}
 
 	/**
 	 * Checks if there are new messages
@@ -65,12 +89,12 @@ public class EMailSpeech {
 			if (this.logic.hasNewMessages(true)) {
 				return "You have new important messages.";
 			}
-			return NOIMPMAILS;
+			return NO_IMP_MAILS;
 		}
 		if (this.logic.hasNewMessages(false)) {
 			return "You have new messages.";
 		}
-		return NOMAILS;
+		return NO_MAILS;
 	}
 
 	/**
@@ -87,13 +111,13 @@ public class EMailSpeech {
 			if (count > 0) {
 				return count + " new important messages";
 			}
-			return NOIMPMAILS;
+			return NO_IMP_MAILS;
 		}
 		int count = this.logic.getNewMessageCount(false);
 		if (count > 0) {
 			return count + " new mails.";
 		}
-		return NOMAILS;
+		return NO_MAILS;
 	}
 
 	/**

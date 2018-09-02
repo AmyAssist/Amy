@@ -9,6 +9,14 @@
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>
+		<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.connectToAmyMail">
+		<gram>connect to amy mail</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.disconnect">
+		<gram>disconnect from mail</gram>
+	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.numberOfNewMails">
 		<gram>how many [new] [{important}] (messages|mails) [do i have]</gram>
