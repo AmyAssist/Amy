@@ -3,9 +3,15 @@ absPath=$(readlink -f "$0")
 absDir=$(dirname "$absPath")
 cd "${absDir}"
 docker-compose up -d
-sleep 8
-curl -I localhost
-curlCode=$?
+stop=false
+remainingTries=20
+while [ "$stop" == "false" ] ;do
+  sleep 1
+  curl -I localhos
+  curlCode=$?
+  if [ $curlCode -eq 0 ] || [ $remainingTries -eq 0 ] ;then stop=true ;fi
+  let "remainingTries=$remainingTries - 1"
+done
 docker-compose stop
 docker-compose logs master-node
 contCode=$(docker inspect -f '{{.State.ExitCode}}' vibrant_elbakyan)
