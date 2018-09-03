@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
 import java.net.URI;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
@@ -36,6 +37,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
@@ -50,6 +54,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
  */
 @Service(PlayerLogic.class)
 public class PlayerLogic {
+	private static final String MUSIC_MUTE_TOPIC_FUNCTION = "muteMusic";
 	@Reference
 	private SpotifyAPICalls spotifyAPICalls;
 	@Reference
@@ -59,27 +64,40 @@ public class PlayerLogic {
 	@Reference
 	private MessageHub messageHub;
 
+	private boolean wasPlaying = false;
+
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
-	
+
 	private static final String ITME_NOT_FOUND = "Item not found";
 
 	@PostConstruct
 	private void init() {
-		this.messageHub.subscribe("home/all/music/mute", message -> {
+		Consumer<String> muteConsumer = message -> {
 			switch (message) {
 			case "true":
-				this.pause();
+				this.wasPlaying = this.spotifyAPICalls.getCurrentPlayingContext().getIs_playing().booleanValue();
+				if (this.wasPlaying) {
+					this.pause();
+				}
 				break;
 			case "false":
-				this.resume();
+				if (this.wasPlaying) {
+					this.resume();
+				}
 				break;
 			default:
 				this.logger.warn("unkown message {}", message);
 				break;
 			}
-		});
+		};
+		String topicGeneral = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
+		String topicMusic = SmarthomeFunctionTopics.getTopicString(LocationTopics.ALL, RoomTopics.ALL,
+				MUSIC_MUTE_TOPIC_FUNCTION);
+
+		this.messageHub.subscribe(topicGeneral, muteConsumer);
+		this.messageHub.subscribe(topicMusic, muteConsumer);
 	}
 
 	/**
@@ -125,9 +143,8 @@ public class PlayerLogic {
 		List<PlaylistEntity> playLists;
 		playLists = this.search.searchFeaturedPlaylists(5);
 		if (!playLists.isEmpty() && 1 < playLists.size()
-				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).getUri())) {
+				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).getUri()))
 			return playLists.get(1);
-		}
 		this.logger.warn("no featured playlist found");
 		return null;
 	}
@@ -142,22 +159,23 @@ public class PlayerLogic {
 	 * @return a PlaylistEntity
 	 */
 	public PlaylistEntity playPlaylist(int playlistNumber, SearchTypes type) {
-		if(type.equals(SearchTypes.FEATURED_PLAYLISTS) && this.search.getFeaturedPlaylists().size() > playlistNumber) {
+		if (type.equals(SearchTypes.FEATURED_PLAYLISTS) && this.search.getFeaturedPlaylists().size() > playlistNumber) {
 			this.spotifyAPICalls.playListFromUri(this.search.getFeaturedPlaylists().get(playlistNumber).getUri());
 			return this.search.getFeaturedPlaylists().get(playlistNumber);
 		}
-		if(type.equals(SearchTypes.USER_PLAYLISTS) && this.search.getOwnPlaylists().size() > playlistNumber) {
+		if (type.equals(SearchTypes.USER_PLAYLISTS) && this.search.getOwnPlaylists().size() > playlistNumber) {
 			this.spotifyAPICalls.playListFromUri(this.search.getOwnPlaylists().get(playlistNumber).getUri());
 			return this.search.getOwnPlaylists().get(playlistNumber);
 		}
-		if(type.equals(SearchTypes.SEARCH_PLAYLISTS) && this.search.getPlaylistSearchResults().size() > playlistNumber) {
+		if (type.equals(SearchTypes.SEARCH_PLAYLISTS)
+				&& this.search.getPlaylistSearchResults().size() > playlistNumber) {
 			this.spotifyAPICalls.playListFromUri(this.search.getPlaylistSearchResults().get(playlistNumber).getUri());
 			return this.search.getPlaylistSearchResults().get(playlistNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
 		return null;
 	}
-	
+
 	/**
 	 * this method play a track from a track search. Use only after a search
 	 * 
@@ -166,14 +184,14 @@ public class PlayerLogic {
 	 * @return a TrackEntity
 	 */
 	public TrackEntity playTrack(int trackNumber) {
-		if(this.search.getTrackSearchResults().size() > trackNumber) {
+		if (this.search.getTrackSearchResults().size() > trackNumber) {
 			this.spotifyAPICalls.playSongFromUri(this.search.getTrackSearchResults().get(trackNumber).getUri());
 			return this.search.getTrackSearchResults().get(trackNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
 		return null;
 	}
-	
+
 	/**
 	 * this method play a album from a album search. Use only after a search
 	 * 
@@ -182,14 +200,14 @@ public class PlayerLogic {
 	 * @return a AlbumEntity
 	 */
 	public AlbumEntity playAlbum(int albumNumber) {
-		if(this.search.getAlbumSearchResults().size() > albumNumber) {
-			this.spotifyAPICalls.playSongFromUri(this.search.getAlbumSearchResults().get(albumNumber).getUri());
+		if (this.search.getAlbumSearchResults().size() > albumNumber) {
+			this.spotifyAPICalls.playListFromUri(this.search.getAlbumSearchResults().get(albumNumber).getUri());
 			return this.search.getAlbumSearchResults().get(albumNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
 		return null;
 	}
-	
+
 	/**
 	 * this method play a artist from a artist search. Use only after a search
 	 * 
@@ -198,8 +216,8 @@ public class PlayerLogic {
 	 * @return a ArtistEntity
 	 */
 	public ArtistEntity playArtist(int artistNumber) {
-		if(this.search.getArtistSearchResults().size() > artistNumber) {
-			this.spotifyAPICalls.playSongFromUri(this.search.getArtistSearchResults().get(artistNumber).getUri());
+		if (this.search.getArtistSearchResults().size() > artistNumber) {
+			this.spotifyAPICalls.playListFromUri(this.search.getArtistSearchResults().get(artistNumber).getUri());
 			return this.search.getArtistSearchResults().get(artistNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
@@ -248,7 +266,7 @@ public class PlayerLogic {
 	 * @return a hashMap with the keys name and artist
 	 */
 	public TrackEntity getCurrentSong() {
-		CurrentlyPlayingContext currentlyPlayingContext = this.spotifyAPICalls.getCurrentSong();
+		CurrentlyPlayingContext currentlyPlayingContext = this.spotifyAPICalls.getCurrentPlayingContext();
 		if (currentlyPlayingContext != null && currentlyPlayingContext.getItem() != null) {
 			Track[] track = { currentlyPlayingContext.getItem() };
 			return this.search.createTrackData(new Paging.Builder<Track>().setItems(track).build()).get(0);

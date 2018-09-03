@@ -33,9 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.*;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
@@ -248,18 +246,45 @@ public class SpotifySpeech {
 	}
 
 	/**
-	 * speech command to search for a song and play this directly
+	 * speech command to search for a track, album or palyist and play this directly
 	 * 
 	 * @param entites
-	 *            input. songname
-	 * @return the song that is now playing
+	 *            input. name
+	 * @return the track, album, playist that is now playing
 	 */
 	@Intent()
 	public String searchASong(Map<String, EntityData> entites) {
-		List<TrackEntity> tracks = this.search.searchforTracks(entites.get("songname").getString(), 1);
-		if (!tracks.isEmpty() && tracks.get(0) != null) {
-			return this.playerLogic.playTrack(0).toString();
+		switch (entites.get("mode").getString()) {
+		case "track":
+		case "song":
+			List<TrackEntity> tracks = this.search.searchforTracks(entites.get("name").getString(), 1);
+			if (!tracks.isEmpty() && tracks.get(0) != null) {
+				return this.playerLogic.playTrack(0).toString();
+			}
+			break;
+		case "playlist":
+			List<PlaylistEntity> playlists = this.search.searchforPlaylists(entites.get("name").getString(), 1);
+			if (!playlists.isEmpty() && playlists.get(0) != null) {
+				return this.playerLogic.playPlaylist(0, SearchTypes.SEARCH_PLAYLISTS).toString();
+			}
+			break;
+		case "album":
+			List<AlbumEntity> albums = this.search.searchforAlbums(entites.get("name").getString(), 1);
+			if (!albums.isEmpty() && albums.get(0) != null) {
+				return this.playerLogic.playAlbum(0).toString();
+			}
+			break;
+		case "artist":
+		case "artists":
+			List<ArtistEntity> artists = this.search.searchforArtists(entites.get("name").getString(), 1);
+			if (!artists.isEmpty() && artists.get(0) != null) {
+				return this.playerLogic.playArtist(0).toString();
+			}
+			break;
+		default:
+			break;
 		}
+		
 		return ERROR_MESSAGE_ELEMENT;
 	}
 

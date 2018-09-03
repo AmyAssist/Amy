@@ -21,20 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
-
-import java.util.concurrent.CompletableFuture;
+package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
 
 /**
- * 
- * @author Leon Kiefer
+ * The interface of message topic filter.
+ *
+ * This conforms to the OASIS Standard for MQTT Version 3.1.1.
+ *
+ * @author Tim Neumann
  */
-public interface SpeechInputHandler {
+public interface TopicFilter extends Topic {
 	/**
-	 * 
-	 * @param speechInput
-	 *            the user input
-	 * @return a Future, that completes with the result of processing the user input
+	 * Checks whether this filter matches the given topic name
+	 *
+	 * @param name
+	 *            The name to match with.
+	 * @return Whether this filter matches the given name.
 	 */
-	CompletableFuture<String> handle(String speechInput);
+	boolean doesFilterMatch(TopicName name);
 }

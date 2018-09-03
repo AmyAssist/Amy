@@ -24,32 +24,23 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import javax.mail.BodyPart;
+import javax.mail.*;
 import javax.mail.Flags.Flag;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
 import javax.mail.search.FlagTerm;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,8 +48,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.GMailSession;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
 import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
 import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -75,9 +67,11 @@ public class EmailLogicTest {
 	@Reference
 	private TestFramework framework;
 
-	private GMailSession mailSession;
+	private MailSession mailSession;
 
 	private ContactRegistry contactRegistry;
+
+	private Properties properties;
 
 	private EMailLogic emailLogic;
 
@@ -93,8 +87,9 @@ public class EmailLogicTest {
 	 */
 	@BeforeEach
 	public void setup() throws MessagingException {
-		this.mailSession = this.framework.mockService(GMailSession.class);
+		this.mailSession = this.framework.mockService(MailSession.class);
 		this.contactRegistry = this.framework.mockService(ContactRegistry.class);
+		this.properties = this.framework.mockService(Properties.class);
 		this.emailLogic = this.framework.setServiceUnderTest(EMailLogic.class);
 
 		// initialize mocks
@@ -515,6 +510,74 @@ public class EmailLogicTest {
 		for (Message message : importantMessages) {
 			assertThat(this.emailLogic.isImportantMessage(message), is(true));
 		}
+	}
+
+	/**
+	 * Tests {@link EMailLogic#connectToMailServer(EMailCredentials)}
+	 */
+	@Test
+	protected void testConnectToMailServerStandardCredentials() {
+		EMailCredentials credentials = new EMailCredentials("testUsername", "testPassword", "testHostAddress");
+
+		when(this.mailSession.startNewMailSession(credentials)).thenReturn(true);
+		assertTrue(this.emailLogic.connectToMailServer(credentials));
+	}
+
+	/**
+	 * Tests {@link EMailLogic#connectToMailServer(EMailCredentials)}
+	 */
+	@Test
+	protected void testConnectToMailServerEmptyCredentials() {
+		when(this.mailSession.startNewMailSession(ArgumentMatchers.any(EMailCredentials.class))).thenReturn(true);
+		assertTrue(this.emailLogic.connectToMailServer(null));
+		Mockito.verify(this.properties).getProperty(EMailLogic.AMY_MAIL_ADDRESS_KEY);
+		Mockito.verify(this.properties).getProperty(EMailLogic.AMY_MAIL_PW_KEY);
+	}
+
+	/**
+	 * Tests {@link EMailLogic#isConnectedToMailServer()}
+	 */
+	@Test
+	protected void testIsConnectedToMailServer() {
+		Assertions.assertFalse(this.emailLogic.isConnectedToMailServer());
+
+		when(this.mailSession.isConnected()).thenReturn(true);
+		assertTrue(this.emailLogic.isConnectedToMailServer());
+	}
+
+	/**
+	 * Tests {@link EMailLogic#disconnectFromMailServer()}
+	 */
+	@Test
+	protected void testDisconnectFromMailServer() {
+		this.emailLogic.disconnectFromMailServer();
+
+		Mockito.verify(this.mailSession).endSession();
+		Mockito.verify(this.framework.storage(), Mockito.atLeastOnce()).delete(ArgumentMatchers.anyString());
+	}
+
+	/**
+	 * Tests {@link EMailLogic#getCredentials()}
+	 */
+	@Test
+	protected void testGetCredentialsNotNull() {
+		final String credentialString = "credential";
+		when(this.framework.storage().has(ArgumentMatchers.anyString())).thenReturn(true);
+		when(this.framework.storage().get(ArgumentMatchers.anyString())).thenReturn(credentialString);
+		EMailCredentials creds = new EMailCredentials(credentialString, credentialString, credentialString);
+
+		assertThat(this.emailLogic.getCredentials().getUsername(), is(creds.getUsername()));
+		assertThat(this.emailLogic.getCredentials().getPassword(), is(creds.getPassword()));
+		assertThat(this.emailLogic.getCredentials().getImapServer(), is(creds.getImapServer()));
+	}
+
+	/**
+	 * Tests {@link EMailLogic#getCredentials()}
+	 */
+	@Test
+	protected void testGetCredentialsNull() {
+		when(this.framework.storage().has(ArgumentMatchers.anyString())).thenReturn(false);
+		Assertions.assertNull(this.emailLogic.getCredentials());
 	}
 
 	/**

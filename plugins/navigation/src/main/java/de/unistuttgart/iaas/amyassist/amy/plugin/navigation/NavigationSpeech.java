@@ -32,6 +32,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.ReadableInstant;
+import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -57,6 +58,9 @@ public class NavigationSpeech {
 
 	@Reference
 	private RegistryConnection registryConnection;
+	
+	@Reference
+	private Logger logger;
 
 	private static final String WRONG_PLACE = "One or more places are not in the registry";
 	private static final String END_KEY = "end";
@@ -78,8 +82,8 @@ public class NavigationSpeech {
 					inputTime.getMinute());
 			ReadableInstant outputTime = null;
 			outputTime = this.logic.whenIHaveToGo(
-					this.registryConnection.getAddress(entities.get(START_KEY).getString()),
-					this.registryConnection.getAddress(entities.get(END_KEY).getString()),
+					cutEndWords(this.registryConnection.getAddress(entities.get(START_KEY).getString()), "to"),
+					cutEndWords(this.registryConnection.getAddress(entities.get(END_KEY).getString()), "by"),
 					this.logic.getTravelMode(entities.get("mode").getString().trim()), time);
 			if (outputTime != null) {
 				return "You should go at ".concat(String.valueOf(outputTime.get(DateTimeFieldType.hourOfDay())))
@@ -110,8 +114,8 @@ public class NavigationSpeech {
 		}
 		if (time != null) {
 			BestTransportResult result = this.logic.getBestTransportInTime(
-					this.registryConnection.getAddress(entities.get(START_KEY).getString()),
-					this.registryConnection.getAddress(entities.get(END_KEY).getString()), time);
+					cutEndWords(this.registryConnection.getAddress(entities.get(START_KEY).getString()), "to"),
+					cutEndWords(this.registryConnection.getAddress(entities.get(END_KEY).getString()), "at"), time);
 			if (result != null) {
 				return "The best transport Mode is ".concat(result.getMode().toString()).concat(".\n")
 						.concat(result.routeToShortString());
@@ -130,10 +134,27 @@ public class NavigationSpeech {
 	@Intent()
 	public String routeFromtTo(Map<String, EntityData> entities) {
 		return this.logic
-				.fromToWithDeparture(this.registryConnection.getAddress(entities.get(START_KEY).getString()),
-						this.registryConnection.getAddress(entities.get(END_KEY).getString()),
+				.fromToWithDeparture(
+						cutEndWords(this.registryConnection.getAddress(entities.get(START_KEY).getString()), "to"),
+						cutEndWords(this.registryConnection.getAddress(entities.get(END_KEY).getString()), "by"),
 						this.logic.getTravelMode(entities.get("mode").getString().trim()), DateTime.now())
 				.routeToShortString();
+	}
+
+	/**
+	 * helper method to cut words at the end for example to or by that comes from the speech
+	 * 
+	 * @param location
+	 *            location input
+	 * @param cut
+	 *            string to cut
+	 * @return the location string without the end word
+	 */
+	private String cutEndWords(String location, String cut) {
+		if (location.endsWith(cut)) {
+			return location.substring(0, location.length() - cut.length() - 1);
+		}
+		return location;
 	}
 
 	/**

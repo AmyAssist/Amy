@@ -73,7 +73,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			"Sorry, could you repeat that?", "I don't know what you mean", "No idea what you are talking about",
 			"My plugin developers did not teach me this yet" };
 
-	private static final String QUIT_INTENT_USER_INPUT = "(never mind|quit|forget that)";
+	private static final String QUIT_INTENT_USER_INPUT = "(never mind|quit|forget that|nevermind)";
 
 	private static final String[] QUIT_INTENT_ANSWER = { "ok", "sure", "what else can i do for you?" };
 
@@ -197,14 +197,12 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private Map<String, String> getEntityContent(AGFNode node) {
 		Map<String, String> result = new HashMap<>();
 
-		for (AGFNode child : node.getChilds()) {
+		for (AGFNode child : node.getChildEntityNodes()) {
 			if (child.getType() == AGFNodeType.ENTITY) {
 				EntityNode entity = (EntityNode) child;
 				if (entity.getUserProvidedContent() != null) {
 					result.put(entity.getContent(), entity.getUserProvidedContent());
 				}
-			} else {
-				result.putAll(getEntityContent(child));
 			}
 		}
 

@@ -47,6 +47,35 @@
 			<gram>[at] {time}</gram>
 		</Prompt>
 	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.goToAt">
+		<gram>when [do] i have to go from {start} {end} [{mode}] [at {time}]
+		</gram>
+		<EntityTemplates>
+			<EntityTemplate id="time" required="true">
+				<gram>{amytime}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="start" required="true">
+				<gram>+ to</gram>
+			</EntityTemplate>
+			<EntityTemplate id="end" required="true">
+				<gram>+ by</gram>
+			</EntityTemplate>
+			<EntityTemplate id="mode" required="true">
+				<gram>(car|transit)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="mode">
+			<text>by car or transit?</text>
+			<gram>[by] {mode} </gram>
+		</Prompt>
+		<Prompt entityTemplateId="time">
+			<text>when do you want to arrive? </text>
+			<gram>[at] {time}</gram>
+		</Prompt>
+	</Intent>
+
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.bestTransport">
 		<gram>best transport</gram>
@@ -87,6 +116,28 @@
 			<gram>[at] {time}</gram>
 		</Prompt>
 	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.bestTransport">
+		<gram>best transport from {start} {end} [{time}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="time" required="true">
+				<gram>({amytime}|now)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="start" required="true">
+				<gram>+ to</gram>
+			</EntityTemplate>
+			<EntityTemplate id="end" required="true">
+				<gram>+ at</gram>
+			</EntityTemplate>
+			<Prompt entityTemplateId="time">
+				<text>When are you leaving?</text>
+				<gram> {time}</gram>
+			</Prompt>
+		</EntityTemplates>
+	</Intent>
+
+
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.routeFromtTo">
 		<gram>get route [by {mode}]</gram>
@@ -128,6 +179,19 @@
 		</Prompt>
 	</Intent>
 
-
-
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.routeFromtTo">
+		<gram>get route from {start} {end} {mode}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="start" required="true">
+				<gram>+ to</gram>
+			</EntityTemplate>
+			<EntityTemplate id="end" required="true">
+				<gram>+ by</gram>
+			</EntityTemplate>
+			<EntityTemplate id="mode" required="true">
+				<gram>(car|transit|bike)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
 </AmyInteractionModel>

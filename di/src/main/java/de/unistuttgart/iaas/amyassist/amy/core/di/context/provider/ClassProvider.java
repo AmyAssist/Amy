@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+
 /**
  * A ContextProvider which provides the class of the consumer
  * 
@@ -31,8 +33,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
 public class ClassProvider implements StaticProvider<Class<?>> {
 
 	@Override
-	public Class<?> getContext(Class<?> consumer) {
-		return consumer;
+	public Class<?> getContext(ServiceConsumer<?> consumer) {
+		return consumer.getConsumerClass();
 	}
 
 }

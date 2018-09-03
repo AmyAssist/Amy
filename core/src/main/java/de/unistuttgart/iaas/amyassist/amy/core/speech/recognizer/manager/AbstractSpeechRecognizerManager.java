@@ -39,6 +39,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
 
 /**
  * Class that manages the Recognizers belonging to a given AudioInputStream
@@ -86,10 +89,28 @@ public abstract class AbstractSpeechRecognizerManager
 		this.output = output;
 		this.mainGrammarName = grammarData.getMainGrammar().getName();
 		this.messageHub = messageHub;
-
+		initMessageHandling();
 		createRecognizers(grammarData, ais);
 
 		this.currentRecognizer = new Thread(this.mainRecognizer, "MainRecognizer");
+	}
+
+	private void initMessageHandling() {
+		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
+
+		this.messageHub.subscribe(topic, message -> {
+			switch (message) {
+			case "true":
+				this.stopOutput();
+				break;
+			case "false":
+				// do nothing
+				break;
+			default:
+				this.logger.warn("unkown message {}", message);
+				break;
+			}
+		});
 	}
 
 	private void createRecognizers(GrammarObjectsCreator grammarData, AudioInputStream ais) {
@@ -173,7 +194,8 @@ public abstract class AbstractSpeechRecognizerManager
 		} else {
 			this.voiceOutput("now sleeping");
 		}
-		this.messageHub.publish("home/all/music/mute", listening ? "true" : "false");
+		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
+		this.messageHub.publish(topic, listening ? "true" : "false", true);
 	}
 
 	@Override
@@ -189,7 +211,8 @@ public abstract class AbstractSpeechRecognizerManager
 		} else {
 			this.soundOutput(Sounds.SINGLE_CALL_STOP_BEEP);
 		}
-		this.messageHub.publish("home/all/music/mute", singleCommand ? "true" : "false");
+		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
+		this.messageHub.publish(topic, singleCommand ? "true" : "false", true);
 	}
 
 	/**

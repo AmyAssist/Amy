@@ -236,8 +236,10 @@ class SpotifySpeechTest {
 	@Test
 	void testSearchASong() {
 		Map<String, EntityData> map = new HashMap<>();
-		when(this.entityData.getString()).thenReturn("test");
-		map.put("songname", this.entityData);
+		when(this.songId.getString()).thenReturn("test");
+		map.put("name", this.songId);
+		when(this.entityData.getString()).thenReturn("track");
+		map.put("mode", this.entityData);
 		assertThat(this.speech.searchASong(map), equalTo("Element is not available"));
 		verify(this.searchLogic).searchforTracks("test", 1);
 	}

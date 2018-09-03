@@ -141,6 +141,12 @@ public class AGFNode {
 		return b.toString();
 	}
 
+	
+	/**
+	 * returns all contained entity nodes 
+	 * 
+	 * @return List<EntityNode> 
+	 */
 	public List<EntityNode> getChildEntityNodes() {
 		List<EntityNode> result = new ArrayList<>();
 

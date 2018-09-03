@@ -21,20 +21,19 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
- * Register the MessageHub in di
+ * Test Service for DI
  * 
  * @author Leon Kiefer
  */
-public class ServiceLoader implements ServiceProviderLoader {
+@Service
+public class ServiceWithPrivateConstructor {
 
-	@Override
-	public void load(Configuration configuration) {
-		configuration.register(MessageHubService.class);
+	private ServiceWithPrivateConstructor() {
+
 	}
 }

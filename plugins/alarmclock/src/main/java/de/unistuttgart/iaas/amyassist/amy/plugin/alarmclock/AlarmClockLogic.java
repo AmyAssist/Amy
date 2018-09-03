@@ -33,6 +33,7 @@ import java.util.NoSuchElementException;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 
 /**
@@ -40,8 +41,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
  * 
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
-@Service
-public class AlarmClockLogic {
+@Service(AlarmClockLogic.class)
+public class AlarmClockLogic implements RunnableService {
 
 	@Reference
 	private AlarmBeepService alarmbeep;
@@ -116,7 +117,7 @@ public class AlarmClockLogic {
 	protected Alarm setAlarm(int tomorrow, int hour, int minute) {
 		if (Alarm.timeValid(hour, minute)) {
 			tomorrowCheck(tomorrow, hour, minute);
-			int id = this.alarmStorage.getAll().size() + 1;
+			int id = searchId();
 			Alarm alarm = new Alarm(id, this.alarmTime, true);
 			this.alarmStorage.save(alarm);
 			Runnable alarmRunnable = createAlarmRunnable(id);
@@ -128,6 +129,20 @@ public class AlarmClockLogic {
 			return alarm;
 		}
 		throw new IllegalArgumentException();
+	}
+
+	private int searchId() {
+		int id = 1;
+		List<Alarm> alarmList = this.alarmStorage.getAll();
+		alarmList.sort((alarm1, alarm2) -> alarm1.getId() - alarm2.getId());
+		for (Alarm a : alarmList) {
+			if (a.getId() == id) {
+				id++;
+			} else {
+				return id;
+			}
+		}
+		return id;
 	}
 
 	/**
@@ -318,9 +333,8 @@ public class AlarmClockLogic {
 	 * @return List of all alarms
 	 */
 	protected List<Alarm> getAllAlarms() {
-		List<Alarm> alarmList = new ArrayList<>();
-		for (Alarm a : this.alarmStorage.getAll())
-			alarmList.add(a);
+		List<Alarm> alarmList = this.alarmStorage.getAll();
+		alarmList.sort((alarm1, alarm2) -> alarm1.getId() - alarm2.getId());
 		return alarmList;
 	}
 
@@ -388,5 +402,26 @@ public class AlarmClockLogic {
 		this.alarmTime = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(),
 				LocalDateTime.now().getDayOfMonth(), hour, minute);
 		return this.alarmTime;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
+	 */
+	@Override
+	public void start() {
+		List<Alarm> alarmList = getAllAlarms();
+		for (Alarm a : alarmList) {
+			Runnable alarmRunnable = createAlarmRunnable(a.getId());
+			ZonedDateTime with = this.environment.getCurrentDateTime().with(a.getAlarmTime());
+			this.taskScheduler.schedule(alarmRunnable, with.toInstant());
+		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
+	 */
+	@Override
+	public void stop() {
+		// Nothing happens here.
 	}
 }

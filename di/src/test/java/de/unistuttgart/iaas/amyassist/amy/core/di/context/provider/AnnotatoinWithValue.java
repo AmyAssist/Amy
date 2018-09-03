@@ -21,45 +21,19 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub;
+package de.unistuttgart.iaas.amyassist.amy.core.di.context.provider;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This is a internal used representation of a Message. It contains the topic and the data of a message.
+ * Annotation to the context
  * 
  * @author Leon Kiefer
- * @param <T>
- *            the type of the message payload
  */
-public class Message<T> {
-	private final String topic;
-	private final T data;
-
-	/**
-	 * @param topic
-	 *            the topic the message was published
-	 * @param data
-	 *            the payload of the message
-	 */
-	public Message(String topic, T data) {
-		this.topic = topic;
-		this.data = data;
-	}
-
-	/**
-	 * Get the topic.
-	 * 
-	 * @return the topic of the message
-	 */
-	public String getTopic() {
-		return this.topic;
-	}
-
-	/**
-	 * Get the data.
-	 * 
-	 * @return the payload of the message
-	 */
-	public T getData() {
-		return this.data;
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(java.lang.annotation.ElementType.FIELD)
+public @interface AnnotatoinWithValue {
+	String value();
 }

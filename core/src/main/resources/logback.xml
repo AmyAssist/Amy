@@ -45,8 +45,8 @@
 	<logger name="default.config.edu.cmu.sphinx" level="WARN" />
 	<logger name="org.glassfish.grizzly.http.server" level="WARN" />
 	<logger name="marytts.TextToMaryXML" level="ERROR" />
-	<logger name="org.glassfish.jersey.internal.inject.Providers"
-		level="ERROR" />
+	<logger name="org.glassfish.jersey.internal.inject.Providers" level="ERROR" />
+	<logger name="com.google.api.client.util.store.FileDataStoreFactory" level="OFF" />
 
 	<root level="WARN">
 		<appender-ref ref="STDOUT" />

@@ -37,7 +37,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 /**
  * This class is responsible to read the annotations of a given class
  *
- * @author Leon Kiefer, Felix Burk
+ * @author Leon Kiefer, Felix Burk, Lars Buttgereit
  */
 public class NLIAnnotationReader {
 
@@ -50,12 +50,13 @@ public class NLIAnnotationReader {
 	 *
 	 * @param cls
 	 *            The class of which to get the grammars
-	 * @return a List of grammars
+	 * @return a List of methods
 	 * @throws IllegalArgumentException
-	 *             if a method annotated with {@link Grammar} is not a valid NLIMethod
+	 *             if no {@link SpeechCommand} Annotation is present
+	 * 
 	 */
 	public static Set<Method> getValidIntentMethods(Class<?> cls) {
-		if (cls.getAnnotation(SpeechCommand.class) != null) {
+		if (cls.isAnnotationPresent(SpeechCommand.class)) {
 			Set<Method> validMethods = new HashSet<>();
 			Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Intent.class);
 			for (Method method : methodsWithAnnotation) {
