@@ -61,10 +61,11 @@ public class PreDefinedEntityTypes {
 			grammars.put("amyhour", "$(0,24,1)");
 			grammars.put("amyminute", "$(0,60,1)");
 			grammars.put("amydayofmonth", "$(1,31,1)");
-			grammars.put("amymonth", "(january|february|march|april|may|june|july|august|september|october|november|december)");
+			grammars.put("amydayofweek", "(monday|tuesday|wednesday|thursday|friday|saturday|sunday)");
+			grammars.put("amymonth", "(january|february|march|april|may|june|july|august|september|october|november|december|$(1,12,1))");
 			grammars.put("amytime", "({amyhour} (x|oh) {amyminute}| (({amyhour}|quarter|half)"
 					+ " (past|to) {amyminute} )|{amyhour}  [o clock])[am|pm]");
-			grammars.put("amydate", " amydayofmonth[st|nd|rd|th] [of] amymonth [amyinteger]");
+			grammars.put("amydate", " [{amydayofweek}] {amydayofmonth} [of] {amymonth} [{amyinteger}]");
 		}
 
 		if (map == null) {

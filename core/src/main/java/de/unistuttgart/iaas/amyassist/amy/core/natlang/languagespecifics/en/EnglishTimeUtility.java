@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUtility;
@@ -134,12 +135,14 @@ public class EnglishTimeUtility implements ITimeUtility {
 	public String formatTime(String input) {
 		String output = input;
 		String regex = "\\d+:?(\\d+)?(\\s(p\\.|a\\.)m\\.)?";
-		if (Pattern.compile(regex).matcher(input).find()) {
-			output = output.replace(":", " x ");
-			output = output.replace("a.m.", "am");
-			output = output.replace("p.m.", "pm");
+		StringBuffer sb = new StringBuffer();
+		Matcher matcher = Pattern.compile(regex).matcher(input);
+		while (matcher.find()) {
+			matcher.appendReplacement(sb,
+					matcher.group().replace(":", " x ").replace("a.m.", "am").replace("p.m.", "pm"));
 		}
-		return output;
+		matcher.appendTail(sb);
+		return sb.toString();
 	}
 
 	/**
@@ -149,6 +152,27 @@ public class EnglishTimeUtility implements ITimeUtility {
 	public LocalDate parseDate(String toParse) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUtility#formatDate(java.lang.String)
+	 */
+	@Override
+	public String formatDate(String input) {
+		Matcher dateWithPoints = Pattern.compile("\\d+\\.\\d+.\\d+").matcher(input);
+		String formattedDateString = replace(dateWithPoints, "\\.", " ");
+		Matcher dateOrdinal = Pattern.compile("\\d+(th|st|nd|rd)").matcher(formattedDateString);
+		formattedDateString = replace(dateOrdinal, "(th|st|nd|rd)", "");
+		return formattedDateString;
+	}
+
+	private String replace(Matcher matcher, String toReplace, String replacement) {
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+			matcher.appendReplacement(sb, matcher.group().replaceAll(toReplace, replacement));
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
 	}
 
 }

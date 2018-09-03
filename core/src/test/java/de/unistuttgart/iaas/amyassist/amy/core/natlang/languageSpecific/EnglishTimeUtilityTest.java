@@ -112,10 +112,24 @@ class EnglishTimeUtilityTest {
 		assertThat(this.timeUtility.parseTime("20 x 22"), equalTo(LocalTime.MIN.plusHours(20).plusMinutes(22)));
 	}
 	
+	@Test
 	void testTimeFormatter() {
 		assertThat(this.timeUtility.formatTime("10 a.m."), equalTo("10 am"));
 		assertThat(this.timeUtility.formatTime("10 p.m."), equalTo("10 pm"));
 		assertThat(this.timeUtility.formatTime("1:02 a.m."), equalTo("1 x 02 am"));
 		assertThat(this.timeUtility.formatTime("10:10 a.m."), equalTo("10 x 10 am"));
+		assertThat(this.timeUtility.formatTime("10:10 a.m. and 12:00 p.m."), equalTo("10 x 10 am and 12 x 00 pm"));
 	}
+	
+	@Test
+	void testformatDateWithPoints() {
+		assertThat(this.timeUtility.formatDate(". today is 10.10.2018 hello"), equalTo(". today is 10 10 2018 hello"));
+		assertThat(this.timeUtility.formatDate(". today is 1.1.2018 hello"), equalTo(". today is 1 1 2018 hello"));
+		assertThat(this.timeUtility.formatDate(". today is 1.1.2018 and 1st july"), equalTo(". today is 1 1 2018 and 1 july"));
+		assertThat(this.timeUtility.formatDate(". today is 1.1.2018 and 1st july and 4th july"), equalTo(". today is 1 1 2018 and 1 july and 4 july"));
+		assertThat(this.timeUtility.formatDate("first 2nd july and 4th july"), equalTo("first 2 july and 4 july"));	
+		assertThat(this.timeUtility.formatDate(". today is 10.10.2018 to 12.10.2018 hello"), equalTo(". today is 10 10 2018 to 12 10 2018 hello"));
+	
+	}
+	
 }

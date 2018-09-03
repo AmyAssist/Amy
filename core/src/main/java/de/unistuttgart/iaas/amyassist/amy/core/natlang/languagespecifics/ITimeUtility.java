@@ -59,5 +59,10 @@ public interface ITimeUtility {
 	 */
 	LocalDate parseDate(String toParse);
 	
-	//String cut
+	/**
+	 * format the time for parse. for example cut th by 4th or replace . to ' ' by 10.08.2018
+	 * @param input string to format
+	 * @return the input with all replacements
+	 */
+	String formatDate(String input);
 }
