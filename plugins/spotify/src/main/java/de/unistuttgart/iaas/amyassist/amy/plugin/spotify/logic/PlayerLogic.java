@@ -337,7 +337,6 @@ public class PlayerLogic {
 	 * @param suppressed 'true' to suppress playback, 'false' to restore it
 	 */
 	private void setSuppressed(boolean suppressed) {
-		logger.warn("setSuppressed({})", suppressed);
 		if (suppressed != this.suppressed) {
 
 			boolean isPlaying = spotifyAPICalls.getIsPlaying();

@@ -271,7 +271,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	}
 
 	/**
-	 * Exception that Singnals that there was an Error with the Chrome Launch
+	 * Exception which signals that there was an Error with the Chrome Launch
 	 */
 	public class LaunchChromeException extends Exception {
 
