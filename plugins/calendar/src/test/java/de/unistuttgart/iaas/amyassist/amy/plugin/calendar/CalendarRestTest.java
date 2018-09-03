@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.*;
 import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
 
 import java.time.LocalDateTime;
@@ -123,7 +124,7 @@ class CalendarRestTest {
         try (Response response = this.target.path("eventsAt/2015-05-28T08:00:00").request().get()) {
             String actualMsg = response.readEntity(String.class);
             assertThat(actualMsg, equalTo("Couldn't get events"));
-            assertThat(response, status(409));
+            assertEquals(404, response.getStatus());
         }
 
         Mockito.verify(this.logic, Mockito.times(2)).getEventsAt(this.ldt);
