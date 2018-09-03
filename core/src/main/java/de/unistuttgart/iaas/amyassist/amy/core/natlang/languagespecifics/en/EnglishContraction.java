@@ -23,9 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.Contraction;
 
 /**
@@ -39,19 +36,17 @@ public class EnglishContraction extends Contraction {
 	 * constructor for the English contraction resolving. all contractions are initialized here
 	 */
 	public EnglishContraction() {
-		Map<String, String> contractions = new HashMap<>();
-		contractions.put("ain't", "am not");
-		contractions.put("won't", "will not");
-		contractions.put("shan't", "shall not");
-		contractions.put("n't", " not");
-		contractions.put("let's", "let us");
-		contractions.put("i'm", "i am");
-		contractions.put("'re", " are");
-		contractions.put("'ve", " have");
-		contractions.put("'ll", " will");
+		this.contractions.put("ain't", "am not");
+		this.contractions.put("won't", "will not");
+		this.contractions.put("shan't", "shall not");
+		this.contractions.put("n't", " not");
+		this.contractions.put("let's", "let us");
+		this.contractions.put("i'm", "i am");
+		this.contractions.put("'re", " are");
+		this.contractions.put("'ve", " have");
+		this.contractions.put("'ll", " will");
 		// more than one possibility. is not possible to transform
-		contractions.put("'d", " d");
-		contractions.put("'s", " s");
-		compilePattern(contractions);
+		this.contractions.put("'d", " d");
+		this.contractions.put("'s", " s");
 	}
 }

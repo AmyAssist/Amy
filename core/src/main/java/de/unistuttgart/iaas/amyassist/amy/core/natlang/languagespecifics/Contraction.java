@@ -40,17 +40,16 @@ public abstract class Contraction {
 	/**
 	 * contains all replacements for all contractions
 	 */
-	private Map<String, String> contractions = new HashMap<>();
+	protected  Map<String, String> contractions = new HashMap<>();
 	private Pattern pattern;
 
 	/**
-	 * make a pattern out of all contractions. call this in the constructor of a subclass with a hashma with all
+	 * make a pattern out of all contractions. call this in the constructor of a subclass with a hashmap with all
 	 * contractions
 	 * 
-	 * @param contractionMap HashMap with all contractions in the specific language
 	 */
-	protected void compilePattern(Map<String, String> contractionMap) {
-		this.contractions = contractionMap;
+	private void compilePattern() {
+
 		String patternString = "(" + StringUtils.join(this.contractions.keySet(), "|") + ")";
 		this.pattern = Pattern.compile(patternString);
 	}
@@ -63,6 +62,9 @@ public abstract class Contraction {
 	 * @return the disassembled string
 	 */
 	public String disassemblingContraction(String toDisassemble) {
+		if(this.pattern == null) {
+			compilePattern();
+		}
 		Matcher matcher = this.pattern.matcher(toDisassemble);
 		StringBuffer sb = new StringBuffer();
 		while (matcher.find()) {
