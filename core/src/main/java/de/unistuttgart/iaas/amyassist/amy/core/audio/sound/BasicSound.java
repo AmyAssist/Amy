@@ -55,7 +55,14 @@ public class BasicSound implements Sound {
 		this.format = audioData.getFormat();
 		if (audioData.getFrameLength() != AudioSystem.NOT_SPECIFIED) {
 			this.data = new byte[(int) (audioData.getFrameLength() * audioData.getFormat().getFrameSize())];
-			audioData.read(this.data, 0, this.data.length);
+			int bytesRead = 0;
+			int bytesReadTotal = 0;
+			do {
+				bytesRead = audioData.read(this.data, bytesReadTotal, this.data.length - bytesReadTotal);
+				if (bytesRead < 0)
+					throw new IllegalStateException("Stream not as long as specified.");
+				bytesReadTotal += bytesRead;
+			} while (bytesReadTotal < this.data.length);
 		} else {
 			int bytesReadTotal = 0;
 			int bytesRead;
