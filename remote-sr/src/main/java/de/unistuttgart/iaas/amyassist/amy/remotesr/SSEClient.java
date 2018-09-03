@@ -57,10 +57,18 @@ class SSEClient {
 	}
 
 	/**
+	 * Checks whether the client is connected. This method performs a network operations and is therefore slow.
 	 * @return Whether this client is connected.
 	 */
 	boolean isConnected() {
-		return this.sink != null && !this.sink.isClosed();
+		try {
+			return this.sink != null && !this.sink.isClosed() && !(this.sink.send(sse.newEvent("ping", "ping")).toCompletableFuture().get() instanceof Exception);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return false;
+		} catch (ExecutionException e) {
+			return false;
+		}
 	}
 
 	/**
