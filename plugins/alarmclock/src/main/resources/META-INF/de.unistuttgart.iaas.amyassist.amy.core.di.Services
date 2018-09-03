@@ -1,4 +1,5 @@
 de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmBeepService
 de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockLogic
-de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.TimerStorage
 de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmRegistryImpl
+de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.TimerLogic
+de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.TimerRegistryImpl
