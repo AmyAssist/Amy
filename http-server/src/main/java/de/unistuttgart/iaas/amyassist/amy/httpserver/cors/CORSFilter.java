@@ -95,16 +95,16 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	private void preflight(ContainerRequestContext requestContext, String origin) {
 		ResponseBuilder builder = Response.ok();
 		builder.header(Headers.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
-		builder.header(Headers.VARY, Headers.ORIGIN);
 		builder.header(Headers.ACCESS_CONTROL_ALLOW_HEADERS, ALLOWED_HEADERS);
 		builder.header(Headers.ACCESS_CONTROL_ALLOW_METHODS, ALLOWED_METHODS);
+		builder.header(Headers.VARY, Headers.ORIGIN);
 
 		requestContext.abortWith(builder.build());
 	}
 
 	private void checkOrigin(ContainerRequestContext requestContext, @Nonnull String origin) {
-		if (!getAllowedOrigins().contains(origin) && !origin.matches(LOCALHOST_REGEX)) {
-			requestContext.setProperty(ACCESS_DENIED, true);
+		if (!getAllowedOrigins().contains("*") && !getAllowedOrigins().contains(origin) && !origin.matches(LOCALHOST_REGEX)) {
+			requestContext.setProperty(ACCESS_DENIED, Boolean.TRUE);
 			throw new WebApplicationException(origin + " not allowed", Status.FORBIDDEN);
 		}
 	}
