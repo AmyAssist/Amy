@@ -103,10 +103,11 @@ public class CORSFilter implements ContainerResponseFilter, ContainerRequestFilt
 	}
 
 	private void checkOrigin(ContainerRequestContext requestContext, @Nonnull String origin) {
-		if (!getAllowedOrigins().contains("*") && !getAllowedOrigins().contains(origin) && !origin.matches(LOCALHOST_REGEX)) {
-			requestContext.setProperty(ACCESS_DENIED, Boolean.TRUE);
-			throw new WebApplicationException(origin + " not allowed", Status.FORBIDDEN);
+		if (getAllowedOrigins().contains("*") || getAllowedOrigins().contains(origin) || origin.matches(LOCALHOST_REGEX)) {
+			return;
 		}
+		requestContext.setProperty(ACCESS_DENIED, Boolean.TRUE);
+		throw new WebApplicationException(origin + " not allowed", Status.FORBIDDEN);
 	}
 
 	/**
