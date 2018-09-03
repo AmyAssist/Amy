@@ -108,7 +108,7 @@ public class ChatResourceTest {
 				.queryParam("clientUUID", this.uuidString).request().post(null);
 		Response req = this.target.path("response").request().post(null);
 		assertEquals(204, r.getStatus());
-		assertEquals(500, req.getStatus());
+		assertEquals(403, req.getStatus());
 
 	}
 	
