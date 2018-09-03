@@ -63,11 +63,11 @@ public class PlayerLogic {
 	private MessageHub messageHub;
 
 	private boolean suppressed = false;
-	private PostSuppressionAction postSuppressionAction = PostSuppressionAction.None;
+	private PostSuppressionAction postSuppressionAction = PostSuppressionAction.NONE;
 
 	private enum PostSuppressionAction {
-		None,
-		Pause
+        NONE,
+        PAUSE
 	}
 
 	private static final int VOLUME_MUTE_VALUE = 0;
@@ -239,7 +239,7 @@ public class PlayerLogic {
 	 */
 	public boolean pause() {
 		if (this.suppressed) {
-			postSuppressionAction = PostSuppressionAction.Pause;
+			postSuppressionAction = PostSuppressionAction.PAUSE;
 			return true;
 		} else {
 			return this.spotifyAPICalls.pause();
@@ -343,9 +343,9 @@ public class PlayerLogic {
 
 			if (!suppressed && !isPlaying) {
 				// Consider resuming playback
-				if (postSuppressionAction == PostSuppressionAction.Pause) {
+				if (postSuppressionAction == PostSuppressionAction.PAUSE) {
 					// Already paused, do nothing
-					postSuppressionAction = PostSuppressionAction.None;
+					postSuppressionAction = PostSuppressionAction.NONE;
 				}
 				else {
 					resume();
