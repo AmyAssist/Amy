@@ -23,12 +23,38 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
+
 /**
  * This interface has methods to disassembling contracted words to the full words. e.g. I'm -> I am
  * 
  * @author Lars Buttgereit
  */
-public interface Contraction {
+public abstract class Contraction {
+
+	/**
+	 * contains all replacements for all contractions
+	 */
+	private Map<String, String> contractions = new HashMap<>();
+	private Pattern pattern;
+
+	/**
+	 * make a pattern out of all contractions. call this in the constructor of a subclass with a hashma with all
+	 * contractions
+	 * 
+	 * @param contractionMap HashMap with all contractions in the specific language
+	 */
+	protected void compilePattern(Map<String, String> contractionMap) {
+		this.contractions = contractionMap;
+		String patternString = "(" + StringUtils.join(this.contractions.keySet(), "|") + ")";
+		this.pattern = Pattern.compile(patternString);
+	}
+
 	/**
 	 * this method disassembling contracted words to the full words.
 	 * 
@@ -36,5 +62,13 @@ public interface Contraction {
 	 *            string to disassembling
 	 * @return the disassembled string
 	 */
-	String disassemblingContraction(String toDisassemble);
+	public String disassemblingContraction(String toDisassemble) {
+		Matcher matcher = this.pattern.matcher(toDisassemble);
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+			matcher.appendReplacement(sb, this.contractions.get(matcher.group(1)));
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
+	}
 }

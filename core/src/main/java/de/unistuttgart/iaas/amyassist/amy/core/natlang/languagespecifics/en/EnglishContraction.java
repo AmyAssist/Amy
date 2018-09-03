@@ -23,6 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.Contraction;
 
 /**
@@ -30,26 +33,25 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.Contrac
  * 
  * @author Lars Buttgereit
  */
-public class EnglishContraction implements Contraction {
+public class EnglishContraction extends Contraction {
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.Contraction#disassemblingContraction(java.lang.String)
+	 * constructor for the English contraction resolving. all contractions are initialized here
 	 */
-	@Override
-	public String disassemblingContraction(String toDisassemble) {
-		String disassembled = toDisassemble;
-		disassembled = disassembled.replaceAll("ain't", "am not");
-		disassembled = disassembled.replaceAll("won't", "will not");
-		disassembled = disassembled.replaceAll("shan't", "shall not");
-		disassembled = disassembled.replaceAll("n't", " not");
-		disassembled = disassembled.replaceAll("let's", "let us");
-		disassembled = disassembled.replaceAll("i'm", "i am");
-		disassembled = disassembled.replaceAll("'re", " are");
-		disassembled = disassembled.replaceAll("'ve", " have");
-		disassembled = disassembled.replaceAll("'ll", " will");
+	public EnglishContraction() {
+		Map<String, String> contractions = new HashMap<>();
+		contractions.put("ain't", "am not");
+		contractions.put("won't", "will not");
+		contractions.put("shan't", "shall not");
+		contractions.put("n't", " not");
+		contractions.put("let's", "let us");
+		contractions.put("i'm", "i am");
+		contractions.put("'re", " are");
+		contractions.put("'ve", " have");
+		contractions.put("'ll", " will");
 		// more than one possibility. is not possible to transform
-		disassembled = disassembled.replaceAll("'d", " d");
-		disassembled = disassembled.replaceAll("'s", " s");
-		return disassembled;
+		contractions.put("'d", " d");
+		contractions.put("'s", " s");
+		compilePattern(contractions);
 	}
 }
