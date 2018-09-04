@@ -240,7 +240,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 			public void run() {
 				r.run();
 			}
-		}, seconds * 1000);
+		}, seconds * 1000L);
 	}
 
 	/**
