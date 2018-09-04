@@ -71,6 +71,7 @@ class SSEClient {
 			Thread.currentThread().interrupt();
 			return false;
 		} catch (ExecutionException | TimeoutException e) {
+			logger.warn("Couldn't ping SSE client", e);
 			return false;
 		}
 	}
