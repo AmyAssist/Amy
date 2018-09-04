@@ -32,7 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
  * 
  * @author Lars Buttgereit
  */
-public interface INumberConversion {
+public interface NumberConversion {
 
 	/**
 	 * calculates the number from a string of words.

@@ -26,7 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en;
 import java.time.LocalTime;
 import java.util.regex.Pattern;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUtility;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.TimeUtility;
 
 /**
  * 
@@ -34,7 +34,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUt
  * 
  * @author Lars Buttgereit
  */
-public class EnglishTimeUtility implements ITimeUtility {
+public class EnglishTimeUtility implements TimeUtility {
 
 	private Pattern minute = Pattern.compile("[0-5]?[0-9]");
 	private Pattern hour24 = Pattern.compile("([01]?[0-9]|2[0-3])");

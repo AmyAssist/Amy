@@ -21,14 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecific;
+package de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecific.en;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.time.LocalTime;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishTimeUtility;
@@ -41,11 +40,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.Engl
 class EnglishTimeUtilityTest {
 	
 	private EnglishTimeUtility timeUtility = new EnglishTimeUtility();
-	
-	@BeforeEach
-	void init() {
-		
-	}
 
 	@Test
 	void testFromatTimeOClock() {

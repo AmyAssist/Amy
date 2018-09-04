@@ -32,7 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.NumberNode;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.ShortWNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.IStemmer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.Stemmer;
 
 /**
  * NLParser implementation, matches NL input to AGFNodes
@@ -53,7 +53,7 @@ public class NLParser implements INLParser {
 
 	private int currentIndex;
 
-	private IStemmer stemmer;
+	private Stemmer stemmer;
 
 	/**
 	 *
@@ -62,7 +62,7 @@ public class NLParser implements INLParser {
 	 * @param stemmer
 	 *            which stemmer should be used
 	 */
-	public NLParser(List<AGFNode> grammars, IStemmer stemmer) {
+	public NLParser(List<AGFNode> grammars, Stemmer stemmer) {
 		this.grammars = grammars;
 		this.stemmer = stemmer;
 	}
