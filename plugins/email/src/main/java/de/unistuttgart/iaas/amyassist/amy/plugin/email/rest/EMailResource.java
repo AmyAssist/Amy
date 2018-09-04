@@ -23,11 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -50,6 +46,34 @@ public class EMailResource {
 	private EMailLogic logic;
 
 	/**
+	 * Check, if currently connected to mail server
+	 * 
+	 * @return true, if currently connected to mail server, else false
+	 */
+	@GET
+	@Path("isConnected")
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean isConnected() {
+		return this.logic.isConnectedToMailServer();
+	}
+
+	/**
+	 * Connect to a mail service with the given parameters
+	 * 
+	 * @param credentials
+	 *            the email credentials
+	 * 
+	 * @return true if connecting was successful, else false
+	 */
+	@POST
+	@Path("connect")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean connect(EMailCredentials credentials) {
+		return this.logic.connectToMailServer(credentials);
+	}
+
+	/**
 	 * REST implementation of {@link EMailLogic#getMailsForREST(int)}
 	 * 
 	 * @param amount
@@ -58,9 +82,18 @@ public class EMailResource {
 	 * @return Array of all mails in inbox
 	 */
 	@GET
-	@Path("getMails")
+	@Path("getMails/{amount}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public MessageDTO[] getAllMails(@QueryParam("amount") @DefaultValue("-1") int amount) {
+	public MessageDTO[] getMails(@PathParam("amount") int amount) {
 		return this.logic.getMailsForREST(amount);
+	}
+
+	/**
+	 * Disconnect the currently running connection to the mail server
+	 */
+	@POST
+	@Path("disconnect")
+	public void disconnect() {
+		this.logic.disconnectFromMailServer();
 	}
 }
