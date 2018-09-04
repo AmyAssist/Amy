@@ -33,7 +33,7 @@ import java.time.LocalTime;
  * 
  * @author Lars Buttgereit
  */
-public interface ITimeUtility {
+public interface DateTimeUtility {
 	/**
 	 * parse a string to a localTime
 	 * 
