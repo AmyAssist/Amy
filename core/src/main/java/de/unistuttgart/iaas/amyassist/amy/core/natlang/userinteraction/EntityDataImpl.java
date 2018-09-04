@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUtility;
@@ -75,5 +77,23 @@ public class EntityDataImpl implements EntityData {
 	public LocalTime getTime() {
 		return this.timeUtility.parseTime(this.string);
 	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData#getDate()
+	 */
+	@Override
+	public LocalDate getDate() {
+		return this.timeUtility.parseDate(this.string);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData#getDateTime()
+	 */
+	@Override
+	public LocalDateTime getDateTime() {
+		return this.timeUtility.parseDateTime(this.string);
+	}
+	
+	
 	
 }

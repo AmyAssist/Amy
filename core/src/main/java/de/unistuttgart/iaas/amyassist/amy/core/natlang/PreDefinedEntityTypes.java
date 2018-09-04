@@ -42,7 +42,8 @@ public class PreDefinedEntityTypes {
 	private static Map<String, AGFNode> map;
 	private static Map<String, String> grammars;
 
-	private static final String[] ids = { "amyinteger", "amyhour", "amyminute", "amytime" };
+	private static final String[] ids = { "amyinteger", "amyhour", "amyminute", "amytime", "amydayofmonth",
+			"amydayofweek", "amymonth", "amydate", "amydatetime" };
 
 	private PreDefinedEntityTypes() {
 		// hide constructor
@@ -62,12 +63,13 @@ public class PreDefinedEntityTypes {
 			grammars.put("amyminute", "$(0,60,1)");
 			grammars.put("amydayofmonth", "$(1,31,1)");
 			grammars.put("amydayofweek", "(monday|tuesday|wednesday|thursday|friday|saturday|sunday)");
-			grammars.put("amymonth", "(january|february|march|april|may|june|july|august|september|october|november|december|$(1,12,1))");
+			grammars.put("amymonth",
+					"(january|february|march|april|may|june|july|august|september|october|november|december|$(1,12,1))");
 			grammars.put("amytime", "({amyhour} (x|oh) {amyminute}| (({amyhour}|quarter|half)"
 					+ " (past|to) {amyminute} )|{amyhour}  [o clock])[am|pm]");
-			grammars.put("amydate", " [{amydayofweek}] {amydayofmonth} [of] {amymonth} [{amyinteger}]");
+			grammars.put("amydate", " [{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{amyinteger}]");
+			grammars.put("amydatetime", "{amydate} at {amytime}");
 		}
-
 		if (map == null) {
 			map = new HashMap<>();
 			generateAGFNodes(grammars);

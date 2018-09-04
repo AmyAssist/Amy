@@ -86,8 +86,9 @@ public class NLLexer {
 	 */
 	public List<WordToken> tokenize(String nlInput) {
 		List<WordToken> list = new LinkedList<>();
-		String toLex = nlInput.toLowerCase();
+		String toLex = nlInput.toLowerCase().trim();
 		toLex = this.language.getTimeUtility().formatTime(toLex);
+		toLex = this.language.getTimeUtility().formatDate(toLex);
 
 		StringBuilder currentWord = new StringBuilder();
 		for (int mIndex = 0; mIndex < toLex.length(); mIndex++) {

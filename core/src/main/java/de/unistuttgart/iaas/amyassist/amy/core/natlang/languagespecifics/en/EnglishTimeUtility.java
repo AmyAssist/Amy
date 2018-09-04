@@ -24,7 +24,11 @@
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,11 +49,15 @@ public class EnglishTimeUtility implements ITimeUtility {
 	@Override
 	public LocalTime parseTime(String toParse) {
 		LocalTime time = null;
-		time = getGoogleTime(toParse);
+		String timeString = toParse.trim();
+		time = getGoogleTime(timeString);
 		if (time == null) {
-			time = getNaturalTime(toParse);
+			time = getNaturalTime(timeString);
 		}
-		return time;
+		if (time != null) {
+			return time;
+		}
+		throw new DateTimeParseException("Could not parse time", timeString, 0);
 	}
 
 	private LocalTime getNaturalTime(String input) {
@@ -133,7 +141,6 @@ public class EnglishTimeUtility implements ITimeUtility {
 
 	@Override
 	public String formatTime(String input) {
-		String output = input;
 		String regex = "\\d+:?(\\d+)?(\\s(p\\.|a\\.)m\\.)?";
 		StringBuffer sb = new StringBuffer();
 		Matcher matcher = Pattern.compile(regex).matcher(input);
@@ -150,8 +157,25 @@ public class EnglishTimeUtility implements ITimeUtility {
 	 */
 	@Override
 	public LocalDate parseDate(String toParse) {
-		// TODO Auto-generated method stub
-		return null;
+		String dateAsString = toParse;
+		dateAsString = dateAsString.replaceAll("(monday|tuesday|wednesday|thursday|friday|saturday|sunday)( the)?", "");
+		dateAsString = dateAsString.replace(" of", "").trim();
+		Matcher withoutYear = Pattern.compile("\\d+ (\\d+|\\D+)").matcher(dateAsString);
+		if (withoutYear.matches()) {
+			dateAsString = dateAsString.concat(" ").concat(String.valueOf(LocalDate.now().getYear()));
+		}
+		Matcher informalDate = Pattern.compile("\\d+ \\d+ \\d{4,4}").matcher(dateAsString);
+		Matcher naturalDate = Pattern.compile(
+				"\\d+ (january|february|march|april|may|june|july|august|september|october|november|december) \\d{4,4}")
+				.matcher(dateAsString);
+		if (naturalDate.matches()) {
+			return LocalDate.parse(dateAsString.trim(), new DateTimeFormatterBuilder().parseCaseInsensitive()
+					.appendPattern("d MMMM yyyy").toFormatter(Locale.ENGLISH));
+		} else if (informalDate.matches()) {
+			return LocalDate.parse(dateAsString, new DateTimeFormatterBuilder().parseCaseInsensitive()
+					.appendPattern("d M yyyy").toFormatter(Locale.ENGLISH));
+		}
+		throw new DateTimeParseException("Could not parse date", dateAsString, 0);
 	}
 
 	/**
@@ -173,6 +197,22 @@ public class EnglishTimeUtility implements ITimeUtility {
 		}
 		matcher.appendTail(sb);
 		return sb.toString();
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUtility#parseDateTime(java.lang.String)
+	 */
+	@Override
+	public LocalDateTime parseDateTime(String toParse) {
+		String[] spiltedString = toParse.split("at");
+		if (spiltedString.length == 2) {
+			LocalDate date = parseDate(spiltedString[0]);
+			LocalTime time = parseTime(spiltedString[1]);
+			if (date != null && time != null) {
+				return LocalDateTime.of(date, time);
+			}
+		}
+		throw new DateTimeParseException("Could not parse dateTime", toParse, 0);
 	}
 
 }
