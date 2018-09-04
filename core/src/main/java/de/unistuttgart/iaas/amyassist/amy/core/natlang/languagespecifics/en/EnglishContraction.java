@@ -48,5 +48,6 @@ public class EnglishContraction extends Contraction {
 		// more than one possibility. is not possible to transform
 		this.contractions.put("'d", " d");
 		this.contractions.put("'s", " s");
+		this.contractions.put("%", " percent");
 	}
 }

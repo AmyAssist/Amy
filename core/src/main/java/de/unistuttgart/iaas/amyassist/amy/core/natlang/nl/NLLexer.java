@@ -89,8 +89,10 @@ public class NLLexer {
 		String toLex = nlInput.toLowerCase();
 		toLex = this.language.getTimeUtility().formatTime(toLex);
 		toLex = this.language.getContraction().disassemblingContraction(toLex);
-		//replace all punctuation
-		toLex = toLex.replaceAll("\\,|\\.|\\:|\\;|\\?", "");
+		// replace all punctuation
+		toLex = toLex.replaceAll("\\,|\\.|\\:|\\;|\\?|\\!", "");
+		toLex = toLex.replaceAll("-", " ");
+		toLex = toLex.trim();
 
 		StringBuilder currentWord = new StringBuilder();
 		for (int mIndex = 0; mIndex < toLex.length(); mIndex++) {
@@ -108,8 +110,6 @@ public class NLLexer {
 				if (currentWord.length() != 0) {
 					list.add(parse(new WordToken(currentWord.toString())));
 					currentWord = new StringBuilder();
-				} else {
-					throw new NLLexerException("more than one whitespace found");
 				}
 				break;
 			default:

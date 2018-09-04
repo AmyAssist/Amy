@@ -85,4 +85,9 @@ public class EnglishContractionTest {
 		assertThat(this.contraction.disassemblingContraction("you'd bla ain't won't you're"),
 				equalTo("you d bla am not will not you are"));
 	}
+	
+	@Test
+	void testPercent() {
+		assertThat(this.contraction.disassemblingContraction("10% from"), equalTo("10 percent from"));
+	}
 }
