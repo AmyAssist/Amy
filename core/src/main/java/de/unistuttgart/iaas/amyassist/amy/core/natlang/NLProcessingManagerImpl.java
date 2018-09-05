@@ -163,12 +163,10 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 				dialog.setIntent(null);
 				return;
 			}
-
 			setEntities(promptGrams.get(matchingNodeIndex), dialog);
-
 		} catch (NLParserException e) {
 			this.logger.debug("no matching grammar found ", e);
-			dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
+			dialog.output(dialog.getNextPrompt().getOutputText());
 		}
 
 	}
@@ -225,8 +223,11 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			Method left = this.nodeToMethodAIMPair.get(node).getMethod();
 			XMLAIMIntent right = this.nodeToMethodAIMPair.get(node).getXml();
 			UserIntent userIntent = new UserIntent(left, right);
+			
+			Object object = this.serviceLocator.createAndInitialize(userIntent.getPartialNLIClass());
+			userIntent.updateGrammars(object);
 			dialog.setIntent(userIntent);
-
+			
 			setEntities(node, dialog);
 
 		} catch (NLParserException e) {
