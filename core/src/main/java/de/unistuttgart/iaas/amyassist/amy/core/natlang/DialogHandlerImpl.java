@@ -82,8 +82,7 @@ public class DialogHandlerImpl implements DialogHandler {
 			dialog = this.manager.decideIntent(dialog, naturalLanguageText);
 			intent = dialog.getIntent();
 		} else {
-			Object object = this.serviceLocator.createAndInitialize(dialog.getIntent().getPartialNLIClass());
-			intent.updateGrammars(object);
+
 			this.manager.processIntent(dialog, naturalLanguageText);
 		}
 

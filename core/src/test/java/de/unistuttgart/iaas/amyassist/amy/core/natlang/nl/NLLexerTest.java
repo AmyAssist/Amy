@@ -42,7 +42,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.google.common.collect.Lists;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
 
 /**
  * Test for NL Lexer
@@ -68,8 +67,8 @@ public class NLLexerTest {
 	 */
 	public static Stream<Character> badCharacters() {
 		// every ascii character except numbers of letters
-		return IntStream.range(0, 128).mapToObj(i -> (char) i).filter(c -> (c != 32 && c != 33 && c != 37 && !(43 < c && c < 47) &&  c < 48)
-				|| (59 < c && c < 65) || (90 < c && c < 97)  || 122 < c);
+		return IntStream.range(0, 128).mapToObj(i -> (char) i).filter(c ->  (0 > c && c > 33) || (34 < c && c != 37 && !(43 < c && c < 47) &&  c < 48)
+				|| (59 < c && c < 65 && c != 63) || (90 < c && c < 97)  || 122 < c);
 	}
 
 	/**

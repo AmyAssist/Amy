@@ -94,32 +94,31 @@ public class NLLexer {
 		toLex = toLex.replaceAll("\\,|\\.|\\:|\\;|\\?|\\!", "");
 		toLex = toLex.replaceAll("-", " ");
 		toLex = toLex.trim();
-
 		StringBuilder currentWord = new StringBuilder();
-		for (int mIndex = 0; mIndex < toLex.length(); mIndex++) {
-			char c = toLex.charAt(mIndex);
-
-			switch (Character.getType(c)) {
-			case Character.LOWERCASE_LETTER:
-				//$FALL-THROUGH$
-			case Character.DECIMAL_DIGIT_NUMBER:
-				currentWord.append(c);
-				break;
-
-			// handles single whitespace characters but not newline, tab or carriage return
-			case Character.SPACE_SEPARATOR:
-				if (currentWord.length() != 0) {
-					list.add(parse(new WordToken(currentWord.toString())));
-					currentWord = new StringBuilder();
+		if (!toLex.isEmpty()) {
+			for (int mIndex = 0; mIndex < toLex.length(); mIndex++) {
+				char c = toLex.charAt(mIndex);
+				switch (Character.getType(c)) {
+				case Character.LOWERCASE_LETTER:
+					//$FALL-THROUGH$
+				case Character.DECIMAL_DIGIT_NUMBER:
+					currentWord.append(c);
+					break;
+				// handles single whitespace characters but not newline, tab or carriage return
+				case Character.SPACE_SEPARATOR:
+					if (currentWord.length() != 0) {
+						list.add(parse(new WordToken(currentWord.toString())));
+						currentWord = new StringBuilder();
+					}
+					break;
+				default:
+					throw new NLLexerException("character not recognized " + c + " stopping");
 				}
-				break;
-			default:
-				throw new NLLexerException("character not recognized " + c + " stopping");
 			}
-
+			list.add(parse(new WordToken(currentWord.toString())));
+			return concatNumbers(list);
 		}
-		list.add(parse(new WordToken(currentWord.toString())));
-		return concatNumbers(list);
+		return new ArrayList<>();
 	}
 
 	/**
@@ -141,7 +140,6 @@ public class NLLexer {
 					result.add(this.fromNumbers(numbers));
 					numbers.clear();
 				}
-
 				result.add(wordToken);
 			}
 		}
