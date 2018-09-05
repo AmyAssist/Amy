@@ -73,7 +73,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			"Sorry, could you repeat that?", "I don't know what you mean", "No idea what you are talking about",
 			"My plugin developers did not teach me this yet" };
 
-	private static final String QUIT_INTENT_USER_INPUT = "(never mind|quit|forget that)";
+	private static final String QUIT_INTENT_USER_INPUT = "(never mind|quit|forget that|nevermind)";
 
 	private static final String[] QUIT_INTENT_ANSWER = { "ok", "sure", "what else can i do for you?" };
 

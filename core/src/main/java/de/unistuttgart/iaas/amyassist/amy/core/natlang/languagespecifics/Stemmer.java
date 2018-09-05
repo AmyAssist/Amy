@@ -23,31 +23,20 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
 
-import java.time.LocalTime;
-
 /**
- * 
- * this interface provide methods for time processing
+ * Interface for stemmer implementation for different languages
  * 
  * @author Lars Buttgereit
  */
-public interface ITimeUtility {
-	/**
-	 * parse a string to a localTime
-	 * 
-	 * @param toParse
-	 *            String to parse
-	 * @return a LocalTime object
-	 */
-	LocalTime parseTime(String toParse);
+public interface Stemmer {
 
 	/**
-	 * format the time from google speech to a more parser friendly format. for example english time: 1:00 p.m. to 1 x
-	 * 00 pm
+	 * this method stem the input string.
 	 * 
 	 * @param input
-	 *            the string to replace the time
-	 * @return the input string with replaced time
+	 *                  a string with one or more words
+	 * @return the stemmed string out of the input string
 	 */
-	String formatTime(String input);
+	String stem(String input);
+
 }

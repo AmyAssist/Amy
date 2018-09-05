@@ -29,9 +29,10 @@ import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishContraction;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishStemmer;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishTimeUtility;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishDateTimeUtility;
 
 /**
  * Test class for ChooseLanguage
@@ -43,10 +44,10 @@ public class TestChooseLanguage {
 	@Test
 	void testChooseEnglish() {
 		ChooseLanguage chooseLanguage = new ChooseLanguage("en", true);
-		assertThat(chooseLanguage.getNumberConversion().getClass().getName(),
-				equalTo(EnglishNumberConversion.class.getName()));
-		assertThat(chooseLanguage.getStemmer().getClass().getName(), equalTo(EnglishStemmer.class.getName()));
-		assertThat(chooseLanguage.getTimeUtility().getClass().getName(), equalTo(EnglishTimeUtility.class.getName()));
+		assertThat(chooseLanguage.getNumberConversion().getClass(), equalTo(EnglishNumberConversion.class));
+		assertThat(chooseLanguage.getStemmer().getClass(), equalTo(EnglishStemmer.class));
+		assertThat(chooseLanguage.getTimeUtility().getClass(), equalTo(EnglishDateTimeUtility.class));
+		assertThat(chooseLanguage.getContraction().getClass(), equalTo(EnglishContraction.class));
 	}
 
 }

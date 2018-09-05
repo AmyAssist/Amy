@@ -21,22 +21,37 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
+package de.unistuttgart.iaas.amyassist.amy.httpserver.di;
+
+import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * Interface for stemmer implementation for different languages
+ * Allow the use of {@link Reference} in Rest Resource classes.
  * 
- * @author Lars Buttgereit
+ * @author Leon Kiefer
  */
-public interface IStemmer {
+public class DependencyInjectionBinder extends AbstractBinder {
+
+	private final ServiceLocator di;
 
 	/**
-	 * this method stem the input string.
+	 * Create a new Binder for the dependencyInjection
 	 * 
-	 * @param input
-	 *                  a string with one or more words
-	 * @return the stemmed string out of the input string
+	 * @param di
+	 *            the ServiceLocator to use to resolve Services in Rest classes
 	 */
-	String stem(String input);
+	public DependencyInjectionBinder(ServiceLocator di) {
+		this.di = di;
+	}
+
+	@Override
+	protected void configure() {
+		this.bind(new ServiceInjectionResolver(this.di)).to(new TypeLiteral<Reference>() {
+		});
+	}
 
 }

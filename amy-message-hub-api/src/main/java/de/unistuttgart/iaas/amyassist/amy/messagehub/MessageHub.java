@@ -57,6 +57,28 @@ public interface MessageHub {
 	 *            A handler being called with the real topic and the message, when a message is received.
 	 * @return The identifier representing this subscription
 	 */
+	UUID subscribe(String topic, BiConsumer<TopicName, Message> handler);
+
+	/**
+	 * Subscribe to a topic
+	 *
+	 * @param topic
+	 *            The topic to subscribe to. This may contain wildcards.
+	 * @param handler
+	 *            A handler being called with the payload of the message, when a message is received.
+	 * @return The identifier representing this subscription
+	 */
+	UUID subscribe(TopicFilter topic, Consumer<String> handler);
+
+	/**
+	 * Subscribe to a topic
+	 *
+	 * @param topic
+	 *            The topic to subscribe to. This may contain wildcards.
+	 * @param handler
+	 *            A handler being called with the real topic and the message, when a message is received.
+	 * @return The identifier representing this subscription
+	 */
 	UUID subscribe(TopicFilter topic, BiConsumer<TopicName, Message> handler);
 
 	/**
@@ -78,6 +100,46 @@ public interface MessageHub {
 	void publish(String topic, String payload);
 
 	/**
+	 * Publish a message to a topic
+	 *
+	 * @param topic
+	 *            The topic to publish to,
+	 * @param payload
+	 *            The payload of the message.
+	 * @param qualityOfService
+	 *            The quality of service(0-2) of the message.
+	 * @param retain
+	 *            Whether the server should retain this message for new subscribes until a new retained message is sent
+	 *            over this topic.
+	 */
+	void publish(String topic, String payload, int qualityOfService, boolean retain);
+
+	/**
+	 * Publish a message to a topic
+	 *
+	 * @param topic
+	 *            The topic to publish to,
+	 * @param payload
+	 *            The payload of the message.
+	 * @param retain
+	 *            Whether the server should retain this message for new subscribes until a new retained message is sent
+	 *            over this topic.
+	 */
+	void publish(String topic, String payload, boolean retain);
+
+	/**
+	 * Publish a message to a topic
+	 *
+	 * @param topic
+	 *            The topic to publish to,
+	 * @param payload
+	 *            The payload of the message.
+	 * @param qualityOfService
+	 *            The quality of service(0-2) of the message.
+	 */
+	void publish(String topic, String payload, int qualityOfService);
+
+	/**
 	 * Publish a message to a topic with a given quality of service.
 	 *
 	 * @param topic
@@ -93,4 +155,46 @@ public interface MessageHub {
 	 * @see <a href="https://en.wikipedia.org/wiki/MQTT#Quality_of_service_(QoS)"> quality of service </a>
 	 */
 	void publish(TopicName topic, String payload, int qualityOfService, boolean retain);
+
+	/**
+	 * Publish a message to a topic.
+	 *
+	 * @param topic
+	 *            The topic to publish to
+	 * @param payload
+	 *            The payload of the message.
+	 *
+	 * @see <a href="https://en.wikipedia.org/wiki/MQTT#Quality_of_service_(QoS)"> quality of service </a>
+	 */
+	void publish(TopicName topic, String payload);
+
+	/**
+	 * Publish a message to a topic with a given quality of service.
+	 *
+	 * @param topic
+	 *            The topic to publish to
+	 * @param payload
+	 *            The payload of the message.
+	 * @param qualityOfService
+	 *            The quality of service(0-2) of the message.
+	 *
+	 * @see <a href="https://en.wikipedia.org/wiki/MQTT#Quality_of_service_(QoS)"> quality of service </a>
+	 */
+	void publish(TopicName topic, String payload, int qualityOfService);
+
+	/**
+	 * Publish a message to a topic.
+	 *
+	 * @param topic
+	 *            The topic to publish to
+	 * @param payload
+	 *            The payload of the message.
+	 * @param retain
+	 *            Whether the server should retain this message for new subscribes until a new retained message is sent
+	 *            over this topic.
+	 *
+	 * @see <a href="https://en.wikipedia.org/wiki/MQTT#Quality_of_service_(QoS)"> quality of service </a>
+	 */
+	void publish(TopicName topic, String payload, boolean retain);
+
 }

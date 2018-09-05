@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.audio.sound;
 
+import java.util.function.Consumer;
+
 import javax.sound.sampled.AudioInputStream;
 
 /**
@@ -58,4 +60,34 @@ public interface SoundPlayer {
 	 * @return Whether the player is running
 	 */
 	boolean isRunning();
+
+	/**
+	 * Sets the callback, which is called when this player ends playback.
+	 * <p>
+	 * This method can only be called before {@link #start()}.
+	 * <p>
+	 * The callback is provided with a reason for the end of the playback.
+	 * 
+	 * @param callback
+	 *            The method called.
+	 * @throws IllegalStateException
+	 *             When the player has already been started.
+	 */
+	void setOnStopHook(Consumer<StopReason> callback);
+
+	/**
+	 * All possible reasons for the SoundPlayer to stop.
+	 * 
+	 * @author Tim Neumann
+	 */
+	public enum StopReason {
+		/** When the audio that should be played, was played completely */
+		END_OF_AUDIO,
+		/** When the audio stream, the audio is played on was closed. */
+		STREAM_CLOSED,
+		/** When the sound player was stopped via {@link SoundPlayer#stop()}. */
+		PLAYER_STOPPED,
+		/** Any other reason. */
+		OTHER;
+	}
 }

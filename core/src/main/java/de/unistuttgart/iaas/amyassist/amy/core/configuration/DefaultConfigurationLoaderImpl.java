@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -43,7 +45,7 @@ public class DefaultConfigurationLoaderImpl implements DefaultConfigurationLoade
 	private ClassLoader classLoader;
 
 	@Override
-	public Properties load(String configurationName) {
+	public @Nonnull Properties load(String configurationName) {
 		return this.internalDefaultConfigurationLoader.load(this.classLoader, configurationName);
 	}
 

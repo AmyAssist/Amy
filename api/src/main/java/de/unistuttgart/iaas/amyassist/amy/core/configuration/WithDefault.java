@@ -21,20 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
-import java.util.concurrent.CompletableFuture;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * Use the default config of this plugin. The Properties can be overwritten by other configs and the environment
+ * variables.
  * 
  * @author Leon Kiefer
  */
-public interface SpeechInputHandler {
-	/**
-	 * 
-	 * @param speechInput
-	 *            the user input
-	 * @return a Future, that completes with the result of processing the user input
-	 */
-	CompletableFuture<String> handle(String speechInput);
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Target(java.lang.annotation.ElementType.FIELD)
+public @interface WithDefault {
+
 }

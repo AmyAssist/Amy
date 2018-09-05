@@ -43,6 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.ServerImpl;
 
 /**
  * The Implementation of the TestFramework
@@ -76,7 +77,7 @@ public class TestFrameworkImpl implements TestFramework {
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.addExternalService(TestFramework.class, this);
 		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
-		this.dependencyInjection.register(Server.class);
+		this.dependencyInjection.register(ServerImpl.class);
 		this.dependencyInjection.register(new LoggerProvider());
 	}
 
@@ -85,12 +86,13 @@ public class TestFrameworkImpl implements TestFramework {
 	 */
 	public void prepareServer() {
 		Properties serverConfig = new Properties();
-		serverConfig.setProperty(Server.PROPERTY_PORT, String.valueOf(TEST_SERVER_PORT));
-		serverConfig.setProperty(Server.PROPERTY_CONTEXT_PATH, "");
-		serverConfig.setProperty(Server.PROPERTY_LOCALHOST, "true");
+		serverConfig.setProperty(ServerImpl.PROPERTY_PORT, String.valueOf(TEST_SERVER_PORT));
+		serverConfig.setProperty(ServerImpl.PROPERTY_CONTEXT_PATH, "");
+		serverConfig.setProperty(ServerImpl.PROPERTY_LOCALHOST, "true");
+		serverConfig.setProperty(ServerImpl.PROPERTY_SERVER_URL, "");
 
 		ConfigurationManager configLoader = this.mockService(ConfigurationManager.class);
-		Mockito.when(configLoader.getConfigurationWithDefaults(Server.CONFIG_NAME)).thenReturn(serverConfig);
+		Mockito.when(configLoader.getConfigurationWithDefaults(ServerImpl.CONFIG_NAME)).thenReturn(serverConfig);
 		this.server = this.dependencyInjection.getService(Server.class);
 	}
 

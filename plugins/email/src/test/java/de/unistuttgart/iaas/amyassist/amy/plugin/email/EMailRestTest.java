@@ -23,15 +23,17 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.equalTo;
 import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.Random;
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +42,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailResource;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -70,15 +73,70 @@ class EMailRestTest {
 	}
 
 	/**
-	 * Test method for {@link EMailResource#getAllMails(int)}
+	 * Tests {@link EMailResource#isConnected()}
 	 */
 	@Test
-	public void testGetAllMails() {
-		final int amountOfMails = 15;
-		MessageDTO[] mails = createMessages(amountOfMails);
-		Mockito.when(this.logic.getMailsForREST(-1)).thenReturn(mails);
+	public void testIsConnected() {
+		when(this.logic.isConnectedToMailServer()).thenReturn(true);
+		try (Response response = this.target.path("isConnected").request().get()) {
+			assertThat(response.getStatus(), is(200));
+			boolean successful = response.readEntity(Boolean.class);
+			assertThat(successful, is(true));
+		}
+	}
 
-		try (Response response = this.target.path("getMails").request().get()) {
+	/**
+	 * Test method for {@link EMailResource#connect(EMailCredentials)}
+	 */
+	@Test
+	public void testConnect() {
+		when(this.logic.connectToMailServer(null)).thenReturn(true);
+		Entity<EMailCredentials> entity = Entity.entity(null, MediaType.APPLICATION_JSON);
+		try (Response response = this.target.path("connect").request().post(entity)) {
+			assertThat(response.getStatus(), is(200));
+			boolean successful = response.readEntity(Boolean.class);
+			assertThat(successful, is(true));
+		}
+	}
+
+	/**
+	 * Test method for {@link EMailResource#getMails(int)}
+	 */
+	@Test
+	public void testGetMailsAll() {
+		final int amountOfMails = -1;
+		MessageDTO[] mails = createMessages(20);
+		Mockito.when(this.logic.getMailsForREST(amountOfMails)).thenReturn(mails);
+
+		try (Response response = this.target.path("getMails/" + amountOfMails).request().get()) {
+			assertThat(response, status(200));
+			MessageDTO[] messages = response.readEntity(MessageDTO[].class);
+			assertThat(messages.length, is(20));
+			for (int i = 0; i < messages.length; i++) {
+				// test equality of objects
+				MessageDTO message1 = mails[i];
+				MessageDTO message2 = messages[i];
+
+				assertThat(message1.getFrom(), equalTo(message2.getFrom()));
+				assertThat(message1.getSubject(), equalTo(message2.getSubject()));
+				assertThat(message1.getContent(), equalTo(message2.getContent()));
+				assertThat(message1.getSentDate(), equalTo(message2.getSentDate()));
+				assertThat(message1.isImportant(), equalTo(message2.isImportant()));
+			}
+			Mockito.verify(this.logic).getMailsForREST(amountOfMails);
+		}
+	}
+
+	/**
+	 * Test method for {@link EMailResource#getMails(int)}
+	 */
+	@Test
+	public void testGetMailsAmount() {
+		final int amountOfMails = 20;
+		MessageDTO[] mails = createMessages(amountOfMails);
+		Mockito.when(this.logic.getMailsForREST(amountOfMails)).thenReturn(mails);
+
+		try (Response response = this.target.path("getMails/" + amountOfMails).request().get()) {
 			assertThat(response, status(200));
 			MessageDTO[] messages = response.readEntity(MessageDTO[].class);
 			assertThat(messages.length, is(amountOfMails));
@@ -93,7 +151,17 @@ class EMailRestTest {
 				assertThat(message1.getSentDate(), equalTo(message2.getSentDate()));
 				assertThat(message1.isImportant(), equalTo(message2.isImportant()));
 			}
-			Mockito.verify(this.logic).getMailsForREST(-1);
+			Mockito.verify(this.logic).getMailsForREST(amountOfMails);
+		}
+	}
+
+	/**
+	 * Tests {@link EMailResource#disconnect()}
+	 */
+	@Test
+	public void testDisconnect() {
+		try (Response response = this.target.path("disconnect").request().post(null)) {
+			assertThat(response.getStatus(), is(204));
 		}
 	}
 

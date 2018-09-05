@@ -58,14 +58,14 @@ public class InstanceInformationService implements InstanceInformation {
 
 	@PostConstruct
 	private void init() {
-		Properties config = this.configManager.getConfiguration(CONFIG_NAME);
+		Properties config = this.configManager.getConfigurationWithDefaults(CONFIG_NAME);
 		this.id = config.getProperty(PROPERTY_ID);
 
-		if (this.id == null) {
+		if (this.id == null || this.id.trim().isEmpty()) {
 			this.logger.info("Missing property {}. Will generate and save it.", PROPERTY_ID);
 			// The last 12 digits are enough. In a System with 20000 nodes a collision has a probability of 0,02%.
 			this.id = "Amy-Node-" + UUID.randomUUID().toString().substring(24);
-			Properties props = this.configLoader.load(CONFIG_NAME);
+			Properties props = this.configLoader.load(CONFIG_NAME, new Properties());
 			props.setProperty(PROPERTY_ID, this.id);
 			this.configLoader.store(CONFIG_NAME, props);
 		}

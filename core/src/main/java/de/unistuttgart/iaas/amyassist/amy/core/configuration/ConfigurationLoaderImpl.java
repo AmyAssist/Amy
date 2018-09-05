@@ -102,9 +102,8 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 		return null;
 	}
 
-	@Nonnull
 	@Override
-	public Properties load(String configurationName) {
+	public @Nonnull Properties load(String configurationName) {
 		Properties emptyDefault = new Properties();
 		Properties load = this.load(configurationName, emptyDefault);
 		// the references must be compared to check if a new properties is loaded. The equals method don't work because
@@ -116,13 +115,12 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 		return load;
 	}
 
-	@Nonnull
 	@Override
-	public Properties load(String configurationName, Properties defaults) {
+	public @Nonnull Properties load(String configurationName, @Nonnull Properties defaults) {
 		return this.loadAll(configurationName, defaults);
 	}
 
-	private Properties loadAll(String configurationName, Properties properties) {
+	private @Nonnull Properties loadAll(String configurationName, @Nonnull Properties properties) {
 		Properties loaded = properties;
 		for (Path path : this.configDirs) {
 			path = path.resolve(configurationName + FILE_ENDING);
@@ -139,7 +137,7 @@ public class ConfigurationLoaderImpl implements ConfigurationLoader {
 	}
 
 	@Override
-	public void store(String configurationName, Properties properties) {
+	public void store(String configurationName, @Nonnull Properties properties) {
 		Path path = findPropertiesFile(configurationName);
 
 		// No property file with this name was found, so create one in the highest priority config folder.

@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.INumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.NumberConversion;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 
 /**
@@ -40,7 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
  * 
  * @author Felix Burk
  */
-public class EnglishNumberConversion implements INumberConversion {
+public class EnglishNumberConversion implements NumberConversion {
 	/**
 	 * maps a string containing a word representation of a number to it's integer counterpart
 	 */

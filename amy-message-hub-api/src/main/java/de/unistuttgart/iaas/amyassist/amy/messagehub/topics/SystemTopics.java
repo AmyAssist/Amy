@@ -21,33 +21,27 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
-
-import java.util.Map;
-
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
+package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
 
 /**
- * This interface provide methods for the number conversion
+ * All system (top level) topics used.
  * 
- * @author Lars Buttgereit
+ * @author Tim Neumann
  */
-public interface INumberConversion {
+public enum SystemTopics {
+	/** The system topic */
+	SYSTEM,
+	/** The smarthome topic */
+	SMARTHOME,
+	/** The user topic */
+	USER,
+	/** The info topic */
+	INFO;
 
 	/**
-	 * calculates the number from a string of words.
-	 * 
-	 * 
-	 * @param subList
-	 *                    the sublist containing the list of word representations
-	 * @return the calculated number
+	 * @return The topic string of the topic.
 	 */
-	int calcNumber(Iterable<WordToken> subList);
-
-	/**
-	 * Get's {@link #wordToNumber wordToNumber}
-	 * 
-	 * @return wordToNumber
-	 */
-	Map<String, Integer> getWordToNumber();
+	public String getTopicString() {
+		return this.name().toLowerCase();
+	}
 }

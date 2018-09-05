@@ -57,7 +57,7 @@ public class MessageHubConsole {
 		return this.msgHub.subscribe(this.tf.createTopicFilter(topic),
 				(t, m) -> this.logger.info("MQTT message" + (m.wasRetained() ? " (retained)" : "")
 						+ (m.mayBeDuplicate() ? " (maybe duplicate)" : "") + " on topic " + t.getStringRepresentation()
-						+ "with QOS " + m.getQualityOfService() + " with message " + m.getPayload()))
+						+ " with QOS " + m.getQualityOfService() + " with message " + m.getPayload()))
 				.toString();
 	}
 

@@ -30,8 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -48,6 +46,7 @@ import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.WithDefault;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -64,14 +63,12 @@ public class CalendarService {
 	private static final String APPLICATION_NAME = "Amy Google Calendar API";
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
-	private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR_READONLY);
-
+	private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR);
+	@WithDefault
 	@Reference
 	private Properties configuration;
 	@Reference
 	private Environment environment;
-	@Reference
-	private Logger logger;
 
 	private Calendar service;
 
@@ -84,12 +81,15 @@ public class CalendarService {
 	 * @param xHTTPTRANSPORT
 	 *            The network HTTP Transport.
 	 * @return An authorized Credential object.
-	 * @throws IOException
-	 *             If there is no client_secret.
+	 * @throws IllegalStateException
+	 *             If there is no client secret.
 	 */
 	private Credential getCredentials(final NetHttpTransport xHTTPTRANSPORT) throws IOException {
 		// Load client secrets
 		String clientSecretIn = this.configuration.getProperty("JSON");
+		if (clientSecretIn.isEmpty()) {
+			throw new IllegalStateException("Missing client secrets");
+		}
 		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new StringReader(clientSecretIn));
 		// Build flow and trigger user authorization request
 		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(xHTTPTRANSPORT, JSON_FACTORY,
@@ -108,10 +108,11 @@ public class CalendarService {
 		try {
 			// Build a new authorized API client service.
 			final NetHttpTransport yHTTPTRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-			this.service = new Calendar.Builder(yHTTPTRANSPORT, JSON_FACTORY, getCredentials(yHTTPTRANSPORT))
+			Credential credentials = this.getCredentials(yHTTPTRANSPORT);
+			this.service = new Calendar.Builder(yHTTPTRANSPORT, JSON_FACTORY, credentials)
 					.setApplicationName(APPLICATION_NAME).build();
 		} catch (IOException | GeneralSecurityException e) {
-			this.logger.error("Sorry, an error occured during the authorization", e);
+			throw new IllegalStateException("Sorry, an error occured during the authorization", e);
 		}
 	}
 
@@ -128,7 +129,8 @@ public class CalendarService {
 			events = this.service.events().list(this.primary).setMaxResults(number).setTimeMin(min)
 					.setOrderBy(this.orderBy).setSingleEvents(true).execute();
 		} catch (IOException e) {
-			this.logger.error("getEvents() failed with an IOException for DataTime: " + min.toString(), e);
+			throw new IllegalStateException("getEvents() failed with an IOException for DataTime: " + min.toString(),
+					e);
 		}
 		return events;
 	}
@@ -146,7 +148,7 @@ public class CalendarService {
 			events = this.service.events().list(this.primary).setTimeMin(min).setTimeMax(max).setOrderBy(this.orderBy)
 					.setSingleEvents(true).execute();
 		} catch (IOException e) {
-			this.logger.error("getEvents() failed with an IOException for DateTime min: " + min.toString()
+			throw new IllegalStateException("getEvents() failed with an IOException for DateTime min: " + min.toString()
 					+ " and max: " + max.toString(), e);
 		}
 		return events;
@@ -164,8 +166,9 @@ public class CalendarService {
 		try {
 			this.service.events().insert(calId, event).execute();
 		} catch (IOException e) {
-			this.logger.error("addEvent() failed with an IOException for callId: " + calId
-					+ " and event: " + event.getSummary(), e);
+			throw new IllegalStateException(
+					"addEvent() failed with an IOException for callId: " + calId + " and event: " + event.getSummary(),
+					e);
 		}
 	}
 
