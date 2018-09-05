@@ -50,7 +50,7 @@ public class CalendarSpeech {
 	 *
 	 * @return the upcoming X events from the calendar
 	 */
-	@Intent()
+	@Intent
 	public String getEvents(Map<String, EntityData> entites) {
 		return this.calendar.getEvents(entites.get("number").getNumber());
 	}
@@ -60,13 +60,35 @@ public class CalendarSpeech {
 	 *            from the speech
 	 * @return upcoming events today or tomorrow depending on input
 	 */
-	@Intent()
+	@Intent
 	public String getEventsToday(Map<String, EntityData> entites) {
 		if (entites.get("day").getString().equalsIgnoreCase("today")) {
 			return this.calendar.getEventsToday();
 		}
 		return this.calendar.getEventsTomorrow();
 
+	}
+
+	/**
+	 * example method
+	 * 
+	 * @param entities
+	 * @return
+	 */
+	@Intent
+	public String getADate(Map<String, EntityData> entities) {
+		return entities.get("date").getDate().toString();
+	}
+
+	/**
+	 * example method
+	 * 
+	 * @param entities
+	 * @return
+	 */
+	@Intent
+	public String getADateTime(Map<String, EntityData> entities) {
+		return entities.get("datetime").getDateTime().toString();
 	}
 
 }

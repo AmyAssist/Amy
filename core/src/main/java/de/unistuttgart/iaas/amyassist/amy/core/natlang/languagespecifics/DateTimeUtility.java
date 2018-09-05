@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 /**
@@ -31,7 +33,7 @@ import java.time.LocalTime;
  * 
  * @author Lars Buttgereit
  */
-public interface ITimeUtility {
+public interface DateTimeUtility {
 	/**
 	 * parse a string to a localTime
 	 * 
@@ -50,4 +52,25 @@ public interface ITimeUtility {
 	 * @return the input string with replaced time
 	 */
 	String formatTime(String input);
+	
+	/**
+	 * parse the date from the speech to a LocalDate
+	 * @param toParse string to parse
+	 * @return a localDate that represent the date from the string
+	 */
+	LocalDate parseDate(String toParse);
+	
+	/**
+	 * format the time for parse. for example cut th by 4th or replace . to ' ' by 10.08.2018
+	 * @param input string to format
+	 * @return the input with all replacements
+	 */
+	String formatDate(String input);
+	
+	/**
+	 * parse a string to a LocalDateTime Object
+	 * @param toParse string to parse
+	 * @return a LocalDateTime object that represent the date from the string
+	 */
+	LocalDateTime parseDateTime(String toParse);
 }
