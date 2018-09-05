@@ -1,4 +1,3 @@
-package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 /*
  * This source file is part of the Amy open source project.
  * For more information see github.com/AmyAssist
@@ -22,19 +21,20 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
  * For more information see notice.md
  */
 
-
+package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
 import com.github.dvdme.ForecastIOLib.FIODataPoint;
 
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static java.lang.Math.round;
 
+/**
+ * Serves as weather entity for current time
+ * 
+ * @author Muhammed Kaya
+ */
 @XmlRootElement
 public class WeatherReportNow {
 	private final String preamble;
@@ -44,16 +44,22 @@ public class WeatherReportNow {
 	private final String precipType;
 	private final long temperatureNow;
 	private final long timestamp;
+	private final double windSpeed;
 	private final String icon;
 
 	private static final String TRIM_QUOTES_REGEX = "^\"|\"$";
 	private static final int FRACTION_TO_PERCENT_FACTOR = 100;
-	private static final int SECONDS_TO_MILLIS_FACTOR = 1000;
 
 	private String trimQuotes(String s) {
 		return s.replaceAll(TRIM_QUOTES_REGEX, "");
 	}
 
+	/**
+	 * @param preamble
+	 *            Introduction text for speech
+	 * @param p
+	 *            FIOCurrently to get current weather values
+	 */
 	public WeatherReportNow(String preamble, FIODataPoint p) {
 		this.preamble = preamble;
 		this.summary = trimQuotes(p.summary());
@@ -61,8 +67,7 @@ public class WeatherReportNow {
 		this.precipType = trimQuotes(p.precipType());
 		this.precip = p.precipProbability() > 0;
 		this.temperatureNow = Math.round(p.temperature());
-
-		Date date = new Date(p.timestamp() * SECONDS_TO_MILLIS_FACTOR);
+		this.windSpeed = p.windSpeed();
 		this.timestamp = p.timestamp();
 
 		this.icon = trimQuotes(p.icon());
@@ -73,52 +78,83 @@ public class WeatherReportNow {
 		if (this.precip) {
 			result += " " + this.precipProbability + " probability of " + this.precipType + ".";
 		}
-		result += " Temp is " + this.temperatureNow +  "°C.";
+		result += " Temp is " + this.temperatureNow + "°C.";
 		return result;
 	}
 
+	/**
+	 * @return description
+	 */
 	public String shortDescription() {
 		return description(true);
 	}
 
+	@Override
 	public String toString() {
 		return description(false);
 	}
-
-	// Boilerplate getters (ffs it's 2018, when's java gonna get automatic property synthesis?
-
+	
+	/**
+	 * @return preamble
+	 */
 	@XmlTransient
 	public String getPreamble() {
-		return preamble;
+		return this.preamble;
 	}
 
+	/**
+	 * @return summary
+	 */
 	public String getSummary() {
-		return summary;
+		return this.summary;
 	}
 
+	/**
+	 * @return precip
+	 */
 	public boolean isPrecip() {
-		return precip;
+		return this.precip;
 	}
 
+	/**
+	 * @return precipProbability
+	 */
 	public String getPrecipProbability() {
-		return precipProbability;
+		return this.precipProbability;
 	}
 
+	/**
+	 * @return precipType
+	 */
 	public String getPrecipType() {
-		return precipType;
+		return this.precipType;
 	}
 
-
+	/**
+	 * @return temperatureNow
+	 */
 	public long getTemperatureNow() {
-		return temperatureNow;
+		return this.temperatureNow;
 	}
 
-
+	/**
+	 * @return timestamp
+	 */
 	public long getTimestamp() {
-		return timestamp;
+		return this.timestamp;
 	}
 
+	/**
+	 * @return windSpeed
+	 */
+	public double getWindspeed() {
+		return this.windSpeed;
+	}
+
+	/**
+	 * @return icon
+	 */
 	public String getIcon() {
-		return icon;
+		return this.icon;
 	}
 }

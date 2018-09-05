@@ -34,8 +34,13 @@ import java.util.Date;
 
 import static java.lang.Math.round;
 
+/**
+ * Serves as weather entity for current time
+ * 
+ * @author Benno Krauß, Muhammed Kaya
+ */
 @XmlRootElement
-public class WeatherReportDay extends Entity{
+public class WeatherReportDay extends Entity {
 	private final String preamble;
 	private final String summary;
 	private final boolean precip;
@@ -57,6 +62,12 @@ public class WeatherReportDay extends Entity{
 		return s.replaceAll(TRIM_QUOTES_REGEX, "");
 	}
 
+	/**
+	 * @param preamble
+	 *            Introduction text for speech
+	 * @param p
+	 *            FIODaily to get weather values of the day
+	 */
 	public WeatherReportDay(String preamble, FIODataPoint p) {
 		this.preamble = preamble;
 		this.summary = trimQuotes(p.summary());
@@ -65,8 +76,8 @@ public class WeatherReportDay extends Entity{
 		this.precip = p.precipProbability() > 0;
 		this.temperatureMin = Math.round(p.temperatureMin());
 		this.temperatureMax = Math.round(p.temperatureMax());
-		this.sunriseTime = convertTimeString(p.sunriseTime());
-		this.sunsetTime = convertTimeString(p.sunsetTime());
+		this.sunriseTime = p.sunriseTime();
+		this.sunsetTime = p.sunsetTime();
 
 		Date date = new Date(p.timestamp() * SECONDS_TO_MILLIS_FACTOR);
 		this.weekday = new SimpleDateFormat("EEEE").format(date);
@@ -76,10 +87,11 @@ public class WeatherReportDay extends Entity{
 	}
 
 	/**
-	 * convert string from HH:mm:ss to HH mm
+	 * convert string from HH:mm:ss to HH mm for speech
 	 * 
 	 * @param s
-	 * @return
+	 *            timestring to convert
+	 * @return converted timestring
 	 */
 	private String convertTimeString(String s) {
 		if (s.length() == 8) {
@@ -95,67 +107,108 @@ public class WeatherReportDay extends Entity{
 		}
 		result += " Between " + this.temperatureMin + " and " + this.temperatureMax + "°C.";
 		if (!tldr) {
-			result += " Sunrise is at " + this.sunriseTime + " and sunset at " + this.sunsetTime;
+			result += " Sunrise is at " + convertTimeString(this.sunriseTime) + " and sunset at "
+					+ convertTimeString(this.sunsetTime);
 		}
 		return result;
 	}
 
+	/**
+	 * @return description
+	 */
 	public String shortDescription() {
 		return description(true);
 	}
 
+	@Override
 	public String toString() {
 		return description(false);
 	}
 
 	// Boilerplate getters (ffs it's 2018, when's java gonna get automatic property synthesis?
 
+	/**
+	 * @return preamble
+	 */
 	@XmlTransient
 	public String getPreamble() {
-		return preamble;
+		return this.preamble;
 	}
 
+	/**
+	 * @return summary
+	 */
 	public String getSummary() {
-		return summary;
+		return this.summary;
 	}
 
+	/**
+	 * @return precip
+	 */
 	public boolean isPrecip() {
-		return precip;
+		return this.precip;
 	}
 
+	/**
+	 * @return precipProbability
+	 */
 	public String getPrecipProbability() {
-		return precipProbability;
+		return this.precipProbability;
 	}
 
+	/**
+	 * @return precipType
+	 */
 	public String getPrecipType() {
-		return precipType;
+		return this.precipType;
 	}
 
+	/**
+	 * @return temperatureMin
+	 */
 	public long getTemperatureMin() {
-		return temperatureMin;
+		return this.temperatureMin;
 	}
 
+	/**
+	 * @return temperatureMax
+	 */
 	public long getTemperatureMax() {
-		return temperatureMax;
+		return this.temperatureMax;
 	}
 
+	/**
+	 * @return sunriseTime
+	 */
 	public String getSunriseTime() {
-		return sunriseTime;
+		return this.sunriseTime;
 	}
 
+	/**
+	 * @return sunsetTime
+	 */
 	public String getSunsetTime() {
-		return sunsetTime;
+		return this.sunsetTime;
 	}
 
+	/**
+	 * @return weekday
+	 */
 	public String getWeekday() {
-		return weekday;
+		return this.weekday;
 	}
 
+	/**
+	 * @return timestamp
+	 */
 	public long getTimestamp() {
-		return timestamp;
+		return this.timestamp;
 	}
 
+	/**
+	 * @return icon
+	 */
 	public String getIcon() {
-		return icon;
+		return this.icon;
 	}
 }

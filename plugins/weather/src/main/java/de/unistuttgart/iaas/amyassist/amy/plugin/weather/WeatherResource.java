@@ -55,7 +55,7 @@ public class WeatherResource implements Resource {
 	@GET
 	@Path("now")
 	@Produces(MediaType.APPLICATION_JSON)
-	public WeatherReportNow getWeatherNoe() {
+	public WeatherReportNow getWeatherNow() {
 		return this.weatherLogic.getReportNow();
 	}
 
@@ -95,6 +95,12 @@ public class WeatherResource implements Resource {
 		return this.weatherLogic.getReportWeek();
 	}
 
+	/**
+	 * set the location for weather forecast
+	 * 
+	 * @param locationId
+	 *            id from the registry entry
+	 */
 	@PUT
 	@Path("setLocation")
 	@Consumes(MediaType.TEXT_PLAIN)

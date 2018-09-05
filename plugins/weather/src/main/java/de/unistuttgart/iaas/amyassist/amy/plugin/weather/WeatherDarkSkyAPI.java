@@ -42,7 +42,7 @@ import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 /**
  * Logic class to provide information about current and coming weather
  * 
- * @author Benno, Lars Buttgereit
+ * @author Benno Krauß, Lars Buttgereit, Muhammed Kaya
  */
 @Service
 public class WeatherDarkSkyAPI {
@@ -109,7 +109,6 @@ public class WeatherDarkSkyAPI {
 			this.lastRequest = Calendar.getInstance();
 			this.locationChanged = false;
 		}
-
 		return this.currentlyReport;
 	}
 
@@ -134,13 +133,13 @@ public class WeatherDarkSkyAPI {
 	}
 	
 	/**
-	 * get the weather forecast for now
+	 * get the current weather forecast
 	 * 
-	 * @return todays weather forecast
+	 * @return current weather forecast
 	 */
 	public WeatherReportNow getReportNow() {
 		FIOCurrently d = this.getCurrentlyReport();
-		return new WeatherReportNow("This is the weather report for now.", d.get());
+		return new WeatherReportNow("This is the current weather report.", d.get());
 	}
 
 	/**
@@ -169,7 +168,7 @@ public class WeatherDarkSkyAPI {
 	 * @return this weeks weather forecast
 	 */
 	public WeatherReportWeek getReportWeek() {
-		return new WeatherReportWeek("This is the weather report for the week. ", this.getDailyReports());
+		return new WeatherReportWeek("This is the weather report for the week.", this.getDailyReports());
 	}
 
 	/**
