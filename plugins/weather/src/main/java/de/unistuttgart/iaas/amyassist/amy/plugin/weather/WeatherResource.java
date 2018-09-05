@@ -53,6 +53,18 @@ public class WeatherResource implements Resource {
 	 * @return todays weather forecast
 	 */
 	@GET
+	@Path("now")
+	@Produces(MediaType.APPLICATION_JSON)
+	public WeatherReportNow getWeatherNoe() {
+		return this.weatherLogic.getReportNow();
+	}
+
+	/**
+	 * get the weather forecast for today
+	 * 
+	 * @return todays weather forecast
+	 */
+	@GET
 	@Path("today")
 	@Produces(MediaType.APPLICATION_JSON)
 	public WeatherReportDay getWeatherToday() {

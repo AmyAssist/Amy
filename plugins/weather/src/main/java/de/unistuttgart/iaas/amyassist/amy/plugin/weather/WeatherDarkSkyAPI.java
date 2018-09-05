@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 import java.util.Calendar;
 import java.util.Properties;
 
+import com.github.dvdme.ForecastIOLib.FIOCurrently;
 import com.github.dvdme.ForecastIOLib.FIODaily;
 import com.github.dvdme.ForecastIOLib.FIODataPoint;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
@@ -65,6 +66,7 @@ public class WeatherDarkSkyAPI {
 
 	private FIODaily dailyReports;
 	private Calendar lastRequest;
+	private FIOCurrently currentlyReport;
 
 	private String apiSecret;
 
@@ -97,6 +99,20 @@ public class WeatherDarkSkyAPI {
 		return this.dailyReports;
 	}
 
+	private FIOCurrently getCurrentlyReport() {
+		if (this.dailyReports == null || checkTime() || this.locationChanged) {
+			loadLocation();
+			ForecastIO fio = new ForecastIO(this.apiSecret);
+			fio.setUnits(ForecastIO.UNITS_SI);
+			fio.getForecast(this.coordinateLat, this.coordinateLong);
+			this.currentlyReport = new FIOCurrently(fio);
+			this.lastRequest = Calendar.getInstance();
+			this.locationChanged = false;
+		}
+
+		return this.currentlyReport;
+	}
+
 	/**
 	 * checks if the time of the last request is still actual and on the same day
 	 * 
@@ -115,6 +131,16 @@ public class WeatherDarkSkyAPI {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * get the weather forecast for now
+	 * 
+	 * @return todays weather forecast
+	 */
+	public WeatherReportNow getReportNow() {
+		FIOCurrently d = this.getCurrentlyReport();
+		return new WeatherReportNow("This is the weather report for now.", d.get());
 	}
 
 	/**
