@@ -34,6 +34,8 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -222,6 +224,23 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 				Thread.currentThread().interrupt();
 			}
 		}).start();
+
+		executeAfterSeconds(() -> {
+			if (client == null || !client.isConnected()) {
+				// No client connected right now. Assume something went wrong. Restart chrome.
+				stop();
+				start();
+			}
+		}, 5);
+	}
+
+	private void executeAfterSeconds(Runnable r, int seconds) {
+		new Timer().schedule(new TimerTask() {
+			@Override
+			public void run() {
+				r.run();
+			}
+		}, seconds * 1_000L);
 	}
 
 	/**

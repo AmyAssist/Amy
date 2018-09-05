@@ -24,6 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.remotesr;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
@@ -57,16 +59,19 @@ class SSEClient {
 	}
 
 	/**
-	 * Checks whether the client is connected. This method performs a network operations and is therefore slow.
-	 * @return Whether this client is connected.
+	 * @return Whether this client is connected. This method may perform a network operation and take up to one second
 	 */
 	boolean isConnected() {
 		try {
-			return this.sink != null && !this.sink.isClosed() && !(this.sink.send(sse.newEvent("ping", "ping")).toCompletableFuture().get() instanceof Exception);
+			return this.sink != null && !this.sink.isClosed()
+				&& !(this.sink.send(
+						sse.newEvent("ping", "ping")
+					).toCompletableFuture().get(1, TimeUnit.SECONDS) instanceof Exception);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			return false;
-		} catch (ExecutionException e) {
+		} catch (ExecutionException | TimeoutException e) {
+			logger.warn("Couldn't ping SSE client", e);
 			return false;
 		}
 	}

@@ -346,13 +346,11 @@ public class PlayerLogic {
 				if (postSuppressionAction == PostSuppressionAction.PAUSE) {
 					// Already paused, do nothing
 					postSuppressionAction = PostSuppressionAction.NONE;
-				}
-				else {
+				} else {
 					resume();
 				}
 				this.suppressed = false;
-			}
-			else if (suppressed && isPlaying) {
+			} else if (suppressed && isPlaying) {
 				// Consider pausing playback
 				pause();
 				this.suppressed = true;
