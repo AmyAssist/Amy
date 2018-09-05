@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 /**
@@ -47,9 +49,23 @@ public interface EntityData {
 	String getString();
 
 	/**
-	 * Get's time represenation
+	 * Get's time representation
 	 * 
 	 * @return time
 	 */
 	LocalTime getTime();
+
+	/**
+	 * Get's date representation
+	 * 
+	 * @return the date
+	 */
+	LocalDate getDate();
+
+	/**
+	 *  Get's localDateTime representation
+	 * @return the dateTime
+	 */
+	LocalDateTime getDateTime();
+
 }

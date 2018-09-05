@@ -23,9 +23,11 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.TimeUtility;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.DateTimeUtility;
 
 /**
  * Stores the data from one entity. Only one attribute is set at the same time
@@ -35,14 +37,14 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.TimeUti
 public class EntityDataImpl implements EntityData {
 
 	private String string;
-	private TimeUtility timeUtility;
+	private DateTimeUtility timeUtility;
 
 	/**
 	 * constructor
 	 * @param string content
 	 * @param timeUtility time converter
 	 */
-	public EntityDataImpl(String string, TimeUtility timeUtility) {
+	public EntityDataImpl(String string, DateTimeUtility timeUtility) {
 		this.string = string;
 		this.timeUtility = timeUtility;
 	}
@@ -75,5 +77,23 @@ public class EntityDataImpl implements EntityData {
 	public LocalTime getTime() {
 		return this.timeUtility.parseTime(this.string);
 	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData#getDate()
+	 */
+	@Override
+	public LocalDate getDate() {
+		return this.timeUtility.parseDate(this.string);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData#getDateTime()
+	 */
+	@Override
+	public LocalDateTime getDateTime() {
+		return this.timeUtility.parseDateTime(this.string);
+	}
+	
+	
 	
 }

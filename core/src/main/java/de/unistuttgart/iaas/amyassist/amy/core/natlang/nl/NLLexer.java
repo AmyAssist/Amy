@@ -81,13 +81,14 @@ public class NLLexer {
 	 * lexer implemented as Iterator
 	 * 
 	 * @param nlInput
-	 *            the stirng to lex
+	 *            the string to lex
 	 * @return returns processed list of WordTokens
 	 */
 	public List<WordToken> tokenize(String nlInput) {
 		List<WordToken> list = new LinkedList<>();
-		String toLex = nlInput.toLowerCase();
+		String toLex = nlInput.toLowerCase().trim();
 		toLex = this.language.getTimeUtility().formatTime(toLex);
+		toLex = this.language.getTimeUtility().formatDate(toLex);
 		toLex = this.language.getContraction().disassemblingContraction(toLex);
 		// replace all punctuation
 		toLex = toLex.replaceAll("\\,|\\.|\\:|\\;|\\?|\\!", "");

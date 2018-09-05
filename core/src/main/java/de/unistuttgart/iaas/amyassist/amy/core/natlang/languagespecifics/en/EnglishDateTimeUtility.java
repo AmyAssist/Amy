@@ -23,10 +23,16 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.TimeUtility;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.DateTimeUtility;
 
 /**
  * 
@@ -34,7 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.TimeUti
  * 
  * @author Lars Buttgereit
  */
-public class EnglishTimeUtility implements TimeUtility {
+public class EnglishDateTimeUtility implements DateTimeUtility {
 
 	private Pattern minute = Pattern.compile("[0-5]?[0-9]");
 	private Pattern hour24 = Pattern.compile("([01]?[0-9]|2[0-3])");
@@ -43,11 +49,15 @@ public class EnglishTimeUtility implements TimeUtility {
 	@Override
 	public LocalTime parseTime(String toParse) {
 		LocalTime time = null;
-		time = getGoogleTime(toParse);
+		String timeString = toParse.trim();
+		time = getGoogleTime(timeString);
 		if (time == null) {
-			time = getNaturalTime(toParse);
+			time = getNaturalTime(timeString);
 		}
-		return time;
+		if (time != null) {
+			return time;
+		}
+		throw new DateTimeParseException("Could not parse time", timeString, 0);
 	}
 
 	private LocalTime getNaturalTime(String input) {
@@ -131,14 +141,78 @@ public class EnglishTimeUtility implements TimeUtility {
 
 	@Override
 	public String formatTime(String input) {
-		String output = input;
 		String regex = "\\d+:?(\\d+)?(\\s(p\\.|a\\.)m\\.)?";
-		if (Pattern.compile(regex).matcher(input).find()) {
-			output = output.replace(":", " x ");
-			output = output.replace("a.m.", "am");
-			output = output.replace("p.m.", "pm");
+		StringBuffer sb = new StringBuffer();
+		Matcher matcher = Pattern.compile(regex).matcher(input);
+		while (matcher.find()) {
+			matcher.appendReplacement(sb,
+					matcher.group().replace(":", " x ").replace("a.m.", "am").replace("p.m.", "pm"));
 		}
-		return output;
+		matcher.appendTail(sb);
+		return sb.toString();
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUtility#parseDate(java.lang.String)
+	 */
+	@Override
+	public LocalDate parseDate(String toParse) {
+		String dateAsString = toParse;
+		dateAsString = dateAsString.replaceAll("(monday|tuesday|wednesday|thursday|friday|saturday|sunday)( the)?", "");
+		dateAsString = dateAsString.replace(" of", "").trim();
+		Matcher withoutYear = Pattern.compile("\\d+ (\\d+|\\D+)").matcher(dateAsString);
+		if (withoutYear.matches()) {
+			dateAsString = dateAsString.concat(" ").concat(String.valueOf(LocalDate.now().getYear()));
+		}
+		Matcher informalDate = Pattern.compile("\\d+ \\d+ \\d{4,4}").matcher(dateAsString);
+		Matcher naturalDate = Pattern.compile(
+				"\\d+ (january|february|march|april|may|june|july|august|september|october|november|december) \\d{4,4}")
+				.matcher(dateAsString);
+		if (naturalDate.matches()) {
+			return LocalDate.parse(dateAsString.trim(), new DateTimeFormatterBuilder().parseCaseInsensitive()
+					.appendPattern("d MMMM yyyy").toFormatter(Locale.ENGLISH));
+		} else if (informalDate.matches()) {
+			return LocalDate.parse(dateAsString, new DateTimeFormatterBuilder().parseCaseInsensitive()
+					.appendPattern("d M yyyy").toFormatter(Locale.ENGLISH));
+		}
+		throw new DateTimeParseException("Could not parse date", dateAsString, 0);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUtility#formatDate(java.lang.String)
+	 */
+	@Override
+	public String formatDate(String input) {
+		Matcher dateWithPoints = Pattern.compile("\\d+\\.\\d+.\\d+").matcher(input);
+		String formattedDateString = replace(dateWithPoints, "\\.", " ");
+		Matcher dateOrdinal = Pattern.compile("\\d+(th|st|nd|rd)").matcher(formattedDateString);
+		formattedDateString = replace(dateOrdinal, "(th|st|nd|rd)", "");
+		return formattedDateString;
+	}
+
+	private String replace(Matcher matcher, String toReplace, String replacement) {
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+			matcher.appendReplacement(sb, matcher.group().replaceAll(toReplace, replacement));
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ITimeUtility#parseDateTime(java.lang.String)
+	 */
+	@Override
+	public LocalDateTime parseDateTime(String toParse) {
+		String[] spiltedString = toParse.split("at");
+		if (spiltedString.length == 2) {
+			LocalDate date = parseDate(spiltedString[0]);
+			LocalTime time = parseTime(spiltedString[1]);
+			if (date != null && time != null) {
+				return LocalDateTime.of(date, time);
+			}
+		}
+		throw new DateTimeParseException("Could not parse dateTime", toParse, 0);
 	}
 
 }
