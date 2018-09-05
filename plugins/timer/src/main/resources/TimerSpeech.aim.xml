@@ -17,6 +17,24 @@
 		</EntityTemplates>
 	</Intent>
 	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.pauseTimer">
+		<gram>pause timer {number}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="number" required="true">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+		<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.reactivateTimer">
+		<gram>(resume|reactivate) timer {number}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="number" required="true">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.resetTimerObjects">
 		<gram>delete all timers</gram>
 	</Intent>

@@ -50,7 +50,12 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	private int id;
 	@XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
 	private LocalDateTime timerTime;
+	private Duration duration;
+	private boolean active;
 
+	/**
+	 * Default constructor
+	 */
 	public Timer() {
 
 	}
@@ -62,12 +67,18 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	 *            id of the timer
 	 * @param timerTime
 	 *            date and time of the timer
+	 * @param remainingTime
+	 *            time until the timer rings
+	 * @param active
+	 *            states whether the timer is active or inactive
 	 */
-	public Timer(int id, LocalDateTime timerTime) {
+	public Timer(int id, LocalDateTime timerTime, Duration remainingTime, boolean active) {
 		if (id < 1)
 			throw new IllegalArgumentException();
 		this.id = id;
 		this.timerTime = timerTime;
+		this.duration = remainingTime;
+		this.active = true;
 	}
 
 	/**
@@ -86,14 +97,22 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	/**
 	 * Returns this timers delay until it goes off
 	 * 
-	 * @param timer
-	 *            timer of which the remaining time should be calculated
 	 * @return the remaining time in seconds
 	 */
-	public Duration getRemainingTime(Timer timer) {
-		LocalDateTime current = LocalDateTime.now();
-		LocalDateTime future = timer.getTimerTime();
-		return Duration.ofMillis(current.until(future, ChronoUnit.MILLIS));
+	public Duration getRemainingTime() {
+		if (this.active) {
+
+			LocalDateTime current = LocalDateTime.now();
+			LocalDateTime future = this.getTimerTime();
+			return (Duration.ofMillis(current.until(future, ChronoUnit.MILLIS)));
+		} else {
+			return this.duration;
+		}
+
+	}
+
+	public Duration getDuration() {
+		return this.duration;
 	}
 
 	/**
@@ -127,6 +146,21 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	}
 
 	/**
+	 * @return whether the timer is active or not
+	 */
+	public boolean isActive() {
+		return this.active;
+	}
+
+	/**
+	 * @param active
+	 *            the value whether the timer is active or not
+	 */
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	/**
 	 * @return timerDate
 	 */
 	public LocalDateTime getTimerTime() {
@@ -139,6 +173,14 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	 */
 	public void setTimerTime(LocalDateTime timerTime) {
 		this.timerTime = timerTime;
+	}
+
+	/**
+	 * @param remainingTime
+	 *            sets the remaining time
+	 */
+	public void setDuration(Duration duration) {
+		this.duration = duration;
 	}
 
 	/**

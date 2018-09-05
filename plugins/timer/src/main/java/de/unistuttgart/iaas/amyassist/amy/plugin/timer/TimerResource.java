@@ -34,9 +34,9 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 /**
- * REST Resource for alarmclock
+ * REST Resource for timer
  * 
- * @author Christian Bräuner, Patrick Gebhardt
+ * @author Patrick Gebhardt
  */
 @Path(TimerResource.PATH)
 public class TimerResource implements Resource {

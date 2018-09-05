@@ -83,6 +83,30 @@ public class TimerSpeech {
 	}
 
 	/**
+	 * @param entities
+	 *            contains the data input
+	 * @return the number of the paused Timer
+	 */
+	@Intent
+	public String pauseTimer(Map<String, EntityData> entities) {
+		Timer timer = this.timerLogic.getTimer(entities.get(NUMBER_MAP_KEY).getNumber());
+		this.timerLogic.pauseTimer(timer);
+		return "Timer " + timer.getId() + " paused";
+	}
+
+	/**
+	 * @param entities
+	 *            contains the data input
+	 * @return the number of the resumed Timer
+	 */
+	@Intent
+	public String reactivateTimer(Map<String, EntityData> entities) {
+		Timer timer = this.timerLogic.getTimer(entities.get(NUMBER_MAP_KEY).getNumber());
+		this.timerLogic.reactivateTimer(timer);
+		return "Timer " + timer.getId() + " resumed";
+	}
+
+	/**
 	 * Resets all alarms or timers
 	 * 
 	 * @param entities
@@ -91,7 +115,7 @@ public class TimerSpeech {
 	 */
 	@Intent
 	public String resetTimerObjects(Map<String, EntityData> entities) {
-		return this.timerLogic.resetTimers();
+		return this.timerLogic.deleteAllTimers();
 	}
 
 	/**
@@ -171,12 +195,12 @@ public class TimerSpeech {
 	}
 
 	private static String outputTimer(Timer timer) {
-		Duration timeDiff = timer.getRemainingTime(timer);
+		Duration timeDiff = timer.getRemainingTime();
 		int sec = (int) ((timeDiff.toMillis() / 1000) % 60);
 		int min = (int) (timeDiff.toMinutes() % 60);
 		int hours = (int) (timeDiff.toHours());
 		int timerNumber = timer.getId();
-		if (hours <= 0 || min <= 0 || sec <= 0) {
+		if (timeDiff.isZero() || timeDiff.isNegative()) {
 			return "Timer " + timerNumber + " is ringing right now.";
 		}
 		if (hours == 0) {

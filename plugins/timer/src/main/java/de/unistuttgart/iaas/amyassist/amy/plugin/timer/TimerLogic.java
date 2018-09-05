@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -44,7 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 public class TimerLogic implements RunnableService {
 
 	@Reference
-	private TimerBeepService alarmbeep;
+	private TimerBeepService timerbeep;
 
 	@Reference
 	private TimerRegistry timerStorage;
@@ -61,17 +62,18 @@ public class TimerLogic implements RunnableService {
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
 	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel Simion
 	 * 
-	 * @param timerNumber
-	 *            number of the timer
+	 * @param timer
+	 *            timer which should ring
 	 * 
 	 * @return runnable
 	 * 
 	 */
-	private Runnable createTimerRunnable(int timerNumber) {
+	public Runnable createTimerRunnable(Timer timer) {
 		return () -> {
-			Timer t = getTimer(timerNumber);
-			if (this.environment.getCurrentLocalDateTime().truncatedTo(ChronoUnit.MINUTES).isEqual(t.getTimerTime())) {
-				this.alarmbeep.beep(t);
+			Timer currenttimer = this.getTimer(timer.getId());
+			if (currenttimer.isActive()
+					&& (currenttimer.getRemainingTime().isNegative() || currenttimer.getRemainingTime().isZero())) {
+				this.timerbeep.beep(currenttimer);
 			}
 		};
 
@@ -84,11 +86,11 @@ public class TimerLogic implements RunnableService {
 	 *            date and time of the timer
 	 * @return the new timer
 	 */
-	protected Timer setTimer(LocalDateTime timerTime) {
+	public Timer setTimer(LocalDateTime timerTime) {
 		int id = searchTimerId();
-		Timer timer = new Timer(id, timerTime);
+		Timer timer = new Timer(id, timerTime, null, true);
 		this.timerStorage.save(timer);
-		Runnable timerRunnable = createTimerRunnable(id);
+		Runnable timerRunnable = createTimerRunnable(timer);
 		ZonedDateTime with = this.environment.getCurrentDateTime().with(timer.getTimerTime());
 		if (with.isBefore(this.environment.getCurrentDateTime())) {
 			with = with.plusDays(1);
@@ -97,7 +99,10 @@ public class TimerLogic implements RunnableService {
 		return timer;
 	}
 
-	private int searchTimerId() {
+	/**
+	 * @return id of the timer
+	 */
+	public int searchTimerId() {
 		int id = 1;
 		List<Timer> timerList = this.timerStorage.getAll();
 		timerList.sort((timer1, timer2) -> timer1.getId() - timer2.getId());
@@ -116,11 +121,11 @@ public class TimerLogic implements RunnableService {
 	 * 
 	 * @return counter counts the existing alarms
 	 */
-	protected String resetTimers() {
+	public String deleteAllTimers() {
 		int counter = 0;
 		for (Timer t : this.timerStorage.getAll()) {
 			counter++;
-			this.alarmbeep.stopBeep(t);
+			this.timerbeep.stopBeep(t);
 			this.timerStorage.deleteById(t.getPersistentId());
 		}
 		if (counter == 0) {
@@ -136,9 +141,9 @@ public class TimerLogic implements RunnableService {
 	 *            timerNumber in the storage
 	 * @return alarmNumber
 	 */
-	protected String deleteTimer(int timerNumber) {
+	public String deleteTimer(int timerNumber) {
 		Timer t = getTimer(timerNumber);
-		this.alarmbeep.stopBeep(t);
+		this.timerbeep.stopBeep(t);
 		this.timerStorage.deleteById(t.getPersistentId());
 		return this.timerS + t.getId() + " deleted";
 	}
@@ -151,7 +156,7 @@ public class TimerLogic implements RunnableService {
 	 * 
 	 * @return timer
 	 */
-	protected Timer getTimer(int timerNumber) {
+	public Timer getTimer(int timerNumber) {
 		for (Timer t : this.timerStorage.getAll()) {
 			if (t.getId() == timerNumber) {
 				return t;
@@ -165,10 +170,50 @@ public class TimerLogic implements RunnableService {
 	 * 
 	 * @return List of all timers
 	 */
-	protected List<Timer> getAllTimers() {
+	public List<Timer> getAllTimers() {
 		List<Timer> timerList = this.timerStorage.getAll();
 		timerList.sort((timer1, timer2) -> timer1.getId() - timer2.getId());
 		return timerList;
+	}
+
+	/**
+	 * @param timer
+	 *            the timer which should be paused
+	 * @return the timer with its new data
+	 */
+	public Timer pauseTimer(Timer timer) {
+		if (timer.isActive()) {
+			this.timerbeep.stopBeep(timer);
+			timer.setActive(false);
+
+			LocalDateTime current = LocalDateTime.now();
+			LocalDateTime future = timer.getTimerTime();
+			timer.setDuration(Duration.ofMillis(current.until(future, ChronoUnit.MILLIS)));
+			this.timerStorage.save(timer);
+			return timer;
+		}
+		throw new IllegalArgumentException("Timer is already inactive");
+	}
+
+	/**
+	 * @param timer
+	 *            time which should be reactivated
+	 * @return the timer with its new data
+	 */
+	public Timer reactivateTimer(Timer timer) {
+		if (!timer.isActive()) {
+			timer.setActive(true);
+			LocalDateTime current = LocalDateTime.now();
+			int timertime = (int) (timer.getDuration().toMillis() / 1000);
+			LocalDateTime newTimerTime = current.plusSeconds(timertime);
+			timer.setTimerTime(newTimerTime);
+			this.timerStorage.save(timer);
+			Runnable timerRunnable = createTimerRunnable(timer);
+			ZonedDateTime ringtime = this.environment.getCurrentDateTime().with(timer.getTimerTime());
+			this.taskScheduler.schedule(timerRunnable, ringtime.toInstant());
+			return timer;
+		}
+		throw new IllegalArgumentException("Timer is already active");
 	}
 
 	/**
@@ -177,9 +222,9 @@ public class TimerLogic implements RunnableService {
 	@Override
 	public void start() {
 		List<Timer> timerList = getAllTimers();
-		for (Timer a : timerList) {
-			Runnable timerRunnable = createTimerRunnable(a.getId());
-			ZonedDateTime with = this.environment.getCurrentDateTime().with(a.getTimerTime());
+		for (Timer t : timerList) {
+			Runnable timerRunnable = createTimerRunnable(t);
+			ZonedDateTime with = this.environment.getCurrentDateTime().with(t.getTimerTime());
 			this.taskScheduler.schedule(timerRunnable, with.toInstant());
 		}
 	}
