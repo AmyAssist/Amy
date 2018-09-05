@@ -71,6 +71,7 @@ public class NLParser implements INLParser {
 	public AGFNode matchingNode(List<WordToken> nl) {
 		this.mRead = nl;
 		for (AGFNode agf : this.grammars) {
+			agf.deleteEntityContent();
 			AGFNode nodeSorted = sortChildsOfOrAndOp(agf);
 			this.currentIndex = 0;
 			if (checkNode(nodeSorted) && this.currentIndex == nl.size()) {
@@ -135,6 +136,7 @@ public class NLParser implements INLParser {
 			for (AGFNode node : agf.getChilds()) {
 				if (!checkNode(node)) {
 					this.currentIndex = traceBack;
+					agf.deleteEntityContent();
 					return false;
 				}
 				if (this.wildcardSkip) {
