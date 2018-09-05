@@ -21,8 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
+package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -170,19 +171,22 @@ public class TimerSpeech {
 	}
 
 	private static String outputTimer(Timer timer) {
-		int[] timeDiff = timer.getRemainingTime();
+		Duration timeDiff = timer.getRemainingTime(timer);
+		int sec = (int) ((timeDiff.toMillis() / 1000) % 60);
+		int min = (int) (timeDiff.toMinutes() % 60);
+		int hours = (int) (timeDiff.toHours());
 		int timerNumber = timer.getId();
-		if (timeDiff[0] < 0 || timeDiff[1] < 0 || timeDiff[2] < 0) {
+		if (hours <= 0 || min <= 0 || sec <= 0) {
 			return "Timer " + timerNumber + " is ringing right now.";
 		}
-		if (timeDiff[0] == 0) {
-			if (timeDiff[1] == 0) {
-				return "Timer " + timerNumber + " will ring in " + timeDiff[2] + " seconds";
+		if (hours == 0) {
+			if (min == 0) {
+				return "Timer " + timerNumber + " will ring in " + sec + " seconds";
 			}
-			return "Timer " + timerNumber + " will ring in " + timeDiff[1] + " minutes and " + timeDiff[2] + " seconds";
+			return "Timer " + timerNumber + " will ring in " + min + " minutes and " + sec + " seconds";
 		}
-		return "Timer " + timerNumber + " will ring in " + timeDiff[0] + " hours and " + timeDiff[1] + " minutes and "
-				+ timeDiff[2] + " seconds";
+		return "Timer " + timerNumber + " will ring in " + hours + " hours and " + min + " minutes and " + sec
+				+ " seconds";
 	}
 
 }

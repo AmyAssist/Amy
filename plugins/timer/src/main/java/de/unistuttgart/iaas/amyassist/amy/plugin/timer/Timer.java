@@ -21,8 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
+package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -45,10 +46,14 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(updatable = false, nullable = false)
-	private int id;
 	private int persistentId;
+	private int id;
 	@XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
 	private LocalDateTime timerTime;
+
+	public Timer() {
+
+	}
 
 	/**
 	 * Constructor for a timer object
@@ -81,21 +86,14 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	/**
 	 * Returns this timers delay until it goes off
 	 * 
-	 * @return hourDiff, minuteDiff, secondDiff
+	 * @param timer
+	 *            timer of which the remaining time should be calculated
+	 * @return the remaining time in seconds
 	 */
-	public int[] getRemainingTime() {
+	public Duration getRemainingTime(Timer timer) {
 		LocalDateTime current = LocalDateTime.now();
-		LocalDateTime future = this.timerTime;
-
-		long hours = current.until(future, ChronoUnit.HOURS);
-		current = current.plusHours(hours);
-
-		long minutes = current.until(future, ChronoUnit.MINUTES);
-		current = current.plusMinutes(minutes);
-
-		long seconds = current.until(future, ChronoUnit.SECONDS);
-
-		return new int[] { (int) hours, (int) minutes, (int) seconds };
+		LocalDateTime future = timer.getTimerTime();
+		return Duration.ofMillis(current.until(future, ChronoUnit.MILLIS));
 	}
 
 	/**

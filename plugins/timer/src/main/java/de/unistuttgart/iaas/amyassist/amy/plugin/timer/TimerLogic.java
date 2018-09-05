@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
+package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -44,7 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 public class TimerLogic implements RunnableService {
 
 	@Reference
-	private AlarmBeepService alarmbeep;
+	private TimerBeepService alarmbeep;
 
 	@Reference
 	private TimerRegistry timerStorage;

@@ -21,30 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
+package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
 
-import javax.annotation.Nonnull;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.IRegistry;
 
 /**
- * The timer registry
+ * Interface for the timer registry
  * 
  * @author Patrick Gebhardt
  */
-@Service(TimerRegistry.class)
-public class TimerRegistryImpl extends AbstractRegistry<Timer> implements TimerRegistry {
-
+public interface TimerRegistry extends IRegistry<Timer> {
+	/**
+	 * @param timer
+	 *            the timer which should be saved
+	 */
 	@Override
-	protected String getPersistenceUnitName() {
-		return "TimerRegistry";
-	}
-
-	@Nonnull
-	@Override
-	public Class<? extends Timer> getEntityClass() {
-		return Timer.class;
-	}
-
+	void save(Timer timer);
 }
