@@ -41,11 +41,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserInten
  *
  * @author Felix Burk
  */
-@Service()
 public class DialogHandlerImpl implements DialogHandler {
 
 	@Reference
-	private NLProcessingManager manager;
+	private NLProcessingManagerImpl manager;
 
 	@Reference
 	private ServiceLocator serviceLocator;

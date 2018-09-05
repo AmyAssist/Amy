@@ -57,7 +57,7 @@ public class DialogHandlerImplTest {
 	@Reference
 	private TestFramework testFramework;
 
-	private NLProcessingManager manager;
+	private NLProcessingManagerImpl manager;
 	private DialogHandlerImpl dialogHandler;
 	private UUID uuid;
 
@@ -74,7 +74,7 @@ public class DialogHandlerImplTest {
 
 	@BeforeEach
 	void init() {
-		this.manager = this.testFramework.mockService(NLProcessingManager.class);
+		this.manager = this.testFramework.mockService(NLProcessingManagerImpl.class);
 		this.dialogHandler = this.testFramework.setServiceUnderTest(DialogHandlerImpl.class);
 		this.uuid = this.dialogHandler.createDialog(this.consumer);
 	}

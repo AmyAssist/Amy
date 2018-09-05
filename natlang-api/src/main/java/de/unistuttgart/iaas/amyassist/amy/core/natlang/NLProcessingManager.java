@@ -25,8 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
 import java.lang.reflect.Method;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent;
-
 /**
  * Manages all natural language interpreter of the plugins and can process the input of natural language
  *
@@ -35,41 +33,16 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent;
 public interface NLProcessingManager {
 
 	/**
-	 * registers the given class
+	 * not supported right now!
 	 * 
-	 * @param method
-	 *            to call
-	 * @param intent
-	 *            to register
+	 * @param grammarName name of grammar
+	 * @param multiStart multi startup command
+	 * @param singleStart single startup command
+	 * @param multiStop multi stop command
+	 * @param shutup command
+	 * @return grammar file as string
 	 */
-	void register(Method method, XMLAIMIntent intent);
-
-	/**
-	 * @param grammarName
-	 *            name of the grammar
-	 * @return the grammar file string
-	 */
-	String getGrammarFileString(String grammarName);
-
-	/**
-	 * decides which intent matches
-	 * 
-	 * @param dialog
-	 *            containing intents
-	 * @param naturalLanguageText
-	 *            text to match
-	 * @return the input dialog. now the intent is set
-	 */
-	Dialog decideIntent(Dialog dialog, String naturalLanguageText);
-
-	/**
-	 * processes an intent
-	 * 
-	 * @param dialog
-	 *            containing current intent
-	 * @param naturalLanguageText
-	 *            input text
-	 */
-	void processIntent(Dialog dialog, String naturalLanguageText);
+	String getGrammarFileString(String grammarName, String multiStart, String singleStart, String multiStop,
+			String shutup);
 
 }

@@ -54,7 +54,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.nl.WordToken;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.EntityDataImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntentTemplate;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
 /**
  * The implementation of the NLProcessingManager. This implementation uses the Parsers in the
@@ -113,10 +112,10 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#register(java.lang.reflect.Method,
-	 *      de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent)
+	 * registers an intent
+	 * @param method with corresponding method
+	 * @param intent corresponding xml aim intent object
 	 */
-	@Override
 	public void register(Method method, XMLAIMIntent intent) {
 		if (!method.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent.class)) {
 			throw new IllegalArgumentException("annotation is not present in " + method.getName());
@@ -136,14 +135,19 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#getGrammarFileString(java.lang.String)
 	 */
 	@Override
-	public String getGrammarFileString(String grammarName) {
-		JSGFGenerator generator = new JSGFGenerator(grammarName, Constants.MULTI_CALL_START,
-				Constants.SINGLE_CALL_START, Constants.MULTI_CALL_STOP, Constants.SHUT_UP);
+	public String getGrammarFileString(
+			String grammarName, String multiStart, String singleStart, String multiStop, String shutup) {
+		JSGFGenerator generator = new JSGFGenerator(grammarName, multiStart,
+				singleStart, multiStop, shutup);
 
 		return generator.generateGrammarFileString();
 	}
 
-	@Override
+	/**
+	 * processes an intent
+	 * @param dialog from this Dialog object
+	 * @param naturalLanguageText input from user
+	 */
 	public void processIntent(Dialog dialog, String naturalLanguageText) {
 		List<AGFNode> promptGrams = new ArrayList<>();
 		if (dialog.getNextPrompt() != null) {
@@ -208,11 +212,11 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 *
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager#decideIntent(de.unistuttgart.iaas.amyassist.amy.core.natlang.Dialog,
-	 *      java.lang.String)
+	 * decides which intent the user meant
+	 * @param dialog corresponding dialog object
+	 * @param naturalLanguageText from user
+	 * @return matching dialog containing matching intent
 	 */
-	@Override
 	public Dialog decideIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language);
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);

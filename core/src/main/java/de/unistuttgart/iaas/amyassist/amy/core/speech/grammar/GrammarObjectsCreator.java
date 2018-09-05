@@ -34,7 +34,6 @@ import java.util.List;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
 
 /**
@@ -47,8 +46,6 @@ public class GrammarObjectsCreator implements DeploymentContainerService {
 
 	@Reference
 	private Environment environment;
-	@Reference
-	private NLProcessingManager nlProcessingManager;
 
 	private Grammar mainGrammar;
 	private List<Grammar> switchables = new ArrayList<>();
@@ -68,7 +65,10 @@ public class GrammarObjectsCreator implements DeploymentContainerService {
 		}
 		try (BufferedWriter bw = Files.newBufferedWriter(grammarFile, StandardOpenOption.CREATE,
 				StandardOpenOption.TRUNCATE_EXISTING)) {
-			bw.write(this.nlProcessingManager.getGrammarFileString("grammar"));
+			//deprecated - will be removed with pr #322
+			//bw.write(this.nlProcessingManager.getGrammarFileString(
+			//		"grammar", Constants.SINGLE_CALL_START, Constants.MULTI_CALL_START, 
+			//		Constants.MULTI_CALL_STOP, Constants.SHUT_UP));
 		} catch (IOException e) {
 			throw new IllegalStateException("Can't write grammar file", e);
 		}

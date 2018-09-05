@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLIAnnotationReader;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManagerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
@@ -62,7 +62,7 @@ public class LoadAIMService implements DeploymentContainerService {
 	private PluginManager pluginManager;
 
 	@Reference
-	private NLProcessingManager nlManager;
+	private NLProcessingManagerImpl nlManager;
 
 	@Reference
 	private Logger logger;

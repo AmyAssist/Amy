@@ -19,6 +19,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Amy versions to depend on -->
+		<amy.natlang.version>0.5.0-Snapshot</amy.natlang.version>
 		<amy.di.api.version>0.5.0-Snapshot</amy.di.api.version>
 		<amy.natlang.api.version>0.5.0-Snapshot</amy.natlang.api.version>
 		<amy.di.version>0.5.0-Snapshot</amy.di.version>
@@ -75,6 +76,7 @@
 		<module>amy-message-hub</module>
 		<module>deployment-descriptor-utility</module>
 		<module>natlang-api</module>
+		<module>natlang</module>
 	</modules>
 	<licenses>
 		<license>
@@ -159,6 +161,11 @@
 	</build>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<artifactId>amy-natlang</artifactId>
+				<version>${amy.natlang.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>de.unistuttgart.iaas.amyassist</groupId>
 				<artifactId>amy-natlang-api</artifactId>

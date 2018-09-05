@@ -26,7 +26,7 @@ public class NLProcessingManagerTest {
 	@Reference
 	private TestFramework testFramework;
 
-	private NLProcessingManager manager;
+	private NLProcessingManagerImpl manager;
 
 	private List<String> failedToUnderstand = new ArrayList<>();
 

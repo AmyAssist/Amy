@@ -12,5 +12,13 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-di-api</artifactId>
+		</dependency>
 	</dependencies>
 </project>
