@@ -21,22 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx;
 
 /**
- * Context key constants
- * 
- * @author Leon Kiefer, Tim Neumann
+ * Container class for Sphinx-grammar DI context
  */
-public final class Context {
-	private Context() {
-		// hide constructor
-	}
+public final class SphinxContext {
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider
-	 */
-	public static final String PLUGIN = "plugin";
-	public static final String CLASS = "class";
-	public static final String CLASSLOADER = "classLoader";
+    private SphinxContext() {}
+
+    public static final String SPHINX_GRAMMAR = "sphinx_grammar";
 }

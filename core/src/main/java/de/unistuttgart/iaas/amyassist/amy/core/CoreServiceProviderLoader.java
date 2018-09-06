@@ -31,6 +31,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Services;
 import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxContext;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarName;
 
 /**
@@ -49,7 +50,7 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 		di.register(new PropertiesProvider());
 
 		di.registerContextProvider(Context.CLASSLOADER, consumer -> consumer.getConsumerClass().getClassLoader());
-		di.registerContextProvider(Context.SPHINX_GRAMMAR,
+		di.registerContextProvider(SphinxContext.SPHINX_GRAMMAR,
 				consumer -> consumer.getServiceDescription().getAnnotations().stream()
 						.filter(annotation -> annotation instanceof SphinxGrammarName).findFirst()
 						.map(annotation -> ((SphinxGrammarName) annotation).value()).orElse(null));

@@ -65,7 +65,7 @@ public class SphinxRecognizer implements SpeechRecognizer, Runnable {
 	@Reference
 	private SphinxGrammarCreator grammarCreator;
 
-	@Context(de.unistuttgart.iaas.amyassist.amy.core.di.Context.SPHINX_GRAMMAR)
+	@Context(SphinxContext.SPHINX_GRAMMAR)
 	private String grammarName;
 
 	private StreamSpeechRecognizer recognizer;
