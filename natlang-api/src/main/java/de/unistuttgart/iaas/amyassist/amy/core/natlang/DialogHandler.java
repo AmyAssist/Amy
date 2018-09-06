@@ -26,8 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-
 /**
  * entry point for natural language interpretation. To create a new dialog use {@link #createDialog(Consumer)} and store
  * the returned UUID. This uuid represents a running dialog of a single user. If the user closes the current session use
@@ -38,7 +36,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * 
  * @author Lars Buttgereit, Felix Burk
  */
-@Service()
 public interface DialogHandler {
 
 	/**
