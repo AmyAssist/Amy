@@ -78,7 +78,7 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 		this.id = id;
 		this.timerTime = timerTime;
 		this.duration = remainingTime;
-		this.active = true;
+		this.active = active;
 	}
 
 	/**
@@ -105,29 +105,16 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 			LocalDateTime current = LocalDateTime.now();
 			LocalDateTime future = this.getTimerTime();
 			return (Duration.ofMillis(current.until(future, ChronoUnit.MILLIS)));
-		} else {
-			return this.duration;
 		}
-
-	}
-
-	public Duration getDuration() {
 		return this.duration;
+
 	}
 
 	/**
-	 * Checks if the given hours, minutes and seconds are valid for a timer
-	 * 
-	 * @param hours
-	 *            hour delay of timer
-	 * @param minutes
-	 *            minute delay of timer
-	 * @param seconds
-	 *            second delay of timer
-	 * @return true, if delay is valid, else false
+	 * @return the duration of the timer
 	 */
-	public static boolean delayValid(int hours, int minutes, int seconds) {
-		return hours >= 0 && minutes >= 0 && seconds >= 0 && hours + minutes + seconds > 0;
+	public Duration getDuration() {
+		return this.duration;
 	}
 
 	/**
@@ -176,8 +163,8 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	}
 
 	/**
-	 * @param remainingTime
-	 *            sets the remaining time
+	 * @param duration
+	 *            sets the duration of the timer
 	 */
 	public void setDuration(Duration duration) {
 		this.duration = duration;

@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -32,6 +33,7 @@ import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
@@ -41,6 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
  *
  * @author Patrick Gebhardt
  */
+@Service
 @SpeechCommand
 public class TimerSpeech {
 
@@ -77,7 +80,8 @@ public class TimerSpeech {
 		if (hours == 0 && minutes == 0 && seconds == 0) {
 			return "No value is set";
 		}
-		LocalDateTime timerDate = LocalDateTime.now().plusHours(hours).plusMinutes(minutes).plusSeconds(seconds);
+		LocalDateTime timerDate = LocalDateTime.now().plusHours(hours).plusMinutes(minutes).plusSeconds(seconds)
+				.truncatedTo(ChronoUnit.SECONDS);
 		Timer timer = this.timerLogic.setTimer(timerDate);
 		return "Timer " + timer.getId() + " set";
 	}
