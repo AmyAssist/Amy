@@ -73,27 +73,20 @@ public class WeatherReportNow {
 		this.icon = trimQuotes(p.icon());
 	}
 
-	private String description(boolean tldr) {
+	private String description() {
 		String result = (this.preamble != null ? this.preamble + " " : "") + this.summary;
 		if (this.precip) {
 			result += " " + this.precipProbability + " probability of " + this.precipType + ".";
 		}
-		result += " Temp is " + this.temperatureNow + "°C.";
+		result += " with " + this.temperatureNow + "°C and wind speed of " + this.windSpeed + ".";
 		return result;
-	}
-
-	/**
-	 * @return description
-	 */
-	public String shortDescription() {
-		return description(true);
 	}
 
 	@Override
 	public String toString() {
-		return description(false);
+		return description();
 	}
-	
+
 	/**
 	 * @return preamble
 	 */

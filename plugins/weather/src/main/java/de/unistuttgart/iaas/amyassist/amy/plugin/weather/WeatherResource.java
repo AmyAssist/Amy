@@ -72,18 +72,6 @@ public class WeatherResource implements Resource {
 	}
 
 	/**
-	 * get the weather forecast for tomorrow
-	 * 
-	 * @return tomorrows weather forecast
-	 */
-	@GET
-	@Path("tomorrow")
-	@Produces(MediaType.APPLICATION_JSON)
-	public WeatherReportDay getWeatherTomorrow() {
-		return this.weatherLogic.getReportTomorrow();
-	}
-
-	/**
 	 * get the weather forecast for the week
 	 * 
 	 * @return this weeks weather forecast
