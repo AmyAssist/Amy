@@ -124,11 +124,6 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 
 			String chromePath = config.getProperty(CHROME_DIRECTORY_CONFIG_KEY);
 
-			if (chromePath == null || chromePath.isEmpty()) {
-				this.logger.error("Chrome command not set. Set your chrome installation directory in {}.properties",
-						CONFIG_NAME);
-			}
-
 			this.chromeProcess = new ProcessBuilder(chromePath, "http://localhost:8080/rest/remotesr",
 					"--user-data-dir=" + file).start();
 
@@ -223,7 +218,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
-		}).start();
+		}, "Chrome watcher thread").start();
 
 		executeAfterSeconds(() -> {
 			if (client == null || !client.isConnected()) {
