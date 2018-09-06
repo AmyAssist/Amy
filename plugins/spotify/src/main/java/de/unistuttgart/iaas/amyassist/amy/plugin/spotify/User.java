@@ -24,7 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 /**
- * TODO: Description
+ * Stores user specific content for example the refresh token or current selected device
  * @author Lars Buttgereit
  */
 public class User {

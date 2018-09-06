@@ -184,7 +184,7 @@ public class SpotifyAPICalls {
 		AuthorizationCodeCredentials authCredentials = exceptionHandlingWithResults(authCodeRefreshReq::execute);
 		if (authCredentials != null) {
 			ZonedDateTime time = this.environment.getCurrentDateTime()
-					.plusSeconds(authCredentials.getExpiresIn().intValue() - TOKEN_EXPIRE_TIME_OFFSET);
+					.plusSeconds(authCredentials.getExpiresIn().longValue() - TOKEN_EXPIRE_TIME_OFFSET);
 			this.userData.setAccessTokenExpireTime(time.toEpochSecond());
 			this.userData.setAccessToken(authCredentials.getAccessToken());
 			return authCredentials.getAccessToken();
@@ -438,10 +438,8 @@ public class SpotifyAPICalls {
 	 * @return int between 0-100 for the volume and -1 if the volume is unknown
 	 */
 	public int getVolume() {
-		if (getSpotifyApi() == null) {
-			if (getActiveDevice() != null && getActiveDevice().getVolume_percent() != null) {
-				return getActiveDevice().getVolume_percent().intValue();
-			}
+		if (getSpotifyApi() == null && getActiveDevice() != null && getActiveDevice().getVolume_percent() != null) {
+			return getActiveDevice().getVolume_percent().intValue();
 		}
 		return -1;
 	}
