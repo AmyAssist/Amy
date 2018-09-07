@@ -83,7 +83,8 @@ public class TimerTest {
 	public void getRemainingTimeTest() {
 		LocalDateTime timerTime = LocalDateTime.now().plusMinutes(1);
 		Timer t1 = new Timer(1, timerTime, null, true);
-		assertThat(t1.getRemainingTime().get(ChronoUnit.SECONDS), is(Duration.ofMillis(60000).getSeconds()));
+		assertTrue(t1.getRemainingTime().get(ChronoUnit.SECONDS) <= Duration.ofMillis(60000).getSeconds()
+				&& t1.getRemainingTime().get(ChronoUnit.SECONDS) >= Duration.ofMillis(59000).getSeconds());
 	}
 
 	/**
