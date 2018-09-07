@@ -140,7 +140,6 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 						+ " Please specify which type this service should have.");
 			}
 		}
-
 		this.registerClass(cls, serviceType);
 	}
 

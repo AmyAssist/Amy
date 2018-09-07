@@ -34,7 +34,6 @@ import org.mockito.Mockito;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandlerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.test.LoggerProvider;
 
@@ -65,7 +64,7 @@ class ConsoleTest {
 		final String expected = "Hello world say hello";
 
 		UUID uuid = UUID.randomUUID();
-		DialogHandlerImpl handler = Mockito.mock(DialogHandlerImpl.class);
+		DialogHandler handler = Mockito.mock(DialogHandler.class);
 
 		Mockito.when(handler.createDialog(ArgumentMatchers.any())).thenReturn(uuid);
 
