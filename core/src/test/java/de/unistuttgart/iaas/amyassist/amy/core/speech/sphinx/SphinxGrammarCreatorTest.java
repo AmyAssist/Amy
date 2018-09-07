@@ -39,7 +39,6 @@ import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -62,7 +61,7 @@ class SphinxGrammarCreatorTest {
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
-		this.tempDir = Files.createTempDirectory(PluginManagerService.class.getName());
+		this.tempDir = Files.createTempDirectory(SphinxGrammarCreatorTest.class.getName());
 		this.tempDir.toFile().deleteOnExit();
 		Environment environment = this.testFramework.mockService(Environment.class);
 		Mockito.when(environment.getWorkingDirectory()).thenReturn(this.tempDir);
