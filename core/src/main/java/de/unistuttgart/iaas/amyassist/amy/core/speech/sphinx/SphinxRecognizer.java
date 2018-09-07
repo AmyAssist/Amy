@@ -210,6 +210,8 @@ public class SphinxRecognizer implements SpeechRecognizer, Runnable {
 		configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
 		configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
 
+		logger.warn("grammarName={}", grammarName);
+
 		configuration.setUseGrammar(false);
 		if (this.grammarName != null && !this.grammarName.isEmpty()) {
 			Path grammarFile = grammarDir.resolve(this.grammarName + ".gram");

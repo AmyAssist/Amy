@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 import java.util.Properties;
 import java.util.UUID;
 
+import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.JSGFGenerator;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
@@ -33,7 +34,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
@@ -77,8 +77,9 @@ public class SpeechManager implements RunnableService {
 	private MessageHub messageHub;
 	@Reference
 	private Output output;
-	@Reference
-	private NLProcessingManager nlProcessingManager;
+
+	private JSGFGenerator jsgfGenerator;
+
 	@Reference
 	private DialogHandler dialogHandler;
 
@@ -98,8 +99,12 @@ public class SpeechManager implements RunnableService {
 
 			this.dialogId = this.dialogHandler.createDialog(this::voiceOutput);
 
+			this.jsgfGenerator = new JSGFGenerator(SPHINX_MAIN_GARMMAR_NAME, Constants.MULTI_CALL_START,
+					Constants.SINGLE_CALL_START, Constants.MULTI_CALL_STOP, Constants.SHUT_UP);
+
 			this.sphinxGrammarCreator.createGrammar(SPHINX_MAIN_GARMMAR_NAME,
-					this.nlProcessingManager.getGrammarFileString(SPHINX_MAIN_GARMMAR_NAME));
+					this.jsgfGenerator.generateGrammarFileString());
+
 		}
 	}
 
