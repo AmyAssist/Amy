@@ -69,7 +69,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	private ConfigurationManager configurationManager;
 
 	@Reference
-	Server httpServer;
+	private Server httpServer;
 
 	private static final String START_SR_EVENT = "START";
 
