@@ -96,7 +96,7 @@ public class WeatherResource implements Resource {
 		try {
 			this.weatherLogic.setLocation(Integer.parseInt(locationId));
 		} catch (NumberFormatException e) {
-			throw new WebApplicationException("No route found.", Status.NOT_FOUND);
+			throw new WebApplicationException("Location not found.", Status.NOT_FOUND);
 		}
 	}
 

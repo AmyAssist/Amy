@@ -87,7 +87,7 @@ public class CalendarResource {
         if(events != null) {
     		return events;        	
         } else {
-        	throw new WebApplicationException("Couldn't get events", Status.CONFLICT);
+        	throw new WebApplicationException("Couldn't get events", Status.NOT_FOUND);
         }
 	}
 

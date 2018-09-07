@@ -28,7 +28,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics;
  * 
  * @author Lars Buttgereit
  */
-public interface IStemmer {
+public interface Stemmer {
 
 	/**
 	 * this method stem the input string.
