@@ -33,7 +33,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
 /**
  * Class that Creates all Grammar Objects sets the MainGrammar and the List of all other Grammars
@@ -66,30 +65,38 @@ public class SphinxGrammarCreator {
 	 * 
 	 * @param name
 	 *            The name of the file
+	 * @param keywordStartSingle
+	 *            The keyword for starting a single recognition
+	 * @param keywordStartMulti
+	 *            The keyword for starting a multi recognition
+	 * @param keywordEndMulti
+	 *            The keyword for stopping the multi recognition
+	 * @param keywordStopOutput
+	 *            The keyword for stopping all speech output.
 	 */
-	public void createGrammar(String name) {
+	public void createGrammar(String name, String keywordStartSingle, String keywordStartMulti, String keywordEndMulti,
+			String keywordStopOutput) {
 		Path grammarFile = this.grammarDir.resolve(name + ".gram");
 
 		try (BufferedWriter bw = Files.newBufferedWriter(grammarFile, StandardOpenOption.CREATE,
 				StandardOpenOption.TRUNCATE_EXISTING)) {
-			bw.write(generateGrammarString(name, Constants.MULTI_CALL_START, Constants.SINGLE_CALL_START,
-					Constants.MULTI_CALL_STOP, Constants.SHUT_UP));
+			bw.write(generateGrammarString(name, keywordStartSingle, keywordStartMulti, keywordEndMulti, keywordStopOutput));
 		} catch (IOException e) {
 			throw new IllegalStateException("Can't write grammar file", e);
 		}
 	}
 
-	private String generateGrammarString(String name, String multiCallStart, String singleCallStart,
-			String multiCallStop, String voiceOutputStopCommand) {
+	private String generateGrammarString(String name, String kwStartSingle, String kwStartMulti,
+			String kwEndMulti, String kwStopOutput) {
 		StringBuilder grammar = new StringBuilder();
 
 		grammar.append("#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n" + " */\n" + "\n");
 
 		grammar.append("grammar " + name + ";\n");
-		publicRule(grammar, "wakeup", multiCallStart);
-		publicRule(grammar, "singlewakeup", singleCallStart);
-		publicRule(grammar, "sleep", multiCallStop);
-		publicRule(grammar, "shutdown", voiceOutputStopCommand);
+		publicRule(grammar, "singlewakeup", kwStartSingle);
+		publicRule(grammar, "wakeup", kwStartMulti);
+		publicRule(grammar, "sleep", kwEndMulti);
+		publicRule(grammar, "shutdown", kwStopOutput);
 
 		return grammar.toString();
 	}

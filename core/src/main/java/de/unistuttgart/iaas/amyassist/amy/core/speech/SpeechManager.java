@@ -34,7 +34,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarCreator;
@@ -58,6 +57,10 @@ public class SpeechManager implements RunnableService {
 
 	private static final String CONFIG_NAME = "localSpeech.config";
 	private static final String PROPERTY_ENABLE = "enable";
+	private static final String PROPERTY_KEYWORD_START_SINGLE = "listenOnceKeyword";
+	private static final String PROPERTY_KEYWORD_START_MULTI = "wakeupKeyword";
+	private static final String PROPERTY_KEYWORD_END_MULTI = "sleepKeyword";
+	private static final String PROPERTY_KEYWORD_OUTPUT_STOP = "stopOutputKeyword";
 	private static final String MESSAGE_TOPIC_MUTE = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL,
 			RoomTopics.ALL);
 
@@ -83,21 +86,33 @@ public class SpeechManager implements RunnableService {
 	private UUID dialogId;
 
 	private boolean recognitionEnabled;
-
-	private Properties config;
+	private String keywordStartSingle;
+	private String keywordStartMulti;
+	private String keywordEndMulti;
+	private String keywordStopOutput;
 
 	private volatile ListeningState currentListeningState = ListeningState.NOT_LISTENING;
 
 	@PostConstruct
 	private void init() {
 		loadAndCheckProperties();
-		if (Boolean.parseBoolean(this.config.getProperty(PROPERTY_ENABLE))) {
-			this.recognitionEnabled = true;
-
+		if (this.recognitionEnabled) {
 			this.dialogId = this.dialogHandler.createDialog(this::voiceOutput);
-
-			this.sphinxGrammarCreator.createGrammar(SPHINX_MAIN_GARMMAR_NAME);
+			this.sphinxGrammarCreator.createGrammar(SPHINX_MAIN_GARMMAR_NAME, this.keywordStartSingle,
+					this.keywordStartMulti, this.keywordEndMulti, this.keywordStopOutput);
 		}
+	}
+
+	/**
+	 * check if Speech Recognizer shall be startedF
+	 */
+	private void loadAndCheckProperties() {
+		Properties config = this.configManager.getConfigurationWithDefaults(CONFIG_NAME);
+		this.recognitionEnabled = Boolean.parseBoolean(config.getProperty(PROPERTY_ENABLE));
+		this.keywordStartSingle = config.getProperty(PROPERTY_KEYWORD_START_SINGLE);
+		this.keywordStartMulti = config.getProperty(PROPERTY_KEYWORD_START_MULTI);
+		this.keywordEndMulti = config.getProperty(PROPERTY_KEYWORD_END_MULTI);
+		this.keywordStopOutput = config.getProperty(PROPERTY_KEYWORD_OUTPUT_STOP);
 	}
 
 	/**
@@ -121,28 +136,21 @@ public class SpeechManager implements RunnableService {
 	}
 
 	private void keywordRecognized(String word) {
-		switch (word) {
-		case Constants.SINGLE_CALL_START:
-			if (this.currentListeningState == ListeningState.NOT_LISTENING) {
+		if (this.currentListeningState == ListeningState.NOT_LISTENING) {
+			if (word.equals(this.keywordStartSingle)) {
 				setListeningState(ListeningState.SINGLE_CALL_LISTENING);
 			}
-			break;
-		case Constants.MULTI_CALL_START:
-			if (this.currentListeningState == ListeningState.NOT_LISTENING) {
+			if (word.equals(this.keywordStartMulti)) {
 				setListeningState(ListeningState.MULTI_CALL_LISTENING);
 			}
-			break;
-		case Constants.MULTI_CALL_STOP:
-			if (this.currentListeningState == ListeningState.MULTI_CALL_LISTENING) {
-				setListeningState(ListeningState.NOT_LISTENING);
-			}
-			break;
-		case Constants.SHUT_UP:
+		}
+
+		if (word.equals(this.keywordEndMulti) && this.currentListeningState == ListeningState.MULTI_CALL_LISTENING) {
+			setListeningState(ListeningState.NOT_LISTENING);
+		}
+
+		if (word.equals(this.keywordStopOutput)) {
 			this.output.stopOutput();
-			break;
-		default:
-			// Do nothing.
-			break;
 		}
 	}
 
@@ -229,15 +237,6 @@ public class SpeechManager implements RunnableService {
 	 */
 	public boolean isRecognitionEnabled() {
 		return this.recognitionEnabled;
-	}
-
-	/**
-	 * check if Speech Recognizer shall be startedF
-	 */
-	private void loadAndCheckProperties() {
-		this.config = this.configManager.getConfigurationWithDefaults(CONFIG_NAME);
-		if (this.config.getProperty(PROPERTY_ENABLE) == null)
-			throw new IllegalStateException("Property " + PROPERTY_ENABLE + " missing in audio manager config.");
 	}
 
 	private void voiceOutput(String text) {
