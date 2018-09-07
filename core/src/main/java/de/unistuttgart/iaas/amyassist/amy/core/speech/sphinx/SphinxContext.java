@@ -28,7 +28,11 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx;
  */
 public final class SphinxContext {
 
-    private SphinxContext() {}
+	private SphinxContext() {
+	}
 
-    public static final String SPHINX_GRAMMAR = "sphinx_grammar";
+	/**
+	 * The context for supplying a grammar to a {@link SphinxRecognizer}.
+	 */
+	public static final String SPHINX_GRAMMAR = "sphinx_grammar";
 }

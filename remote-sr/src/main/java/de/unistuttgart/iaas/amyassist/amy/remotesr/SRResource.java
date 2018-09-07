@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.remotesr;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import java.io.InputStream;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -31,7 +31,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
-import java.io.InputStream;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * SSE resource for the remote SR. Chrome connects to this resource and stays connected indefinitely
@@ -41,46 +42,55 @@ import java.io.InputStream;
 @Path("remotesr")
 public class SRResource {
 
-    @Reference
-    private RemoteSR sr;
+	@Reference
+	private RemoteSR sr;
 
+	/**
+	 * SSE endpoint for the chrome instance
+	 * 
+	 * @param sink
+	 *            sse event sink
+	 * @param sse
+	 *            sse object
+	 */
+	@GET
+	@Path("eventstream")
+	@Produces(MediaType.SERVER_SENT_EVENTS)
+	public void eventStream(@Context SseEventSink sink, @Context Sse sse) {
 
-    /**
-     * SSE endpoint for the chrome instance
-     * @param sink sse event sink
-     * @param sse sse object
-     */
-    @GET
-    @Path("eventstream")
-    @Produces(MediaType.SERVER_SENT_EVENTS)
-    public void eventStream(@Context SseEventSink sink, @Context Sse sse) {
+		SSEClient newClient = new SSEClient(sink, sse);
+		this.sr.setClient(newClient);
 
-        SSEClient newClient = new SSEClient(sink, sse);
-        sr.setClient(newClient);
+	}
 
-    }
+	/**
+	 * endpoint to supply the static sr website for chrome
+	 * 
+	 * @return static html website
+	 */
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	@SuppressWarnings("resource")
+	public Response getStaticWebsite() {
+		InputStream is = getClass().getClassLoader().getResourceAsStream("index.html");
+		if (is == null)
+			throw new WebApplicationException("Couldn't get input stream for file index.html",
+					Response.Status.INTERNAL_SERVER_ERROR);
+		// The input stream is kept open on purpose. Jax-rs will close the stream after it's done reading
+		// from it
+		return Response.ok(is).build();
 
-    /**
-     * endpoint to supply the static sr website for chrome
-     * @return static html website
-     */
-    @GET
-    @Produces(MediaType.TEXT_HTML)
-    public Response getStaticWebsite() {
-        InputStream is = getClass().getClassLoader().getResourceAsStream("index.html");
-        if (is != null) {
-            // The input stream is kept open on purpose. Jax-rs will close the stream after it's done reading
-            // from it
-            return Response.ok(is).build();
-        } else {
-            throw new WebApplicationException("Couldn't get input stream for file index.html",
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
+	}
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void postSRResult(SRResult res) {
-        sr.processResult(res);
-    }
+	/**
+	 * Endpoint to which the java script posts the speech recognition results
+	 * 
+	 * @param res
+	 *            The result recognized.
+	 */
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void postSRResult(SRResult res) {
+		this.sr.processResult(res);
+	}
 }

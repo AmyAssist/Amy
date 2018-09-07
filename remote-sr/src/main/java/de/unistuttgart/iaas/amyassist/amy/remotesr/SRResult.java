@@ -25,17 +25,29 @@ package de.unistuttgart.iaas.amyassist.amy.remotesr;
 
 /**
  * response object from the remote SR
+ * 
  * @author Benno Krauß
  */
 public class SRResult {
 
-    private String text;
+	private String text;
 
-    public String getText() {
-        return text;
-    }
+	/**
+	 * Get the text of this result
+	 * 
+	 * @return The text.
+	 */
+	public String getText() {
+		return this.text;
+	}
 
-    public void setText(String text) {
-        this.text = text;
-    }
+	/**
+	 * Set the text of this result
+	 * 
+	 * @param text
+	 *            The text.
+	 */
+	public void setText(String text) {
+		this.text = text;
+	}
 }

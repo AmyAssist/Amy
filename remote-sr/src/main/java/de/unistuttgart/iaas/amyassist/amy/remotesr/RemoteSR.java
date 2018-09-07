@@ -168,12 +168,9 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	 *             if any IO error occurs
 	 */
 	private void copyFromJar(final URI sourceURI, final Path target) throws IOException {
-
-		FileSystem fs = null;
-		try {
-			if (sourceURI.getScheme().equals("jar")) {
-				fs = FileSystems.newFileSystem(sourceURI, Collections.<String, String> emptyMap());
-			}
+		try (FileSystem fs = (sourceURI.getScheme().equals("jar"))
+				? FileSystems.newFileSystem(sourceURI, Collections.<String, String> emptyMap())
+				: null) {
 			final Path jarPath = Paths.get(sourceURI);
 
 			Files.walkFileTree(jarPath, new SimpleFileVisitor<Path>() {
@@ -192,10 +189,6 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 					return FileVisitResult.CONTINUE;
 				}
 			});
-		} finally {
-			if (fs != null) {
-				fs.close();
-			}
 		}
 	}
 

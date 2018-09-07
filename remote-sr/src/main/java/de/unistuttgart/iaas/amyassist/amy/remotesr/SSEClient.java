@@ -63,15 +63,13 @@ class SSEClient {
 	 */
 	boolean isConnected() {
 		try {
-			return this.sink != null && !this.sink.isClosed()
-				&& !(this.sink.send(
-						sse.newEvent("ping", "ping")
-					).toCompletableFuture().get(1, TimeUnit.SECONDS) instanceof Exception);
+			return this.sink != null && !this.sink.isClosed() && !(this.sink.send(this.sse.newEvent("ping", "ping"))
+					.toCompletableFuture().get(1, TimeUnit.SECONDS) instanceof Exception);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			return false;
 		} catch (ExecutionException | TimeoutException e) {
-			logger.warn("Couldn't ping SSE client", e);
+			this.logger.warn("Couldn't ping SSE client", e);
 			return false;
 		}
 	}
