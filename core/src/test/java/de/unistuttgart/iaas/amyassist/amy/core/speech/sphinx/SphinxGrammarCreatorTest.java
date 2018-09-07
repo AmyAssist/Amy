@@ -26,11 +26,14 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -93,6 +96,17 @@ class SphinxGrammarCreatorTest {
 				containsString("> = ( keyword3 );\n"));
 		assertThat("Grammer file should contain line with keyword 4.", fileContent,
 				containsString("> = ( keyword4 );\n"));
+	}
+
+	/**
+	 * Clean up after each test
+	 * 
+	 * @throws IOException
+	 *             when a file system error occurs
+	 */
+	@AfterEach
+	void cleanUp() throws IOException {
+		Files.walk(this.tempDir).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
 	}
 
 }
