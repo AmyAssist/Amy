@@ -313,8 +313,10 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	private <T> ServiceProvider<T> getServiceProvider(ServiceDescription<T> serviceDescription) {
 		ServiceKey<T> serviceKey = new ServiceKey<>(serviceDescription);
 		synchronized (this.register) {
-			if (!this.register.containsKey(serviceKey))
+			if (!this.register.containsKey(serviceKey)) {
+				System.out.println(serviceDescription.getServiceType().getName());
 				throw new ServiceNotFoundException(serviceDescription);
+			}
 			return (ServiceProvider<T>) this.register.get(serviceKey);
 		}
 	}

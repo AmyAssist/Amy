@@ -40,7 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishDa
 /**
  * 
  * test class for the English Time Utility
- * @author
+ * @author Lars Buttgereit
  */
 class EnglishTimeUtilityTest {
 	

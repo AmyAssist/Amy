@@ -41,7 +41,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.PluginMockFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
-import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManagerImpl;
+import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAmyInteractionModel;
 import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.LoadAIMService;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -64,7 +64,7 @@ class TestAIMService {
 	@BeforeEach
 	void init() throws FileNotFoundException {
 		this.testFramework.mockService(PluginManager.class);
-		this.testFramework.mockService(NLProcessingManagerImpl.class);
+		this.testFramework.mockService(NLProcessingManager.class);
 
 		this.loadAIMService = this.testFramework.setServiceUnderTest(LoadAIMService.class);
 		InputStream stream = this.getClass().getResourceAsStream("HelloWorldSpeech.aim.xml");

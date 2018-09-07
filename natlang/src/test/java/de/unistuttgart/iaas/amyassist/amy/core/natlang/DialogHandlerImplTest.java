@@ -43,6 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.natlang.Dialog;
 import de.unistuttgart.iaas.amyassist.amy.natlang.DialogHandlerImpl;
+import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManagerImpl;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.Entity;
@@ -60,7 +61,7 @@ public class DialogHandlerImplTest {
 	@Reference
 	private TestFramework testFramework;
 
-	private NLProcessingManagerImpl manager;
+	private NLProcessingManager manager;
 	private DialogHandlerImpl dialogHandler;
 	private UUID uuid;
 
@@ -77,7 +78,7 @@ public class DialogHandlerImplTest {
 
 	@BeforeEach
 	void init() {
-		this.manager = this.testFramework.mockService(NLProcessingManagerImpl.class);
+		this.manager = this.testFramework.mockService(NLProcessingManager.class);
 		this.dialogHandler = this.testFramework.setServiceUnderTest(DialogHandlerImpl.class);
 		this.uuid = this.dialogHandler.createDialog(this.consumer);
 	}

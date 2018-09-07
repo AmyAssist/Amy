@@ -46,7 +46,7 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntent;
 public class DialogHandlerImpl implements DialogHandler {
 
 	@Reference
-	private NLProcessingManagerImpl manager;
+	private NLProcessingManager manager;
 
 	@Reference
 	private ServiceLocator serviceLocator;

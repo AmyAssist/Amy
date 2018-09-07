@@ -43,7 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
 import de.unistuttgart.iaas.amyassist.amy.natlang.NLIAnnotationReader;
-import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManagerImpl;
+import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAmyInteractionModel;
 
@@ -62,7 +62,7 @@ public class LoadAIMService implements DeploymentContainerService {
 	private PluginManager pluginManager;
 
 	@Reference
-	private NLProcessingManagerImpl nlManager;
+	private NLProcessingManager nlManager;
 
 	@Reference
 	private Logger logger;

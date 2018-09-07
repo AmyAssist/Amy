@@ -21,26 +21,47 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package de.unistuttgart.iaas.amyassist.amy.natlang;
+
+import java.lang.reflect.Method;
+
+import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent;
 
 /**
- * Manages all natural language interpreter of the plugins and can process the input of natural language
- *
- * @author Felix Burk, Leon Kiefer
+ * TODO: Description
+ * @author
  */
 public interface NLProcessingManager {
 
 	/**
-	 * not supported right now!
-	 * 
-	 * @param grammarName name of grammar
-	 * @param multiStart multi startup command
-	 * @param singleStart single startup command
-	 * @param multiStop multi stop command
-	 * @param shutup command
-	 * @return grammar file as string
+	 * registers an intent
+	 * @param method with corresponding method
+	 * @param intent corresponding xml aim intent object
+	 */
+	void register(Method method, XMLAIMIntent intent);
+
+	/**
+	 *
+	 * currently not working!
+	 *
+	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#getGrammarFileString(java.lang.String)
 	 */
 	String getGrammarFileString(String grammarName, String multiStart, String singleStart, String multiStop,
 			String shutup);
+
+	/**
+	 * processes an intent
+	 * @param dialog from this Dialog object
+	 * @param naturalLanguageText input from user
+	 */
+	void processIntent(Dialog dialog, String naturalLanguageText);
+
+	/**
+	 * decides which intent the user meant
+	 * @param dialog corresponding dialog object
+	 * @param naturalLanguageText from user
+	 * @return matching dialog containing matching intent
+	 */
+	Dialog decideIntent(Dialog dialog, String naturalLanguageText);
 
 }

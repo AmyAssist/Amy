@@ -17,6 +17,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManage
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.natlang.Dialog;
+import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManagerImpl;
 import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -28,7 +29,7 @@ public class NLProcessingManagerTest {
 	@Reference
 	private TestFramework testFramework;
 
-	private NLProcessingManagerImpl manager;
+	private NLProcessingManager manager;
 
 	private List<String> failedToUnderstand = new ArrayList<>();
 

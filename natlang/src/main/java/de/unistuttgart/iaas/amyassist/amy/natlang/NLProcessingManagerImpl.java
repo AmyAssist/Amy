@@ -39,7 +39,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
@@ -59,7 +58,7 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntentTemp
  *
  * @author Leon Kiefer, Felix Burk
  */
-@Service(NLProcessingManagerImpl.class)
+@Service
 public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	/**
@@ -109,10 +108,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * registers an intent
-	 * @param method with corresponding method
-	 * @param intent corresponding xml aim intent object
+	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#register(java.lang.reflect.Method, de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent)
 	 */
+	@Override
 	public void register(Method method, XMLAIMIntent intent) {
 		if (!method.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent.class)) {
 			throw new IllegalArgumentException("annotation is not present in " + method.getName());
@@ -126,10 +124,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 *
-	 * currently not working!
-	 *
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#getGrammarFileString(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#getGrammarFileString(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
 	public String getGrammarFileString(
@@ -141,10 +136,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * processes an intent
-	 * @param dialog from this Dialog object
-	 * @param naturalLanguageText input from user
+	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#processIntent(de.unistuttgart.iaas.amyassist.amy.natlang.Dialog, java.lang.String)
 	 */
+	@Override
 	public void processIntent(Dialog dialog, String naturalLanguageText) {
 		List<AGFNode> promptGrams = new ArrayList<>();
 		if (dialog.getNextPrompt() != null) {
@@ -209,11 +203,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * decides which intent the user meant
-	 * @param dialog corresponding dialog object
-	 * @param naturalLanguageText from user
-	 * @return matching dialog containing matching intent
+	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#decideIntent(de.unistuttgart.iaas.amyassist.amy.natlang.Dialog, java.lang.String)
 	 */
+	@Override
 	public Dialog decideIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language);
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
