@@ -208,6 +208,7 @@ public class SpeechManager implements RunnableService {
 				this.dialogHandler.process(result, this.dialogId);
 			} catch (RuntimeException e) {
 				this.logger.error("Error while processing input", e);
+				voiceOutput("Error while processing input.");
 			}
 		}
 	}
@@ -240,10 +241,10 @@ public class SpeechManager implements RunnableService {
 	}
 
 	private void voiceOutput(String text) {
-		this.output.voiceOutput(text, this::voiceOutputFinished);
+		this.output.voiceOutput(text, this::voiceIOFinished);
 	}
 
-	private void voiceOutputFinished() {
+	private void voiceIOFinished() {
 		if (this.currentListeningState == ListeningState.NOT_LISTENING)
 			return;
 		if (this.dialogHandler.hasDialogUnfinishedIntent(this.dialogId)) {
