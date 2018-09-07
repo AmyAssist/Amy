@@ -28,7 +28,8 @@ import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
+import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
+import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.EntityDataImpl;
 
 /**
  * test class for the entityDataImpl

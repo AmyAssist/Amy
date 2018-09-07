@@ -36,7 +36,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.EntityDataImpl;
+import de.unistuttgart.iaas.amyassist.amy.natlang.NLIAnnotationReader;
+import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.EntityDataImpl;
 
 /**
  * Test Cases for the AnnotationReader

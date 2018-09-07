@@ -28,11 +28,11 @@ import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishContraction;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishStemmer;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishDateTimeUtility;
+import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
+import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishContraction;
+import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishDateTimeUtility;
+import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishNumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishStemmer;
 
 /**
  * Test class for ChooseLanguage

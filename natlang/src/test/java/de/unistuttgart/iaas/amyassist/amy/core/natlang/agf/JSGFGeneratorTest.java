@@ -27,8 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.JSGFGenerator;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.natlang.JSGFGenerator;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexer;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParser;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
 
 /**
  * test for JSGF generator

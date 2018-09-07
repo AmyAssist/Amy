@@ -31,7 +31,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexer;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParser;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
 
 /**
  * Tests some convenience methods used by AGFNode objects

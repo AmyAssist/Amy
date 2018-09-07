@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
-import java.lang.reflect.Method;
-
 /**
  * Manages all natural language interpreter of the plugins and can process the input of natural language
  *

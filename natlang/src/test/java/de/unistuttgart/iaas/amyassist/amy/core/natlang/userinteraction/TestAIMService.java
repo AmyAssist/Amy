@@ -38,12 +38,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManager;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.NLProcessingManagerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.PluginMockFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
+import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManagerImpl;
+import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAmyInteractionModel;
+import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.LoadAIMService;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 

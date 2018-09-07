@@ -31,8 +31,11 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexer;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParseException;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParser;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNodeType;
 
 
 /**

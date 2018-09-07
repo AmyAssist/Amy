@@ -29,9 +29,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.PreDefinedEntityTypes;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.natlang.PreDefinedEntityTypes;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
 
 /**
  * TODO: Description

@@ -35,7 +35,7 @@ import java.time.format.DateTimeParseException;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishDateTimeUtility;
+import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishDateTimeUtility;
 
 /**
  * 

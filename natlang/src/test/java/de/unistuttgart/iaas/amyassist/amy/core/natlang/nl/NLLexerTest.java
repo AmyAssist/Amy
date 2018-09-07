@@ -41,7 +41,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.google.common.collect.Lists;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
+import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLLexer;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLLexerException;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.WordToken;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.WordTokenType;
 
 /**
  * Test for NL Lexer

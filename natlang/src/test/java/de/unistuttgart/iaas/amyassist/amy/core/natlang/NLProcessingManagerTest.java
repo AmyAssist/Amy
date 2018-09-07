@@ -16,7 +16,9 @@ import java.util.Properties;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAIMIntent;
+import de.unistuttgart.iaas.amyassist.amy.natlang.Dialog;
+import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManagerImpl;
+import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 

@@ -41,13 +41,16 @@ import javax.xml.bind.Unmarshaller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.AGFNodeType;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.agf.nodes.EntityNode;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.aim.XMLAmyInteractionModel;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en.EnglishNumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction.UserIntent;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNodeType;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.EntityNode;
+import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAmyInteractionModel;
+import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
+import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishNumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLLexer;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLParser;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.WordToken;
+import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntent;
 
 /**
  * TODO: Description
