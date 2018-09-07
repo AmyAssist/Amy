@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author Tim Neumann
  */
-class TopicFilterImpl extends AbstractTopic implements TopicFilter {
+class TopicFilterImpl extends GenericTopic implements TopicFilter {
 
 	/**
 	 * Create a new topic filter with the given string
@@ -46,6 +46,16 @@ class TopicFilterImpl extends AbstractTopic implements TopicFilter {
 	 */
 	protected TopicFilterImpl(String topicString) throws TopicFormatException {
 		super(topicString);
+	}
+
+	/**
+	 * Creates a new topic filter from the original topic.
+	 * 
+	 * @param orig
+	 *            The orig.
+	 */
+	protected TopicFilterImpl(Topic orig) {
+		super(orig);
 	}
 
 	/**

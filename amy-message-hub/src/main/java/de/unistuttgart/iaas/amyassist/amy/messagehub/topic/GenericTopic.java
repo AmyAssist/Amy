@@ -29,16 +29,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A abstract class containing most implementation for a {@link Topic}.
+ * A generic {@link Topic}.
  *
  * @author Tim Neumann
  */
-abstract class AbstractTopic implements Topic {
+class GenericTopic implements Topic {
 	private final List<TopicLevel> topicLevels;
-	private boolean special = false;
 
 	/**
-	 * Create a new abstract topic with the given string
+	 * Create a new generic topic with the given string
 	 * <p>
 	 * This checks the given String against the rules specified in the OASIS Standard for MQTT Version 3.1.1. chapter
 	 * 4.7
@@ -49,17 +48,46 @@ abstract class AbstractTopic implements Topic {
 	 * @throws TopicFormatException
 	 *             When the given topic string is not a valid topic.
 	 */
-	protected AbstractTopic(String topicString) throws TopicFormatException {
+	protected GenericTopic(String topicString) throws TopicFormatException {
 
 		validateTopicString(topicString);
-
-		if (topicString.charAt(0) == Constants.SPECIAL_TOPIC_PREFIX) {
-			this.special = true;
-		}
 
 		this.topicLevels = new ArrayList<>();
 
 		String[] tokens = topicString.split(Character.toString(Constants.TOPIC_LEVEL_SEPERATOR), -1);
+
+		for (String token : tokens) {
+			this.topicLevels.add(new TopicLevelImpl(token));
+		}
+
+		validateTopicLevels(this.topicLevels);
+	}
+
+	/**
+	 * Creates a new generic topic from any existing topic. No checks are being done.
+	 * 
+	 * @param orig
+	 *            The original topic.
+	 */
+	protected GenericTopic(Topic orig) {
+		this.topicLevels = new ArrayList<>(orig.getTopicLevels());
+	}
+
+	/**
+	 * Creates a new generic topic from any exisiting topic and a String containing the extension of the existing topic.
+	 * 
+	 * @param orig
+	 *            The original topic
+	 * @param extension
+	 *            The extension to be added at the end of the original topic. (Without trailing level seperator)
+	 * @throws TopicFormatException
+	 *             When the format of the orig combined with the extension is invalid.
+	 */
+	protected GenericTopic(Topic orig, String extension) throws TopicFormatException {
+		validateTopicString(orig.getStringRepresentation() + Constants.TOPIC_LEVEL_SEPERATOR + extension);
+
+		this.topicLevels = new ArrayList<>(orig.getTopicLevels());
+		String[] tokens = extension.split(Character.toString(Constants.TOPIC_LEVEL_SEPERATOR), -1);
 
 		for (String token : tokens) {
 			this.topicLevels.add(new TopicLevelImpl(token));
@@ -136,7 +164,8 @@ abstract class AbstractTopic implements Topic {
 	 */
 	@Override
 	public boolean isSpecialTopic() {
-		return this.special;
+		return this.topicLevels.get(0).getStringRepresentation()
+				.startsWith(Character.toString(Constants.SPECIAL_TOPIC_PREFIX));
 	}
 
 	/**
@@ -154,7 +183,7 @@ abstract class AbstractTopic implements Topic {
 	 */
 	@Override
 	public int hashCode() {
-		return this.topicLevels.hashCode() + (this.special ? 0 : 1);
+		return this.topicLevels.hashCode();
 	}
 
 	/**
@@ -162,10 +191,41 @@ abstract class AbstractTopic implements Topic {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof AbstractTopic))
+		if (!(obj instanceof GenericTopic))
 			return false;
-		AbstractTopic t = (AbstractTopic) obj;
-		return (t.topicLevels.equals(this.topicLevels) && (t.special == this.special));
+		GenericTopic t = (GenericTopic) obj;
+		return (t.topicLevels.equals(this.topicLevels));
 	}
 
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.Topic#getTopicName()
+	 */
+	@Override
+	public TopicName getTopicName() {
+		try {
+			return new TopicNameImpl(this);
+		} catch (TopicFormatException e) {
+			throw new UnsupportedOperationException("Can't turn this into a topic name", e);
+		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.Topic#getTopicFilter()
+	 */
+	@Override
+	public TopicFilter getTopicFilter() {
+		return new TopicFilterImpl(this);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.Topic#resolve(java.lang.String)
+	 */
+	@Override
+	public Topic resolve(String newParts) {
+		try {
+			return new GenericTopic(this, newParts);
+		} catch (TopicFormatException e) {
+			throw new IllegalArgumentException("Can't create new Topic from this with the given string.", e);
+		}
+	}
 }

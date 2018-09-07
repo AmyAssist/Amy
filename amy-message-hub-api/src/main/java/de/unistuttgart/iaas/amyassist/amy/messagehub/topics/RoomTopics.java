@@ -35,15 +35,11 @@ public enum RoomTopics {
 	LIVING;
 
 	/**
-	 * Get the topic string for this location in a given system and location.
+	 * Get the topic string for this room. This does not include a previous level.
 	 * 
-	 * @param systemTopic
-	 *            The system topic this room is in.
-	 * @param locationTopic
-	 *            The location topic this room is in
 	 * @return The topic string of this room.
 	 */
-	public String getTopicString(SystemTopics systemTopic, LocationTopics locationTopic) {
-		return locationTopic.getTopicString(systemTopic) + "/" + this.name().toLowerCase();
+	public String getTopicString() {
+		return this.name().toLowerCase();
 	}
 }

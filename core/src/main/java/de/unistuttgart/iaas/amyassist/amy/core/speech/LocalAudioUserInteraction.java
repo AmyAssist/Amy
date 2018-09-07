@@ -43,6 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.LocalSpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.manager.SpeechRecognizerManager;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
 
 /**
  * Manager of the Local Speech Recognition System
@@ -71,6 +72,9 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 	private LocalAudio la;
 
 	@Reference
+	private TopicFactory tf;
+
+	@Reference
 	private GrammarObjectsCreator grammarData;
 
 	@Reference
@@ -92,7 +96,7 @@ public class LocalAudioUserInteraction implements AudioUserInteraction {
 
 			this.localRecognition = new LocalSpeechRecognizerManager(createNewAudioInputStream(), input -> {
 				this.dialogHandler.process(input, dialog);
-			}, this.tts, this.grammarData, this.messageHub);
+			}, this.tts, this.grammarData, this.messageHub, this.tf);
 		}
 	}
 

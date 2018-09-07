@@ -35,13 +35,11 @@ public enum LocationTopics {
 	HOME;
 
 	/**
-	 * Get the topic string for this location in a given system topic.
+	 * Get the topic string for this location. This does not include a previous level.
 	 * 
-	 * @param systemTopic
-	 *            The system topic this location is in.
 	 * @return The topic string of this location.
 	 */
-	public String getTopicString(SystemTopics systemTopic) {
-		return systemTopic.getTopicString() + "/" + this.name().toLowerCase();
+	public String getTopicString() {
+		return this.name().toLowerCase();
 	}
 }

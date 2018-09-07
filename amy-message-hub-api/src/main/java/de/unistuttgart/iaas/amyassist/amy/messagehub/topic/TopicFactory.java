@@ -54,4 +54,19 @@ public interface TopicFactory {
 	 *             If the given String is not a valid topic name as defined in the standard.
 	 */
 	TopicName createTopicName(String topicNameString);
+
+	/**
+	 * Creates a topic from a amount of strings subtopics.
+	 * 
+	 * @param parts
+	 *            The subtopics
+	 * 
+	 * @return The new topic.
+	 */
+	Topic from(String... parts);
+
+	/**
+	 * @return The smarthome topic
+	 */
+	SmarthomeTopic smarthomeTopic();
 }

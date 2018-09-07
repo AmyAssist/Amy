@@ -45,8 +45,9 @@ public interface Topic {
 	 * <p>
 	 * The first element is left most level in the string representation.
 	 * <p>
-	 * The first element does not include the leading {@link Constants#SPECIAL_TOPIC_PREFIX}, if it is part of this topic. But
-	 * any level may still contain that character, because it is only special as the first character of the topic.
+	 * The first element does not include the leading {@link Constants#SPECIAL_TOPIC_PREFIX}, if it is part of this
+	 * topic. But any level may still contain that character, because it is only special as the first character of the
+	 * topic.
 	 *
 	 * @return A list of the levels of this topic.
 	 */
@@ -58,4 +59,33 @@ public interface Topic {
 	 * @return Whether this is a special topic.
 	 */
 	boolean isSpecialTopic();
+
+	/**
+	 * Get a Topic Name from this topic.
+	 * 
+	 * @return The topic name
+	 * @throws UnsupportedOperationException
+	 *             If the topic can't be turned into a name.
+	 */
+	TopicName getTopicName();
+
+	/**
+	 * Get a Topic Filter from this topic
+	 * 
+	 * @return The topic filter
+	 * @throws UnsupportedOperationException
+	 *             If the topic can't be turned into a filter.
+	 */
+	TopicFilter getTopicFilter();
+
+	/**
+	 * Get a new topic, which is a (grand-) child of this topic.
+	 * 
+	 * @param newParts
+	 *            The new parts of the topic to add.
+	 * @return The new Topic.
+	 * @throws IllegalArgumentException
+	 *             If the new topic would be malformated.
+	 */
+	Topic resolve(String newParts);
 }

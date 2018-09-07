@@ -33,7 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RemoteResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
 
 /**
  * Class that manages the Recognizers belonging to a given AudioInputStream
@@ -55,11 +55,12 @@ public class RemoteSpeechRecognizerManager extends AbstractSpeechRecognizerManag
 	 *            DataSet of all GrammarObjects
 	 * @param messageHub
 	 *            Message Hub
-	 * 
+	 * @param tf
+	 *            TopicFactory
 	 */
 	public RemoteSpeechRecognizerManager(AudioInputStream ais, Consumer<String> inputHandler, Output output,
-			GrammarObjectsCreator grammarData, MessageHub messageHub) {
-		super(ais, inputHandler, output, grammarData, messageHub);
+			GrammarObjectsCreator grammarData, MessageHub messageHub, TopicFactory tf) {
+		super(ais, inputHandler, output, grammarData, messageHub, tf);
 	}
 
 	/**

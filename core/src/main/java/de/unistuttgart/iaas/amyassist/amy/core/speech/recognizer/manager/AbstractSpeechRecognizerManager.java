@@ -39,6 +39,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.SpeechRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.Topic;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
@@ -55,6 +57,7 @@ public abstract class AbstractSpeechRecognizerManager
 
 	private Consumer<String> inputHandler;
 	private Output output;
+	private TopicFactory tf;
 	private String mainGrammarName;
 	private MessageHub messageHub;
 
@@ -81,14 +84,17 @@ public abstract class AbstractSpeechRecognizerManager
 	 *            DataSet of all GrammarObjects
 	 * @param messageHub
 	 *            MessageHub
+	 * @param tf
+	 *            TopicFactory
 	 * 
 	 */
 	public AbstractSpeechRecognizerManager(AudioInputStream ais, Consumer<String> inputHandler, Output output,
-			GrammarObjectsCreator grammarData, MessageHub messageHub) {
+			GrammarObjectsCreator grammarData, MessageHub messageHub, TopicFactory tf) {
 		this.inputHandler = inputHandler;
 		this.output = output;
 		//this.mainGrammarName = grammarData.getMainGrammar().getName();
 		this.messageHub = messageHub;
+		this.tf = tf;
 		initMessageHandling();
 		createRecognizers(grammarData, ais);
 
@@ -96,9 +102,10 @@ public abstract class AbstractSpeechRecognizerManager
 	}
 
 	private void initMessageHandling() {
-		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
+		Topic topic = this.tf.smarthomeTopic().resolve(LocationTopics.ALL).resolve(RoomTopics.ALL)
+				.resolve(SmarthomeFunctionTopics.MUTE);
 
-		this.messageHub.subscribe(topic, message -> {
+		this.messageHub.subscribe(topic.getTopicFilter(), message -> {
 			switch (message) {
 			case "true":
 				this.stopOutput();
@@ -194,8 +201,9 @@ public abstract class AbstractSpeechRecognizerManager
 		} else {
 			this.voiceOutput("now sleeping");
 		}
-		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
-		this.messageHub.publish(topic, listening ? "true" : "false", true);
+		Topic topic = this.tf.smarthomeTopic().resolve(LocationTopics.ALL).resolve(RoomTopics.ALL)
+				.resolve(SmarthomeFunctionTopics.MUTE);
+		this.messageHub.publish(topic.getTopicName(), listening ? "true" : "false", true);
 	}
 
 	@Override
@@ -211,8 +219,9 @@ public abstract class AbstractSpeechRecognizerManager
 		} else {
 			this.soundOutput(Sounds.SINGLE_CALL_STOP_BEEP);
 		}
-		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
-		this.messageHub.publish(topic, singleCommand ? "true" : "false", true);
+		Topic topic = this.tf.smarthomeTopic().resolve(LocationTopics.ALL).resolve(RoomTopics.ALL)
+				.resolve(SmarthomeFunctionTopics.MUTE);
+		this.messageHub.publish(topic.getTopicName(), singleCommand ? "true" : "false", true);
 	}
 
 	/**

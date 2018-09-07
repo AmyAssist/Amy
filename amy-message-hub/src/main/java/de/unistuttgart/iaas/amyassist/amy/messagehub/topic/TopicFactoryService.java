@@ -57,4 +57,28 @@ public class TopicFactoryService implements TopicFactory {
 		}
 	}
 
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory#from(java.lang.String[])
+	 */
+	@Override
+	public Topic from(String... parts) {
+		try {
+			return new GenericTopic(String.join(Character.toString(Constants.TOPIC_LEVEL_SEPERATOR), parts));
+		} catch (TopicFormatException e) {
+			throw new IllegalArgumentException("Illegal topic string", e);
+		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory#smarthomeTopic()
+	 */
+	@Override
+	public SmarthomeTopic smarthomeTopic() {
+		try {
+			return new SmarthomeTopicImpl();
+		} catch (TopicFormatException e) {
+			throw new IllegalStateException("The smarthome topic is malformatted.", e);
+		}
+	}
+
 }

@@ -34,7 +34,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.LocalMa
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.LocalSwitchableGrammarResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.recognizer.handler.RecognitionResultHandler;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
 
 /**
  * Class that manages the Recognizers belonging to the local AudioInputStream
@@ -56,11 +56,13 @@ public class LocalSpeechRecognizerManager extends AbstractSpeechRecognizerManage
 	 *            DataSet of all GrammarObjects
 	 * @param messageHub
 	 *            Message Hub
+	 * @param tf
+	 *            TopicFactory
 	 * 
 	 */
 	public LocalSpeechRecognizerManager(AudioInputStream ais, Consumer<String> inputHandler, Output output,
-			GrammarObjectsCreator grammarData, MessageHub messageHub) {
-		super(ais, inputHandler, output, grammarData, messageHub);
+			GrammarObjectsCreator grammarData, MessageHub messageHub, TopicFactory tf) {
+		super(ais, inputHandler, output, grammarData, messageHub, tf);
 	}
 
 	/**
