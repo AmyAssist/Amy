@@ -41,6 +41,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
@@ -74,9 +75,16 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	private volatile boolean currentlyRecognizing = false;
 	private volatile boolean stop = false;
 
-	private boolean isEnabled() {
-		return Boolean.parseBoolean(
+	private boolean enabled;
+
+	@PostConstruct
+	private void init() {
+		this.enabled = Boolean.parseBoolean(
 				this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME).getProperty(ENABLED_CONFIG_KEY));
+	}
+
+	private boolean isEnabled() {
+		return this.enabled;
 	}
 
 	/**
