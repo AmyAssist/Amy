@@ -45,6 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.SoundPlayer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -78,6 +79,7 @@ class OutputTest {
 		this.am = this.framework.mockService(AudioManager.class);
 		this.la = this.framework.mockService(LocalAudio.class);
 		this.sf = this.framework.mockService(SoundFactory.class);
+		this.framework.mockService(TaskScheduler.class);
 
 		this.mockedAis = Mockito.mock(AudioInputStream.class);
 
