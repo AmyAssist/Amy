@@ -221,7 +221,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 		}, "Chrome watcher thread").start();
 
 		executeAfterSeconds(() -> {
-			if (client == null || !client.isConnected()) {
+			if (this.client == null || !this.client.isConnected()) {
 				// No client connected right now. Assume something went wrong. Restart chrome.
 				stop();
 				start();
