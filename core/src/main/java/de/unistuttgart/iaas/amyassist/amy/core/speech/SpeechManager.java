@@ -26,7 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech;
 import java.util.Properties;
 import java.util.UUID;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.JSGFGenerator;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
@@ -78,8 +77,6 @@ public class SpeechManager implements RunnableService {
 	@Reference
 	private Output output;
 
-	private JSGFGenerator jsgfGenerator;
-
 	@Reference
 	private DialogHandler dialogHandler;
 
@@ -99,11 +96,7 @@ public class SpeechManager implements RunnableService {
 
 			this.dialogId = this.dialogHandler.createDialog(this::voiceOutput);
 
-			this.jsgfGenerator = new JSGFGenerator(SPHINX_MAIN_GARMMAR_NAME, Constants.MULTI_CALL_START,
-					Constants.SINGLE_CALL_START, Constants.MULTI_CALL_STOP, Constants.SHUT_UP);
-
-			this.sphinxGrammarCreator.createGrammar(SPHINX_MAIN_GARMMAR_NAME,
-					this.jsgfGenerator.generateGrammarFileString());
+			this.sphinxGrammarCreator.createGrammar(SPHINX_MAIN_GARMMAR_NAME);
 
 		}
 	}

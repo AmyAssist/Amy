@@ -33,6 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Constants;
 
 /**
  * Class that Creates all Grammar Objects sets the MainGrammar and the List of all other Grammars
@@ -65,18 +66,36 @@ public class SphinxGrammarCreator {
 	 * 
 	 * @param name
 	 *            The name of the file
-	 * @param grammFileString
-	 *            The content of the file
 	 */
-	public void createGrammar(String name, String grammFileString) {
+	public void createGrammar(String name) {
 		Path grammarFile = this.grammarDir.resolve(name + ".gram");
 
 		try (BufferedWriter bw = Files.newBufferedWriter(grammarFile, StandardOpenOption.CREATE,
 				StandardOpenOption.TRUNCATE_EXISTING)) {
-			bw.write(grammFileString);
+			bw.write(generateGrammarString(name, Constants.MULTI_CALL_START, Constants.SINGLE_CALL_START,
+					Constants.MULTI_CALL_STOP, Constants.SHUT_UP));
 		} catch (IOException e) {
 			throw new IllegalStateException("Can't write grammar file", e);
 		}
+	}
+
+	private String generateGrammarString(String name, String multiCallStart, String singleCallStart,
+			String multiCallStop, String voiceOutputStopCommand) {
+		StringBuilder grammar = new StringBuilder();
+
+		grammar.append("#JSGF V1.0;\n" + "\n" + "/**\n" + " * JSGF Grammar \n" + " */\n" + "\n");
+
+		grammar.append("grammar " + name + ";\n");
+		publicRule(grammar, "wakeup", multiCallStart);
+		publicRule(grammar, "singlewakeup", singleCallStart);
+		publicRule(grammar, "sleep", multiCallStop);
+		publicRule(grammar, "shutdown", voiceOutputStopCommand);
+
+		return grammar.toString();
+	}
+
+	private void publicRule(StringBuilder builder, String ruleName, String rule) {
+		builder.append("public <").append(ruleName).append("> = ( ").append(rule).append(" );\n");
 	}
 
 	/**
