@@ -28,8 +28,9 @@ import java.lang.reflect.Method;
 import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent;
 
 /**
- * TODO: Description
- * @author
+ * Handles natural language processing from registered methods and corresponding intents
+ * 
+ * @author Felix Burk
  */
 public interface NLProcessingManager {
 
