@@ -42,7 +42,7 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntent;
  *
  * @author Felix Burk
  */
-@Service(DialogHandlerImpl.class)
+@Service
 public class DialogHandlerImpl implements DialogHandler {
 
 	@Reference
