@@ -25,14 +25,11 @@ package de.unistuttgart.iaas.amyassist.amy.core.speech.data;
 
 import java.net.URL;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-
 /**
  * Class that holds System Sounds
  * 
  * @author Kai Menzel, Tim Neumann
  */
-@Service
 public enum Sounds {
 	/**
 	 * Beep that gets Played to Signal the single call start

@@ -70,6 +70,7 @@ class OutputTest {
 
 	/**
 	 * @throws java.lang.Exception
+	 *             When an error occurs
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
@@ -78,23 +79,11 @@ class OutputTest {
 		this.la = this.framework.mockService(LocalAudio.class);
 		this.sf = this.framework.mockService(SoundFactory.class);
 
-		// QueuedInputStream qis = new QueuedInputStream();
-		// qis.getQueue().put(10);
-		// qis.getQueue().put(11);
-		// qis.getQueue().put(12);
-		// qis.getQueue().put(13);
-		// qis.setAutoEnding(true);
-		// AudioInputStream ais = new AudioInputStream(qis, getFormat(), AudioSystem.NOT_SPECIFIED);
-
 		this.mockedAis = Mockito.mock(AudioInputStream.class);
 
 		when(this.la.isLocalAudioAvailable()).thenReturn(true);
 		when(this.la.getLocalAudioEnvironmentIdentifier()).thenReturn(this.uuid);
 		when(this.tts.getMaryAudio("Test")).thenReturn(this.mockedAis);
-		// Sound sound = new BasicSound(ais);
-		// when(this.sf.loadSound(any(URL.class))).thenReturn(sound);
-		// when(this.sf.loadSound(any(AudioInputStream.class))).thenReturn(sound);
-
 	}
 
 	/**

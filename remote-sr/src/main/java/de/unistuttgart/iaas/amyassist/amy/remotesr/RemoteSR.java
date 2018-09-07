@@ -75,13 +75,15 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	private volatile boolean stop = false;
 
 	private boolean isEnabled() {
-		return Boolean.parseBoolean(configurationManager.getConfigurationWithDefaults(CONFIG_NAME)
-				.getProperty(ENABLED_CONFIG_KEY));
+		return Boolean.parseBoolean(
+				this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME).getProperty(ENABLED_CONFIG_KEY));
 	}
 
 	/**
 	 * Throw an exception if remoteSR is disabled via config
-	 * @throws IllegalStateException the exception
+	 * 
+	 * @throws IllegalStateException
+	 *             the exception
 	 */
 	private void checkEnabled() {
 		if (!isEnabled())
@@ -240,7 +242,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	}
 
 	private void executeAfterSeconds(Runnable r, int seconds) {
-		new Timer().schedule(new TimerTask() {
+		new Timer("RemoteSpeechTimer").schedule(new TimerTask() {
 			@Override
 			public void run() {
 				r.run();
