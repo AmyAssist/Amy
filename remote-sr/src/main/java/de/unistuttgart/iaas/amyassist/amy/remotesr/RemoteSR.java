@@ -56,6 +56,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 
 	private static final String CONFIG_NAME = "remotesr.config";
 	private static final String CHROME_DIRECTORY_CONFIG_KEY = "chromeCmd";
+	private static final String ENABLED_CONFIG_KEY = "enabled";
 
 	@Reference
 	private Logger logger;
@@ -69,15 +70,30 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 
 	private Process chromeProcess;
 
-	private volatile Consumer<String> listener;
-	private volatile boolean currentlyRecognizing;
-	private volatile boolean stop;
+	private volatile Consumer<String> listener = null;
+	private volatile boolean currentlyRecognizing = false;
+	private volatile boolean stop = false;
+
+	private boolean isEnabled() {
+		return Boolean.parseBoolean(configurationManager.getConfigurationWithDefaults(CONFIG_NAME)
+				.getProperty(ENABLED_CONFIG_KEY));
+	}
+
+	/**
+	 * Throw an exception if remoteSR is disabled via config
+	 * @throws IllegalStateException the exception
+	 */
+	private void checkEnabled() {
+		if (!isEnabled())
+			throw new IllegalStateException("RemoteSR not enabled");
+	}
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#recognizeOnce(java.util.function.Consumer)
 	 */
 	@Override
 	public void recognizeOnce(Consumer<String> resultHandler) {
+		this.checkEnabled();
 		if (this.currentlyRecognizing)
 			throw new IllegalStateException("Already recognizing");
 		this.listener = resultHandler;
@@ -117,6 +133,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	 *             Exception Signaling that something went wrong with launching Chrome
 	 */
 	private void launchChrome() throws LaunchChromeException {
+		this.checkEnabled();
 		try {
 			String file = generateTempProfile();
 
@@ -238,6 +255,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	 *            The client to set
 	 */
 	void setClient(SSEClient client) {
+		this.checkEnabled();
 		if (this.client != null && this.client.isConnected()) {
 			this.logger.warn("New SSE client connected before the old one disconnected");
 			this.client.disconnect();
@@ -251,6 +269,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	 * @return true if the request was successful
 	 */
 	boolean tryToRecognize() {
+		this.checkEnabled();
 		if (this.client == null) {
 			this.logger.error("Could not start recognition, because I have no client.");
 			return false;
@@ -269,6 +288,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	 *            The result.
 	 */
 	void processResult(SRResult res) {
+		this.checkEnabled();
 		if (res != null && res.getText() != null && this.listener != null) {
 			this.listener.accept(res.getText());
 			this.currentlyRecognizing = false;
@@ -312,6 +332,9 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	 */
 	@Override
 	public void start() {
+		if (!isEnabled())
+			return;
+
 		try {
 			launchChrome();
 		} catch (LaunchChromeException e) {
@@ -324,6 +347,9 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	 */
 	@Override
 	public void stop() {
+		if (!isEnabled())
+			return;
+
 		this.stop = true;
 		this.chromeProcess.destroy();
 	}
