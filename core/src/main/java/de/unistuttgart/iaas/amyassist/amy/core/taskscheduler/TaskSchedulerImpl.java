@@ -55,7 +55,7 @@ public class TaskSchedulerImpl implements TaskScheduler {
 
 	@PostConstruct
 	private void setup() {
-		this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+		this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "TaskScheduler"));
 	}
 
 	@Override

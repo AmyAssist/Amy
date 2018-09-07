@@ -38,6 +38,7 @@ public class ServiceNotFoundException extends RuntimeException {
 
 	/**
 	 * @param serviceDescription
+	 * @param serviceCreation 
 	 */
 	public ServiceNotFoundException(ServiceDescription<?> serviceDescription, ServiceCreation<?> serviceCreation) {
 		this.message = "No Service of type " + serviceDescription.getServiceType().getName() + " with qualifier "
@@ -54,7 +55,8 @@ public class ServiceNotFoundException extends RuntimeException {
 				+ "\nFirst step find the implementation of the Service."
 				+ "\nSecond check if the type of the Service is " + serviceDescription.getServiceType().getName()
 				+ "\nif you use the @Service read the JavaDoc to find out how to set the correct type of the Service."
-				+ "\nThird check if the Service implemenatin is loaded either by using a deployment descriptor or by a programmatic call.";
+				+ "\nThird check if the Service implemenatin is loaded"
+				+ " either by using a deployment descriptor or by a programmatic call.";
 	}
 
 	@Override
