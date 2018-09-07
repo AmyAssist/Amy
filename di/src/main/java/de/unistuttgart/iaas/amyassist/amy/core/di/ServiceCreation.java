@@ -23,7 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -39,6 +41,16 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 class ServiceCreation<T> {
 	CompletableFuture<ServiceHandle<T>> completableFuture;
 	private final Set<ServiceCreation<?>> dependents = new HashSet<>();
+	private final String name;
+
+	/**
+	 * @param name
+	 *            the name for the debugging
+	 * 
+	 */
+	public ServiceCreation(String name) {
+		this.name = name;
+	}
 
 	/**
 	 * Check if the given ServiceCreation is transitive dependent on this. This check is important to prevent circles in
@@ -72,6 +84,33 @@ class ServiceCreation<T> {
 		}
 
 		this.dependents.add(dependent);
+	}
+
+	@Override
+	public String toString() {
+		return this.print();
+	}
+
+	public String print() {
+		return this.print("\n");
+	}
+
+	private String print(String prefix) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(this.name);
+		// prefix + (isTail ? "└── " : "├── ")
+		List<ServiceCreation<?>> children = new ArrayList<>(this.dependents);
+		for (int i = 0; i < children.size() - 1; i++) {
+			stringBuilder.append(prefix);
+			stringBuilder.append("├── ");
+			stringBuilder.append(children.get(i).print(prefix + "│   "));
+		}
+		if (!children.isEmpty()) {
+			stringBuilder.append(prefix);
+			stringBuilder.append("└── ");
+			stringBuilder.append(children.get(children.size() - 1).print(prefix + "    "));
+		}
+		return stringBuilder.toString();
 	}
 
 }

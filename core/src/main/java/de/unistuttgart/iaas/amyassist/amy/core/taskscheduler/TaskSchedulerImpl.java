@@ -25,13 +25,14 @@ package de.unistuttgart.iaas.amyassist.amy.core.taskscheduler;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.Core;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
@@ -48,16 +49,13 @@ public class TaskSchedulerImpl implements TaskScheduler {
 	private Logger logger;
 
 	@Reference
-	private Core core;
-
-	@Reference
 	private Environment environment;
 
 	private ScheduledExecutorService scheduledExecutorService;
 
 	@PostConstruct
 	private void setup() {
-		this.scheduledExecutorService = this.core.getScheduledExecutor();
+		this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 	}
 
 	@Override
@@ -71,6 +69,11 @@ public class TaskSchedulerImpl implements TaskScheduler {
 		long delay = ChronoUnit.MILLIS.between(this.environment.getCurrentDateTime().toInstant(), instant);
 		this.logger.debug("the delay of the task is {} ms", delay);
 		this.scheduledExecutorService.schedule(task, delay, TimeUnit.MILLISECONDS);
+	}
+
+	@PreDestroy
+	private void destroy() {
+		this.scheduledExecutorService.shutdownNow();
 	}
 
 }

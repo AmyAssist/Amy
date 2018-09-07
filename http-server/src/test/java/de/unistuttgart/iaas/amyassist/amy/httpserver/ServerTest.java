@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 
 /**
  * 
@@ -59,8 +60,8 @@ class ServerTest {
 		Mockito.when(configManager.getConfigurationWithDefaults(ServerImpl.CONFIG_NAME)).thenReturn(serverConfig);
 
 		this.dependencyInjection = new DependencyInjection();
-		this.dependencyInjection.addExternalService(ConfigurationManager.class, configManager);
-		this.dependencyInjection.addExternalService(Logger.class, LoggerFactory.getLogger(ServerImpl.class));
+		this.dependencyInjection.register(new SingletonServiceProvider<>(ConfigurationManager.class, configManager));
+		this.dependencyInjection.register(new SingletonServiceProvider<>(Logger.class, LoggerFactory.getLogger(ServerImpl.class)));
 	}
 
 	@Test

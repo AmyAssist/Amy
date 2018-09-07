@@ -50,7 +50,7 @@ public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 	 * @param serviceType
 	 *            the type of the singleton
 	 * @param instance
-	 *            the singleton
+	 *            The instance of this service
 	 */
 	public SingletonServiceProvider(@Nonnull Class<T> serviceType, @Nonnull T instance) {
 		this.serviceType = serviceType;
