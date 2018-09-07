@@ -72,7 +72,7 @@ public class GrammarObjectsCreator implements DeploymentContainerService {
 		} catch (IOException e) {
 			throw new IllegalStateException("Can't write grammar file", e);
 		}
-		this.mainGrammar = new Grammar("grammar", grammarFile);
+		//this.mainGrammar = new Grammar("grammar", grammarFile);
 	}
 
 	/**

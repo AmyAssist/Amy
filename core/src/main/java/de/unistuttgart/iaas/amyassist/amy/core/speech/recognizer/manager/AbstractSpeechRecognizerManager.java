@@ -87,7 +87,7 @@ public abstract class AbstractSpeechRecognizerManager
 			GrammarObjectsCreator grammarData, MessageHub messageHub) {
 		this.inputHandler = inputHandler;
 		this.output = output;
-		this.mainGrammarName = grammarData.getMainGrammar().getName();
+		//this.mainGrammarName = grammarData.getMainGrammar().getName();
 		this.messageHub = messageHub;
 		initMessageHandling();
 		createRecognizers(grammarData, ais);
