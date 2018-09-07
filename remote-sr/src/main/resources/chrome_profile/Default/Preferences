@@ -6,7 +6,7 @@
     "content_settings": {
       "exceptions": {
         "media_engagement": {
-          "http://localhost:8080,*": {
+          "{{REMOTESR_HOST}},*": {
             "last_modified": "13178369017755602",
             "setting": {
               "audiblePlaybacks": 0,
@@ -22,7 +22,7 @@
         },
         "media_stream_camera": {},
         "media_stream_mic": {
-          "http://localhost:8080,*": {
+          "{{REMOTESR_HOST}},*": {
             "last_modified": "13178368387294370",
             "setting": 1
           }
@@ -39,7 +39,7 @@
         "protocol_handler": {},
         "sensors": {},
         "site_engagement": {
-          "http://localhost:8080,*": {
+          "{{REMOTESR_HOST}},*": {
             "last_modified": "13178368383329350",
             "setting": {
               "lastEngagementTime": 13178368383329304.0,

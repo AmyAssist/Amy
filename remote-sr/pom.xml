@@ -37,5 +37,9 @@
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>de.unistuttgart.iaas.amyassist</groupId>
+            <artifactId>amy-http-server-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>

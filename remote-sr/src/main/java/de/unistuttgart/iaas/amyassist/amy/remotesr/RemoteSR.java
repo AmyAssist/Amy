@@ -38,6 +38,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
+import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
@@ -46,6 +47,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer;
+
+import javax.ws.rs.core.UriBuilder;
 
 /**
  * Class to initiate the remote SR
@@ -64,6 +67,9 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 
 	@Reference
 	private ConfigurationManager configurationManager;
+
+	@Reference
+	Server httpServer;
 
 	private static final String START_SR_EVENT = "START";
 
@@ -151,7 +157,12 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 
 			String chromePath = config.getProperty(CHROME_DIRECTORY_CONFIG_KEY);
 
-			this.chromeProcess = new ProcessBuilder(chromePath, "http://localhost:8080/rest/remotesr",
+			URI uri = httpServer.getSocketUri();
+			String hostString = UriBuilder
+					.fromPath(uri.getPath() + "/remotesr")
+					.scheme(uri.getScheme()).host("localhost").port(uri.getPort()).build().toString();
+
+			this.chromeProcess = new ProcessBuilder(chromePath, hostString,
 					"--user-data-dir=" + file).start();
 
 			watchProcess(new BufferedReader(
@@ -211,8 +222,22 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 
 				@Override
 				public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-					Files.copy(file, target.resolve(jarPath.relativize(file).toString()),
-							StandardCopyOption.REPLACE_EXISTING);
+
+					String relativeFile = jarPath.relativize(file).toString();
+					Path targetFilePath = target.resolve(relativeFile);
+
+					if (relativeFile.equals("Default/Preferences")) {
+						// Replace host placeholder
+						URI uri = httpServer.getSocketUri();
+						String remoteSRHost = UriBuilder
+								.fromPath("")
+								.scheme(uri.getScheme()).host("localhost").port(uri.getPort()).build().toString();
+						String fileContent = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
+						fileContent = fileContent.replaceAll("\\{\\{REMOTESR_HOST}}", remoteSRHost);
+						Files.write(targetFilePath, fileContent.getBytes(StandardCharsets.UTF_8));
+					} else {
+						Files.copy(file, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
+					}
 					return FileVisitResult.CONTINUE;
 				}
 			});
