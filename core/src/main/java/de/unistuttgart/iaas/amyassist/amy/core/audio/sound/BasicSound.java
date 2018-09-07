@@ -53,46 +53,32 @@ public class BasicSound implements Sound {
 	 */
 	public BasicSound(AudioInputStream audioData) throws IOException {
 		this.format = audioData.getFormat();
+
+		int initialBufferSize = BUFFER_SIZE_INCR;
+
 		if (audioData.getFrameLength() != AudioSystem.NOT_SPECIFIED) {
-			this.data = new byte[(int) (audioData.getFrameLength() * audioData.getFormat().getFrameSize())];
-			int bytesRead = 0;
-			int bytesReadTotal = 0;
-			do {
-				bytesRead = audioData.read(this.data, bytesReadTotal, this.data.length - bytesReadTotal);
-				if (bytesRead < 0)
-					throw new IllegalStateException("Stream not as long as specified.");
-				bytesReadTotal += bytesRead;
-			} while (bytesReadTotal < this.data.length);
-		} else {
-			int bytesReadTotal = 0;
-			int bytesRead;
-			byte[] tmp = new byte[BUFFER_SIZE_INCR];
-			do {
-				tmp = Arrays.copyOf(tmp, tmp.length + BUFFER_SIZE_INCR);
-				bytesRead = audioData.read(tmp, bytesReadTotal, tmp.length - bytesReadTotal);
-				if (bytesRead > 0) {
-					bytesReadTotal += bytesRead;
-				}
-			} while (bytesRead != -1);
-
-			this.frameLength = (int) Math.ceil((double) bytesReadTotal / this.format.getFrameSize());
-
-			int byteLength = this.frameLength * this.format.getFrameSize();
-
-			if (bytesReadTotal < byteLength) {
-				int bytesToAdd = byteLength - bytesReadTotal;
-				if (bytesReadTotal + bytesToAdd > tmp.length) {
-					tmp = Arrays.copyOf(tmp, bytesReadTotal + bytesToAdd);
-				}
-
-				for (int i = bytesReadTotal; i < byteLength; i++) {
-					tmp[i] = 0;
-					bytesReadTotal++;
-				}
-			}
-
-			this.data = Arrays.copyOf(tmp, byteLength);
+			initialBufferSize = (int) (audioData.getFrameLength() * audioData.getFormat().getFrameSize());
 		}
+
+		int bytesReadTotal = 0;
+		int bytesRead;
+		byte[] tmp = new byte[initialBufferSize];
+		do {
+			if (bytesReadTotal + BUFFER_SIZE_INCR > tmp.length) {
+				tmp = Arrays.copyOf(tmp, tmp.length + BUFFER_SIZE_INCR);
+			}
+			bytesRead = audioData.read(tmp, bytesReadTotal, tmp.length - bytesReadTotal);
+			if (bytesRead > 0) {
+				bytesReadTotal += bytesRead;
+			}
+		} while (bytesRead != -1);
+
+		this.frameLength = (int) Math.ceil((double) bytesReadTotal / this.format.getFrameSize());
+
+		int byteLength = this.frameLength * this.format.getFrameSize();
+
+		this.data = Arrays.copyOf(tmp, byteLength);
+
 		audioData.close();
 	}
 

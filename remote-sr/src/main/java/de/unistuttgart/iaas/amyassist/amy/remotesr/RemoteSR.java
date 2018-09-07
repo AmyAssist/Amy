@@ -290,8 +290,8 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	void processResult(SRResult res) {
 		this.checkEnabled();
 		if (res != null && res.getText() != null && this.listener != null) {
-			this.listener.accept(res.getText());
 			this.currentlyRecognizing = false;
+			this.listener.accept(res.getText());
 		} else {
 			tryToRecognize();
 		}
