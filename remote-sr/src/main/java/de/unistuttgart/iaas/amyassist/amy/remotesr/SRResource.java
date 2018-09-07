@@ -70,7 +70,7 @@ public class SRResource {
 	 */
 	@GET
 	@Produces(MediaType.TEXT_HTML)
-	@SuppressWarnings("resource")
+	@SuppressWarnings("resource") // NOSONAR
 	public Response getStaticWebsite() {
 		InputStream is = getClass().getClassLoader().getResourceAsStream("index.html");
 		if (is == null)

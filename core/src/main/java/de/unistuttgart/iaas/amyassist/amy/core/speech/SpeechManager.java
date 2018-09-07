@@ -202,7 +202,7 @@ public class SpeechManager implements RunnableService {
 		this.logger.info("I understood: {}", result);
 
 		if (result.isEmpty() && !this.dialogHandler.hasDialogUnfinishedIntent(this.dialogId)) {
-			this.setListeningState(ListeningState.NOT_LISTENING);
+			this.voiceIOFinished();
 		} else {
 			try {
 				this.dialogHandler.process(result, this.dialogId);
