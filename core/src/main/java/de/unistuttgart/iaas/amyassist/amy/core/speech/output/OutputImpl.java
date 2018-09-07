@@ -43,6 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 
 /**
  * This class outputs
@@ -62,6 +63,8 @@ public class OutputImpl implements Output {
 	private LocalAudio la;
 	@Reference
 	private SoundFactory sf;
+	@Reference
+	private TaskScheduler scheduler;
 
 	private Map<Sounds, Sound> soundData = new EnumMap<>(Sounds.class);
 
@@ -91,7 +94,7 @@ public class OutputImpl implements Output {
 					this.players.remove(player);
 				}
 				if (callback != null) {
-					callback.run();
+					this.scheduler.execute(callback);
 				}
 			});
 			player.start();
