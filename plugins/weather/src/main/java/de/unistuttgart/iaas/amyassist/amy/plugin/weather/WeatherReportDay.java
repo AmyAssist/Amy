@@ -86,20 +86,6 @@ public class WeatherReportDay extends Entity {
 		this.icon = trimQuotes(p.icon());
 	}
 
-	/**
-	 * convert string from HH:mm:ss to HH mm for speech
-	 * 
-	 * @param s
-	 *            timestring to convert
-	 * @return converted timestring
-	 */
-	private String convertTimeString(String s) {
-		if (s.length() == 8) {
-			return s.substring(0, 5).replace(':', ' ');
-		}
-		return s;
-	}
-
 	private String description(boolean tldr) {
 		String result = (this.preamble != null ? this.preamble + " " : "") + this.summary;
 		if (this.precip) {
@@ -107,8 +93,7 @@ public class WeatherReportDay extends Entity {
 		}
 		result += " Between " + this.temperatureMin + " and " + this.temperatureMax + "°C.";
 		if (!tldr) {
-			result += " Sunrise is at " + convertTimeString(this.sunriseTime) + " and sunset at "
-					+ convertTimeString(this.sunsetTime);
+			result += " Sunrise is at " + this.sunriseTime + " and sunset at " + this.sunsetTime;
 		}
 		return result;
 	}

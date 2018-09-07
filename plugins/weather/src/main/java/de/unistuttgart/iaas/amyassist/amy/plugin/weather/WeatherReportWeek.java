@@ -47,7 +47,7 @@ public class WeatherReportWeek extends Entity {
 	/**
 	 * @param preamble
 	 *            Introduction text for speech
-	 * @param p
+	 * @param d
 	 *            FIODaily to get weather values of the week
 	 */
 	public WeatherReportWeek(String preamble, FIODaily d) {
