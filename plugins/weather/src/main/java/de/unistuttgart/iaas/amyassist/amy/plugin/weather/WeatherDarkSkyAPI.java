@@ -64,7 +64,6 @@ public class WeatherDarkSkyAPI {
 	private static final String WEATHER_LOCATION_ID_STRING = "WEATHER_LOCATION_ID";
 
 	private FIODaily dailyReports;
-	private FIOCurrently currentlyReport;
 
 	private String apiSecret;
 
@@ -92,22 +91,18 @@ public class WeatherDarkSkyAPI {
 			}
 			this.locationChanged = false;
 		}
-
 		return this.dailyReports;
 	}
 
 	private FIOCurrently getCurrentlyReport() {
-		if (this.currentlyReport == null || this.locationChanged) {
 			loadLocation();
 			ForecastIO fio = new ForecastIO(this.apiSecret);
 			fio.setUnits(ForecastIO.UNITS_SI);
 			fio.getForecast(this.coordinateLat, this.coordinateLong);
-			this.currentlyReport = new FIOCurrently(fio);
-			FIODataPoint report = this.currentlyReport.get();
+			FIODataPoint report = new FIOCurrently(fio).get();
 			report.setTimezone(fio.getTimezone());
 			this.locationChanged = false;
-		}
-		return this.currentlyReport;
+			return new FIOCurrently(fio);
 	}
 
 	/**
