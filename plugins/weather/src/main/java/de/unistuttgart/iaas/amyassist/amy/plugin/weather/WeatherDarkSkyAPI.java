@@ -97,12 +97,14 @@ public class WeatherDarkSkyAPI {
 	}
 
 	private FIOCurrently getCurrentlyReport() {
-		if (this.dailyReports == null || this.locationChanged) {
+		if (this.currentlyReport == null || this.locationChanged) {
 			loadLocation();
 			ForecastIO fio = new ForecastIO(this.apiSecret);
 			fio.setUnits(ForecastIO.UNITS_SI);
 			fio.getForecast(this.coordinateLat, this.coordinateLong);
 			this.currentlyReport = new FIOCurrently(fio);
+			FIODataPoint report = this.currentlyReport.get();
+			report.setTimezone(fio.getTimezone());
 			this.locationChanged = false;
 		}
 		return this.currentlyReport;
