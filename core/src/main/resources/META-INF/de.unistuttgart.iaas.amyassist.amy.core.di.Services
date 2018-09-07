@@ -20,8 +20,9 @@ de.unistuttgart.iaas.amyassist.amy.core.persistence.storage.DatabaseStorage
 de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginLoader
 de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerService
 de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl
-de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction
-de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator
 de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.TaskSchedulerImpl
 de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformationService
+de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechManager
+de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarCreator
+de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxRecognizer
 de.unistuttgart.iaas.amyassist.amy.core.information.InstanceInformationService

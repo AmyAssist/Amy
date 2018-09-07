@@ -42,15 +42,6 @@ public interface NLProcessingManager {
 	void register(Method method, XMLAIMIntent intent);
 
 	/**
-	 *
-	 * currently not working!
-	 *
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#getGrammarFileString(java.lang.String)
-	 */
-	String getGrammarFileString(String grammarName, String multiStart, String singleStart, String multiStop,
-			String shutup);
-
-	/**
 	 * processes an intent
 	 * @param dialog from this Dialog object
 	 * @param naturalLanguageText input from user

@@ -23,16 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
-import java.net.URI;
-import java.util.List;
-import java.util.function.Consumer;
-
-import org.slf4j.Logger;
-
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Track;
-
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -45,6 +38,11 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
+import org.slf4j.Logger;
+
+import java.net.URI;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music
@@ -64,7 +62,13 @@ public class PlayerLogic {
 	@Reference
 	private MessageHub messageHub;
 
-	private boolean wasPlaying = false;
+	private boolean suppressed = false;
+	private PostSuppressionAction postSuppressionAction = PostSuppressionAction.NONE;
+
+	private enum PostSuppressionAction {
+        NONE,
+        PAUSE
+	}
 
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
@@ -77,18 +81,13 @@ public class PlayerLogic {
 		Consumer<String> muteConsumer = message -> {
 			switch (message) {
 			case "true":
-				this.wasPlaying = this.spotifyAPICalls.getCurrentPlayingContext().getIs_playing().booleanValue();
-				if (this.wasPlaying) {
-					this.pause();
-				}
+				setSuppressed(true);
 				break;
 			case "false":
-				if (this.wasPlaying) {
-					this.resume();
-				}
+				setSuppressed(false);
 				break;
 			default:
-				this.logger.warn("unkown message {}", message);
+				this.logger.warn("unknown message {}", message);
 				break;
 			}
 		};
@@ -239,7 +238,12 @@ public class PlayerLogic {
 	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean pause() {
-		return this.spotifyAPICalls.pause();
+		if (this.suppressed) {
+			postSuppressionAction = PostSuppressionAction.PAUSE;
+			return true;
+		} else {
+			return this.spotifyAPICalls.pause();
+		}
 	}
 
 	/**
@@ -326,6 +330,32 @@ public class PlayerLogic {
 	 */
 	public int getVolume() {
 		return this.spotifyAPICalls.getVolume();
+	}
+
+	/**
+	 * Suppress music playback temporarily.
+	 * @param suppressed 'true' to suppress playback, 'false' to restore it
+	 */
+	private void setSuppressed(boolean suppressed) {
+		if (suppressed != this.suppressed) {
+
+			boolean isPlaying = spotifyAPICalls.getIsPlaying();
+
+			if (!suppressed && !isPlaying) {
+				// Consider resuming playback
+				if (postSuppressionAction == PostSuppressionAction.PAUSE) {
+					// Already paused, do nothing
+					postSuppressionAction = PostSuppressionAction.NONE;
+				} else {
+					resume();
+				}
+				this.suppressed = false;
+			} else if (suppressed && isPlaying) {
+				// Consider pausing playback
+				pause();
+				this.suppressed = true;
+			}
+		}
 	}
 
 }
