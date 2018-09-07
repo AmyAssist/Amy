@@ -4,8 +4,12 @@
 		<meta charset="utf-8">
 	</head>
 	<body>
-		<button onclick="startSR(event)">Start SR (for testing)</button>
-		<p id="textBox">
+		<p>Status: 
+		  <div id="textBox1">Initialized</div>
+		</p>
+		<br/>
+		<p>Info:
+		  <div id="textBox2"></div>
 		</p>
 	</body>
 	<script>
@@ -13,7 +17,10 @@
 		 * Simple Speech Recognition website.
 		 * @author Benno Krauß
 		 */
-		const textBox = document.getElementById('textBox');
+		const statusBox = document.getElementById('textBox1');
+		const infoBox = document.getElementById('textBox2');
+
+		let result = "";
 
 		if (!('webkitSpeechRecognition' in window)) {
 			throw new Error('Browser doesn\'t support SR!');
@@ -38,27 +45,28 @@
 
 		recognition.onstart = function() {
 			console.log('onstart');
-			textBoxMessage('Listening');
+			updateStatus('Listening');
 		}
 
 		recognition.onerror = function(event) {
 			console.log('onerror: ', event);
-            textBoxMessage('Error: ', event.error);
-			if (event.error === "no-speech") {
-			    sendResult("");
-			}
+			updateStatus('Error')
+            		info('Error', event.error);
 		}
 
 		recognition.onend = function() {
-			console.log('onend');
+			console.log('onend with result: ', result);
+			sendResult(result);
+			updateStatus('Sent result')
+			result = "";
 		}
+		
 
 		recognition.onresult = function(event) {
-			const result = event.results[0][0].transcript;
+			result = event.results[0][0].transcript;
 			console.log('onresult: ', result);
-
-			sendResult(result);
-            textBoxMessage('Sent result');
+			updateStatus('on result');
+            		info('Result', result);
 		}
 
 		function sendResult(text) {
@@ -85,8 +93,12 @@
 			recognition.start();
 		}
 
-		function textBoxMessage(message) {
-		    textBox.textContent = [...arguments].join(": ");
+		function updateStatus(newStatus) {
+		    statusBox.textContent = newStatus;
+		}
+		
+		function info(message) {
+		    infoBox.textContent = [...arguments].join(": ");
 		}
 
 		source.addEventListener('START', startSR, false);
