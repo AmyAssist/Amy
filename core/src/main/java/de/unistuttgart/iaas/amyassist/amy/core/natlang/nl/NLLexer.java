@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.ChooseLanguage;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.INumberConversion;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.NumberConversion;
 
 /**
  * Lexer for language input from speechs
@@ -53,7 +53,7 @@ public class NLLexer {
 
 	private ChooseLanguage language;
 
-	private INumberConversion numberConversion;
+	private NumberConversion numberConversion;
 
 	/**
 	 * this class handles natural language input of any type
@@ -81,41 +81,44 @@ public class NLLexer {
 	 * lexer implemented as Iterator
 	 * 
 	 * @param nlInput
-	 *            the stirng to lex
+	 *            the string to lex
 	 * @return returns processed list of WordTokens
 	 */
 	public List<WordToken> tokenize(String nlInput) {
 		List<WordToken> list = new LinkedList<>();
-		String toLex = nlInput.toLowerCase();
+		String toLex = nlInput.toLowerCase().trim();
 		toLex = this.language.getTimeUtility().formatTime(toLex);
-
+		toLex = this.language.getTimeUtility().formatDate(toLex);
+		toLex = this.language.getContraction().disassemblingContraction(toLex);
+		// replace all punctuation
+		toLex = toLex.replaceAll("\\,|\\.|\\:|\\;|\\?|\\!", "");
+		toLex = toLex.replaceAll("-", " ");
+		toLex = toLex.trim();
 		StringBuilder currentWord = new StringBuilder();
-		for (int mIndex = 0; mIndex < toLex.length(); mIndex++) {
-			char c = toLex.charAt(mIndex);
-
-			switch (Character.getType(c)) {
-			case Character.LOWERCASE_LETTER:
-				//$FALL-THROUGH$
-			case Character.DECIMAL_DIGIT_NUMBER:
-				currentWord.append(c);
-				break;
-
-			// handles single whitespace characters but not newline, tab or carriage return
-			case Character.SPACE_SEPARATOR:
-				if (currentWord.length() != 0) {
-					list.add(parse(new WordToken(currentWord.toString())));
-					currentWord = new StringBuilder();
-				} else {
-					throw new NLLexerException("more than one whitespace found");
+		if (!toLex.isEmpty()) {
+			for (int mIndex = 0; mIndex < toLex.length(); mIndex++) {
+				char c = toLex.charAt(mIndex);
+				switch (Character.getType(c)) {
+				case Character.LOWERCASE_LETTER:
+					//$FALL-THROUGH$
+				case Character.DECIMAL_DIGIT_NUMBER:
+					currentWord.append(c);
+					break;
+				// handles single whitespace characters but not newline, tab or carriage return
+				case Character.SPACE_SEPARATOR:
+					if (currentWord.length() != 0) {
+						list.add(parse(new WordToken(currentWord.toString())));
+						currentWord = new StringBuilder();
+					}
+					break;
+				default:
+					throw new NLLexerException("character not recognized " + c + " stopping");
 				}
-				break;
-			default:
-				throw new NLLexerException("character not recognized " + c + " stopping");
 			}
-
+			list.add(parse(new WordToken(currentWord.toString())));
+			return concatNumbers(list);
 		}
-		list.add(parse(new WordToken(currentWord.toString())));
-		return concatNumbers(list);
+		return new ArrayList<>();
 	}
 
 	/**
@@ -137,7 +140,6 @@ public class NLLexer {
 					result.add(this.fromNumbers(numbers));
 					numbers.clear();
 				}
-
 				result.add(wordToken);
 			}
 		}

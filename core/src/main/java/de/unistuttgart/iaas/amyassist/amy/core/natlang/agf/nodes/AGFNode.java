@@ -160,6 +160,19 @@ public class AGFNode {
 
 		return result;
 	}
+	
+	/**
+	 * deletes content of all entity nodes
+	 */
+	public void deleteEntityContent() {
+		for(AGFNode node : this.childs) {
+			if (node.getType() == AGFNodeType.ENTITY) {
+				EntityNode entity = (EntityNode) node;
+				entity.setUserProvidedContent(null);
+			}
+			node.deleteEntityContent();
+		}
+	}
 
 	/**
 	 * method to print the content

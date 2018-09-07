@@ -23,7 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.en;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.IStemmer;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.Stemmer;
 
 /**
  * This class implements the porter stemming algorithm see for more information:
@@ -31,7 +31,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.languagespecifics.IStemme
  * 
  * @author Lars Buttgereit
  */
-public class EnglishStemmer implements IStemmer {
+public class EnglishStemmer implements Stemmer {
 	private String currentWord;
 
 	/**

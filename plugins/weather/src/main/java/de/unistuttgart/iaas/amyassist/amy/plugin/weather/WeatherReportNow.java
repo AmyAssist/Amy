@@ -25,38 +25,30 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
 import com.github.dvdme.ForecastIOLib.FIODataPoint;
 
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static java.lang.Math.round;
 
 /**
  * Serves as weather entity for current time
  * 
- * @author Benno Krauß, Muhammed Kaya
+ * @author Muhammed Kaya
  */
 @XmlRootElement
-public class WeatherReportDay extends Entity {
+public class WeatherReportNow {
 	private final String preamble;
 	private final String summary;
 	private final boolean precip;
 	private final String precipProbability;
 	private final String precipType;
-	private final long temperatureMin;
-	private final long temperatureMax;
-	private final String sunriseTime;
-	private final String sunsetTime;
-	private final String weekday;
+	private final long temperatureNow;
 	private final long timestamp;
+	private final double windSpeed;
 	private final String icon;
 
 	private static final String TRIM_QUOTES_REGEX = "^\"|\"$";
 	private static final int FRACTION_TO_PERCENT_FACTOR = 100;
-	private static final int SECONDS_TO_MILLIS_FACTOR = 1000;
 
 	private String trimQuotes(String s) {
 		return s.replaceAll(TRIM_QUOTES_REGEX, "");
@@ -66,51 +58,34 @@ public class WeatherReportDay extends Entity {
 	 * @param preamble
 	 *            Introduction text for speech
 	 * @param p
-	 *            FIODaily to get weather values of the day
+	 *            FIOCurrently to get current weather values
 	 */
-	public WeatherReportDay(String preamble, FIODataPoint p) {
+	public WeatherReportNow(String preamble, FIODataPoint p) {
 		this.preamble = preamble;
 		this.summary = trimQuotes(p.summary());
 		this.precipProbability = round(p.precipProbability() * FRACTION_TO_PERCENT_FACTOR) + "%";
 		this.precipType = trimQuotes(p.precipType());
 		this.precip = p.precipProbability() > 0;
-		this.temperatureMin = Math.round(p.temperatureMin());
-		this.temperatureMax = Math.round(p.temperatureMax());
-		this.sunriseTime = p.sunriseTime();
-		this.sunsetTime = p.sunsetTime();
-
-		Date date = new Date(p.timestamp() * SECONDS_TO_MILLIS_FACTOR);
-		this.weekday = new SimpleDateFormat("EEEE").format(date);
+		this.temperatureNow = Math.round(p.temperature());
+		this.windSpeed = p.windSpeed();
 		this.timestamp = p.timestamp();
 
 		this.icon = trimQuotes(p.icon());
 	}
 
-	private String description(boolean tldr) {
+	private String description() {
 		String result = (this.preamble != null ? this.preamble + " " : "") + this.summary;
 		if (this.precip) {
 			result += " " + this.precipProbability + " probability of " + this.precipType + ".";
 		}
-		result += " Between " + this.temperatureMin + " and " + this.temperatureMax + "°C.";
-		if (!tldr) {
-			result += " Sunrise is at " + this.sunriseTime + " and sunset at " + this.sunsetTime;
-		}
+		result += " with " + this.temperatureNow + "°C and wind speed of " + this.windSpeed + ".";
 		return result;
-	}
-
-	/**
-	 * @return description
-	 */
-	public String shortDescription() {
-		return description(true);
 	}
 
 	@Override
 	public String toString() {
-		return description(false);
+		return description();
 	}
-
-	// Boilerplate getters (ffs it's 2018, when's java gonna get automatic property synthesis?
 
 	/**
 	 * @return preamble
@@ -149,38 +124,10 @@ public class WeatherReportDay extends Entity {
 	}
 
 	/**
-	 * @return temperatureMin
+	 * @return temperatureNow
 	 */
-	public long getTemperatureMin() {
-		return this.temperatureMin;
-	}
-
-	/**
-	 * @return temperatureMax
-	 */
-	public long getTemperatureMax() {
-		return this.temperatureMax;
-	}
-
-	/**
-	 * @return sunriseTime
-	 */
-	public String getSunriseTime() {
-		return this.sunriseTime;
-	}
-
-	/**
-	 * @return sunsetTime
-	 */
-	public String getSunsetTime() {
-		return this.sunsetTime;
-	}
-
-	/**
-	 * @return weekday
-	 */
-	public String getWeekday() {
-		return this.weekday;
+	public long getTemperatureNow() {
+		return this.temperatureNow;
 	}
 
 	/**
@@ -188,6 +135,13 @@ public class WeatherReportDay extends Entity {
 	 */
 	public long getTimestamp() {
 		return this.timestamp;
+	}
+
+	/**
+	 * @return windSpeed
+	 */
+	public double getWindspeed() {
+		return this.windSpeed;
 	}
 
 	/**
