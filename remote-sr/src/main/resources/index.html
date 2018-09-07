@@ -86,7 +86,7 @@
 		}
 
 		function textBoxMessage(message) {
-		    textBox.textContent = message;
+		    textBox.textContent = [...arguments].join(": ");
 		}
 
 		source.addEventListener('START', startSR, false);
