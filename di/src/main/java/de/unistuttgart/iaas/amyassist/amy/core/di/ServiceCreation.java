@@ -98,7 +98,6 @@ class ServiceCreation<T> {
 	private String print(String prefix) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(this.name);
-		// prefix + (isTail ? "└── " : "├── ")
 		List<ServiceCreation<?>> children = new ArrayList<>(this.dependents);
 		for (int i = 0; i < children.size() - 1; i++) {
 			stringBuilder.append(prefix);
