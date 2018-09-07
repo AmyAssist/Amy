@@ -130,9 +130,11 @@ public class SpeechManager implements RunnableService {
 	 */
 	@Override
 	public void stop() {
-		this.currentListeningState = ListeningState.NOT_LISTENING;
-		this.sphinxSpeechRecognizer.stopContinuousRecognition();
-		this.output.stopOutput();
+		if (this.recognitionEnabled) {
+			this.currentListeningState = ListeningState.NOT_LISTENING;
+			this.sphinxSpeechRecognizer.stopContinuousRecognition();
+			this.output.stopOutput();
+		}
 	}
 
 	private void keywordRecognized(String word) {
