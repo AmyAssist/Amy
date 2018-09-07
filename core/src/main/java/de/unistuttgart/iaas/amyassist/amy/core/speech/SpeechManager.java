@@ -97,7 +97,6 @@ public class SpeechManager implements RunnableService {
 			this.dialogId = this.dialogHandler.createDialog(this::voiceOutput);
 
 			this.sphinxGrammarCreator.createGrammar(SPHINX_MAIN_GARMMAR_NAME);
-
 		}
 	}
 
@@ -176,15 +175,14 @@ public class SpeechManager implements RunnableService {
 			// Depends on Current Listening State
 			switch (this.currentListeningState) {
 			case MULTI_CALL_LISTENING:
-				this.output.voiceOutput("now sleeping");
+				this.output.voiceOutput("now sleeping", this::unmute);
 				break;
 			case SINGLE_CALL_LISTENING:
-				this.output.soundOutput(Sounds.SINGLE_CALL_STOP_BEEP);
+				this.output.soundOutput(Sounds.SINGLE_CALL_STOP_BEEP, this::unmute);
 				break;
 			default:
 				break;
 			}
-			this.messageHub.publish(MESSAGE_TOPIC_MUTE, "false");
 			break;
 
 		default:
@@ -192,6 +190,10 @@ public class SpeechManager implements RunnableService {
 		}
 
 		this.currentListeningState = newListeningState;
+	}
+
+	private void unmute() {
+		this.messageHub.publish(MESSAGE_TOPIC_MUTE, "false");
 	}
 
 	private void processNormalInput(String result) {
