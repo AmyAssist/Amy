@@ -49,7 +49,7 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 /**
  * test for the rest resource of the timer
  * 
- * @author Patrick Gebhardt
+ * @author Patrick Gebhardt, Muhammed Kaya
  */
 @ExtendWith(FrameworkExtension.class)
 class TimerResourceTest {
@@ -143,9 +143,13 @@ class TimerResourceTest {
 		Entity<Timer> entity = Entity.entity(newTimer, MediaType.APPLICATION_JSON);
 
 		this.r = this.target.path("timers/new").request().post(entity);
-		assertEquals(200, this.r.getStatus());
+
 		Timer timerRead = this.r.readEntity(Timer.class);
-		assertEquals(newTimer, timerRead);
+		assertEquals(200, this.r.getStatus());
+		assertEquals(newTimer.getId(), timerRead.getId());
+		assertEquals(newTimer.getTimerTime(), timerRead.getTimerTime());
+		assertEquals(newTimer.getRemainingTime(), timerRead.getRemainingTime());
+		assertEquals(newTimer.isActive(), timerRead.isActive());
 	}
 
 	/**
@@ -159,7 +163,7 @@ class TimerResourceTest {
 
 		this.r = this.target.path("timers/de.activate/1").request().post(entity);
 		assertEquals(204, this.r.getStatus());
-		verify(this.tLogic).reactivateTimer(returnedTimers.get(0));
+		verify(this.tLogic).reactivateTimer(any());
 	}
 
 	/**
@@ -173,7 +177,7 @@ class TimerResourceTest {
 
 		this.r = this.target.path("timers/de.activate/1").request().post(entity);
 		assertEquals(204, this.r.getStatus());
-		verify(this.tLogic).pauseTimer(returnedTimers.get(0));
+		verify(this.tLogic).pauseTimer(any());
 	}
 
 	/**

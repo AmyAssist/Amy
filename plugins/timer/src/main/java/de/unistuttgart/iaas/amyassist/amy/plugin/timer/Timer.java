@@ -31,6 +31,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.DurationAdapter;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
 
 /**
@@ -50,7 +51,8 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	private int id;
 	@XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
 	private LocalDateTime timerTime;
-	private Duration duration;
+	@XmlJavaTypeAdapter(DurationAdapter.class)
+	private Duration remainingTime;
 	private boolean active;
 
 	/**
@@ -75,9 +77,10 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	public Timer(int id, LocalDateTime timerTime, Duration remainingTime, boolean active) {
 		if (id < 1)
 			throw new IllegalArgumentException();
+
 		this.id = id;
 		this.timerTime = timerTime;
-		this.duration = remainingTime;
+		this.remainingTime = remainingTime;
 		this.active = active;
 	}
 
@@ -101,20 +104,11 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	 */
 	public Duration getRemainingTime() {
 		if (this.active) {
-
 			LocalDateTime current = LocalDateTime.now();
 			LocalDateTime future = this.getTimerTime();
 			return (Duration.ofMillis(current.until(future, ChronoUnit.MILLIS)));
 		}
-		return this.duration;
-
-	}
-
-	/**
-	 * @return the duration of the timer
-	 */
-	public Duration getDuration() {
-		return this.duration;
+		return this.remainingTime;
 	}
 
 	/**
@@ -163,11 +157,19 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	}
 
 	/**
-	 * @param duration
-	 *            sets the duration of the timer
+	 * @param remainingTime
+	 *            sets the remainingTime of the timer
 	 */
-	public void setDuration(Duration duration) {
-		this.duration = duration;
+	public void setDuration(Duration remainingTime) {
+		this.remainingTime = remainingTime;
+	}
+
+	/**
+	 * @param persistentId
+	 *            persistentId
+	 */
+	public void setPersistentId(int persistentId) {
+		this.persistentId = persistentId;
 	}
 
 	/**
