@@ -40,9 +40,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarCreato
 import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarName;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxRecognizer;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.Topics;
 import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
 
 /**
@@ -61,8 +60,7 @@ public class SpeechManager implements RunnableService {
 	private static final String PROPERTY_KEYWORD_START_MULTI = "wakeupKeyword";
 	private static final String PROPERTY_KEYWORD_END_MULTI = "sleepKeyword";
 	private static final String PROPERTY_KEYWORD_OUTPUT_STOP = "stopOutputKeyword";
-	private static final String MESSAGE_TOPIC_MUTE = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL,
-			RoomTopics.ALL);
+	private static final String MESSAGE_TOPIC_MUTE = Topics.getGlobalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
 
 	@Reference
 	private Logger logger;

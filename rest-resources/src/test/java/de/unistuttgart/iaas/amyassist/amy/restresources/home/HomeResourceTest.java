@@ -39,9 +39,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.Topics;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -107,7 +106,7 @@ class HomeResourceTest {
 	void testMute() {
 		Response r = this.target.path("mute").request().post(null);
 		assertEquals(204, r.getStatus());
-		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
+		String topic = Topics.getGlobalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
 		Mockito.verify(this.messageHub).publish(topic, "true", true);
 	}
 
@@ -118,7 +117,7 @@ class HomeResourceTest {
 	void testUnmute() {
 		Response r = this.target.path("unmute").request().post(null);
 		assertEquals(204, r.getStatus());
-		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
+		String topic = Topics.getGlobalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
 		Mockito.verify(this.messageHub).publish(topic, "false", true);
 	}
 }
