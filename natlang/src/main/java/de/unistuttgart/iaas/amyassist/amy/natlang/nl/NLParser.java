@@ -287,7 +287,7 @@ public class NLParser implements INLParser {
 		if (nodeContent.equals(tokenContent)) {
 			return true;
 		}
-		return !CompareWords.isDistanceBiggerThanOne(nodeContent, tokenContent);
+		return !CompareWords.isDistanceBigger(nodeContent, tokenContent, 1);
 	}
 
 	/**

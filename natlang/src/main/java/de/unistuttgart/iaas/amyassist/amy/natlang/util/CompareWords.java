@@ -33,7 +33,41 @@ package de.unistuttgart.iaas.amyassist.amy.natlang.util;
  * @author Felix Burk
  */
 public class CompareWords {
+	
+	private CompareWords() {
+		//hide constructor
+	}
+	
+	/**
+	 * calculates word distance
+	 * 
+	 * @param source charsequence to compare
+	 * @param target second charsequence to compare
+	 * @return the word distance
+	 */
+	public static int wordDistance(CharSequence source, CharSequence target) {
+		if(source == null || target == null) {
+			throw new IllegalArgumentException("Strings must not be null");
+		}
+		return damerauLevenshtein(source, target);
+		
+	}
 
+	/**
+	 * helper method to prevent expensive comparisons
+	 * 
+	 * @param source charsequence to compare
+	 * @param target second charsequence to compare
+	 * @param comparison distance to compare it to
+	 * @return is the word distance bigger than one?
+	 */
+	public static boolean isDistanceBigger(String source, String target, int comparison) {
+		if (Math.abs(source.length() - target.length()) > comparison)
+			return true;
+		return wordDistance(source, target) > comparison;
+	}
+	
+	
 	/**
 	 * calculates distance of two words based on 
 	 * Damerau-Levenshtein Distance.
@@ -53,11 +87,7 @@ public class CompareWords {
 	 * @param target second charsequence to compare
 	 * @return the word distance
 	 */
-	public static int wordDistance(CharSequence source, CharSequence target) {
-		if(source == null || target == null) {
-			throw new IllegalArgumentException("Strings must not be null");
-		}
-		
+	private static int damerauLevenshtein(CharSequence source, CharSequence target) {
 		int lengthSource = source.length();
 		int lengthTarget = target.length();
 		
@@ -104,19 +134,6 @@ public class CompareWords {
 		
 		return matrix[lengthSource][lengthTarget];
 		
-	}
-
-	/**
-	 * helper method to prevent expensive comparisons
-	 * 
-	 * @param source charsequence to compare
-	 * @param target second charsequence to compare
-	 * @return is the word distance bigger than one?
-	 */
-	public static boolean isDistanceBiggerThanOne(String source, String target) {
-		if (Math.abs(source.length() - target.length()) >= 2)
-			return true;
-		return wordDistance(source, target) >= 2;
 	}
 
 }
