@@ -128,6 +128,23 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	 */
 	@Override
 	public void processIntent(Dialog dialog, String naturalLanguageText) {
+		NLLexer nlLexer = new NLLexer(this.language);
+		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
+
+		if(!promptGrammarFound(dialog, tokens)) {
+			//try to skip prefixes and suffixes until a grammar matches
+			for(int i=1; i <= tokens.size(); i++) {
+				for(int j=tokens.size(); j>i; j--) {
+					if(promptGrammarFound(dialog, tokens.subList(i, j))) {
+						return;
+					}
+				}
+			}
+		}
+
+	}
+	
+	private boolean promptGrammarFound(Dialog dialog, List<WordToken> tokens) {
 		List<AGFNode> promptGrams = new ArrayList<>();
 		if (dialog.getNextPrompt() != null) {
 			promptGrams.add(dialog.getNextPrompt().getGrammar());
@@ -135,8 +152,6 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 		promptGrams.add(this.quitIntentUserInputGram);
 
-		NLLexer nlLexer = new NLLexer(this.language);
-		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
 		INLParser nlParser = new NLParser(promptGrams, this.language.getStemmer());
 		try {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
@@ -144,14 +159,14 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			if (matchingNodeIndex == promptGrams.indexOf(this.quitIntentUserInputGram)) {
 				dialog.output(generateRandomAnswer(QUIT_INTENT_ANSWER));
 				dialog.setIntent(null);
-				return;
+				return true;
 			}
 			setEntities(promptGrams.get(matchingNodeIndex), dialog);
 		} catch (NLParserException e) {
-			this.logger.debug("no matching grammar found ", e);
-			dialog.output(dialog.getNextPrompt().getOutputText());
+			return false;
 		}
-
+		return true;
+		
 	}
 
 	private void setEntities(AGFNode gram, Dialog dialog) {
@@ -202,7 +217,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			return dialog;
 		}
 		
-		//try to skip the first words until a grammar matches
+		//try to skip prefixes and suffixes until a grammar matches
 		for(int i=1; i <= tokens.size(); i++) {
 			for(int j=tokens.size(); j>i; j--) {
     			if(intentFound(dialog, tokens.subList(i,j))) {
@@ -220,21 +235,23 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private boolean intentFound(Dialog dialog, List<WordToken> tokens) {
 		INLParser nlParser = new NLParser(new ArrayList<>(this.nodeToMethodAIMPair.keySet()),
 				this.language.getStemmer());
+		AGFNode node;
 		try {
-			AGFNode node = nlParser.matchingNode(tokens);
-			Method left = this.nodeToMethodAIMPair.get(node).getMethod();
-			XMLAIMIntent right = this.nodeToMethodAIMPair.get(node).getXml();
-			UserIntent userIntent = new UserIntent(left, right);
-			
-			Object object = this.serviceLocator.createAndInitialize(userIntent.getPartialNLIClass());
-			userIntent.updateGrammars(object);
-			dialog.setIntent(userIntent);
-			
-			setEntities(node, dialog);
+			node = nlParser.matchingNode(tokens);
 
 		} catch (NLParserException e) {
 			return false;
 		}
+		
+		Method left = this.nodeToMethodAIMPair.get(node).getMethod();
+		XMLAIMIntent right = this.nodeToMethodAIMPair.get(node).getXml();
+		UserIntent userIntent = new UserIntent(left, right);
+		
+		Object object = this.serviceLocator.createAndInitialize(userIntent.getPartialNLIClass());
+		userIntent.updateGrammars(object);
+		dialog.setIntent(userIntent);
+		
+		setEntities(node, dialog);
 		return true;
 	}
 
