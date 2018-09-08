@@ -31,10 +31,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
 public class PlaylistEntity extends Item {
 
 
-	/**
-	 * a Url to a image from the playlist
-	 */
-	private String imageUrl;
 	private String playlistCreator;
 
 	/**
@@ -56,26 +52,7 @@ public class PlaylistEntity extends Item {
 	 */
 	public PlaylistEntity(String name, String uri, String imageUrl) {
 		super(name, uri);
-		this.imageUrl = imageUrl;
-	}
-
-	/**
-	 * get the image URL from the playlist image
-	 * 
-	 * @return url to the image
-	 */
-	public String getImageUrl() {
-		return this.imageUrl;
-	}
-
-	/**
-	 * set the image url from the playlist image
-	 * 
-	 * @param imageUrl
-	 *            url to set
-	 */
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+		setImageUrl(imageUrl);
 	}
 
 	/**

@@ -43,11 +43,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.*;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;

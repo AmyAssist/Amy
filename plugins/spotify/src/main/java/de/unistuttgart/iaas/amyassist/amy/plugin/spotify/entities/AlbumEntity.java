@@ -30,8 +30,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
  */
 public class AlbumEntity extends Item {
 	private String[] artists;
-	private String imageUrl;
-
 	/**
 	 * default constructor. no data is set
 	 */
@@ -67,25 +65,6 @@ public class AlbumEntity extends Item {
 	 */
 	public void setArtists(String[] artists) {
 		this.artists = artists;
-	}
-
-	/**
-	 * Get's {@link #imageUrl imageUrl}
-	 * 
-	 * @return imageUrl
-	 */
-	public String getImageUrl() {
-		return this.imageUrl;
-	}
-
-	/**
-	 * Set's {@link #imageUrl imageUrl}
-	 * 
-	 * @param imageUrl
-	 *            imageUrl
-	 */
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
 	}
 
 	@Override

@@ -157,6 +157,7 @@ public class Search {
 				trackEntity = new TrackEntity();
 				trackEntity.setName(track.getName());
 				String[] artistNames = Arrays.stream(track.getArtists()).map(ArtistSimplified::getName).toArray(String[]::new);
+				trackEntity.setImageUrl((track.getAlbum() != null && track.getAlbum().getImages().length > 0) ? track.getAlbum().getImages()[0].getUrl( ): "");
 				trackEntity.setArtists(artistNames);
 				trackEntity.setUri(track.getUri());
 				trackEntity.setDurationInMs(track.getDurationMs());

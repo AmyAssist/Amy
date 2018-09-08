@@ -43,11 +43,22 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.volume">
-		<gram> (set [music] volume [to] |spotify) {volumeoption}
+		<gram> set [spotify|music] volume [to|on]  {volumeoption}
 		</gram>
 		<EntityTemplates>
 			<EntityTemplate id="volumeoption" required="true">
-				<gram>(max|mute|up|down)</gram>
+				<gram>(full|max|mute|up|down)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.volumePercent">
+		<gram> (set [music] volume [to] |spotify) {volume} percent
+		</gram>
+		<EntityTemplates>
+			<EntityTemplate id="volume" required="true">
+				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>
@@ -79,7 +90,7 @@
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="songid">
-			<text> which playlist id would you play? </text>
+			<text> which playlist ID would you play? </text>
 			<gram>[playlist] {songid}</gram>
 		</Prompt>
 

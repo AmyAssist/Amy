@@ -187,8 +187,21 @@ public class SpotifySpeech {
 	 */
 	@Intent()
 	public String volume(Map<String, EntityData> entites) {
-		return "Volume is now on: "
-				+ Integer.toString(this.playerLogic.setVolume(entites.get("volumeoption").getString())) + " percent";
+		int volume = this.playerLogic.setVolume(entites.get("volumeoption").getString());
+		return (volume != -1) ? "Volume is now on: " + String.valueOf(volume) + " percent" : "Wrong volume range";
+	}
+
+	/**
+	 * speech command for the volume control to set volume by percent
+	 * 
+	 * @param entites
+	 *            input. the new volume in percent
+	 * @return the speech output string
+	 */
+	@Intent()
+	public String volumePercent(Map<String, EntityData> entites) {
+		int volume = this.playerLogic.setVolume(entites.get("volume").getNumber());
+		return (volume != -1) ? "Volume is now on: " + String.valueOf(volume) + " percent" : "Wrong volume range";
 	}
 
 	/**
@@ -284,7 +297,7 @@ public class SpotifySpeech {
 		default:
 			break;
 		}
-		
+
 		return ERROR_MESSAGE_ELEMENT;
 	}
 

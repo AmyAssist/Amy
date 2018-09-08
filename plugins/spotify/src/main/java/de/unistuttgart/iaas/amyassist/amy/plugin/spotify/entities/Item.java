@@ -38,6 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
 public abstract class Item extends Entity{
 	private String uri;
 	private String name;
+	private String imageUrl;
 
 	/**
 	 * default constructor. no data is set
@@ -91,5 +92,24 @@ public abstract class Item extends Entity{
 	 */
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+	/**
+	 * Get's {@link #imageUrl imageUrl}
+	 * 
+	 * @return imageUrl
+	 */
+	public String getImageUrl() {
+		return this.imageUrl;
+	}
+
+	/**
+	 * Set's {@link #imageUrl imageUrl}
+	 * 
+	 * @param imageUrl
+	 *            imageUrl
+	 */
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 }
