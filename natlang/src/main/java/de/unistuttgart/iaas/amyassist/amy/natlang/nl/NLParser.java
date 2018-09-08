@@ -277,15 +277,17 @@ public class NLParser implements INLParser {
 		if(toMatch == null || toMatch.getContent() == null || token == null || token.getContent() == null) 
 			return false;
 		
-		String stemmedNodeContent = this.stemmer.stem(toMatch.getContent());
-		String stemmedTokenContent = this.stemmer.stem(token.getContent());
-		if (this.stemmer != null && stemmedNodeContent.equals(stemmedTokenContent)) {
+		String nodeContent = toMatch.getContent();
+		String tokenContent = token.getContent();
+		
+		if(this.stemmer != null) {
+			nodeContent = this.stemmer.stem(toMatch.getContent());
+			tokenContent = this.stemmer.stem(token.getContent());
+		}
+		if (nodeContent.equals(tokenContent)) {
 			return true;
 		}
-		if(this.stemmer == null && token != null && toMatch.getContent().equals(token.getContent())){
-			return true;
-		}
-		return !CompareWords.isDistanceBiggerThanOne(stemmedNodeContent, stemmedTokenContent);
+		return !CompareWords.isDistanceBiggerThanOne(nodeContent, tokenContent);
 	}
 
 	/**
