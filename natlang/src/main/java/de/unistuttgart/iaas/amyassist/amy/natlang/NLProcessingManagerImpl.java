@@ -197,6 +197,27 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	public Dialog decideIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language);
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
+		
+		if(intentFound(dialog, tokens)) {
+			return dialog;
+		}
+		
+		//try to skip the first words until a grammar matches
+		for(int i=1; i <= tokens.size(); i++) {
+			for(int j=tokens.size(); j>i; j--) {
+    			if(intentFound(dialog, tokens.subList(i,j))) {
+    				return dialog;
+    			}
+			}
+		}
+		
+		this.logger.debug("no matching grammar found");
+		dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
+		return dialog;
+		
+	}
+	
+	private boolean intentFound(Dialog dialog, List<WordToken> tokens) {
 		INLParser nlParser = new NLParser(new ArrayList<>(this.nodeToMethodAIMPair.keySet()),
 				this.language.getStemmer());
 		try {
@@ -212,10 +233,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			setEntities(node, dialog);
 
 		} catch (NLParserException e) {
-			this.logger.debug("no matching grammar found ", e);
-			dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
+			return false;
 		}
-		return dialog;
+		return true;
 	}
 
 	private String generateRandomAnswer(String[] strings) {
