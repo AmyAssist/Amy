@@ -35,6 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
 import de.unistuttgart.iaas.amyassist.amy.deployment.DeploymentDescriptorUtil;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.internal.InternalMessageHubService;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.internal.SubscriptionUtil;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
 
@@ -77,22 +78,12 @@ public class MessageRecievers implements DeploymentContainerService {
 		Method[] methodsWithAnnotation = MethodUtils.getMethodsWithAnnotation(cls, Subscription.class);
 
 		for (Method method : methodsWithAnnotation) {
-			if (!isValidSubscriptionMethod(method)) {
-				throw new IllegalArgumentException(
-						"The method " + method.getName() + " could not be used as Subscription.");
-			}
-
+			SubscriptionUtil.assertValidSubscriptionMethod(method);
 			Subscription annotation = method.getAnnotation(Subscription.class);
 			TopicFilter createTopicFilter = this.topicFactory.createTopicFilter(annotation.value());
 			this.messageHub.subscribe(createTopicFilter, cls, method);
 		}
 
-	}
-
-	private boolean isValidSubscriptionMethod(Method method) {
-		if (!method.getReturnType().equals(Void.TYPE))
-			return false;
-		return true;
 	}
 
 }

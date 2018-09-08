@@ -40,16 +40,27 @@ class SubscriptionObject implements Subscription {
 
 	private final Class<?> messageReceiverClass;
 	private final Method method;
+	private final boolean withTopicName;
 
 	/**
 	 * @param cls
 	 *            the {@link MessageReceiver} class
 	 * @param method
-	 *            the method of the {link {@link de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.Subscription}
+	 *            the method of the {@link de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.Subscription}
 	 */
 	public SubscriptionObject(Class<?> cls, Method method) {
+		SubscriptionUtil.assertValidSubscriptionMethod(method);
 		this.messageReceiverClass = cls;
 		this.method = method;
+		Class<?>[] parameterTypes = this.method.getParameterTypes();
+		if (parameterTypes.length == 1) {
+			this.withTopicName = false;
+		} else if (parameterTypes.length == 2) {
+			this.withTopicName = true;
+		} else {
+			throw new IllegalArgumentException(
+					"Subscription can only have the message and the topicname as parameter.");
+		}
 	}
 
 	@Override
@@ -57,7 +68,12 @@ class SubscriptionObject implements Subscription {
 		Object createAndInitialize = serviceLocator.createAndInitialize(this.messageReceiverClass);
 
 		try {
-			this.method.invoke(createAndInitialize, msg.getPayload());
+			if (this.withTopicName) {
+				this.method.invoke(createAndInitialize, msg.getPayload(), topic);
+			} else {
+				this.method.invoke(createAndInitialize, msg.getPayload());
+			}
+
 		} catch (IllegalAccessException e) {
 			throw new IllegalArgumentException("tryed to invoke method " + this.method + " but got an error", e);
 		} catch (InvocationTargetException e) {
