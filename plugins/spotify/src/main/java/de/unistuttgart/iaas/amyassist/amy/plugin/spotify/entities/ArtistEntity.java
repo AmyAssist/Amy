@@ -30,12 +30,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
  */
 public class ArtistEntity extends Item {
 	private String[] genres;
-	/**
-	 * default constructor. no data is set
-	 */
-	public ArtistEntity() {
-
-	}
 
 	/**
 	 * get the genre from the artist
@@ -49,7 +43,8 @@ public class ArtistEntity extends Item {
 	/**
 	 * set the genre from the artist
 	 * 
-	 * @param genres of a artist
+	 * @param genres
+	 *            of a artist
 	 */
 	public void setGenre(String[] genres) {
 		this.genres = genres;

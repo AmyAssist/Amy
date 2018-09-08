@@ -33,13 +33,6 @@ public class PlaylistEntity extends Item {
 	private String playlistCreator;
 
 	/**
-	 * constructor for a Playlist
-	 */
-	public PlaylistEntity() {
-
-	}
-
-	/**
 	 * Get's {@link #playlistCreator playlistCreator}
 	 * 
 	 * @return playlistCreator

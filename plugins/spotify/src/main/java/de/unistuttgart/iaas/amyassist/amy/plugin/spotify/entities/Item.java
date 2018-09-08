@@ -41,13 +41,6 @@ public abstract class Item extends Entity {
 	private String imageUrl;
 
 	/**
-	 * default constructor. no data is set
-	 */
-	public Item() {
-
-	}
-
-	/**
 	 * get the name from the item
 	 * 
 	 * @return name

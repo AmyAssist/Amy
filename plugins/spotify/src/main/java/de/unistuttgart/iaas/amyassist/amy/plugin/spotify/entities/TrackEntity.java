@@ -34,13 +34,6 @@ public class TrackEntity extends Item {
 	private int durationInMs;
 
 	/**
-	 * default constructor. no data is set
-	 */
-	public TrackEntity() {
-
-	}
-
-	/**
 	 * Get's {@link #getArtists() artists}
 	 * 
 	 * @return artists a string array with all artists

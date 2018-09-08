@@ -32,13 +32,6 @@ public class AlbumEntity extends Item {
 	private String[] artists;
 
 	/**
-	 * default constructor. no data is set
-	 */
-	public AlbumEntity() {
-
-	}
-
-	/**
 	 * get the artists from the album
 	 * 
 	 * @return a String array with all artists
