@@ -113,6 +113,7 @@ public class SpotifySpeech {
 				}
 				break;
 			case "own":
+			case "on":
 				for (PlaylistEntity playlist : this.search.searchOwnPlaylists(LIMIT_FOR_SEARCH)) {
 					builder = builder.append(playlist.toString()).append("\n");
 				}
@@ -164,6 +165,7 @@ public class SpotifySpeech {
 			}
 			return ERROR_MESSAGE;
 		case "pause":
+		case "pass":
 			if (this.playerLogic.pause()) {
 				return "pause";
 			}
@@ -187,8 +189,21 @@ public class SpotifySpeech {
 	 */
 	@Intent()
 	public String volume(Map<String, EntityData> entites) {
-		return "Volume is now on: "
-				+ Integer.toString(this.playerLogic.setVolume(entites.get("volumeoption").getString())) + " percent";
+		int volume = this.playerLogic.setVolume(entites.get("volumeoption").getString());
+		return (volume != -1) ? "Volume: " + volume + " percent" : "Wrong volume range";
+	}
+
+	/**
+	 * speech command for the volume control to set volume by percent
+	 * 
+	 * @param entites
+	 *            input. the new volume in percent
+	 * @return the speech output string
+	 */
+	@Intent()
+	public String volumePercent(Map<String, EntityData> entites) {
+		int volume = this.playerLogic.setVolume(entites.get("volume").getNumber());
+		return (volume != -1) ? "Volume: " + volume + " percent" : "Wrong volume range";
 	}
 
 	/**
@@ -234,6 +249,7 @@ public class SpotifySpeech {
 		PlaylistEntity playlist = null;
 		switch (entites.get("type").getString()) {
 		case "own":
+		case "on":
 			playlist = this.playerLogic.playPlaylist(entites.get("songid").getNumber(), SearchTypes.USER_PLAYLISTS);
 			break;
 		case "featured":
@@ -284,7 +300,7 @@ public class SpotifySpeech {
 		default:
 			break;
 		}
-		
+
 		return ERROR_MESSAGE_ELEMENT;
 	}
 

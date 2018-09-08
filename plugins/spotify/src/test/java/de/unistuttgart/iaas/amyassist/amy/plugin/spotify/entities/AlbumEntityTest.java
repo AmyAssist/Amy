@@ -44,28 +44,20 @@ class AlbumEntityTest {
 
 	@BeforeEach
 	void init() {
-		this.album = new AlbumEntity(NAME, ARTIST, URI);
-	}
-
-	@Test
-	void testConstructorAndGetters() {
-		assertThat(this.album.getName(), equalTo(NAME));
-		assertThat(this.album.getArtists(), equalTo(ARTIST));
-		assertThat(this.album.getUri(), equalTo(URI));
-	}
-
-	@Test
-	void testSetter() {
 		this.album = new AlbumEntity();
 		this.album.setName(NAME);
 		this.album.setArtists(ARTIST);
 		this.album.setUri(URI);
 		this.album.setImageUrl(IMAGE_URL);
+	}
+
+	@Test
+	void testGetters() {
 		assertThat(this.album.getName(), equalTo(NAME));
 		assertThat(this.album.getArtists(), equalTo(ARTIST));
 		assertThat(this.album.getUri(), equalTo(URI));
-		assertThat(this.album.getImageUrl(), equalTo(IMAGE_URL));
 	}
+
 
 	@Test
 	void testToString() {
