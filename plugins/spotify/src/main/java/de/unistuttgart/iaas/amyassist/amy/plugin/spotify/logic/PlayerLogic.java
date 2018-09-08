@@ -25,30 +25,21 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
 import java.net.URI;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Track;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
-import org.slf4j.Logger;
-
-import java.net.URI;
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music
