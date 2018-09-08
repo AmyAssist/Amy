@@ -271,7 +271,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 				stop();
 				start();
 			}
-		}, 5);
+		}, 10);
 	}
 
 	private void executeAfterSeconds(Runnable r, int seconds) {
