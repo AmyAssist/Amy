@@ -101,14 +101,14 @@ public class ChatResource {
 		try {
 			this.handler.process(input, UUID.fromString(uuid));
 		} catch (IllegalArgumentException e) {
-			throw new WebApplicationException("can't handle input: " + input, e, Status.INTERNAL_SERVER_ERROR);
+			throw new WebApplicationException("unknown UUID " + uuid, e, Status.FORBIDDEN);
 		}
 	}
 
 	/**
 	 * receive queued responses
 	 * 
-	 * @param uuid
+	 * @param uuidString
 	 *            of user
 	 * @return current response
 	 */
@@ -129,7 +129,7 @@ public class ChatResource {
 			return "";
 
 		} catch (IllegalArgumentException e) {
-			throw new WebApplicationException("can't handle input: " + uuidString, e, Status.INTERNAL_SERVER_ERROR);
+			throw new WebApplicationException("unknown UUID " + uuidString, e, Status.FORBIDDEN);
 		}
 	}
 }

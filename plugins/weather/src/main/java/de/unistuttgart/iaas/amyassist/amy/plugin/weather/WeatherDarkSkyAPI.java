@@ -23,9 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
-import java.util.Calendar;
 import java.util.Properties;
 
+import com.github.dvdme.ForecastIOLib.FIOCurrently;
 import com.github.dvdme.ForecastIOLib.FIODaily;
 import com.github.dvdme.ForecastIOLib.FIODataPoint;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
@@ -41,7 +41,7 @@ import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 /**
  * Logic class to provide information about current and coming weather
  * 
- * @author Benno, Lars Buttgereit
+ * @author Benno Krauß, Lars Buttgereit, Muhammed Kaya
  */
 @Service
 public class WeatherDarkSkyAPI {
@@ -64,7 +64,7 @@ public class WeatherDarkSkyAPI {
 	private static final String WEATHER_LOCATION_ID_STRING = "WEATHER_LOCATION_ID";
 
 	private FIODaily dailyReports;
-	private Calendar lastRequest;
+	private FIOCurrently currentlyReport;
 
 	private String apiSecret;
 
@@ -79,7 +79,7 @@ public class WeatherDarkSkyAPI {
 	}
 
 	private FIODaily getDailyReports() {
-		if (this.dailyReports == null || checkTime() || this.locationChanged) {
+		if (this.dailyReports == null || this.locationChanged) {
 			loadLocation();
 			ForecastIO fio = new ForecastIO(this.apiSecret);
 			fio.setUnits(ForecastIO.UNITS_SI);
@@ -90,31 +90,32 @@ public class WeatherDarkSkyAPI {
 				FIODataPoint report = this.dailyReports.getDay(i);
 				report.setTimezone(fio.getTimezone());
 			}
-			this.lastRequest = Calendar.getInstance();
 			this.locationChanged = false;
 		}
 
 		return this.dailyReports;
 	}
 
-	/**
-	 * checks if the time of the last request is still actual and on the same day
-	 * 
-	 * @return true if the data is outdated, false if its actual
-	 */
-	private boolean checkTime() {
-		Calendar now = Calendar.getInstance();
-		if (this.lastRequest != null) {
-			boolean sameDay = now.get(Calendar.YEAR) == this.lastRequest.get(Calendar.YEAR)
-					&& now.get(Calendar.DAY_OF_YEAR) == this.lastRequest.get(Calendar.DAY_OF_YEAR);
-			if (sameDay) {
-				boolean withinHour = now.getTimeInMillis() - this.lastRequest.getTimeInMillis() < 60 * 60 * 1000;
-				if (withinHour) {
-					return false;
-				}
-			}
+	private FIOCurrently getCurrentlyReport() {
+		if (this.dailyReports == null || this.locationChanged) {
+			loadLocation();
+			ForecastIO fio = new ForecastIO(this.apiSecret);
+			fio.setUnits(ForecastIO.UNITS_SI);
+			fio.getForecast(this.coordinateLat, this.coordinateLong);
+			this.currentlyReport = new FIOCurrently(fio);
+			this.locationChanged = false;
 		}
-		return true;
+		return this.currentlyReport;
+	}
+
+	/**
+	 * get the current weather forecast
+	 * 
+	 * @return current weather forecast
+	 */
+	public WeatherReportNow getReportNow() {
+		FIOCurrently d = this.getCurrentlyReport();
+		return new WeatherReportNow("This is the current weather report.", d.get());
 	}
 
 	/**
@@ -143,7 +144,7 @@ public class WeatherDarkSkyAPI {
 	 * @return this weeks weather forecast
 	 */
 	public WeatherReportWeek getReportWeek() {
-		return new WeatherReportWeek("This is the weather report for the week. ", this.getDailyReports());
+		return new WeatherReportWeek("This is the weather report for the week.", this.getDailyReports());
 	}
 
 	/**

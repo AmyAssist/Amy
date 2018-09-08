@@ -267,7 +267,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 			this.logger.info("Trying to reconnect in {}", amount);
 			this.scheduler.schedule(this::start, Instant.now().plus(amount));
 		} else {
-			this.logger.error("Ne reconnects left.");
+			this.logger.error("No reconnects left.");
 		}
 	}
 

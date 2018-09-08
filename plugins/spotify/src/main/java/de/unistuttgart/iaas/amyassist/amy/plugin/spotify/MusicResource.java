@@ -184,7 +184,7 @@ public class MusicResource implements Resource {
 		if (!trackList.isEmpty()) {
 			return trackList.toArray(new TrackEntity[trackList.size()]);
 		}
-		throw new WebApplicationException(NO_RESULTS_FOUND, Status.NO_CONTENT);
+		throw new WebApplicationException(NO_RESULTS_FOUND, Status.NOT_FOUND);
 	}
 
 	/**
@@ -206,7 +206,7 @@ public class MusicResource implements Resource {
 		if (!playlistList.isEmpty()) {
 			return playlistList.toArray(new PlaylistEntity[playlistList.size()]);
 		}
-		throw new WebApplicationException(NO_RESULTS_FOUND, Status.NO_CONTENT);
+		throw new WebApplicationException(NO_RESULTS_FOUND, Status.NOT_FOUND);
 	}
 
 	/**
@@ -228,7 +228,7 @@ public class MusicResource implements Resource {
 		if (!albumList.isEmpty()) {
 			return albumList.toArray(new AlbumEntity[albumList.size()]);
 		}
-		throw new WebApplicationException(NO_RESULTS_FOUND, Status.NO_CONTENT);
+		throw new WebApplicationException(NO_RESULTS_FOUND, Status.NOT_FOUND);
 	}
 
 	/**
@@ -250,7 +250,7 @@ public class MusicResource implements Resource {
 		if (!albumList.isEmpty()) {
 			return albumList.toArray(new ArtistEntity[albumList.size()]);
 		}
-		throw new WebApplicationException(NO_RESULTS_FOUND, Status.NO_CONTENT);
+		throw new WebApplicationException(NO_RESULTS_FOUND, Status.NOT_FOUND);
 	}
 
 	/**
@@ -285,7 +285,7 @@ public class MusicResource implements Resource {
 		if (playlist != null) {
 			return playlist;
 		}
-		throw new WebApplicationException("There is no playlist available with this number.", Status.CONFLICT);
+		throw new WebApplicationException("There is no playlist available with this number.", Status.NOT_FOUND);
 	}
 
 	/**
@@ -304,7 +304,7 @@ public class MusicResource implements Resource {
 		if (searchTrack != null) {
 			return searchTrack;
 		}
-		throw new WebApplicationException("There is no track available with this number.", Status.CONFLICT);
+		throw new WebApplicationException("There is no track available with this number.", Status.NOT_FOUND);
 	}
 
 	/**
@@ -323,7 +323,7 @@ public class MusicResource implements Resource {
 		if (searchAlbum != null) {
 			return searchAlbum;
 		}
-		throw new WebApplicationException("There is no album available with this number.", Status.CONFLICT);
+		throw new WebApplicationException("There is no album available with this number.", Status.NOT_FOUND);
 	}
 
 	/**
@@ -342,7 +342,7 @@ public class MusicResource implements Resource {
 		if (searchArtist != null) {
 			return searchArtist;
 		}
-		throw new WebApplicationException("There is no artist available with this number.", Status.CONFLICT);
+		throw new WebApplicationException("There is no artist available with this number.", Status.NOT_FOUND);
 	}
 
 	/**
@@ -418,7 +418,7 @@ public class MusicResource implements Resource {
 		if (currentSong != null) {
 			return currentSong;
 		}
-		throw new WebApplicationException("No song is currently playing", Status.CONFLICT);
+		throw new WebApplicationException("No song is currently playing", Status.NOT_FOUND);
 	}
 
 	/**
@@ -451,7 +451,7 @@ public class MusicResource implements Resource {
 		if (!pl.isEmpty()) {
 			return pl.toArray(new PlaylistEntity[pl.size()]);
 		}
-		throw new WebApplicationException("No Playlists are available", Status.NO_CONTENT);
+		throw new WebApplicationException("No Playlists are available", Status.NOT_FOUND);
 	}
 
 	/**

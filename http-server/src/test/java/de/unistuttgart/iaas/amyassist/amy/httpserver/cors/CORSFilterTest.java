@@ -23,8 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -53,122 +52,98 @@ class CORSFilterTest {
 	private static final String ALLOWED_LOCALHOST_ORIGIN = "http://localhost:4200";
 
 	@Test
-	public void testRequestFilter() {
+	public void testRequestFilter() throws IOException {
+		ConfigurationManager configurationManager = Mockito.mock(ConfigurationManager.class);
+
+		Properties properties = new Properties();
+		properties.setProperty("origins", ALLOWED_FOREIGN_ORIGIN + "|" + ALLOWED_FOREIGN_ORIGIN_2);
+		when(configurationManager.getConfigurationWithDefaults("cors.config")).thenReturn(properties);
+
+		CORSFilter filter = new CORSFilter();
+		filter.configurationManager = configurationManager;
+		ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+		Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(null);
+
+		filter.filter(requestContext);
+		Mockito.verify(requestContext, Mockito.never()).getMethod();
+
+		Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_FOREIGN_ORIGIN);
+		Mockito.when(requestContext.getMethod()).thenReturn("GET");
+
+		filter.filter(requestContext);
+
+		Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_FOREIGN_ORIGIN_2);
+		Mockito.when(requestContext.getMethod()).thenReturn("GET");
+
 		try {
-			ConfigurationManager configurationManager = Mockito.mock(ConfigurationManager.class);
-
-			Properties properties = new Properties();
-			properties.setProperty("origins", ALLOWED_FOREIGN_ORIGIN + "|" + ALLOWED_FOREIGN_ORIGIN_2);
-			when(configurationManager.getConfiguration("cors.config")).thenReturn(properties);
-
-			CORSFilter filter = new CORSFilter();
-			filter.configurationManager = configurationManager;
-			ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
-			Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(null);
-
-			try {
-				filter.filter(requestContext);
-				Mockito.verify(requestContext, Mockito.never()).getMethod();
-			} catch (WebApplicationException e) {
-				fail("");
-			}
-
-			Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_FOREIGN_ORIGIN);
-			Mockito.when(requestContext.getMethod()).thenReturn("GET");
-
-			try {
-				filter.filter(requestContext);
-			} catch (WebApplicationException e) {
-				fail("");
-			}
-
-			Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_FOREIGN_ORIGIN_2);
-			Mockito.when(requestContext.getMethod()).thenReturn("GET");
-
-			try {
-				filter.filter(requestContext);
-			} catch (WebApplicationException e) {
-				fail("Allowed origin from config was not actually allowed");
-			}
-
-			Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_LOCALHOST_ORIGIN);
-			Mockito.when(requestContext.getMethod()).thenReturn("GET");
-
-			try {
-				filter.filter(requestContext);
-			} catch (WebApplicationException e) {
-				fail("Allowed localhost origin was not actually allowed");
-			}
-
-			Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn("bad.website.com");
-			Mockito.when(requestContext.getMethod()).thenReturn("GET");
-
-			try {
-				filter.filter(requestContext);
-				fail("");
-			} catch (WebApplicationException e) {
-				assertEquals(403, e.getResponse().getStatus());
-				assertEquals("bad.website.com not allowed", e.getMessage());
-				Mockito.verify(requestContext).setProperty("access.denied", true);
-			}
-
-			Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_FOREIGN_ORIGIN);
-			Mockito.when(requestContext.getMethod()).thenReturn("Options");
-
-			try {
-				filter.filter(requestContext);
-				Mockito.verify(requestContext).abortWith(Mockito.any());
-			} catch (WebApplicationException e) {
-				fail("");
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
+			filter.filter(requestContext);
+		} catch (WebApplicationException e) {
+			fail("Allowed origin from config was not actually allowed");
 		}
+
+		Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_LOCALHOST_ORIGIN);
+		Mockito.when(requestContext.getMethod()).thenReturn("GET");
+
+		try {
+			filter.filter(requestContext);
+		} catch (WebApplicationException e) {
+			fail("Allowed localhost origin was not actually allowed");
+		}
+
+		Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn("bad.website.com");
+		Mockito.when(requestContext.getMethod()).thenReturn("GET");
+
+		WebApplicationException assertThrows = assertThrows(WebApplicationException.class,
+				() -> filter.filter(requestContext));
+
+		assertEquals(403, assertThrows.getResponse().getStatus());
+		assertEquals("bad.website.com not allowed", assertThrows.getMessage());
+		Mockito.verify(requestContext).setProperty("access.denied", true);
+
+		Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_FOREIGN_ORIGIN);
+		Mockito.when(requestContext.getMethod()).thenReturn("Options");
+
+		filter.filter(requestContext);
+		Mockito.verify(requestContext).abortWith(Mockito.any());
 	}
 
 	@Test
-	public void testResponseFilter() {
-		try {
-			CORSFilter filter = new CORSFilter();
-			ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
-			ContainerResponseContext responseContext = Mockito.mock(ContainerResponseContext.class);
-			MultivaluedMap<String, Object> headers = Mockito.mock(MultivaluedMap.class);
+	public void testResponseFilter() throws IOException {
+		CORSFilter filter = new CORSFilter();
+		ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+		ContainerResponseContext responseContext = Mockito.mock(ContainerResponseContext.class);
+		MultivaluedMap<String, Object> headers = Mockito.mock(MultivaluedMap.class);
 
-			Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(null);
-			filter.filter(requestContext, responseContext);
-			Mockito.verify(responseContext, Mockito.never()).getHeaders();
+		Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(null);
+		filter.filter(requestContext, responseContext);
+		Mockito.verify(responseContext, Mockito.never()).getHeaders();
 
-			Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_FOREIGN_ORIGIN);
-			Mockito.when(requestContext.getMethod()).thenReturn("OPTIONS");
-			filter.filter(requestContext, responseContext);
-			Mockito.verify(responseContext, Mockito.never()).getHeaders();
+		Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_FOREIGN_ORIGIN);
+		Mockito.when(requestContext.getMethod()).thenReturn("OPTIONS");
+		filter.filter(requestContext, responseContext);
+		Mockito.verify(responseContext, Mockito.never()).getHeaders();
 
-			Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_FOREIGN_ORIGIN);
-			Mockito.when(requestContext.getMethod()).thenReturn("POST");
-			Mockito.when(requestContext.getProperty("access.denied")).thenReturn(true);
-			filter.filter(requestContext, responseContext);
-			Mockito.verify(responseContext, Mockito.never()).getHeaders();
+		Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_FOREIGN_ORIGIN);
+		Mockito.when(requestContext.getMethod()).thenReturn("POST");
+		Mockito.when(requestContext.getProperty("access.denied")).thenReturn(true);
+		filter.filter(requestContext, responseContext);
+		Mockito.verify(responseContext, Mockito.never()).getHeaders();
 
-			Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_FOREIGN_ORIGIN);
-			Mockito.when(requestContext.getMethod()).thenReturn("POST");
-			Mockito.when(requestContext.getProperty("access.denied")).thenReturn(null);
-			Mockito.when(responseContext.getHeaders()).thenReturn(headers);
-			filter.filter(requestContext, responseContext);
-			Mockito.verify(headers).putSingle(Headers.ACCESS_CONTROL_ALLOW_ORIGIN, ALLOWED_FOREIGN_ORIGIN);
-			Mockito.verify(headers).putSingle(Headers.VARY, Headers.ORIGIN);
+		Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn(ALLOWED_FOREIGN_ORIGIN);
+		Mockito.when(requestContext.getMethod()).thenReturn("POST");
+		Mockito.when(requestContext.getProperty("access.denied")).thenReturn(null);
+		Mockito.when(responseContext.getHeaders()).thenReturn(headers);
+		filter.filter(requestContext, responseContext);
+		Mockito.verify(headers).putSingle(Headers.ACCESS_CONTROL_ALLOW_ORIGIN, ALLOWED_FOREIGN_ORIGIN);
+		Mockito.verify(headers).putSingle(Headers.VARY, Headers.ORIGIN);
 
-			Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn("allowed.origin.com");
-			Mockito.when(requestContext.getMethod()).thenReturn("POST");
-			Mockito.when(requestContext.getProperty("access.denied")).thenReturn(null);
-			Mockito.when(responseContext.getHeaders()).thenReturn(headers);
-			filter.filter(requestContext, responseContext);
-			Mockito.verify(headers).putSingle(Headers.ACCESS_CONTROL_ALLOW_ORIGIN, "allowed.origin.com");
-			Mockito.verify(headers, Mockito.times(2)).putSingle(Headers.VARY, Headers.ORIGIN);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Mockito.when(requestContext.getHeaderString(Headers.ORIGIN)).thenReturn("allowed.origin.com");
+		Mockito.when(requestContext.getMethod()).thenReturn("POST");
+		Mockito.when(requestContext.getProperty("access.denied")).thenReturn(null);
+		Mockito.when(responseContext.getHeaders()).thenReturn(headers);
+		filter.filter(requestContext, responseContext);
+		Mockito.verify(headers).putSingle(Headers.ACCESS_CONTROL_ALLOW_ORIGIN, "allowed.origin.com");
+		Mockito.verify(headers, Mockito.times(2)).putSingle(Headers.VARY, Headers.ORIGIN);
 	}
 
 }

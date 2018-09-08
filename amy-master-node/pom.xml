@@ -45,6 +45,16 @@
 			<artifactId>amy-message-hub</artifactId>
 			<version>${amy.message-hub.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-remote-sr</artifactId>
+			<version>${amy.remote-sr.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-natlang</artifactId>
+			<version>${amy.natlang.version}</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

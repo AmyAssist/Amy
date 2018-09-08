@@ -27,6 +27,7 @@ import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatch
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -266,7 +267,7 @@ class MusicRestTest {
 		Mockito.when(this.search.searchforTracks(SONG_NAME1, 1)).thenReturn(new ArrayList<>());
 		try (Response response = this.target.path("search/track/" + SONG_NAME1).queryParam("limit", 1).request()
 				.get()) {
-			assertThat(response, status(204));
+			assertEquals(404, response.getStatus());
 			Mockito.verify(this.search).searchforTracks(SONG_NAME1, 1);
 		}
 	}
@@ -296,7 +297,7 @@ class MusicRestTest {
 		Mockito.when(this.search.searchforAlbums(SONG_NAME1, 1)).thenReturn(new ArrayList<>());
 		try (Response response = this.target.path("search/album/" + SONG_NAME1).queryParam("limit", 1).request()
 				.get()) {
-			assertThat(response, status(204));
+			assertEquals(404, response.getStatus());
 			Mockito.verify(this.search).searchforAlbums(SONG_NAME1, 1);
 		}
 	}
@@ -326,7 +327,7 @@ class MusicRestTest {
 		Mockito.when(this.search.searchforTracks(ARTIST_NAME1, 1)).thenReturn(new ArrayList<>());
 		try (Response response = this.target.path("search/artist/" + ARTIST_NAME1).queryParam("limit", 1).request()
 				.get()) {
-			assertThat(response, status(204));
+			assertEquals(404, response.getStatus());
 		}
 	}
 
@@ -355,7 +356,7 @@ class MusicRestTest {
 		Mockito.when(this.search.searchforPlaylists(SONG_NAME1, 1)).thenReturn(new ArrayList<>());
 		try (Response response = this.target.path("search/playlist/" + SONG_NAME1).queryParam("limit", 1).request()
 				.get()) {
-			assertThat(response, status(204));
+			assertEquals(404, response.getStatus());
 			Mockito.verify(this.search).searchforPlaylists(SONG_NAME1, 1);
 		}
 	}
@@ -378,7 +379,7 @@ class MusicRestTest {
 		Mockito.when(this.logic.playPlaylist(0, SearchTypes.USER_PLAYLISTS)).thenReturn(null);
 		try (Response response = this.target.path("play/playlist").queryParam("type", "user").queryParam("index", 0)
 				.request().post(null)) {
-			assertThat(response, status(409));
+			assertEquals(404, response.getStatus());
 		}
 	}
 
@@ -401,7 +402,7 @@ class MusicRestTest {
 		Mockito.when(this.logic.playPlaylist(0, SearchTypes.FEATURED_PLAYLISTS)).thenReturn(null);
 		try (Response response = this.target.path("play/playlist").queryParam("type", "featured").queryParam("index", 0)
 				.request().post(null)) {
-			assertThat(response, status(409));
+			assertEquals(404, response.getStatus());
 		}
 	}
 
@@ -423,7 +424,7 @@ class MusicRestTest {
 		when(this.logic.playPlaylist(0, SearchTypes.SEARCH_PLAYLISTS)).thenReturn(null);
 		try (Response response = this.target.path("play/playlist").queryParam("type", "search").queryParam("index", 0)
 				.request().post(null)) {
-			assertThat(response, status(409));
+			assertEquals(404, response.getStatus());
 		}
 	}
 
@@ -442,7 +443,7 @@ class MusicRestTest {
 
 		Mockito.when(this.logic.playAlbum(0)).thenReturn(null);
 		try (Response response = this.target.path("play/album").queryParam("index", 0).request().post(null)) {
-			assertThat(response, status(409));
+			assertEquals(404, response.getStatus());
 		}
 	}
 
@@ -461,7 +462,7 @@ class MusicRestTest {
 
 		Mockito.when(this.logic.playTrack(0)).thenReturn(null);
 		try (Response response = this.target.path("play/track").queryParam("index", 0).request().post(null)) {
-			assertThat(response, status(409));
+			assertEquals(404, response.getStatus());
 		}
 	}
 
@@ -480,7 +481,7 @@ class MusicRestTest {
 
 		Mockito.when(this.logic.playArtist(0)).thenReturn(null);
 		try (Response response = this.target.path("play/artist").queryParam("index", 0).request().post(null)) {
-			assertThat(response, status(409));
+			assertEquals(404, response.getStatus());
 		}
 	}
 
@@ -575,7 +576,7 @@ class MusicRestTest {
 		Mockito.when(this.logic.getCurrentSong()).thenReturn(null);
 		try (Response response = this.target.path("currentSong").request().get()) {
 			assertThat(response.readEntity(String.class), equalTo("No song is currently playing"));
-			assertThat(response, status(409));
+			assertEquals(404, response.getStatus());
 			Mockito.verify(this.logic, Mockito.times(2)).getCurrentSong();
 		}
 	}
@@ -618,7 +619,7 @@ class MusicRestTest {
 	void testGetPlaylistEmpty() {
 		Mockito.when(this.search.searchFeaturedPlaylists(1)).thenReturn(new ArrayList<>());
 		try (Response response = this.target.path("playlists/featured").queryParam("limit", 1).request().get()) {
-			assertThat(response, status(204));
+			assertEquals(404, response.getStatus());
 		}
 	}
 

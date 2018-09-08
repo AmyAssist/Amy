@@ -48,14 +48,7 @@ import com.wrapper.spotify.requests.authorization.authorization_code.Authorizati
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import com.wrapper.spotify.requests.data.browse.GetListOfFeaturedPlaylistsRequest;
-import com.wrapper.spotify.requests.data.player.GetInformationAboutUsersCurrentPlaybackRequest;
-import com.wrapper.spotify.requests.data.player.GetUsersAvailableDevicesRequest;
-import com.wrapper.spotify.requests.data.player.PauseUsersPlaybackRequest;
-import com.wrapper.spotify.requests.data.player.SetVolumeForUsersPlaybackRequest;
-import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToNextTrackRequest;
-import com.wrapper.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrackRequest;
-import com.wrapper.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
-import com.wrapper.spotify.requests.data.player.TransferUsersPlaybackRequest;
+import com.wrapper.spotify.requests.data.player.*;
 import com.wrapper.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import com.wrapper.spotify.requests.data.search.SearchItemRequest;
 
@@ -290,9 +283,8 @@ public class SpotifyAPICalls {
 			GetUsersAvailableDevicesRequest getUsersAvailableDevicesRequest = getSpotifyApi().getUsersAvailableDevices()
 					.build();
 			devices = exceptionHandlingWithResults(getUsersAvailableDevicesRequest::execute);
-			if (devices != null) {
+			if (devices != null)
 				return devices;
-			}
 		}
 		return new Device[0];
 	}
@@ -304,9 +296,8 @@ public class SpotifyAPICalls {
 	 */
 	public Device getActiveDevice() {
 		for (Device device : getDevices()) {
-			if (device.getIs_active().booleanValue()) {
+			if (device.getIs_active().booleanValue())
 				return device;
-			}
 		}
 		return null;
 	}
@@ -320,9 +311,8 @@ public class SpotifyAPICalls {
 	 */
 	public boolean checkDeviceIsLoggedIn(String deviceId) {
 		for (Device device : getDevices()) {
-			if (device.getId().equals(deviceId)) {
+			if (device.getId().equals(deviceId))
 				return true;
-			}
 		}
 		return false;
 	}
@@ -440,14 +430,13 @@ public class SpotifyAPICalls {
 	public int getVolume() {
 		if (getSpotifyApi() == null && getActiveDevice() != null && getActiveDevice().getVolume_percent() != null) {
 			return getActiveDevice().getVolume_percent().intValue();
-		}
 		return -1;
 	}
 
 	/**
 	 * get the current song from the active spotify client
 	 * 
-	 * @return a CurrentlyPlayingContext object from the spotify library, null if a problem occur
+	 * @return a CurrentlyPlayingContext object from the spotify library, null if a problem occurs
 	 */
 	public CurrentlyPlayingContext getCurrentPlayingContext() {
 		if (checkPlayerState()) {
@@ -456,6 +445,15 @@ public class SpotifyAPICalls {
 			return exceptionHandlingWithResults(getInformationAboutUsersCurrentPlaybackRequest::execute);
 		}
 		return null;
+	}
+
+	/**
+	 * get the current playback state
+	 * 
+	 * @return true if currently playing, false otherwise
+	 */
+	public boolean getIsPlaying() {
+		return getCurrentPlayingContext().getIs_playing();
 	}
 
 	/**

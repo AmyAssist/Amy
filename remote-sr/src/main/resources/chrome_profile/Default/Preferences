@@ -1,0 +1,68 @@
+{
+  "profile": {
+    "avatar_bubble_tutorial_shown": 2,
+    "avatar_index": 26,
+    "blacklisted_credentials_stripped": true,
+    "content_settings": {
+      "exceptions": {
+        "media_engagement": {
+          "{{REMOTESR_HOST}},*": {
+            "last_modified": "13178369017755602",
+            "setting": {
+              "audiblePlaybacks": 0,
+              "hasHighScore": false,
+              "highScoreChanges": 0,
+              "lastMediaPlaybackTime": 0.0,
+              "mediaPlaybacks": 0,
+              "significantPlaybacks": 0,
+              "visits": 4,
+              "visitsWithMediaTag": 0
+            }
+          }
+        },
+        "media_stream_camera": {},
+        "media_stream_mic": {
+          "{{REMOTESR_HOST}},*": {
+            "last_modified": "13178368387294370",
+            "setting": 1
+          }
+        },
+        "midi_sysex": {},
+        "mixed_script": {},
+        "notifications": {},
+        "password_protection": {},
+        "payment_handler": {},
+        "permission_autoblocking_data": {},
+        "plugins": {},
+        "popups": {},
+        "ppapi_broker": {},
+        "protocol_handler": {},
+        "sensors": {},
+        "site_engagement": {
+          "{{REMOTESR_HOST}},*": {
+            "last_modified": "13178368383329350",
+            "setting": {
+              "lastEngagementTime": 13178368383329304.0,
+              "lastShortcutLaunchTime": 0.0,
+              "pointsAddedToday": 2.1,
+              "rawScore": 2.1
+            }
+          }
+        },
+        "sound": {},
+        "ssl_cert_decisions": {},
+        "subresource_filter": {},
+        "subresource_filter_data": {},
+        "usb_chooser_data": {},
+        "usb_guard": {}
+      },
+      "pref_version": 1
+    },
+    "created_by_version": "68.0.3440.106",
+    "exit_type": "Normal",
+    "exited_cleanly": true,
+    "last_engagement_time": "13178368383329303",
+    "managed_user_id": "",
+    "name": "Profil 1"
+  }
+}
