@@ -163,6 +163,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			}
 			setEntities(promptGrams.get(matchingNodeIndex), dialog);
 		} catch (NLParserException e) {
+			this.logger.debug("grammar not directly regocnized - skipping pre and suffixes " + e.getMessage());
 			return false;
 		}
 		return true;
@@ -240,6 +241,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			node = nlParser.matchingNode(tokens);
 
 		} catch (NLParserException e) {
+			this.logger.debug("grammar not directly regocnized - skipping pre and suffixes " + e.getMessage());
 			return false;
 		}
 		
