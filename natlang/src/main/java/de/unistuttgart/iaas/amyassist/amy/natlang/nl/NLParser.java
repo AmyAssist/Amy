@@ -29,6 +29,7 @@ import java.util.List;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParseException;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.*;
 import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.Stemmer;
+import de.unistuttgart.iaas.amyassist.amy.natlang.util.CompareWords;
 
 /**
  * NLParser implementation, matches NL input to AGFNodes
@@ -273,11 +274,20 @@ public class NLParser implements INLParser {
 	}
 
 	private boolean compareWord(AGFNode toMatch, WordToken token) {
-		if (this.stemmer != null && token != null
-				&& this.stemmer.stem(toMatch.getContent()).equals(this.stemmer.stem(token.getContent()))) {
+		if(toMatch == null || toMatch.getContent() == null || token == null || token.getContent() == null) 
+			return false;
+		
+		String nodeContent = toMatch.getContent();
+		String tokenContent = token.getContent();
+		
+		if(this.stemmer != null) {
+			nodeContent = this.stemmer.stem(toMatch.getContent());
+			tokenContent = this.stemmer.stem(token.getContent());
+		}
+		if (nodeContent.equals(tokenContent)) {
 			return true;
 		}
-		return this.stemmer == null && token != null && toMatch.getContent().equals(token.getContent());
+		return !CompareWords.isDistanceBigger(nodeContent, tokenContent, 1);
 	}
 
 	/**
