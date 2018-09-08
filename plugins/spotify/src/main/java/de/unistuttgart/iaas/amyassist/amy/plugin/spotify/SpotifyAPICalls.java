@@ -86,7 +86,7 @@ public class SpotifyAPICalls {
 	public static final int TOKEN_EXPIRE_TIME_OFFSET = 120;
 	public static final String SPOTIFY_ERROR_TAG = "Spotify Exception:";
 
-	private String clienSecret;
+	private String clientSecret;
 	private String clientId;
 
 	private User userData;
@@ -109,7 +109,7 @@ public class SpotifyAPICalls {
 	@PostConstruct
 	protected final void init() {
 		this.userData = new User();
-		this.clienSecret = this.configLoader.getProperty(SPOTIFY_CLIENTSECRET_KEY, null);
+		this.clientSecret = this.configLoader.getProperty(SPOTIFY_CLIENTSECRET_KEY, null);
 		this.clientId = this.configLoader.getProperty(SPOTIFY_CLIENTID_KEY, null);
 		if (this.storage.has(SPOTIFY_REFRSHTOKEN_KEY)) {
 			this.userData.setRefreshToken(this.storage.get(SPOTIFY_REFRSHTOKEN_KEY));
@@ -130,7 +130,7 @@ public class SpotifyAPICalls {
 	public SpotifyApi getSpotifyApi() {
 		SpotifyApi spotifyApi = getSpotifyApiWithoutAcToken();
 		if (spotifyApi != null && spotifyApi.getRefreshToken() != null) {
-			if (this.userData.getAccessToken() != null && this.userData.getAccessTokenExpireTime() != Integer.MIN_VALUE
+			if (this.userData.getAccessToken() != null && this.userData.getAccessTokenExpireTime() != Long.MIN_VALUE
 					&& this.userData.getAccessTokenExpireTime() > this.environment.getCurrentDateTime()
 							.toEpochSecond()) {
 				spotifyApi.setAccessToken(this.userData.getAccessToken());
@@ -149,8 +149,8 @@ public class SpotifyAPICalls {
 
 	private SpotifyApi getSpotifyApiWithoutAcToken() {
 		SpotifyApi spotifyApi = null;
-		if (this.clienSecret != null && this.clientId != null) {
-			spotifyApi = new SpotifyApi.Builder().setClientId(this.clientId).setClientSecret(this.clienSecret)
+		if (this.clientSecret != null && this.clientId != null) {
+			spotifyApi = new SpotifyApi.Builder().setClientId(this.clientId).setClientSecret(this.clientSecret)
 					.setRedirectUri(this.redirectURI).build();
 		} else {
 			this.logger.warn("Client Secret and ID missing. Please insert the config file");
@@ -237,7 +237,7 @@ public class SpotifyAPICalls {
 	 *            from the spotify developer account
 	 */
 	public void setClientSecret(String clientSecret) {
-		this.clienSecret = clientSecret;
+		this.clientSecret = clientSecret;
 	}
 
 	/**

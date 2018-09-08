@@ -36,7 +36,7 @@
 		<gram>[go] {type} [(a track|the music)]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="type" required="true">
-				<gram>(back|skip|pause|resume)</gram>
+				<gram>(back|skip|pause|pass|resume)</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>

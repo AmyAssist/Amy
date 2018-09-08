@@ -29,10 +29,10 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
  */
 public class User {
 
-	private int id = Integer.MIN_VALUE;
+	private int id;
 	private String refreshToken;
 	private String accessToken;
-	private long accessTokenExpireTime;
+	private long accessTokenExpireTime = Long.MIN_VALUE;
 	private String currentDeviceId;
 	/**
 	 * Get's {@link #id id}
