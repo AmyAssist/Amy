@@ -32,17 +32,23 @@ import org.slf4j.Logger;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Track;
-
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.*;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
+import org.slf4j.Logger;
+
+import java.net.URI;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music
@@ -52,7 +58,6 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
  */
 @Service(PlayerLogic.class)
 public class PlayerLogic {
-	private static final String MUSIC_MUTE_TOPIC_FUNCTION = "muteMusic";
 	@Reference
 	private SpotifyAPICalls spotifyAPICalls;
 	@Reference
@@ -74,29 +79,6 @@ public class PlayerLogic {
 	private static final int VOLUME_UPDOWN_VALUE = 10;
 
 	private static final String ITME_NOT_FOUND = "Item not found";
-
-	@PostConstruct
-	private void init() {
-		Consumer<String> muteConsumer = message -> {
-			switch (message) {
-			case "true":
-				setSuppressed(true);
-				break;
-			case "false":
-				setSuppressed(false);
-				break;
-			default:
-				this.logger.warn("unknown message {}", message);
-				break;
-			}
-		};
-		String topicGeneral = Topics.globalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
-		String topicMusic = Topics.from(SystemTopics.SMARTHOME, LocationTopics.ALL, RoomTopics.ALL,
-				MUSIC_MUTE_TOPIC_FUNCTION);
-
-		this.messageHub.subscribe(topicGeneral, muteConsumer);
-		this.messageHub.subscribe(topicMusic, muteConsumer);
-	}
 
 	/**
 	 * needed for the first init. need the clientID and the clientSecret form a spotify devloper account
@@ -291,6 +273,7 @@ public class PlayerLogic {
 			case "mute":
 				return setVolume(VOLUME_MUTE_VALUE);
 			case "max":
+			case "full":
 				return setVolume(VOLUME_MAX_VALUE);
 			case "up":
 				volume = Math.min(VOLUME_MAX_VALUE, volume + VOLUME_UPDOWN_VALUE);
@@ -336,7 +319,7 @@ public class PlayerLogic {
 	 * @param suppressed
 	 *            'true' to suppress playback, 'false' to restore it
 	 */
-	private void setSuppressed(boolean suppressed) {
+	void setSuppressed(boolean suppressed) {
 		if (suppressed != this.suppressed) {
 
 			boolean isPlaying = this.spotifyAPICalls.getIsPlaying();

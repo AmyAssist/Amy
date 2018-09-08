@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.internal.InternalMessageHubService;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;

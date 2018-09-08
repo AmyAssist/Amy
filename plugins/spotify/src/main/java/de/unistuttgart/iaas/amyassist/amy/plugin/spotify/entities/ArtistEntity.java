@@ -30,26 +30,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
  */
 public class ArtistEntity extends Item {
 	private String[] genres;
-	private String imageUrl;
-
-	/**
-	 * default constructor. no data is set
-	 */
-	public ArtistEntity() {
-
-	}
-
-	/**
-	 * this constructor set all data Objects
-	 * 
-	 * @param name of the artist
-	 * @param genres of the artist
-	 * @param uri of the artist
-	 */
-	public ArtistEntity(String name, String[] genres, String uri) {
-		super(name, uri);
-		this.genres = genres;
-	}
 
 	/**
 	 * get the genre from the artist
@@ -63,29 +43,11 @@ public class ArtistEntity extends Item {
 	/**
 	 * set the genre from the artist
 	 * 
-	 * @param genres of a artist
+	 * @param genres
+	 *            of a artist
 	 */
 	public void setGenre(String[] genres) {
 		this.genres = genres;
-	}
-
-	/**
-	 * Get's {@link #imageUrl imageUrl}
-	 * 
-	 * @return imageUrl
-	 */
-	public String getImageUrl() {
-		return this.imageUrl;
-	}
-
-	/**
-	 * Set's {@link #imageUrl imageUrl}
-	 * 
-	 * @param imageUrl
-	 *            imageUrl
-	 */
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
 	}
 
 	@Override
