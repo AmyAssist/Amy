@@ -133,7 +133,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 		if(!promptGrammarFound(dialog, tokens)) {
 			//try to skip prefixes and suffixes until a grammar matches
-			for(int i=1; i <= tokens.size(); i++) {
+			for(int i=0; i <= tokens.size(); i++) {
 				for(int j=tokens.size(); j>i; j--) {
 					if(promptGrammarFound(dialog, tokens.subList(i, j))) {
 						return;
@@ -218,7 +218,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		}
 		
 		//try to skip prefixes and suffixes until a grammar matches
-		for(int i=1; i <= tokens.size(); i++) {
+		for(int i=0; i <= tokens.size(); i++) {
 			for(int j=tokens.size(); j>i; j--) {
     			if(intentFound(dialog, tokens.subList(i,j))) {
     				return dialog;
