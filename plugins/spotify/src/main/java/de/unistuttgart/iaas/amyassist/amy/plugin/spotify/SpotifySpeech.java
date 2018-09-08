@@ -188,7 +188,7 @@ public class SpotifySpeech {
 	@Intent()
 	public String volume(Map<String, EntityData> entites) {
 		int volume = this.playerLogic.setVolume(entites.get("volumeoption").getString());
-		return (volume != -1) ? "Volume is now on: " + String.valueOf(volume) + " percent" : "Wrong volume range";
+		return (volume != -1) ? "Volume is now on: " + volume + " percent" : "Wrong volume range";
 	}
 
 	/**
@@ -201,7 +201,7 @@ public class SpotifySpeech {
 	@Intent()
 	public String volumePercent(Map<String, EntityData> entites) {
 		int volume = this.playerLogic.setVolume(entites.get("volume").getNumber());
-		return (volume != -1) ? "Volume is now on: " + String.valueOf(volume) + " percent" : "Wrong volume range";
+		return (volume != -1) ? "Volume is now on: " + volume + " percent" : "Wrong volume range";
 	}
 
 	/**

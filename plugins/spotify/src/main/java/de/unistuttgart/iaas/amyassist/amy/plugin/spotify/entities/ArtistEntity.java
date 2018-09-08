@@ -38,18 +38,6 @@ public class ArtistEntity extends Item {
 	}
 
 	/**
-	 * this constructor set all data Objects
-	 * 
-	 * @param name of the artist
-	 * @param genres of the artist
-	 * @param uri of the artist
-	 */
-	public ArtistEntity(String name, String[] genres, String uri) {
-		super(name, uri);
-		this.genres = genres;
-	}
-
-	/**
 	 * get the genre from the artist
 	 * 
 	 * @return generes

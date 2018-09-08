@@ -156,8 +156,11 @@ public class Search {
 			for (Track track : searchResult.getItems()) {
 				trackEntity = new TrackEntity();
 				trackEntity.setName(track.getName());
-				String[] artistNames = Arrays.stream(track.getArtists()).map(ArtistSimplified::getName).toArray(String[]::new);
-				trackEntity.setImageUrl((track.getAlbum() != null && track.getAlbum().getImages().length > 0) ? track.getAlbum().getImages()[0].getUrl( ): "");
+				String[] artistNames = Arrays.stream(track.getArtists()).map(ArtistSimplified::getName)
+						.toArray(String[]::new);
+				trackEntity.setImageUrl((track.getAlbum() != null && track.getAlbum().getImages().length > 0)
+						? track.getAlbum().getImages()[0].getUrl()
+						: "");
 				trackEntity.setArtists(artistNames);
 				trackEntity.setUri(track.getUri());
 				trackEntity.setDurationInMs(track.getDurationMs());
@@ -181,7 +184,8 @@ public class Search {
 			for (AlbumSimplified album : searchResult.getItems()) {
 				albumEntity = new AlbumEntity();
 				albumEntity.setName(album.getName());
-				String[] artistNames = Arrays.stream(album.getArtists()).map(ArtistSimplified::getName).toArray(String[]::new);
+				String[] artistNames = Arrays.stream(album.getArtists()).map(ArtistSimplified::getName)
+						.toArray(String[]::new);
 				if (album.getImages() != null && album.getImages().length > 0) {
 					albumEntity.setImageUrl(album.getImages()[0].getUrl());
 				}

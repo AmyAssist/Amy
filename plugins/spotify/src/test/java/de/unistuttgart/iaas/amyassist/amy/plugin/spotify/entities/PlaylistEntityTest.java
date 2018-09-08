@@ -38,49 +38,28 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity
  */
 class PlaylistEntityTest {
 
-	private PlaylistEntity playlist;
-
-	@BeforeEach
-	void init() {
-		this.playlist = new PlaylistEntity("Hello", "abc123", "image.de");
-	}
+	private PlaylistEntity playlist = new PlaylistEntity();
 
 	@Test
-	void testGetName() {
-		assertThat(this.playlist.getName(), equalTo("Hello"));
-	}
-
-	@Test
-	void testGetUri() {
-		assertThat(this.playlist.getUri(), equalTo("abc123"));
-	}
-
-	@Test
-	void testGetImageUrl() {
-		assertThat(this.playlist.getImageUrl(), equalTo("image.de"));
-	}
-
-	@Test
-	void testSetName() {
+	void testSetGetName() {
 		this.playlist.setName("name");
 		assertThat(this.playlist.getName(), equalTo("name"));
 	}
 
 	@Test
-	void testSetUri() {
+	void testSetGetUri() {
 		this.playlist.setUri("123abc");
 		assertThat(this.playlist.getUri(), equalTo("123abc"));
 	}
 
 	@Test
-	void testSetImageUrl() {
+	void testSetGetImageUrl() {
 		this.playlist.setImageUrl("testimage.de");
 		assertThat(this.playlist.getImageUrl(), equalTo("testimage.de"));
 	}
 
 	@Test
-	void testToString() {
-		assertThat(this.playlist.toString(), equalTo("Hello"));
+	void testToStringEmpty() {
 		this.playlist = new PlaylistEntity();
 		assertThat(this.playlist.toString(), equalTo("No playlist data available"));
 	}
@@ -88,6 +67,7 @@ class PlaylistEntityTest {
 	@Test
 	void testToStringWithCreator() {
 		this.playlist.setPlaylistCreator("Hans");
+		this.playlist.setName("Hello");
 		assertThat(this.playlist.toString(), equalTo("Hello created by: Hans"));
 	}
 }
