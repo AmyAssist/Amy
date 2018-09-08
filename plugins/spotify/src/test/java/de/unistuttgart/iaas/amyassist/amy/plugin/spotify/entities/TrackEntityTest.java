@@ -42,29 +42,20 @@ class TrackEntityTest {
 	private TrackEntity track;
 	@BeforeEach
 	void init() {
-		this.track = new TrackEntity(NAME, ARTIST, URI);
-	}
-
-	@Test
-	void testConstructorAndGetters() {
-		assertThat(this.track.getName(), equalTo(NAME));
-		assertThat(this.track.getArtists(), equalTo(ARTIST));
-		assertThat(this.track.getUri(), equalTo(URI));
-	}
-
-	@Test
-	void testSetter() {
 		this.track = new TrackEntity();
 		this.track.setName(NAME);
 		this.track.setArtists(ARTIST);
 		this.track.setUri(URI);
 		this.track.setDurationInMs(DURATION);
+	}
+
+	@Test
+	void testConstructorGetters() {
 		assertThat(this.track.getName(), equalTo(NAME));
 		assertThat(this.track.getArtists(), equalTo(ARTIST));
 		assertThat(this.track.getUri(), equalTo(URI));
-		assertThat(this.track.getDurationInMs(), equalTo(DURATION));
 	}
-	
+
 	@Test
 	void testToString() {
 		assertThat(this.track.toString(), equalTo(NAME + " from: Dieter, Hans, "));

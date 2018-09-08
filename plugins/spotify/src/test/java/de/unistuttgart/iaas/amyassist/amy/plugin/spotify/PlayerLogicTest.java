@@ -112,10 +112,19 @@ class PlayerLogicTest {
 		PlaylistSimplified[] playlistList = new PlaylistSimplified[2];
 		playlistList[0] = playlist1;
 		playlistList[1] = playlist2;
+		
+		PlaylistEntity playlistEntity1 = new PlaylistEntity();
+		playlistEntity1.setName(PLAYLIST_NAME1);
+		playlistEntity1.setUri(ID1);
+		PlaylistEntity playlistEntity2 = new PlaylistEntity();
+		playlistEntity2.setName(PLAYLIST_NAME2);
+		playlistEntity2.setUri(ID2);
+		playlistEntity2.setImageUrl(ID1);
 		this.playlistsSpotifyFormat = new Paging.Builder<PlaylistSimplified>().setItems(playlistList).build();
 		this.playlistsOwnFormat = new ArrayList<>();
-		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME1, ID1, null));
-		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME2, ID2, ID1));
+		
+		this.playlistsOwnFormat.add(playlistEntity1);
+		this.playlistsOwnFormat.add(playlistEntity2);
 		
 
 	}
