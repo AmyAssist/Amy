@@ -265,6 +265,7 @@ public class PlayerLogic {
 			case "mute":
 				return setVolume(VOLUME_MUTE_VALUE);
 			case "max":
+			case "full":
 				return setVolume(VOLUME_MAX_VALUE);
 			case "up":
 				volume = Math.min(VOLUME_MAX_VALUE, volume + VOLUME_UPDOWN_VALUE);
