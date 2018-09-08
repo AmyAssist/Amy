@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceiver;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.Subscription;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 
 /**
  * MessageReveiver for music and sound messages
@@ -43,8 +42,6 @@ public class SpotifyMessageReciever {
 	private PlayerLogic player;
 	@Reference
 	private Logger logger;
-	@Reference
-	private SpotifyAPICalls spotifyAPICalls;
 
 	/**
 	 * 
@@ -61,7 +58,7 @@ public class SpotifyMessageReciever {
 			this.player.setSuppressed(false);
 			break;
 		default:
-			this.logger.warn("unkown message {}", message);
+			this.logger.warn("unknown message {}", message);
 			break;
 		}
 	}
@@ -81,7 +78,7 @@ public class SpotifyMessageReciever {
 			this.player.setSuppressed(false);
 			break;
 		default:
-			this.logger.warn("unkown message {}", message);
+			this.logger.warn("unknown message {}", message);
 			break;
 		}
 	}

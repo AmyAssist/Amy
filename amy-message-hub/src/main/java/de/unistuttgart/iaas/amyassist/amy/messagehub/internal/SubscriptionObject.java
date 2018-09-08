@@ -65,17 +65,17 @@ class SubscriptionObject implements Subscription {
 
 	@Override
 	public void handle(TopicName topic, Message msg, ServiceLocator serviceLocator) {
-		Object createAndInitialize = serviceLocator.createAndInitialize(this.messageReceiverClass);
+		Object messageReceiver = serviceLocator.createAndInitialize(this.messageReceiverClass);
 
 		try {
 			if (this.withTopicName) {
-				this.method.invoke(createAndInitialize, msg.getPayload(), topic);
+				this.method.invoke(messageReceiver, msg.getPayload(), topic);
 			} else {
-				this.method.invoke(createAndInitialize, msg.getPayload());
+				this.method.invoke(messageReceiver, msg.getPayload());
 			}
 
 		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("tryed to invoke method " + this.method + " but got an error", e);
+			throw new IllegalArgumentException("tried to invoke method " + this.method + " but got an error", e);
 		} catch (InvocationTargetException e) {
 			Throwable cause = e.getCause();
 
@@ -85,6 +85,6 @@ class SubscriptionObject implements Subscription {
 			throw new IllegalArgumentException("method " + this.method + " throw an exception", cause);
 		}
 
-		serviceLocator.preDestroy(createAndInitialize);
+		serviceLocator.preDestroy(messageReceiver);
 	}
 }

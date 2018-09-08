@@ -1,4 +1,4 @@
-de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageRecievers
+de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceivers
 de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHubService
 de.unistuttgart.iaas.amyassist.amy.messagehub.internal.InternalMessageHubService
 de.unistuttgart.iaas.amyassist.amy.messagehub.MQTTAdapter

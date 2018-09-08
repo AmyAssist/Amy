@@ -44,9 +44,9 @@ import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
  * 
  * @author Leon Kiefer
  */
-@Service(MessageRecievers.class)
-public class MessageRecievers implements DeploymentContainerService {
-	private static final String COMPONENT_DEPLOYMENT_DESCRIPTOR = "META-INF/" + MessageRecievers.class.getName();
+@Service(MessageReceivers.class)
+public class MessageReceivers implements DeploymentContainerService {
+	private static final String COMPONENT_DEPLOYMENT_DESCRIPTOR = "META-INF/" + MessageReceivers.class.getName();
 
 	@Reference
 	private InternalMessageHubService messageHub;
@@ -80,13 +80,13 @@ public class MessageRecievers implements DeploymentContainerService {
 		for (Method method : methodsWithAnnotation) {
 			SubscriptionUtil.assertValidSubscriptionMethod(method);
 			Subscription annotation = method.getAnnotation(Subscription.class);
-			TopicFilter createTopicFilter;
+			TopicFilter topicFilter;
 			try {
-				createTopicFilter = this.topicFactory.createTopicFilter(annotation.value());
+				topicFilter = this.topicFactory.createTopicFilter(annotation.value());
 			} catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException("Illegal topic filter on annotation in " + cls.getName(), e);
 			}
-			this.messageHub.subscribe(createTopicFilter, cls, method);
+			this.messageHub.subscribe(topicFilter, cls, method);
 		}
 
 	}

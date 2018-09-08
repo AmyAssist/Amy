@@ -50,7 +50,7 @@ public class SubscriptionUtil {
 	public static void assertValidSubscriptionMethod(Method method) {
 		if (!method.getReturnType().equals(Void.TYPE))
 			throw new IllegalArgumentException(
-					"The returntype of a method annotated with @Subscription should be String.");
+					"The returntype of a method annotated with @Subscription should be void.");
 		if (method.getExceptionTypes().length > 0) {
 			throw new IllegalArgumentException("The method annotated with @Subscription should not throw exceptions.");
 		}
