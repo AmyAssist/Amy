@@ -55,10 +55,10 @@ public class SpotifyMessageReciever {
 	public void mute(String message) {
 		switch (message) {
 		case "true":
-			this.player.mute();
+			this.player.setSuppressed(true);
 			break;
 		case "false":
-			this.player.unmute();
+			this.player.setSuppressed(false);
 			break;
 		default:
 			this.logger.warn("unkown message {}", message);
@@ -75,10 +75,10 @@ public class SpotifyMessageReciever {
 	public void muteMusic(String message) {
 		switch (message) {
 		case "true":
-			this.player.mute();
+			this.player.setSuppressed(true);
 			break;
 		case "false":
-			this.player.unmute();
+			this.player.setSuppressed(false);
 			break;
 		default:
 			this.logger.warn("unkown message {}", message);

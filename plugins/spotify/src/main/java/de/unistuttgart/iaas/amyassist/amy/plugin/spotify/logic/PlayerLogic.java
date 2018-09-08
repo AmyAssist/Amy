@@ -58,7 +58,12 @@ public class PlayerLogic {
 	@Reference
 	private MessageHub messageHub;
 
-	private boolean wasPlaying = false;
+	private boolean suppressed = false;
+	private PostSuppressionAction postSuppressionAction = PostSuppressionAction.NONE;
+
+	private enum PostSuppressionAction {
+		NONE, PAUSE
+	}
 
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
@@ -79,25 +84,6 @@ public class PlayerLogic {
 		this.spotifyAPICalls.setClientID(clientID);
 		this.spotifyAPICalls.setClientSecret(clientSecret);
 		return this.spotifyAPICalls.authorizationCodeUri();
-	}
-
-	/**
-	 * mute music
-	 */
-	public void mute() {
-		this.wasPlaying = this.spotifyAPICalls.getCurrentPlayingContext().getIs_playing().booleanValue();
-		if (this.wasPlaying) {
-			this.pause();
-		}
-	}
-
-	/**
-	 * unmute music
-	 */
-	public void unmute() {
-		if (this.wasPlaying) {
-			this.resume();
-		}
 	}
 
 	/**
@@ -224,7 +210,12 @@ public class PlayerLogic {
 	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean pause() {
-		return this.spotifyAPICalls.pause();
+		if (this.suppressed) {
+			this.postSuppressionAction = PostSuppressionAction.PAUSE;
+			return true;
+		} else {
+			return this.spotifyAPICalls.pause();
+		}
 	}
 
 	/**
@@ -311,6 +302,34 @@ public class PlayerLogic {
 	 */
 	public int getVolume() {
 		return this.spotifyAPICalls.getVolume();
+	}
+
+	/**
+	 * Suppress music playback temporarily.
+	 * 
+	 * @param suppressed
+	 *            'true' to suppress playback, 'false' to restore it
+	 */
+	void setSuppressed(boolean suppressed) {
+		if (suppressed != this.suppressed) {
+
+			boolean isPlaying = this.spotifyAPICalls.getIsPlaying();
+
+			if (!suppressed && !isPlaying) {
+				// Consider resuming playback
+				if (this.postSuppressionAction == PostSuppressionAction.PAUSE) {
+					// Already paused, do nothing
+					this.postSuppressionAction = PostSuppressionAction.NONE;
+				} else {
+					resume();
+				}
+				this.suppressed = false;
+			} else if (suppressed && isPlaying) {
+				// Consider pausing playback
+				pause();
+				this.suppressed = true;
+			}
+		}
 	}
 
 }

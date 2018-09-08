@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
@@ -93,25 +94,33 @@ public class ServerImpl implements RunnableService, Server {
 	@Reference
 	private ConfigurationManager configurationManager;
 
-	/**
-	 * @return the URI of the server
-	 */
-	private URI socketURI() {
-		Properties conf = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
-		int port = Integer.parseInt(conf.getProperty(PROPERTY_PORT));
-		String contextPath = conf.getProperty(PROPERTY_CONTEXT_PATH);
-		String local = conf.getProperty(PROPERTY_LOCALHOST);
+	private String serverURL;
+	private int serverPort;
+	private String contextPath;
+	private boolean local;
 
-		if (contextPath.indexOf('/') != -1) {
+	@PostConstruct
+	private void init() {
+		Properties conf = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
+		this.serverURL = conf.getProperty(PROPERTY_SERVER_URL);
+		this.serverPort = Integer.parseInt(conf.getProperty(PROPERTY_PORT));
+		this.contextPath = conf.getProperty(PROPERTY_CONTEXT_PATH);
+		this.local = Boolean.parseBoolean(conf.getProperty(PROPERTY_LOCALHOST));
+	}
+
+	@Override
+	public URI getSocketUri() {
+
+		if (this.contextPath.indexOf('/') != -1) {
 			// see GrizzlyWebContainerFactory.create()
 			this.logger.warn("Only first path segment will be used as context path, the rest will be ignored.");
 		}
-		if (contextPath.isEmpty()) {
-			contextPath = "/";
+		if (this.contextPath.isEmpty()) {
+			this.contextPath = "/";
 		}
 
-		String ip = Boolean.parseBoolean(local) ? IP_LOCAL : IP_GLOBAL;
-		return UriBuilder.fromPath(contextPath).scheme("http").host(ip).port(port).build();
+		String ip = this.local ? IP_LOCAL : IP_GLOBAL;
+		return UriBuilder.fromPath(this.contextPath).scheme("http").host(ip).port(this.serverPort).build();
 	}
 
 	@Override
@@ -131,14 +140,12 @@ public class ServerImpl implements RunnableService, Server {
 		OpenApiResource openApiResource = new OpenApiResource();
 		OpenAPI openapi = new OpenAPI();
 
-		String serverURL = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME)
-				.getProperty(PROPERTY_SERVER_URL);
-		if (serverURL.isEmpty()) {
+		if (this.serverURL.isEmpty()) {
 			this.logger.warn("Missing public server URL."
 					+ " The Url is required to create links to the server itself, that are valid in the global scope.");
 		} else {
 			List<io.swagger.v3.oas.models.servers.Server> servers = Collections
-					.singletonList(new io.swagger.v3.oas.models.servers.Server().url(serverURL));
+					.singletonList(new io.swagger.v3.oas.models.servers.Server().url(this.serverURL));
 			openapi.servers(servers);
 		}
 
@@ -155,7 +162,7 @@ public class ServerImpl implements RunnableService, Server {
 		resourceConfig.register(CORSFilter.class);
 		resourceConfig.register(new DependencyInjectionBinder(this.di));
 		try {
-			URI socketURI = this.socketURI();
+			URI socketURI = this.getSocketUri();
 			this.httpServer = GrizzlyWebContainerFactory.create(socketURI, new ServletContainer(resourceConfig), null,
 					null);
 		} catch (IOException e) {
@@ -169,7 +176,7 @@ public class ServerImpl implements RunnableService, Server {
 		if (this.httpServer == null)
 			throw new IllegalStateException("The Server is not running");
 		this.logger.info("shutdown the server");
-		this.httpServer.shutdown();
+		this.httpServer.shutdownNow();
 		this.httpServer = null;
 	}
 
@@ -188,5 +195,10 @@ public class ServerImpl implements RunnableService, Server {
 		if (this.httpServer != null)
 			throw new IllegalStateException("The Server is already started");
 		this.restResources.add(cls);
+	}
+
+	@Override
+	public String getBaseUrl() {
+		return this.serverURL;
 	}
 }

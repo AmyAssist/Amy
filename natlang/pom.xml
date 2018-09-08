@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>amy-natlang</artifactId>
+	<name>Amy natlang</name>
+	<description>The Amy natural language system</description>
+	<parent>
+		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<artifactId>amy</artifactId>
+		<version>0.5.0-Snapshot</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.8</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-natlang-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-di-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-plugin-manager-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>deployment-descriptor-utility</artifactId>
+			<version>${deployment.descriptor.utility.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-testing-framework</artifactId>
+			<version>${amy.testing-framework.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- Tests -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest-all -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+			<version>1.3</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

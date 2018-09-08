@@ -34,18 +34,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
  * @author Leon Kiefer
  */
 public interface Configuration {
-	/**
-	 * Adds an external Service instance to the DI. The DI does not manage the dependencies of the external Service, but
-	 * the DI can inject the external Service as dependency into other managed services.
-	 * 
-	 * @param serviceType
-	 *            The type of this service
-	 * @param externalService
-	 *            The instance of this service
-	 * @deprecated use a SingletonServiceProvider directly
-	 */
-	@Deprecated
-	<T> void addExternalService(@Nonnull Class<T> serviceType, @Nonnull T externalService);
 
 	/**
 	 * Register a StaticContextProvider to be used later by ServiceProviders
