@@ -24,6 +24,9 @@
 package de.unistuttgart.iaas.amyassist.amy.messagehub.internal;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
 
 /**
  * Util for low level operations
@@ -36,12 +39,49 @@ public class SubscriptionUtil {
 		// hide constructor
 	}
 
+	/**
+	 * check if the given method is a valid Subscription method. If not throw an exception.
+	 * 
+	 * @param method
+	 *            the method to validate as Subscription method
+	 * @throws IllegalArgumentException
+	 *             if the given method is not a valid Subscription method
+	 */
 	public static void assertValidSubscriptionMethod(Method method) {
 		if (!method.getReturnType().equals(Void.TYPE))
 			throw new IllegalArgumentException(
 					"The returntype of a method annotated with @Subscription should be String.");
 		if (method.getExceptionTypes().length > 0) {
-			throw new IllegalArgumentException("The method annotated with @Intent should should not throw exceptions.");
+			throw new IllegalArgumentException("The method annotated with @Subscription should not throw exceptions.");
+		}
+		if (Modifier.isStatic(method.getModifiers())) {
+			throw new IllegalArgumentException("The method annotated with @Subscription should not be static.");
+		}
+		if (!Modifier.isPublic(method.getModifiers())) {
+			throw new IllegalArgumentException("The method annotated with @Subscription should be public.");
+		}
+		Class<?>[] parameterTypes = method.getParameterTypes();
+		if (parameterTypes.length == 1) {
+			if (!parameterTypes[0].equals(String.class)) {
+				throw new IllegalArgumentException(
+						"The first parameter of a method annotated with @Subscription must be a String.");
+			}
+		} else if (parameterTypes.length == 2) {
+			if (!parameterTypes[0].equals(String.class)) {
+				throw new IllegalArgumentException(
+						"The first parameter of a method annotated with @Subscription must be a String.");
+			}
+			if (!parameterTypes[1].equals(TopicName.class)) {
+				throw new IllegalArgumentException(
+						"The second parameter of a method annotated with @Subscription must be a TopicName.");
+			}
+		} else {
+			throw new IllegalArgumentException(
+					"Subscription can only have the message and the topicname as parameter.");
+		}
+
+		if (method.isVarArgs()) {
+			throw new IllegalArgumentException("The method annotated with @Subscription should not be a VarArgs.");
 		}
 	}
 }

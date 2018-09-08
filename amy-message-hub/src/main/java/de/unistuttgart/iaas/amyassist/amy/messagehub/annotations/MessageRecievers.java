@@ -80,7 +80,12 @@ public class MessageRecievers implements DeploymentContainerService {
 		for (Method method : methodsWithAnnotation) {
 			SubscriptionUtil.assertValidSubscriptionMethod(method);
 			Subscription annotation = method.getAnnotation(Subscription.class);
-			TopicFilter createTopicFilter = this.topicFactory.createTopicFilter(annotation.value());
+			TopicFilter createTopicFilter;
+			try {
+				createTopicFilter = this.topicFactory.createTopicFilter(annotation.value());
+			} catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException("Illegal topic filter on annotation in " + cls.getName(), e);
+			}
 			this.messageHub.subscribe(createTopicFilter, cls, method);
 		}
 
