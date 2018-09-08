@@ -90,9 +90,9 @@ public class PlayerLogic {
 				break;
 			}
 		};
-		String topicGeneral = Topics.getGlobalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
-		String topicMusic = Topics.from(SystemTopics.SMARTHOME, LocationTopics.ALL, RoomTopics.ALL)
-				.extend(MUSIC_MUTE_TOPIC_FUNCTION).toString();
+		String topicGeneral = Topics.globalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
+		String topicMusic = Topics.from(SystemTopics.SMARTHOME, LocationTopics.ALL, RoomTopics.ALL,
+				MUSIC_MUTE_TOPIC_FUNCTION);
 
 		this.messageHub.subscribe(topicGeneral, muteConsumer);
 		this.messageHub.subscribe(topicMusic, muteConsumer);

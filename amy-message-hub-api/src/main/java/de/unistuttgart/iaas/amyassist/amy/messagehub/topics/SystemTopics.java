@@ -28,29 +28,17 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
  * 
  * @author Tim Neumann
  */
-public enum SystemTopics implements Topic {
+public class SystemTopics {
 	/** The system topic */
-	SYSTEM,
+	public static final String SYSTEM = "system";
 	/** The smarthome topic */
-	SMARTHOME,
+	public static final String SMARTHOME = "smarthome";
 	/** The user topic */
-	USER,
+	public static final String USER = "user";
 	/** The info topic */
-	INFO;
+	public static final String INFO = "info";
 
-	/**
-	 * @return The topic string of the topic.
-	 */
-	@Override
-	public String getTopicString() {
-		return this.name().toLowerCase();
-	}
-
-	/**
-	 * @see java.lang.Enum#toString()
-	 */
-	@Override
-	public String toString() {
-		return getTopicString();
+	private SystemTopics() {
+		// hide constructor
 	}
 }

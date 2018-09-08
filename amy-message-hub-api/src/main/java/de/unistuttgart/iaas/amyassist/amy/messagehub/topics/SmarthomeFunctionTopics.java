@@ -28,20 +28,11 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
  * 
  * @author Tim Neumann
  */
-public enum SmarthomeFunctionTopics implements Topic {
+public class SmarthomeFunctionTopics {
 	/** The mute topic */
-	MUTE;
+	public static final String MUTE = "mute";
 
-	@Override
-	public String getTopicString() {
-		return this.name().toLowerCase();
-	}
-
-	/**
-	 * @see java.lang.Enum#toString()
-	 */
-	@Override
-	public String toString() {
-		return getTopicString();
+	private SmarthomeFunctionTopics() {
+		// hide constructor
 	}
 }

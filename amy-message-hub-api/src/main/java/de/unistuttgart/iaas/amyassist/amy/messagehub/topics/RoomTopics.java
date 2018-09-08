@@ -28,22 +28,13 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
  * 
  * @author Tim Neumann
  */
-public enum RoomTopics implements Topic {
+public class RoomTopics {
 	/** All rooms */
-	ALL,
+	public static final String ALL = "all";
 	/** The living room */
-	LIVING;
+	public static final String LIVING = "living";
 
-	@Override
-	public String getTopicString() {
-		return this.name().toLowerCase();
-	}
-
-	/**
-	 * @see java.lang.Enum#toString()
-	 */
-	@Override
-	public String toString() {
-		return getTopicString();
+	private RoomTopics() {
+		// hide constructor
 	}
 }

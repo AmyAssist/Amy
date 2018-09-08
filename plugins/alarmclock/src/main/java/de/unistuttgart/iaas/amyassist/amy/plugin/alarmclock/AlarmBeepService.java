@@ -104,7 +104,7 @@ public class AlarmBeepService {
 				break;
 			}
 		};
-		String topic = Topics.getGlobalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
+		String topic = Topics.globalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
 		this.messageHub.subscribe(topic, muteConsumer);
 	}
 

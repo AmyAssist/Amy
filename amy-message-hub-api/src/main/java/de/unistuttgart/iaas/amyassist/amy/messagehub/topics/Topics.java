@@ -45,21 +45,6 @@ public class Topics {
 	}
 
 	/**
-	 * Get's the topic string for the given topic parts
-	 * 
-	 * @param parts
-	 *            The parts of the topic string
-	 * @return The topic string.
-	 */
-	public static TopicStubbing from(Topic... parts) {
-		String[] partsS = new String[parts.length];
-		for (int i = 0; i < parts.length; i++) {
-			partsS[i] = parts[i].getTopicString();
-		}
-		return new TopicStubbing(from(partsS));
-	}
-
-	/**
 	 * Extends a given topic string by the given topics.
 	 * 
 	 * @param beginning
@@ -73,19 +58,6 @@ public class Topics {
 	}
 
 	/**
-	 * Extends a given topic string by the given topics.
-	 * 
-	 * @param beginning
-	 *            The existing topic string
-	 * @param parts
-	 *            The parts to add.
-	 * @return The extended topic string.
-	 */
-	public static String extend(String beginning, Topic... parts) {
-		return from(beginning, from(parts).toString());
-	}
-
-	/**
 	 * Get a smarthome topic string for a given location, room and function.
 	 * 
 	 * @param location
@@ -96,8 +68,8 @@ public class Topics {
 	 *            The function
 	 * @return The topic string.
 	 */
-	public static String getSmarthomeTopic(LocationTopics location, RoomTopics room, SmarthomeFunctionTopics function) {
-		return from(SystemTopics.SMARTHOME, location, room, function).toString();
+	public static String smarthomeTopic(String location, String room, String function) {
+		return from(SystemTopics.SMARTHOME, location, room, function);
 	}
 
 	/**
@@ -107,56 +79,7 @@ public class Topics {
 	 *            The function
 	 * @return The topic string.
 	 */
-	public static String getGlobalSmarthomeTopic(SmarthomeFunctionTopics function) {
-		return from(SystemTopics.SMARTHOME, LocationTopics.ALL, RoomTopics.ALL, function).toString();
-	}
-
-	/**
-	 * A class for ongoing stubbing to be able to call from(...).extend(...).extend(...).toString()
-	 * 
-	 * @author Tim Neumann
-	 */
-	public static class TopicStubbing {
-		private String topic;
-
-		/**
-		 * Create a new stubbing
-		 * 
-		 * @param pTopic
-		 *            The topic.
-		 */
-		TopicStubbing(String pTopic) {
-			this.topic = pTopic;
-		}
-
-		/**
-		 * Extends the stubbing by the parts
-		 * 
-		 * @param parts
-		 *            The parts
-		 * @return The new extended stubbing
-		 */
-		public TopicStubbing extend(String... parts) {
-			return new TopicStubbing(Topics.extend(this.topic, parts));
-		}
-
-		/**
-		 * Extends the stubbing by the parts
-		 * 
-		 * @param parts
-		 *            The parts
-		 * @return The new extended stubbing
-		 */
-		public TopicStubbing extend(Topic... parts) {
-			return new TopicStubbing(Topics.extend(this.topic, parts));
-		}
-
-		/**
-		 * @see java.lang.Object#toString()
-		 */
-		@Override
-		public String toString() {
-			return this.topic;
-		}
+	public static String globalSmarthomeTopic(String function) {
+		return from(SystemTopics.SMARTHOME, LocationTopics.ALL, RoomTopics.ALL, function);
 	}
 }

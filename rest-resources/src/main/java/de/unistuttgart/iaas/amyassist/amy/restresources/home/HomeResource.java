@@ -90,7 +90,7 @@ public class HomeResource {
 	@POST
 	@Path("mute")
 	public void mute() {
-		String topic = Topics.getGlobalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
+		String topic = Topics.globalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
 		this.messageHub.publish(topic, "true", true);
 	}
 
@@ -100,7 +100,7 @@ public class HomeResource {
 	@POST
 	@Path("unmute")
 	public void unmute() {
-		String topic = Topics.getGlobalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
+		String topic = Topics.globalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
 		this.messageHub.publish(topic, "false", true);
 	}
 

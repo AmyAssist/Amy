@@ -28,22 +28,13 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
  * 
  * @author Tim Neumann
  */
-public enum LocationTopics implements Topic {
+public class LocationTopics {
 	/** All locations */
-	ALL,
+	public static final String ALL = "all";
 	/** The home location */
-	HOME;
+	public static final String HOME = "home";
 
-	@Override
-	public String getTopicString() {
-		return this.name().toLowerCase();
-	}
-
-	/**
-	 * @see java.lang.Enum#toString()
-	 */
-	@Override
-	public String toString() {
-		return getTopicString();
+	private LocationTopics() {
+		// hide constructor
 	}
 }
