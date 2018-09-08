@@ -42,6 +42,7 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -53,6 +54,7 @@ class SpotifyAPICallsTest {
 	private SpotifyApi spotifyApi;
 
 	private SpotifyAPICalls spotifyAPICalls;
+	private Environment environment;
 
 	private static final String CLIENT_ID = "A1B2cCD";
 	private static final String CLIENT_SECRET = "E4F5E5";
@@ -71,10 +73,11 @@ class SpotifyAPICallsTest {
 	public void init() {
 		this.configLoader = this.testFramework.mockService(Properties.class);
 		this.testFramework.mockService(TaskScheduler.class);
+		this.environment = this.testFramework.mockService(Environment.class);
 		this.spotifyAPICalls = this.testFramework.setServiceUnderTest(SpotifyAPICalls.class);
 		this.spotifyAPICalls = spy(this.spotifyAPICalls);
 		try {
-			spotifyApi = new SpotifyApi.Builder().setAccessToken(ACCESS_TOKEN).setClientId(CLIENT_ID)
+			this.spotifyApi = new SpotifyApi.Builder().setAccessToken(ACCESS_TOKEN).setClientId(CLIENT_ID)
 					.setClientSecret(CLIENT_SECRET).setHost("j").setRedirectUri(new URI("s")).build();
 		} catch (URISyntaxException e1) {
 
@@ -84,7 +87,7 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testAuthorizationCodeUri() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		URI uri = null;
 		try {
 			uri = new URI(
@@ -98,7 +101,7 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testResume() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
 		assertThat(this.spotifyAPICalls.resume(), equalTo(false));
@@ -108,7 +111,7 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testPause() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
 		assertThat(this.spotifyAPICalls.pause(), equalTo(false));
@@ -118,7 +121,7 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testBack() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
 		assertThat(this.spotifyAPICalls.back(), equalTo(false));
@@ -128,7 +131,7 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testSkip() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
 		assertThat(this.spotifyAPICalls.skip(), equalTo(false));
@@ -138,7 +141,7 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testplaySongFromUri() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
 		assertThat(this.spotifyAPICalls.playSongFromUri("a"), equalTo(false));
@@ -148,7 +151,7 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testplayListFromUri() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
 		assertThat(this.spotifyAPICalls.playListFromUri("c"), equalTo(false));
@@ -158,7 +161,7 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testSetVolume() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
 		assertThat(this.spotifyAPICalls.setVolume(1), equalTo(false));
@@ -168,7 +171,7 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testGetCurrentSong() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
 		assertThat(this.spotifyAPICalls.getCurrentPlayingContext(), equalTo(null));
@@ -178,7 +181,7 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testSearch() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
 		assertThat(this.spotifyAPICalls.searchInSpotify("e", "track", 1), equalTo(null));
@@ -188,7 +191,7 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testFeaturedPlaylists() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
 		assertThat(this.spotifyAPICalls.getFeaturedPlaylists(1), equalTo(null));
@@ -202,13 +205,13 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testgetDevices() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		assertThat(this.spotifyAPICalls.getDevices(), equalTo(new Device[0]));
 	}
 
 	@Test
 	public void testSetDevice() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		assertThat(this.spotifyAPICalls.setCurrentDevice("d"), equalTo(false));
 	}
 
@@ -243,7 +246,7 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testCheckPlayerState() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		assertThat(this.spotifyAPICalls.checkPlayerState(), equalTo(false));
 		doReturn(null).when(this.spotifyAPICalls).getSpotifyApi();
@@ -251,37 +254,10 @@ class SpotifyAPICallsTest {
 	}
 
 	@Test
-	public void testGetSpotifyApiAllData() {
-		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
-		doReturn(CLIENT_SECRET).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
-		this.storage.put(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY, REFRESH_TOKEN);
-		this.storage.put(SpotifyAPICalls.SPOTIFY_ACCESSTOKEN, ACCESS_TOKEN);
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.MINUTE, 20);
-		this.storage.put(SpotifyAPICalls.SPOTIFY_EXPIRE_TIME_TOKEN, String.valueOf(calendar.getTimeInMillis()));
-		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
-		assertThat(spotifyApi.getClientId(), equalTo(CLIENT_ID));
-		assertThat(spotifyApi.getClientSecret(), equalTo(CLIENT_SECRET));
-		assertThat(spotifyApi.getAccessToken(), equalTo(ACCESS_TOKEN));
-		assertThat(spotifyApi.getRefreshToken(), equalTo(REFRESH_TOKEN));
-	}
-
-	@Test
-	public void testGetSpotifyApiWithoutAccessToken() {
-		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
-		doReturn(CLIENT_SECRET).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
-		this.storage.put(SpotifyAPICalls.SPOTIFY_REFRSHTOKEN_KEY, REFRESH_TOKEN);
-		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
-		assertThat(spotifyApi.getClientId(), equalTo(CLIENT_ID));
-		assertThat(spotifyApi.getClientSecret(), equalTo(CLIENT_SECRET));
-		assertThat(spotifyApi.getAccessToken(), equalTo(null));
-		assertThat(spotifyApi.getRefreshToken(), equalTo(REFRESH_TOKEN));
-	}
-
-	@Test
 	public void testGetSpotifyApiWithoutAccessTokenAndRefreshToken() {
-		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
-		doReturn(CLIENT_SECRET).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
+		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY, null);
+		doReturn(CLIENT_SECRET).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY, null);
+		this.spotifyAPICalls.init();
 		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
 		assertThat(spotifyApi.getClientId(), equalTo(CLIENT_ID));
 		assertThat(spotifyApi.getClientSecret(), equalTo(CLIENT_SECRET));
@@ -291,15 +267,16 @@ class SpotifyAPICallsTest {
 
 	@Test
 	public void testGetSpotifyApiWithoutAccessTokenAndRefreshTokenAndClientSecret() {
-		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
-		doReturn(null).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY);
+		doReturn(CLIENT_ID).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY, null);
+		doReturn(null).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY, null);
+		this.spotifyAPICalls.init();
 		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
 		assertThat(spotifyApi, equalTo(null));
 	}
 
 	@Test
 	public void testGetSpotifyApiWithoutAllData() {
-		doReturn(null).when(this.configLoader).getProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY);
+		this.spotifyAPICalls.init();
 		SpotifyApi spotifyApi = this.spotifyAPICalls.getSpotifyApi();
 		assertThat(spotifyApi, equalTo(null));
 	}
@@ -311,20 +288,8 @@ class SpotifyAPICallsTest {
 	}
 
 	@Test
-	public void testSetClientSecret() {
-		this.spotifyAPICalls.setClientSecret(CLIENT_SECRET);
-		verify(this.configLoader).setProperty(SpotifyAPICalls.SPOTIFY_CLIENTSECRET_KEY, CLIENT_SECRET);
-	}
-
-	@Test
-	public void testSetClientId() {
-		this.spotifyAPICalls.setClientID(CLIENT_ID);
-		verify(this.configLoader).setProperty(SpotifyAPICalls.SPOTIFY_CLIENTID_KEY, CLIENT_ID);
-	}
-
-	@Test
 	public void testOwnPlaylists() {
-		doReturn(spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
 		assertThat(this.spotifyAPICalls.getOwnPlaylists(1), equalTo(null));
