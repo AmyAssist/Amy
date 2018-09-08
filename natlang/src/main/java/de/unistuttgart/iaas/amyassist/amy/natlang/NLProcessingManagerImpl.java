@@ -124,18 +124,6 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#getGrammarFileString(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-	 */
-	@Override
-	public String getGrammarFileString(
-			String grammarName, String multiStart, String singleStart, String multiStop, String shutup) {
-		JSGFGenerator generator = new JSGFGenerator(grammarName, multiStart,
-				singleStart, multiStop, shutup);
-
-		return generator.generateGrammarFileString();
-	}
-
-	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#processIntent(de.unistuttgart.iaas.amyassist.amy.natlang.Dialog, java.lang.String)
 	 */
 	@Override

@@ -34,6 +34,7 @@
 		<amy.rest-resources.version>0.5.0-Snapshot</amy.rest-resources.version>
 		<amy.utility.version>0.5.0-Snapshot</amy.utility.version>
 		<amy.registry.version>0.5.0-Snapshot</amy.registry.version>
+		<amy.remote-sr.version>0.5.0-Snapshot</amy.remote-sr.version>
 		<deployment.descriptor.utility.version>0.5.0-Snapshot</deployment.descriptor.utility.version>
 
 		<!-- External dependency versions. Only project wide or core dependencies 
@@ -50,6 +51,7 @@
 		<swagger.version>2.0.2</swagger.version>
 		<commons-lang3.version>3.7</commons-lang3.version>
 		<cliche.version>110413</cliche.version>
+		<jersey-media-sse.version>2.27</jersey-media-sse.version>
 	</properties>
 	<modules>
 		<module>amy-master-node</module>
@@ -74,6 +76,7 @@
 		<module>plugins/navigation</module>
 		<module>amy-message-hub-api</module>
 		<module>amy-message-hub</module>
+		<module>remote-sr</module>
 		<module>deployment-descriptor-utility</module>
 		<module>natlang-api</module>
 		<module>natlang</module>
