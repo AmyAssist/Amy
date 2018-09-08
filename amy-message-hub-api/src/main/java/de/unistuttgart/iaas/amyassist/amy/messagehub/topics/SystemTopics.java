@@ -28,7 +28,7 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
  * 
  * @author Tim Neumann
  */
-public enum SystemTopics {
+public enum SystemTopics implements Topic {
 	/** The system topic */
 	SYSTEM,
 	/** The smarthome topic */
@@ -41,7 +41,16 @@ public enum SystemTopics {
 	/**
 	 * @return The topic string of the topic.
 	 */
+	@Override
 	public String getTopicString() {
 		return this.name().toLowerCase();
+	}
+
+	/**
+	 * @see java.lang.Enum#toString()
+	 */
+	@Override
+	public String toString() {
+		return getTopicString();
 	}
 }

@@ -28,35 +28,20 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
  * 
  * @author Tim Neumann
  */
-public enum SmarthomeFunctionTopics {
+public enum SmarthomeFunctionTopics implements Topic {
 	/** The mute topic */
 	MUTE;
 
-	/**
-	 * Get the topic string for this smarthome function in a given location and room.
-	 * 
-	 * @param locationTopic
-	 *            The location topic this function is in
-	 * @param roomTopic
-	 *            The room topic this function is in
-	 * @return The topic string of this function.
-	 */
-	public String getTopicString(LocationTopics locationTopic, RoomTopics roomTopic) {
-		return roomTopic.getTopicString(SystemTopics.SMARTHOME, locationTopic) + "/" + this.name().toLowerCase();
+	@Override
+	public String getTopicString() {
+		return this.name().toLowerCase();
 	}
 
 	/**
-	 * Get the topic string for a custom smarthome function in a given location and room.
-	 * 
-	 * @param locationTopic
-	 *            The location topic this function is in
-	 * @param roomTopic
-	 *            The room topic this function is in
-	 * @param customFunction
-	 *            The custom function for the topic
-	 * @return The topic string of this function.
+	 * @see java.lang.Enum#toString()
 	 */
-	public static String getTopicString(LocationTopics locationTopic, RoomTopics roomTopic, String customFunction) {
-		return roomTopic.getTopicString(SystemTopics.SMARTHOME, locationTopic) + "/" + customFunction;
+	@Override
+	public String toString() {
+		return getTopicString();
 	}
 }

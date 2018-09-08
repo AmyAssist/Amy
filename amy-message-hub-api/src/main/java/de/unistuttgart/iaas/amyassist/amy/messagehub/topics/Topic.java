@@ -24,26 +24,15 @@
 package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
 
 /**
- * The location topics
+ * A generic location
  * 
  * @author Tim Neumann
  */
-public enum LocationTopics implements Topic {
-	/** All locations */
-	ALL,
-	/** The home location */
-	HOME;
-
-	@Override
-	public String getTopicString() {
-		return this.name().toLowerCase();
-	}
-
+public interface Topic {
 	/**
-	 * @see java.lang.Enum#toString()
+	 * Get the topic string of this topic.
+	 * 
+	 * @return The topic string of this topic.
 	 */
-	@Override
-	public String toString() {
-		return getTopicString();
-	}
+	String getTopicString();
 }

@@ -28,22 +28,22 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
  * 
  * @author Tim Neumann
  */
-public enum RoomTopics {
+public enum RoomTopics implements Topic {
 	/** All rooms */
 	ALL,
 	/** The living room */
 	LIVING;
 
+	@Override
+	public String getTopicString() {
+		return this.name().toLowerCase();
+	}
+
 	/**
-	 * Get the topic string for this location in a given system and location.
-	 * 
-	 * @param systemTopic
-	 *            The system topic this room is in.
-	 * @param locationTopic
-	 *            The location topic this room is in
-	 * @return The topic string of this room.
+	 * @see java.lang.Enum#toString()
 	 */
-	public String getTopicString(SystemTopics systemTopic, LocationTopics locationTopic) {
-		return locationTopic.getTopicString(systemTopic) + "/" + this.name().toLowerCase();
+	@Override
+	public String toString() {
+		return getTopicString();
 	}
 }
