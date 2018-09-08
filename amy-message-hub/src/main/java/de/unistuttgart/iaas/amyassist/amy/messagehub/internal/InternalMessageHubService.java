@@ -21,8 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub;
+package de.unistuttgart.iaas.amyassist.amy.messagehub.internal;
 
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,10 +34,13 @@ import java.util.function.BiConsumer;
 
 import org.slf4j.Logger;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.Message;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessagingAdapter;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
@@ -44,7 +48,7 @@ import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
 /**
  * The internal implementation of the MessageHub
  *
- * @author Tim Neumann
+ * @author Tim Neumann, Leon Kiefer
  */
 @Service(InternalMessageHubService.class)
 public class InternalMessageHubService {
@@ -56,8 +60,10 @@ public class InternalMessageHubService {
 
 	@Reference
 	private MessagingAdapter adapter;
+	@Reference
+	private ServiceLocator serviceLocator;
 
-	private final Map<UUID, BiConsumer<TopicName, Message>> eventListener = new ConcurrentHashMap<>();
+	private final Map<UUID, Subscription> eventListener = new ConcurrentHashMap<>();
 	private final Map<TopicFilter, List<UUID>> topicListeners = new ConcurrentHashMap<>();
 
 	private volatile boolean adapterFullyConnected = false;
@@ -73,11 +79,12 @@ public class InternalMessageHubService {
 		this.adapter.setCallback(null);
 	}
 
-	private void executeHandler(BiConsumer<TopicName, Message> handler, Message msg, TopicName topic) {
+	private void executeHandler(Subscription handler, Message msg, TopicName topic) {
 		try {
-			handler.accept(topic, msg);
+			handler.handle(topic, msg, this.serviceLocator);
 		} catch (RuntimeException e) {
-			this.logger.error("Error in event handler", e);
+			this.logger.error(
+					"Error in event handler for message " + msg + " on topic " + topic.getStringRepresentation(), e);
 		}
 	}
 
@@ -86,8 +93,8 @@ public class InternalMessageHubService {
 			TopicFilter filter = entry.getKey();
 			if (filter.doesFilterMatch(topic)) {
 				for (UUID uuid : entry.getValue()) {
-					BiConsumer<TopicName, Message> handler = this.eventListener.get(uuid);
-					executeHandler(handler, message, topic);
+					Subscription handler = this.eventListener.get(uuid);
+					this.executeHandler(handler, message, topic);
 				}
 			}
 		}
@@ -108,10 +115,32 @@ public class InternalMessageHubService {
 	 * @param handler
 	 *            The handler for messages of the topic
 	 * @return The uuid of the subscription.
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(TopicFilter,
-	 *      java.util.function.BiConsumer)
 	 */
 	public UUID subscribe(TopicFilter topic, BiConsumer<TopicName, Message> handler) {
+		return this.subscribe(topic, new SimpleSubscription(handler));
+	}
+
+	/**
+	 * @param topic
+	 *            The topic to subscribe to
+	 * @param cls
+	 *            the class of the MessageReceiver
+	 * @param method
+	 *            the method of the subscription
+	 * @return The uuid of the subscription.
+	 */
+	public UUID subscribe(TopicFilter topic, Class<?> cls, Method method) {
+		return this.subscribe(topic, new SubscriptionObject(cls, method));
+	}
+
+	/**
+	 * @param topic
+	 *            The topic to subscribe to
+	 * @param subscription
+	 *            The {@link Subscription} for messages of the topic
+	 * @return The uuid of the subscription.
+	 */
+	private UUID subscribe(TopicFilter topic, Subscription subscription) {
 		UUID uuid = UUID.randomUUID();
 
 		synchronized (this.topicListeners) {
@@ -126,7 +155,7 @@ public class InternalMessageHubService {
 				}
 			}
 
-			this.eventListener.put(uuid, handler);
+			this.eventListener.put(uuid, subscription);
 		}
 
 		return uuid;
@@ -134,7 +163,7 @@ public class InternalMessageHubService {
 
 	/**
 	 * @param identifier
-	 *            The uuid of the subscribtion to unsubscribe.
+	 *            The uuid of the subscription to unsubscribe.
 	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#unsubscribe(java.util.UUID)
 	 */
 	public void unsubscribe(UUID identifier) {
