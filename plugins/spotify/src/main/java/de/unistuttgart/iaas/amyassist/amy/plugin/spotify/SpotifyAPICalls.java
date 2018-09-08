@@ -430,6 +430,7 @@ public class SpotifyAPICalls {
 	public int getVolume() {
 		if (getSpotifyApi() == null && getActiveDevice() != null && getActiveDevice().getVolume_percent() != null) {
 			return getActiveDevice().getVolume_percent().intValue();
+		}
 		return -1;
 	}
 
