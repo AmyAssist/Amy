@@ -40,6 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManage
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceNotFoundException;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
@@ -75,8 +76,8 @@ public class TestFrameworkImpl implements TestFramework {
 				Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS).useConstructor());
 
 		this.dependencyInjection = new DependencyInjection();
-		this.dependencyInjection.addExternalService(TestFramework.class, this);
-		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
+		this.dependencyInjection.register(new SingletonServiceProvider<>(TestFramework.class, this));
+		this.dependencyInjection.register(new SingletonServiceProvider<>(IStorage.class, this.storage));
 		this.dependencyInjection.register(ServerImpl.class);
 		this.dependencyInjection.register(new LoggerProvider());
 	}
@@ -132,7 +133,7 @@ public class TestFrameworkImpl implements TestFramework {
 	@Override
 	public <T> T mockService(Class<T> serviceType) {
 		T mock = Mockito.mock(serviceType);
-		this.dependencyInjection.addExternalService(serviceType, mock);
+		this.dependencyInjection.register(new SingletonServiceProvider<>(serviceType, mock));
 		return mock;
 	}
 

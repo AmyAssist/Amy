@@ -35,4 +35,11 @@ dependency-reduced-pom.xml
 
 #Ignore db and persistence files.
 *.db
+
 .mqtt-persistence/**
+#Ignore chrome user profile except the permission preset and first launch config
+remote-sr/src/main/resources/chrome_profile/*
+!remote-sr/src/main/resources/chrome_profile/First\ Run
+!remote-sr/src/main/resources/chrome_profile/Default/
+remote-sr/src/main/resources/chrome_profile/Default/*
+!remote-sr/src/main/resources/chrome_profile/Default/Preferences

@@ -44,23 +44,15 @@ public class ArtistEntityTest {
 
 	@BeforeEach
 	void init() {
-		this.artist = new ArtistEntity(NAME, GENRE, URI);
-	}
-	
-	@Test
-	public void testConstructorAndGetters() {
-		assertThat(this.artist.getName(), equalTo(NAME));
-		assertThat(this.artist.getGenre(), equalTo(GENRE));
-		assertThat(this.artist.getUri(), equalTo(URI));
-	}
-
-	@Test
-	public void testSetter() {
 		this.artist = new ArtistEntity();
 		this.artist.setName(NAME);
 		this.artist.setGenre(GENRE);
 		this.artist.setUri(URI);
 		this.artist.setImageUrl(IMAGE_URL);
+	}
+	
+	@Test
+	public void testSetterGetter() {
 		assertThat(this.artist.getName(), equalTo(NAME));
 		assertThat(this.artist.getGenre(), equalTo(GENRE));
 		assertThat(this.artist.getUri(), equalTo(URI));

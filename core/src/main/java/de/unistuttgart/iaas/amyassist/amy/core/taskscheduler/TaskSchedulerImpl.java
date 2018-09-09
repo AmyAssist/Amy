@@ -25,16 +25,17 @@ package de.unistuttgart.iaas.amyassist.amy.core.taskscheduler;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.Core;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 
 /**
@@ -42,13 +43,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
  * 
  * @author Leon Kiefer
  */
-@Service
-public class TaskSchedulerImpl implements TaskScheduler {
+@Service(TaskScheduler.class)
+public class TaskSchedulerImpl implements TaskScheduler, RunnableService {
 	@Reference
 	private Logger logger;
-
-	@Reference
-	private Core core;
 
 	@Reference
 	private Environment environment;
@@ -57,7 +55,7 @@ public class TaskSchedulerImpl implements TaskScheduler {
 
 	@PostConstruct
 	private void setup() {
-		this.scheduledExecutorService = this.core.getScheduledExecutor();
+		this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "TaskScheduler"));
 	}
 
 	@Override
@@ -71,6 +69,22 @@ public class TaskSchedulerImpl implements TaskScheduler {
 		long delay = ChronoUnit.MILLIS.between(this.environment.getCurrentDateTime().toInstant(), instant);
 		this.logger.debug("the delay of the task is {} ms", delay);
 		this.scheduledExecutorService.schedule(task, delay, TimeUnit.MILLISECONDS);
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
+	 */
+	@Override
+	public void start() {
+		// Do nothing.
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
+	 */
+	@Override
+	public void stop() {
+		this.scheduledExecutorService.shutdownNow();
 	}
 
 }

@@ -28,6 +28,7 @@ import java.util.Set;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.extension.Extension;
 
 /**
@@ -59,7 +60,8 @@ public class DeploymentContainerServiceExtension implements Extension {
 	public void deploy() {
 		for (ServiceDescription<?> deploymentContainerServiceDescription : this.deploymentContainerServices) {
 			DeploymentContainerService deploymentContainerService = (DeploymentContainerService) this.di
-					.getService(deploymentContainerServiceDescription).getService();
+					.getService(new ServiceConsumerImpl<>(this.getClass(), deploymentContainerServiceDescription))
+					.getService();
 			deploymentContainerService.deploy();
 		}
 	}

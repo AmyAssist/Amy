@@ -24,8 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +31,9 @@ import org.slf4j.LoggerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.console.ExitConsole;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService;
 import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
@@ -48,8 +49,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableServiceExtension;
 public class Core {
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
-
-	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
 	private final DependencyInjection di;
 
@@ -69,15 +68,6 @@ public class Core {
 	}
 
 	/**
-	 * Get's {@link #singleThreadScheduledExecutor singleThreadScheduledExecutor}
-	 * 
-	 * @return singleThreadScheduledExecutor
-	 */
-	public ScheduledExecutorService getScheduledExecutor() {
-		return this.singleThreadScheduledExecutor;
-	}
-
-	/**
 	 * The method executed by the main method
 	 *
 	 * @param args
@@ -86,11 +76,12 @@ public class Core {
 	void start(String[] args) {
 		this.registerAllCoreServices();
 		this.init();
-		CommandLineArgumentHandlerService cmaHandler = this.di.getService(CommandLineArgumentHandlerService.class);
+		CommandLineArgumentHandlerService cmaHandler = this.di.getService(new ServiceConsumerImpl<>(this.getClass(),
+				new ServiceDescriptionImpl<>(CommandLineArgumentHandlerService.class))).getService();
 		cmaHandler.load(args, System.out::println);
 		if (cmaHandler.shouldProgramContinue()) {
-			this.di.addExternalService(CommandLineArgumentInfo.class, cmaHandler.getInfo());
-			run();
+			this.di.register(new SingletonServiceProvider<>(CommandLineArgumentInfo.class, cmaHandler.getInfo()));
+			this.run();
 		}
 	}
 
@@ -109,7 +100,7 @@ public class Core {
 	 * register all instances and classes in the DI
 	 */
 	private void registerAllCoreServices() {
-		this.di.addExternalService(Core.class, this);
+		this.di.register(new SingletonServiceProvider<>(Core.class, this));
 
 		this.di.loadServices();
 	}
@@ -122,7 +113,10 @@ public class Core {
 	}
 
 	private void loadPlugins() {
-		PluginManager pluginManager = this.di.getService(PluginManager.class);
+		PluginManager pluginManager = this.di
+				.getService(
+						new ServiceConsumerImpl<>(this.getClass(), new ServiceDescriptionImpl<>(PluginManager.class)))
+				.getService();
 		try {
 			pluginManager.loadPlugins();
 		} catch (IOException e) {
@@ -155,7 +149,6 @@ public class Core {
 	private void doStop() {
 		this.logger.info("stop");
 		this.runnableServiceExtension.stop();
-		this.singleThreadScheduledExecutor.shutdownNow();
 		this.di.shutdown();
 		this.logger.info("stopped");
 	}

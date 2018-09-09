@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	</head>
+	<body>
+		<p>Status: 
+		  <div id="textBox1">Initialized</div>
+		</p>
+		<br/>
+		<p>Info:
+		  <div id="textBox2"></div>
+		</p>
+	</body>
+	<script>
+		/**
+		 * Simple Speech Recognition website.
+		 * @author Benno Krauß
+		 */
+		const statusBox = document.getElementById('textBox1');
+		const infoBox = document.getElementById('textBox2');
+
+		let result = "";
+
+		if (!('webkitSpeechRecognition' in window)) {
+			throw new Error('Browser doesn\'t support SR!');
+		}
+		const recognition = new webkitSpeechRecognition();
+		recognition.lang = 'en-US';
+		recognition.continuous = false;
+		recognition.interimResults = false;
+
+		const source = new EventSource("/rest/remotesr/eventstream");
+
+		source.onmessage = function(event) {
+			console.log('EventSource message: ', event.message);
+		};
+		source.onopen = function(event) {
+			console.log('EventSource onopen: ', event);
+		}
+
+		source.onerror = function(event) {
+			console.log('EventSource onerror: ', event);
+		}
+
+		recognition.onstart = function() {
+			console.log('onstart');
+			updateStatus('Listening');
+		}
+
+		recognition.onerror = function(event) {
+			console.log('onerror: ', event);
+			updateStatus('Error')
+            		info('Error', event.error);
+		}
+
+		recognition.onend = function() {
+			console.log('onend with result: ', result);
+			sendResult(result);
+			updateStatus('Sent result')
+			result = "";
+		}
+		
+
+		recognition.onresult = function(event) {
+			result = event.results[0][0].transcript;
+			console.log('onresult: ', result);
+			updateStatus('on result');
+            		info('Result', result);
+		}
+
+		function sendResult(text) {
+		    fetch("/rest/remotesr", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    text
+                })
+            }).then(res => {
+                if (res.ok) {
+                    console.log(`sent result`);
+                }
+                else {
+                    console.log(`error sending result: ${res.statusText}`);
+				}
+			}, error => {
+                console.log(`error sending result: ${error}`)
+            });
+		}
+
+		function startSR(event) {
+			console.log('Starting SR');
+			recognition.start();
+		}
+
+		function updateStatus(newStatus) {
+		    statusBox.textContent = newStatus;
+		}
+		
+		function info(message) {
+		    infoBox.textContent = [...arguments].join(": ");
+		}
+
+		source.addEventListener('START', startSR, false);
+	</script>
+</html>

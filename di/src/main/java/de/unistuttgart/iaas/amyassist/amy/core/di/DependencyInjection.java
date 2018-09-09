@@ -44,6 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.ClassProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.extension.Extension;
@@ -93,8 +94,8 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		this.extensions = new HashSet<>(Arrays.asList(extensions));
 
 		this.registerContextProvider("class", new ClassProvider());
-		this.addExternalService(ServiceLocator.class, this);
-		this.addExternalService(Configuration.class, this);
+		this.register(new SingletonServiceProvider<>(ServiceLocator.class, this));
+		this.register(new SingletonServiceProvider<>(Configuration.class, this));
 		this.extensions.forEach(ext -> ext.postConstruct(this));
 	}
 
@@ -140,7 +141,6 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 						+ " Please specify which type this service should have.");
 			}
 		}
-
 		this.registerClass(cls, serviceType);
 	}
 
@@ -162,40 +162,18 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	}
 
 	@Override
-	public <T> void addExternalService(@Nonnull Class<T> serviceType, @Nonnull T externalService) {
-		this.register(new SingletonServiceProvider<>(serviceType, externalService));
-	}
-
-	@Override
 	public <T> T getService(Class<T> serviceType) {
 		return this.getService(new ServiceDescriptionImpl<>(serviceType)).getService();
 	}
 
 	@Override
 	public <T> ServiceHandle<T> getService(ServiceDescription<T> serviceDescription) {
-		ServiceProvider<T> provider = this.getServiceProvider(serviceDescription);
-		ServiceImplementationDescription<T> serviceImplementationDescription = provider
-				.getServiceImplementationDescription(this.contextLocator, new ServiceConsumer<T>() {
-
-					@Override
-					public Class<?> getConsumerClass() {
-						return null;
-					}
-
-					@Override
-					public ServiceDescription<T> getServiceDescription() {
-						return serviceDescription;
-					}
-				});
-		if (serviceImplementationDescription == null) {
-			throw new ServiceNotFoundException(serviceDescription);
-		}
-		return this.lookUpOrCreateService(new ServiceCreation<>(), provider, serviceImplementationDescription);
+		return this.getService(new ServiceConsumerImpl<>(this.getClass(), serviceDescription));
 	}
 
 	@Override
 	public <T> ServiceHandle<T> getService(@Nonnull ServiceConsumer<T> serviceConsumer) {
-		return this.getService(new ServiceCreation<>(), serviceConsumer);
+		return this.getService(new ServiceCreation<>(serviceConsumer.getConsumerClass().getName()), serviceConsumer);
 	}
 
 	/**
@@ -209,11 +187,12 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	 */
 	<T> ServiceHandle<T> getService(@Nonnull ServiceCreation<?> dependentServiceCreation,
 			@Nonnull ServiceConsumer<T> serviceConsumer) {
-		ServiceProvider<T> provider = this.getServiceProvider(serviceConsumer.getServiceDescription());
+		ServiceProvider<T> provider = this.getServiceProvider(serviceConsumer.getServiceDescription(),
+				dependentServiceCreation);
 		ServiceImplementationDescription<T> serviceImplementationDescription = provider
 				.getServiceImplementationDescription(this.contextLocator, serviceConsumer);
 		if (serviceImplementationDescription == null) {
-			throw new ServiceNotFoundException(serviceConsumer.getServiceDescription());
+			throw new ServiceNotFoundException(serviceConsumer.getServiceDescription(), dependentServiceCreation);
 		}
 		return this.lookUpOrCreateService(dependentServiceCreation, provider, serviceImplementationDescription);
 	}
@@ -241,7 +220,8 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 			if (this.serviceCreationInfos.containsKey(key)) {
 				serviceCreation = (ServiceCreation<T>) this.serviceCreationInfos.get(key);
 			} else {
-				serviceCreation = new ServiceCreation<>();
+				serviceCreation = new ServiceCreation<>(
+						serviceImplementationDescription.getImplementationClass().getName());
 
 				serviceCreation.completableFuture = CompletableFuture.supplyAsync(() -> {
 					ServiceHandle<T> service = serviceProvider.createService(
@@ -311,11 +291,12 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	 */
 	@Nonnull
 	@SuppressWarnings("unchecked")
-	private <T> ServiceProvider<T> getServiceProvider(ServiceDescription<T> serviceDescription) {
+	private <T> ServiceProvider<T> getServiceProvider(ServiceDescription<T> serviceDescription,
+			ServiceCreation<?> serviceCreation) {
 		ServiceKey<T> serviceKey = new ServiceKey<>(serviceDescription);
 		synchronized (this.register) {
 			if (!this.register.containsKey(serviceKey))
-				throw new ServiceNotFoundException(serviceDescription);
+				throw new ServiceNotFoundException(serviceDescription, serviceCreation);
 			return (ServiceProvider<T>) this.register.get(serviceKey);
 		}
 	}
