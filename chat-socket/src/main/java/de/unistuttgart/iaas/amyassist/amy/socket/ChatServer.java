@@ -47,9 +47,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
  * @author Christian Bräuner
  */
 @Service(ChatServer.class)
-public class ChatServer implements RunnableService, Runnable {
+public class ChatServer implements RunnableService{
 
-	private ServerSocket serverSocket;
+	/**
+	 * the socket that represents the server
+	 */
+	ServerSocket serverSocket;
 	
 	private static final int PORT = 10000;
 	
@@ -58,8 +61,10 @@ public class ChatServer implements RunnableService, Runnable {
 	 */
 	@Reference DialogHandler handler;
 
-	@Reference
-	private Logger logger;
+	/**
+	 * the logger
+	 */
+	@Reference Logger logger;
 	
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
@@ -68,33 +73,31 @@ public class ChatServer implements RunnableService, Runnable {
 	public void start() {
 		try {
 			this.serverSocket = new ServerSocket(PORT);
-			this.run();
+			new Thread() {
+				
+				@Override
+				public void run() {
+					ChatServer.this.logger.info("Chatserver started");
+					
+					// accept new connections and instantiate a new ClientHandler for each session
+					try {
+						while (true) {
+							new ClientHandler(ChatServer.this.serverSocket.accept()).start();
+						}
+					} catch (SocketException se) {
+						if(!se.getMessage().equals("socket closed")) {
+							se.printStackTrace();
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * @see java.lang.Runnable#run()
-	 */
-	@Override
-	public void run() {
-		this.logger.info("Chatserver started");
-		
-		// accept new connections and instantiate a new ClientHandler for each session
-		try {
-			while (true) {
-				new ClientHandler(this.serverSocket.accept()).start();
-			}
-		} catch (SocketException se) {
-			if(!se.getMessage().equals("socket closed")) {
-				se.printStackTrace();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
