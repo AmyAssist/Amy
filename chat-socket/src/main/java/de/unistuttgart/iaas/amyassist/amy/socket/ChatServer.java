@@ -86,15 +86,15 @@ public class ChatServer implements RunnableService{
 						}
 					} catch (SocketException se) {
 						if(!se.getMessage().equals("socket closed")) {
-							se.printStackTrace();
+							ChatServer.this.logger.error("Socket exception", se);
 						}
 					} catch (IOException e) {
-						e.printStackTrace();
+						ChatServer.this.logger.error("Error while running chat socket", e);
 					}
 				}
 			}.start();
 		} catch (IOException e) {
-			e.printStackTrace();
+			this.logger.error("Error while starting", e);e.printStackTrace();
 		}
 	}
 
@@ -107,7 +107,7 @@ public class ChatServer implements RunnableService{
 		try {
 			this.serverSocket.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			this.logger.error("Error while shuting down", e);
 		}
 		this.logger.info("ChatServer shutdown");
 	}
@@ -175,8 +175,8 @@ public class ChatServer implements RunnableService{
 				in.close();
 				out.close();
 				this.clientSocket.close();
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (IOException e) {
+				ChatServer.this.logger.error("Error in session", e);
 			}
 		}
 	}
