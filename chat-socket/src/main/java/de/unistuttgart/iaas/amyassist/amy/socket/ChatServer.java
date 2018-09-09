@@ -23,14 +23,22 @@
 
 package de.unistuttgart.iaas.amyassist.amy.socket;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 
 /**
@@ -38,13 +46,18 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
  * 
  * @author Christian Bräuner
  */
-@Service()
+@Service(ChatServer.class)
 public class ChatServer implements RunnableService, Runnable {
 
 	private ServerSocket serverSocket;
 	
 	private static final int PORT = 10000;
 	
+	/**
+	 * the dialog handler
+	 */
+	@Reference DialogHandler handler;
+
 	@Reference
 	private Logger logger;
 	
@@ -55,6 +68,7 @@ public class ChatServer implements RunnableService, Runnable {
 	public void start() {
 		try {
 			this.serverSocket = new ServerSocket(PORT);
+			this.run();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -70,7 +84,7 @@ public class ChatServer implements RunnableService, Runnable {
 		// accept new connections and instantiate a new ClientHandler for each session
 		try {
 			while (true) {
-				new ClientHandler(serverSocket.accept()).start();
+				new ClientHandler(this.serverSocket.accept()).start();
 			}
 		} catch (SocketException se) {
 			if(!se.getMessage().equals("socket closed")) {
@@ -96,4 +110,72 @@ public class ChatServer implements RunnableService, Runnable {
 	}
 
 
+	/**
+	 * A handler thread class to start a new session for each client.
+	 * Responsible for a dealing with a single client and sending its messages
+	 * to the respective user.
+	 * 
+	 * @author Christian Bräuner
+	 */
+	private class ClientHandler extends Thread {
+
+		private static final String TERMINATE = "quit";
+		
+		private Socket clientSocket;
+		
+		
+		/**
+		 * Constructs a handler thread.
+		 * 
+		 * @param socket the socket to handle
+		 */
+		public ClientHandler(Socket socket) {
+			// init handler
+			this.clientSocket = socket;
+		}
+
+		/**
+		 * Services this thread's client by repeatedly requesting a screen name
+		 * until a unique one has been submitted, then acknowledges the name and
+		 * registers the output stream for the client in a global set.
+		 */
+		@Override
+		public void run() {
+			try(PrintWriter out = new PrintWriter(this.clientSocket.getOutputStream(), true);
+					BufferedReader in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
+					) {
+					
+				out.println("Hello");
+				Queue<String> answerQueue = new LinkedList<>();
+				UUID uuid = ChatServer.this.handler.createDialog(answerQueue::add);
+				
+				boolean running = true;
+				while(running) {
+					
+					//look for input
+					if(in.ready()) {
+						String input = in.readLine();
+						if(input.equalsIgnoreCase(ClientHandler.TERMINATE)) {
+							running = false;
+							break;
+						}
+						ChatServer.this.handler.process(input, uuid);
+					}
+					
+					//output if possible
+					String output = answerQueue.poll();
+					if(output != null) {
+						out.println(output);
+					}
+				}
+				
+				in.close();
+				out.close();
+				this.clientSocket.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 }
