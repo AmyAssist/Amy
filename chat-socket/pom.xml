@@ -21,17 +21,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-testing-framework</artifactId>
-			<version>${amy.testing-framework.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
-			<artifactId>amy-message-hub-api</artifactId>
 		</dependency>
 	</dependencies>
 	<description>Socket for chat communication</description>
