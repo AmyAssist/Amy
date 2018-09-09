@@ -58,7 +58,7 @@ public class NavigationSpeech {
 
 	@Reference
 	private RegistryConnection registryConnection;
-	
+
 	@Reference
 	private Logger logger;
 
@@ -105,14 +105,9 @@ public class NavigationSpeech {
 	public String bestTransport(Map<String, EntityData> entities) {
 		LocalDateTime now = this.environment.getCurrentLocalDateTime();
 		LocalTime inputTime = entities.get("time").getTime();
-		DateTime time = null;
 		if (inputTime != null) {
-			time = new DateTime(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), inputTime.getHour(),
+			DateTime time = new DateTime(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), inputTime.getHour(),
 					inputTime.getMinute());
-		} else if (entities.get("time").getString().trim().equalsIgnoreCase("now")) {
-			time = DateTime.now();
-		}
-		if (time != null) {
 			BestTransportResult result = this.logic.getBestTransportInTime(
 					cutEndWords(this.registryConnection.getAddress(entities.get(START_KEY).getString()), "to"),
 					cutEndWords(this.registryConnection.getAddress(entities.get(END_KEY).getString()), "at"), time);
