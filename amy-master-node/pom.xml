@@ -45,6 +45,16 @@
 			<artifactId>amy-message-hub</artifactId>
 			<version>${amy.message-hub.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-remote-sr</artifactId>
+			<version>${amy.remote-sr.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-natlang</artifactId>
+			<version>${amy.natlang.version}</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -91,6 +101,10 @@
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 									<resource>META-INF/de.unistuttgart.iaas.amyassist.amy.core.console.Console</resource>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceivers</resource>
 								</transformer>
 							</transformers>
 						</configuration>

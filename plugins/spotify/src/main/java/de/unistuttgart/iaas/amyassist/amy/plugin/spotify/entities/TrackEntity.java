@@ -34,25 +34,6 @@ public class TrackEntity extends Item {
 	private int durationInMs;
 
 	/**
-	 * default constructor. no data is set
-	 */
-	public TrackEntity() {
-
-	}
-
-	/**
-	 * this constructor set all data Objects
-	 * 
-	 * @param name of the item
-	 * @param artists of the item
-	 * @param uri of the item
-	 */
-	public TrackEntity(String name, String[] artists, String uri) {
-		super(name, uri);
-		this.artists = artists;
-	}
-
-	/**
 	 * Get's {@link #getArtists() artists}
 	 * 
 	 * @return artists a string array with all artists
@@ -62,9 +43,10 @@ public class TrackEntity extends Item {
 	}
 
 	/**
-	 * Set's {@link #artists artists} 
+	 * Set's {@link #artists artists}
 	 * 
-	 * @param artists all artists in a string array
+	 * @param artists
+	 *            all artists in a string array
 	 */
 	public void setArtists(String[] artists) {
 		this.artists = artists;
@@ -80,7 +62,7 @@ public class TrackEntity extends Item {
 	}
 
 	/**
-	 * Set's {@link #durationInMs duration} 
+	 * Set's {@link #durationInMs duration}
 	 * 
 	 * @param duration
 	 *            duration
@@ -91,10 +73,10 @@ public class TrackEntity extends Item {
 
 	@Override
 	public String toString() {
-		if(this.artists != null && getName() != null) {
+		if (this.artists != null && getName() != null) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder = stringBuilder.append(getName()).append(" from: ");
-			for(String name : this.artists) {
+			for (String name : this.artists) {
 				stringBuilder = stringBuilder.append(name).append(", ");
 			}
 			return stringBuilder.toString();

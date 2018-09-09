@@ -30,8 +30,13 @@ import com.github.dvdme.ForecastIOLib.FIODaily;
 
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
 
+/**
+ * Serves as weather entity for current time
+ * 
+ * @author Benno Krauß, Muhammed Kaya
+ */
 @XmlRootElement
-public class WeatherReportWeek extends Entity{
+public class WeatherReportWeek extends Entity {
 
 	@XmlTransient
 	public final String preamble;
@@ -39,6 +44,12 @@ public class WeatherReportWeek extends Entity{
 	public final WeatherReportDay[] days;
 	public final String summary;
 
+	/**
+	 * @param preamble
+	 *            Introduction text for speech
+	 * @param d
+	 *            FIODaily to get weather values of the week
+	 */
 	public WeatherReportWeek(String preamble, FIODaily d) {
 		this.preamble = preamble;
 		this.days = new WeatherReportDay[d.days()];

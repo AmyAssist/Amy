@@ -28,34 +28,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
 
 /**
- * in this abstract class are all attributes from Data object that are the same
- * in all four different types. For example after a search
+ * in this abstract class are all attributes from Data object that are the same in all four different types. For example
+ * after a search
  * 
  * @author Lars Buttgereit
  *
  */
 @XmlRootElement
-public abstract class Item extends Entity{
+public abstract class Item extends Entity {
 	private String uri;
 	private String name;
-
-	/**
-	 * default constructor. no data is set
-	 */
-	public Item() {
-
-	}
-
-	/**
-	 * this constructor set all data Objects
-	 * 
-	 * @param name of the item
-	 * @param uri of the item
-	 */
-	public Item(String name, String uri) {
-		this.uri = uri;
-		this.name = name;
-	}
+	private String imageUrl;
 
 	/**
 	 * get the name from the item
@@ -69,7 +52,8 @@ public abstract class Item extends Entity{
 	/**
 	 * set the name form the item
 	 * 
-	 * @param name from the item
+	 * @param name
+	 *            from the item
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -87,9 +71,29 @@ public abstract class Item extends Entity{
 	/**
 	 * set the uri form the item
 	 * 
-	 * @param uri from the item
+	 * @param uri
+	 *            from the item
 	 */
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+	/**
+	 * Get's {@link #imageUrl imageUrl}
+	 * 
+	 * @return imageUrl
+	 */
+	public String getImageUrl() {
+		return this.imageUrl;
+	}
+
+	/**
+	 * Set's {@link #imageUrl imageUrl}
+	 * 
+	 * @param imageUrl
+	 *            imageUrl
+	 */
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 }

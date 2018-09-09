@@ -123,11 +123,13 @@ public class AudioInputStreamWithPauseFactory {
 		}
 
 		private int zerosToBuffer(byte[] b, int off, int len) {
-			int numOfZerosToReturn = Math.min(len - off, this.numZeros - this.zerosAppended);
+			int numOfZerosToReturn = Math.min(len, (this.numZeros - this.zerosAppended));
 			for (int i = 0; i < numOfZerosToReturn; i++) {
 				b[off + i] = 0;
 				this.zerosAppended++;
 			}
+			if (numOfZerosToReturn <= 0)
+				return -1;
 			return numOfZerosToReturn;
 		}
 

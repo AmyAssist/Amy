@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
 import java.net.URI;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
@@ -33,13 +32,9 @@ import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Track;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
@@ -54,7 +49,6 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
  */
 @Service(PlayerLogic.class)
 public class PlayerLogic {
-	private static final String MUSIC_MUTE_TOPIC_FUNCTION = "muteMusic";
 	@Reference
 	private SpotifyAPICalls spotifyAPICalls;
 	@Reference
@@ -64,41 +58,18 @@ public class PlayerLogic {
 	@Reference
 	private MessageHub messageHub;
 
-	private boolean wasPlaying = false;
+	private boolean suppressed = false;
+	private PostSuppressionAction postSuppressionAction = PostSuppressionAction.NONE;
+
+	private enum PostSuppressionAction {
+		NONE, PAUSE
+	}
 
 	private static final int VOLUME_MUTE_VALUE = 0;
 	private static final int VOLUME_MAX_VALUE = 100;
 	private static final int VOLUME_UPDOWN_VALUE = 10;
 
 	private static final String ITME_NOT_FOUND = "Item not found";
-
-	@PostConstruct
-	private void init() {
-		Consumer<String> muteConsumer = message -> {
-			switch (message) {
-			case "true":
-				this.wasPlaying = this.spotifyAPICalls.getCurrentPlayingContext().getIs_playing().booleanValue();
-				if (this.wasPlaying) {
-					this.pause();
-				}
-				break;
-			case "false":
-				if (this.wasPlaying) {
-					this.resume();
-				}
-				break;
-			default:
-				this.logger.warn("unkown message {}", message);
-				break;
-			}
-		};
-		String topicGeneral = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
-		String topicMusic = SmarthomeFunctionTopics.getTopicString(LocationTopics.ALL, RoomTopics.ALL,
-				MUSIC_MUTE_TOPIC_FUNCTION);
-
-		this.messageHub.subscribe(topicGeneral, muteConsumer);
-		this.messageHub.subscribe(topicMusic, muteConsumer);
-	}
 
 	/**
 	 * needed for the first init. need the clientID and the clientSecret form a spotify devloper account
@@ -239,7 +210,12 @@ public class PlayerLogic {
 	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean pause() {
-		return this.spotifyAPICalls.pause();
+		if (this.suppressed) {
+			this.postSuppressionAction = PostSuppressionAction.PAUSE;
+			return true;
+		} else {
+			return this.spotifyAPICalls.pause();
+		}
 	}
 
 	/**
@@ -289,6 +265,7 @@ public class PlayerLogic {
 			case "mute":
 				return setVolume(VOLUME_MUTE_VALUE);
 			case "max":
+			case "full":
 				return setVolume(VOLUME_MAX_VALUE);
 			case "up":
 				volume = Math.min(VOLUME_MAX_VALUE, volume + VOLUME_UPDOWN_VALUE);
@@ -326,6 +303,34 @@ public class PlayerLogic {
 	 */
 	public int getVolume() {
 		return this.spotifyAPICalls.getVolume();
+	}
+
+	/**
+	 * Suppress music playback temporarily.
+	 * 
+	 * @param suppressed
+	 *            'true' to suppress playback, 'false' to restore it
+	 */
+	void setSuppressed(boolean suppressed) {
+		if (suppressed != this.suppressed) {
+
+			boolean isPlaying = this.spotifyAPICalls.getIsPlaying();
+
+			if (!suppressed && !isPlaying) {
+				// Consider resuming playback
+				if (this.postSuppressionAction == PostSuppressionAction.PAUSE) {
+					// Already paused, do nothing
+					this.postSuppressionAction = PostSuppressionAction.NONE;
+				} else {
+					resume();
+				}
+				this.suppressed = false;
+			} else if (suppressed && isPlaying) {
+				// Consider pausing playback
+				pause();
+				this.suppressed = true;
+			}
+		}
 	}
 
 }
