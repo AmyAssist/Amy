@@ -165,6 +165,13 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	}
 
 	/**
+	 * @return the duration of the timer
+	 */
+	public Duration getDuration() {
+		return this.remainingTime;
+	}
+
+	/**
 	 * @param persistentId
 	 *            persistentId
 	 */

@@ -204,7 +204,7 @@ public class TimerLogic implements RunnableService {
 		if (!timer.isActive()) {
 			timer.setActive(true);
 			LocalDateTime current = LocalDateTime.now();
-			int timertime = (int) (timer.getRemainingTime().toMillis() / 1000);
+			int timertime = (int) (timer.getDuration().toMillis() / 1000);
 			LocalDateTime newTimerTime = current.plusSeconds(timertime);
 			timer.setTimerTime(newTimerTime);
 			this.timerStorage.save(timer);
