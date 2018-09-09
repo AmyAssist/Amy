@@ -102,6 +102,10 @@
 									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 									<resource>META-INF/de.unistuttgart.iaas.amyassist.amy.core.console.Console</resource>
 								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceivers</resource>
+								</transformer>
 							</transformers>
 						</configuration>
 					</execution>

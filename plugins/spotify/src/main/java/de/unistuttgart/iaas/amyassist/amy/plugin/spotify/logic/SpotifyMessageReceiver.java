@@ -37,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SystemTopics;
  * @author Leon Kiefer
  */
 @MessageReceiver
-public class SpotifyMessageReciever {
+public class SpotifyMessageReceiver {
 
 	private static final String MUSIC_MUTE_TOPIC_FUNCTION = "muteMusic";
 	@Reference
