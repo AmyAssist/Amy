@@ -31,11 +31,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
@@ -49,12 +51,17 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 @Service(ChatServer.class)
 public class ChatServer implements RunnableService{
 
+	/** The name of the config used by this class */
+	public static final String CONFIG_NAME = "socket.config";
+	/** The name of the property, which specifies the port */
+	public static final String PROPERTY_PORT = "chatserver.socket.port";
+	
 	/**
 	 * the socket that represents the server
 	 */
 	ServerSocket serverSocket;
 	
-	private static final int PORT = 10000;
+	private int port = 10000;
 	
 	/**
 	 * the dialog handler
@@ -66,13 +73,19 @@ public class ChatServer implements RunnableService{
 	 */
 	@Reference Logger logger;
 	
+	@Reference
+	private ConfigurationManager configurationManager;
+	
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
 	 */
 	@Override
 	public void start() {
+		Properties conf = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
+		this.port = Integer.parseInt(conf.getProperty(PROPERTY_PORT));
+		
 		try {
-			this.serverSocket = new ServerSocket(PORT);
+			this.serverSocket = new ServerSocket(port);
 			new Thread() {
 				
 				@Override
