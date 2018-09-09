@@ -26,6 +26,8 @@ package de.unistuttgart.iaas.amyassist.amy.httpserver;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
@@ -42,6 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.LocalDateTimeMessageBodyWriter;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.LocalDateTimeProvider;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeMessageBodyWriter;
@@ -88,6 +91,9 @@ public class ServerImpl implements RunnableService, Server {
 	@Reference
 	private ServiceLocator di;
 
+	@Reference
+	private TaskScheduler scheduler;
+
 	private Set<Class<?>> restResources = new HashSet<>();
 	private HttpServer httpServer;
 
@@ -99,6 +105,8 @@ public class ServerImpl implements RunnableService, Server {
 	private String contextPath;
 	private boolean local;
 
+	private CompletableFuture<Void> afterStartFuture;
+
 	@PostConstruct
 	private void init() {
 		Properties conf = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
@@ -106,6 +114,7 @@ public class ServerImpl implements RunnableService, Server {
 		this.serverPort = Integer.parseInt(conf.getProperty(PROPERTY_PORT));
 		this.contextPath = conf.getProperty(PROPERTY_CONTEXT_PATH);
 		this.local = Boolean.parseBoolean(conf.getProperty(PROPERTY_LOCALHOST));
+		this.afterStartFuture = new CompletableFuture<>();
 	}
 
 	@Override
@@ -168,6 +177,7 @@ public class ServerImpl implements RunnableService, Server {
 		} catch (IOException e) {
 			throw new IllegalStateException("The Server is can not be started", e);
 		}
+		this.afterStartFuture.complete(null);
 		this.logger.info("started the server");
 	}
 
@@ -201,4 +211,14 @@ public class ServerImpl implements RunnableService, Server {
 	public String getBaseUrl() {
 		return this.serverURL;
 	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.httpserver.Server#registerOnPostStartHook(java.lang.Runnable)
+	 */
+	@Override
+	public void registerOnPostStartHook(Runnable hook) {
+		this.afterStartFuture.thenRunAsync(hook,
+				Executors.newSingleThreadExecutor(r -> new Thread(r, "HTTP Server Start Hook Thread")));
+	}
+
 }
