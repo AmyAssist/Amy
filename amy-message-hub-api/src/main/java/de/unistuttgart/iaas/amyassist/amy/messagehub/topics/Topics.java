@@ -68,7 +68,7 @@ public class Topics {
 	 *            The function
 	 * @return The topic string.
 	 */
-	public static String smarthomeTopic(String location, String room, String function) {
+	public static String smarthome(String location, String room, String function) {
 		return from(SystemTopics.SMARTHOME, location, room, function);
 	}
 
@@ -79,7 +79,7 @@ public class Topics {
 	 *            The function
 	 * @return The topic string.
 	 */
-	public static String globalSmarthomeTopic(String function) {
+	public static String smarthomeAll(String function) {
 		return from(SystemTopics.SMARTHOME, LocationTopics.ALL, RoomTopics.ALL, function);
 	}
 }

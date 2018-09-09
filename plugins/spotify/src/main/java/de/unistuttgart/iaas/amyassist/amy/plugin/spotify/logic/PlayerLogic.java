@@ -213,8 +213,9 @@ public class PlayerLogic {
 		if (this.suppressed) {
 			this.postSuppressionAction = PostSuppressionAction.PAUSE;
 			return true;
-		} else
-			return this.spotifyAPICalls.pause();
+		}
+
+		return this.spotifyAPICalls.pause();
 	}
 
 	/**

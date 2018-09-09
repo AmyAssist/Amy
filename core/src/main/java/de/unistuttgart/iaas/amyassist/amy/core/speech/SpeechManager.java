@@ -60,7 +60,7 @@ public class SpeechManager implements RunnableService {
 	private static final String PROPERTY_KEYWORD_START_MULTI = "wakeupKeyword";
 	private static final String PROPERTY_KEYWORD_END_MULTI = "sleepKeyword";
 	private static final String PROPERTY_KEYWORD_OUTPUT_STOP = "stopOutputKeyword";
-	private static final String MESSAGE_TOPIC_MUTE = Topics.globalSmarthomeTopic(SmarthomeFunctionTopics.MUTE);
+	private static final String MESSAGE_TOPIC_MUTE = Topics.smarthomeAll(SmarthomeFunctionTopics.MUTE);
 
 	@Reference
 	private Logger logger;
