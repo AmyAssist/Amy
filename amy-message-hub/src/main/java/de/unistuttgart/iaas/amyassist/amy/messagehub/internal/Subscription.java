@@ -21,18 +21,29 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
+package de.unistuttgart.iaas.amyassist.amy.messagehub.internal;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.Message;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
 
 /**
- * The 4th level topics for smarthome
+ * This is a representation of a Subscription
  * 
- * @author Tim Neumann
+ * @author Leon Kiefer
  */
-public class SmarthomeFunctionTopics {
-	/** The mute topic */
-	public static final String MUTE = "mute";
+interface Subscription {
 
-	private SmarthomeFunctionTopics() {
-		// hide constructor
-	}
+	/**
+	 * Let the subscription handle a message, that was published on an topic, that matches the topic filter.
+	 * 
+	 * @param topic
+	 *            the topic the message was published to, matching the topic filter of this subscription
+	 * @param msg
+	 *            the message that was published
+	 * @param serviceLocator
+	 *            the ServiceLocatior to use to get Services
+	 */
+	void handle(TopicName topic, Message msg, ServiceLocator serviceLocator);
+
 }

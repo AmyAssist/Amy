@@ -21,18 +21,23 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
+package de.unistuttgart.iaas.amyassist.amy.messagehub.annotations;
+
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- * The 4th level topics for smarthome
+ * Qualifiy this class as a MessageRecevier, which gets called for subscriptions.
  * 
- * @author Tim Neumann
+ * @author Leon Kiefer
  */
-public class SmarthomeFunctionTopics {
-	/** The mute topic */
-	public static final String MUTE = "mute";
+@Documented
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface MessageReceiver {
 
-	private SmarthomeFunctionTopics() {
-		// hide constructor
-	}
 }

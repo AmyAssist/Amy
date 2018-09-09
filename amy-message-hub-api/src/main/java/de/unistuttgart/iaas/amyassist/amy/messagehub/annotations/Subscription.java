@@ -21,18 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
+package de.unistuttgart.iaas.amyassist.amy.messagehub.annotations;
+
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- * The 4th level topics for smarthome
+ * Add a Subscription to this MessageReceiver.
  * 
- * @author Tim Neumann
+ * @author Leon Kiefer
  */
-public class SmarthomeFunctionTopics {
-	/** The mute topic */
-	public static final String MUTE = "mute";
-
-	private SmarthomeFunctionTopics() {
-		// hide constructor
-	}
+@Documented
+@Retention(RUNTIME)
+@Target(METHOD)
+public @interface Subscription {
+	/**
+	 * The Topic filter of the Subscription. If the Topic Filter matches a Topic of a message, this Method is called.
+	 * 
+	 * @return the string value of the topic filter
+	 */
+	String value();
 }

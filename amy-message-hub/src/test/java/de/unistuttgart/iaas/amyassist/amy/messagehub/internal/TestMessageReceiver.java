@@ -21,18 +21,26 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
+package de.unistuttgart.iaas.amyassist.amy.messagehub.internal;
+
+import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceiver;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.Subscription;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
 
 /**
- * The 4th level topics for smarthome
+ * Message receiver with valid methods for tests
  * 
- * @author Tim Neumann
+ * @author Leon Kiefer
  */
-public class SmarthomeFunctionTopics {
-	/** The mute topic */
-	public static final String MUTE = "mute";
+@MessageReceiver
+public class TestMessageReceiver {
+	@Subscription("topic")
+	public void sub(String message) {
 
-	private SmarthomeFunctionTopics() {
-		// hide constructor
+	}
+
+	@Subscription("/top")
+	public void sub(String message, TopicName topic) {
+
 	}
 }

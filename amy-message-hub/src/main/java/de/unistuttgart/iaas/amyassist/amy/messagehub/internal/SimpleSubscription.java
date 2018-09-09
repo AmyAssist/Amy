@@ -21,18 +21,36 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
+package de.unistuttgart.iaas.amyassist.amy.messagehub.internal;
+
+import java.util.function.BiConsumer;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.Message;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
 
 /**
- * The 4th level topics for smarthome
+ * Subscription with simple callback.
  * 
- * @author Tim Neumann
+ * @author Leon Kiefer
  */
-public class SmarthomeFunctionTopics {
-	/** The mute topic */
-	public static final String MUTE = "mute";
+class SimpleSubscription implements Subscription {
 
-	private SmarthomeFunctionTopics() {
-		// hide constructor
+	private final BiConsumer<TopicName, Message> handler;
+
+	/**
+	 * Create a new Subscription with a simple callback handler
+	 * 
+	 * @param handler
+	 *            the simple handler
+	 */
+	public SimpleSubscription(BiConsumer<TopicName, Message> handler) {
+		this.handler = handler;
 	}
+
+	@Override
+	public void handle(TopicName topic, Message msg, ServiceLocator serviceLocator) {
+		this.handler.accept(topic, msg);
+	}
+
 }
