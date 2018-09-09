@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
+import java.net.URI;
+
 /**
  * A http server, which can be configured, started and stopped programmatically.
  * 
@@ -61,4 +63,18 @@ public interface Server {
 	 */
 	void start();
 
+	/**
+	 * Get the base url of the server. This is the uri specified in the config under server.url.
+	 * 
+	 * @return The base url.
+	 */
+	String getBaseUrl();
+
+	/**
+	 * Get the socket uri for the server. This starts with http, followed by the bound ip, the port and at maximum one
+	 * path segment.
+	 * 
+	 * @return The socket uri.
+	 */
+	URI getSocketUri();
 }

@@ -26,7 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 /**
  * Context key constants
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Tim Neumann
  */
 public final class Context {
 	private Context() {

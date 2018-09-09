@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
@@ -97,11 +98,18 @@ class DependencyInjectionTest {
 		String message = assertThrows(ServiceNotFoundException.class,
 				() -> this.dependencyInjection.getService(Service6.class)).getMessage();
 
-		assertThat(message, equalTo("The Service " + Service7API.class.getName()
-				+ " with [] is not registered in the DI."
-				+ " So first make sure you use the Service type and not the Service implementation to find the service."
-				+ " Second is the Service implementation of the type registered in the DI."
-				+ " Either by using a deployment descriptor or by a programmatic call."));
+		assertThat(message, equalTo("No Service of type " + Service7API.class.getName()
+				+ " with qualifier [] is registered in the DI." + "\nRequired by:"
+				+ "\nde.unistuttgart.iaas.amyassist.amy.core.di.Service6\n└── de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection"
+				+ "\nSo first make sure you use the Service type and not the Service implementation to find the service."
+				+ "\nIs " + Service7API.class.getName() + " the type of the Service?"
+				+ "\nIf not you MUST change the JavaType of the Reference to match the Service type to get the Service."
+				+ "\nElse make sure there is a Service implementation for the Service type "
+				+ Service7API.class.getName() + " registered in the DI."
+				+ "\nFirst step find the implementation of the Service."
+				+ "\nSecond check if the type of the Service is " + Service7API.class.getName()
+				+ "\nif you use the @Service read the JavaDoc to find out how to set the correct type of the Service."
+				+ "\nThird check if the Service implemenatin is loaded either by using a deployment descriptor or by a programmatic call."));
 	}
 
 	@Test()
@@ -112,9 +120,9 @@ class DependencyInjectionTest {
 
 	@Test()
 	void testDuplicateServiceException2() {
-		this.dependencyInjection.addExternalService(Service7API.class, new Service7());
-		assertThrows(DuplicateServiceException.class,
-				() -> this.dependencyInjection.addExternalService(Service7API.class, new Service7()));
+		this.dependencyInjection.register(new SingletonServiceProvider<>(Service7API.class, new Service7()));
+		assertThrows(DuplicateServiceException.class, () -> this.dependencyInjection
+				.register(new SingletonServiceProvider<>(Service7API.class, new Service7())));
 	}
 
 	@Test()
@@ -179,9 +187,9 @@ class DependencyInjectionTest {
 	}
 
 	@Test()
-	void testExternalService() {
+	void testSingletonServiceProvider() {
 		Service7 service7 = new Service7();
-		this.dependencyInjection.addExternalService(Service7API.class, service7);
+		this.dependencyInjection.register(new SingletonServiceProvider<>(Service7API.class, service7));
 		assertThat(this.dependencyInjection.getService(Service7API.class), is(theInstance(service7)));
 	}
 

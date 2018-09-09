@@ -131,7 +131,8 @@ public class WeatherSpeechCommand {
 	/**
 	 * speech command to set a new weather location. only registry entries are allowed
 	 * 
-	 * @param entities input. contains the name of the tag
+	 * @param entities
+	 *            input. contains the name of the tag
 	 * @return return the name of the location
 	 */
 	@Intent()
@@ -144,15 +145,16 @@ public class WeatherSpeechCommand {
 		}
 		return "new location not found";
 	}
-	
+
 	/**
 	 * provide all location tags to the speech
+	 * 
 	 * @return all tags
 	 */
 	@EntityProvider("weatherlocation")
-	public List<String> getAllLocationTags(){
+	public List<String> getAllLocationTags() {
 		List<String> locationNames = new ArrayList<>();
-		for(Location loc : this.locationRegistry.getAll()) {
+		for (Location loc : this.locationRegistry.getAll()) {
 			locationNames.add(loc.getTag());
 		}
 		return locationNames;

@@ -53,22 +53,22 @@ public class WeatherResource implements Resource {
 	 * @return todays weather forecast
 	 */
 	@GET
+	@Path("now")
+	@Produces(MediaType.APPLICATION_JSON)
+	public WeatherReportNow getWeatherNow() {
+		return this.weatherLogic.getReportNow();
+	}
+
+	/**
+	 * get the weather forecast for today
+	 * 
+	 * @return todays weather forecast
+	 */
+	@GET
 	@Path("today")
 	@Produces(MediaType.APPLICATION_JSON)
 	public WeatherReportDay getWeatherToday() {
 		return this.weatherLogic.getReportToday();
-	}
-
-	/**
-	 * get the weather forecast for tomorrow
-	 * 
-	 * @return tomorrows weather forecast
-	 */
-	@GET
-	@Path("tomorrow")
-	@Produces(MediaType.APPLICATION_JSON)
-	public WeatherReportDay getWeatherTomorrow() {
-		return this.weatherLogic.getReportTomorrow();
 	}
 
 	/**
@@ -83,6 +83,12 @@ public class WeatherResource implements Resource {
 		return this.weatherLogic.getReportWeek();
 	}
 
+	/**
+	 * set the location for weather forecast
+	 * 
+	 * @param locationId
+	 *            id from the registry entry
+	 */
 	@PUT
 	@Path("setLocation")
 	@Consumes(MediaType.TEXT_PLAIN)
