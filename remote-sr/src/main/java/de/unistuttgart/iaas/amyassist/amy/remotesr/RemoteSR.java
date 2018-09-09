@@ -32,10 +32,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.function.Consumer;
 
 import javax.ws.rs.core.UriBuilder;
@@ -48,6 +47,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 
 /**
@@ -71,6 +71,9 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 
 	@Reference
 	private Server httpServer;
+
+	@Reference
+	private TaskScheduler scheduler;
 
 	private static final String START_SR_EVENT = "START";
 
@@ -265,22 +268,13 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 			}
 		}, "Chrome watcher thread").start();
 
-		executeAfterSeconds(() -> {
+		this.scheduler.schedule(() -> {
 			if (this.client == null || !this.client.isConnected()) {
 				// No client connected right now. Assume something went wrong. Restart chrome.
 				stop();
 				start();
 			}
-		}, this.chromeRestartTime);
-	}
-
-	private void executeAfterSeconds(Runnable r, int seconds) {
-		new Timer("RemoteSpeechTimer").schedule(new TimerTask() {
-			@Override
-			public void run() {
-				r.run();
-			}
-		}, seconds * 1_000L);
+		}, Instant.now().plusSeconds(this.chromeRestartTime));
 	}
 
 	/**
