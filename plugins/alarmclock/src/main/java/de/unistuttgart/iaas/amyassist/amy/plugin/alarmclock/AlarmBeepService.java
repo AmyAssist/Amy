@@ -47,9 +47,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.Topics;
 
 /**
  * This class controls the alarm sound file, which is used for the alarm clock
@@ -105,7 +104,7 @@ public class AlarmBeepService {
 				break;
 			}
 		};
-		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
+		String topic = Topics.smarthomeAll(SmarthomeFunctionTopics.MUTE);
 		this.messageHub.subscribe(topic, muteConsumer);
 	}
 

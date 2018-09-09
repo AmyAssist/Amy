@@ -28,22 +28,13 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
  * 
  * @author Tim Neumann
  */
-public enum RoomTopics {
+public class RoomTopics {
 	/** All rooms */
-	ALL,
+	public static final String ALL = "all";
 	/** The living room */
-	LIVING;
+	public static final String LIVING = "living";
 
-	/**
-	 * Get the topic string for this location in a given system and location.
-	 * 
-	 * @param systemTopic
-	 *            The system topic this room is in.
-	 * @param locationTopic
-	 *            The location topic this room is in
-	 * @return The topic string of this room.
-	 */
-	public String getTopicString(SystemTopics systemTopic, LocationTopics locationTopic) {
-		return locationTopic.getTopicString(systemTopic) + "/" + this.name().toLowerCase();
+	private RoomTopics() {
+		// hide constructor
 	}
 }
