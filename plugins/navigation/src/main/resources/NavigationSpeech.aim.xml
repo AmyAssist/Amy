@@ -81,7 +81,7 @@
 		<gram>best transport</gram>
 		<EntityTemplates>
 			<EntityTemplate id="time" required="true">
-				<gram>({amytime}|now)</gram>
+				<gram>({amytime})</gram>
 			</EntityTemplate>
 			<EntityTemplate id="startregistry" required="false">
 				<gram>start</gram>
@@ -122,7 +122,7 @@
 		<gram>best transport from {start} {end} [{time}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="time" required="true">
-				<gram>({amytime}|now)</gram>
+				<gram>({amytime})</gram>
 			</EntityTemplate>
 			<EntityTemplate id="start" required="true">
 				<gram>+ to</gram>
