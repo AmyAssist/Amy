@@ -28,20 +28,17 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
  * 
  * @author Tim Neumann
  */
-public enum SystemTopics {
+public class SystemTopics {
 	/** The system topic */
-	SYSTEM,
+	public static final String SYSTEM = "system";
 	/** The smarthome topic */
-	SMARTHOME,
+	public static final String SMARTHOME = "smarthome";
 	/** The user topic */
-	USER,
+	public static final String USER = "user";
 	/** The info topic */
-	INFO;
+	public static final String INFO = "info";
 
-	/**
-	 * @return The topic string of the topic.
-	 */
-	public String getTopicString() {
-		return this.name().toLowerCase();
+	private SystemTopics() {
+		// hide constructor
 	}
 }

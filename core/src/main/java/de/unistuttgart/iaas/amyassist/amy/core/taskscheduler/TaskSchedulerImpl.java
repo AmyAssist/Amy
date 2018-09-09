@@ -32,10 +32,10 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 
 /**
@@ -43,8 +43,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
  * 
  * @author Leon Kiefer
  */
-@Service
-public class TaskSchedulerImpl implements TaskScheduler {
+@Service(TaskScheduler.class)
+public class TaskSchedulerImpl implements TaskScheduler, RunnableService {
 	@Reference
 	private Logger logger;
 
@@ -71,8 +71,19 @@ public class TaskSchedulerImpl implements TaskScheduler {
 		this.scheduledExecutorService.schedule(task, delay, TimeUnit.MILLISECONDS);
 	}
 
-	@PreDestroy
-	private void destroy() {
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
+	 */
+	@Override
+	public void start() {
+		// Do nothing.
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
+	 */
+	@Override
+	public void stop() {
 		this.scheduledExecutorService.shutdownNow();
 	}
 

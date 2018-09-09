@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceiver;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.Subscription;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SystemTopics;
 
 /**
  * MessageReveiver for music and sound messages
@@ -35,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.Subscription;
  * @author Leon Kiefer
  */
 @MessageReceiver
-public class SpotifyMessageReciever {
+public class SpotifyMessageReceiver {
 
 	private static final String MUSIC_MUTE_TOPIC_FUNCTION = "muteMusic";
 	@Reference
@@ -48,7 +50,7 @@ public class SpotifyMessageReciever {
 	 * @param message
 	 *            "true" or "false"
 	 */
-	@Subscription("smarthome/+/+/mute")
+	@Subscription(SystemTopics.SMARTHOME + "/+/+/" + SmarthomeFunctionTopics.MUTE)
 	public void mute(String message) {
 		switch (message) {
 		case "true":
@@ -68,7 +70,7 @@ public class SpotifyMessageReciever {
 	 * @param message
 	 *            "true" or "false"
 	 */
-	@Subscription("smarthome/+/+/" + MUSIC_MUTE_TOPIC_FUNCTION)
+	@Subscription(SystemTopics.SMARTHOME + "/+/+/" + MUSIC_MUTE_TOPIC_FUNCTION)
 	public void muteMusic(String message) {
 		switch (message) {
 		case "true":
