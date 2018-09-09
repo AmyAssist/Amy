@@ -84,6 +84,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	private volatile Consumer<String> listener = null;
 	private volatile boolean currentlyRecognizing = false;
 	private volatile boolean stop = false;
+	private volatile boolean stoppingChromeForRestart = false;
 
 	private boolean enabled;
 	private int chromeRestartTime;
@@ -255,7 +256,9 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 					this.logger.warn("Chrome: {}", line);
 				}
 				this.chromeProcess.waitFor();
-				if (!this.stop) {
+				if (this.stoppingChromeForRestart) {
+					this.stoppingChromeForRestart = false;
+				} else if (!this.stop) {
 					this.logger.warn("Chrome quit unexpectedly");
 					launchChrome();
 				}
@@ -270,9 +273,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 
 		this.scheduler.schedule(() -> {
 			if (this.client == null || !this.client.isConnected()) {
-				// No client connected right now. Assume something went wrong. Restart chrome.
-				stop();
-				start();
+				restartChromeIfNotStopping();
 			}
 		}, Instant.now().plusSeconds(this.chromeRestartTime));
 	}
@@ -353,6 +354,19 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 		 */
 		LaunchChromeException(String string, Exception e) {
 			super(string, e);
+		}
+	}
+
+	private void restartChromeIfNotStopping() {
+		if (!this.stop) {
+			this.stoppingChromeForRestart = true;
+			this.chromeProcess.destroy();
+
+			try {
+				launchChrome();
+			} catch (LaunchChromeException e) {
+				throw new IllegalStateException("Unable to launch chrome", e);
+			}
 		}
 	}
 
