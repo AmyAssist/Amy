@@ -61,8 +61,6 @@ public class ChatServer implements RunnableService{
 	 */
 	ServerSocket serverSocket;
 	
-	private int port = 10000;
-	
 	/**
 	 * the dialog handler
 	 */
@@ -82,7 +80,7 @@ public class ChatServer implements RunnableService{
 	@Override
 	public void start() {
 		Properties conf = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
-		this.port = Integer.parseInt(conf.getProperty(PROPERTY_PORT));
+		int port = Integer.parseInt(conf.getProperty(PROPERTY_PORT));
 		
 		try {
 			this.serverSocket = new ServerSocket(port);
@@ -107,7 +105,7 @@ public class ChatServer implements RunnableService{
 				}
 			}.start();
 		} catch (IOException e) {
-			this.logger.error("Error while starting", e);e.printStackTrace();
+			this.logger.error("Error while starting", e);
 		}
 	}
 
@@ -165,14 +163,12 @@ public class ChatServer implements RunnableService{
 				Queue<String> answerQueue = new LinkedList<>();
 				UUID uuid = ChatServer.this.handler.createDialog(answerQueue::add);
 				
-				boolean running = true;
-				while(running) {
+				while(true) {
 					
 					//look for input
 					if(in.ready()) {
 						String input = in.readLine();
 						if(input.equalsIgnoreCase(ClientHandler.TERMINATE)) {
-							running = false;
 							break;
 						}
 						ChatServer.this.handler.process(input, uuid);
@@ -185,8 +181,6 @@ public class ChatServer implements RunnableService{
 					}
 				}
 				
-				in.close();
-				out.close();
 				this.clientSocket.close();
 			} catch (IOException e) {
 				ChatServer.this.logger.error("Error in session", e);
