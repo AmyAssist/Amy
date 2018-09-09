@@ -378,11 +378,13 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 		if (!isEnabled())
 			return;
 
-		try {
-			launchChrome();
-		} catch (LaunchChromeException e) {
-			throw new IllegalStateException("Unable to launch chrome", e);
-		}
+		this.httpServer.registerOnPostStartHook(() -> {
+			try {
+				launchChrome();
+			} catch (LaunchChromeException e) {
+				throw new IllegalStateException("Unable to launch chrome", e);
+			}
+		});
 	}
 
 	/**
