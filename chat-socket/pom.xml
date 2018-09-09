@@ -2,9 +2,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>amy-rest-resources</artifactId>
-	<name>Amy rest resources</name>
-	<description>Basic rest resources</description>
+	<artifactId>amy-chat-socket</artifactId>
+	<name>Amy chat socket</name>
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
 		<artifactId>amy</artifactId>
@@ -35,4 +34,5 @@
 			<artifactId>amy-message-hub-api</artifactId>
 		</dependency>
 	</dependencies>
+	<description>Socket for chat communication</description>
 </project>
