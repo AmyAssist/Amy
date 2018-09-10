@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.LogManager;
 
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -50,6 +52,11 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		Core core = new Core();
-		core.start(args);
+		CompletableFuture<Integer> exitFuture = core.start(args);
+		try {
+			System.exit(exitFuture.get());
+		} catch (InterruptedException | ExecutionException e) {
+			System.exit(1);
+		}
 	}
 }
