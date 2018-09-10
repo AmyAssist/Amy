@@ -216,14 +216,7 @@ class SpotifyAPICallsTest {
 	}
 
 	@Test
-	public void testGetVolume() {
-		doReturn(this.device1).when(this.spotifyAPICalls).getActiveDevice();
-		assertThat(this.spotifyAPICalls.getVolume(), equalTo(10));
-	}
-
-	@Test
 	public void testGetVolumeNoDevice() {
-		doReturn(null).when(this.spotifyAPICalls).getActiveDevice();
 		assertThat(this.spotifyAPICalls.getVolume(), equalTo(-1));
 	}
 
