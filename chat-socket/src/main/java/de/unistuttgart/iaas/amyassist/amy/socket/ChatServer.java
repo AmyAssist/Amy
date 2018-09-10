@@ -23,21 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.socket;
 
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.LinkedList;
+import java.io.IOException;
 import java.util.Properties;
-import java.util.Queue;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 
 /**
@@ -45,31 +37,20 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
  * 
  * @author Christian Bräuner
  */
-@Service(ChatServer.class)
-public class ChatServer implements RunnableService{
-
+public class ChatServer implements RunnableService {
+	
 	/** The name of the config used by this class */
 	public static final String CONFIG_NAME = "socket.config";
 	/** The name of the property, which specifies the port */
-	public static final String PROPERTY_PORT = "chatserver.socket.port";
-	
-	/**
-	 * the socket that represents the server
-	 */
-	ServerSocket serverSocket;
-	
-	/**
-	 * the dialog handler
-	 */
-	@Reference DialogHandler handler;
+	public static final String PROPERTY_PORT = "web.socket.port";
 
-	/**
-	 * the logger
-	 */
-	@Reference Logger logger;
-	
 	@Reference
 	private ConfigurationManager configurationManager;
+	
+	@Reference
+	private Logger logger;
+	
+	private ChatWebSocket socket;
 	
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
@@ -79,33 +60,10 @@ public class ChatServer implements RunnableService{
 		Properties conf = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
 		int port = Integer.parseInt(conf.getProperty(PROPERTY_PORT));
 		
-		try {
-			this.serverSocket = new ServerSocket(port);
-			new Thread() {
-				
-				@Override
-				public void run() {
-					ChatServer.this.logger.info("Chatserver started");
-					
-					// accept new connections and instantiate a new ClientHandler for each session
-					try {
-						while (true) {
-							new ClientHandler(ChatServer.this.serverSocket.accept()).start();
-						}
-					} catch (SocketException se) {
-						if(!se.getMessage().equals("socket closed")) {
-							ChatServer.this.logger.error("Socket exception", se);
-						}
-					} catch (IOException e) {
-						ChatServer.this.logger.error("Error while running chat socket", e);
-					}
-				}
-			}.start();
-		} catch (IOException e) {
-			this.logger.error("Error while starting", e);
-		}
-	}
+		this.socket = new ChatWebSocket( port );
+		this.socket.start();
 
+	}
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
@@ -113,76 +71,11 @@ public class ChatServer implements RunnableService{
 	@Override
 	public void stop() {
 		try {
-			this.serverSocket.close();
-		} catch (IOException e) {
-			this.logger.error("Error while shuting down", e);
+			this.socket.stop();
+		} catch (IOException | InterruptedException e) {
+			this.logger.error("Can't close chatserver", e);
 		}
 		this.logger.info("ChatServer shutdown");
 	}
 
-
-	/**
-	 * A handler thread class to start a new session for each client.
-	 * Responsible for a dealing with a single client and sending its messages
-	 * to the respective user.
-	 * 
-	 * @author Christian Bräuner
-	 */
-	private class ClientHandler extends Thread {
-
-		private static final String TERMINATE = "quit";
-		
-		private Socket clientSocket;
-		
-		
-		/**
-		 * Constructs a handler thread.
-		 * 
-		 * @param socket the socket to handle
-		 */
-		public ClientHandler(Socket socket) {
-			// init handler
-			this.clientSocket = socket;
-		}
-
-		/**
-		 * Services this thread's client by repeatedly requesting a screen name
-		 * until a unique one has been submitted, then acknowledges the name and
-		 * registers the output stream for the client in a global set.
-		 */
-		@Override
-		public void run() {
-			try(PrintWriter out = new PrintWriter(new OutputStreamWriter(this.clientSocket.getOutputStream(),"UTF-8"), true);
-					BufferedReader in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream(),"UTF-8"));
-					) {
-					
-				out.println("Hello");
-				Queue<String> answerQueue = new LinkedList<>();
-				UUID uuid = ChatServer.this.handler.createDialog(answerQueue::add);
-				
-				while(true) {
-					
-					//look for input
-					if(in.ready()) {
-						String input = in.readLine();
-						if(input.equalsIgnoreCase(ClientHandler.TERMINATE)) {
-							break;
-						}
-						ChatServer.this.handler.process(input, uuid);
-					}
-					
-					//output if possible
-					String output = answerQueue.poll();
-					if(output != null) {
-						out.println(output);
-					}
-				}
-				
-				this.clientSocket.close();
-			} catch (IOException e) {
-				ChatServer.this.logger.error("Error in session", e);
-			}
-		}
-	}
-	
 }
