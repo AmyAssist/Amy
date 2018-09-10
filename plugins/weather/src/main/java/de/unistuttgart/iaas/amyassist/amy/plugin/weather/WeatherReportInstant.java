@@ -24,27 +24,21 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
 /**
- * Weather report for a day
+ * Weather report for an instant
  * 
- * @author Benno Krauß, Muhammed Kaya, Tim Neumann
+ * @author Muhammed Kaya, Tim Neumann
  */
-public class WeatherReportDay {
+public class WeatherReportInstant {
 	/** The summary of the report */
 	private final String summary;
 	/** The probability for precipitation from 0 to 1 */
 	private final double precipProbability;
 	/** The type of precipitation. Possibilities: rain, snow, or sleet */
 	private final String precipType;
-	/** The minimal temperature in degrees celcius */
-	private final double temperatureMin;
-	/** The maximal temperature in degrees celcius */
-	private final double temperatureMax;
+	/** The temperature in degrees celcius */
+	private final double temperature;
 	/** The time stamp of the weather report */
 	private final long timestamp;
-	/** The time stamp of the sunrise */
-	private final long sunriseTime;
-	/** The time stamp of the sunset */
-	private final long sunsetTime;
 	/** The wind speed in meters per second */
 	private final double windSpeed;
 	/**
@@ -56,7 +50,7 @@ public class WeatherReportDay {
 	private final String iconType;
 
 	/**
-	 * Creates a weather report for a day
+	 * Creates a weather report for an instant
 	 * 
 	 * @param pSummary
 	 *            Sets {@link #summary}
@@ -64,32 +58,22 @@ public class WeatherReportDay {
 	 *            Set's {@link #precipProbability}
 	 * @param pPrecipitationType
 	 *            Set's {@link #precipType}
-	 * @param pTemperatureMin
-	 *            Set's {@link #temperatureMin}
-	 * @param pTemperatureMax
-	 *            Set's {@link #temperatureMax}
+	 * @param pTemperature
+	 *            Set's {@link #temperature}
 	 * @param pTimestamp
 	 *            Set's {@link #timestamp}
-	 * @param pSunriseTime
-	 *            Set's {@link #sunriseTime}
-	 * @param pSunsetTime
-	 *            Set's {@link #sunsetTime}
 	 * @param pWindSpeed
 	 *            Set's {@link #windSpeed}
 	 * @param pIconType
 	 *            Set's {@link #iconType}
 	 */
-	public WeatherReportDay(String pSummary, double pPrecipitationProbability, String pPrecipitationType,
-			double pTemperatureMin, double pTemperatureMax, long pTimestamp, long pSunriseTime, long pSunsetTime,
-			double pWindSpeed, String pIconType) {
+	public WeatherReportInstant(String pSummary, double pPrecipitationProbability, String pPrecipitationType,
+			double pTemperature, long pTimestamp, double pWindSpeed, String pIconType) {
 		this.summary = pSummary;
 		this.precipProbability = pPrecipitationProbability;
 		this.precipType = pPrecipitationType;
-		this.temperatureMin = pTemperatureMin;
-		this.temperatureMax = pTemperatureMax;
+		this.temperature = pTemperature;
 		this.timestamp = pTimestamp;
-		this.sunriseTime = pSunriseTime;
-		this.sunsetTime = pSunsetTime;
 		this.windSpeed = pWindSpeed;
 		this.iconType = pIconType;
 	}
@@ -122,21 +106,12 @@ public class WeatherReportDay {
 	}
 
 	/**
-	 * Get's {@link #temperatureMin temperatureMin}
+	 * Get's {@link #temperature temperature}
 	 * 
-	 * @return temperatureMin
+	 * @return temperature
 	 */
-	public double getTemperatureMin() {
-		return this.temperatureMin;
-	}
-
-	/**
-	 * Get's {@link #temperatureMax temperatureMax}
-	 * 
-	 * @return temperatureMax
-	 */
-	public double getTemperatureMax() {
-		return this.temperatureMax;
+	public double getTemperature() {
+		return this.temperature;
 	}
 
 	/**
@@ -146,24 +121,6 @@ public class WeatherReportDay {
 	 */
 	public long getTimestamp() {
 		return this.timestamp;
-	}
-
-	/**
-	 * Get's {@link #sunriseTime sunriseTime}
-	 * 
-	 * @return sunriseTime
-	 */
-	public long getSunriseTime() {
-		return this.sunriseTime;
-	}
-
-	/**
-	 * Get's {@link #sunsetTime sunsetTime}
-	 * 
-	 * @return sunsetTime
-	 */
-	public long getSunsetTime() {
-		return this.sunsetTime;
 	}
 
 	/**

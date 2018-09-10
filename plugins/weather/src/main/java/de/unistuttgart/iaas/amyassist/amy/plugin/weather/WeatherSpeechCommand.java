@@ -23,19 +23,28 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+
+import javax.annotation.Nullable;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherLogic.GeoCoordinatePair;
 import de.unistuttgart.iaas.amyassist.amy.registry.Location;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 
@@ -45,12 +54,61 @@ import java.util.Map;
  */
 @SpeechCommand
 public class WeatherSpeechCommand {
+	/** The name for the persistence used. */
+	private static final String NO_LOCATION_STRING = "No location configured.";
+	private static final String CURRENT_LOCATION_KEY = "currentLocation";
 
 	@Reference
-	private WeatherDarkSkyAPI weatherAPI;
+	private WeatherLogic weatherLogic;
 
 	@Reference
 	private LocationRegistry locationRegistry;
+
+	@Reference
+	private IStorage storage;
+
+	private @Nullable GeoCoordinatePair getCurrentLocation() {
+		if (!this.storage.has(CURRENT_LOCATION_KEY)) {
+			if (this.locationRegistry.getAll().isEmpty())
+				return null;
+
+			setCurrentLocation(new GeoCoordinatePair(this.locationRegistry.getAll().get(0)));
+		}
+		return new GeoCoordinatePair(this.storage.get(CURRENT_LOCATION_KEY));
+	}
+
+	private void setCurrentLocation(GeoCoordinatePair loc) {
+		this.storage.put(CURRENT_LOCATION_KEY, loc.getStringRepresentation());
+	}
+
+	private int round(double value) {
+		return (int) Math.round(value);
+	}
+
+	private String dateString(long timeStamp, String timezone) {
+		DateFormat dfm = new SimpleDateFormat("HH:mm");
+		dfm.setTimeZone(TimeZone.getTimeZone(timezone));
+		return dfm.format(timeStamp * 1000);
+	}
+
+	private String stringifyDayWeatherReport(String preamble, WeatherReportDay report, String timezone, boolean tldr) {
+		String result = preamble + " " + report.getSummary();
+		if (report.getPrecipProbability() > 0) {
+			result += " " + round(report.getPrecipProbability() * 100) + "% probability of " + report.getPrecipType()
+					+ ".";
+		}
+		result += " Between " + round(report.getTemperatureMin()) + " and " + round(report.getTemperatureMax()) + "°C.";
+
+		if (!tldr) {
+			result += " Sunrise is at " + dateString(report.getSunriseTime(), timezone) + " and sunset at "
+					+ dateString(report.getSunsetTime(), timezone);
+		}
+		return result;
+	}
+
+	private String stringifyWeekWeatherReport(String preamble, WeatherReportWeek report) {
+		return preamble + " " + report.getSummary();
+	}
 
 	/**
 	 * speech command for the weather forecast for today
@@ -61,7 +119,13 @@ public class WeatherSpeechCommand {
 	 */
 	@Intent()
 	public String weatherToday(Map<String, EntityData> entities) {
-		return this.weatherAPI.getReportToday().toString();
+		GeoCoordinatePair curr = getCurrentLocation();
+		if (curr == null)
+			return NO_LOCATION_STRING;
+		WeatherReport report = this.weatherLogic.getWeatherReport(curr);
+
+		return stringifyDayWeatherReport("This is the weather report for today.", report.getWeek().getDays()[0],
+				report.getTimezone(), false);
 	}
 
 	/**
@@ -73,7 +137,13 @@ public class WeatherSpeechCommand {
 	 */
 	@Intent()
 	public String weatherTomorrow(Map<String, EntityData> entities) {
-		return this.weatherAPI.getReportTomorrow().toString();
+		GeoCoordinatePair curr = getCurrentLocation();
+		if (curr == null)
+			return NO_LOCATION_STRING;
+		WeatherReport report = this.weatherLogic.getWeatherReport(curr);
+
+		return stringifyDayWeatherReport("This is the weather report for tomorrow.", report.getWeek().getDays()[1],
+				report.getTimezone(), false);
 	}
 
 	/**
@@ -85,7 +155,11 @@ public class WeatherSpeechCommand {
 	 */
 	@Intent()
 	public String weatherWeek(Map<String, EntityData> entities) {
-		return this.weatherAPI.getReportWeek().toString();
+		GeoCoordinatePair curr = getCurrentLocation();
+		if (curr == null)
+			return NO_LOCATION_STRING;
+		WeatherReport report = this.weatherLogic.getWeatherReport(curr);
+		return stringifyWeekWeatherReport("This is the weather report for the week.", report.getWeek());
 	}
 
 	/**
@@ -97,31 +171,34 @@ public class WeatherSpeechCommand {
 	 */
 	@Intent()
 	public String weatherWeekend(Map<String, EntityData> entities) {
+		GeoCoordinatePair curr = getCurrentLocation();
+		if (curr == null)
+			return NO_LOCATION_STRING;
+		WeatherReport report = this.weatherLogic.getWeatherReport(curr);
+		ZonedDateTime now = ZonedDateTime.now(ZoneId.of(report.getTimezone()));
 
-		WeatherReportWeek report = this.weatherAPI.getReportWeek();
-		Calendar c = Calendar.getInstance();
-
-		int weekday = c.get(Calendar.DAY_OF_WEEK);
+		DayOfWeek weekday = now.getDayOfWeek();
 		switch (weekday) {
-		case Calendar.SATURDAY:
-			if (report.days.length < 2) {
-				throw new RuntimeException("WeatherAPI not working as expected");
-			}
-			return "Today, " + report.days[0].shortDescription() + " and tomorrow, "
-					+ report.days[1].shortDescription();
-		case Calendar.SUNDAY:
-			return "Today, " + report.days[0].shortDescription();
+		case SATURDAY:
+			if (report.getWeek().getDays().length < 2)
+				throw new IllegalStateException("WeatherAPI not working as expected");
+			return "Today, " + stringifyDayWeatherReport("", report.getWeek().getDays()[0], report.getTimezone(), true)
+					+ " and tomorrow, "
+					+ stringifyDayWeatherReport("", report.getWeek().getDays()[1], report.getTimezone(), true);
+		case SUNDAY:
+			return "Today, " + stringifyDayWeatherReport("", report.getWeek().getDays()[0], report.getTimezone(), true);
 		default:
 			// Get weekend days
 			String saturdayReport = null;
 			String sundayReport = null;
-			for (WeatherReportDay d : report.days) {
-				c.setTime(new Date(d.getTimestamp() * 1000));
-				weekday = c.get(Calendar.DAY_OF_WEEK);
-				if (weekday == Calendar.SATURDAY) {
-					saturdayReport = d.shortDescription();
-				} else if (weekday == Calendar.SUNDAY) {
-					sundayReport = d.shortDescription();
+			for (WeatherReportDay d : report.getWeek().getDays()) {
+				Instant instant = Instant.ofEpochSecond(d.getTimestamp());
+				ZonedDateTime date = ZonedDateTime.ofInstant(instant, ZoneId.of(report.getTimezone()));
+				DayOfWeek day = date.getDayOfWeek();
+				if (day == DayOfWeek.SATURDAY) {
+					saturdayReport = stringifyDayWeatherReport("", d, report.getTimezone(), true);
+				} else if (day == DayOfWeek.SUNDAY) {
+					sundayReport = stringifyDayWeatherReport("", d, report.getTimezone(), true);
 				}
 			}
 			return "On Saturday, " + saturdayReport + " and on Sunday " + sundayReport;
@@ -139,7 +216,7 @@ public class WeatherSpeechCommand {
 	public String setLocation(Map<String, EntityData> entities) {
 		for (Location loc : this.locationRegistry.getAll()) {
 			if (loc.getTag().equalsIgnoreCase(entities.get("weatherlocation").getString())) {
-				this.weatherAPI.setLocation(loc.getPersistentId());
+				this.setCurrentLocation(new GeoCoordinatePair(loc));
 				return loc.getName();
 			}
 		}
