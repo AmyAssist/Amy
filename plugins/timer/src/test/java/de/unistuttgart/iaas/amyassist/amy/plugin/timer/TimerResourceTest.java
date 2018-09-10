@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
@@ -148,7 +149,7 @@ class TimerResourceTest {
 		assertEquals(200, this.r.getStatus());
 		assertEquals(newTimer.getId(), timerRead.getId());
 		assertEquals(newTimer.getTimerTime(), timerRead.getTimerTime());
-		assertEquals(newTimer.getRemainingTime(), timerRead.getRemainingTime());
+		// time.now() is not testable
 		assertEquals(newTimer.isActive(), timerRead.isActive());
 	}
 
