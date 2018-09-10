@@ -33,19 +33,19 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * TODO: Description
+ * 
  * @author Felix Burk
  */
 @Service
 @SpeechCommand
 public class ToskaSpeech {
-	
+
 	@Reference
 	private ToskaLogic logic;
 
-	
 	@Intent
 	public String install(Map<String, EntityData> entities) {
-		logic.install();
+		this.logic.install();
 		return "trying to install...";
 	}
 

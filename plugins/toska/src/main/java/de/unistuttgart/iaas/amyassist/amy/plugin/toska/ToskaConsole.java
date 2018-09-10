@@ -23,35 +23,21 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.toska;
 
-import java.util.ServiceLoader;
-
-import javax.ws.rs.ext.MessageBodyReader;
-
-import org.slf4j.Logger;
-
 import asg.cliche.Command;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * TODO: Description
  * 
- * @author
+ * @author Leon Kiefer
  */
 public class ToskaConsole {
-	
-	@Reference
-	Logger logger;
 
 	@Reference
-	ToskaLogic logic;
+	private ToskaLogic logic;
 	
 	@Command
 	public String test() {
-		this.logger.error("test {}", ServiceLoader.load(MessageBodyReader.class));
-		
-		//logic.getInstalledPlugins();
-		
-		return "hfioeshfoishfoisheiofhesfhoshfo TOSKAAAAAA";
-		
+		return this.logic.getInstalledPlugins();
 	}
 }

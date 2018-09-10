@@ -24,13 +24,13 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.toska;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
 import org.opentosca.containerapi.client.IOpenTOSCAContainerAPIClient;
 import org.opentosca.containerapi.client.impl.OpenTOSCAContainerLegacyAPIClient;
 import org.opentosca.containerapi.client.model.Application;
-import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.WithDefault;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
@@ -39,50 +39,45 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
  * TODO: Description
- * @author Felix Burk
+ * 
+ * @author Felix Burk, Leon Kiefer
  */
 @Service
 public class ToskaLogic {
-	
-	@Reference
-	private Logger logger;
-	
-	
-	
+
 	@WithDefault
 	@Reference
 	private Properties configuration;
-	
+
 	/**
 	 * internal toska client
 	 */
-	IOpenTOSCAContainerAPIClient apiClient;
-	
-	
+	private IOpenTOSCAContainerAPIClient apiClient;
+
 	@PostConstruct
 	private void connect() {
 		String containerHost = this.configuration.getProperty("CONTAINER_HOST");
 		String containerHostInternal = this.configuration.getProperty("CONTAINER_HOST_INTERNAL");
 		this.apiClient = new OpenTOSCAContainerLegacyAPIClient(containerHost, containerHostInternal);
-
-		this.getInstalledPlugins();
 	}
 
 	/**
 	 * 
 	 */
 	public void install() {
-				
-	}
-	
-	public void getInstalledPlugins() {
-		
+		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 		List<Application> applist = this.apiClient.getApplications();
-		
+		this.apiClient.createServiceInstance(applist.get(0), Collections.emptyMap());
+	}
+
+	public String getInstalledPlugins() {
+		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+		List<Application> applist = this.apiClient.getApplications();
+
 		List<String> apps = new ArrayList<>();
 		applist.forEach(a -> apps.add(a.getDisplayName()));
-		
-		apps.forEach(a -> this.logger.error(a));
+
+		return String.join(", ", apps);
 	}
 
 }
