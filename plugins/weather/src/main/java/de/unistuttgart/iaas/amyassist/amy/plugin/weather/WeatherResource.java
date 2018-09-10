@@ -23,13 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherLogic.GeoCoordinatePair;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
@@ -44,6 +44,9 @@ public class WeatherResource implements Resource {
 	@Reference
 	private WeatherLogic weatherLogic;
 
+	@Reference
+	private LocationRegistry registry;
+
 	/**
 	 * get the weather report
 	 * 
@@ -56,7 +59,10 @@ public class WeatherResource implements Resource {
 	@Path("report")
 	@Produces(MediaType.APPLICATION_JSON)
 	public WeatherReport getWeatherReport(@QueryParam("id") int locationId) {
-		return this.weatherLogic.getWeatherReport(locationId);
+		Location loc = this.registry.getById(locationId);
+		if (loc == null)
+			throw new WebApplicationException(400);
+		return this.weatherLogic.getWeatherReport(new GeoCoordinatePair(loc));
 	}
 
 	/**

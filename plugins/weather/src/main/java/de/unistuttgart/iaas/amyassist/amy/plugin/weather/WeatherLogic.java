@@ -43,26 +43,107 @@ public class WeatherLogic {
 	@Reference
 	private WeatherDarkSkyAdapter api;
 
-	private Map<Location, WeatherReport> currentReports = new ConcurrentHashMap<>();
+	private Map<GeoCoordinatePair, WeatherReport> currentReports = new ConcurrentHashMap<>();
 
 	/**
-	 * Get the current weather report for the location, that has the given id in the location registry.
+	 * Get the current weather report for the given location.
 	 * 
-	 * @param locationId
-	 *            The id of the location to get the report for
+	 * @param location
+	 *            The location to get the report for
 	 * @return The WeatherReport
-	 * @throws IllegalArgumentException
-	 *             If the given id does not correspond to a location in the registry.
 	 */
-	public WeatherReport getWeatherReport(int locationId) {
-		Location loc = this.locationRegistry.getById(locationId);
-		if (loc == null)
-			throw new IllegalArgumentException("Not a valid location id");
-		WeatherReport report = this.currentReports.get(loc);
+	public WeatherReport getWeatherReport(GeoCoordinatePair location) {
+
+		WeatherReport report = this.currentReports.get(location);
 		if (report == null || report.isToOld()) {
-			report = this.api.getWeatherReport(String.valueOf(loc.getLatitude()), String.valueOf(loc.getLongitude()));
+			report = this.api.getWeatherReport(String.valueOf(location.getLatitude()),
+					String.valueOf(location.getLongitude()));
 		}
 
 		return report;
+	}
+
+	/**
+	 * A class for geo coordinates
+	 * 
+	 * @author Tim Neumann
+	 */
+	public static class GeoCoordinatePair {
+		private final double longitude;
+		private final double latitude;
+
+		/**
+		 * Create a new geo coordinate pair from latitude and longitude.
+		 * 
+		 * @param pLongitude
+		 *            The longitude to use
+		 * 
+		 * @param pLatitude
+		 *            The latitude to use
+		 */
+		public GeoCoordinatePair(long pLongitude, long pLatitude) {
+			this.longitude = pLongitude;
+			this.latitude = pLatitude;
+		}
+
+		/**
+		 * Creates a new geo coordinate pair from a location.
+		 * 
+		 * @param loc
+		 *            The location to use.
+		 */
+		public GeoCoordinatePair(Location loc) {
+			this.longitude = loc.getLongitude();
+			this.latitude = loc.getLatitude();
+		}
+
+		/**
+		 * Creates a new geo coordnate pair from a string representation
+		 * <p>
+		 * The string should be the string representation of a double followed by semicolon followed by another double.
+		 * The first double is the longitude, the second the latitude.
+		 * <p>
+		 * Works with {@link #getStringRepresentation()}.
+		 * 
+		 * @param stringRepresentation
+		 *            The string representation to use.
+		 * @throws IllegalArgumentException
+		 *             When the given string is not a String followed by semicolon followed by String
+		 * @throws NumberFormatException
+		 *             When one of the strings before and after the semicolon is not a double.
+		 */
+		public GeoCoordinatePair(String stringRepresentation) {
+			String[] parts = stringRepresentation.split(";");
+			if (parts.length != 2)
+				throw new IllegalArgumentException(
+						"string representation should be a semicolon seperated pair of coordinats.");
+			this.longitude = Double.parseDouble(parts[0]);
+			this.latitude = Double.parseDouble(parts[1]);
+		}
+
+		/**
+		 * Get's {@link #longitude longitude}
+		 * 
+		 * @return longitude
+		 */
+		public double getLongitude() {
+			return this.longitude;
+		}
+
+		/**
+		 * Get's {@link #latitude latitude}
+		 * 
+		 * @return latitude
+		 */
+		public double getLatitude() {
+			return this.latitude;
+		}
+
+		/**
+		 * @return The longitude followed by a semicolon followed by the latitude.
+		 */
+		public String getStringRepresentation() {
+			return this.longitude + ";" + this.latitude;
+		}
 	}
 }

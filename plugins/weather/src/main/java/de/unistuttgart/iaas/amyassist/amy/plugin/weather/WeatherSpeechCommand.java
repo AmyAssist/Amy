@@ -35,16 +35,14 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import javax.annotation.Nullable;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
-import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherLogic.GeoCoordinatePair;
 import de.unistuttgart.iaas.amyassist.amy.registry.Location;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 
@@ -57,9 +55,8 @@ import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 @SpeechCommand
 public class WeatherSpeechCommand {
 	/** The name for the persistence used. */
-	public static final String PERSISTENCE_NAME = "WeatherCurrentLocation";
-	private static final int PERSISTENCE_ID = 1;
 	private static final String NO_LOCATION_STRING = "No location configured.";
+	private static final String CURRENT_LOCATION_KEY = "currentLocatio";
 
 	@Reference
 	private WeatherLogic weatherLogic;
@@ -68,43 +65,20 @@ public class WeatherSpeechCommand {
 	private LocationRegistry locationRegistry;
 
 	@Reference
-	private Persistence persistence;
+	private IStorage storage;
 
-	@PostConstruct
-	private void init() {
-		this.persistence.register(CurrentLocationPersistence.class);
+	private @Nullable GeoCoordinatePair getCurrentLocation() {
+		if (!this.storage.has(CURRENT_LOCATION_KEY)) {
+			if (this.locationRegistry.getAll().isEmpty())
+				return null;
+
+			setCurrentLocation(new GeoCoordinatePair(this.locationRegistry.getAll().get(0)));
+		}
+		return new GeoCoordinatePair(this.storage.get(CURRENT_LOCATION_KEY));
 	}
 
-	private @Nullable Location getCurrentLocation() {
-		EntityManager em = this.persistence.getEntityManager(PERSISTENCE_NAME);
-		CurrentLocationPersistence result;
-		try {
-			result = em
-					.createQuery("SELECT l FROM " + CurrentLocationPersistence.class.getName()
-							+ " l WHERE l.primaryId = :id", CurrentLocationPersistence.class)
-					.setParameter("id", PERSISTENCE_ID).getSingleResult();
-			return result.getCurrentLocation();
-		} catch (NoResultException e) { // NOSONAR
-			Location loc = this.locationRegistry.getAll().get(0);
-
-			setCurrentLocation(loc);
-			return loc;
-		}
-	}
-
-	private void setCurrentLocation(Location data) {
-		EntityManager em = this.persistence.getEntityManager(PERSISTENCE_NAME);
-		CurrentLocationPersistence d = new CurrentLocationPersistence(data, PERSISTENCE_ID);
-		if (em.contains(d)) {
-			em.getTransaction().begin();
-			em.merge(d);
-			em.getTransaction().commit();
-		} else {
-			em.getTransaction().begin();
-			em.persist(d);
-			em.getTransaction().commit();
-			em.detach(d);
-		}
+	private void setCurrentLocation(GeoCoordinatePair loc) {
+		this.storage.put(CURRENT_LOCATION_KEY, loc.getStringRepresentation());
 	}
 
 	private int round(double value) {
@@ -118,7 +92,7 @@ public class WeatherSpeechCommand {
 	}
 
 	private String stringifyDayWeatherReport(String preamble, WeatherReportDay report, String timezone, boolean tldr) {
-		String result = preamble + report.getSummary();
+		String result = preamble + " " + report.getSummary();
 		if (report.getPrecipProbability() > 0) {
 			result += " " + round(report.getPrecipProbability() * 100) + "% probability of " + report.getPrecipType()
 					+ ".";
@@ -133,7 +107,7 @@ public class WeatherSpeechCommand {
 	}
 
 	private String stringifyWeekWeatherReport(String preamble, WeatherReportWeek report) {
-		return preamble + report.getSummary();
+		return preamble + " " + report.getSummary();
 	}
 
 	/**
@@ -145,10 +119,10 @@ public class WeatherSpeechCommand {
 	 */
 	@Intent()
 	public String weatherToday(Map<String, EntityData> entities) {
-		Location curr = getCurrentLocation();
+		GeoCoordinatePair curr = getCurrentLocation();
 		if (curr == null)
 			return NO_LOCATION_STRING;
-		WeatherReport report = this.weatherLogic.getWeatherReport(curr.getPersistentId());
+		WeatherReport report = this.weatherLogic.getWeatherReport(curr);
 
 		return stringifyDayWeatherReport("This is the weather report for today.", report.getWeek().getDays()[0],
 				report.getTimezone(), false);
@@ -163,10 +137,10 @@ public class WeatherSpeechCommand {
 	 */
 	@Intent()
 	public String weatherTomorrow(Map<String, EntityData> entities) {
-		Location curr = getCurrentLocation();
+		GeoCoordinatePair curr = getCurrentLocation();
 		if (curr == null)
 			return NO_LOCATION_STRING;
-		WeatherReport report = this.weatherLogic.getWeatherReport(curr.getPersistentId());
+		WeatherReport report = this.weatherLogic.getWeatherReport(curr);
 
 		return stringifyDayWeatherReport("This is the weather report for tomorrow.", report.getWeek().getDays()[1],
 				report.getTimezone(), false);
@@ -181,10 +155,10 @@ public class WeatherSpeechCommand {
 	 */
 	@Intent()
 	public String weatherWeek(Map<String, EntityData> entities) {
-		Location curr = getCurrentLocation();
+		GeoCoordinatePair curr = getCurrentLocation();
 		if (curr == null)
 			return NO_LOCATION_STRING;
-		WeatherReport report = this.weatherLogic.getWeatherReport(curr.getPersistentId());
+		WeatherReport report = this.weatherLogic.getWeatherReport(curr);
 		return stringifyWeekWeatherReport("This is the weather report for the week.", report.getWeek());
 	}
 
@@ -197,10 +171,10 @@ public class WeatherSpeechCommand {
 	 */
 	@Intent()
 	public String weatherWeekend(Map<String, EntityData> entities) {
-		Location curr = getCurrentLocation();
+		GeoCoordinatePair curr = getCurrentLocation();
 		if (curr == null)
 			return NO_LOCATION_STRING;
-		WeatherReport report = this.weatherLogic.getWeatherReport(curr.getPersistentId());
+		WeatherReport report = this.weatherLogic.getWeatherReport(curr);
 		ZonedDateTime now = ZonedDateTime.now(ZoneId.of(report.getTimezone()));
 
 		DayOfWeek weekday = now.getDayOfWeek();
@@ -242,7 +216,7 @@ public class WeatherSpeechCommand {
 	public String setLocation(Map<String, EntityData> entities) {
 		for (Location loc : this.locationRegistry.getAll()) {
 			if (loc.getTag().equalsIgnoreCase(entities.get("weatherlocation").getString())) {
-				this.setCurrentLocation(loc);
+				this.setCurrentLocation(new GeoCoordinatePair(loc));
 				return loc.getName();
 			}
 		}
