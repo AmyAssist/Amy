@@ -53,8 +53,8 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntentTemp
 
 /**
  * The implementation of the NLProcessingManager. This implementation uses the Parsers in the
- * {@link de.unistuttgart.iaas.amyassist.amy.natlang.nl} and the
- * {@link de.unistuttgart.iaas.amyassist.amy.natlang.agf} package.
+ * {@link de.unistuttgart.iaas.amyassist.amy.natlang.nl} and the {@link de.unistuttgart.iaas.amyassist.amy.natlang.agf}
+ * package.
  *
  * @author Leon Kiefer, Felix Burk
  */
@@ -108,7 +108,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#register(java.lang.reflect.Method, de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent)
+	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#register(java.lang.reflect.Method,
+	 *      de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent)
 	 */
 	@Override
 	public void register(Method method, XMLAIMIntent intent) {
@@ -124,26 +125,27 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#processIntent(de.unistuttgart.iaas.amyassist.amy.natlang.Dialog, java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#processIntent(de.unistuttgart.iaas.amyassist.amy.natlang.Dialog,
+	 *      java.lang.String)
 	 */
 	@Override
 	public void processIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language);
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
-
-		if(!promptGrammarFound(dialog, tokens)) {
-			//try to skip prefixes and suffixes until a grammar matches
-			for(int i=0; i <= tokens.size(); i++) {
-				for(int j=tokens.size(); j>i; j--) {
-					if(promptGrammarFound(dialog, tokens.subList(i, j))) {
+		if (!promptGrammarFound(dialog, tokens)) {
+			// try to skip prefixes and suffixes until a grammar matches
+			for (int i = 0; i <= tokens.size(); i++) {
+				for (int j = tokens.size(); j > i; j--) {
+					if (promptGrammarFound(dialog, tokens.subList(i, j))) {
 						return;
 					}
 				}
 			}
+			this.logger.debug("no matching grammar found");
+			dialog.output(dialog.getNextPrompt().getOutputText());
 		}
-
 	}
-	
+
 	private boolean promptGrammarFound(Dialog dialog, List<WordToken> tokens) {
 		List<AGFNode> promptGrams = new ArrayList<>();
 		if (dialog.getNextPrompt() != null) {
@@ -167,7 +169,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			return false;
 		}
 		return true;
-		
+
 	}
 
 	private void setEntities(AGFNode gram, Dialog dialog) {
@@ -207,32 +209,33 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#decideIntent(de.unistuttgart.iaas.amyassist.amy.natlang.Dialog, java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#decideIntent(de.unistuttgart.iaas.amyassist.amy.natlang.Dialog,
+	 *      java.lang.String)
 	 */
 	@Override
 	public Dialog decideIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language);
 		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
-		
-		if(intentFound(dialog, tokens)) {
+
+		if (intentFound(dialog, tokens)) {
 			return dialog;
 		}
-		
-		//try to skip prefixes and suffixes until a grammar matches
-		for(int i=0; i <= tokens.size(); i++) {
-			for(int j=tokens.size(); j>i; j--) {
-    			if(intentFound(dialog, tokens.subList(i,j))) {
-    				return dialog;
-    			}
+
+		// try to skip prefixes and suffixes until a grammar matches
+		for (int i = 0; i <= tokens.size(); i++) {
+			for (int j = tokens.size(); j > i; j--) {
+				if (intentFound(dialog, tokens.subList(i, j))) {
+					return dialog;
+				}
 			}
 		}
-		
+
 		this.logger.debug("no matching grammar found");
 		dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
 		return dialog;
-		
+
 	}
-	
+
 	private boolean intentFound(Dialog dialog, List<WordToken> tokens) {
 		INLParser nlParser = new NLParser(new ArrayList<>(this.nodeToMethodAIMPair.keySet()),
 				this.language.getStemmer());
@@ -241,18 +244,18 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			node = nlParser.matchingNode(tokens);
 
 		} catch (NLParserException e) {
-			this.logger.debug("grammar not directly regocnized - skipping pre and suffixes {}",  e.getMessage());
+			this.logger.debug("grammar not directly regocnized - skipping pre and suffixes {}", e.getMessage());
 			return false;
 		}
-		
+
 		Method left = this.nodeToMethodAIMPair.get(node).getMethod();
 		XMLAIMIntent right = this.nodeToMethodAIMPair.get(node).getXml();
 		UserIntent userIntent = new UserIntent(left, right);
-		
+
 		Object object = this.serviceLocator.createAndInitialize(userIntent.getPartialNLIClass());
 		userIntent.updateGrammars(object);
 		dialog.setIntent(userIntent);
-		
+
 		setEntities(node, dialog);
 		return true;
 	}
