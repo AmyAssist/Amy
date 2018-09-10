@@ -23,14 +23,23 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+
+import java.util.Random;
+
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import com.eclipsesource.json.JsonObject;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -46,11 +55,10 @@ public class WeatherRestTest {
 	private TestFramework testFramework;
 
 	private WeatherLogic logic;
-	private WeatherReportInstant now;
-	private WeatherReportDay day;
-	private WeatherReportWeek week;
-	private JsonObject objNow;
-	private JsonObject objToday;
+	private LocationRegistry registry;
+
+	private Location mockLocation;
+	private WeatherReport report;
 
 	private WebTarget target;
 
@@ -59,9 +67,22 @@ public class WeatherRestTest {
 	 */
 	@BeforeEach
 	public void setUp() {
-		this.target = this.testFramework.setRESTResource(WeatherResource.class);
 		this.logic = this.testFramework.mockService(WeatherLogic.class);
+		this.registry = this.testFramework.mockService(LocationRegistry.class);
+		this.mockLocation = Mockito.mock(Location.class);
+		Mockito.when(this.registry.getById(1)).thenReturn(this.mockLocation);
+		Mockito.when(this.mockLocation.getLatitude()).thenReturn(4.2);
+		Mockito.when(this.mockLocation.getLongitude()).thenReturn(5.3);
+		this.report = WeatherTestUtil.generateWeatherReport(new Random());
+		Mockito.when(this.logic.getWeatherReport(ArgumentMatchers.any())).thenReturn(this.report);
+		this.target = this.testFramework.setRESTResource(WeatherResource.class);
 	}
 
-	// TODO: Add new Tests.
+	@Test
+	public void testGetWeatherReport() {
+		try (Response response = this.target.path("report").queryParam("id", 1).request().get()) {
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).getWeatherReport(ArgumentMatchers.any());
+		}
+	}
 }
