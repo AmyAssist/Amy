@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -47,9 +46,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.LocationTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.RoomTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
 
 /**
  * This class controls the alarm sound file, which is used for the alarm clock
@@ -84,6 +80,7 @@ public class TimerBeepService {
 	private Set<Integer> timerList = new HashSet<>();
 
 	@PostConstruct
+
 	private void init() {
 		InputStream resolve = this.getClass().getResourceAsStream(ALARMSOUND);
 		try (InputStream bufferedIn = new BufferedInputStream(resolve);
@@ -92,21 +89,6 @@ public class TimerBeepService {
 		} catch (IOException | UnsupportedAudioFileException e) {
 			this.logger.error("Cant load alarm sound", e);
 		}
-		Consumer<String> muteConsumer = message -> {
-			switch (message) {
-			case "true":
-				this.stopBeeping();
-				break;
-			case "false":
-				// do nothing
-				break;
-			default:
-				this.logger.warn("unkown message {}", message);
-				break;
-			}
-		};
-		String topic = SmarthomeFunctionTopics.MUTE.getTopicString(LocationTopics.ALL, RoomTopics.ALL);
-		this.messageHub.subscribe(topic, muteConsumer);
 	}
 
 	/**
@@ -157,7 +139,7 @@ public class TimerBeepService {
 	/**
 	 * Stops the audio file, when the timer / alarm is deactivated and sets the beeping variable on false
 	 */
-	private void stopBeeping() {
+	void stopBeeping() {
 		if (this.beepPlayer != null && this.beepPlayer.isRunning()) {
 			this.beepPlayer.stop();
 		}
