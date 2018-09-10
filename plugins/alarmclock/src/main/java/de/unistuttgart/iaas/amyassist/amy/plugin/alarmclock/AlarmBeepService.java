@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -47,8 +46,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.Topics;
 
 /**
  * This class controls the alarm sound file, which is used for the alarm clock
@@ -91,21 +88,6 @@ public class AlarmBeepService {
 		} catch (IOException | UnsupportedAudioFileException e) {
 			this.logger.error("Cant load alarm sound", e);
 		}
-		Consumer<String> muteConsumer = message -> {
-			switch (message) {
-			case "true":
-				this.stopBeeping();
-				break;
-			case "false":
-				// do nothing
-				break;
-			default:
-				this.logger.warn("unkown message {}", message);
-				break;
-			}
-		};
-		String topic = Topics.smarthomeAll(SmarthomeFunctionTopics.MUTE);
-		this.messageHub.subscribe(topic, muteConsumer);
 	}
 
 	/**
@@ -156,7 +138,7 @@ public class AlarmBeepService {
 	/**
 	 * Stops the audio file, when the timer / alarm is deactivated and sets the beeping variable on false
 	 */
-	private void stopBeeping() {
+	void stopBeeping() {
 		if (this.beepPlayer != null && this.beepPlayer.isRunning()) {
 			this.beepPlayer.stop();
 		}
