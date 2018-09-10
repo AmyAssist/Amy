@@ -23,22 +23,23 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
-import static java.time.Duration.*;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Properties;
-
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
+import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
+import java.util.Properties;
+
+import static java.time.Duration.ofSeconds;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 /**
  * 
@@ -56,12 +57,15 @@ class ServerTest {
 		serverConfig.setProperty(ServerImpl.PROPERTY_LOCALHOST, "true");
 		serverConfig.setProperty(ServerImpl.PROPERTY_SERVER_URL, "");
 
+
+		TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
 		ConfigurationManager configManager = Mockito.mock(ConfigurationManager.class);
 		Mockito.when(configManager.getConfigurationWithDefaults(ServerImpl.CONFIG_NAME)).thenReturn(serverConfig);
 
 		this.dependencyInjection = new DependencyInjection();
 		this.dependencyInjection.register(new SingletonServiceProvider<>(ConfigurationManager.class, configManager));
 		this.dependencyInjection.register(new SingletonServiceProvider<>(Logger.class, LoggerFactory.getLogger(ServerImpl.class)));
+		this.dependencyInjection.register(new SingletonServiceProvider<>(TaskScheduler.class, taskScheduler));
 	}
 
 	@Test
