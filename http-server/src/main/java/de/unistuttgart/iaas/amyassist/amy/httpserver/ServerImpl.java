@@ -91,9 +91,6 @@ public class ServerImpl implements RunnableService, Server {
 	@Reference
 	private ServiceLocator di;
 
-	@Reference
-	private TaskScheduler scheduler;
-
 	private Set<Class<?>> restResources = new HashSet<>();
 	private HttpServer httpServer;
 
