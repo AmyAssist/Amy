@@ -55,6 +55,10 @@ public class TimerSpeech {
 
 	private static final String ELEMENTNOTFOUND = "Element not found";
 	private static final String NUMBER_MAP_KEY = "number";
+	private static String timerS = "Timer ";
+	private static String secS = " seconds";
+	private static String ringS = " will ring in ";
+	private static String active;
 
 	/**
 	 * Sets a new timer. You can select between hours, minutes and seconds or combinate them
@@ -83,7 +87,7 @@ public class TimerSpeech {
 		LocalDateTime timerDate = LocalDateTime.now().plusHours(hours).plusMinutes(minutes).plusSeconds(seconds)
 				.truncatedTo(ChronoUnit.SECONDS);
 		Timer timer = this.timerLogic.setTimer(timerDate);
-		return "Timer " + timer.getId() + " set";
+		return timerS + timer.getId() + " set";
 	}
 
 	/**
@@ -95,7 +99,7 @@ public class TimerSpeech {
 	public String pauseTimer(Map<String, EntityData> entities) {
 		Timer timer = this.timerLogic.getTimer(entities.get(NUMBER_MAP_KEY).getNumber());
 		this.timerLogic.pauseTimer(timer);
-		return "Timer " + timer.getId() + " paused";
+		return timerS + timer.getId() + " paused";
 	}
 
 	/**
@@ -107,7 +111,7 @@ public class TimerSpeech {
 	public String reactivateTimer(Map<String, EntityData> entities) {
 		Timer timer = this.timerLogic.getTimer(entities.get(NUMBER_MAP_KEY).getNumber());
 		this.timerLogic.reactivateTimer(timer);
-		return "Timer " + timer.getId() + " resumed";
+		return timerS + timer.getId() + " resumed";
 	}
 
 	/**
@@ -204,17 +208,22 @@ public class TimerSpeech {
 		int min = (int) (timeDiff.toMinutes() % 60);
 		int hours = (int) (timeDiff.toHours());
 		int timerNumber = timer.getId();
+		if (!timer.isActive()) {
+			active = " but is paused";
+		} else {
+			active = "";
+		}
+
 		if (timeDiff.isZero() || timeDiff.isNegative()) {
-			return "Timer " + timerNumber + " is ringing right now.";
+			return timerS + timerNumber + " is ringing right now.";
 		}
 		if (hours == 0) {
 			if (min == 0) {
-				return "Timer " + timerNumber + " will ring in " + sec + " seconds";
+				return timerS + timerNumber + ringS + sec + secS + active;
 			}
-			return "Timer " + timerNumber + " will ring in " + min + " minutes and " + sec + " seconds";
+			return timerS + timerNumber + ringS + min + " minutes and " + sec + secS + active;
 		}
-		return "Timer " + timerNumber + " will ring in " + hours + " hours and " + min + " minutes and " + sec
-				+ " seconds";
+		return timerS + timerNumber + ringS + hours + " hours and " + min + " minutes and " + sec + secS + active;
 	}
 
 }
