@@ -172,7 +172,7 @@ public class SpotifySpeech {
 			return ERROR_MESSAGE;
 		case "resume":
 			if (this.playerLogic.resume()) {
-				return "resume";
+				return "resuming";
 			}
 			return ERROR_MESSAGE;
 		default:
