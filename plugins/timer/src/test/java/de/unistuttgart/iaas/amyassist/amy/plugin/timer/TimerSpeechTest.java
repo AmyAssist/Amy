@@ -30,9 +30,7 @@ import static org.mockito.Mockito.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -61,8 +59,6 @@ public class TimerSpeechTest {
 
 	private TimerLogic tLogic;
 
-	private TimerRegistry timerStorage;
-
 	@Mock
 	private EntityData hour;
 
@@ -75,15 +71,13 @@ public class TimerSpeechTest {
 	@Mock
 	private EntityData number;
 
-	private List<Timer> timers = new ArrayList<>();
-
 	/**
 	 * Initializes the class variables before each test
 	 */
 	@BeforeEach
 	public void init() {
 		this.tLogic = this.framework.mockService(TimerLogic.class);
-		this.timerStorage = this.framework.mockService(TimerRegistry.class);
+		this.framework.mockService(TimerRegistry.class);
 		this.tSpeech = this.framework.setServiceUnderTest(TimerSpeech.class);
 	}
 
@@ -199,7 +193,7 @@ public class TimerSpeechTest {
 		LocalDateTime timerDate = LocalDateTime.of(2018, 9, 6, 12, 11, 10);
 		Timer t = new Timer(1, timerDate, Duration.ofSeconds(10), false);
 		when(this.tLogic.getTimer(1)).thenReturn(t);
-		assertThat(this.tSpeech.getTimerObject(map), is("Timer 1 will ring in 10 seconds"));
+		assertThat(this.tSpeech.getTimerObject(map), is("Timer 1 will ring in 10 seconds but is paused"));
 	}
 
 	/**
@@ -213,7 +207,7 @@ public class TimerSpeechTest {
 		LocalDateTime timerDate = LocalDateTime.of(2018, 9, 6, 12, 11, 10);
 		Timer t = new Timer(1, timerDate, Duration.ofMinutes(10), false);
 		when(this.tLogic.getTimer(1)).thenReturn(t);
-		assertThat(this.tSpeech.getTimerObject(map), is("Timer 1 will ring in 10 minutes and 0 seconds"));
+		assertThat(this.tSpeech.getTimerObject(map), is("Timer 1 will ring in 10 minutes and 0 seconds but is paused"));
 	}
 
 	/**
@@ -227,7 +221,8 @@ public class TimerSpeechTest {
 		LocalDateTime timerDate = LocalDateTime.of(2018, 9, 6, 12, 11, 10);
 		Timer t = new Timer(1, timerDate, Duration.ofHours(10), false);
 		when(this.tLogic.getTimer(1)).thenReturn(t);
-		assertThat(this.tSpeech.getTimerObject(map), is("Timer 1 will ring in 10 hours and 0 minutes and 0 seconds"));
+		assertThat(this.tSpeech.getTimerObject(map),
+				is("Timer 1 will ring in 10 hours and 0 minutes and 0 seconds but is paused"));
 	}
 
 }

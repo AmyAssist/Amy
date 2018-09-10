@@ -45,6 +45,10 @@ public class AlarmMessageReceiver {
 	@Reference
 	private Logger logger;
 
+	/**
+	 * @param message
+	 *            message for the system
+	 */
 	@Subscription(SystemTopics.SMARTHOME + "/+/+/" + SmarthomeFunctionTopics.MUTE)
 	public void beepMessage(String message) {
 		switch (message) {
