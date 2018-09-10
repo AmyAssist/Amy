@@ -56,7 +56,7 @@ import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 public class WeatherSpeechCommand {
 	/** The name for the persistence used. */
 	private static final String NO_LOCATION_STRING = "No location configured.";
-	private static final String CURRENT_LOCATION_KEY = "currentLocatio";
+	private static final String CURRENT_LOCATION_KEY = "currentLocation";
 
 	@Reference
 	private WeatherLogic weatherLogic;
