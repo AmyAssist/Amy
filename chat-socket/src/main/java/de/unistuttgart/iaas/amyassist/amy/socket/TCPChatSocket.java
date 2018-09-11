@@ -45,6 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
  * 
  * @author Christian Bräuner
  */
+@Service(TCPChatSocket.class)
 public class TCPChatSocket implements RunnableService{
 
 	/** The name of the config used by this class */

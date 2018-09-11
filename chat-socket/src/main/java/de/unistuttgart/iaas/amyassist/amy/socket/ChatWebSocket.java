@@ -32,9 +32,8 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 
 /**
@@ -42,13 +41,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
  *  
  * @author Christian Bräuner
  */
-@Service(ChatWebSocket.class)
 public class ChatWebSocket extends WebSocketServer {
 	
-	@Reference 
-	private Logger logger;
+	private Logger logger = LoggerFactory.getLogger(ChatWebSocket.class);
 	
-	@Reference 
 	private DialogHandler handler;
 	
 	private Map<InetSocketAddress,UUID> dialogMap = new HashMap<>();
@@ -57,9 +53,12 @@ public class ChatWebSocket extends WebSocketServer {
 	 *creates a new web socket server
 	 *
 	 *@param port the port of the server
+	 *@param handler the dialog handler of the backend
+	 *
 	 */
-	public ChatWebSocket(int port) {
+	public ChatWebSocket(int port, DialogHandler handler) {
 		super(new InetSocketAddress(port));
+		this.handler = handler;
 	}
 	
 	/**

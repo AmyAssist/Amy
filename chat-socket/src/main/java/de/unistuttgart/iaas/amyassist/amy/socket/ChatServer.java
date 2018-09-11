@@ -29,9 +29,9 @@ import java.util.Properties;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 
 /**
@@ -53,13 +53,11 @@ public class ChatServer implements RunnableService {
 	@Reference
 	private Logger logger;
 	
+	@Reference
+	private DialogHandler handler;
+	
 	private ChatWebSocket socket;
 	
-	
-	@PostConstruct
-	public void init() {
-		System.out.println("satart");
-	}
 	
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
@@ -69,7 +67,7 @@ public class ChatServer implements RunnableService {
 		Properties conf = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
 		int port = Integer.parseInt(conf.getProperty(PROPERTY_PORT));
 		
-		this.socket = new ChatWebSocket( port );
+		this.socket = new ChatWebSocket(port, this.handler);
 		this.socket.start();
 
 	}

@@ -1,2 +1,2 @@
 de.unistuttgart.iaas.amyassist.amy.socket.ChatServer
-de.unistuttgart.iaas.amyassist.amy.socket.ChatWebSocket
+de.unistuttgart.iaas.amyassist.amy.socket.TCPChatSocket
