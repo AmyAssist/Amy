@@ -40,4 +40,10 @@ public class ToscaConsole {
 	public String test() {
 		return this.logic.getInstalledPlugins();
 	}
+	
+	@Command
+	public String install() {
+		this.logic.install();
+		return "installing";
+	}
 }

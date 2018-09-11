@@ -11,13 +11,17 @@
 		<version>0.5.0-Snapshot</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 	<dependencies>
 		<dependency>
-			<groupId>org.opentosca</groupId>
-			<artifactId>ContainerAPIClient</artifactId>
-			<version>2.0.0</version>
-			<scope>compile</scope>
+			<groupId>com.github.OpenTOSCA</groupId>
+			<artifactId>container-client</artifactId>
+			<version>master-SNAPSHOT</version>
 		</dependency>
 		<!-- Cliche for Console -->
 		<dependency>
