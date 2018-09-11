@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.5.0-Snapshot</version>
+		<version>0.5.0</version>
 	</parent>
 	<artifactId>amy-message-hub</artifactId>
 	<dependencies>
