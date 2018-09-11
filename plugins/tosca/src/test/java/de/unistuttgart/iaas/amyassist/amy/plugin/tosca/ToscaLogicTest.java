@@ -21,32 +21,34 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.toska;
+package de.unistuttgart.iaas.amyassist.amy.plugin.tosca;
 
-import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.ToscaLogic;
+import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
+import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
  * TODO: Description
- * 
  * @author Felix Burk
  */
-@Service
-@SpeechCommand
-public class ToskaSpeech {
+@ExtendWith(FrameworkExtension.class)
+public class ToscaLogicTest {
+	
 
 	@Reference
-	private ToskaLogic logic;
+	private TestFramework framework;
+	
+	private ToscaLogic toskaLogic;
+	
+	@Test
+	public void testGetNames() {
+		this.toskaLogic = this.framework.setServiceUnderTest(ToscaLogic.class);
+		this.toskaLogic.getInstalledPlugins();
 
-	@Intent
-	public String install(Map<String, EntityData> entities) {
-		this.logic.install();
-		return "trying to install...";
 	}
 
 }

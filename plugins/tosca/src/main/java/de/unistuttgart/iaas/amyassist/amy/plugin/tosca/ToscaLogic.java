@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.toska;
+package de.unistuttgart.iaas.amyassist.amy.plugin.tosca;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  * @author Felix Burk, Leon Kiefer
  */
 @Service
-public class ToskaLogic {
+public class ToscaLogic {
 
 	@WithDefault
 	@Reference

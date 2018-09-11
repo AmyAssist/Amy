@@ -2,9 +2,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>amy-plugin-toska</artifactId>
-	<name>Amy plugin toska</name>
-	<description>The Amy toska plugin</description>
+	<artifactId>amy-plugin-tosca</artifactId>
+	<name>Amy plugin tosca</name>
+	<description>The Amy tosca plugin</description>
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
 		<artifactId>amy-plugin</artifactId>

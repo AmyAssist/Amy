@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.toska;
+package de.unistuttgart.iaas.amyassist.amy.plugin.tosca;
 
 import asg.cliche.Command;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -31,10 +31,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  * 
  * @author Leon Kiefer
  */
-public class ToskaConsole {
+public class ToscaConsole {
 
 	@Reference
-	private ToskaLogic logic;
+	private ToscaLogic logic;
 	
 	@Command
 	public String test() {
