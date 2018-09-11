@@ -34,6 +34,7 @@ import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 
 /**
@@ -41,6 +42,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
  *  
  * @author Christian Bräuner
  */
+@Service(ChatWebSocket.class)
 public class ChatWebSocket extends WebSocketServer {
 	
 	@Reference 

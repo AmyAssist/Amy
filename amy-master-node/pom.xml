@@ -55,6 +55,11 @@
 			<artifactId>amy-natlang</artifactId>
 			<version>${amy.natlang.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-chat-socket</artifactId>
+			<version>${amy.chatsocket.version}</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

@@ -29,7 +29,9 @@ import java.util.Properties;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 
 /**
@@ -37,6 +39,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
  * 
  * @author Christian Bräuner
  */
+@Service(ChatServer.class)
 public class ChatServer implements RunnableService {
 	
 	/** The name of the config used by this class */
@@ -51,6 +54,12 @@ public class ChatServer implements RunnableService {
 	private Logger logger;
 	
 	private ChatWebSocket socket;
+	
+	
+	@PostConstruct
+	public void init() {
+		System.out.println("satart");
+	}
 	
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
