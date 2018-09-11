@@ -81,7 +81,7 @@ public class WeatherLogic {
 		 * @param pLatitude
 		 *            The latitude to use
 		 */
-		public GeoCoordinatePair(long pLongitude, long pLatitude) {
+		public GeoCoordinatePair(double pLongitude, double pLatitude) {
 			this.longitude = pLongitude;
 			this.latitude = pLatitude;
 		}
