@@ -5,10 +5,13 @@
 	<packaging>pom</packaging>
 	<groupId>de.unistuttgart.iaas.amyassist</groupId>
 	<artifactId>amy</artifactId>
-	<version>0.4.0</version>
+	<version>0.5.0</version>
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
 	<properties>
+		<!-- Amy specific settings -->
+		<amy.plugin.build.dir>build/plugins</amy.plugin.build.dir>
+
 		<!-- General settings -->
 		<java.version>1.8</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
@@ -16,36 +19,48 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Amy versions to depend on -->
-		<amy.di.api.version>0.4.0</amy.di.api.version>
-		<amy.di.version>0.4.0</amy.di.version>
-		<amy.api.version>0.4.0</amy.api.version>
-		<amy.plugin-manager-api.version>0.4.0</amy.plugin-manager-api.version>
-		<amy.http-server.version>0.4.0</amy.http-server.version>
-		<amy.testing-framework.version>0.4.0</amy.testing-framework.version>
-		<amy.core.version>0.4.0</amy.core.version>
-		<amy.rest-resources.version>0.4.0</amy.rest-resources.version>
-		<amy.utility.version>0.4.0</amy.utility.version>
-		<amy.registry.version>0.4.0</amy.registry.version>
+		<amy.natlang.version>0.5.0</amy.natlang.version>
+		<amy.di.api.version>0.5.0</amy.di.api.version>
+		<amy.natlang.api.version>0.5.0</amy.natlang.api.version>
+		<amy.di.version>0.5.0</amy.di.version>
+		<amy.message-hub.api.version>0.5.0</amy.message-hub.api.version>
+		<amy.message-hub.version>0.5.0</amy.message-hub.version>
+		<amy.api.version>0.5.0</amy.api.version>
+		<amy.plugin-manager-api.version>0.5.0</amy.plugin-manager-api.version>
+		<amy.http-server.api.version>0.5.0</amy.http-server.api.version>
+		<amy.http-server.version>0.5.0</amy.http-server.version>
+		<amy.testing-framework.version>0.5.0</amy.testing-framework.version>
+		<amy.core.version>0.5.0</amy.core.version>
+		<amy.rest-resources.version>0.5.0</amy.rest-resources.version>
+		<amy.utility.version>0.5.0</amy.utility.version>
+		<amy.registry.version>0.5.0</amy.registry.version>
+		<amy.remote-sr.version>0.5.0</amy.remote-sr.version>
+		<deployment.descriptor.utility.version>0.5.0</deployment.descriptor.utility.version>
 
 		<!-- External dependency versions. Only project wide or core dependencies 
 			here -->
 		<junit.jupiter.version>5.1.0</junit.jupiter.version>
 		<junit.platform.version>1.1.0</junit.platform.version>
 		<hamcrest.version>1.3</hamcrest.version>
-		<mockito.version>2.18.3</mockito.version>
+		<mockito.version>2.21.0</mockito.version>
 		<jersey.version>2.27</jersey.version>
 		<jackson.version>2.27</jackson.version>
 		<javax.ws.rs.version>2.1</javax.ws.rs.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<httpcore.version>4.4.9</httpcore.version>
 		<swagger.version>2.0.2</swagger.version>
+		<commons-lang3.version>3.7</commons-lang3.version>
+		<cliche.version>110413</cliche.version>
+		<jersey-media-sse.version>2.27</jersey-media-sse.version>
 	</properties>
 	<modules>
+		<module>amy-master-node</module>
 		<module>di-api</module>
 		<module>di</module>
 		<module>api</module>
 		<module>utility</module>
 		<module>registry</module>
+		<module>http-server-api</module>
 		<module>http-server</module>
 		<module>testing-framework</module>
 		<module>core</module>
@@ -59,6 +74,12 @@
 		<module>plugins/systemtime</module>
 		<module>plugins/weather</module>
 		<module>plugins/navigation</module>
+		<module>amy-message-hub-api</module>
+		<module>amy-message-hub</module>
+		<module>remote-sr</module>
+		<module>deployment-descriptor-utility</module>
+		<module>natlang-api</module>
+		<module>natlang</module>
 	</modules>
 	<licenses>
 		<license>
@@ -68,18 +89,6 @@
 			<comments>A business-friendly OSS license</comments>
 		</license>
 	</licenses>
-	<repositories>
-		<repository>
-			<id>snapshots-repo</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.junit.platform</groupId>
@@ -97,6 +106,11 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.5.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -133,19 +147,52 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.4.1</version>
+				<configuration>
+					<followSymLinks>false</followSymLinks>
+					<filesets>
+						<fileset>
+							<directory>${project.basedir}/build</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<artifactId>amy-natlang</artifactId>
+				<version>${amy.natlang.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<artifactId>amy-natlang-api</artifactId>
+				<version>${amy.natlang.api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.unistuttgart.iaas.amyassist</groupId>
 				<artifactId>amy-di-api</artifactId>
-				<version>${amy.di.version}</version>
+				<version>${amy.di.api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<artifactId>amy-message-hub-api</artifactId>
+				<version>${amy.message-hub.api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.unistuttgart.iaas.amyassist</groupId>
 				<artifactId>amy-api</artifactId>
 				<version>${amy.api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<artifactId>amy-http-server-api</artifactId>
+				<version>${amy.http-server.api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.unistuttgart.iaas.amyassist</groupId>
@@ -214,6 +261,12 @@
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-junit-jupiter</artifactId>
+				<version>${mockito.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
 				<version>${mockito.version}</version>
 				<scope>test</scope>
 			</dependency>

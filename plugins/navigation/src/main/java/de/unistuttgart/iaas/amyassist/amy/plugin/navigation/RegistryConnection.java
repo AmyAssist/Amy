@@ -27,11 +27,15 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.registry.Location;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.Taggable;
+
+import java.util.List;
 
 /**
  * get and set the data to the registry. At the moment with hardcoded data while registry is not avaiable
  * 
  * @author Lars Buttgereit
+ * @author Benno Krauß
  */
 @Service
 public class RegistryConnection {
@@ -40,36 +44,43 @@ public class RegistryConnection {
 	private LocationRegistry locationRegistry;
 
 	/**
-	 * get the address from the registry with the given name
+	 * get the address from the registry with the given name. if now adress in registry found the input string is
+	 * returned
 	 * 
 	 * @param name
 	 *            name of the location
 	 * @return one String with all address data, to use for e.g. google maps queries
 	 */
 	public String getAddress(String name) {
-		switch (name.toLowerCase()) {
-		case "home":
-			if (this.locationRegistry.getHome() != null) {
-				return this.locationRegistry.getHome().getAddressString();
+
+		Location address = null;
+
+		List<Location> locations = this.locationRegistry.getEntitiesWithTag(name);
+		if (!locations.isEmpty()) {
+			address = locations.get(0);
+		} else {
+			// Try to find by name
+			for (Location location : this.locationRegistry.getAll()) {
+				if (location.getName().equals(name)) {
+					address = location;
+					break;
+				}
 			}
-			break;
-		case "work":
-			if (this.locationRegistry.getWork() != null) {
-				return this.locationRegistry.getWork().getAddressString();
-			}
-			break;
-		default:
-			return findOtherLocations(name);
 		}
-		return null;
+
+		if (address == null) {
+			return name;
+		}
+
+		return address.getAddressString();
 	}
 
-	private String findOtherLocations(String loc) {
-		for (Location location : this.locationRegistry.getAll()) {
-			if (location.getName().equals(loc)) {
-				return location.getAddressString();
-			}
-		}
-		return null;
+	/**
+	 * Get all available location tags
+	 * @return all location tags
+	 */
+	String[] getAllLocationTags() {
+		return this.locationRegistry.getAll().stream().filter(l -> l.getTag() != null && !l.getTag().isEmpty())
+				.map(Taggable::getTag).distinct().toArray(String[]::new);
 	}
 }

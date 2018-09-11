@@ -23,9 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
-import static java.time.Duration.ofSeconds;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static java.time.Duration.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Properties;
@@ -36,8 +36,9 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 
 /**
  * 
@@ -50,50 +51,51 @@ class ServerTest {
 	@BeforeEach
 	void setup() {
 		Properties serverConfig = new Properties();
-		serverConfig.setProperty(Server.PROPERTY_PORT, "50080");
-		serverConfig.setProperty(Server.PROPERTY_CONTEXT_PATH, "test");
-		serverConfig.setProperty(Server.PROPERTY_LOCALHOST, "true");
+		serverConfig.setProperty(ServerImpl.PROPERTY_PORT, "50080");
+		serverConfig.setProperty(ServerImpl.PROPERTY_CONTEXT_PATH, "test");
+		serverConfig.setProperty(ServerImpl.PROPERTY_LOCALHOST, "true");
+		serverConfig.setProperty(ServerImpl.PROPERTY_SERVER_URL, "");
 
-		ConfigurationLoader configLoader = Mockito.mock(ConfigurationLoader.class);
-		Mockito.when(configLoader.load(Server.CONFIG_NAME)).thenReturn(serverConfig);
+		ConfigurationManager configManager = Mockito.mock(ConfigurationManager.class);
+		Mockito.when(configManager.getConfigurationWithDefaults(ServerImpl.CONFIG_NAME)).thenReturn(serverConfig);
 
 		this.dependencyInjection = new DependencyInjection();
-		this.dependencyInjection.addExternalService(ConfigurationLoader.class, configLoader);
-		this.dependencyInjection.addExternalService(Logger.class, LoggerFactory.getLogger(Server.class));
+		this.dependencyInjection.register(new SingletonServiceProvider<>(ConfigurationManager.class, configManager));
+		this.dependencyInjection.register(new SingletonServiceProvider<>(Logger.class, LoggerFactory.getLogger(ServerImpl.class)));
 	}
 
 	@Test
 	void test() {
 		assertTimeout(ofSeconds(2), () -> {
-			Server server = this.dependencyInjection.createAndInitialize(Server.class);
-			server.start(TestRestResource.class);
-			server.shutdown();
+			ServerImpl server = this.dependencyInjection.createAndInitialize(ServerImpl.class);
+			server.startWithResources(TestRestResource.class);
+			server.stop();
 		}, "The Server start and shotdown takes longer then 2 Seconds");
 
 	}
 
 	@Test
 	void testCantStartServerTwice() {
-		Server server = this.dependencyInjection.createAndInitialize(Server.class);
+		ServerImpl server = this.dependencyInjection.createAndInitialize(ServerImpl.class);
 		String message = assertThrows(IllegalStateException.class, () -> {
-			server.start(TestRestResource.class);
-			server.start(TestRestResource.class);
+			server.startWithResources(TestRestResource.class);
+			server.startWithResources(TestRestResource.class);
 		}, "The Server dont throw an IllegalStateException if its started twice").getMessage();
-		server.shutdown();
+		server.stop();
 		assertThat(message, equalTo("The Server is already started"));
 	}
 
 	@Test
 	void testRegister() {
-		Server server = this.dependencyInjection.createAndInitialize(Server.class);
+		ServerImpl server = this.dependencyInjection.createAndInitialize(ServerImpl.class);
 		server.register(TestRestResource.class);
 		server.start();
-		server.shutdown();
+		server.stop();
 	}
 
 	@Test
 	void testRegisterNonResourceClass() {
-		Server server = this.dependencyInjection.createAndInitialize(Server.class);
+		ServerImpl server = this.dependencyInjection.createAndInitialize(ServerImpl.class);
 		assertThrows(IllegalArgumentException.class, () -> {
 			server.register(ServerTest.class);
 		}, "The Server dont throw an IllegalArgumentException if a registered class is not a Rest Resource");

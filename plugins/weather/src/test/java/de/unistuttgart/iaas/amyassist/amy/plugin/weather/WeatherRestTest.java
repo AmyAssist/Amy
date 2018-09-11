@@ -25,24 +25,21 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
 import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-import javax.ws.rs.client.Entity;
+import java.util.Random;
+
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import com.eclipsesource.json.JsonObject;
-import com.github.dvdme.ForecastIOLib.FIODaily;
-import com.github.dvdme.ForecastIOLib.FIODataPoint;
-
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -57,101 +54,35 @@ public class WeatherRestTest {
 	@Reference
 	private TestFramework testFramework;
 
-	private WeatherDarkSkyAPI logic;
-	private WeatherReportDay day;
-	private WeatherReportWeek week;
-	private JsonObject obj;
+	private WeatherLogic logic;
+	private LocationRegistry registry;
+
+	private Location mockLocation;
+	private WeatherReport report;
 
 	private WebTarget target;
 
+	/**
+	 * setUp
+	 */
 	@BeforeEach
 	public void setUp() {
+		this.logic = this.testFramework.mockService(WeatherLogic.class);
+		this.registry = this.testFramework.mockService(LocationRegistry.class);
+		this.mockLocation = Mockito.mock(Location.class);
+		Mockito.when(this.registry.getById(1)).thenReturn(this.mockLocation);
+		Mockito.when(this.mockLocation.getLatitude()).thenReturn(4.2);
+		Mockito.when(this.mockLocation.getLongitude()).thenReturn(5.3);
+		this.report = WeatherTestUtil.generateWeatherReport(new Random());
+		Mockito.when(this.logic.getWeatherReport(ArgumentMatchers.any())).thenReturn(this.report);
 		this.target = this.testFramework.setRESTResource(WeatherResource.class);
-		this.logic = this.testFramework.mockService(WeatherDarkSkyAPI.class);
-
-		this.createDay();
-		this.createWeek();
 	}
 
-	private void createDay() {
-		FIODataPoint p = Mockito.mock(FIODataPoint.class);
-		Mockito.when(p.summary()).thenReturn("Clear throughout the day");
-		Mockito.when(p.precipProbability()).thenReturn((double) 0);
-		Mockito.when(p.precipType()).thenReturn("no data");
-		Mockito.when(p.temperatureMin()).thenReturn((double) 15);
-		Mockito.when(p.temperatureMax()).thenReturn((double) 25);
-		Mockito.when(p.sunriseTime()).thenReturn("05:00:00");
-		Mockito.when(p.sunsetTime()).thenReturn("21:00:00");
-		Mockito.when(p.timestamp()).thenReturn((long) 12345);
-		Mockito.when(p.icon()).thenReturn("rainIcon");
-
-		this.day = new WeatherReportDay("This is the weather report for today.", p);
-
-		this.obj = new JsonObject();
-		this.obj.add("link", this.day.getLink().toString());
-		this.obj.add("summary", this.day.getSummary());
-		this.obj.add("precip", this.day.isPrecip());
-		this.obj.add("precipProbability", this.day.getPrecipProbability());
-		this.obj.add("precipType", this.day.getPrecipType());
-		this.obj.add("temperatureMin", this.day.getTemperatureMin());
-		this.obj.add("temperatureMax", this.day.getTemperatureMax());
-		this.obj.add("sunriseTime", this.day.getSunriseTime());
-		this.obj.add("sunsetTime", this.day.getSunsetTime());
-		this.obj.add("weekday", this.day.getWeekday());
-		this.obj.add("timestamp", this.day.getTimestamp());
-		this.obj.add("icon", this.day.getIcon());
-	}
-
-	private void createWeek() {
-		FIODaily d = Mockito.mock(FIODaily.class);
-		Mockito.when(d.getSummary()).thenReturn("Clear throughout the day");
-		this.week = new WeatherReportWeek("Preamble", d);
-	}
-
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherToday()}.
-	 */
 	@Test
-	void testGetWeatherToday() {
-		Mockito.when(this.logic.getReportToday()).thenReturn(this.day);
-
-		Response response = this.target.path("today").request().get();
-
-		assertThat(response, status(200));
-		assertEquals(this.obj.toString(), response.readEntity(String.class));
-	}
-
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherTomorrow()}.
-	 */
-	@Test
-	void testGetWeatherTomorrow() {
-		Mockito.when(this.logic.getReportTomorrow()).thenReturn(this.day);
-
-		Response response = this.target.path("tomorrow").request().get();
-
-		assertThat(response, status(200));
-		assertEquals(this.obj.toString(), response.readEntity(String.class));
-	}
-
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherResource#getWeatherWeek()}.
-	 */
-	@Test
-	void testGetWeatherWeek() {
-		Mockito.when(this.logic.getReportWeek()).thenReturn(this.week);
-
-		Response response = this.target.path("week").request().get();
-
-		assertThat(response, status(200));
-		assertTrue(response.readEntity(String.class).contains(this.week.summary));
-	}
-	
-	@Test
-	void testSetLocation() {
-		Response response = this.target.path("setLocation").request().put(Entity.entity("1", MediaType.TEXT_PLAIN));
-		assertThat(response, status(204));
-		verify(this.logic).setLocation(1);
-
+	public void testGetWeatherReport() {
+		try (Response response = this.target.path("report").queryParam("id", 1).request().get()) {
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).getWeatherReport(ArgumentMatchers.any());
+		}
 	}
 }

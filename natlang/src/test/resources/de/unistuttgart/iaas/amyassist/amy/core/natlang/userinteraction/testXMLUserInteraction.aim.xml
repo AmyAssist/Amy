@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
+		<gram>greet me [with {greeting}] [test {amytime}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="greeting" required="true">
+				<gram>(hello|good morning)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+
+		<Prompt entityTemplateId="greeting">
+			<text> how should i greet you? </text>
+			<gram>with {greeting}</gram>
+		</Prompt>
+		
+	</Intent>
+	
+	<Intent
+	ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
+		<gram>test the + here</gram>
+	</Intent>
+	
+	<Intent
+	ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
+		<gram>test the wildcard *</gram>
+	</Intent>
+</AmyInteractionModel>

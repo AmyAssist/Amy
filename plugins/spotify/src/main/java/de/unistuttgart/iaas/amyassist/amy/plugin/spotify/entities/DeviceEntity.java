@@ -128,6 +128,7 @@ public class DeviceEntity extends Entity implements RegistryEntity {
 	 * 
 	 * @return id
 	 */
+	@Override
 	public int getPersistentId() {
 		return this.persistentId;
 	}

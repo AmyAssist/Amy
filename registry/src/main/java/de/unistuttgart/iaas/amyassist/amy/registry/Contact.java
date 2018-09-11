@@ -28,7 +28,7 @@ package de.unistuttgart.iaas.amyassist.amy.registry;
  *
  * @author Benno Krauß
  */
-public interface Contact extends RegistryEntity {
+public interface Contact extends RegistryEntity, Taggable {
 
     String getFirstName();
 

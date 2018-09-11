@@ -107,7 +107,7 @@ public class DeviceLogic {
 	 * 
 	 * @param deviceUri
 	 *            the Uri from the device to change
-	 * @param newName
+	 * @param newName of the selected device
 	 * @return the deviceEntity with the new name or null if the Uri is not found in the registry
 	 */
 	public DeviceEntity setNewDeviceName(String deviceUri, String newName) {

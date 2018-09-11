@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -40,6 +39,7 @@ import org.slf4j.Logger;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.Events;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -47,10 +47,10 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 
 /**
- * This class is for the Calendar Authentication and Logic, parts of the Code are from
- * https://developers.google.com/calendar/quickstart/java
+ * This class implements all the functions that our calendar plugin is capable of, e.g. get calendar events and set
+ * calendar events.
  *
- * @author Patrick Gebhardt, Florian Bauer
+ * @author Florian Bauer, Patrick Gebhardt
  */
 @Service
 public class CalendarLogic {
@@ -70,25 +70,43 @@ public class CalendarLogic {
 	private LocalTime zero = LocalTime.of(0, 0, 0, 0);
 
 	/**
-	 * Output of the logger
-	 */
-	String errorLogger = "An error occurred.";
-	/**
-	 * Natural language response of Amy if error occurred.
-	 */
-	String errorOutput = "Sorry, I am not able to get your events.";
-	/**
 	 * Natural language response of Amy when the event list is empty.
 	 */
 	String noEventsFound = "No upcoming events found.";
+
 	/**
-	 * List key to get events from Google.
+	 * This method creates an event for the connected google calendar, modified version from
+	 * https://developers.google.com/calendar/create-events
+	 *
+	 * @param calendarEvent
+	 *            the event which will be created in the google calendar
 	 */
-	String primary = "primary";
-	/**
-	 * The way the events are ordered in the list.
-	 */
-	String orderBy = "startTime";
+	public void setEvent(CalendarEvent calendarEvent) {
+		Event event = new Event().setSummary(calendarEvent.getSummary()).setLocation(calendarEvent.getLocation())
+				.setDescription(calendarEvent.getDescription());
+
+		EventDateTime start = new EventDateTime();
+		EventDateTime end = new EventDateTime();
+		ZonedDateTime startZDT = calendarEvent.getStart().atZone(ZoneId.systemDefault());
+		DateTime startDT = new DateTime(startZDT.toInstant().toEpochMilli());
+		ZonedDateTime endZDT = calendarEvent.getEnd().atZone(ZoneId.systemDefault());
+		DateTime endDT = new DateTime(endZDT.toInstant().toEpochMilli());
+		if (calendarEvent.isAllDay()) {
+			start.setDate(new DateTime(true, startZDT.toInstant().toEpochMilli(), 0));
+			end.setDate(new DateTime(true, endZDT.toInstant().toEpochMilli(), 0));
+		} else {
+			start.setDateTime(startDT);
+			end.setDateTime(endDT);
+		}
+		start.setTimeZone(ZoneId.systemDefault().toString());
+		end.setTimeZone(ZoneId.systemDefault().toString());
+
+		event.setStart(start);
+		event.setEnd(end);
+
+		event.setReminders(calendarEvent.getReminders());
+		this.calendarService.addEvent("primary", event);
+	}
 
 	/**
 	 * This method lists the next events from the calendar
@@ -99,26 +117,20 @@ public class CalendarLogic {
 	 */
 	public String getEvents(int number) {
 		List<String> eventList = new ArrayList<>();
-		try {
-			DateTime current = new DateTime(System.currentTimeMillis());
-			Events events = this.calendarService.getService().events().list(this.primary).setMaxResults(number)
-					.setTimeMin(current).setOrderBy(this.orderBy).setSingleEvents(true).execute();
-			List<Event> items = events.getItems();
-			if (items.isEmpty()) {
-				return this.noEventsFound;
-			}
-			LocalDateTime now = LocalDateTime.now();
-			for (Event event : items) {
-				eventList.add(checkDay(now, event, true));
-			}
-			if (number == 1) {
-				return "You have following upcoming event:\n" + String.join("\n", eventList);
-			}
-			return "You have following upcoming " + number + " events:\n" + String.join("\n", eventList);
-		} catch (IOException e) {
-			this.logger.error(this.errorLogger, e);
-			return this.errorOutput;
+		DateTime current = new DateTime(System.currentTimeMillis());
+		Events events = this.calendarService.getEvents(current, number);
+		List<Event> items = events.getItems();
+		if (items.isEmpty()) {
+			return this.noEventsFound;
 		}
+		LocalDateTime now = LocalDateTime.now();
+		for (Event event : items) {
+			eventList.add(checkDay(now, event, true));
+		}
+		if (number == 1) {
+			return "You have following upcoming event:\n" + String.join("\n", eventList);
+		}
+		return "You have following upcoming " + number + " events:\n" + String.join("\n", eventList);
 
 	}
 
@@ -129,30 +141,21 @@ public class CalendarLogic {
 	 */
 	public String getEventsToday() {
 		List<String> eventList = new ArrayList<>();
-		try {
-			LocalDateTime now = this.environment.getCurrentLocalDateTime();
-			LocalDate nextDay = now.plusDays(1).toLocalDate();
-			LocalDateTime endOfDay = LocalDateTime.of(nextDay, this.zero);
-			ZonedDateTime zdt = endOfDay.atZone(ZoneId.systemDefault());
-			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
-			DateTime setup = new DateTime(System.currentTimeMillis());
-			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
-			List<Event> items = events.getItems();
-			if (items.isEmpty()) {
-				return this.noEventsFound;
-			}
-			for (Event event : items) {
-				eventList.add(this.checkDay(now, event, false));
-			}
-			if (eventList.isEmpty()) {
-				return "There are no events today.";
-			}
-			return "You have following events today:\n" + String.join("\n", eventList);
-		} catch (IOException e) {
-			this.logger.error(this.errorLogger, e);
-			return this.errorOutput;
+		LocalDateTime now = this.environment.getCurrentLocalDateTime();
+		DateTime min = new DateTime(System.currentTimeMillis());
+		DateTime max = getDateTime(now, 1);
+		Events events = this.calendarService.getEvents(min, max);
+		List<Event> items = events.getItems();
+		if (items.isEmpty()) {
+			return this.noEventsFound;
 		}
+		for (Event event : items) {
+			eventList.add(this.checkDay(now, event, false));
+		}
+		if (eventList.isEmpty()) {
+			return "There are no events today.";
+		}
+		return "You have following events today:\n" + String.join("\n", eventList);
 	}
 
 	/**
@@ -162,98 +165,84 @@ public class CalendarLogic {
 	 */
 	public String getEventsTomorrow() {
 		List<String> eventList = new ArrayList<>();
-		try {
-			LocalDateTime now = this.environment.getCurrentLocalDateTime();
-			LocalDate nextDay = now.plusDays(1).toLocalDate();
-			now = LocalDateTime.of(nextDay, this.zero);
-			ZonedDateTime zdt = now.atZone(ZoneId.systemDefault());
-			DateTime setup = new DateTime(zdt.toInstant().toEpochMilli());
-			LocalDateTime endOfTomorrow = now.plusDays(1);
-			zdt = endOfTomorrow.atZone(ZoneId.systemDefault());
-			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
-			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
-			List<Event> items = events.getItems();
-			if (items.isEmpty()) {
-				return this.noEventsFound;
-			}
-			for (Event event : items) {
-				eventList.add(this.checkDay(now, event, false));
-			}
-			if (eventList.isEmpty()) {
-				return "There are no events tomorrow.";
-			}
-			return "You have following events tomorrow:\n" + String.join("\n", eventList);
-		} catch (IOException e) {
-			this.logger.error(this.errorLogger, e);
-			return this.errorOutput;
+		LocalDateTime now = this.environment.getCurrentLocalDateTime();
+		DateTime min = getDateTime(now, 1);
+		DateTime max = getDateTime(now, 2);
+		Events events = this.calendarService.getEvents(min, max);
+		List<Event> items = events.getItems();
+		if (items.isEmpty()) {
+			return this.noEventsFound;
 		}
+		for (Event event : items) {
+			eventList.add(this.checkDay(now, event, false));
+		}
+		if (eventList.isEmpty()) {
+			return "There are no events tomorrow.";
+		}
+		return "You have following events tomorrow:\n" + String.join("\n", eventList);
 	}
 
 	/**
 	 * This method contains the logic to show the calendar events on a specific date as natural language output
 	 *
-	 * @param ldt
+	 * @param chosenDay
 	 *            LocalDateTime variable
 	 * @return the events of the chosen day
 	 */
-	public String getEventsAtAsString(LocalDateTime ldt) {
+	public String getEventsAtAsString(LocalDateTime chosenDay) {
 		List<String> eventList = new ArrayList<>();
-		try {
-			LocalDateTime chosenDay = LocalDateTime.of(ldt.toLocalDate(), this.zero);
-			ZonedDateTime zdt = chosenDay.atZone(ZoneId.systemDefault());
-			DateTime setup = new DateTime(zdt.toInstant().toEpochMilli());
-			LocalDateTime nextDay = chosenDay.plusDays(1);
-			zdt = nextDay.atZone(ZoneId.systemDefault());
-			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
-			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
-			List<Event> items = events.getItems();
-			if (items.isEmpty()) {
-				return this.noEventsFound;
-			}
-			for (Event event : items) {
-				eventList.add(this.checkDay(chosenDay, event, false));
-			}
-			if (eventList.isEmpty()) {
-				return "There are no events on the " + getDate(chosenDay) + ".";
-			}
-			return "You have following events on the " + getDate(chosenDay) + ":\n" + String.join("\n", eventList);
-		} catch (IOException e) {
-			this.logger.error(this.errorLogger, e);
-			return this.errorOutput;
+		DateTime min = getDateTime(chosenDay, 0);
+		DateTime max = getDateTime(chosenDay, 1);
+		Events events = this.calendarService.getEvents(min, max);
+		List<Event> items = events.getItems();
+		if (items.isEmpty()) {
+			return this.noEventsFound;
 		}
+		for (Event event : items) {
+			eventList.add(this.checkDay(chosenDay, event, false));
+		}
+		if (eventList.isEmpty()) {
+			return "There are no events on the " + getDate(chosenDay) + ".";
+		}
+		return "You have following events on the " + getDate(chosenDay) + ":\n" + String.join("\n", eventList);
 	}
 
 	/**
 	 * This method contains the logic to show the calendar events on a specific date as a list of Events
 	 *
-	 * @param ldt
+	 * @param chosenDay
 	 *            LocalDateTime variable
 	 * @return the events of the chosen day as a List<Event>
 	 */
-	public List<CalendarEvent> getEventsAt(LocalDateTime ldt) {
+	public List<CalendarEvent> getEventsAt(LocalDateTime chosenDay) {
 		List<CalendarEvent> eventList = new ArrayList<>();
-		try {
-			LocalDateTime chosenDay = LocalDateTime.of(ldt.toLocalDate(), this.zero);
-			ZonedDateTime zdt = chosenDay.atZone(ZoneId.systemDefault());
-			DateTime setup = new DateTime(zdt.toInstant().toEpochMilli());
-			LocalDateTime nextDay = chosenDay.plusDays(1);
-			zdt = nextDay.atZone(ZoneId.systemDefault());
-			DateTime max = new DateTime(zdt.toInstant().toEpochMilli());
-			Events events = this.calendarService.getService().events().list(this.primary).setTimeMin(setup)
-					.setTimeMax(max).setOrderBy(this.orderBy).setSingleEvents(true).execute();
-			List<Event> items = events.getItems();
-			for (Event event : items) {
-				CalendarEvent calendarEvent = new CalendarEvent(event.getId(), getLocalDateTimeStart(event),
-						getLocalDateTimeEnd(event), event.getSummary(), event.getLocation(), event.getDescription(),
-						isAllDay(event));
-				eventList.add(calendarEvent);
-			}
-		} catch (IOException e) {
-			this.logger.error(this.errorLogger, e);
+		DateTime min = getDateTime(chosenDay, 0);
+		DateTime max = getDateTime(chosenDay, 1);
+		Events events = this.calendarService.getEvents(min, max);
+		List<Event> items = events.getItems();
+		for (Event event : items) {
+			CalendarEvent calendarEvent = new CalendarEvent(event.getId(), getLocalDateTimeStart(event),
+					getLocalDateTimeEnd(event), event.getSummary(), event.getLocation(), event.getDescription(),
+					isAllDay(event));
+			eventList.add(calendarEvent);
 		}
 		return eventList;
+	}
+
+	/**
+	 * This method converts a LocalDateTime to a google api DateTime
+	 *
+	 * @param ldt
+	 *            LocalDateTime variable
+	 * @param plusDays
+	 *            the number of days you want to add
+	 * @return DateTime of input
+	 */
+	private DateTime getDateTime(LocalDateTime ldt, int plusDays) {
+		LocalDate nextDay = ldt.plusDays(plusDays).toLocalDate();
+		LocalDateTime endOfDay = LocalDateTime.of(nextDay, this.zero);
+		ZonedDateTime zdt = endOfDay.atZone(ZoneId.systemDefault());
+		return new DateTime(zdt.toInstant().toEpochMilli());
 	}
 
 	/**
@@ -325,7 +314,7 @@ public class CalendarLogic {
 	 */
 	public String eventToString(LocalDateTime startDate, LocalDateTime endDate, Event event, boolean withStartDate,
 			boolean withEndDate, boolean withTime, OutputCase outputCase) {
-		String eventData = event.getSummary();
+		String eventData = convertEventTitle(event.getSummary());
 		String eventStartDate = dateOutput(startDate, withStartDate, withTime);
 		String eventEndDate = dateOutput(endDate, withEndDate, withTime);
 		String eventStartTime = "";
@@ -346,7 +335,8 @@ public class CalendarLogic {
 			eventData += ". \n";
 			break;
 		case STARTINFUTURE:
-			eventData += " from" + eventStartDate + eventStartTime + " until" + eventEndDate + eventEndTime + ". \n";
+			eventData += " from" + eventStartDate + eventStartTime;
+			eventData += " until" + eventEndDate + eventEndTime + ". \n";
 			break;
 		case ALLDAYLONG:
 			if (withStartDate) {
@@ -369,6 +359,19 @@ public class CalendarLogic {
 		}
 
 		return eventData;
+	}
+	
+	/**
+	 * Checks if given event summary is empty/ null and returns an alternative String or the title
+	 * 
+	 * @param title the title String of the event
+	 * @return the title part of the event for Amy output
+	 */
+	private String convertEventTitle(String title) {
+		if(title == null || title.equals("")) {
+			return "An event without a title";
+		}
+		return title;
 	}
 
 	/**

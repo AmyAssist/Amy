@@ -23,33 +23,48 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.util.Arrays;
 
-import com.github.dvdme.ForecastIOLib.FIODaily;
+/**
+ * Weather report for a week
+ * 
+ * @author Benno Krauß, Muhammed Kaya, Tim Neumann
+ */
+public class WeatherReportWeek {
 
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
+	/** The reports for the days of the week. */
+	private final WeatherReportDay[] days;
+	/** The summary of the report. */
+	private final String summary;
 
-@XmlRootElement
-public class WeatherReportWeek extends Entity{
-
-	@XmlTransient
-	public final String preamble;
-
-	public final WeatherReportDay[] days;
-	public final String summary;
-
-	public WeatherReportWeek(String preamble, FIODaily d) {
-		this.preamble = preamble;
-		this.days = new WeatherReportDay[d.days()];
-		for (int i = 0; i < d.days(); i++) {
-			this.days[i] = new WeatherReportDay(null, d.getDay(i));
-		}
-		this.summary = d.getSummary();
+	/**
+	 * Creates a weather report for a week
+	 * 
+	 * @param pSummary
+	 *            Sets {@link #summary}
+	 * @param pDays
+	 *            Sets {@link #days}
+	 */
+	public WeatherReportWeek(String pSummary, WeatherReportDay[] pDays) {
+		this.summary = pSummary;
+		this.days = pDays;
 	}
 
-	@Override
-	public String toString() {
-		return (this.preamble != null ? this.preamble + " " : "") + this.summary;
+	/**
+	 * Get's {@link #days days}
+	 * 
+	 * @return days
+	 */
+	public WeatherReportDay[] getDays() {
+		return Arrays.copyOf(this.days, this.days.length);
+	}
+
+	/**
+	 * Get's {@link #summary summary}
+	 * 
+	 * @return summary
+	 */
+	public String getSummary() {
+		return this.summary;
 	}
 }

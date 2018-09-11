@@ -34,16 +34,17 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 
 import org.mockito.Mockito;
-import org.slf4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceNotFoundException;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.ServerImpl;
 
 /**
  * The Implementation of the TestFramework
@@ -75,10 +76,10 @@ public class TestFrameworkImpl implements TestFramework {
 				Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS).useConstructor());
 
 		this.dependencyInjection = new DependencyInjection();
-		this.dependencyInjection.addExternalService(TestFramework.class, this);
-		this.dependencyInjection.addExternalService(IStorage.class, this.storage);
-		this.dependencyInjection.register(Server.class);
-		this.dependencyInjection.register(Logger.class, new LoggerProvider());
+		this.dependencyInjection.register(new SingletonServiceProvider<>(TestFramework.class, this));
+		this.dependencyInjection.register(new SingletonServiceProvider<>(IStorage.class, this.storage));
+		this.dependencyInjection.register(ServerImpl.class);
+		this.dependencyInjection.register(new LoggerProvider());
 	}
 
 	/**
@@ -86,11 +87,13 @@ public class TestFrameworkImpl implements TestFramework {
 	 */
 	public void prepareServer() {
 		Properties serverConfig = new Properties();
-		serverConfig.setProperty(Server.PROPERTY_PORT, String.valueOf(TEST_SERVER_PORT));
-		serverConfig.setProperty(Server.PROPERTY_CONTEXT_PATH, "");
-		serverConfig.setProperty(Server.PROPERTY_LOCALHOST, "true");
-		ConfigurationLoader configLoader = this.registerService(ConfigurationLoader.class, TestConfiguration.class);
-		configLoader.store(Server.CONFIG_NAME, serverConfig);
+		serverConfig.setProperty(ServerImpl.PROPERTY_PORT, String.valueOf(TEST_SERVER_PORT));
+		serverConfig.setProperty(ServerImpl.PROPERTY_CONTEXT_PATH, "");
+		serverConfig.setProperty(ServerImpl.PROPERTY_LOCALHOST, "true");
+		serverConfig.setProperty(ServerImpl.PROPERTY_SERVER_URL, "");
+
+		ConfigurationManager configLoader = this.mockService(ConfigurationManager.class);
+		Mockito.when(configLoader.getConfigurationWithDefaults(ServerImpl.CONFIG_NAME)).thenReturn(serverConfig);
 		this.server = this.dependencyInjection.getService(Server.class);
 	}
 
@@ -109,7 +112,7 @@ public class TestFrameworkImpl implements TestFramework {
 	public void before() {
 		if (!this.restResources.isEmpty()) {
 			this.prepareServer();
-			this.server.start(this.restResources.toArray(new Class<?>[this.restResources.size()]));
+			this.server.startWithResources(this.restResources.toArray(new Class<?>[this.restResources.size()]));
 		}
 	}
 
@@ -118,7 +121,7 @@ public class TestFrameworkImpl implements TestFramework {
 	 */
 	public void after() {
 		if (this.server != null) {
-			this.server.shutdown();
+			this.server.stop();
 		}
 	}
 
@@ -130,7 +133,7 @@ public class TestFrameworkImpl implements TestFramework {
 	@Override
 	public <T> T mockService(Class<T> serviceType) {
 		T mock = Mockito.mock(serviceType);
-		this.dependencyInjection.addExternalService(serviceType, mock);
+		this.dependencyInjection.register(new SingletonServiceProvider<>(serviceType, mock));
 		return mock;
 	}
 

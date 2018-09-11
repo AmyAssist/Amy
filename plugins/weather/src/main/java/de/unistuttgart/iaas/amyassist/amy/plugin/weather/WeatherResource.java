@@ -23,75 +23,46 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherLogic.GeoCoordinatePair;
+import de.unistuttgart.iaas.amyassist.amy.registry.Location;
+import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
 /**
  * REST Resource for weather
  * 
- * @author Muhammed Kaya, Christian Bräuner
+ * @author Muhammed Kaya, Christian Bräuner, Tim Neumann
  */
 @Path("weather")
 public class WeatherResource implements Resource {
 
 	@Reference
-	private WeatherDarkSkyAPI weatherLogic;
+	private WeatherLogic weatherLogic;
+
+	@Reference
+	private LocationRegistry registry;
 
 	/**
-	 * get the weather forecast for today
+	 * get the weather report
 	 * 
-	 * @return todays weather forecast
+	 * @param locationId
+	 *            The id of the location to get the report for.
+	 * 
+	 * @return The weather report
 	 */
 	@GET
-	@Path("today")
+	@Path("report")
 	@Produces(MediaType.APPLICATION_JSON)
-	public WeatherReportDay getWeatherToday() {
-		return this.weatherLogic.getReportToday();
-	}
-
-	/**
-	 * get the weather forecast for tomorrow
-	 * 
-	 * @return tomorrows weather forecast
-	 */
-	@GET
-	@Path("tomorrow")
-	@Produces(MediaType.APPLICATION_JSON)
-	public WeatherReportDay getWeatherTomorrow() {
-		return this.weatherLogic.getReportTomorrow();
-	}
-
-	/**
-	 * get the weather forecast for the week
-	 * 
-	 * @return this weeks weather forecast
-	 */
-	@GET
-	@Path("week")
-	@Produces(MediaType.APPLICATION_JSON)
-	public WeatherReportWeek getWeatherWeek() {
-		return this.weatherLogic.getReportWeek();
-	}
-
-	@PUT
-	@Path("setLocation")
-	@Consumes(MediaType.TEXT_PLAIN)
-	public void setLocation(String locationId) {
-		try {
-			this.weatherLogic.setLocation(Integer.parseInt(locationId));
-		} catch (NumberFormatException e) {
-			throw new WebApplicationException("No route found.", Status.NOT_FOUND);
-		}
+	public WeatherReport getWeatherReport(@QueryParam("id") int locationId) {
+		Location loc = this.registry.getById(locationId);
+		if (loc == null)
+			throw new WebApplicationException(400);
+		return this.weatherLogic.getWeatherReport(new GeoCoordinatePair(loc));
 	}
 
 	/**

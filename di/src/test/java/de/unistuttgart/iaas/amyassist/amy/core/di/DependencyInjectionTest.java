@@ -26,13 +26,15 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static uk.org.lidalia.slf4jtest.LoggingEvent.*;
+
+import java.time.Duration;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
@@ -77,7 +79,9 @@ class DependencyInjectionTest {
 		this.dependencyInjection.register(Service4.class);
 		this.dependencyInjection.register(Service5.class);
 
-		assertThrows(RuntimeException.class, () -> this.dependencyInjection.getService(Service4.class));
+		assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
+			assertThrows(RuntimeException.class, () -> this.dependencyInjection.getService(Service4.class));
+		});
 	}
 
 	@Test()
@@ -94,8 +98,18 @@ class DependencyInjectionTest {
 		String message = assertThrows(ServiceNotFoundException.class,
 				() -> this.dependencyInjection.getService(Service6.class)).getMessage();
 
-		assertThat(message, equalTo(
-				"The Service " + Service7API.class.getName() + " is not registered in the DI or do not exists."));
+		assertThat(message, equalTo("No Service of type " + Service7API.class.getName()
+				+ " with qualifier [] is registered in the DI." + "\nRequired by:"
+				+ "\nde.unistuttgart.iaas.amyassist.amy.core.di.Service6\n└── de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection"
+				+ "\nSo first make sure you use the Service type and not the Service implementation to find the service."
+				+ "\nIs " + Service7API.class.getName() + " the type of the Service?"
+				+ "\nIf not you MUST change the JavaType of the Reference to match the Service type to get the Service."
+				+ "\nElse make sure there is a Service implementation for the Service type "
+				+ Service7API.class.getName() + " registered in the DI."
+				+ "\nFirst step find the implementation of the Service."
+				+ "\nSecond check if the type of the Service is " + Service7API.class.getName()
+				+ "\nif you use the @Service read the JavaDoc to find out how to set the correct type of the Service."
+				+ "\nThird check if the Service implemenatin is loaded either by using a deployment descriptor or by a programmatic call."));
 	}
 
 	@Test()
@@ -106,9 +120,9 @@ class DependencyInjectionTest {
 
 	@Test()
 	void testDuplicateServiceException2() {
-		this.dependencyInjection.addExternalService(Service7API.class, new Service7());
-		assertThrows(DuplicateServiceException.class,
-				() -> this.dependencyInjection.addExternalService(Service7API.class, new Service7()));
+		this.dependencyInjection.register(new SingletonServiceProvider<>(Service7API.class, new Service7()));
+		assertThrows(DuplicateServiceException.class, () -> this.dependencyInjection
+				.register(new SingletonServiceProvider<>(Service7API.class, new Service7())));
 	}
 
 	@Test()
@@ -153,15 +167,6 @@ class DependencyInjectionTest {
 	}
 
 	@Test()
-	void testCreateService() {
-		Service2 s2 = this.dependencyInjection.create(Service2.class);
-		assertThat(s2.getService3(), nullValue());
-
-		Service1 service1 = this.dependencyInjection.create(Service1.class);
-		assertThat(service1.init, is(0));
-	}
-
-	@Test()
 	void testCreateNotAService() {
 		NotAService2 nas = this.dependencyInjection.createAndInitialize(NotAService2.class);
 		assertThat(nas.getInit(), is(1));
@@ -175,16 +180,16 @@ class DependencyInjectionTest {
 	@Test()
 	void testCreateIllegalAccessException() {
 		String message = assertThrows(IllegalArgumentException.class,
-				() -> this.dependencyInjection.create(Service8.class)).getMessage();
+				() -> this.dependencyInjection.createAndInitialize(Service8.class)).getMessage();
 
 		assertThat(message, equalTo(
 				"There is a problem with the class " + Service8.class.getName() + ". It can't be used as a Service"));
 	}
 
 	@Test()
-	void testExternalService() {
+	void testSingletonServiceProvider() {
 		Service7 service7 = new Service7();
-		this.dependencyInjection.addExternalService(Service7API.class, service7);
+		this.dependencyInjection.register(new SingletonServiceProvider<>(Service7API.class, service7));
 		assertThat(this.dependencyInjection.getService(Service7API.class), is(theInstance(service7)));
 	}
 
@@ -205,6 +210,18 @@ class DependencyInjectionTest {
 	@Test()
 	void testServiceType() {
 		assertThrows(IllegalArgumentException.class, () -> this.dependencyInjection.register(Service17.class));
+	}
+
+	@Test()
+	void testRegisterServiceTypeFromInterface() {
+		this.dependencyInjection.register(Service7Impl.class);
+		assertThat(this.dependencyInjection.getService(Service7API.class), is(notNullValue()));
+	}
+
+	@Test()
+	void testRegisterServiceTypeFromMultipleInterfaces() {
+		assertThrows(IllegalArgumentException.class,
+				() -> this.dependencyInjection.register(ServiceImplementingMultipleInterfaces.class));
 	}
 
 	@Test()

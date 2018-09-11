@@ -1,0 +1,7 @@
+autoEnabled=true
+eclipse.preferences.version=1
+extraProperties=
+fileExclusions=
+moduleKey=de.unistuttgart.iaas.amyassist\:amy-message-hub
+projectKey=de.unistuttgart.iaas.amyassist\:amy
+serverId=SonarCloud/amyassist

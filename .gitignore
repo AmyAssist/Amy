@@ -1,5 +1,10 @@
+build/
 target/
+bin/
 *.gram
+.classpath
+.project
+org.eclipse.core.resources.prefs
 
 temp/
 
@@ -22,5 +27,19 @@ dependency-reduced-pom.xml
 
 #Ignore config files
 *.properties
+!**/META-INF/*.properties
 
+#Include docker and dev configs
+!.docker/config/**
+!.dev/config/**
+
+#Ignore db and persistence files.
 *.db
+
+.mqtt-persistence/**
+#Ignore chrome user profile except the permission preset and first launch config
+remote-sr/src/main/resources/chrome_profile/*
+!remote-sr/src/main/resources/chrome_profile/First\ Run
+!remote-sr/src/main/resources/chrome_profile/Default/
+remote-sr/src/main/resources/chrome_profile/Default/*
+!remote-sr/src/main/resources/chrome_profile/Default/Preferences

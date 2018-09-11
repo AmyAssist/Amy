@@ -23,19 +23,28 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * Class that defines the speech commands for the email functionality and calls the logic methods
  * 
  * @author Patrick Singer, Felix Burk
  */
+@Service
 @SpeechCommand
 public class EMailSpeech {
+
+	private static final String NO_MAILS = "No new messages";
+	private static final String NO_IMP_MAILS = "No important new messages";
+	private static final String IMPORTANT = "important";
 
 	@Reference
 	private EMailLogic logic;
@@ -44,90 +53,99 @@ public class EMailSpeech {
 	private Logger logger;
 
 	/**
-	 * Checks if there are new messages
+	 * Connects to the Amy Mail
 	 * 
-	 * @param params
-	 *            words in the grammar annotation
-	 * @return yes or no
+	 * @return connected
 	 */
-	@Grammar("new messages")
-	public String newMessages(String... params) {
-		if (this.logic.hasUnreadMessages()) {
-			return "You have new messages.";
+	@Intent
+	public String connectToAmyMail(Map<String, EntityData> entities) {
+		if (this.logic.connectToMailServer(null)) {
+			return "Connected to mail server";
 		}
-		return "You have no new messages.";
-
+		return "Couldn't connect to mail server";
 	}
 
 	/**
-	 * Gets number of UNSEEN (don't confuse with UNREAD) mails
+	 * Disconnect from currently connected mail server
 	 * 
-	 * @param params
-	 *            words in the grammar annotation
+	 * @return disconnected
+	 */
+	@Intent
+	public String disconnect(Map<String, EntityData> entities) {
+		this.logic.disconnectFromMailServer();
+		return "disconnected";
+	}
+
+	/**
+	 * Checks if there are new messages
+	 * 
+	 * @param entities
+	 *            contain if important or not
+	 * @return yes or no
+	 */
+	@Intent()
+	public String newMessages(Map<String, EntityData> entities) {
+		if (entities.get(IMPORTANT) != null && entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
+			if (this.logic.hasNewMessages(true)) {
+				return "You have new important messages.";
+			}
+			return NO_IMP_MAILS;
+		}
+		if (this.logic.hasNewMessages(false)) {
+			return "You have new messages.";
+		}
+		return NO_MAILS;
+	}
+
+	/**
+	 * Gets number of UNREAD mails
+	 * 
+	 * @param entities
+	 *            contain if important or not
 	 * @return number of unseen emails
 	 */
-	@Grammar("how many [new] (emails|mails) [do i have]")
-	public String numberOfNewMails(String... params) {
-		int s = this.logic.getNewMessageCount();
-		if (s > 0) {
-			return this.logic.getNewMessageCount() + " new mails.";
-		} else if (s == 0) {
-			return "You don't have new mails.";
+	@Intent()
+	public String numberOfNewMails(Map<String, EntityData> entities) {
+		if (entities.get(IMPORTANT) != null && entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
+			int count = this.logic.getNewMessageCount(true);
+			if (count > 0) {
+				return count + " new important messages";
+			}
+			return NO_IMP_MAILS;
 		}
-		return "something went wrong - i am deeply sorry";
+		int count = this.logic.getNewMessageCount(false);
+		if (count > 0) {
+			return count + " new mails.";
+		}
+		return NO_MAILS;
 	}
 
 	/**
 	 * Reads the x most recent mails
 	 * 
-	 * @param params
-	 *            words in the grammar annotation
+	 * @param entities
+	 *            contain if important or not and how many mails should be read
 	 * @return x most recent mails
 	 */
-	@Grammar("read [# most recent] (emails|mails)")
-	public String readRecentMails(String... params) {
-		String message;
-		if (params.length == 2) {
-			message = this.logic.printPlainTextMessages(-1);
-		} else {
-			message = this.logic.printPlainTextMessages(Integer.parseInt(params[1]));
+	@Intent()
+	public String readRecentMails(Map<String, EntityData> entities) {
+		boolean important = false;
+		if (entities.get(IMPORTANT) != null) {
+			important = entities.get(IMPORTANT).getString().contains(IMPORTANT);
 		}
-		if (message.isEmpty()) {
-			return "no messages received - poor you";
+		if (entities.get("all") != null && entities.get("all").getString() != null) {
+			if (important) {
+				return this.logic.printMessages(-1, true);
+			}
+			return this.logic.printMessages(-1, false);
 		}
-		return message;
-	}
-
-	/**
-	 * Reads all messages from important people
-	 * 
-	 * @param params
-	 *            words in the grammar annotation
-	 * @return all important mails
-	 */
-	@Grammar("read [# most recent] important (emails|mails)")
-	public String readImportantMails(String... params) {
-		String message;
-		if (params.length == 3) {
-			message = this.logic.printImportantMessages(-1);
-		} else {
-			message = this.logic.printImportantMessages(Integer.parseInt(params[1]));
+		if (entities.get("number") != null) {
+			int amount = entities.get("number").getNumber();
+			if (important) {
+				return this.logic.printMessages(amount, true);
+			}
+			return this.logic.printMessages(amount, false);
 		}
-		if (message.isEmpty()) {
-			return "You have no important messages";
-		}
-		return message;
-	}
-
-	/**
-	 * Sends an example email
-	 * 
-	 * @param params
-	 *            words in the grammar annotation
-	 * @return confirmation
-	 */
-	@Grammar("send example mail")
-	public String sendExampleMail(String... params) {
-		return this.logic.sendMail("amy.speechassist@gmail.com", "Mail From Amy", "Hello!");
+		return "";
 	}
 }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEvents">
+		<gram>what (is|are) my next [{number}] event</gram>
+		<EntityTemplates>
+			<EntityTemplate id="number" required="true">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="number">
+			<text>How many events should i show? </text>
+			<gram> {number} [event] </gram>
+		</Prompt>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsToday">
+		<gram>[which] events [do i have] [{day}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="day" required="true">
+				<gram>(today|tomorrow)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="day">
+			<text>today or tomorrow? </text>
+			<gram> {day} </gram>
+		</Prompt>
+	</Intent>
+	
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getADate">
+		<gram>{date}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="date" required="true">
+				<gram>{amydate}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getADateTime">
+		<gram>{datetime}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="datetime" required="true">
+				<gram>{amydatetime}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+
+	</Intent>
+
+</AmyInteractionModel>

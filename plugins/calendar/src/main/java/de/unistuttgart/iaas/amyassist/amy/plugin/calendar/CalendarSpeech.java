@@ -23,15 +23,20 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
+import java.util.Map;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.Grammar;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.api.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * This is the speech class, which contains the commands for the calendar
- * 
+ *
  * @author Patrick Gebhardt, Florian Bauer
  */
+@Service
 @SpeechCommand
 public class CalendarSpeech {
 
@@ -40,42 +45,50 @@ public class CalendarSpeech {
 
 	/**
 	 *
-	 * @param params
-	 *            params from the speech
+	 * @param entites
+	 *            from the speech
 	 *
 	 * @return the upcoming X events from the calendar
 	 */
-	@Grammar("what (is|are) my next [#] (event|events)")
-	public String getEvents(String[] params) {
-		String number;
-		if (params[4].contains("event")) {
-			number = "1";
-		} else {
-			number = params[4];
-		}
-		return this.calendar.getEvents(Integer.parseInt(number));
+	@Intent
+	public String getEvents(Map<String, EntityData> entites) {
+		return this.calendar.getEvents(entites.get("number").getNumber());
 	}
 
 	/**
-	 * @param params
-	 *            params from the speech
+	 * @param entites
+	 *            from the speech
 	 * @return upcoming events today or tomorrow depending on input
 	 */
-	@Grammar("[which] events [do i have] (today|tomorrow)")
-	public String getEventsToday(String[] params) {
-		int position = 1;
-		if (params[0].contains("which") && params[2].contains("do")) {
-			position = 5;
-		} else if (params[0].contains("which")) {
-			position = 2;
-		} else if (params[1].contains("do")) {
-			position = 4;
-		}
-		if (params[position].contains("today")) {
+	@Intent
+	public String getEventsToday(Map<String, EntityData> entites) {
+		if (entites.get("day").getString().equalsIgnoreCase("today")) {
 			return this.calendar.getEventsToday();
 		}
 		return this.calendar.getEventsTomorrow();
 
+	}
+
+	/**
+	 * example method
+	 * 
+	 * @param entities
+	 * @return
+	 */
+	@Intent
+	public String getADate(Map<String, EntityData> entities) {
+		return entities.get("date").getDate().toString();
+	}
+
+	/**
+	 * example method
+	 * 
+	 * @param entities
+	 * @return
+	 */
+	@Intent
+	public String getADateTime(Map<String, EntityData> entities) {
+		return entities.get("datetime").getDateTime().toString();
 	}
 
 }

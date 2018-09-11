@@ -23,19 +23,19 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -44,18 +44,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.MusicEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.*;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.SearchTypes;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
  * Test for the rest resource of music
  * 
- * @author Muhammed Kaya
+ * @author Muhammed Kaya, Lars Buttgereit
  */
 @ExtendWith(FrameworkExtension.class)
 class MusicRestTest {
@@ -63,62 +63,55 @@ class MusicRestTest {
 	@Reference
 	private TestFramework testFramework;
 
-	private StringGenerator stringGenerator;
 	private PlayerLogic logic;
 	private DeviceLogic deviceLogic;
-	private MusicEntity[] userMusics;
-	private MusicEntity[] featuredMusics;
-	private List<PlaylistEntity> userPlaylists;
-	private List<PlaylistEntity> featuredPlaylists;
-
+	private List<PlaylistEntity> userPlaylists = new ArrayList<>();
+	private List<PlaylistEntity> featuredPlaylists = new ArrayList<>();
+	private List<TrackEntity> trackList = new ArrayList<>();
+	private List<AlbumEntity> albumList = new ArrayList<>();
+	private List<ArtistEntity> artistList = new ArrayList<>();
+	private List<PlaylistEntity> playlistList = new ArrayList<>();
 	private WebTarget target;
+	private Search search;
+
+	private static final String SONG_NAME1 = "Flames";
+	private static final String SONG_NAME2 = "Say Something";
+	private static final String ARTIST_NAME1 = "David Guetta";
 
 	/**
-	 * 
+	 * setUp
 	 */
 	@BeforeEach
 	public void setUp() {
 		this.target = this.testFramework.setRESTResource(MusicResource.class);
-		this.stringGenerator = this.testFramework.mockService(StringGenerator.class);
 		this.deviceLogic = this.testFramework.mockService(DeviceLogic.class);
 		this.logic = this.testFramework.mockService(PlayerLogic.class);
-
-		createSongAndPlaylist();
+		this.search = this.testFramework.mockService(Search.class);
+		createData();
 	}
 
 	/**
-	 * creates song and playlist for testing
+	 * creates data for testing
 	 */
-	private void createSongAndPlaylist() {
-		HashMap<String, String> currentSong = new HashMap<>();
-		currentSong.put(SpotifyConstants.ITEM_NAME, "Say Something");
-		currentSong.put(SpotifyConstants.ARTIST_NAME, "Justin Timberlake");
-		Mockito.when(this.logic.getCurrentSong()).thenReturn(currentSong);
-
-		MusicEntity musicEntity1 = new MusicEntity(currentSong.get(SpotifyConstants.ITEM_NAME), currentSong.get(SpotifyConstants.ARTIST_NAME));
-		MusicEntity musicEntity2 = new MusicEntity("Flames", "David Guetta");
-		MusicEntity musicEntity3 = new MusicEntity("Holz", "Hans Dieter");
-
-		this.userMusics = new MusicEntity[2];
-		this.userMusics[0] = musicEntity1;
-		this.userMusics[1] = musicEntity2;
-
-		this.featuredMusics = new MusicEntity[2];
-		this.featuredMusics[0] = musicEntity2;
-		this.featuredMusics[1] = musicEntity3;
-
-		PlaylistEntity myFirstPlaylist = new PlaylistEntity("myFirstPlaylist", this.userMusics, "test123", "image.com");
-		PlaylistEntity mySecondPlaylist = new PlaylistEntity("mySecondPlaylist", this.featuredMusics, "test456",
-				"picture.com");
-		PlaylistEntity featuredPlaylist1 = new PlaylistEntity("featuredPlaylist", this.featuredMusics, "test789",
-				"cover.com");
-
-		this.userPlaylists = new ArrayList<>();
-		this.userPlaylists.add(myFirstPlaylist);
-		this.userPlaylists.add(mySecondPlaylist);
-
-		this.featuredPlaylists = new ArrayList<>();
-		this.featuredPlaylists.add(featuredPlaylist1);
+	private void createData() {
+		TrackEntity track = new TrackEntity();
+		track.setName(SONG_NAME1);
+		this.trackList.add(track);
+		AlbumEntity album = new AlbumEntity();
+		album.setName(SONG_NAME1);
+		this.albumList.add(album);
+		ArtistEntity artist = new ArtistEntity();
+		artist.setName(ARTIST_NAME1);
+		this.artistList.add(artist);
+		PlaylistEntity playlist = new PlaylistEntity();
+		playlist.setName(SONG_NAME1);
+		this.playlistList.add(playlist);
+		PlaylistEntity userPlaylist = new PlaylistEntity();
+		userPlaylist.setName(SONG_NAME2);
+		this.userPlaylists.add(userPlaylist);
+		PlaylistEntity featuredPlaylist = new PlaylistEntity();
+		featuredPlaylist.setName(ARTIST_NAME1);
+		this.featuredPlaylists.add(featuredPlaylist);
 	}
 
 	/**
@@ -142,39 +135,39 @@ class MusicRestTest {
 		URI uri = URI.create("http://example.com");
 
 		Mockito.when(this.logic.firstTimeInit("HansDieter", "horst123")).thenReturn(uri);
-		Response response = this.target.path("init").queryParam("clientID", "HansDieter")
-				.queryParam("clientSecret", "horst123").request().post(null);
-		URI actual = response.readEntity(URI.class);
-		assertThat(actual, is(uri));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).firstTimeInit("HansDieter", "horst123");
+		try (Response response = this.target.path("init").queryParam("clientID", "HansDieter")
+				.queryParam("clientSecret", "horst123").request().post(null)) {
+			assertThat(response.readEntity(URI.class), is(uri));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).firstTimeInit("HansDieter", "horst123");
+		}
 
 		Mockito.when(this.logic.firstTimeInit("abc123", "123abc")).thenReturn(null);
-		response = this.target.path("init").queryParam("clientID", "abc123")
-				.queryParam("clientSecret", "123abc").request().post(null);
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Enter valid client information"));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic).firstTimeInit("abc123", "123abc");
+		try (Response response = this.target.path("init").queryParam("clientID", "abc123")
+				.queryParam("clientSecret", "123abc").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("Enter valid client information"));
+			assertThat(response, status(409));
+			Mockito.verify(this.logic).firstTimeInit("abc123", "123abc");
+		}
 
 		Mockito.when(this.logic.firstTimeInit()).thenReturn(uri);
-		response = this.target.path("init").queryParam("clientID", null).queryParam("clientSecret", null)
-				.request().post(null);
-		actual = response.readEntity(URI.class);
-		assertThat(actual, is(uri));
-		assertThat(response.getStatus(), is(200));
+		try (Response response = this.target.path("init").queryParam("clientID", null).queryParam("clientSecret", null)
+				.request().post(null)) {
+			assertThat(response.readEntity(URI.class), is(uri));
+			assertThat(response, status(200));
+		}
 
-		response = this.target.path("init").request().post(null);
-		actual = response.readEntity(URI.class);
-		assertThat(actual, is(uri));
-		assertThat(response.getStatus(), is(200));
+		try (Response response = this.target.path("init").request().post(null)) {
+			assertThat(response.readEntity(URI.class), is(uri));
+			assertThat(response, status(200));
+		}
 
 		Mockito.when(this.logic.firstTimeInit()).thenReturn(null);
-		response = this.target.path("init").request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Check your property location"));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic, Mockito.times(3)).firstTimeInit();
+		try (Response response = this.target.path("init").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("Check your property location"));
+			assertThat(response, status(409));
+			Mockito.verify(this.logic, Mockito.times(3)).firstTimeInit();
+		}
 
 	}
 
@@ -183,11 +176,11 @@ class MusicRestTest {
 	 */
 	@Test
 	void testInputAuthCode() {
-		Response response = this.target.path("token/abc").request().post(null);
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Token created."));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).inputAuthCode("abc");
+		try (Response response = this.target.path("token/abc").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("Token created."));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).inputAuthCode("abc");
+		}
 	}
 
 	/**
@@ -196,181 +189,300 @@ class MusicRestTest {
 	@Test
 	void testGetDevices() {
 		Mockito.when(this.deviceLogic.getDevices()).thenReturn(createDeviceList());
-
-		Response response = this.target.path("getDevices").request().get();
-
-		DeviceEntity[] actualDevices = response.readEntity(DeviceEntity[].class);
-		assertThat(actualDevices[0].getType(), is("Smartphone"));
-		assertThat(actualDevices[0].getName(), is("Hello"));
-		assertThat(actualDevices[0].getID(), is("abc123"));
-		assertThat(actualDevices[1].getType(), is("Computer"));
-		assertThat(actualDevices[1].getName(), is("Goodbye"));
-		assertThat(actualDevices[1].getID(), is("123abc"));
-		assertThat(response.getStatus(), is(200));
+		try (Response response = this.target.path("getDevices").request().get()) {
+			DeviceEntity[] actualDevices = response.readEntity(DeviceEntity[].class);
+			assertThat(actualDevices[0].getType(), equalTo("Smartphone"));
+			assertThat(actualDevices[0].getName(), equalTo("Hello"));
+			assertThat(actualDevices[0].getID(), equalTo("abc123"));
+			assertThat(actualDevices[1].getType(), equalTo("Computer"));
+			assertThat(actualDevices[1].getName(), equalTo("Goodbye"));
+			assertThat(actualDevices[1].getID(), equalTo("123abc"));
+			assertThat(response, status(200));
+		}
 
 		List<DeviceEntity> emptyList = new ArrayList<>();
 		Mockito.when(this.deviceLogic.getDevices()).thenReturn(emptyList);
-
-		response = this.target.path("getDevices").request().get();
-
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Currently there are no devices available or connected"));
+		try (Response response = this.target.path("getDevices").request().get()) {
+			assertThat(response.readEntity(String.class),
+					equalTo("Currently there are no devices available or connected"));
+		}
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#setDevice(int)}.
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#setDevice(String)}.
 	 */
 	@Test
 	void testSetDevice() {
 		Mockito.when(this.deviceLogic.setDevice(0)).thenReturn("Hello");
-		Response response = this.target.path("setDevice/0").request().post(null);
-		assertThat(response.readEntity(String.class), is("Hello"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.deviceLogic).setDevice(0);
+		try (Response response = this.target.path("setDevice/0").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("Hello"));
+			assertThat(response, status(200));
+			Mockito.verify(this.deviceLogic).setDevice(0);
+		}
 
 		Mockito.when(this.deviceLogic.setDevice(2)).thenReturn("No device found");
-		response = this.target.path("setDevice/2").request().post(null);
-		assertThat(response.readEntity(String.class), is("No device found"));
-		assertThat(response.getStatus(), is(404));
-		Mockito.verify(this.deviceLogic).setDevice(2);
+		try (Response response = this.target.path("setDevice/2").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("No device found"));
+			assertThat(response, status(404));
+			Mockito.verify(this.deviceLogic).setDevice(2);
+		}
 
 		Mockito.when(this.deviceLogic.setDevice("abc123")).thenReturn(true);
-		response = this.target.path("setDevice/abc123").request().post(null);
-		assertThat(response.readEntity(String.class), is("Device: 'abc123' is selected now"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.deviceLogic).setDevice("abc123");
+		try (Response response = this.target.path("setDevice/abc123").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("Device: 'abc123' is selected now"));
+			assertThat(response, status(200));
+			Mockito.verify(this.deviceLogic).setDevice("abc123");
+		}
 
 		Mockito.when(this.deviceLogic.setDevice("xyz789")).thenReturn(false);
-		response = this.target.path("setDevice/xyz789").request().post(null);
-		assertThat(response.readEntity(String.class), is("Device: 'xyz789' is not available"));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.deviceLogic).setDevice("xyz789");
+		try (Response response = this.target.path("setDevice/xyz789").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("Device: 'xyz789' is not available"));
+			assertThat(response, status(409));
+			Mockito.verify(this.deviceLogic).setDevice("xyz789");
+		}
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#search(String, String, int)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchTracks(String, int)}.
 	 */
 	@Test
-	void testSearch() {
-		List<Map<String, String>> searchList = new ArrayList<>();
-		HashMap<String, String> entry = new HashMap<>();
-		entry.put(SpotifyConstants.ARTIST_NAME, "David Guetta");
-		entry.put("track", "Flames");
-		entry.put("album", "albumName");
-		entry.put("playlist", "playlistName");
-		searchList.add(0, entry);
-
-		Mockito.when(this.logic.search("Flames", "track", 1)).thenReturn(searchList);
-		Response response = this.target.path("search/Flames").queryParam("type", "track")
-				.queryParam("limit", 1).request().post(null);
-		List<Map<String, String>> actual = response.readEntity(List.class);
-		assertThat(actual, is(searchList));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).search("Flames", "track", 1);
-
-		Mockito.when(this.logic.search("Flames", "track", 5)).thenReturn(searchList);
-		response = this.target.path("search/Flames").request().post(null);
-		actual = response.readEntity(List.class);
-		assertThat(actual, is(searchList));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).search("Flames", "track", 5);
-
-		Mockito.when(this.logic.search("abc", "artist", 1)).thenReturn(null);
-		response = this.target.path("search/abc").queryParam("type", "artist").queryParam("limit", 1)
-				.request().post(null);
-		actual = response.readEntity(List.class);
-		String nullString = null;
-		assertThat(actual, is(nullString));
-		assertThat(response.getStatus(), is(204));
-		Mockito.verify(this.logic).search("abc", "artist", 1);
+	void testSearchTrack() {
+		Mockito.when(this.search.searchforTracks(SONG_NAME1, 1)).thenReturn(this.trackList);
+		try (Response response = this.target.path("search/track/" + SONG_NAME1).queryParam("limit", 1).request()
+				.get()) {
+			TrackEntity[] actual = response.readEntity(TrackEntity[].class);
+			assertThat(actual[0].getName(), equalTo(this.trackList.get(0).getName()));
+			assertThat(response, status(200));
+			Mockito.verify(this.search).searchforTracks(SONG_NAME1, 1);
+		}
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#play(MusicEntity, int, String, int)}.
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchTracks(String, int)}.
 	 */
 	@Test
-	void testPlay() {
-		Entity<MusicEntity> entity = Entity.entity(this.userMusics[0], MediaType.APPLICATION_JSON);
-		List<Map<String, String>> emptySearchList = new ArrayList<>();
-		List<Map<String, String>> searchList = new ArrayList<>();
-		Map<String, String> emptyList = new HashMap<>();
-		Map<String, String> foundEntries = new HashMap<>();
-		foundEntries.put(SpotifyConstants.ITEM_NAME, "Playlist");
-		searchList.add(foundEntries);
+	void testSearchTrackEmpty() {
+		Mockito.when(this.search.searchforTracks(SONG_NAME1, 1)).thenReturn(new ArrayList<>());
+		try (Response response = this.target.path("search/track/" + SONG_NAME1).queryParam("limit", 1).request()
+				.get()) {
+			assertEquals(404, response.getStatus());
+			Mockito.verify(this.search).searchforTracks(SONG_NAME1, 1);
+		}
+	}
 
-		Mockito.when(this.logic.search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK, 5))
-				.thenReturn(searchList);
-		Mockito.when(this.stringGenerator.generateSearchOutputString(this.logic.play(0, SearchTypes.NORMAL_SEARCH)))
-				.thenReturn("songName");
-		Response response = this.target.path("play").queryParam("type", "track").request().post(entity);
-		String actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("songName"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK, 5);
-		Mockito.verify(this.stringGenerator).generateSearchOutputString(this.logic.play(0, SearchTypes.NORMAL_SEARCH));
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchAlbums(String, int)}.
+	 */
+	@Test
+	void testSearchAlbum() {
+		Mockito.when(this.search.searchforAlbums(SONG_NAME1, 1)).thenReturn(this.albumList);
+		try (Response response = this.target.path("search/album/" + SONG_NAME1).queryParam("limit", 1).request()
+				.get()) {
+			AlbumEntity[] actual = response.readEntity(AlbumEntity[].class);
+			assertThat(actual[0].getName(), equalTo(this.albumList.get(0).getName()));
+			assertThat(response, status(200));
+			Mockito.verify(this.search).searchforAlbums(SONG_NAME1, 1);
+		}
+	}
 
-		Mockito.when(this.logic.search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK, 5))
-				.thenReturn(emptySearchList);
-		response = this.target.path("play").queryParam("type", "track").request().post(entity);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("No matching results found."));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic, Mockito.times(2)).search(this.userMusics[0].toString(), SpotifyConstants.TYPE_TRACK,
-				5);
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchAlbums(String, int)}.
+	 */
+	@Test
+	void testSearchAlbumEmpty() {
+		Mockito.when(this.search.searchforAlbums(SONG_NAME1, 1)).thenReturn(new ArrayList<>());
+		try (Response response = this.target.path("search/album/" + SONG_NAME1).queryParam("limit", 1).request()
+				.get()) {
+			assertEquals(404, response.getStatus());
+			Mockito.verify(this.search).searchforAlbums(SONG_NAME1, 1);
+		}
+	}
 
-		response = this.target.path("play").queryParam("type", "track").request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Enter valid music information."));
-		assertThat(response.getStatus(), is(409));
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchArtists(String, int)}.
+	 */
+	@Test
+	void testSearchArtist() {
+		Mockito.when(this.search.searchforArtists(ARTIST_NAME1, 1)).thenReturn(this.artistList);
+		try (Response response = this.target.path("search/artist/" + ARTIST_NAME1).queryParam("limit", 1).request()
+				.get()) {
+			ArtistEntity[] actual = response.readEntity(ArtistEntity[].class);
+			assertThat(actual[0].getName(), equalTo(this.artistList.get(0).getName()));
+			assertThat(response, status(200));
+			Mockito.verify(this.search).searchforArtists(ARTIST_NAME1, 1);
+		}
+	}
 
-		Mockito.when(this.logic.play(1, SearchTypes.USER_PLAYLISTS)).thenReturn(foundEntries);
-		Mockito.when(this.stringGenerator.generateSearchOutputString(foundEntries)).thenReturn("myPlaylist");
-		response = this.target.path("play").queryParam("type", "user").queryParam("songNumber", "1")
-				.request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("myPlaylist"));
-		assertThat(response.getStatus(), is(200));
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchArtists(String, int)}.
+	 */
+	@Test
+	void testSearchArtistEmpty() {
+		Mockito.when(this.search.searchforTracks(ARTIST_NAME1, 1)).thenReturn(new ArrayList<>());
+		try (Response response = this.target.path("search/artist/" + ARTIST_NAME1).queryParam("limit", 1).request()
+				.get()) {
+			assertEquals(404, response.getStatus());
+		}
+	}
 
-		Mockito.when(this.logic.play(1, SearchTypes.USER_PLAYLISTS)).thenReturn(emptyList);
-		response = this.target.path("play").queryParam("type", "user").queryParam("songNumber", "1")
-				.request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("There is no user playlist available."));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic, Mockito.times(2)).play(1, SearchTypes.USER_PLAYLISTS);
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchPlaylists(String, int)}.
+	 */
+	@Test
+	void testSearchPlaylist() {
+		Mockito.when(this.search.searchforPlaylists(SONG_NAME1, 1)).thenReturn(this.playlistList);
+		try (Response response = this.target.path("search/playlist/" + SONG_NAME1).queryParam("limit", 1).request()
+				.get()) {
+			PlaylistEntity[] actual = response.readEntity(PlaylistEntity[].class);
+			assertThat(actual[0].getName(), equalTo(this.playlistList.get(0).getName()));
+			assertThat(response, status(200));
+			Mockito.verify(this.search).searchforPlaylists(SONG_NAME1, 1);
+		}
+	}
 
-		Mockito.when(this.logic.play(0, SearchTypes.FEATURED_PLAYLISTS)).thenReturn(foundEntries);
-		Mockito.when(this.stringGenerator.generateSearchOutputString(foundEntries)).thenReturn("featuredPlaylist");
-		response = this.target.path("play").queryParam("type", "featured").queryParam("limit", "4")
-				.request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("featuredPlaylist"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).play(0, SearchTypes.FEATURED_PLAYLISTS);
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchPlaylists(String, int)}.
+	 */
+	@Test
+	void testSearchPlaylistEmpty() {
+		Mockito.when(this.search.searchforPlaylists(SONG_NAME1, 1)).thenReturn(new ArrayList<>());
+		try (Response response = this.target.path("search/playlist/" + SONG_NAME1).queryParam("limit", 1).request()
+				.get()) {
+			assertEquals(404, response.getStatus());
+			Mockito.verify(this.search).searchforPlaylists(SONG_NAME1, 1);
+		}
+	}
 
-		Mockito.when(this.logic.play()).thenReturn(this.featuredPlaylists.get(0));
-		response = this.target.path("play").request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("name of the playlist is: featuredPlaylist"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).play();
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#playPlaylist(int, String)}.
+	 */
+	@Test
+	void playPlaylistUser() {
+		Mockito.when(this.logic.playPlaylist(0, SearchTypes.USER_PLAYLISTS)).thenReturn(this.userPlaylists.get(0));
+		try (Response response = this.target.path("play/playlist").queryParam("type", "user").queryParam("index", 0)
+				.request().post(null)) {
+			PlaylistEntity actual = response.readEntity(PlaylistEntity.class);
+			assertThat(actual.getName(), equalTo(this.userPlaylists.get(0).getName()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).playPlaylist(0, SearchTypes.USER_PLAYLISTS);
+		}
 
-		Mockito.when(this.logic.play(1, SearchTypes.FEATURED_PLAYLISTS)).thenReturn(emptyList);
-		response = this.target.path("play").queryParam("type", "featured").queryParam("songNumber", "1")
-				.request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("There is no featured playlist available."));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic).play(1, SearchTypes.FEATURED_PLAYLISTS);
+		Mockito.when(this.logic.playPlaylist(0, SearchTypes.USER_PLAYLISTS)).thenReturn(null);
+		try (Response response = this.target.path("play/playlist").queryParam("type", "user").queryParam("index", 0)
+				.request().post(null)) {
+			assertEquals(404, response.getStatus());
+		}
+	}
 
-		Mockito.when(this.logic.play()).thenReturn(null);
-		response = this.target.path("play").request().post(null);
-		actualMsg = response.readEntity(String.class);
-		assertThat(actualMsg, is("Found nothing to play."));
-		assertThat(response.getStatus(), is(409));
-		Mockito.verify(this.logic, Mockito.times(2)).play();
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#playPlaylist(int, String)}.
+	 */
+	@Test
+	void playPlaylistFeatured() {
+		Mockito.when(this.logic.playPlaylist(0, SearchTypes.FEATURED_PLAYLISTS))
+				.thenReturn(this.featuredPlaylists.get(0));
+		try (Response response = this.target.path("play/playlist").queryParam("type", "featured").queryParam("index", 0)
+				.request().post(null)) {
+			PlaylistEntity actual = response.readEntity(PlaylistEntity.class);
+			assertThat(actual.getName(), equalTo(this.featuredPlaylists.get(0).getName()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).playPlaylist(0, SearchTypes.FEATURED_PLAYLISTS);
+		}
+
+		Mockito.when(this.logic.playPlaylist(0, SearchTypes.FEATURED_PLAYLISTS)).thenReturn(null);
+		try (Response response = this.target.path("play/playlist").queryParam("type", "featured").queryParam("index", 0)
+				.request().post(null)) {
+			assertEquals(404, response.getStatus());
+		}
+	}
+
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#playPlaylist(int, String)}.
+	 */
+	@Test
+	void playPlaylistSearch() {
+		Mockito.when(this.logic.playPlaylist(0, SearchTypes.SEARCH_PLAYLISTS)).thenReturn(this.playlistList.get(0));
+		try (Response response = this.target.path("play/playlist").queryParam("type", "search").queryParam("index", 0)
+				.request().post(null)) {
+			PlaylistEntity actual = response.readEntity(PlaylistEntity.class);
+			assertThat(actual.getName(), equalTo(this.playlistList.get(0).getName()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).playPlaylist(0, SearchTypes.SEARCH_PLAYLISTS);
+		}
+
+		when(this.logic.playPlaylist(0, SearchTypes.SEARCH_PLAYLISTS)).thenReturn(null);
+		try (Response response = this.target.path("play/playlist").queryParam("type", "search").queryParam("index", 0)
+				.request().post(null)) {
+			assertEquals(404, response.getStatus());
+		}
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#playAlbum(int)}.
+	 */
+	@Test
+	void playAlbum() {
+		Mockito.when(this.logic.playAlbum(0)).thenReturn(this.albumList.get(0));
+		try (Response response = this.target.path("play/album").queryParam("index", 0).request().post(null)) {
+			AlbumEntity actual = response.readEntity(AlbumEntity.class);
+			assertThat(actual.getName(), equalTo(this.albumList.get(0).getName()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).playAlbum(0);
+		}
+
+		Mockito.when(this.logic.playAlbum(0)).thenReturn(null);
+		try (Response response = this.target.path("play/album").queryParam("index", 0).request().post(null)) {
+			assertEquals(404, response.getStatus());
+		}
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#playTrack(int)}.
+	 */
+	@Test
+	void playTrack() {
+		Mockito.when(this.logic.playTrack(0)).thenReturn(this.trackList.get(0));
+		try (Response response = this.target.path("play/track").queryParam("index", 0).request().post(null)) {
+			TrackEntity actual = response.readEntity(TrackEntity.class);
+			assertThat(actual.getName(), equalTo(this.trackList.get(0).getName()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).playTrack(0);
+		}
+
+		Mockito.when(this.logic.playTrack(0)).thenReturn(null);
+		try (Response response = this.target.path("play/track").queryParam("index", 0).request().post(null)) {
+			assertEquals(404, response.getStatus());
+		}
+	}
+
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#playArtist(int)}.
+	 */
+	@Test
+	void playArtist() {
+		Mockito.when(this.logic.playArtist(0)).thenReturn(this.artistList.get(0));
+		try (Response response = this.target.path("play/artist").queryParam("index", 0).request().post(null)) {
+			ArtistEntity actual = response.readEntity(ArtistEntity.class);
+			assertThat(actual.getName(), equalTo(this.artistList.get(0).getName()));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).playArtist(0);
+		}
+
+		Mockito.when(this.logic.playArtist(0)).thenReturn(null);
+		try (Response response = this.target.path("play/artist").queryParam("index", 0).request().post(null)) {
+			assertEquals(404, response.getStatus());
+		}
 	}
 
 	/**
@@ -379,15 +491,17 @@ class MusicRestTest {
 	@Test
 	void testResume() {
 		Mockito.when(this.logic.resume()).thenReturn(true);
-		Response response = this.target.path("resume").request().post(null);
-		assertThat(response.readEntity(String.class), is("resume"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).resume();
+		try (Response response = this.target.path("resume").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("resume"));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).resume();
+		}
 
 		Mockito.when(this.logic.resume()).thenReturn(false);
-		response = this.target.path("resume").request().post(null);
-		assertThat(response.getStatus(), is(409));
-		assertThat(response.readEntity(String.class), is("Check player state"));
+		try (Response response = this.target.path("resume").request().post(null)) {
+			assertThat(response, status(409));
+			assertThat(response.readEntity(String.class), equalTo("Check player state"));
+		}
 	}
 
 	/**
@@ -396,15 +510,17 @@ class MusicRestTest {
 	@Test
 	void testPause() {
 		Mockito.when(this.logic.pause()).thenReturn(true);
-		Response response = this.target.path("pause").request().post(null);
-		assertThat(response.readEntity(String.class), is("pause"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).pause();
+		try (Response response = this.target.path("pause").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("pause"));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).pause();
+		}
 
 		Mockito.when(this.logic.pause()).thenReturn(false);
-		response = this.target.path("pause").request().post(null);
-		assertThat(response.getStatus(), is(409));
-		assertThat(response.readEntity(String.class), is("Check player state"));
+		try (Response response = this.target.path("pause").request().post(null)) {
+			assertThat(response, status(409));
+			assertThat(response.readEntity(String.class), equalTo("Check player state"));
+		}
 	}
 
 	/**
@@ -413,15 +529,17 @@ class MusicRestTest {
 	@Test
 	void testSkip() {
 		Mockito.when(this.logic.skip()).thenReturn(true);
-		Response response = this.target.path("skip").request().post(null);
-		assertThat(response.readEntity(String.class), is("skip"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).skip();
+		try (Response response = this.target.path("skip").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("skip"));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).skip();
+		}
 
 		Mockito.when(this.logic.skip()).thenReturn(false);
-		response = this.target.path("skip").request().post(null);
-		assertThat(response.getStatus(), is(409));
-		assertThat(response.readEntity(String.class), is("Check player state"));
+		try (Response response = this.target.path("skip").request().post(null)) {
+			assertThat(response, status(409));
+			assertThat(response.readEntity(String.class), equalTo("Check player state"));
+		}
 	}
 
 	/**
@@ -430,15 +548,17 @@ class MusicRestTest {
 	@Test
 	void testBack() {
 		Mockito.when(this.logic.back()).thenReturn(true);
-		Response response = this.target.path("back").request().post(null);
-		assertThat(response.readEntity(String.class), is("back"));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).back();
+		try (Response response = this.target.path("back").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("back"));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).back();
+		}
 
 		Mockito.when(this.logic.back()).thenReturn(false);
-		response = this.target.path("back").request().post(null);
-		assertThat(response.getStatus(), is(409));
-		assertThat(response.readEntity(String.class), is("Check player state"));
+		try (Response response = this.target.path("back").request().post(null)) {
+			assertThat(response, status(409));
+			assertThat(response.readEntity(String.class), equalTo("Check player state"));
+		}
 	}
 
 	/**
@@ -446,56 +566,61 @@ class MusicRestTest {
 	 */
 	@Test
 	void testGetCurrentSong() {
-		Response response = this.target.path("currentSong").request().get();
-
-		MusicEntity actualMusic = response.readEntity(MusicEntity.class);
-		assertThat(actualMusic.getArtist(), is("Justin Timberlake"));
-		assertThat(actualMusic.getTitle(), is("Say Something"));
-		assertThat(response.getStatus(), is(200));
+		Mockito.when(this.logic.getCurrentSong()).thenReturn(this.trackList.get(0));
+		try (Response response = this.target.path("currentSong").request().get()) {
+			TrackEntity actualMusic = response.readEntity(TrackEntity.class);
+			assertThat(actualMusic.getName(), equalTo(this.trackList.get(0).getName()));
+			assertThat(response, status(200));
+		}
 
 		Mockito.when(this.logic.getCurrentSong()).thenReturn(null);
-		response = this.target.path("currentSong").request().get();
-		assertThat(response.readEntity(String.class), is("No song is currently playing"));
-		assertThat(response.getStatus(), is(409));
-		verify(this.logic, Mockito.times(2)).getCurrentSong();
+		try (Response response = this.target.path("currentSong").request().get()) {
+			assertThat(response.readEntity(String.class), equalTo("No song is currently playing"));
+			assertEquals(404, response.getStatus());
+			Mockito.verify(this.logic, Mockito.times(2)).getCurrentSong();
+		}
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#getPlaylists(String)}.
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#getPlaylists(String, int)}.
 	 */
 	@Test
-	void testGetPlaylist() {
-		Mockito.when(this.logic.getOwnPlaylists(5)).thenReturn(this.userPlaylists);
-		Response response = this.target.path("playlists/user").request().post(null);
-		PlaylistEntity[] actual = response.readEntity(PlaylistEntity[].class);
-		assertThat(actual[0].getUri(), is(this.userPlaylists.get(0).getUri()));
-		assertThat(actual[0].getName(), is(this.userPlaylists.get(0).getName()));
-		assertThat(actual[0].getImageUrl(), is(this.userPlaylists.get(0).getImageUrl()));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).getOwnPlaylists(5);
+	void testGetPlaylistUser() {
+		when(this.search.searchOwnPlaylists(1)).thenReturn(this.userPlaylists);
+		try (Response response = this.target.path("playlists/user").queryParam("limit", 1).request().get()) {
+			PlaylistEntity[] actual = response.readEntity(PlaylistEntity[].class);
+			assertThat(actual[0].getName(), equalTo(this.userPlaylists.get(0).getName()));
+			assertThat(response, status(200));
+			Mockito.verify(this.search).searchOwnPlaylists(1);
+		}
+	}
 
-		Mockito.when(this.logic.getOwnPlaylists(2)).thenReturn(this.userPlaylists);
-		response = this.target.path("playlists/user").queryParam("limit", 2).request().post(null);
-		actual = response.readEntity(PlaylistEntity[].class);
-		assertThat(actual[1].getUri(), is(this.userPlaylists.get(1).getUri()));
-		assertThat(actual[1].getName(), is(this.userPlaylists.get(1).getName()));
-		assertThat(actual[1].getImageUrl(), is(this.userPlaylists.get(1).getImageUrl()));
-		assertThat(response.getStatus(), is(200));
-		Mockito.verify(this.logic).getOwnPlaylists(2);
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#getPlaylists(String, int)}.
+	 */
+	@Test
+	void testGetPlaylistFeatured() {
+		Mockito.when(this.search.searchFeaturedPlaylists(1)).thenReturn(this.featuredPlaylists);
+		try (Response response = this.target.path("playlists/featured").queryParam("limit", 1).request().get()) {
+			PlaylistEntity[] actual = response.readEntity(PlaylistEntity[].class);
+			assertThat(actual[0].getName(), equalTo(this.featuredPlaylists.get(0).getName()));
+			assertThat(response, status(200));
+			Mockito.verify(this.search).searchFeaturedPlaylists(1);
+		}
+	}
 
-		Mockito.when(this.logic.getFeaturedPlaylists(1)).thenReturn(this.featuredPlaylists);
-		response = this.target.path("playlists/featured").queryParam("limit", 1).request().post(null);
-		actual = response.readEntity(PlaylistEntity[].class);
-		assertThat(actual[0].getUri(), is(this.featuredPlaylists.get(0).getUri()));
-		assertThat(actual[0].getName(), is(this.featuredPlaylists.get(0).getName()));
-		assertThat(actual[0].getImageUrl(), is(this.featuredPlaylists.get(0).getImageUrl()));
-		assertThat(response.getStatus(), is(200));
-
-		Mockito.when(this.logic.getFeaturedPlaylists(1)).thenReturn(new ArrayList<PlaylistEntity>());
-		response = this.target.path("playlists/featured").queryParam("limit", 1).request().post(null);
-		assertThat(response.readEntity(String.class), is("No Playlists are available"));
-		assertThat(response.getStatus(), is(404));
-		Mockito.verify(this.logic, Mockito.times(2)).getFeaturedPlaylists(1);
+	/**
+	 * Test method for
+	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#getPlaylists(String, int)}.
+	 */
+	@Test
+	void testGetPlaylistEmpty() {
+		Mockito.when(this.search.searchFeaturedPlaylists(1)).thenReturn(new ArrayList<>());
+		try (Response response = this.target.path("playlists/featured").queryParam("limit", 1).request().get()) {
+			assertEquals(404, response.getStatus());
+		}
 	}
 
 	/**
@@ -504,71 +629,82 @@ class MusicRestTest {
 	 */
 	@Test
 	void testSetVolume() {
-		Response response = this.target.path("volume/0").request().post(null);
-		assertThat(response.getStatus(), is(200));
-		assertThat(response.readEntity(String.class), is("0"));
-		Mockito.verify(this.logic).setVolume(0);
+		try (Response response = this.target.path("volume/0").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("0"));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).setVolume(0);
+		}
 
-		response = this.target.path("volume/50").request().post(null);
-		assertThat(response.getStatus(), is(200));
-		assertThat(response.readEntity(String.class), is("50"));
-		Mockito.verify(this.logic).setVolume(50);
+		try (Response response = this.target.path("volume/50").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("50"));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).setVolume(50);
+		}
 
-		response = this.target.path("volume/100").request().post(null);
-		assertThat(response.getStatus(), is(200));
-		assertThat(response.readEntity(String.class), is("100"));
-		Mockito.verify(this.logic).setVolume(100);
+		try (Response response = this.target.path("volume/100").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("100"));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).setVolume(100);
+		}
 
-		response = this.target.path("volume/-1").request().post(null);
-		assertThat(response.getStatus(), is(400));
-		assertThat(response.readEntity(String.class), is("Incorrect volume value"));
+		try (Response response = this.target.path("volume/-1").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("Incorrect volume value"));
+			assertThat(response, status(400));
+		}
 
-		response = this.target.path("volume/101").request().post(null);
-		assertThat(response.getStatus(), is(400));
-		assertThat(response.readEntity(String.class), is("Incorrect volume value"));
+		try (Response response = this.target.path("volume/101").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("Incorrect volume value"));
+			assertThat(response, status(400));
+		}
 
-		response = this.target.path("volume/xyz").request().post(null);
-		assertThat(response.getStatus(), is(400));
-		assertThat(response.readEntity(String.class), is("Incorrect volume command"));
+		try (Response response = this.target.path("volume/xyz").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("Incorrect volume command"));
+			assertThat(response, status(400));
+		}
 
 		Mockito.when(this.logic.setVolume("mute")).thenReturn(0);
-		response = this.target.path("volume/mute").request().post(null);
-		assertThat(response.getStatus(), is(200));
-		assertThat(response.readEntity(String.class), is("0"));
-		Mockito.verify(this.logic).setVolume("mute");
-
+		try (Response response = this.target.path("volume/mute").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("0"));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).setVolume("mute");
+		}
 		Mockito.when(this.logic.setVolume("max")).thenReturn(100);
-		response = this.target.path("volume/max").request().post(null);
-		assertThat(response.getStatus(), is(200));
-		assertThat(response.readEntity(String.class), is("100"));
-		Mockito.verify(this.logic).setVolume("max");
+		try (Response response = this.target.path("volume/max").request().post(null)) {
+			assertThat(response.readEntity(String.class), equalTo("100"));
+			assertThat(response, status(200));
+			Mockito.verify(this.logic).setVolume("max");
+		}
 
 		Mockito.when(this.logic.setVolume("up")).thenReturn(60);
-		response = this.target.path("volume/up").request().post(null);
-		assertThat(response.getStatus(), is(200));
-		assertThat(response.readEntity(String.class), is("60"));
-		Mockito.verify(this.logic).setVolume("up");
+		try (Response response = this.target.path("volume/up").request().post(null)) {
+			assertThat(response, status(200));
+			assertThat(response.readEntity(String.class), equalTo("60"));
+			Mockito.verify(this.logic).setVolume("up");
+		}
 
 		Mockito.when(this.logic.setVolume("down")).thenReturn(40);
-		response = this.target.path("volume/down").request().post(null);
-		assertThat(response.getStatus(), is(200));
-		assertThat(response.readEntity(String.class), is("40"));
-		Mockito.verify(this.logic).setVolume("down");
+		try (Response response = this.target.path("volume/down").request().post(null)) {
+			assertThat(response, status(200));
+			assertThat(response.readEntity(String.class), equalTo("40"));
+			Mockito.verify(this.logic).setVolume("down");
+		}
 
 		Mockito.when(this.logic.setVolume("mute")).thenReturn(-1);
-		response = this.target.path("volume/mute").request().post(null);
-		assertThat(response.getStatus(), is(409));
-		assertThat(response.readEntity(String.class), is("Check player state"));
+		try (Response response = this.target.path("volume/mute").request().post(null)) {
+			assertThat(response, status(409));
+			assertThat(response.readEntity(String.class), equalTo("Check player state"));
+		}
 	}
-	
+
 	/**
 	 * Test method for
 	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#setDeviceName(String, String)}.
 	 */
 	@Test
 	public void setDeviceName() {
-		Response response = this.target.path("setDeviceName").request().post(null);
-		verify(this.deviceLogic).setNewDeviceName(any(), any());
+		try (Response response = this.target.path("setDeviceName").request().post(null)) {
+			Mockito.verify(this.deviceLogic).setNewDeviceName(any(), any());
+		}
 	}
 
 }

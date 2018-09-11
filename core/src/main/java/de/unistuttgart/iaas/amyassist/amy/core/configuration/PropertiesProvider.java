@@ -23,17 +23,19 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
+import javax.annotation.Nonnull;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.*;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandleImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceImplementationDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 
 /**
@@ -43,29 +45,43 @@ import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
  */
 public class PropertiesProvider implements ServiceProvider<Properties> {
 
-	private ServiceConsumer<ConfigurationLoader> consumer;
+	private static final String CONTEXT_WITH_DEFAULT = "WithDefault";
 
-	public PropertiesProvider() {
-		this.consumer = ConsumerFactory.build(null, Util.serviceDescriptionFor(ConfigurationLoader.class));
+	@Override
+	public @Nonnull ServiceDescription<Properties> getServiceDescription() {
+		return new ServiceDescriptionImpl<>(Properties.class);
 	}
 
 	@Override
-	public Properties getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
-			Map<String, ?> context) {
-		ConfigurationLoader configurationLoader = (ConfigurationLoader) resolvedDependencies
-				.get(this.consumer).build();
-		IPlugin plugin = (IPlugin) context.get(Context.PLUGIN);
+	public ServiceImplementationDescription<Properties> getServiceImplementationDescription(
+			@Nonnull ContextLocator locator, @Nonnull ServiceConsumer<Properties> serviceConsumer) {
+		Map<String, Object> context = new HashMap<>();
+		context.put(Context.PLUGIN, locator.getContextProvider(Context.PLUGIN).getContext(serviceConsumer));
+		context.put(CONTEXT_WITH_DEFAULT, serviceConsumer.getServiceDescription().getAnnotations().stream()
+				.anyMatch(a -> a instanceof WithDefault));
+		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(), context,
+				Properties.class);
+	}
+
+	@Override
+	public @Nonnull ServiceHandle<Properties> createService(@Nonnull SimpleServiceLocator locator,
+			@Nonnull ServiceImplementationDescription<Properties> serviceImplementationDescription) {
+		ConfigurationManager configurationLoader = locator.getService(ConsumerFactory.build(PropertiesProvider.class,
+				new ServiceDescriptionImpl<>(ConfigurationManager.class))).getService();
+		IPlugin plugin = (IPlugin) serviceImplementationDescription.getContext().get(Context.PLUGIN);
 		String uniqueName = plugin.getUniqueName();
-		return configurationLoader.load(uniqueName);
+		boolean withDefault = (boolean) serviceImplementationDescription.getContext().get(CONTEXT_WITH_DEFAULT);
+
+		if (withDefault) {
+			ClassLoader classLoader = plugin.getClassLoader();
+			return new ServiceHandleImpl<>(configurationLoader.getConfigurationWithDefaults(uniqueName, classLoader));
+		}
+		return new ServiceHandleImpl<>(configurationLoader.getConfiguration(uniqueName));
 	}
 
 	@Override
-	public Set<ServiceConsumer<?>> getDependencies() {
-		return Collections.singleton(this.consumer);
+	public void dispose(ServiceHandle<Properties> properties) {
+		// TODO maybe save the properties
 	}
 
-	@Override
-	public Set<String> getRequiredContextIdentifiers() {
-		return Collections.singleton(Context.PLUGIN);
-	}
 }

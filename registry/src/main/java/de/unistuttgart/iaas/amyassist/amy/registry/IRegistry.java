@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.registry;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 /**
  * Abstract persistent registry interface
  *
@@ -62,5 +64,5 @@ public interface IRegistry<T> {
      * Delete an entity
      * @param key the primary key of the entity
      */
-    void deleteById(Object key);
+    void deleteById(@Nonnull Object key);
 }

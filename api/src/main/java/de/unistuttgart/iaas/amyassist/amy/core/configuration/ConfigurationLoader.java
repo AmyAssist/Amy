@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.core.configuration;
 
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+
 /**
  * The interface of a configuration loader
  * 
@@ -36,9 +38,22 @@ public interface ConfigurationLoader {
 	 * 
 	 * @param configurationName
 	 *            the name of the config file, without the .properties
-	 * @return the loaded Properties or null if no such file was found
+	 * @return the loaded Properties or empty Properties if no such file was found
 	 */
+	@Nonnull
 	Properties load(String configurationName);
+
+	/**
+	 * Load the Properties with default Properties given.
+	 * 
+	 * @param configurationName
+	 *            the name of the config file, without the .properties
+	 * @param defaults
+	 *            the defaults used when no properties are given in the properties files
+	 * @return the loaded properties with the given defaults or the default properties if no properties file exists
+	 */
+	@Nonnull
+	Properties load(String configurationName, @Nonnull Properties defaults);
 
 	/**
 	 * 
@@ -47,6 +62,6 @@ public interface ConfigurationLoader {
 	 * @param properties
 	 *            the Properties to be saved
 	 */
-	void store(String configurationName, Properties properties);
+	void store(String configurationName, @Nonnull Properties properties);
 
 }

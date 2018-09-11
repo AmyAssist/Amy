@@ -25,16 +25,16 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
@@ -49,7 +49,10 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.User;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
@@ -64,50 +67,57 @@ public class SearchTest {
 	@Reference
 	private TestFramework testFramework;
 
-	private SearchResult albums1;
-	private SearchResult artists1;
-	private SearchResult playlists1;
-	private SearchResult tracks1;
-	private SearchResult albums2;
-	private SearchResult artists2;
-	private SearchResult tracks2;
+	private SearchResult albums;
+	private SearchResult artists;
+	private SearchResult playlists;
+	private SearchResult tracks;
 	private FeaturedPlaylists featuredPlaylists;
 	private Paging<PlaylistSimplified> playlistsSpotifyFormat;
 	private List<PlaylistEntity> playlistsOwnFormat;
 	private Search search;
 
+	private static final String SONG_NAME1 = "Flames";
+	private static final String SONG_NAME2 = "Say Something";
 	private static final String ID1 = "abc123";
 	private static final String ID2 = "123abc";
 	private static final String PLAYLIST_NAME1 = "New Hits";
 	private static final String PLAYLIST_NAME2 = "must popular hits";
 	private static final String ARTIST_NAME1 = "David Guetta";
 	private static final String ARTIST_NAME2 = "Justin Timberlake";
+	private static final String GENRE1 = "Pop";
+	private static final String GENRE2 = "Rock";
+	private static final int DURATION1 = 10;
+	private static final int DURATION2 = 30;
+	private static final String IMAGE_URL1 = "abc123";
+	private static final String IMAGE_URL2 = "123abc";
 
-	@Mock
 	private SpotifyAPICalls spotifyAPICalls;
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		this.spotifyAPICalls = this.testFramework.mockService(SpotifyAPICalls.class);
 		this.search = this.testFramework.setServiceUnderTest(Search.class);
-		createSearchResults();
+		spotifyAlbum();
+		spotifyArtist();
+		spotifyPlaylist();
+		spotifyTrack();
 
 		createFeaturedPlaylist();
 	}
 
-	public void createFeaturedPlaylist() {
-		PlaylistSimplified playlist1 = new PlaylistSimplified.Builder().setName("Flames").setUri("123")
-				.setOwner(new User.Builder().setDisplayName("David Guetta").build()).build();
-		PlaylistSimplified playlist2 = new PlaylistSimplified.Builder().setName("Say Something").setUri("abc")
-				.setOwner(new User.Builder().setDisplayName("Justin Timberlake").build()).build();
+	private void createFeaturedPlaylist() {
+		PlaylistSimplified playlist1 = new PlaylistSimplified.Builder().setName(SONG_NAME1).setUri(ID1)
+				.setOwner(new User.Builder().setDisplayName(ARTIST_NAME1).build()).build();
+		PlaylistSimplified playlist2 = new PlaylistSimplified.Builder().setName(SONG_NAME2).setUri(ID2)
+				.setOwner(new User.Builder().setDisplayName(ARTIST_NAME2).build()).build();
 		PlaylistSimplified[] playlistList = new PlaylistSimplified[2];
 		playlistList[0] = playlist1;
 		playlistList[1] = playlist2;
-		featuredPlaylists = new FeaturedPlaylists.Builder()
+		this.featuredPlaylists = new FeaturedPlaylists.Builder()
 				.setPlaylists(new Paging.Builder<PlaylistSimplified>().setItems(playlistList).build()).build();
 	}
 
-	public void initPlaylists() {
+	private void initPlaylists() {
 		PlaylistSimplified playlist1 = new PlaylistSimplified.Builder().setName(PLAYLIST_NAME1).setUri(ID1)
 				.setOwner(new User.Builder().setDisplayName(ARTIST_NAME1).build()).build();
 		PlaylistSimplified playlist2 = new PlaylistSimplified.Builder().setName(PLAYLIST_NAME2).setUri(ID2)
@@ -116,205 +126,167 @@ public class SearchTest {
 		PlaylistSimplified[] playlistList = new PlaylistSimplified[2];
 		playlistList[0] = playlist1;
 		playlistList[1] = playlist2;
+		PlaylistEntity playlistEntity1 = new PlaylistEntity();
+		playlistEntity1.setName(PLAYLIST_NAME1);
+		playlistEntity1.setUri(ID1);
+		PlaylistEntity playlistEntity2 = new PlaylistEntity();
+		playlistEntity2.setName(PLAYLIST_NAME2);
+		playlistEntity2.setUri(ID2);
+		playlistEntity2.setImageUrl(ID1);
 		this.playlistsSpotifyFormat = new Paging.Builder<PlaylistSimplified>().setItems(playlistList).build();
 		this.playlistsOwnFormat = new ArrayList<>();
-		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME1, null, ID1, null));
-		this.playlistsOwnFormat.add(new PlaylistEntity(PLAYLIST_NAME2, null, ID2, ID1));
+		
+		this.playlistsOwnFormat.add(playlistEntity1);
+		this.playlistsOwnFormat.add(playlistEntity2);
 	}
 
-	public void createSearchResults() {
-		{
-			Track track1 = new Track.Builder().setName("Flames").setUri("123")
-					.setArtists(new ArtistSimplified.Builder().setName("David Guetta").build()).build();
-			Track track2 = new Track.Builder().setName("Say Something").setUri("abc")
-					.setArtists(new ArtistSimplified.Builder().setName("Justin Timberlake").build()).build();
-			Track[] trackList = new Track[2];
-			trackList[0] = track1;
-			trackList[1] = track2;
-			this.tracks1 = new SearchResult.Builder().setTracks(new Paging.Builder<Track>().setItems(trackList).build())
-					.build();
-			AlbumSimplified album1 = new AlbumSimplified.Builder().setName("Flames").setUri("123")
-					.setArtists(new ArtistSimplified.Builder().setName("David Guetta").build()).build();
-			AlbumSimplified album2 = new AlbumSimplified.Builder().setName("Say Something").setUri("abc")
-					.setArtists(new ArtistSimplified.Builder().setName("Justin Timberlake").build()).build();
-			AlbumSimplified[] albumList = new AlbumSimplified[2];
-			albumList[0] = album1;
-			albumList[1] = album2;
-			this.albums1 = new SearchResult.Builder()
-					.setAlbums(new Paging.Builder<AlbumSimplified>().setItems(albumList).build()).build();
-			Artist artist1 = new Artist.Builder().setName("David Guetta").setUri("123").setGenres("Pop").build();
-			Artist artist2 = new Artist.Builder().setName("Cro").setUri("abc").setGenres("Rock").build();
-			Artist[] artistList = new Artist[2];
-			artistList[0] = artist1;
-			artistList[1] = artist2;
-			this.artists1 = new SearchResult.Builder()
-					.setArtists(new Paging.Builder<Artist>().setItems(artistList).build()).build();
-			PlaylistSimplified playlist1 = new PlaylistSimplified.Builder().setName("Flames").setUri("123")
-					.setOwner(new User.Builder().setDisplayName("David Guetta").build()).build();
-			PlaylistSimplified playlist2 = new PlaylistSimplified.Builder().setName("Say Something").setUri("abc")
-					.setOwner(new User.Builder().setDisplayName("Justin Timberlake").build()).build();
-			PlaylistSimplified[] playlistList = new PlaylistSimplified[2];
-			playlistList[0] = playlist1;
-			playlistList[1] = playlist2;
-			this.playlists1 = new SearchResult.Builder()
-					.setPlaylists(new Paging.Builder<PlaylistSimplified>().setItems(playlistList).build()).build();
-		}
-		{
-			Track track1 = new Track.Builder().setName("Flames").setUri("123")
-					.setArtists(new ArtistSimplified.Builder().setName("David Guetta").build(),
-							new ArtistSimplified.Builder().setName("Hans Dieter").build())
-					.build();
-			Track track2 = new Track.Builder().setName("Say Something").setUri("abc")
-					.setArtists(new ArtistSimplified.Builder().setName("Justin Timberlake").build(),
-							new ArtistSimplified.Builder().setName("Hans Dieter").build())
-					.build();
-			Track[] trackList = new Track[2];
-			trackList[0] = track1;
-			trackList[1] = track2;
-			this.tracks2 = new SearchResult.Builder().setTracks(new Paging.Builder<Track>().setItems(trackList).build())
-					.build();
-			AlbumSimplified album1 = new AlbumSimplified.Builder().setName("Flames").setUri("123")
-					.setArtists(new ArtistSimplified.Builder().setName("David Guetta").build(),
-							new ArtistSimplified.Builder().setName("Hans Dieter").build())
-					.build();
-			AlbumSimplified album2 = new AlbumSimplified.Builder().setName("Say Something").setUri("abc")
-					.setArtists(new ArtistSimplified.Builder().setName("Justin Timberlake").build(),
-							new ArtistSimplified.Builder().setName("Hans Dieter").build())
-					.build();
-			AlbumSimplified[] albumList = new AlbumSimplified[2];
-			albumList[0] = album1;
-			albumList[1] = album2;
-			this.albums2 = new SearchResult.Builder()
-					.setAlbums(new Paging.Builder<AlbumSimplified>().setItems(albumList).build()).build();
-			Artist artist1 = new Artist.Builder().setName("David Guetta").setUri("123").setGenres("Pop", "Rock")
-					.build();
-			Artist artist2 = new Artist.Builder().setName("Cro").setUri("abc").setGenres("Rock", "Electro").build();
-			Artist[] artistList = new Artist[2];
-			artistList[0] = artist1;
-			artistList[1] = artist2;
-			this.artists2 = new SearchResult.Builder()
-					.setArtists(new Paging.Builder<Artist>().setItems(artistList).build()).build();
-		}
+	private void spotifyTrack() {
+		Track track1 = new Track.Builder().setName(SONG_NAME1).setUri(ID1).setDurationMs(DURATION1)
+				.setArtists(new ArtistSimplified.Builder().setName(ARTIST_NAME1).build()).build();
+		Track track2 = new Track.Builder().setName(SONG_NAME2).setUri(ID2).setDurationMs(DURATION2)
+				.setArtists(new ArtistSimplified.Builder().setName(ARTIST_NAME2).build()).build();
+		Track[] trackList = new Track[2];
+		trackList[0] = track1;
+		trackList[1] = track2;
+		this.tracks = new SearchResult.Builder().setTracks(new Paging.Builder<Track>().setItems(trackList).build())
+				.build();
+	}
+
+	private void spotifyAlbum() {
+		AlbumSimplified album1 = new AlbumSimplified.Builder().setName(SONG_NAME1).setUri(ID1)
+				.setImages(new Image.Builder().setUrl(IMAGE_URL1).build())
+				.setArtists(new ArtistSimplified.Builder().setName(ARTIST_NAME1).build()).build();
+		AlbumSimplified album2 = new AlbumSimplified.Builder().setName(SONG_NAME2).setUri(ID2)
+				.setImages(new Image.Builder().setUrl(IMAGE_URL2).build())
+				.setArtists(new ArtistSimplified.Builder().setName(ARTIST_NAME2).build()).build();
+		AlbumSimplified[] albumList = new AlbumSimplified[2];
+		albumList[0] = album1;
+		albumList[1] = album2;
+		this.albums = new SearchResult.Builder()
+				.setAlbums(new Paging.Builder<AlbumSimplified>().setItems(albumList).build()).build();
+	}
+
+	private void spotifyArtist() {
+		Artist artist1 = new Artist.Builder().setName(ARTIST_NAME1).setUri(ID1).setGenres(GENRE1)
+				.setImages(new Image.Builder().setUrl(IMAGE_URL1).build()).build();
+		Artist artist2 = new Artist.Builder().setName(ARTIST_NAME2).setUri(ID2).setGenres(GENRE2)
+				.setImages(new Image.Builder().setUrl(IMAGE_URL2).build()).build();
+		Artist[] artistList = new Artist[2];
+		artistList[0] = artist1;
+		artistList[1] = artist2;
+		this.artists = new SearchResult.Builder().setArtists(new Paging.Builder<Artist>().setItems(artistList).build())
+				.build();
+	}
+
+	private void spotifyPlaylist() {
+		PlaylistSimplified playlist1 = new PlaylistSimplified.Builder().setName(SONG_NAME1).setUri(ID1)
+				.setImages(new Image.Builder().setUrl(IMAGE_URL1).build())
+				.setOwner(new User.Builder().setDisplayName(ARTIST_NAME1).build()).build();
+		PlaylistSimplified playlist2 = new PlaylistSimplified.Builder().setName(SONG_NAME2).setUri(ID2)
+				.setImages(new Image.Builder().setUrl(IMAGE_URL2).build())
+				.setOwner(new User.Builder().setDisplayName(ARTIST_NAME2).build()).build();
+		PlaylistSimplified[] playlistList = new PlaylistSimplified[2];
+		playlistList[0] = playlist1;
+		playlistList[1] = playlist2;
+		this.playlists = new SearchResult.Builder()
+				.setPlaylists(new Paging.Builder<PlaylistSimplified>().setItems(playlistList).build()).build();
 	}
 
 	@Test
-	public void testSearchHashMapTrack() {
-		List<Map<String, String>> result1 = this.search.createMap(tracks1, "track");
-		List<Map<String, String>> result2 = this.search.createMap(tracks2, "track");
-		assertThat(result1.get(0).get(SpotifyConstants.ITEM_NAME), equalTo("Flames"));
-		assertThat(result1.get(0).get(SpotifyConstants.ARTIST_NAME), equalTo("David Guetta"));
-		assertThat(result1.get(1).get(SpotifyConstants.ITEM_NAME), equalTo("Say Something"));
-		assertThat(result1.get(1).get(SpotifyConstants.ARTIST_NAME), equalTo("Justin Timberlake"));
-		assertThat(result1.get(0).get(SpotifyConstants.ITEM_URI), equalTo("123"));
-		assertThat(result1.get(1).get(SpotifyConstants.ITEM_URI), equalTo("abc"));
-		assertThat(result1.get(0).get(SpotifyConstants.ITEM_TYPE), equalTo("track"));
-		assertThat(result2.get(0).get(SpotifyConstants.ARTIST_NAME), equalTo("David Guetta, Hans Dieter"));
-		assertThat(result2.get(1).get(SpotifyConstants.ARTIST_NAME), equalTo("Justin Timberlake, Hans Dieter"));
+	void testSearchTrack() {
+		when(this.spotifyAPICalls.searchInSpotify(SONG_NAME1, "track", 2)).thenReturn(this.tracks);
+		List<TrackEntity> trackEntities = this.search.searchforTracks(SONG_NAME1, 2);
+		TrackEntity trackEntity1 = trackEntities.get(0);
+		TrackEntity TrackEntity2 = trackEntities.get(1);
+		assertThat(trackEntity1.getName(), equalTo(SONG_NAME1));
+		assertThat(TrackEntity2.getName(), equalTo(SONG_NAME2));
+		assertThat(trackEntity1.getArtists()[0], equalTo(ARTIST_NAME1));
+		assertThat(TrackEntity2.getArtists()[0], equalTo(ARTIST_NAME2));
+		assertThat(trackEntity1.getUri(), equalTo(ID1));
+		assertThat(TrackEntity2.getUri(), equalTo(ID2));
+		assertThat(trackEntity1.getDurationInMs(), equalTo(DURATION1));
+		assertThat(TrackEntity2.getDurationInMs(), equalTo(DURATION2));
 	}
 
 	@Test
-	public void testSearchHashMapPlaylist() {
-		List<Map<String, String>> result1 = this.search.createMap(playlists1, "playlist");
-		assertThat(result1.get(0).get(SpotifyConstants.ITEM_NAME), equalTo("Flames"));
-		assertThat(result1.get(0).get(SpotifyConstants.ARTIST_NAME), equalTo("David Guetta"));
-		assertThat(result1.get(1).get(SpotifyConstants.ITEM_NAME), equalTo("Say Something"));
-		assertThat(result1.get(1).get(SpotifyConstants.ARTIST_NAME), equalTo("Justin Timberlake"));
-		assertThat(result1.get(0).get(SpotifyConstants.ITEM_URI), equalTo("123"));
-		assertThat(result1.get(1).get(SpotifyConstants.ITEM_URI), equalTo("abc"));
-		assertThat(result1.get(0).get(SpotifyConstants.ITEM_TYPE), equalTo("playlist"));
+	void testSearchPlaylist() {
+		when(this.spotifyAPICalls.searchInSpotify(SONG_NAME1, "playlist", 2)).thenReturn(this.playlists);
+		List<PlaylistEntity> playlistEntities = this.search.searchforPlaylists(SONG_NAME1, 2);
+		PlaylistEntity playlistEntity1 = playlistEntities.get(0);
+		PlaylistEntity playlistEntity2 = playlistEntities.get(1);
+		assertThat(playlistEntity1.getName(), equalTo(SONG_NAME1));
+		assertThat(playlistEntity2.getName(), equalTo(SONG_NAME2));
+		assertThat(playlistEntity1.getPlaylistCreator(), equalTo(ARTIST_NAME1));
+		assertThat(playlistEntity2.getPlaylistCreator(), equalTo(ARTIST_NAME2));
+		assertThat(playlistEntity1.getUri(), equalTo(ID1));
+		assertThat(playlistEntity2.getUri(), equalTo(ID2));
+		assertThat(playlistEntity1.getImageUrl(), equalTo(IMAGE_URL1));
+		assertThat(playlistEntity2.getImageUrl(), equalTo(IMAGE_URL2));
 	}
 
 	@Test
-	public void testSearchHashMapAlbum() {
-		List<Map<String, String>> result1 = this.search.createMap(albums1, "album");
-		List<Map<String, String>> result2 = this.search.createMap(albums2, "album");
-		assertThat(result1.get(0).get(SpotifyConstants.ITEM_NAME), equalTo("Flames"));
-		assertThat(result1.get(0).get(SpotifyConstants.ARTIST_NAME), equalTo("David Guetta"));
-		assertThat(result1.get(1).get(SpotifyConstants.ITEM_NAME), equalTo("Say Something"));
-		assertThat(result1.get(1).get(SpotifyConstants.ARTIST_NAME), equalTo("Justin Timberlake"));
-		assertThat(result1.get(0).get(SpotifyConstants.ITEM_URI), equalTo("123"));
-		assertThat(result1.get(1).get(SpotifyConstants.ITEM_URI), equalTo("abc"));
-		assertThat(result1.get(0).get(SpotifyConstants.ITEM_TYPE), equalTo("album"));
-		assertThat(result2.get(0).get(SpotifyConstants.ARTIST_NAME), equalTo("David Guetta, Hans Dieter"));
-		assertThat(result2.get(1).get(SpotifyConstants.ARTIST_NAME), equalTo("Justin Timberlake, Hans Dieter"));
+	void testSearchAlbum() {
+		when(this.spotifyAPICalls.searchInSpotify(SONG_NAME1, "album", 2)).thenReturn(this.albums);
+		List<AlbumEntity> albumEntities = this.search.searchforAlbums(SONG_NAME1, 2);
+		AlbumEntity albumEntity1 = albumEntities.get(0);
+		AlbumEntity albumEntity2 = albumEntities.get(1);
+		assertThat(albumEntity1.getName(), equalTo(SONG_NAME1));
+		assertThat(albumEntity2.getName(), equalTo(SONG_NAME2));
+		assertThat(albumEntity1.getArtists()[0], equalTo(ARTIST_NAME1));
+		assertThat(albumEntity2.getArtists()[0], equalTo(ARTIST_NAME2));
+		assertThat(albumEntity1.getUri(), equalTo(ID1));
+		assertThat(albumEntity2.getUri(), equalTo(ID2));
+		assertThat(albumEntity1.getImageUrl(), equalTo(IMAGE_URL1));
+		assertThat(albumEntity2.getImageUrl(), equalTo(IMAGE_URL2));
 	}
 
 	@Test
-	public void testSearchHashMapArtist() {
-		List<Map<String, String>> result1 = this.search.createMap(artists1, "artist");
-		List<Map<String, String>> result2 = this.search.createMap(artists2, "artist");
-		assertThat(result1.get(0).get(SpotifyConstants.ITEM_NAME), equalTo("David Guetta"));
-		assertThat(result1.get(1).get(SpotifyConstants.ITEM_NAME), equalTo("Cro"));
-		assertThat(result1.get(0).get(SpotifyConstants.GENRE), equalTo("Pop"));
-		assertThat(result1.get(1).get(SpotifyConstants.GENRE), equalTo("Rock"));
-		assertThat(result1.get(0).get(SpotifyConstants.ITEM_URI), equalTo("123"));
-		assertThat(result1.get(1).get(SpotifyConstants.ITEM_URI), equalTo("abc"));
-		assertThat(result1.get(0).get(SpotifyConstants.ITEM_TYPE), equalTo("artist"));
-		assertThat(result2.get(0).get(SpotifyConstants.GENRE), equalTo("Pop, Rock"));
-		assertThat(result2.get(1).get(SpotifyConstants.GENRE), equalTo("Rock, Electro"));
+	void testSearchArtist() {
+		when(this.spotifyAPICalls.searchInSpotify(ARTIST_NAME1, "artist", 2)).thenReturn(this.artists);
+		List<ArtistEntity> artistEntities = this.search.searchforArtists(ARTIST_NAME1, 2);
+		ArtistEntity artistEntity1 = artistEntities.get(0);
+		ArtistEntity artistEntity2 = artistEntities.get(1);
+		assertThat(artistEntity1.getName(), equalTo(ARTIST_NAME1));
+		assertThat(artistEntity2.getName(), equalTo(ARTIST_NAME2));
+		assertThat(artistEntity1.getGenre()[0], equalTo(GENRE1));
+		assertThat(artistEntity2.getGenre()[0], equalTo(GENRE2));
+		assertThat(artistEntity1.getUri(), equalTo(ID1));
+		assertThat(artistEntity2.getUri(), equalTo(ID2));
+		assertThat(artistEntity1.getImageUrl(), equalTo(IMAGE_URL1));
+		assertThat(artistEntity2.getImageUrl(), equalTo(IMAGE_URL2));
 	}
 
 	@Test
-	public void testEmptyResult() {
-		List<Map<String, String>> result = this.search.createMap(null, "artist");
-		assertThat(result.isEmpty(), equalTo(true));
+	void testEmptySearchResults() {
+		when(this.spotifyAPICalls.searchInSpotify(any(), any(), anyInt())).thenReturn(null);
+		assertThat(this.search.searchforTracks("", 0).isEmpty(), equalTo(true));
+		assertThat(this.search.searchforAlbums("", 0).isEmpty(), equalTo(true));
+		assertThat(this.search.searchforPlaylists("", 0).isEmpty(), equalTo(true));
+		assertThat(this.search.searchforArtists("", 0).isEmpty(), equalTo(true));
 	}
 
 	@Test
-	public void testWrongType() {
-		List<Map<String, String>> result = this.search.createMap(artists1, "artistsss");
-		assertThat(result.isEmpty(), equalTo(true));
-	}
-
-	@Test
-	public void testTypeCheck() {
-		assertThat(search.typeCheck(SpotifyConstants.TYPE_ALBUM), equalTo(true));
-		assertThat(search.typeCheck(SpotifyConstants.TYPE_ARTIST), equalTo(true));
-		assertThat(search.typeCheck(SpotifyConstants.TYPE_TRACK), equalTo(true));
-		assertThat(search.typeCheck(SpotifyConstants.TYPE_PLAYLIST), equalTo(true));
-		assertThat(search.typeCheck(""), equalTo(false));
-	}
-
-	@Test
-	public void testFeaturedPlaylists() {
+	void testFeaturedPlaylists() {
 		when(spotifyAPICalls.getFeaturedPlaylists(Search.SEARCH_LIMIT)).thenReturn(featuredPlaylists);
-		List<PlaylistEntity> result = this.search.getFeaturedPlaylists(Search.SEARCH_LIMIT);
-		assertThat(result.get(0).getName(), equalTo("Flames"));
-		// assertThat(result.get(0).get(SpotifyConstants.ARTIST_NAME), equalTo("David Guetta"));
-		assertThat(result.get(1).getName(), equalTo("Say Something"));
-		// assertThat(result.get(1).get(SpotifyConstants.ARTIST_NAME), equalTo("Justin Timberlake"));
-		assertThat(result.get(0).getUri(), equalTo("123"));
-		assertThat(result.get(1).getUri(), equalTo("abc"));
+		List<PlaylistEntity> result = this.search.searchFeaturedPlaylists(Search.SEARCH_LIMIT);
+		assertThat(result.get(0).getName(), equalTo(SONG_NAME1));
+		assertThat(result.get(1).getName(), equalTo(SONG_NAME2));
+		assertThat(result.get(0).getUri(), equalTo(ID1));
+		assertThat(result.get(1).getUri(), equalTo(ID2));
 	}
 
 	@Test
-	public void testEmptyFeaturedPlaylists() {
+	void testEmptyFeaturedPlaylists() {
 		when(spotifyAPICalls.getFeaturedPlaylists(Search.SEARCH_LIMIT)).thenReturn(null);
-		assertThat(search.getFeaturedPlaylists(Search.SEARCH_LIMIT), equalTo(new ArrayList<>()));
+		assertThat(search.searchFeaturedPlaylists(Search.SEARCH_LIMIT), equalTo(new ArrayList<>()));
 	}
 
 	@Test
-	public void testSerachList() {
-		when(spotifyAPICalls.searchInSpotify("Flames", "playlist", Search.SEARCH_LIMIT)).thenReturn(playlists1);
-		List<Map<String, String>> result = this.search.searchList("Flames", "playlist", Search.SEARCH_LIMIT);
-		assertThat(result.get(0).get(SpotifyConstants.ITEM_NAME), equalTo("Flames"));
-		assertThat(result.get(0).get(SpotifyConstants.ARTIST_NAME), equalTo("David Guetta"));
-		assertThat(result.get(1).get(SpotifyConstants.ITEM_NAME), equalTo("Say Something"));
-		assertThat(result.get(1).get(SpotifyConstants.ARTIST_NAME), equalTo("Justin Timberlake"));
-		assertThat(result.get(0).get(SpotifyConstants.ITEM_URI), equalTo("123"));
-		assertThat(result.get(1).get(SpotifyConstants.ITEM_URI), equalTo("abc"));
-		assertThat(result.get(0).get(SpotifyConstants.ITEM_TYPE), equalTo("playlist"));
-		when(spotifyAPICalls.searchInSpotify("", "playlist", Search.SEARCH_LIMIT)).thenReturn(null);
-		List<Map<String, String>> result2 = this.search.searchList("", "playlist", Search.SEARCH_LIMIT);
-		assertThat(result2.isEmpty(), equalTo(true));
-	}
-
-	@Test
-	public void testGetUsersPlaylists() {
+	void testGetUsersPlaylists() {
 		initPlaylists();
 		List<PlaylistEntity> pl;
 		when(this.spotifyAPICalls.getOwnPlaylists(2)).thenReturn(this.playlistsSpotifyFormat);
-		pl = this.search.getOwnPlaylists(2);
+		pl = this.search.searchOwnPlaylists(2);
 		assertThat(pl.get(0).getUri(), equalTo(ID1));
 		assertThat(pl.get(1).getUri(), equalTo(ID2));
 		assertThat(pl.get(0).getName(), equalTo(PLAYLIST_NAME1));
@@ -324,13 +296,13 @@ public class SearchTest {
 	}
 
 	@Test
-	public void testGetFeturedPlaylists() {
+	void testGetFeturedPlaylists() {
 		initPlaylists();
 		FeaturedPlaylists featuredPls = new FeaturedPlaylists.Builder().setPlaylists(this.playlistsSpotifyFormat)
 				.build();
 		List<PlaylistEntity> pl;
 		when(this.spotifyAPICalls.getFeaturedPlaylists(2)).thenReturn(featuredPls);
-		pl = this.search.getFeaturedPlaylists(2);
+		pl = this.search.searchFeaturedPlaylists(2);
 		assertThat(pl.get(0).getUri(), equalTo(ID1));
 		assertThat(pl.get(1).getUri(), equalTo(ID2));
 		assertThat(pl.get(0).getName(), equalTo(PLAYLIST_NAME1));

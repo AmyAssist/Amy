@@ -23,27 +23,23 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core;
 
-import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.console.Console;
+import de.unistuttgart.iaas.amyassist.amy.core.console.ExitConsole;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService;
+import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.LocalAudioUserInteraction;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.grammar.GrammarObjectsCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource;
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource;
-import de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource;
+import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerServiceExtension;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableServiceExtension;
 
 /**
  * The central core of the application
@@ -51,31 +47,24 @@ import de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource;
  * @author Tim Neumann, Leon Kiefer
  */
 public class Core {
-	private static final String CONFIG_NAME = "core.config";
-	private static final String PROPERTY_ENABLE_CONSOLE = "enableConsole";
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
-	private ServiceManagerImpl serviceManager;
-	private ScheduledExecutorService singleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
-
-	private DependencyInjection di = new DependencyInjection();
-
-	private Server server;
-
-	private CommandLineArgumentHandlerService cmaHandler;
-
-	private Properties config;
+	private final DependencyInjection di;
 
 	private Thread shutdownHook = new Thread(this::doStop, "ShutdownHook");
 
+	private RunnableServiceExtension runnableServiceExtension;
+
+	private DeploymentContainerServiceExtension deploymentContainerServiceExtension;
+
 	/**
-	 * Get's {@link #singleThreadScheduledExecutor singleThreadScheduledExecutor}
 	 * 
-	 * @return singleThreadScheduledExecutor
 	 */
-	public ScheduledExecutorService getScheduledExecutor() {
-		return this.singleThreadScheduledExecutor;
+	public Core() {
+		this.runnableServiceExtension = new RunnableServiceExtension();
+		this.deploymentContainerServiceExtension = new DeploymentContainerServiceExtension();
+		this.di = new DependencyInjection(this.runnableServiceExtension, this.deploymentContainerServiceExtension);
 	}
 
 	/**
@@ -85,10 +74,14 @@ public class Core {
 	 *            The arguments for the core.
 	 */
 	void start(String[] args) {
-		this.cmaHandler = new CommandLineArgumentHandlerService();
-		this.cmaHandler.init(args);
-		if (this.cmaHandler.shouldProgramContinue()) {
-			run();
+		this.registerAllCoreServices();
+		this.init();
+		CommandLineArgumentHandlerService cmaHandler = this.di.getService(new ServiceConsumerImpl<>(this.getClass(),
+				new ServiceDescriptionImpl<>(CommandLineArgumentHandlerService.class))).getService();
+		cmaHandler.load(args, System.out::println);
+		if (cmaHandler.shouldProgramContinue()) {
+			this.di.register(new SingletonServiceProvider<>(CommandLineArgumentInfo.class, cmaHandler.getInfo()));
+			this.run();
 		}
 	}
 
@@ -97,62 +90,56 @@ public class Core {
 	 */
 	private void run() {
 		this.logger.info("run");
-		this.init();
-		this.serviceManager.start();
-		this.server.start();
-		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+		this.loadPlugins();
+		this.deploy();
+		this.start();
 		this.logger.info("running");
-	}
-
-	/**
-	 * Initializes the core
-	 */
-	private void init() {
-		this.registerAllCoreServices();
-		ConfigurationLoader configLoader = this.di.getService(ConfigurationLoader.class);
-		this.config = configLoader.load(CONFIG_NAME);
-
-		this.serviceManager = this.di.getService(ServiceManagerImpl.class);
-
-		this.server = this.di.getService(Server.class);
-		this.server.register(HomeResource.class);
-		this.server.register(LocationRegistryResource.class);
-		this.server.register(ContactRegistryResource.class);
-
-		initConsole();
-
-		PluginManager pluginManager = this.di.getService(PluginManager.class);
-		pluginManager.loadPlugins();
-		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
-
-		this.di.getService(GrammarObjectsCreator.class).completeSetup();
-		this.serviceManager.register(LocalAudioUserInteraction.class);
-		this.serviceManager.register(TextToSpeech.class);
-	}
-
-	private void initConsole() {
-		String enableConsole = this.config.getProperty(PROPERTY_ENABLE_CONSOLE);
-		if (enableConsole == null) {
-			this.logger.warn("Core config missing key {}.", PROPERTY_ENABLE_CONSOLE);
-			enableConsole = "true";
-		}
-		if (enableConsole.equals("true")) {
-			this.serviceManager.register(Console.class);
-		}
 	}
 
 	/**
 	 * register all instances and classes in the DI
 	 */
 	private void registerAllCoreServices() {
-		this.di.addExternalService(Core.class, this);
-		this.di.addExternalService(CommandLineArgumentHandler.class, this.cmaHandler);
+		this.di.register(new SingletonServiceProvider<>(Core.class, this));
 
 		this.di.loadServices();
 	}
 
 	/**
-	 * stop all Threads and terminate the application. This is call form the {@link Console}
+	 * Initializes the core
+	 */
+	private void init() {
+		// nothing in init stage
+	}
+
+	private void loadPlugins() {
+		PluginManager pluginManager = this.di
+				.getService(
+						new ServiceConsumerImpl<>(this.getClass(), new ServiceDescriptionImpl<>(PluginManager.class)))
+				.getService();
+		try {
+			pluginManager.loadPlugins();
+		} catch (IOException e) {
+			throw new IllegalStateException("Could not load plugins due to an IOException.", e);
+		}
+		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
+	}
+
+	/**
+	 * The deploy stage comes after all plugins are loaded
+	 */
+	private void deploy() {
+		this.runnableServiceExtension.deploy();
+		this.deploymentContainerServiceExtension.deploy();
+	}
+
+	private void start() {
+		this.runnableServiceExtension.start();
+		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+	}
+
+	/**
+	 * stop all Threads and terminate the application. This is call form the {@link ExitConsole}
 	 */
 	public void stop() {
 		Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
@@ -161,9 +148,7 @@ public class Core {
 
 	private void doStop() {
 		this.logger.info("stop");
-		this.server.shutdown();
-		this.serviceManager.stop();
-		this.singleThreadScheduledExecutor.shutdownNow();
+		this.runnableServiceExtension.stop();
 		this.di.shutdown();
 		this.logger.info("stopped");
 	}

@@ -23,14 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceFactory;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ContextLocator;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.SimpleServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 
 /**
@@ -43,29 +42,42 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 
 	private final T instance;
+	private final Class<T> serviceType;
 
 	/**
+	 * Create a new Singleton Service provider which provides the given service instance as service of the given type.
 	 * 
+	 * @param serviceType
+	 *            the type of the singleton
 	 * @param instance
-	 *            the singleton
+	 *            The instance of this service
 	 */
-	public SingletonServiceProvider(@Nonnull T instance) {
+	public SingletonServiceProvider(@Nonnull Class<T> serviceType, @Nonnull T instance) {
+		this.serviceType = serviceType;
 		this.instance = instance;
 	}
 
 	@Override
-	public T getService(Map<ServiceConsumer<?>, ServiceFactory<?>> resolvedDependencies,
-			@Nullable Map<String, ?> context) {
-		return this.instance;
+	public @Nonnull ServiceDescription<T> getServiceDescription() {
+		return new ServiceDescriptionImpl<>(this.serviceType);
 	}
 
 	@Override
-	public Set<ServiceConsumer<?>> getDependencies() {
-		return Collections.emptySet();
+	public ServiceImplementationDescription<T> getServiceImplementationDescription(@Nonnull ContextLocator locator,
+			@Nonnull ServiceConsumer<T> serviceConsumer) {
+		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
+				this.instance.getClass());
 	}
 
 	@Override
-	public Set<String> getRequiredContextIdentifiers() {
-		return Collections.emptySet();
+	public @Nonnull ServiceHandle<T> createService(@Nonnull SimpleServiceLocator locator,
+			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
+		return new ServiceHandleImpl<>(this.instance);
 	}
+
+	@Override
+	public void dispose(ServiceHandle<T> service) {
+		// singleton can not be disposed
+	}
+
 }

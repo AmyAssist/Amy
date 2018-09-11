@@ -30,7 +30,8 @@ import com.eclipsesource.json.JsonValue;
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import javafx.util.Pair;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
 import java.io.BufferedReader;
@@ -61,10 +62,10 @@ public class Geocoder {
     private static final String API_CREDENTIALS_KEY = "GOOGLE_API_KEY";
 
     @Reference
-    public ConfigurationLoader configurationLoader;
+    private ConfigurationLoader configurationLoader;
 
     @Reference
-    Logger log;
+    private Logger log;
 
     /**
      * Geocode an address
@@ -106,7 +107,7 @@ public class Geocoder {
         double lat = getJson(location, "lat", JsonValue.class).asDouble();
         double lng = getJson(location, "lng", JsonValue.class).asDouble();
 
-        return new Pair<>(lat, lng);
+        return Pair.of(lat, lng);
     }
 
     private String getAPIKey() throws GeocoderException {

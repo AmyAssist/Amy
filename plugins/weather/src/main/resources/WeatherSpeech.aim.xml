@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherSpeechCommand.weatherToday">
+		<gram>[how is the] weather today</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherSpeechCommand.weatherTomorrow">
+		<gram>[how is the] weather tomorrow</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherSpeechCommand.weatherWeek">
+		<gram>[how is the] weather [for the next] week</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherSpeechCommand.weatherWeekend">
+		<gram>[how is the] weather [at the] weekend</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherSpeechCommand.setLocation">
+		<gram>set weather location [to {weatherlocation}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="weatherlocation" required="true">
+				<gram>loc</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="weatherlocation">
+			<text>To which location should i switch? </text>
+			<gram>[to location] {weatherlocation} </gram>
+		</Prompt>
+	</Intent>
+	<Intent ref="de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherSpeechCommand.weatherAtLocation">
+		<gram>[(whats|what is)] [the] weather [like] in {locationname}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="locationname" required="true">
+				<gram>*</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+</AmyInteractionModel>
