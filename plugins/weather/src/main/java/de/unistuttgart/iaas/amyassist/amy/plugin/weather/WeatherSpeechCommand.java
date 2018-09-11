@@ -29,10 +29,7 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 import javax.annotation.Nullable;
 
@@ -45,6 +42,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherLogic.GeoCoordinatePair;
 import de.unistuttgart.iaas.amyassist.amy.registry.Location;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
+import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
+import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.GeocoderException;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * 
@@ -66,6 +66,9 @@ public class WeatherSpeechCommand {
 
 	@Reference
 	private IStorage storage;
+
+	@Reference
+	Geocoder geocoder;
 
 	private @Nullable GeoCoordinatePair getCurrentLocation() {
 		if (!this.storage.has(CURRENT_LOCATION_KEY)) {
@@ -235,5 +238,19 @@ public class WeatherSpeechCommand {
 			locationNames.add(loc.getTag());
 		}
 		return locationNames;
+	}
+
+	@Intent()
+	public String weatherAtLocation(Map<String, EntityData> entities) {
+		String locationName = entities.get("locationname").getString();
+		try {
+			Pair<Double, Double> coordinates = geocoder.geocodeAddress(locationName);
+			GeoCoordinatePair pair = new GeoCoordinatePair(coordinates.getRight(), coordinates.getLeft());
+			WeatherReport report = weatherLogic.getWeatherReport(pair);
+			return stringifyDayWeatherReport("This is the weather report for " + locationName + ". ",
+					report.getWeek().getDays()[0], report.getTimezone(), false);
+		} catch (GeocoderException e) {
+			return "I couldn't find this location";
+		}
 	}
 }
