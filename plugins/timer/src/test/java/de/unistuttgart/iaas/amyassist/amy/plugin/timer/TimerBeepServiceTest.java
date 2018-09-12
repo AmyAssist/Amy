@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
+package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -43,48 +43,48 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
  * @author Patrick Gebhardt
  */
 @ExtendWith(FrameworkExtension.class)
-public class AlarmBeepServiceTest {
+public class TimerBeepServiceTest {
 
 	@Reference
 	private TestFramework framework;
 
-	private AlarmBeepService abs;
+	private TimerBeepService tbs;
 
-	private Set<Integer> alarms = new HashSet<>();
+	private Set<Integer> timers = new HashSet<>();
 
 	/**
 	 * Initializes the class variables before each test
 	 */
 	@BeforeEach
 	public void setup() {
-		this.abs = this.framework.mockService(AlarmBeepService.class);
+		this.tbs = this.framework.mockService(TimerBeepService.class);
 	}
 
 	/**
-	 * Tests beep(Alarm)
+	 * Tests beep(timer)
 	 */
 	@Test
-	public void beepAlarmTest() {
-		LocalDateTime alarmTime = LocalDateTime.of(2018, 8, 15, 11, 11);
-		Alarm alarm = new Alarm(1, alarmTime, true);
-		when(this.abs.beep(alarm)).thenReturn(this.alarms);
-		this.alarms.add(alarm.getId());
-		this.abs.beep(alarm);
-		verify(this.abs).beep(alarm);
-		assertThat(this.abs.beep(alarm).size(), is(1));
+	public void beepTimerTest() {
+		LocalDateTime timerTime = LocalDateTime.of(2018, 8, 15, 11, 11);
+		Timer timer = new Timer(1, timerTime, null, true);
+		when(this.tbs.beep(timer)).thenReturn(this.timers);
+		this.timers.add(timer.getId());
+		this.tbs.beep(timer);
+		verify(this.tbs).beep(timer);
+		assertThat(this.tbs.beep(timer).size(), is(1));
 	}
 
 	/**
-	 * Tests stopBeep(alarm)
+	 * Tests stopBeep(timer)
 	 */
 	@Test
 	public void stopBeepAlarmTest() {
-		LocalDateTime alarmTime = LocalDateTime.of(2018, 8, 15, 11, 11);
-		Alarm alarm = new Alarm(1, alarmTime, true);
-		when(this.abs.stopBeep(alarm)).thenReturn(this.alarms);
-		this.abs.stopBeep(alarm);
-		verify(this.abs).stopBeep(alarm);
-		assertThat(this.abs.stopBeep(alarm).size(), is(0));
+		LocalDateTime timerTime = LocalDateTime.of(2018, 8, 15, 11, 11);
+		Timer timer = new Timer(1, timerTime, null, true);
+		when(this.tbs.stopBeep(timer)).thenReturn(this.timers);
+		this.tbs.stopBeep(timer);
+		verify(this.tbs).stopBeep(timer);
+		assertThat(this.tbs.stopBeep(timer).size(), is(0));
 	}
 
 }

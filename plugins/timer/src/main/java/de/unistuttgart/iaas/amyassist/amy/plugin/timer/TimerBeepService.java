@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
+package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -53,7 +53,7 @@ import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
  * @author Patrick Gebhardt, Tim Neumann
  */
 @Service
-public class AlarmBeepService {
+public class TimerBeepService {
 
 	private static final String ALARMSOUND = "alarmsound.wav";
 
@@ -80,6 +80,7 @@ public class AlarmBeepService {
 	private Set<Integer> timerList = new HashSet<>();
 
 	@PostConstruct
+
 	private void init() {
 		InputStream resolve = this.getClass().getResourceAsStream(ALARMSOUND);
 		try (InputStream bufferedIn = new BufferedInputStream(resolve);
@@ -91,25 +92,25 @@ public class AlarmBeepService {
 	}
 
 	/**
-	 * @param alarm
-	 *            alarm from the alarm class
-	 * @return returns the list of alarms
+	 * @param timer
+	 *            timer from the timer class
+	 * @return returns the list of timers
 	 */
-	public Set<Integer> beep(Alarm alarm) {
-		this.alarmList.add(alarm.getId());
+	public Set<Integer> beep(Timer timer) {
+		this.timerList.add(timer.getId());
 		this.update();
-		return this.alarmList;
+		return this.timerList;
 	}
 
 	/**
-	 * @param alarm
-	 *            alarm from the alarm class
-	 * @return returns the list of alarms
+	 * @param timer
+	 *            timer from the timer class
+	 * @return returns the list of timers
 	 */
-	public Set<Integer> stopBeep(Alarm alarm) {
-		this.alarmList.remove(alarm.getId());
+	public Set<Integer> stopBeep(Timer timer) {
+		this.timerList.remove(timer.getId());
 		this.update();
-		return this.alarmList;
+		return this.timerList;
 	}
 
 	private void update() {
