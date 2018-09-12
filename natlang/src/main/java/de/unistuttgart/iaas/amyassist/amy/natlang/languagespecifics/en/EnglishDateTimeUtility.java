@@ -50,6 +50,9 @@ public class EnglishDateTimeUtility implements DateTimeUtility {
 	public LocalTime parseTime(String toParse) {
 		LocalTime time = null;
 		String timeString = toParse.trim();
+		if (timeString.matches("now|no")) {
+			return LocalTime.now();
+		}
 		time = getGoogleTime(timeString);
 		if (time == null) {
 			time = getNaturalTime(timeString);
@@ -174,6 +177,12 @@ public class EnglishDateTimeUtility implements DateTimeUtility {
 		} else if (informalDate.matches()) {
 			return LocalDate.parse(dateAsString, new DateTimeFormatterBuilder().parseCaseInsensitive()
 					.appendPattern("d M yyyy").toFormatter(Locale.ENGLISH));
+		}
+		if (dateAsString.matches("today")) {
+			return LocalDate.now();
+		}
+		if (dateAsString.matches("tomorrow")) {
+			return LocalDate.now().plusDays(1);
 		}
 		throw new DateTimeParseException("Could not parse date", dateAsString, 0);
 	}

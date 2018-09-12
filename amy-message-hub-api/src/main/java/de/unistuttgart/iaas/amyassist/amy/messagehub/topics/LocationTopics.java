@@ -28,20 +28,13 @@ package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
  * 
  * @author Tim Neumann
  */
-public enum LocationTopics {
+public class LocationTopics {
 	/** All locations */
-	ALL,
+	public static final String ALL = "all";
 	/** The home location */
-	HOME;
+	public static final String HOME = "home";
 
-	/**
-	 * Get the topic string for this location in a given system topic.
-	 * 
-	 * @param systemTopic
-	 *            The system topic this location is in.
-	 * @return The topic string of this location.
-	 */
-	public String getTopicString(SystemTopics systemTopic) {
-		return systemTopic.getTopicString() + "/" + this.name().toLowerCase();
+	private LocationTopics() {
+		// hide constructor
 	}
 }

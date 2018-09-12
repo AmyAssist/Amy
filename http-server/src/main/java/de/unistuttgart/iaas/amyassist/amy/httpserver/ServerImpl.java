@@ -23,19 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.httpserver;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.*;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.core.UriBuilder;
-
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.grizzly2.servlet.GrizzlyWebContainerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.servlet.ServletContainer;
-import org.slf4j.Logger;
-
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
@@ -51,6 +38,19 @@ import de.unistuttgart.iaas.amyassist.amy.httpserver.di.DependencyInjectionBinde
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.servlet.GrizzlyWebContainerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
+import org.slf4j.Logger;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.core.UriBuilder;
+import java.io.IOException;
+import java.net.URI;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 /**
  * A class to create a http server
@@ -99,6 +99,8 @@ public class ServerImpl implements RunnableService, Server {
 	private String contextPath;
 	private boolean local;
 
+	private CompletableFuture<Void> afterStartFuture;
+
 	@PostConstruct
 	private void init() {
 		Properties conf = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
@@ -106,6 +108,7 @@ public class ServerImpl implements RunnableService, Server {
 		this.serverPort = Integer.parseInt(conf.getProperty(PROPERTY_PORT));
 		this.contextPath = conf.getProperty(PROPERTY_CONTEXT_PATH);
 		this.local = Boolean.parseBoolean(conf.getProperty(PROPERTY_LOCALHOST));
+		this.afterStartFuture = new CompletableFuture<>();
 	}
 
 	@Override
@@ -168,6 +171,7 @@ public class ServerImpl implements RunnableService, Server {
 		} catch (IOException e) {
 			throw new IllegalStateException("The Server is can not be started", e);
 		}
+		this.afterStartFuture.complete(null);
 		this.logger.info("started the server");
 	}
 
@@ -201,4 +205,14 @@ public class ServerImpl implements RunnableService, Server {
 	public String getBaseUrl() {
 		return this.serverURL;
 	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.httpserver.Server#registerOnPostStartHook(java.lang.Runnable)
+	 */
+	@Override
+	public void registerOnPostStartHook(Runnable hook) {
+		this.afterStartFuture.thenRunAsync(hook,
+				Executors.newSingleThreadExecutor(r -> new Thread(r, "HTTP Server Start Hook Thread")));
+	}
+
 }
