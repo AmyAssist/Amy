@@ -72,6 +72,7 @@
 		<module>plugins/example</module>
 		<module>plugins/spotify</module>
 		<module>plugins/systemtime</module>
+		<module>plugins/timer</module>
 		<module>plugins/weather</module>
 		<module>plugins/navigation</module>
 		<module>amy-message-hub-api</module>
