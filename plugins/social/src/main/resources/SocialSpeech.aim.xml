@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.greeting">
+		<gram>(hello|hi|good (morning|evening|day)) [amy]</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.whatsUp">
+		<gram>(what is| what s) (up|going on)</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.howAreYou">
+		<gram>how (are you [feeling]| do you [feel])</gram>
+	</Intent>
+</AmyInteractionModel>
