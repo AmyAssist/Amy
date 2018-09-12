@@ -24,32 +24,23 @@
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 /**
- * A exception of the dependency injection, signaling, that a given class is not a service.
+ * Test Service to test the use of the ServiceLocator.
  * 
  * @author Leon Kiefer
  */
-public class ClassIsNotAServiceException extends RuntimeException {
+public class ServiceWithServiceLocator {
 
-	/**
-	 * Generated serial version UID
-	 */
-	private static final long serialVersionUID = 5382225920636029620L;
-	private final Class<?> cls;
+	private SimpleServiceLocator locator;
 
-	/**
-	 * @param cls
-	 *            the class that is not a Service
-	 */
-	public ClassIsNotAServiceException(Class<?> cls) {
-		this.cls = cls;
+	public SimpleServiceLocator getLocator() {
+		return this.locator;
 	}
 
 	/**
-	 * @see java.lang.Throwable#getMessage()
+	 * @param locator
 	 */
-	@Override
-	public String getMessage() {
-		return "The class " + this.cls.getName() + " is not a Service";
+	public ServiceWithServiceLocator(SimpleServiceLocator locator) {
+		this.locator = locator;
 	}
 
 }

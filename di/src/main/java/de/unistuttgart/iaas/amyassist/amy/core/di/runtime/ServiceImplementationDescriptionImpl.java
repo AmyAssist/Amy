@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package de.unistuttgart.iaas.amyassist.amy.core.di.runtime;
 
 import java.util.Collections;
 import java.util.Map;
@@ -48,8 +48,11 @@ public class ServiceImplementationDescriptionImpl<T> implements ServiceImplement
 
 	/**
 	 * @param serviceDescription
+	 *            {@link #getServiceDescription()}
 	 * @param context
+	 *            {@link #getContext()}
 	 * @param cls
+	 *            the implementation of the Service {@link #getImplementationClass()}
 	 */
 	public ServiceImplementationDescriptionImpl(@Nonnull ServiceDescription<T> serviceDescription,
 			@Nonnull Map<String, Object> context, @Nonnull Class<?> cls) {
@@ -62,9 +65,12 @@ public class ServiceImplementationDescriptionImpl<T> implements ServiceImplement
 	 * Create a new ServiceImplementationDescription with a empty context.
 	 * 
 	 * @param serviceDescription
+	 *            {@link #getServiceDescription()}
 	 * @param cls
+	 *            the implementation of the Service {@link #getImplementationClass()}
 	 */
-	public ServiceImplementationDescriptionImpl(@Nonnull ServiceDescription<T> serviceDescription, @Nonnull Class<?> cls) {
+	public ServiceImplementationDescriptionImpl(@Nonnull ServiceDescription<T> serviceDescription,
+			@Nonnull Class<?> cls) {
 		this.serviceDescription = serviceDescription;
 		this.context = Collections.emptyMap();
 		this.cls = cls;
