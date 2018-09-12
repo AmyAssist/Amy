@@ -155,29 +155,23 @@ public class SpotifySpeech {
 	public String control(Map<String, EntityData> entites) {
 		switch (entites.get("type").getString()) {
 		case "back":
-			if (this.playerLogic.back()) {
-				return "back";
-			}
-			return ERROR_MESSAGE;
+			this.playerLogic.back();
+			break;
 		case "skip":
-			if (this.playerLogic.skip()) {
-				return "skip";
-			}
-			return ERROR_MESSAGE;
+			this.playerLogic.skip();
+			break;
 		case "pause":
 		case "pass":
-			if (this.playerLogic.pause()) {
-				return "pause";
-			}
-			return ERROR_MESSAGE;
+			this.playerLogic.pause();
+			break;
 		case "resume":
-			if (this.playerLogic.resume()) {
-				return "resuming";
-			}
-			return ERROR_MESSAGE;
+			this.playerLogic.resume();
+			break;
 		default:
 			return ERROR_MESSAGE;
 		}
+		return "OK";
+
 	}
 
 	/**

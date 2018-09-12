@@ -130,10 +130,10 @@ class PlayerLogicTest {
 	}
 
 	private void initDevices() {
-		devices = new Device[2];
-		devices[0] = new Device.Builder().setId(ID1).setIs_active(true).setName(DEVICE_NAME1).setVolume_percent(50)
+		this.devices = new Device[2];
+		this.devices[0] = new Device.Builder().setId(ID1).setIs_active(true).setName(DEVICE_NAME1).setVolume_percent(50)
 				.setType("Smartphone").build();
-		devices[1] = new Device.Builder().setId(ID2).setIs_active(false).setName(DEVICE_NAME2).setType("Computer")
+		this.devices[1] = new Device.Builder().setId(ID2).setIs_active(false).setName(DEVICE_NAME2).setType("Computer")
 				.build();
 	}
 
@@ -143,7 +143,7 @@ class PlayerLogicTest {
 				.setArtists(new ArtistSimplified.Builder().setName(ARTIST_NAME1).build(),
 						new ArtistSimplified.Builder().setName(ARTIST_NAME2).build())
 				.build();
-		currentlyPlayingContext = new CurrentlyPlayingContext.Builder().setItem(track1).build();
+		this.currentlyPlayingContext = new CurrentlyPlayingContext.Builder().setItem(track1).build();
 	}
 
 	@Test
@@ -168,7 +168,7 @@ class PlayerLogicTest {
 	
 	@Test
 	void testPlayEmptyList() {
-		when(search.searchFeaturedPlaylists(5)).thenReturn(new ArrayList<>());
+		when(this.search.searchFeaturedPlaylists(5)).thenReturn(new ArrayList<>());
 		assertThat(this.playerLogic.play(), equalTo(null));
 
 	}
@@ -176,10 +176,10 @@ class PlayerLogicTest {
 	@Test
 	void testPlayNotEmptyList() {
 		initPlaylists();
-		when(this.search.searchFeaturedPlaylists(5)).thenReturn(playlistsOwnFormat);
+		when(this.search.searchFeaturedPlaylists(5)).thenReturn(this.playlistsOwnFormat);
 		when(this.spotifyAPICalls.playListFromUri(any())).thenReturn(true);
-		assertThat(this.playerLogic.play().getUri(), equalTo(ID2));
-		verify(this.spotifyAPICalls).playListFromUri(ID2);
+		assertThat(this.playerLogic.play().getUri(), equalTo(ID1));
+		verify(this.spotifyAPICalls).playListFromUri(ID1);
 	}
 	
 	@Test

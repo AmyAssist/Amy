@@ -61,8 +61,11 @@ public class PlayerLogic {
 	private boolean suppressed = false;
 	private PostSuppressionAction postSuppressionAction = PostSuppressionAction.NONE;
 
+	private String collectionUriToPlay;
+	private String trackUriToPlay;
+
 	private enum PostSuppressionAction {
-		NONE, PAUSE
+		NONE, PAUSE, PLAY_COLLECTION, PLAY_TRACK
 	}
 
 	private static final int VOLUME_MUTE_VALUE = 0;
@@ -113,9 +116,15 @@ public class PlayerLogic {
 	public PlaylistEntity play() {
 		List<PlaylistEntity> playLists;
 		playLists = this.search.searchFeaturedPlaylists(5);
-		if (!playLists.isEmpty() && 1 < playLists.size()
-				&& this.spotifyAPICalls.playListFromUri(playLists.get(1).getUri()))
-			return playLists.get(1);
+		if (!playLists.isEmpty()) {
+			if (this.suppressed) {
+				this.collectionUriToPlay = playLists.get(0).getUri();
+				this.postSuppressionAction = PostSuppressionAction.PLAY_COLLECTION;
+			} else {
+				this.spotifyAPICalls.playListFromUri(playLists.get(0).getUri());
+			}
+			return playLists.get(0);
+		}
 		this.logger.warn("no featured playlist found");
 		return null;
 	}
@@ -130,18 +139,23 @@ public class PlayerLogic {
 	 * @return a PlaylistEntity
 	 */
 	public PlaylistEntity playPlaylist(int playlistNumber, SearchTypes type) {
+		PlaylistEntity selectedPlaylist = null;
 		if (type.equals(SearchTypes.FEATURED_PLAYLISTS) && this.search.getFeaturedPlaylists().size() > playlistNumber) {
-			this.spotifyAPICalls.playListFromUri(this.search.getFeaturedPlaylists().get(playlistNumber).getUri());
-			return this.search.getFeaturedPlaylists().get(playlistNumber);
-		}
-		if (type.equals(SearchTypes.USER_PLAYLISTS) && this.search.getOwnPlaylists().size() > playlistNumber) {
-			this.spotifyAPICalls.playListFromUri(this.search.getOwnPlaylists().get(playlistNumber).getUri());
-			return this.search.getOwnPlaylists().get(playlistNumber);
-		}
-		if (type.equals(SearchTypes.SEARCH_PLAYLISTS)
+			selectedPlaylist = this.search.getFeaturedPlaylists().get(playlistNumber);
+		} else if (type.equals(SearchTypes.USER_PLAYLISTS) && this.search.getOwnPlaylists().size() > playlistNumber) {
+			selectedPlaylist = this.search.getOwnPlaylists().get(playlistNumber);
+		} else if (type.equals(SearchTypes.SEARCH_PLAYLISTS)
 				&& this.search.getPlaylistSearchResults().size() > playlistNumber) {
-			this.spotifyAPICalls.playListFromUri(this.search.getPlaylistSearchResults().get(playlistNumber).getUri());
-			return this.search.getPlaylistSearchResults().get(playlistNumber);
+			selectedPlaylist = this.search.getPlaylistSearchResults().get(playlistNumber);
+		}
+		if (selectedPlaylist != null) {
+			if (this.suppressed) {
+				this.postSuppressionAction = PostSuppressionAction.PLAY_COLLECTION;
+				this.collectionUriToPlay = selectedPlaylist.getUri();
+			} else {
+				this.spotifyAPICalls.playListFromUri(selectedPlaylist.getUri());
+			}
+			return selectedPlaylist;
 		}
 		this.logger.warn(ITME_NOT_FOUND);
 		return null;
@@ -156,7 +170,12 @@ public class PlayerLogic {
 	 */
 	public TrackEntity playTrack(int trackNumber) {
 		if (this.search.getTrackSearchResults().size() > trackNumber) {
-			this.spotifyAPICalls.playSongFromUri(this.search.getTrackSearchResults().get(trackNumber).getUri());
+			if (this.suppressed) {
+				this.trackUriToPlay = this.search.getTrackSearchResults().get(trackNumber).getUri();
+				this.postSuppressionAction = PostSuppressionAction.PLAY_TRACK;
+			} else {
+				this.spotifyAPICalls.playSongFromUri(this.search.getTrackSearchResults().get(trackNumber).getUri());
+			}
 			return this.search.getTrackSearchResults().get(trackNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
@@ -172,7 +191,12 @@ public class PlayerLogic {
 	 */
 	public AlbumEntity playAlbum(int albumNumber) {
 		if (this.search.getAlbumSearchResults().size() > albumNumber) {
-			this.spotifyAPICalls.playListFromUri(this.search.getAlbumSearchResults().get(albumNumber).getUri());
+			if (this.suppressed) {
+				this.postSuppressionAction = PostSuppressionAction.PLAY_COLLECTION;
+				this.collectionUriToPlay = this.search.getAlbumSearchResults().get(albumNumber).getUri();
+			} else {
+				this.spotifyAPICalls.playListFromUri(this.search.getAlbumSearchResults().get(albumNumber).getUri());
+			}
 			return this.search.getAlbumSearchResults().get(albumNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
@@ -188,7 +212,12 @@ public class PlayerLogic {
 	 */
 	public ArtistEntity playArtist(int artistNumber) {
 		if (this.search.getArtistSearchResults().size() > artistNumber) {
-			this.spotifyAPICalls.playListFromUri(this.search.getArtistSearchResults().get(artistNumber).getUri());
+			if (this.suppressed) {
+				this.postSuppressionAction = PostSuppressionAction.PLAY_COLLECTION;
+				this.collectionUriToPlay = this.search.getArtistSearchResults().get(artistNumber).getUri();
+			} else {
+				this.spotifyAPICalls.playListFromUri(this.search.getArtistSearchResults().get(artistNumber).getUri());
+			}
 			return this.search.getArtistSearchResults().get(artistNumber);
 		}
 		this.logger.warn(ITME_NOT_FOUND);
@@ -201,6 +230,10 @@ public class PlayerLogic {
 	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean resume() {
+		if (this.suppressed) {
+			this.postSuppressionAction = PostSuppressionAction.NONE;
+			return true;
+		}
 		return this.spotifyAPICalls.resume();
 	}
 
@@ -214,7 +247,6 @@ public class PlayerLogic {
 			this.postSuppressionAction = PostSuppressionAction.PAUSE;
 			return true;
 		}
-
 		return this.spotifyAPICalls.pause();
 	}
 
@@ -224,6 +256,10 @@ public class PlayerLogic {
 	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean skip() {
+		if (this.suppressed) {
+			this.postSuppressionAction = PostSuppressionAction.NONE;
+			return true;
+		}
 		return this.spotifyAPICalls.skip();
 	}
 
@@ -233,6 +269,10 @@ public class PlayerLogic {
 	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean back() {
+		if (this.suppressed) {
+			this.postSuppressionAction = PostSuppressionAction.NONE;
+			return true;
+		}
 		return this.spotifyAPICalls.back();
 	}
 
@@ -321,13 +361,21 @@ public class PlayerLogic {
 				if (this.postSuppressionAction == PostSuppressionAction.PAUSE) {
 					// Already paused, do nothing
 					this.postSuppressionAction = PostSuppressionAction.NONE;
+				} else if (this.postSuppressionAction == PostSuppressionAction.PLAY_TRACK) {
+					this.spotifyAPICalls.playSongFromUri(this.trackUriToPlay);
+					this.postSuppressionAction = PostSuppressionAction.NONE;
+				} else if (this.postSuppressionAction == PostSuppressionAction.PLAY_COLLECTION) {
+					this.spotifyAPICalls.playListFromUri(this.collectionUriToPlay);
+					this.postSuppressionAction = PostSuppressionAction.NONE;
 				} else {
 					resume();
 				}
 				this.suppressed = false;
-			} else if (suppressed && isPlaying) {
+			} else if (suppressed) {
+				if(isPlaying) {
+					pause();
+				}
 				// Consider pausing playback
-				pause();
 				this.suppressed = true;
 			}
 		}
