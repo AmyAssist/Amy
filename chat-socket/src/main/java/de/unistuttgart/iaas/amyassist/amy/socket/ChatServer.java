@@ -79,8 +79,11 @@ public class ChatServer implements RunnableService {
 	public void stop() {
 		try {
 			this.socket.stop();
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			this.logger.error("Can't close chatserver", e);
+		} catch (InterruptedException e) {
+			this.logger.error("Interrupt while stoping", e);
+			Thread.currentThread().interrupt();
 		}
 		this.logger.info("ChatServer shutdown");
 	}
