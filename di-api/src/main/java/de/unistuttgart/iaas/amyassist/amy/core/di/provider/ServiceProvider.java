@@ -74,7 +74,7 @@ public interface ServiceProvider<T> {
 	 * dependencies.
 	 * 
 	 * @param locator
-	 *            the ServiceLocator to lookup services
+	 *            the ServiceLocator to lookup services, don't pass this reference to any created Service
 	 * @param serviceImplementationDescription
 	 *            the description of the Service which must be created
 	 * 

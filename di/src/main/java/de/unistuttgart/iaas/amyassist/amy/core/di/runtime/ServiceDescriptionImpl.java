@@ -21,12 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.core.di.runtime;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
 
 /**
  * Implementation of ServiceDescription interface
@@ -42,8 +44,9 @@ public class ServiceDescriptionImpl<T> implements ServiceDescription<T> {
 
 	/**
 	 * @param serviceType
+	 *            the type of the Service given as class
 	 * @param annotations
-	 * 
+	 *            the qualifier annotations
 	 */
 	public ServiceDescriptionImpl(Class<T> serviceType, Set<Annotation> annotations) {
 		this.serviceType = serviceType;
@@ -51,7 +54,10 @@ public class ServiceDescriptionImpl<T> implements ServiceDescription<T> {
 	}
 
 	/**
-	 * @param serviceType2
+	 * Create a Service description with no qualifiers
+	 * 
+	 * @param serviceType
+	 *            the type of the Service given as class
 	 */
 	public ServiceDescriptionImpl(Class<T> serviceType) {
 		this.serviceType = serviceType;
