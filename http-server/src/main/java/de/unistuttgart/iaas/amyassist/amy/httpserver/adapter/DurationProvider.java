@@ -21,35 +21,31 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.httpserver.adapter;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.time.Duration;
+
+import javax.ws.rs.ext.ParamConverter;
+import javax.ws.rs.ext.ParamConverterProvider;
 
 /**
- * A exception of the dependency injection, signaling, that a given class is not a service.
+ * A Duration provider to return DurationParameterConverter according to ISO-8601
  * 
- * @author Leon Kiefer
+ * @author Muhammed Kaya
  */
-public class ClassIsNotAServiceException extends RuntimeException {
+public class DurationProvider implements ParamConverterProvider {
 
 	/**
-	 * Generated serial version UID
-	 */
-	private static final long serialVersionUID = 5382225920636029620L;
-	private final Class<?> cls;
-
-	/**
-	 * @param cls
-	 *            the class that is not a Service
-	 */
-	public ClassIsNotAServiceException(Class<?> cls) {
-		this.cls = cls;
-	}
-
-	/**
-	 * @see java.lang.Throwable#getMessage()
+	 * @see javax.ws.rs.ext.ParamConverterProvider#getConverter(java.lang.Class, java.lang.reflect.Type,
+	 *      java.lang.annotation.Annotation[])
 	 */
 	@Override
-	public String getMessage() {
-		return "The class " + this.cls.getName() + " is not a Service";
+	public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
+		if (rawType.equals(Duration.class)) {
+			return (ParamConverter<T>) new DurationParameterConverter();
+		}
+		return null;
 	}
-
 }

@@ -96,7 +96,7 @@ final class ServicePoolKey<T> {
 			return false;
 		if (this.getClass() != obj.getClass())
 			return false;
-		ServicePoolKey other = (ServicePoolKey) obj;
+		ServicePoolKey<?> other = (ServicePoolKey<?>) obj;
 		if (!this.serviceProvider.equals(other.serviceProvider))
 			return false;
 		if (!this.context.equals(other.context))
@@ -106,8 +106,8 @@ final class ServicePoolKey<T> {
 
 	@Override
 	public String toString() {
-		return "Service type: " + this.serviceType.getName() + " ServiceProvider: " + this.serviceProvider
-				+ " Implementation class: " + this.implementationClass.getName() + " Context: " + this.context;
+		return "Service type: " + this.serviceType.getName() + "\nServiceProvider: " + this.serviceProvider
+				+ "\nImplementation class: " + this.implementationClass.getName() + "\nContext: " + this.context;
 	}
 
 }

@@ -17,50 +17,22 @@
 		</Prompt>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.setTimer">
-		<gram>(set|create) timer (for|on|at) [{hour} hour] [{minute} minute] [{second}second]
-		</gram>
-		<EntityTemplates>
-			<EntityTemplate id="hour" required="false">
-				<gram>{amyinteger}</gram>
-			</EntityTemplate>
-			<EntityTemplate id="minute" required="false">
-				<gram>{amyinteger}</gram>
-			</EntityTemplate>
-			<EntityTemplate id="second" required="false">
-				<gram>{amyinteger}</gram>
-			</EntityTemplate>
-		</EntityTemplates>
-	</Intent>
-	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.resetAlarmClockObjects">
-		<gram>delete all {type}</gram>
-		<EntityTemplates>
-			<EntityTemplate id="type" required="true">
-				<gram>(alarms|timers)</gram>
-			</EntityTemplate>
-		</EntityTemplates>
+		<gram>delete all alarms</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.deleteAlarmClockObject">
-		<gram>delete {type} {number}</gram>
+		<gram>delete alarm {number}</gram>
 		<EntityTemplates>
-			<EntityTemplate id="type" required="true">
-				<gram>(alarm|timer)</gram>
-			</EntityTemplate>
 			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>
-
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.deactivateAlarmClockObject">
-		<gram>deactivate {type} {number}</gram>
+		<gram>deactivate alarm {number}</gram>
 		<EntityTemplates>
-			<EntityTemplate id="type" required="true">
-				<gram>(alarm|timer)</gram>
-			</EntityTemplate>
 			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>
 			</EntityTemplate>
@@ -79,27 +51,17 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getAlarmClockObject">
-		<gram>get {type} {number}</gram>
+		<gram>get alarm {number}</gram>
 		<EntityTemplates>
-			<EntityTemplate id="type" required="true">
-				<gram>(alarm|timer)</gram>
-			</EntityTemplate>
 			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>
-
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getAllAlarmClockObjects">
-		<gram>get all {type}</gram>
-		<EntityTemplates>
-			<EntityTemplate id="type" required="true">
-				<gram>(alarms|timers)</gram>
-			</EntityTemplate>
-		</EntityTemplates>
+		<gram>get all alarms</gram>
 	</Intent>
-
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.editAlarm">
 		<gram>edit alarm {number} to {time} [{day}]</gram>
@@ -112,16 +74,6 @@
 			</EntityTemplate>
 			<EntityTemplate id="day" required="false">
 				<gram>(today|tomorrow)</gram>
-			</EntityTemplate>
-		</EntityTemplates>
-	</Intent>
-
-	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getRemainingTimerDelay">
-		<gram>when (does|is) timer {number} (ringing|ring)</gram>
-		<EntityTemplates>
-			<EntityTemplate id="number" required="true">
-				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>

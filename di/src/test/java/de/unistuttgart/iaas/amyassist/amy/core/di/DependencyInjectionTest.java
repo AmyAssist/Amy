@@ -33,6 +33,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.exception.ClassIsNotAServiceException;
+import de.unistuttgart.iaas.amyassist.amy.core.di.exception.DuplicateServiceException;
+import de.unistuttgart.iaas.amyassist.amy.core.di.exception.ServiceNotFoundException;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import uk.org.lidalia.slf4jtest.TestLogger;

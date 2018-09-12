@@ -34,8 +34,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandleImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceImplementationDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceImplementationDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 
 /**
