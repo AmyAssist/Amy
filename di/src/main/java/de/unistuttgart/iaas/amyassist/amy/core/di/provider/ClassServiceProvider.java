@@ -35,13 +35,13 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.ContextLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceInstantiationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.SimpleServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceImplementationDescriptionImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
@@ -100,7 +100,7 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public ServiceImplementationDescription<T> getServiceImplementationDescription(@Nonnull ContextLocator locator,
+	public ServiceInstantiationDescription<T> getServiceInstantiationDescription(@Nonnull ContextLocator locator,
 			@Nonnull ServiceConsumer<T> serviceConsumer) {
 		HashMap<String, Object> map = new HashMap<>();
 		for (ContextInjectionPoint c : this.contextInjectionPoints) {
@@ -108,21 +108,22 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 			map.put(key, locator.getContextProvider(key).getContext(serviceConsumer));
 		}
 
-		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(), map, this.cls);
+		return new ServiceInstantiationDescriptionImpl<>(serviceConsumer.getServiceDescription(), map, this.cls);
 	}
 
 	@Override
 	public @Nonnull ServiceHandle<T> createService(@Nonnull SimpleServiceLocator locator,
-			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
+			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
 
-		@Nonnull T serviceInstance = this.createService();
+		@Nonnull
+		T serviceInstance = this.createService();
 		for (InjectionPoint injectionPoint : this.injectionPoints) {
 			ServiceConsumer<?> serviceConsumer = injectionPoint.getServiceConsumer();
 			ServiceHandle<?> serviceHandle = locator.getService(serviceConsumer);
 			injectionPoint.inject(serviceInstance, serviceHandle.getService());
 		}
 
-		Map<String, Object> context = serviceImplementationDescription.getContext();
+		Map<String, Object> context = serviceInstantiationDescription.getContext();
 		for (ContextInjectionPoint contextInjectionPoint : this.contextInjectionPoints) {
 			contextInjectionPoint.inject(serviceInstance, context.get(contextInjectionPoint.getContextIdentifier()));
 		}
@@ -141,7 +142,8 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public void dispose(ServiceHandle<T> service) {
+	public void dispose(ServiceHandle<T> service,
+			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
 		Util.preDestroy(service.getService());
 	}
 

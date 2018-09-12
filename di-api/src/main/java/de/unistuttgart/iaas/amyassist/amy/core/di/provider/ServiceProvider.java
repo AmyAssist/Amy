@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.ContextLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceInstantiationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.SimpleServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 
@@ -55,43 +55,45 @@ public interface ServiceProvider<T> {
 	/**
 	 * Refine the ServiceDescription of a ServiceConsumer. The ServiceProvider can decide if it can provide the
 	 * requested service. If this ServiceProvider can provide the service, it returns the
-	 * ServiceImplementationDescription for the Service. The ServiceImplementationDescription contains all information
-	 * needed to create the requested Service for the Consumer.
+	 * ServiceInstantiationDescription for the Service. The ServiceInstantiationDescription contains all information
+	 * needed to create the requested Service for the ServiceConsumer.
 	 * 
 	 * @param locator
 	 *            the ContextLocator which can be used to lookup ContextProvider
 	 * @param serviceConsumer
 	 *            the consumer of the Service. This can be used to extract context information.
-	 * @return the ServiceImplementationDescription for the Service this Provider can provide or null if this provider
+	 * @return the ServiceInstantiationDescription for the Service this Provider can provide or null if this provider
 	 *         can not provide the requested Service.
 	 */
 	@CheckForNull
-	ServiceImplementationDescription<T> getServiceImplementationDescription(@Nonnull ContextLocator locator,
+	ServiceInstantiationDescription<T> getServiceInstantiationDescription(@Nonnull ContextLocator locator,
 			@Nonnull ServiceConsumer<T> serviceConsumer);
 
 	/**
-	 * Create a new Service from the given ServiceImplementationDescription. Using the ServiceLocator to lookup
+	 * Create a new Service from the given ServiceInstantiationDescription. Using the ServiceLocator to lookup
 	 * dependencies.
 	 * 
 	 * @param locator
 	 *            the ServiceLocator to lookup services, don't pass this reference to any created Service
-	 * @param serviceImplementationDescription
+	 * @param serviceInstantiationDescription
 	 *            the description of the Service which must be created
 	 * 
-	 * @return the created service of this ServiceProvider for the given ServiceImplementationDescription
+	 * @return the created service of this ServiceProvider for the given ServiceInstantiationDescription
 	 */
 	@Nonnull
 	ServiceHandle<T> createService(@Nonnull SimpleServiceLocator locator,
-			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription);
+			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription);
 
 	/**
 	 * Dispose a Service that was provided by this ServiceProvider.
 	 * 
 	 * @param service
 	 *            the Service that should be disposed
+	 * @param serviceInstantiationDescription
+	 *            the description of the Service which should be disposed
 	 * @throws IllegalArgumentException
 	 *             if the given Service was not provided by this ServiceProvider.
 	 */
-	void dispose(ServiceHandle<T> service);
+	void dispose(ServiceHandle<T> service, @Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription);
 
 }
