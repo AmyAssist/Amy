@@ -66,8 +66,8 @@ public class ChatWebSocket extends WebSocketServer {
 	 */
 	@Override
 	public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-		this.logger.debug(conn + " closed connection");
-		this.logger.debug("Code was " + code + ". Reason was " + reason + "." );
+		this.logger.debug("{} closed connection", conn);
+		this.logger.debug("Code was {}. Reason was {}.",code,reason	);
 		
 	}
 
@@ -92,7 +92,7 @@ public class ChatWebSocket extends WebSocketServer {
 	 */
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
-		conn.send("Hello");
+		conn.send("Hello, I am Amy");
 		UUID uuid = this.handler.createDialog(conn::send);
 		this.dialogMap.put(conn.getRemoteSocketAddress(), uuid);
 	}
