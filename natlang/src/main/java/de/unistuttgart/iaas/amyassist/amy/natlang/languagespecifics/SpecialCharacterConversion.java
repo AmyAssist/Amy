@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en;
+package de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics;
 
 /**
  * Utility interface to convert special characters

@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.SpecialCharacterConversion;
+
 /**
  * Special Character conversion for the english language
  * 
@@ -49,7 +51,7 @@ public class EnglishSpecialCharacterConversion implements SpecialCharacterConver
 	}
 	
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.SpecialCharacterConversion#format(java.lang.String)
+	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.SpecialCharacterConversion#format(java.lang.String)
 	 */
 	@Override
 	public String format(String toFormat) {
