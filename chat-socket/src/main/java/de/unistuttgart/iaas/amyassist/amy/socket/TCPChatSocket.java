@@ -93,7 +93,7 @@ public class TCPChatSocket implements RunnableService{
 							new ClientHandler(TCPChatSocket.this.serverSocket.accept()).start();
 						}
 					} catch (SocketException se) {
-						if(!se.getMessage().equals("socket closed")) {
+						if(!se.getMessage().equalsIgnoreCase("socket closed")) {
 							TCPChatSocket.this.logger.error("Socket exception", se);
 						}
 					} catch (IOException e) {
