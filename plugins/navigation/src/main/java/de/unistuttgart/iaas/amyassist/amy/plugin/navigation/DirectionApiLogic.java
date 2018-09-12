@@ -97,6 +97,7 @@ public class DirectionApiLogic {
 		DirectionsRoute route;
 		switch (mode) {
 		case DRIVING:
+		case BICYCLING:
 			routes = this.calls.fromToWithDepartureTime(origin, destination, mode, DateTime.now());
 			route = findBestRoute(routes);
 			if (route != null && route.legs[0].durationInTraffic != null && arrivalTime.getMillis() > DateTime.now()
@@ -236,6 +237,7 @@ public class DirectionApiLogic {
 		case "car":
 			return TravelMode.DRIVING;
 		case "bicycling":
+		case "bicycle":
 		case "bike":
 			return TravelMode.BICYCLING;
 		case "transit":
