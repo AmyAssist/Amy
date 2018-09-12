@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -71,8 +72,9 @@ public class NLLexerTest {
 	 */
 	public static Stream<Character> badCharacters() {
 		// every ascii character except numbers of letters
-		return IntStream.range(0, 128).mapToObj(i -> (char) i).filter(c ->  (0 > c && c > 33) || (34 < c && c != 37 && !(43 < c && c < 47) &&  c < 48)
-				|| (59 < c && c < 65 && c != 63) || (90 < c && c < 97)  || 122 < c);
+		return IntStream.range(0, 128).mapToObj(i -> (char) i)
+				.filter(c -> (0 > c && c > 33) || (34 < c && c != 37 && !(43 < c && c < 47) && c < 48)
+						|| (59 < c && c < 65 && c != 63) || (90 < c && c < 97) || 122 < c);
 	}
 
 	/**
@@ -85,7 +87,9 @@ public class NLLexerTest {
 	@MethodSource("badCharacters")
 	public void testBadChars(Character badCharacter) {
 		NLLexer lexer = new NLLexer(this.lang);
-		assertThrows(NLLexerException.class, () -> lexer.tokenize(badCharacter.toString()));
+		String test = "";
+		lexer.tokenize(badCharacter.toString()).stream().map(s -> s.getContent()).collect(Collectors.joining(""));
+		assertEquals(true, test.equals(""));
 	}
 
 	/**
@@ -118,6 +122,16 @@ public class NLLexerTest {
 	public void testTypes() {
 		NLLexer lex = new NLLexer(this.lang);
 		List<WordToken> tokenize = lex.tokenize("wajjo 9 0 oh 99 oh one");
+		assertThat(Lists.transform(tokenize, WordToken::getType),
+				contains(WordTokenType.WORD, WordTokenType.NUMBER, WordTokenType.NUMBER, WordTokenType.WORD,
+						WordTokenType.NUMBER, WordTokenType.WORD, WordTokenType.NUMBER));
+	}
+	
+	@ParameterizedTest
+	@MethodSource("badCharacters")
+	public void testRemoveBadCharacters(Character badCharacter) {
+		NLLexer lex = new NLLexer(this.lang);
+		List<WordToken> tokenize = lex.tokenize("wajjo" + badCharacter + " 9 0 oh 99 oh one");
 		assertThat(Lists.transform(tokenize, WordToken::getType),
 				contains(WordTokenType.WORD, WordTokenType.NUMBER, WordTokenType.NUMBER, WordTokenType.WORD,
 						WordTokenType.NUMBER, WordTokenType.WORD, WordTokenType.NUMBER));

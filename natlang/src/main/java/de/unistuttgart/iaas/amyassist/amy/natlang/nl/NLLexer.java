@@ -90,10 +90,7 @@ public class NLLexer {
 		toLex = this.language.getTimeUtility().formatTime(toLex);
 		toLex = this.language.getTimeUtility().formatDate(toLex);
 		toLex = this.language.getContraction().disassemblingContraction(toLex);
-		// replace all punctuation
-		toLex = toLex.replaceAll("\\,|\\.|\\:|\\;|\\?|\\!", "");
-		toLex = toLex.replaceAll("-", " ");
-		toLex = toLex.trim();
+
 		StringBuilder currentWord = new StringBuilder();
 		if (!toLex.isEmpty()) {
 			for (int mIndex = 0; mIndex < toLex.length(); mIndex++) {
@@ -101,21 +98,26 @@ public class NLLexer {
 				switch (Character.getType(c)) {
 				case Character.LOWERCASE_LETTER:
 					//$FALL-THROUGH$
+				case Character.OTHER_LETTER:
+					//$FALL-THROUGH$
 				case Character.DECIMAL_DIGIT_NUMBER:
 					currentWord.append(c);
 					break;
 				// handles single whitespace characters but not newline, tab or carriage return
 				case Character.SPACE_SEPARATOR:
+					//$FALL-THROUGH$
+				default:
 					if (currentWord.length() != 0) {
 						list.add(parse(new WordToken(currentWord.toString())));
 						currentWord = new StringBuilder();
+						break;
 					}
-					break;
-				default:
-					throw new NLLexerException("character not recognized " + c + " stopping");
+					continue;
 				}
 			}
-			list.add(parse(new WordToken(currentWord.toString())));
+			if(currentWord.length() != 0) {
+				list.add(parse(new WordToken(currentWord.toString())));
+			}
 			return concatNumbers(list);
 		}
 		return new ArrayList<>();
