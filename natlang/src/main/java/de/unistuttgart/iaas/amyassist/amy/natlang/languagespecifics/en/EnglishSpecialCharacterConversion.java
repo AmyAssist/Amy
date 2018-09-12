@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Special Character conversion for the english language
@@ -52,14 +53,15 @@ public class EnglishSpecialCharacterConversion implements SpecialCharacterConver
 	 */
 	@Override
 	public String format(String toFormat) {
+		String result = toFormat;
 		//this is kinda ugly buuut regex and special characters is pretty bad
-		for(String c : this.conversion.keySet()) {
-			if(toFormat.contains(c)) {
-				toFormat.replaceAll(c, this.conversion.get(c));
+		for(Entry<String, String> e : this.conversion.entrySet()) {
+			if(result.contains(e.getKey())) {
+				result = toFormat.replaceAll(e.getKey(), e.getValue());
 			}
 		}
 		
-		return toFormat;
+		return result;
 	}
 
 }
