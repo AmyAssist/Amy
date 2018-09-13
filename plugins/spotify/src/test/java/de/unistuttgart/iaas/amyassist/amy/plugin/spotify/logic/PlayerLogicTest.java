@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -36,6 +36,9 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.internal.verification.VerificationModeFactory;
 
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
@@ -48,6 +51,7 @@ import com.wrapper.spotify.model_objects.specification.User;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
@@ -58,10 +62,8 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.SearchTypes;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
-
 @ExtendWith(FrameworkExtension.class)
 class PlayerLogicTest {
-
 
 	private static final String ID1 = "abc123";
 	private static final String ID2 = "123abc";
@@ -97,7 +99,7 @@ class PlayerLogicTest {
 		this.playerLogic = this.testFramework.setServiceUnderTest(PlayerLogic.class);
 		initDevices();
 		initCurrentTrack();
-		
+
 		this.playlistList = new ArrayList<>();
 		this.playlistList.add(new PlaylistEntity());
 
@@ -112,7 +114,7 @@ class PlayerLogicTest {
 		PlaylistSimplified[] playlistList = new PlaylistSimplified[2];
 		playlistList[0] = playlist1;
 		playlistList[1] = playlist2;
-		
+
 		PlaylistEntity playlistEntity1 = new PlaylistEntity();
 		playlistEntity1.setName(PLAYLIST_NAME1);
 		playlistEntity1.setUri(ID1);
@@ -122,10 +124,9 @@ class PlayerLogicTest {
 		playlistEntity2.setImageUrl(ID1);
 		this.playlistsSpotifyFormat = new Paging.Builder<PlaylistSimplified>().setItems(playlistList).build();
 		this.playlistsOwnFormat = new ArrayList<>();
-		
+
 		this.playlistsOwnFormat.add(playlistEntity1);
 		this.playlistsOwnFormat.add(playlistEntity2);
-		
 
 	}
 
@@ -165,7 +166,7 @@ class PlayerLogicTest {
 		this.playerLogic.inputAuthCode(ID2);
 		verify(this.spotifyAPICalls).createRefreshToken(ID2);
 	}
-	
+
 	@Test
 	void testPlayEmptyList() {
 		when(this.search.searchFeaturedPlaylists(5)).thenReturn(new ArrayList<>());
@@ -181,7 +182,19 @@ class PlayerLogicTest {
 		assertThat(this.playerLogic.play().getUri(), equalTo(ID1));
 		verify(this.spotifyAPICalls).playListFromUri(ID1);
 	}
-	
+
+	@Test
+	void testPlayNotEmptyListSupressed() {
+		initPlaylists();
+		when(this.search.searchFeaturedPlaylists(5)).thenReturn(this.playlistsOwnFormat);
+		when(this.spotifyAPICalls.playListFromUri(any())).thenReturn(true);
+		this.playerLogic.setSuppressed(true);
+		assertThat(this.playerLogic.play().getUri(), equalTo(ID1));
+		verify(this.spotifyAPICalls, Mockito.never()).playListFromUri(any());
+		this.playerLogic.setSuppressed(false);
+		verify(this.spotifyAPICalls).playListFromUri(any());
+	}
+
 	@Test
 	void playPlaylist() {
 		when(this.search.getFeaturedPlaylists()).thenReturn(this.playlistList);
@@ -190,19 +203,30 @@ class PlayerLogicTest {
 	}
 
 	@Test
+	void playPlaylistSupressed() {
+		when(this.search.getFeaturedPlaylists()).thenReturn(this.playlistList);
+		this.playerLogic.setSuppressed(true);
+		assertThat(this.playerLogic.playPlaylist(0, SearchTypes.FEATURED_PLAYLISTS), equalTo(this.playlistList.get(0)));
+		assertThat(this.playerLogic.playPlaylist(1, SearchTypes.FEATURED_PLAYLISTS), equalTo(null));
+		verify(this.spotifyAPICalls, Mockito.never()).playListFromUri(any());
+		this.playerLogic.setSuppressed(false);
+		verify(this.spotifyAPICalls).playListFromUri(any());
+	}
+
+	@Test
 	void playPlaylistUser() {
 		when(this.search.getOwnPlaylists()).thenReturn(this.playlistList);
 		assertThat(this.playerLogic.playPlaylist(0, SearchTypes.USER_PLAYLISTS), equalTo(this.playlistList.get(0)));
 		assertThat(this.playerLogic.playPlaylist(1, SearchTypes.USER_PLAYLISTS), equalTo(null));
 	}
-	
+
 	@Test
 	void playPlaylistSearch() {
 		when(this.search.getPlaylistSearchResults()).thenReturn(this.playlistList);
 		assertThat(this.playerLogic.playPlaylist(0, SearchTypes.SEARCH_PLAYLISTS), equalTo(this.playlistList.get(0)));
 		assertThat(this.playerLogic.playPlaylist(1, SearchTypes.SEARCH_PLAYLISTS), equalTo(null));
 	}
-	
+
 	@Test
 	void playTrackSearch() {
 		List<TrackEntity> trackList = new ArrayList<>();
@@ -211,7 +235,20 @@ class PlayerLogicTest {
 		assertThat(this.playerLogic.playTrack(0), equalTo(trackList.get(0)));
 		assertThat(this.playerLogic.playTrack(1), equalTo(null));
 	}
-	
+
+	@Test
+	void playTrackSearchSupressed() {
+		List<TrackEntity> trackList = new ArrayList<>();
+		trackList.add(new TrackEntity());
+		when(this.search.getTrackSearchResults()).thenReturn(trackList);
+		this.playerLogic.setSuppressed(true);
+		assertThat(this.playerLogic.playTrack(0), equalTo(trackList.get(0)));
+		assertThat(this.playerLogic.playTrack(1), equalTo(null));
+		verify(this.spotifyAPICalls, Mockito.never()).playListFromUri(any());
+		this.playerLogic.setSuppressed(false);
+		verify(this.spotifyAPICalls).playSongFromUri(any());
+	}
+
 	@Test
 	void playAlbumSearch() {
 		List<AlbumEntity> albumList = new ArrayList<>();
@@ -220,7 +257,20 @@ class PlayerLogicTest {
 		assertThat(this.playerLogic.playAlbum(0), equalTo(albumList.get(0)));
 		assertThat(this.playerLogic.playAlbum(1), equalTo(null));
 	}
-	
+
+	@Test
+	void playAlbumSearchSupressed() {
+		List<AlbumEntity> albumList = new ArrayList<>();
+		albumList.add(new AlbumEntity());
+		when(this.search.getAlbumSearchResults()).thenReturn(albumList);
+		this.playerLogic.setSuppressed(true);
+		assertThat(this.playerLogic.playAlbum(0), equalTo(albumList.get(0)));
+		assertThat(this.playerLogic.playAlbum(1), equalTo(null));
+		verify(this.spotifyAPICalls, Mockito.never()).playListFromUri(any());
+		this.playerLogic.setSuppressed(false);
+		verify(this.spotifyAPICalls).playListFromUri(any());
+	}
+
 	@Test
 	void playArtistSearch() {
 		List<ArtistEntity> artistList = new ArrayList<>();
@@ -231,8 +281,30 @@ class PlayerLogicTest {
 	}
 
 	@Test
+	void playArtistSearchSupressed() {
+		List<ArtistEntity> artistList = new ArrayList<>();
+		artistList.add(new ArtistEntity());
+		when(this.search.getArtistSearchResults()).thenReturn(artistList);
+		this.playerLogic.setSuppressed(true);
+		assertThat(this.playerLogic.playArtist(0), equalTo(artistList.get(0)));
+		assertThat(this.playerLogic.playArtist(1), equalTo(null));
+		verify(this.spotifyAPICalls, Mockito.never()).playListFromUri(any());
+		this.playerLogic.setSuppressed(false);
+		verify(this.spotifyAPICalls).playListFromUri(any());
+	}
+
+	@Test
 	void testResume() {
 		this.playerLogic.resume();
+		verify(this.spotifyAPICalls).resume();
+	}
+
+	@Test
+	void testSupressedResumep() {
+		this.playerLogic.setSuppressed(true);
+		this.playerLogic.resume();
+		verify(this.spotifyAPICalls, Mockito.never()).resume();
+		this.playerLogic.setSuppressed(false);
 		verify(this.spotifyAPICalls).resume();
 	}
 
@@ -243,14 +315,43 @@ class PlayerLogicTest {
 	}
 
 	@Test
+	void testSupressedPause() {
+		when(this.spotifyAPICalls.getIsPlaying()).thenReturn(true);
+		this.playerLogic.setSuppressed(true);
+		verify(this.spotifyAPICalls).pause();
+		this.playerLogic.pause();
+		this.playerLogic.setSuppressed(false);
+		verify(this.spotifyAPICalls, Mockito.atMost(1)).pause();
+
+	}
+
+	@Test
 	void testSkip() {
 		this.playerLogic.skip();
 		verify(this.spotifyAPICalls).skip();
 	}
 
 	@Test
+	void testSupressedSkip() {
+		this.playerLogic.setSuppressed(true);
+		this.playerLogic.skip();
+		verify(this.spotifyAPICalls, Mockito.never()).skip();
+		this.playerLogic.setSuppressed(false);
+		verify(this.spotifyAPICalls).skip();
+	}
+
+	@Test
 	void testBack() {
 		this.playerLogic.back();
+		verify(this.spotifyAPICalls).back();
+	}
+
+	@Test
+	void testSupressedBack() {
+		this.playerLogic.setSuppressed(true);
+		this.playerLogic.back();
+		verify(this.spotifyAPICalls, Mockito.never()).back();
+		this.playerLogic.setSuppressed(false);
 		verify(this.spotifyAPICalls).back();
 	}
 
@@ -330,7 +431,7 @@ class PlayerLogicTest {
 		assertThat(this.playerLogic.setVolume(1), equalTo(1));
 		verify(this.spotifyAPICalls).setVolume(1);
 	}
-	
+
 	@Test
 	void testCurrentSong() {
 		when(this.spotifyAPICalls.getCurrentPlayingContext()).thenReturn(this.currentlyPlayingContext);
@@ -338,9 +439,30 @@ class PlayerLogicTest {
 		TrackEntity track = this.playerLogic.getCurrentSong();
 		assertThat(track.getUri(), equalTo(ID1));
 	}
+
 	@Test
 	void testNoCurrentSong() {
 		when(this.spotifyAPICalls.getCurrentPlayingContext()).thenReturn(null);
 		assertThat(this.playerLogic.getCurrentSong(), equalTo(null));
 	}
+	
+	@Test
+	void testSuppresedPlayingNothingChanged() {
+		when(this.spotifyAPICalls.getIsPlaying()).thenReturn(true);
+		this.playerLogic.setSuppressed(true);
+		verify(this.spotifyAPICalls).pause();
+		when(this.spotifyAPICalls.getIsPlaying()).thenReturn(false);
+		this.playerLogic.setSuppressed(false);
+		verify(this.spotifyAPICalls).resume();
+	}
+	
+	@Test
+	void testSuppresedNotPlayingNothingChanged() {
+		when(this.spotifyAPICalls.getIsPlaying()).thenReturn(false);
+		this.playerLogic.setSuppressed(true);
+		verify(this.spotifyAPICalls, Mockito.never()).pause();
+		this.playerLogic.setSuppressed(false);
+		verify(this.spotifyAPICalls, Mockito.never()).resume();
+	}
+
 }

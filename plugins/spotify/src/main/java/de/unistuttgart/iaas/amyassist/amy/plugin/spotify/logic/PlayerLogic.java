@@ -355,10 +355,11 @@ public class PlayerLogic {
 	}
 
 	/**
-	 * Suppress music playback temporarily.
+	 * Suppress music playback temporarily and wait with playback start until the unmute is triggered
 	 * 
 	 * @param suppressed
-	 *            'true' to suppress playback, 'false' to restore it
+	 *            'true' to suppress playback or wait with playing a new song or skip a song, 'false' to restore it or
+	 *            start playback
 	 */
 	void setSuppressed(boolean suppressed) {
 		if (suppressed != this.suppressed) {
@@ -379,6 +380,7 @@ public class PlayerLogic {
 				} else if (this.postSuppressionAction == PostSuppressionAction.SKIP) {
 					skip();
 				} else {
+					// resume if was not paused and no other action is executed
 					resume();
 				}
 				this.postSuppressionAction = PostSuppressionAction.NONE;
