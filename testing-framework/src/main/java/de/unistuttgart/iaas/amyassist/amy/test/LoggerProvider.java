@@ -32,14 +32,14 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.ContextLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceInstantiationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.SimpleServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandleImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceImplementationDescriptionImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
 
 /**
  * Logger Service provider for tests
@@ -56,23 +56,24 @@ public class LoggerProvider implements ServiceProvider<Logger> {
 	}
 
 	@Override
-	public ServiceImplementationDescription<Logger> getServiceImplementationDescription(@Nonnull ContextLocator locator,
+	public ServiceInstantiationDescription<Logger> getServiceInstantiationDescription(@Nonnull ContextLocator locator,
 			@Nonnull ServiceConsumer<Logger> serviceConsumer) {
 		Class<?> cls = serviceConsumer.getConsumerClass();
-		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
+		return new ServiceInstantiationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
 				Collections.singletonMap(KEY, cls), LoggerFactory.class);
 	}
 
 	@Override
 	public @Nonnull ServiceHandle<Logger> createService(@Nonnull SimpleServiceLocator locator,
-			@Nonnull ServiceImplementationDescription<Logger> serviceImplementationDescription) {
+			@Nonnull ServiceInstantiationDescription<Logger> serviceInstantiationDescription) {
 
-		Class<?> cls = (Class<?>) serviceImplementationDescription.getContext().get(KEY);
+		Class<?> cls = (Class<?>) serviceInstantiationDescription.getContext().get(KEY);
 		return new ServiceHandleImpl<>(LoggerFactory.getLogger(cls));
 	}
 
 	@Override
-	public void dispose(ServiceHandle<Logger> service) {
+	public void dispose(ServiceHandle<Logger> service,
+			@Nonnull ServiceInstantiationDescription<Logger> serviceInstantiationDescription) {
 		// nothing to do here
 	}
 

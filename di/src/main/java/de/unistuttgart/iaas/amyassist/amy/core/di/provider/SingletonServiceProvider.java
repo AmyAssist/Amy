@@ -27,11 +27,11 @@ import javax.annotation.Nonnull;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.ContextLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceInstantiationDescription;
 import de.unistuttgart.iaas.amyassist.amy.core.di.SimpleServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceImplementationDescriptionImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
 
 /**
  * A ServiceProvider which provides only a single existing instance
@@ -64,20 +64,21 @@ public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public ServiceImplementationDescription<T> getServiceImplementationDescription(@Nonnull ContextLocator locator,
+	public ServiceInstantiationDescription<T> getServiceInstantiationDescription(@Nonnull ContextLocator locator,
 			@Nonnull ServiceConsumer<T> serviceConsumer) {
-		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
+		return new ServiceInstantiationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
 				this.instance.getClass());
 	}
 
 	@Override
 	public @Nonnull ServiceHandle<T> createService(@Nonnull SimpleServiceLocator locator,
-			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
+			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
 		return new ServiceHandleImpl<>(this.instance);
 	}
 
 	@Override
-	public void dispose(ServiceHandle<T> service) {
+	public void dispose(ServiceHandle<T> service,
+			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
 		// singleton can not be disposed
 	}
 
