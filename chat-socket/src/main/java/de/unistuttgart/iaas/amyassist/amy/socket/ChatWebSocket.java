@@ -65,9 +65,9 @@ public class ChatWebSocket extends WebSocketServer {
 	 * @see org.java_websocket.server.WebSocketServer#onClose(org.java_websocket.WebSocket, int, java.lang.String, boolean)
 	 */
 	@Override
-	public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-		this.logger.debug("{} closed connection", conn);
-		this.logger.debug("Code was {}. Reason was {}.",code,reason	);
+	public void onClose(WebSocket clientSocket, int code, String reason, boolean remote) {
+		this.logger.debug("{} closed connection", clientSocket);
+		this.logger.debug("Code was {}. Reason was {}.", code, reason);
 		
 	}
 

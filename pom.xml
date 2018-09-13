@@ -35,7 +35,7 @@
 		<amy.utility.version>0.6.0-Snapshot</amy.utility.version>
 		<amy.registry.version>0.6.0-Snapshot</amy.registry.version>
 		<amy.remote-sr.version>0.6.0-Snapshot</amy.remote-sr.version>
-    <amy.chatsocket.version>0.6.0-Snapshot</amy.chatsocket.version>
+		<amy.chatsocket.version>0.6.0-Snapshot</amy.chatsocket.version>
 		<deployment.descriptor.utility.version>0.6.0-Snapshot</deployment.descriptor.utility.version>
 
 		<!-- External dependency versions. Only project wide or core dependencies 
