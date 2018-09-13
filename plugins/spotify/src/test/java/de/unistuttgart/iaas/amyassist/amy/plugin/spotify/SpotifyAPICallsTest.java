@@ -110,12 +110,19 @@ class SpotifyAPICallsTest {
 	}
 
 	@Test
-	public void testPause() {
+	public void testPausePlaying() {
 		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
 		this.spotifyAPICalls.setCurrentDevice("w");
 		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		doReturn(true).when(this.spotifyAPICalls).getIsPlaying();
 		assertThat(this.spotifyAPICalls.pause(), equalTo(false));
-		doReturn(false).when(this.spotifyAPICalls).checkPlayerState();
+	}
+	@Test
+	public void testPausePaused() {
+		doReturn(this.spotifyApi).when(this.spotifyAPICalls).getSpotifyApi();
+		this.spotifyAPICalls.setCurrentDevice("w");
+		doReturn(true).when(this.spotifyAPICalls).checkPlayerState();
+		doReturn(false).when(this.spotifyAPICalls).getIsPlaying();
 		assertThat(this.spotifyAPICalls.pause(), equalTo(false));
 	}
 
