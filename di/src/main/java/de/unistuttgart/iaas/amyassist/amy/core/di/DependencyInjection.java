@@ -182,20 +182,20 @@ public class DependencyInjection implements ServiceLocator, Configuration, Simpl
 			@Nonnull ServiceConsumer<T> serviceConsumer) {
 		ServiceProvider<T> provider = this.getServiceProvider(serviceConsumer.getServiceDescription(),
 				dependentServiceCreation);
-		ServiceImplementationDescription<T> serviceImplementationDescription = provider
-				.getServiceImplementationDescription(this.contextLocator, serviceConsumer);
-		if (serviceImplementationDescription == null) {
+		ServiceInstantiationDescription<T> serviceInstantiationDescription = provider
+				.getServiceInstantiationDescription(this.contextLocator, serviceConsumer);
+		if (serviceInstantiationDescription == null) {
 			throw new ServiceNotFoundException(serviceConsumer.getServiceDescription(), dependentServiceCreation);
 		}
-		return this.lookUpOrCreateService(dependentServiceCreation, provider, serviceImplementationDescription);
+		return this.lookUpOrCreateService(dependentServiceCreation, provider, serviceInstantiationDescription);
 	}
 
 	@SuppressWarnings("unchecked")
 	@CheckForNull
 	private <T> ServiceHandle<T> lookUpService(@Nonnull ServiceProvider<T> serviceProvider,
-			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
+			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
 
-		ServicePoolKey<?> servicePoolKey = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription);
+		ServicePoolKey<?> servicePoolKey = new ServicePoolKey<>(serviceProvider, serviceInstantiationDescription);
 
 		if (!this.servicePool.containsKey(servicePoolKey)) {
 			return null;
@@ -206,23 +206,23 @@ public class DependencyInjection implements ServiceLocator, Configuration, Simpl
 	@SuppressWarnings("unchecked")
 	private <T> Future<ServiceHandle<T>> createService(@Nonnull ServiceCreation<?> dependentServiceCreation,
 			@Nonnull ServiceProvider<T> serviceProvider,
-			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
-		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription);
+			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
+		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceInstantiationDescription);
 		synchronized (this.servicePool) {
 			ServiceCreation<T> serviceCreation;
 			if (this.serviceCreationInfos.containsKey(key)) {
 				serviceCreation = (ServiceCreation<T>) this.serviceCreationInfos.get(key);
 			} else {
 				serviceCreation = new ServiceCreation<>(
-						serviceImplementationDescription.getImplementationClass().getName());
+						serviceInstantiationDescription.getImplementationClass().getName());
 
 				serviceCreation.completableFuture = CompletableFuture.supplyAsync(() -> {
 					SimpleServiceLocatorImpl tempLocator = new SimpleServiceLocatorImpl(this, serviceCreation);
-					ServiceHandle<T> service = serviceProvider.createService(
-							tempLocator, serviceImplementationDescription);
+					T service = serviceProvider.createService(tempLocator, serviceInstantiationDescription);
 					tempLocator.destroy();
-					this.servicePool.put(key, service);
-					return service;
+					ServiceHandle<T> serviceHandle = new ServiceHandleImpl<>(service);
+					this.servicePool.put(key, serviceHandle);
+					return serviceHandle;
 				});
 
 				this.serviceCreationInfos.put(key, serviceCreation);
@@ -235,11 +235,11 @@ public class DependencyInjection implements ServiceLocator, Configuration, Simpl
 
 	private <T> ServiceHandle<T> lookUpOrCreateService(@Nonnull ServiceCreation<?> dependentServiceCreationInfo,
 			@Nonnull ServiceProvider<T> serviceProvider,
-			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
-		ServiceHandle<T> lookUpService = this.lookUpService(serviceProvider, serviceImplementationDescription);
+			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
+		ServiceHandle<T> lookUpService = this.lookUpService(serviceProvider, serviceInstantiationDescription);
 		if (lookUpService == null) {
 			Future<ServiceHandle<T>> createService = this.createService(dependentServiceCreationInfo, serviceProvider,
-					serviceImplementationDescription);
+					serviceInstantiationDescription);
 			try {
 				lookUpService = createService.get();
 			} catch (InterruptedException e) {

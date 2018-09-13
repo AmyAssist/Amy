@@ -29,16 +29,16 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceImplementationDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceInstantiationDescription;
 
 /**
- * Immutable implementation of the ServiceImplementationDescription
+ * Immutable implementation of the ServiceInstantiationDescription
  * 
  * @author Leon Kiefer
  * @param <T>
  *            the type of the service
  */
-public class ServiceImplementationDescriptionImpl<T> implements ServiceImplementationDescription<T> {
+public class ServiceInstantiationDescriptionImpl<T> implements ServiceInstantiationDescription<T> {
 	@Nonnull
 	private final ServiceDescription<T> serviceDescription;
 	@Nonnull
@@ -54,7 +54,7 @@ public class ServiceImplementationDescriptionImpl<T> implements ServiceImplement
 	 * @param cls
 	 *            the implementation of the Service {@link #getImplementationClass()}
 	 */
-	public ServiceImplementationDescriptionImpl(@Nonnull ServiceDescription<T> serviceDescription,
+	public ServiceInstantiationDescriptionImpl(@Nonnull ServiceDescription<T> serviceDescription,
 			@Nonnull Map<String, Object> context, @Nonnull Class<?> cls) {
 		this.serviceDescription = serviceDescription;
 		this.context = context;
@@ -62,14 +62,14 @@ public class ServiceImplementationDescriptionImpl<T> implements ServiceImplement
 	}
 
 	/**
-	 * Create a new ServiceImplementationDescription with a empty context.
+	 * Create a new ServiceInstantiationDescription with a empty context.
 	 * 
 	 * @param serviceDescription
 	 *            {@link #getServiceDescription()}
 	 * @param cls
 	 *            the implementation of the Service {@link #getImplementationClass()}
 	 */
-	public ServiceImplementationDescriptionImpl(@Nonnull ServiceDescription<T> serviceDescription,
+	public ServiceInstantiationDescriptionImpl(@Nonnull ServiceDescription<T> serviceDescription,
 			@Nonnull Class<?> cls) {
 		this.serviceDescription = serviceDescription;
 		this.context = Collections.emptyMap();

@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
 import de.unistuttgart.iaas.amyassist.amy.core.di.*;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceImplementationDescriptionImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
 
 /**
  * Provider for the ServiceLocator in the DI with the correct consumer class.
@@ -56,9 +56,9 @@ public class ServiceLocatorProvider implements ServiceProvider<ServiceLocator> {
 	}
 
 	@Override
-	public ServiceImplementationDescription<ServiceLocator> getServiceImplementationDescription(
+	public ServiceInstantiationDescription<ServiceLocator> getServiceInstantiationDescription(
 			@Nonnull ContextLocator locator, @Nonnull ServiceConsumer<ServiceLocator> serviceConsumer) {
-		return new ServiceImplementationDescriptionImpl<>(this.getServiceDescription(),
+		return new ServiceInstantiationDescriptionImpl<>(this.getServiceDescription(),
 				Collections.singletonMap("consumerClass",
 						locator.getContextProvider("class").getContext(serviceConsumer)),
 				InjectableServiceLocator.class);
@@ -66,15 +66,15 @@ public class ServiceLocatorProvider implements ServiceProvider<ServiceLocator> {
 
 	@Override
 	@Nonnull
-	public ServiceHandle<ServiceLocator> createService(@Nonnull SimpleServiceLocator locator,
-			@Nonnull ServiceImplementationDescription<ServiceLocator> serviceImplementationDescription) {
-		InjectableServiceLocator injectableServiceLocator = new InjectableServiceLocator(this.simpleServiceLocator,
-				(Class<?>) serviceImplementationDescription.getContext().get("consumerClass"));
-		return new ServiceHandleImpl<>(injectableServiceLocator);
+	public ServiceLocator createService(@Nonnull SimpleServiceLocator locator,
+			@Nonnull ServiceInstantiationDescription<ServiceLocator> serviceInstantiationDescription) {
+		return new InjectableServiceLocator(this.simpleServiceLocator,
+				(Class<?>) serviceInstantiationDescription.getContext().get("consumerClass"));
 	}
 
 	@Override
-	public void dispose(ServiceHandle<ServiceLocator> service) {
+	public void dispose(@Nonnull ServiceLocator service,
+			@Nonnull ServiceInstantiationDescription<ServiceLocator> serviceInstantiationDescription) {
 		// nothing to do here
 	}
 

@@ -21,16 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package de.unistuttgart.iaas.amyassist.amy.core.di;
 
 import javax.annotation.Nonnull;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 
 /**
  * The implementation of the ServiceHandle
  * 
  * @author Leon Kiefer
  */
-public class ServiceHandleImpl<T> implements ServiceHandle<T> {
+class ServiceHandleImpl<T> implements ServiceHandle<T> {
 	@Nonnull
 	private final T service;
 
