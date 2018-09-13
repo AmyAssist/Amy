@@ -356,7 +356,7 @@ public class SpotifyAPICalls {
 	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean resume() {
-		if (checkPlayerState()) {
+		if (checkPlayerState() && !getIsPlaying()) {
 			StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest = getSpotifyApi().startResumeUsersPlayback()
 					.device_id(this.userData.getCurrentDeviceId()).build();
 			return exceptionHandlingWithBoolean(startResumeUsersPlaybackRequest);
@@ -370,7 +370,7 @@ public class SpotifyAPICalls {
 	 * @return a boolean. true if the command was executed, else if the command failed
 	 */
 	public boolean pause() {
-		if (checkPlayerState()) {
+		if (checkPlayerState() && getIsPlaying()) {
 			PauseUsersPlaybackRequest pauseUsersPlaybackRequest = getSpotifyApi().pauseUsersPlayback()
 					.device_id(this.userData.getCurrentDeviceId()).build();
 			return exceptionHandlingWithBoolean(pauseUsersPlaybackRequest);
