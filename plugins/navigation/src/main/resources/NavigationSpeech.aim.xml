@@ -140,7 +140,7 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.routeFromtTo">
-		<gram>get route [by {mode}]</gram>
+		<gram>route [by {mode}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="startregistry" required="false">
 				<gram>start</gram>
@@ -181,7 +181,7 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.routeFromtTo">
-		<gram>get route from {start} {end} {mode}</gram>
+		<gram>[route] from {start} {end} {mode} [{time}] </gram>
 		<EntityTemplates>
 			<EntityTemplate id="start" required="true">
 				<gram>+ to</gram>
@@ -191,6 +191,9 @@
 			</EntityTemplate>
 			<EntityTemplate id="mode" required="true">
 				<gram>(car|transit|bike)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="time" required="false">
+				<gram>({amytime})</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>

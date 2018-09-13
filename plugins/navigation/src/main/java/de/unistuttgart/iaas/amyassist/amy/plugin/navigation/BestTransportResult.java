@@ -95,21 +95,24 @@ public class BestTransportResult {
 	public String routeToShortString() {
 		if (this.route != null && this.route.legs != null) {
 			DirectionsLeg leg = this.route.legs[0];
+			StringBuilder builder = new StringBuilder();
 			switch (this.mode) {
 			case DRIVING:
 				if (leg.durationInTraffic != null) {
-					return THE_ROUTE_IS.concat(leg.distance.humanReadable)
-							.concat(LONG_AND_NEED.concat(leg.durationInTraffic.humanReadable))
-							.concat(" time in traffic");
+					return builder.append(THE_ROUTE_IS).append(leg.distance.humanReadable).append(LONG_AND_NEED)
+							.append(leg.durationInTraffic.humanReadable).append(" time in traffic").toString();
 				}
-				return THE_ROUTE_IS.concat(leg.distance.humanReadable)
-						.concat(LONG_AND_NEED.concat(leg.duration.humanReadable)).concat(" time");
+				return builder.append(THE_ROUTE_IS).append(leg.distance.humanReadable).append(LONG_AND_NEED)
+						.append(leg.duration.humanReadable).append(" time").toString();
 			case TRANSIT:
-				return "Departure time is ".concat(leg.departureTime.toString("HH:mm")).concat(", arrival time is ")
-						.concat(leg.arrivalTime.toString("HH:mm"));
+				return builder.append("Departure time is ").append(leg.departureTime.toString("HH:mm")).append(" at ")
+						.append(leg.steps[0].transitDetails.departureStop.name).append(" with line ")
+						.append(leg.steps[0].transitDetails.line.shortName).append(" to ")
+						.append(leg.steps[0].transitDetails.headsign).append(", arrival time is ")
+						.append(leg.arrivalTime.toString("HH:mm")).toString();
 			case BICYCLING:
-				return THE_ROUTE_IS.concat(leg.distance.humanReadable)
-						.concat(LONG_AND_NEED.concat(leg.duration.humanReadable)).concat(" time");
+				return builder.append(THE_ROUTE_IS).append(leg.distance.humanReadable).append(LONG_AND_NEED)
+						.append(leg.duration.humanReadable).append(" time").toString();
 			default:
 				break;
 			}

@@ -128,6 +128,19 @@ public class NavigationSpeech {
 	 */
 	@Intent()
 	public String routeFromtTo(Map<String, EntityData> entities) {
+		if(entities.get("time") != null) {
+			LocalDateTime now = this.environment.getCurrentLocalDateTime();
+			LocalTime inputTime = entities.get("time").getTime();
+			if (inputTime != null) {
+				DateTime time = new DateTime(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), inputTime.getHour(),
+						inputTime.getMinute());
+			return this.logic
+					.fromToWithDeparture(
+							cutEndWords(this.registryConnection.getAddress(entities.get(START_KEY).getString()), "to"),
+							cutEndWords(this.registryConnection.getAddress(entities.get(END_KEY).getString()), "by"),
+							this.logic.getTravelMode(entities.get("mode").getString().trim()), time)
+					.routeToShortString();
+		}}
 		return this.logic
 				.fromToWithDeparture(
 						cutEndWords(this.registryConnection.getAddress(entities.get(START_KEY).getString()), "to"),
