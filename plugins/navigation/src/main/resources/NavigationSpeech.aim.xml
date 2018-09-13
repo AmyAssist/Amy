@@ -26,11 +26,11 @@
 				<gram>({endregistry}|{endwildcard})</gram>
 			</EntityTemplate>
 			<EntityTemplate id="mode" required="true">
-				<gram>(car|transit)</gram>
+				<gram>(car|transit|bike|bicycle)</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="mode">
-			<text>by car or transit?</text>
+			<text>by car, transit or bike?</text>
 			<gram>[by] {mode} </gram>
 		</Prompt>
 		<Prompt entityTemplateId="start">
@@ -63,11 +63,11 @@
 				<gram>+ by</gram>
 			</EntityTemplate>
 			<EntityTemplate id="mode" required="true">
-				<gram>(car|transit)</gram>
+				<gram>(car|transit|bike|bicycle)</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="mode">
-			<text>by car or transit?</text>
+			<text>by car, transit or bike?</text>
 			<gram>[by] {mode} </gram>
 		</Prompt>
 		<Prompt entityTemplateId="time">
@@ -161,7 +161,7 @@
 				<gram>({endregistry}|{endwildcard})</gram>
 			</EntityTemplate>
 			<EntityTemplate id="mode" required="true">
-				<gram>(car|transit|bike)</gram>
+				<gram>(car|transit|bike|bicycle)</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="start">

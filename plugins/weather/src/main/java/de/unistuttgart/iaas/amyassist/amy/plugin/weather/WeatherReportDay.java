@@ -23,104 +23,80 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
-import com.github.dvdme.ForecastIOLib.FIODataPoint;
-
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import static java.lang.Math.round;
-
 /**
- * Serves as weather entity for current time
+ * Weather report for a day
  * 
- * @author Benno Krauß, Muhammed Kaya
+ * @author Benno Krauß, Muhammed Kaya, Tim Neumann
  */
-@XmlRootElement
-public class WeatherReportDay extends Entity {
-	private final String preamble;
+public class WeatherReportDay {
+	/** The summary of the report */
 	private final String summary;
-	private final boolean precip;
-	private final String precipProbability;
+	/** The probability for precipitation from 0 to 1 */
+	private final double precipProbability;
+	/** The type of precipitation. Possibilities: rain, snow, or sleet */
 	private final String precipType;
-	private final long temperatureMin;
-	private final long temperatureMax;
-	private final String sunriseTime;
-	private final String sunsetTime;
-	private final String weekday;
+	/** The minimal temperature in degrees celcius */
+	private final double temperatureMin;
+	/** The maximal temperature in degrees celcius */
+	private final double temperatureMax;
+	/** The time stamp of the weather report */
 	private final long timestamp;
-	private final String icon;
-
-	private static final String TRIM_QUOTES_REGEX = "^\"|\"$";
-	private static final int FRACTION_TO_PERCENT_FACTOR = 100;
-	private static final int SECONDS_TO_MILLIS_FACTOR = 1000;
-
-	private String trimQuotes(String s) {
-		return s.replaceAll(TRIM_QUOTES_REGEX, "");
-	}
-
+	/** The time stamp of the sunrise */
+	private final long sunriseTime;
+	/** The time stamp of the sunset */
+	private final long sunsetTime;
+	/** The wind speed in meters per second */
+	private final double windSpeed;
 	/**
-	 * @param preamble
-	 *            Introduction text for speech
-	 * @param p
-	 *            FIODaily to get weather values of the day
+	 * The kind of icon appropriate for this report.
+	 * <p>
+	 * Possibilities: clear-day, clear-night, rain, snow, sleet, wind, fog, cloudy, partly-cloudy-day or
+	 * partly-cloudy-night
 	 */
-	public WeatherReportDay(String preamble, FIODataPoint p) {
-		this.preamble = preamble;
-		this.summary = trimQuotes(p.summary());
-		this.precipProbability = round(p.precipProbability() * FRACTION_TO_PERCENT_FACTOR) + "%";
-		this.precipType = trimQuotes(p.precipType());
-		this.precip = p.precipProbability() > 0;
-		this.temperatureMin = Math.round(p.temperatureMin());
-		this.temperatureMax = Math.round(p.temperatureMax());
-		this.sunriseTime = p.sunriseTime();
-		this.sunsetTime = p.sunsetTime();
-
-		Date date = new Date(p.timestamp() * SECONDS_TO_MILLIS_FACTOR);
-		this.weekday = new SimpleDateFormat("EEEE").format(date);
-		this.timestamp = p.timestamp();
-
-		this.icon = trimQuotes(p.icon());
-	}
-
-	private String description(boolean tldr) {
-		String result = (this.preamble != null ? this.preamble + " " : "") + this.summary;
-		if (this.precip) {
-			result += " " + this.precipProbability + " probability of " + this.precipType + ".";
-		}
-		result += " Between " + this.temperatureMin + " and " + this.temperatureMax + "°C.";
-		if (!tldr) {
-			result += " Sunrise is at " + this.sunriseTime + " and sunset at " + this.sunsetTime;
-		}
-		return result;
-	}
+	private final String iconType;
 
 	/**
-	 * @return description
+	 * Creates a weather report for a day
+	 * 
+	 * @param pSummary
+	 *            Sets {@link #summary}
+	 * @param pPrecipitationProbability
+	 *            Set's {@link #precipProbability}
+	 * @param pPrecipitationType
+	 *            Set's {@link #precipType}
+	 * @param pTemperatureMin
+	 *            Set's {@link #temperatureMin}
+	 * @param pTemperatureMax
+	 *            Set's {@link #temperatureMax}
+	 * @param pTimestamp
+	 *            Set's {@link #timestamp}
+	 * @param pSunriseTime
+	 *            Set's {@link #sunriseTime}
+	 * @param pSunsetTime
+	 *            Set's {@link #sunsetTime}
+	 * @param pWindSpeed
+	 *            Set's {@link #windSpeed}
+	 * @param pIconType
+	 *            Set's {@link #iconType}
 	 */
-	public String shortDescription() {
-		return description(true);
-	}
-
-	@Override
-	public String toString() {
-		return description(false);
-	}
-
-	// Boilerplate getters (ffs it's 2018, when's java gonna get automatic property synthesis?
-
-	/**
-	 * @return preamble
-	 */
-	@XmlTransient
-	public String getPreamble() {
-		return this.preamble;
+	public WeatherReportDay(String pSummary, double pPrecipitationProbability, String pPrecipitationType,
+			double pTemperatureMin, double pTemperatureMax, long pTimestamp, long pSunriseTime, long pSunsetTime,
+			double pWindSpeed, String pIconType) {
+		this.summary = pSummary;
+		this.precipProbability = pPrecipitationProbability;
+		this.precipType = pPrecipitationType;
+		this.temperatureMin = pTemperatureMin;
+		this.temperatureMax = pTemperatureMax;
+		this.timestamp = pTimestamp;
+		this.sunriseTime = pSunriseTime;
+		this.sunsetTime = pSunsetTime;
+		this.windSpeed = pWindSpeed;
+		this.iconType = pIconType;
 	}
 
 	/**
+	 * Get's {@link #summary summary}
+	 * 
 	 * @return summary
 	 */
 	public String getSummary() {
@@ -128,20 +104,17 @@ public class WeatherReportDay extends Entity {
 	}
 
 	/**
-	 * @return precip
-	 */
-	public boolean isPrecip() {
-		return this.precip;
-	}
-
-	/**
+	 * Get's {@link #precipProbability precipProbability}
+	 * 
 	 * @return precipProbability
 	 */
-	public String getPrecipProbability() {
+	public double getPrecipProbability() {
 		return this.precipProbability;
 	}
 
 	/**
+	 * Get's {@link #precipType precipType}
+	 * 
 	 * @return precipType
 	 */
 	public String getPrecipType() {
@@ -149,41 +122,26 @@ public class WeatherReportDay extends Entity {
 	}
 
 	/**
+	 * Get's {@link #temperatureMin temperatureMin}
+	 * 
 	 * @return temperatureMin
 	 */
-	public long getTemperatureMin() {
+	public double getTemperatureMin() {
 		return this.temperatureMin;
 	}
 
 	/**
+	 * Get's {@link #temperatureMax temperatureMax}
+	 * 
 	 * @return temperatureMax
 	 */
-	public long getTemperatureMax() {
+	public double getTemperatureMax() {
 		return this.temperatureMax;
 	}
 
 	/**
-	 * @return sunriseTime
-	 */
-	public String getSunriseTime() {
-		return this.sunriseTime;
-	}
-
-	/**
-	 * @return sunsetTime
-	 */
-	public String getSunsetTime() {
-		return this.sunsetTime;
-	}
-
-	/**
-	 * @return weekday
-	 */
-	public String getWeekday() {
-		return this.weekday;
-	}
-
-	/**
+	 * Get's {@link #timestamp timestamp}
+	 * 
 	 * @return timestamp
 	 */
 	public long getTimestamp() {
@@ -191,9 +149,38 @@ public class WeatherReportDay extends Entity {
 	}
 
 	/**
-	 * @return icon
+	 * Get's {@link #sunriseTime sunriseTime}
+	 * 
+	 * @return sunriseTime
 	 */
-	public String getIcon() {
-		return this.icon;
+	public long getSunriseTime() {
+		return this.sunriseTime;
+	}
+
+	/**
+	 * Get's {@link #sunsetTime sunsetTime}
+	 * 
+	 * @return sunsetTime
+	 */
+	public long getSunsetTime() {
+		return this.sunsetTime;
+	}
+
+	/**
+	 * Get's {@link #windSpeed windSpeed}
+	 * 
+	 * @return windSpeed
+	 */
+	public double getWindSpeed() {
+		return this.windSpeed;
+	}
+
+	/**
+	 * Get's {@link #iconType iconType}
+	 * 
+	 * @return iconType
+	 */
+	public String getIconType() {
+		return this.iconType;
 	}
 }

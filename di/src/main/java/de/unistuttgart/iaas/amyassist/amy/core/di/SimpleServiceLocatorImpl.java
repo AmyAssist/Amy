@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import javax.annotation.Nonnull;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 
@@ -31,7 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
  * 
  * @author Leon Kiefer
  */
-public class SimpleServiceLocatorImpl implements SimpleServiceLocator {
+class SimpleServiceLocatorImpl implements SimpleServiceLocator {
 
 	private DependencyInjection dependencyInjection;
 	private ServiceCreation<?> serviceCreationInfo;
@@ -46,7 +48,15 @@ public class SimpleServiceLocatorImpl implements SimpleServiceLocator {
 	}
 
 	@Override
-	public <T> ServiceHandle<T> getService(ServiceConsumer<T> serviceConsumer) {
+	public <T> ServiceHandle<T> getService(@Nonnull ServiceConsumer<T> serviceConsumer) {
 		return this.dependencyInjection.getService(this.serviceCreationInfo, serviceConsumer);
+	}
+
+	/**
+	 * destroy the references
+	 */
+	public void destroy() {
+		this.dependencyInjection = null;
+		this.serviceCreationInfo = null;
 	}
 }

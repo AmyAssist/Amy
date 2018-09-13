@@ -95,7 +95,9 @@ public class AGFLexer implements Iterator<AGFToken> {
 			case 32:
 				return this.next();
 			default:
-				if (Character.isLetterOrDigit(c)) {
+				if (Character.getType(c) == Character.LOWERCASE_LETTER ||
+				Character.getType(c) == Character.OTHER_LETTER ||
+				Character.getType(c) == Character.DECIMAL_DIGIT_NUMBER) {
 					currentWord.append(c);
 					while (hasNext() && Character.isLetterOrDigit(this.mToLex.charAt(this.mIndex))) {
 						currentWord.append(this.mToLex.charAt(this.mIndex));

@@ -77,4 +77,12 @@ public interface Server {
 	 * @return The socket uri.
 	 */
 	URI getSocketUri();
+
+	/**
+	 * Register a runnable that is executed some time after the server is started.
+	 * 
+	 * @param hook
+	 *            The runnable to be executed.
+	 */
+	void registerOnPostStartHook(Runnable hook);
 }

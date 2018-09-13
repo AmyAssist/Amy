@@ -32,13 +32,13 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.function.Consumer;
 
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import javax.ws.rs.core.UriBuilder;
+
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
@@ -47,8 +47,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer;
-
-import javax.ws.rs.core.UriBuilder;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
 
 /**
  * Class to initiate the remote SR
@@ -61,6 +61,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	private static final String CONFIG_NAME = "remotesr.config";
 	private static final String CHROME_DIRECTORY_CONFIG_KEY = "chromeCmd";
 	private static final String ENABLED_CONFIG_KEY = "enabled";
+	private static final String RESTART_TIME_CONFIG_KEY = "chromeRestartSeconds";
 
 	@Reference
 	private Logger logger;
@@ -71,6 +72,9 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	@Reference
 	private Server httpServer;
 
+	@Reference
+	private TaskScheduler scheduler;
+
 	private static final String START_SR_EVENT = "START";
 
 	private SSEClient client = null;
@@ -80,13 +84,16 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	private volatile Consumer<String> listener = null;
 	private volatile boolean currentlyRecognizing = false;
 	private volatile boolean stop = false;
+	private volatile boolean stoppingChromeForRestart = false;
 
 	private boolean enabled;
+	private int chromeRestartTime;
 
 	@PostConstruct
 	private void init() {
-		this.enabled = Boolean.parseBoolean(
-				this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME).getProperty(ENABLED_CONFIG_KEY));
+		Properties config = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
+		this.enabled = Boolean.parseBoolean(config.getProperty(ENABLED_CONFIG_KEY));
+		this.chromeRestartTime = Integer.parseInt(config.getProperty(RESTART_TIME_CONFIG_KEY));
 	}
 
 	private boolean isEnabled() {
@@ -157,13 +164,11 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 
 			String chromePath = config.getProperty(CHROME_DIRECTORY_CONFIG_KEY);
 
-			URI uri = httpServer.getSocketUri();
-			String hostString = UriBuilder
-					.fromPath(uri.getPath() + "/remotesr")
-					.scheme(uri.getScheme()).host("localhost").port(uri.getPort()).build().toString();
+			URI uri = this.httpServer.getSocketUri();
+			String hostString = UriBuilder.fromPath(uri.getPath() + "/remotesr").scheme(uri.getScheme())
+					.host("localhost").port(uri.getPort()).build().toString();
 
-			this.chromeProcess = new ProcessBuilder(chromePath, hostString,
-					"--user-data-dir=" + file).start();
+			this.chromeProcess = new ProcessBuilder(chromePath, hostString, "--user-data-dir=" + file).start();
 
 			watchProcess(new BufferedReader(
 					new InputStreamReader(this.chromeProcess.getInputStream(), StandardCharsets.UTF_8)));
@@ -228,10 +233,9 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 
 					if (relativeFile.equals("Default/Preferences")) {
 						// Replace host placeholder
-						URI uri = httpServer.getSocketUri();
-						String remoteSRHost = UriBuilder
-								.fromPath("")
-								.scheme(uri.getScheme()).host("localhost").port(uri.getPort()).build().toString();
+						URI uri = RemoteSR.this.httpServer.getSocketUri();
+						String remoteSRHost = UriBuilder.fromPath("").scheme(uri.getScheme()).host("localhost")
+								.port(uri.getPort()).build().toString();
 						String fileContent = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
 						fileContent = fileContent.replaceAll("\\{\\{REMOTESR_HOST}}", remoteSRHost);
 						Files.write(targetFilePath, fileContent.getBytes(StandardCharsets.UTF_8));
@@ -252,7 +256,9 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 					this.logger.warn("Chrome: {}", line);
 				}
 				this.chromeProcess.waitFor();
-				if (!this.stop) {
+				if (this.stoppingChromeForRestart) {
+					this.stoppingChromeForRestart = false;
+				} else if (!this.stop) {
 					this.logger.warn("Chrome quit unexpectedly");
 					launchChrome();
 				}
@@ -265,22 +271,11 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 			}
 		}, "Chrome watcher thread").start();
 
-		executeAfterSeconds(() -> {
+		this.scheduler.schedule(() -> {
 			if (this.client == null || !this.client.isConnected()) {
-				// No client connected right now. Assume something went wrong. Restart chrome.
-				stop();
-				start();
+				restartChromeIfNotStopping();
 			}
-		}, 5);
-	}
-
-	private void executeAfterSeconds(Runnable r, int seconds) {
-		new Timer("RemoteSpeechTimer").schedule(new TimerTask() {
-			@Override
-			public void run() {
-				r.run();
-			}
-		}, seconds * 1_000L);
+		}, Instant.now().plusSeconds(this.chromeRestartTime));
 	}
 
 	/**
@@ -362,6 +357,19 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 		}
 	}
 
+	private void restartChromeIfNotStopping() {
+		if (!this.stop) {
+			this.stoppingChromeForRestart = true;
+			this.chromeProcess.destroy();
+
+			try {
+				launchChrome();
+			} catch (LaunchChromeException e) {
+				throw new IllegalStateException("Unable to launch chrome", e);
+			}
+		}
+	}
+
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
 	 */
@@ -370,11 +378,13 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 		if (!isEnabled())
 			return;
 
-		try {
-			launchChrome();
-		} catch (LaunchChromeException e) {
-			throw new IllegalStateException("Unable to launch chrome", e);
-		}
+		this.httpServer.registerOnPostStartHook(() -> {
+			try {
+				launchChrome();
+			} catch (LaunchChromeException e) {
+				throw new IllegalStateException("Unable to launch chrome", e);
+			}
+		});
 	}
 
 	/**
