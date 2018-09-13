@@ -45,8 +45,8 @@ public class ToscaSpeech {
 
 	@Intent
 	public String install(Map<String, EntityData> entities) {
-		this.logic.install();
-		return "trying to install...";
+		// todo
+		return "";
 	}
 
 }

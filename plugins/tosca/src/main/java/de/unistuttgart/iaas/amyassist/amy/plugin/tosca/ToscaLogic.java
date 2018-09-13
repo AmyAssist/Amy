@@ -23,9 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.tosca;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.opentosca.containerapi.client.IOpenTOSCAContainerAPIClient;
@@ -36,11 +35,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.configuration.WithDefault;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 
 /**
- * TODO: Description
+ * The tosca logic ckass
  * 
- * @author Felix Burk, Leon Kiefer
+ * @author Felix Burk, Leon Kiefer, Tim Neumann
  */
 @Service
 public class ToscaLogic {
@@ -48,6 +48,9 @@ public class ToscaLogic {
 	@WithDefault
 	@Reference
 	private Properties configuration;
+
+	@Reference
+	private TaskScheduler scheduler;
 
 	/**
 	 * internal toska client
@@ -62,22 +65,30 @@ public class ToscaLogic {
 	}
 
 	/**
+	 * Installs the given application with the given parameters
 	 * 
+	 * @param app
+	 *            The application to install
+	 * @param parameters
+	 *            The parameters to use
 	 */
-	public void install() {
-		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-		List<Application> applist = this.apiClient.getApplications();
-		this.apiClient.createServiceInstance(applist.get(0), Collections.emptyMap());
+	public void install(Application app, Map<String, String> parameters) {
+		this.scheduler.execute(() -> installWait(app, parameters));
 	}
 
-	public String getInstalledPlugins() {
+	private void installWait(Application app, Map<String, String> parameters) {
 		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-		List<Application> applist = this.apiClient.getApplications();
+		this.apiClient.createServiceInstance(app, parameters);
+	}
 
-		List<String> apps = new ArrayList<>();
-		applist.forEach(a -> apps.add(a.getDisplayName()));
-
-		return String.join(", ", apps);
+	/**
+	 * Get a list of installed apps.
+	 * 
+	 * @return A list of installed apps.
+	 */
+	public List<Application> getInstalledApps() {
+		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+		return this.apiClient.getApplications();
 	}
 
 }

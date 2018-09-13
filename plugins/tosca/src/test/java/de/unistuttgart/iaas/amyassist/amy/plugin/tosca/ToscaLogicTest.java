@@ -27,27 +27,26 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.ToscaLogic;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
  * TODO: Description
+ * 
  * @author Felix Burk
  */
 @ExtendWith(FrameworkExtension.class)
 public class ToscaLogicTest {
-	
 
 	@Reference
 	private TestFramework framework;
-	
+
 	private ToscaLogic toskaLogic;
-	
+
 	@Test
 	public void testGetNames() {
 		this.toskaLogic = this.framework.setServiceUnderTest(ToscaLogic.class);
-		this.toskaLogic.getInstalledPlugins();
+		this.toskaLogic.getInstalledApps();
 
 	}
 

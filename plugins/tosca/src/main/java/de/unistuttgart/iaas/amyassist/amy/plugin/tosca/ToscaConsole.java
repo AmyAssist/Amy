@@ -23,11 +23,17 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.tosca;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.opentosca.containerapi.client.model.Application;
+
 import asg.cliche.Command;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * TODO: Description
+ * The console class fo the tosca plugin
  * 
  * @author Leon Kiefer
  */
@@ -35,15 +41,52 @@ public class ToscaConsole {
 
 	@Reference
 	private ToscaLogic logic;
-	
+
+	/**
+	 * List all apps
+	 * 
+	 * @return A string to output
+	 */
 	@Command
-	public String test() {
-		return this.logic.getInstalledPlugins();
+	public String listApps() {
+		List<Application> apps = this.logic.getInstalledApps();
+
+		StringBuilder ret = new StringBuilder("Found " + apps.size() + " applications. \n");
+
+		apps.forEach(a -> {
+			ret.append("  ");
+			ret.append(a.getDisplayName());
+			ret.append(" : ");
+			ret.append(a.getDescription());
+			ret.append("\n ");
+		});
+
+		return ret.toString();
 	}
-	
+
+	/**
+	 * Install the first app
+	 * 
+	 * @return A strin to output.
+	 */
 	@Command
-	public String install() {
-		this.logic.install();
-		return "installing";
+	public String installTinyTodo() {
+		List<Application> apps = this.logic.getInstalledApps();
+
+		Map<String, String> params = new HashMap<>();
+
+		params.put("ApplicationPort", "9990");
+		params.put("DockerEngineURL", "tcp://dind:2375");
+
+		for (Application app : apps) {
+			if (app.getDisplayName().equals("MyTinyToDo Docker Service")) {
+				this.logic.install(app, params);
+				return "installing";
+
+			}
+		}
+
+		return "my tiny todo not found";
+
 	}
 }
