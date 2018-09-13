@@ -105,16 +105,20 @@ public class SpotifySpeech {
 	@Intent()
 	public String getPlaylists(Map<String, EntityData> entites) {
 		StringBuilder builder = new StringBuilder();
+		int amount = LIMIT_FOR_SEARCH;
+		if (entites.get("number") != null) {
+			amount = entites.get("number").getNumber();
+		}
 		if (entites.get("type").getString() != null) {
 			switch (entites.get("type").getString()) {
 			case "featured":
-				for (PlaylistEntity playlist : this.search.searchFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
+				for (PlaylistEntity playlist : this.search.searchFeaturedPlaylists(amount)) {
 					builder = builder.append(playlist.toString()).append("\n");
 				}
 				break;
 			case "own":
 			case "on":
-				for (PlaylistEntity playlist : this.search.searchOwnPlaylists(LIMIT_FOR_SEARCH)) {
+				for (PlaylistEntity playlist : this.search.searchOwnPlaylists(amount)) {
 					builder = builder.append(playlist.toString()).append("\n");
 				}
 				break;
@@ -155,29 +159,24 @@ public class SpotifySpeech {
 	public String control(Map<String, EntityData> entites) {
 		switch (entites.get("type").getString()) {
 		case "back":
-			if (this.playerLogic.back()) {
-				return "back";
-			}
-			return ERROR_MESSAGE;
+			this.playerLogic.back();
+			break;
 		case "skip":
-			if (this.playerLogic.skip()) {
-				return "skip";
-			}
-			return ERROR_MESSAGE;
+			this.playerLogic.skip();
+			break;
 		case "pause":
 		case "pass":
-			if (this.playerLogic.pause()) {
-				return "pause";
-			}
-			return ERROR_MESSAGE;
+		case "stop":
+			this.playerLogic.pause();
+			break;
 		case "resume":
-			if (this.playerLogic.resume()) {
-				return "resuming";
-			}
-			return ERROR_MESSAGE;
+			this.playerLogic.resume();
+			break;
 		default:
 			return ERROR_MESSAGE;
 		}
+		return "OK";
+
 	}
 
 	/**

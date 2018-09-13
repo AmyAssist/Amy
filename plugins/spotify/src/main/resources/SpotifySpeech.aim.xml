@@ -12,17 +12,19 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.getPlaylists">
-		<gram> get [{type}] playlists </gram>
+		<gram> get [{number}] [{type}] playlists </gram>
 		<EntityTemplates>
 			<EntityTemplate id="type" required="true">
 				<gram>(own|featured)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="number" required="false">
+				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 
 		<Prompt entityTemplateId="type">
 			<text> what type of playlists would you search? </text>
-			<gram>{type} playlist
-			</gram>
+			<gram>{type} playlist</gram>
 		</Prompt>
 	</Intent>
 
@@ -36,14 +38,14 @@
 		<gram>[go] {type} [(a track|the music)]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="type" required="true">
-				<gram>(back|skip|pause|pass|resume)</gram>
+				<gram>(back|skip|pause|pass|resume|stop)</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.volume">
-		<gram> set [spotify|music] volume [to|on]  {volumeoption}
+		<gram> set [spotify|music] volume [to|on] {volumeoption}
 		</gram>
 		<EntityTemplates>
 			<EntityTemplate id="volumeoption" required="true">
