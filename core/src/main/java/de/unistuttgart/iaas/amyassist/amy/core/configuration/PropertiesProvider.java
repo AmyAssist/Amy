@@ -32,8 +32,6 @@ import javax.annotation.Nonnull;
 import de.unistuttgart.iaas.amyassist.amy.core.di.*;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandleImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
@@ -65,7 +63,7 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 	}
 
 	@Override
-	public @Nonnull ServiceHandle<Properties> createService(@Nonnull SimpleServiceLocator locator,
+	public @Nonnull Properties createService(@Nonnull SimpleServiceLocator locator,
 			@Nonnull ServiceInstantiationDescription<Properties> serviceInstantiationDescription) {
 		ConfigurationManager configurationLoader = locator.getService(ConsumerFactory.build(PropertiesProvider.class,
 				new ServiceDescriptionImpl<>(ConfigurationManager.class))).getService();
@@ -75,13 +73,13 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 
 		if (withDefault) {
 			ClassLoader classLoader = plugin.getClassLoader();
-			return new ServiceHandleImpl<>(configurationLoader.getConfigurationWithDefaults(uniqueName, classLoader));
+			return configurationLoader.getConfigurationWithDefaults(uniqueName, classLoader);
 		}
-		return new ServiceHandleImpl<>(configurationLoader.getConfiguration(uniqueName));
+		return configurationLoader.getConfiguration(uniqueName);
 	}
 
 	@Override
-	public void dispose(ServiceHandle<Properties> properties,
+	public void dispose(@Nonnull Properties properties,
 			@Nonnull ServiceInstantiationDescription<Properties> serviceInstantiationDescription) {
 		// nothing to do here
 	}

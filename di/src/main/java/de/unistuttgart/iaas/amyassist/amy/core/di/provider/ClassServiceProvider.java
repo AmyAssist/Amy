@@ -74,7 +74,9 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	/**
 	 * 
 	 * @param serviceDescription
+	 *            the description of the service that should be provided
 	 * @param cls
+	 *            the service implementation class
 	 */
 	public ClassServiceProvider(@Nonnull ServiceDescription<T> serviceDescription, @Nonnull Class<? extends T> cls) {
 		this.serviceDescription = serviceDescription;
@@ -112,7 +114,7 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public @Nonnull ServiceHandle<T> createService(@Nonnull SimpleServiceLocator locator,
+	public @Nonnull T createService(@Nonnull SimpleServiceLocator locator,
 			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
 
 		@Nonnull
@@ -129,7 +131,7 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 		}
 
 		Util.postConstruct(serviceInstance);
-		return new ServiceHandleImpl<>(serviceInstance);
+		return serviceInstance;
 	}
 
 	private T createService() {
@@ -142,9 +144,9 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public void dispose(ServiceHandle<T> service,
+	public void dispose(@Nonnull T service,
 			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
-		Util.preDestroy(service.getService());
+		Util.preDestroy(service);
 	}
 
 }

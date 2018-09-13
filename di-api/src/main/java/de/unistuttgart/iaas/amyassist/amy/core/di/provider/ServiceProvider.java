@@ -81,7 +81,7 @@ public interface ServiceProvider<T> {
 	 * @return the created service of this ServiceProvider for the given ServiceInstantiationDescription
 	 */
 	@Nonnull
-	ServiceHandle<T> createService(@Nonnull SimpleServiceLocator locator,
+	T createService(@Nonnull SimpleServiceLocator locator,
 			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription);
 
 	/**
@@ -94,6 +94,6 @@ public interface ServiceProvider<T> {
 	 * @throws IllegalArgumentException
 	 *             if the given Service was not provided by this ServiceProvider.
 	 */
-	void dispose(ServiceHandle<T> service, @Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription);
+	void dispose(@Nonnull T service, @Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription);
 
 }
