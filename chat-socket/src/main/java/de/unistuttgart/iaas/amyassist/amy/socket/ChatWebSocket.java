@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.eclipsesource.json.Json;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -92,9 +93,13 @@ public class ChatWebSocket extends WebSocketServer {
 	 */
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
-		conn.send("Hello, I am Amy");
-		UUID uuid = this.handler.createDialog(conn::send);
+		send(conn, "Hello, I am Amy");
+		UUID uuid = this.handler.createDialog(msg -> send(conn, msg));
 		this.dialogMap.put(conn.getRemoteSocketAddress(), uuid);
+	}
+
+	private void send(WebSocket socket, String message) {
+		socket.send(Json.object().add("msg", message).toString());
 	}
 
 	/**
