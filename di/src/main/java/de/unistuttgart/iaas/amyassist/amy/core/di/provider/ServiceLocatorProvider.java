@@ -66,15 +66,14 @@ public class ServiceLocatorProvider implements ServiceProvider<ServiceLocator> {
 
 	@Override
 	@Nonnull
-	public ServiceHandle<ServiceLocator> createService(@Nonnull SimpleServiceLocator locator,
+	public ServiceLocator createService(@Nonnull SimpleServiceLocator locator,
 			@Nonnull ServiceInstantiationDescription<ServiceLocator> serviceInstantiationDescription) {
-		InjectableServiceLocator injectableServiceLocator = new InjectableServiceLocator(this.simpleServiceLocator,
+		return new InjectableServiceLocator(this.simpleServiceLocator,
 				(Class<?>) serviceInstantiationDescription.getContext().get("consumerClass"));
-		return new ServiceHandleImpl<>(injectableServiceLocator);
 	}
 
 	@Override
-	public void dispose(ServiceHandle<ServiceLocator> service,
+	public void dispose(@Nonnull ServiceLocator service,
 			@Nonnull ServiceInstantiationDescription<ServiceLocator> serviceInstantiationDescription) {
 		// nothing to do here
 	}

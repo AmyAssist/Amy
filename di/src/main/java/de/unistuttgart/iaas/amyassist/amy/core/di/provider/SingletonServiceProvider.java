@@ -71,13 +71,13 @@ public class SingletonServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	@Override
-	public @Nonnull ServiceHandle<T> createService(@Nonnull SimpleServiceLocator locator,
+	public @Nonnull T createService(@Nonnull SimpleServiceLocator locator,
 			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
-		return new ServiceHandleImpl<>(this.instance);
+		return this.instance;
 	}
 
 	@Override
-	public void dispose(ServiceHandle<T> service,
+	public void dispose(@Nonnull T service,
 			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
 		// singleton can not be disposed
 	}

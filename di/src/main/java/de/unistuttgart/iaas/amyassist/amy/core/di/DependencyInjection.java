@@ -218,11 +218,11 @@ public class DependencyInjection implements ServiceLocator, Configuration, Simpl
 
 				serviceCreation.completableFuture = CompletableFuture.supplyAsync(() -> {
 					SimpleServiceLocatorImpl tempLocator = new SimpleServiceLocatorImpl(this, serviceCreation);
-					ServiceHandle<T> service = serviceProvider.createService(
-							tempLocator, serviceInstantiationDescription);
+					T service = serviceProvider.createService(tempLocator, serviceInstantiationDescription);
 					tempLocator.destroy();
-					this.servicePool.put(key, service);
-					return service;
+					ServiceHandle<T> serviceHandle = new ServiceHandleImpl<>(service);
+					this.servicePool.put(key, serviceHandle);
+					return serviceHandle;
 				});
 
 				this.serviceCreationInfos.put(key, serviceCreation);
