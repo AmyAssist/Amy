@@ -188,7 +188,7 @@ public class TimerLogic implements RunnableService {
 
 			LocalDateTime current = LocalDateTime.now();
 			LocalDateTime future = timer.getTimerTime();
-			timer.setDuration(Duration.ofMillis(current.until(future, ChronoUnit.MILLIS)));
+			timer.duration(Duration.ofMillis(current.until(future, ChronoUnit.MILLIS)));
 			this.timerStorage.save(timer);
 			return timer;
 		}
@@ -204,7 +204,7 @@ public class TimerLogic implements RunnableService {
 		if (!timer.isActive()) {
 			timer.setActive(true);
 			LocalDateTime current = LocalDateTime.now();
-			int timertime = (int) (timer.getDuration().toMillis() / 1000);
+			int timertime = (int) (timer.duration().toMillis() / 1000);
 			LocalDateTime newTimerTime = current.plusSeconds(timertime);
 			timer.setTimerTime(newTimerTime);
 			this.timerStorage.save(timer);

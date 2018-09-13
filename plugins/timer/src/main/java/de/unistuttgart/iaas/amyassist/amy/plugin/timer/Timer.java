@@ -160,14 +160,14 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	 * @param remainingTime
 	 *            sets the remainingTime of the timer
 	 */
-	public void setDuration(Duration remainingTime) {
+	public void duration(Duration remainingTime) {
 		this.remainingTime = remainingTime;
 	}
 
 	/**
 	 * @return the duration of the timer
 	 */
-	public Duration getDuration() {
+	public Duration duration() {
 		return this.remainingTime;
 	}
 
