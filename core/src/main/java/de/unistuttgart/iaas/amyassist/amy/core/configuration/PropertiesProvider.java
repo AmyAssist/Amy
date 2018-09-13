@@ -32,10 +32,9 @@ import javax.annotation.Nonnull;
 import de.unistuttgart.iaas.amyassist.amy.core.di.*;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandleImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceImplementationDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
 
 /**
@@ -53,35 +52,36 @@ public class PropertiesProvider implements ServiceProvider<Properties> {
 	}
 
 	@Override
-	public ServiceImplementationDescription<Properties> getServiceImplementationDescription(
+	public ServiceInstantiationDescription<Properties> getServiceInstantiationDescription(
 			@Nonnull ContextLocator locator, @Nonnull ServiceConsumer<Properties> serviceConsumer) {
 		Map<String, Object> context = new HashMap<>();
 		context.put(Context.PLUGIN, locator.getContextProvider(Context.PLUGIN).getContext(serviceConsumer));
 		context.put(CONTEXT_WITH_DEFAULT, serviceConsumer.getServiceDescription().getAnnotations().stream()
 				.anyMatch(a -> a instanceof WithDefault));
-		return new ServiceImplementationDescriptionImpl<>(serviceConsumer.getServiceDescription(), context,
+		return new ServiceInstantiationDescriptionImpl<>(serviceConsumer.getServiceDescription(), context,
 				Properties.class);
 	}
 
 	@Override
-	public @Nonnull ServiceHandle<Properties> createService(@Nonnull SimpleServiceLocator locator,
-			@Nonnull ServiceImplementationDescription<Properties> serviceImplementationDescription) {
+	public @Nonnull Properties createService(@Nonnull SimpleServiceLocator locator,
+			@Nonnull ServiceInstantiationDescription<Properties> serviceInstantiationDescription) {
 		ConfigurationManager configurationLoader = locator.getService(ConsumerFactory.build(PropertiesProvider.class,
 				new ServiceDescriptionImpl<>(ConfigurationManager.class))).getService();
-		IPlugin plugin = (IPlugin) serviceImplementationDescription.getContext().get(Context.PLUGIN);
+		IPlugin plugin = (IPlugin) serviceInstantiationDescription.getContext().get(Context.PLUGIN);
 		String uniqueName = plugin.getUniqueName();
-		boolean withDefault = (boolean) serviceImplementationDescription.getContext().get(CONTEXT_WITH_DEFAULT);
+		boolean withDefault = (boolean) serviceInstantiationDescription.getContext().get(CONTEXT_WITH_DEFAULT);
 
 		if (withDefault) {
 			ClassLoader classLoader = plugin.getClassLoader();
-			return new ServiceHandleImpl<>(configurationLoader.getConfigurationWithDefaults(uniqueName, classLoader));
+			return configurationLoader.getConfigurationWithDefaults(uniqueName, classLoader);
 		}
-		return new ServiceHandleImpl<>(configurationLoader.getConfiguration(uniqueName));
+		return configurationLoader.getConfiguration(uniqueName);
 	}
 
 	@Override
-	public void dispose(ServiceHandle<Properties> properties) {
-		// TODO maybe save the properties
+	public void dispose(@Nonnull Properties properties,
+			@Nonnull ServiceInstantiationDescription<Properties> serviceInstantiationDescription) {
+		// nothing to do here
 	}
 
 }

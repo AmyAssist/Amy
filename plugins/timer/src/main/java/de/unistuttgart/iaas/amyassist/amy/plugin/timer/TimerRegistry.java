@@ -21,33 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
 
-import javax.annotation.Nonnull;
+import de.unistuttgart.iaas.amyassist.amy.registry.IRegistry;
 
 /**
- * The implementation of the ServiceHandle
+ * Interface for the timer registry
  * 
- * @author Leon Kiefer
+ * @author Patrick Gebhardt
  */
-public class ServiceHandleImpl<T> implements ServiceHandle<T> {
-	@Nonnull
-	private final T service;
-
+public interface TimerRegistry extends IRegistry<Timer> {
 	/**
-	 * Create a new ServiceHandle with a given service instance
-	 * 
-	 * @param service
-	 *            the service instance for this ServiceHandle
+	 * @param timer
+	 *            the timer which should be saved
 	 */
-	public ServiceHandleImpl(@Nonnull T service) {
-		this.service = service;
-	}
-
-	@Nonnull
 	@Override
-	public T getService() {
-		return this.service;
-	}
-
+	void save(Timer timer);
 }

@@ -23,12 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -38,20 +33,18 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNullableByDefault;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.ClassProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.exception.ClassIsNotAServiceException;
+import de.unistuttgart.iaas.amyassist.amy.core.di.exception.DuplicateServiceException;
+import de.unistuttgart.iaas.amyassist.amy.core.di.exception.ServiceNotFoundException;
 import de.unistuttgart.iaas.amyassist.amy.core.di.extension.Extension;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ClassServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.*;
+import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.util.ServiceLocatorUtil;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 
 /**
@@ -65,7 +58,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
  * @author Leon Kiefer, Tim Neumann
  */
 @ParametersAreNullableByDefault
-public class DependencyInjection implements ServiceLocator, Configuration {
+public class DependencyInjection implements ServiceLocator, Configuration, SimpleServiceLocator {
 	/**
 	 * A register which maps a service description to it's service provider.
 	 */
@@ -94,7 +87,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 		this.extensions = new HashSet<>(Arrays.asList(extensions));
 
 		this.registerContextProvider("class", new ClassProvider());
-		this.register(new SingletonServiceProvider<>(ServiceLocator.class, this));
+		this.register(new ServiceLocatorProvider(this));
 		this.register(new SingletonServiceProvider<>(Configuration.class, this));
 		this.extensions.forEach(ext -> ext.postConstruct(this));
 	}
@@ -189,20 +182,20 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 			@Nonnull ServiceConsumer<T> serviceConsumer) {
 		ServiceProvider<T> provider = this.getServiceProvider(serviceConsumer.getServiceDescription(),
 				dependentServiceCreation);
-		ServiceImplementationDescription<T> serviceImplementationDescription = provider
-				.getServiceImplementationDescription(this.contextLocator, serviceConsumer);
-		if (serviceImplementationDescription == null) {
+		ServiceInstantiationDescription<T> serviceInstantiationDescription = provider
+				.getServiceInstantiationDescription(this.contextLocator, serviceConsumer);
+		if (serviceInstantiationDescription == null) {
 			throw new ServiceNotFoundException(serviceConsumer.getServiceDescription(), dependentServiceCreation);
 		}
-		return this.lookUpOrCreateService(dependentServiceCreation, provider, serviceImplementationDescription);
+		return this.lookUpOrCreateService(dependentServiceCreation, provider, serviceInstantiationDescription);
 	}
 
 	@SuppressWarnings("unchecked")
 	@CheckForNull
 	private <T> ServiceHandle<T> lookUpService(@Nonnull ServiceProvider<T> serviceProvider,
-			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
+			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
 
-		ServicePoolKey<?> servicePoolKey = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription);
+		ServicePoolKey<?> servicePoolKey = new ServicePoolKey<>(serviceProvider, serviceInstantiationDescription);
 
 		if (!this.servicePool.containsKey(servicePoolKey)) {
 			return null;
@@ -213,21 +206,23 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 	@SuppressWarnings("unchecked")
 	private <T> Future<ServiceHandle<T>> createService(@Nonnull ServiceCreation<?> dependentServiceCreation,
 			@Nonnull ServiceProvider<T> serviceProvider,
-			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
-		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceImplementationDescription);
+			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
+		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceInstantiationDescription);
 		synchronized (this.servicePool) {
 			ServiceCreation<T> serviceCreation;
 			if (this.serviceCreationInfos.containsKey(key)) {
 				serviceCreation = (ServiceCreation<T>) this.serviceCreationInfos.get(key);
 			} else {
 				serviceCreation = new ServiceCreation<>(
-						serviceImplementationDescription.getImplementationClass().getName());
+						serviceInstantiationDescription.getImplementationClass().getName());
 
 				serviceCreation.completableFuture = CompletableFuture.supplyAsync(() -> {
-					ServiceHandle<T> service = serviceProvider.createService(
-							new SimpleServiceLocatorImpl(this, serviceCreation), serviceImplementationDescription);
-					this.servicePool.put(key, service);
-					return service;
+					SimpleServiceLocatorImpl tempLocator = new SimpleServiceLocatorImpl(this, serviceCreation);
+					T service = serviceProvider.createService(tempLocator, serviceInstantiationDescription);
+					tempLocator.destroy();
+					ServiceHandle<T> serviceHandle = new ServiceHandleImpl<>(service);
+					this.servicePool.put(key, serviceHandle);
+					return serviceHandle;
 				});
 
 				this.serviceCreationInfos.put(key, serviceCreation);
@@ -240,11 +235,11 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	private <T> ServiceHandle<T> lookUpOrCreateService(@Nonnull ServiceCreation<?> dependentServiceCreationInfo,
 			@Nonnull ServiceProvider<T> serviceProvider,
-			@Nonnull ServiceImplementationDescription<T> serviceImplementationDescription) {
-		ServiceHandle<T> lookUpService = this.lookUpService(serviceProvider, serviceImplementationDescription);
+			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
+		ServiceHandle<T> lookUpService = this.lookUpService(serviceProvider, serviceInstantiationDescription);
 		if (lookUpService == null) {
 			Future<ServiceHandle<T>> createService = this.createService(dependentServiceCreationInfo, serviceProvider,
-					serviceImplementationDescription);
+					serviceInstantiationDescription);
 			try {
 				lookUpService = createService.get();
 			} catch (InterruptedException e) {
@@ -262,15 +257,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	@Override
 	public void inject(@Nonnull Object instance) {
-		Class<? extends Object> classOfInstance = instance.getClass();
-		Field[] dependencyFields = FieldUtils.getFieldsWithAnnotation(classOfInstance, Reference.class);
-		for (Field field : dependencyFields) {
-			ServiceDescription<?> serviceDescription = Util.serviceDescriptionFor(field);
-			serviceDescription.getAnnotations().removeIf(annotation -> annotation instanceof Reference);
-			Class<?> declaredClass = field.getDeclaringClass();
-			Object object = this.getService(ConsumerFactory.build(declaredClass, serviceDescription)).getService();
-			Util.inject(instance, object, field);
-		}
+		ServiceLocatorUtil.inject(instance, this);
 	}
 
 	@Override
@@ -303,21 +290,7 @@ public class DependencyInjection implements ServiceLocator, Configuration {
 
 	@Override
 	public <T> T createAndInitialize(@Nonnull Class<T> serviceClass) {
-		if (!Util.isValidServiceClass(serviceClass)) {
-			throw new IllegalArgumentException(
-					"There is a problem with the class " + serviceClass.getName() + ". It can't be used as a Service");
-		}
-		T newInstance;
-		try {
-			newInstance = serviceClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new IllegalStateException(
-					"The constructor of " + serviceClass.getName() + " should have been checked", e);
-		}
-		this.inject(newInstance);
-		this.postConstruct(newInstance);
-
-		return newInstance;
+		return ServiceLocatorUtil.createAndInitialize(serviceClass, this);
 	}
 
 	@Override
