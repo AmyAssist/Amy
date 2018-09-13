@@ -83,7 +83,7 @@
 									<manifestEntries>
 										<Specification-Title>${project.artifactId}</Specification-Title>
 										<Specification-Version>${project.version}</Specification-Version>
-										<Implementation-Title>${project.artifactId}</Implementation-Title>
+										<Implementation-Title>${project.name}</Implementation-Title>
 										<Implementation-Version>${project.version}</Implementation-Version>
 										<Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
 										<PluginID>${project.groupId}.${project.artifactId}</PluginID>
