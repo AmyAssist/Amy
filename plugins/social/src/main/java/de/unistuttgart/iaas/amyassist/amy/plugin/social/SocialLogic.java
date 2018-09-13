@@ -29,6 +29,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.Configuration;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.NatlangInformation;
 
 /**
  * Logic for this social plugin
@@ -37,6 +38,12 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  */
 @Service
 public class SocialLogic {
+	
+	/**
+	 * receive information about possible grammars to use
+	 */
+	@Reference
+	NatlangInformation info;
 	
 	/**
 	 * provides information about installed plugins
@@ -88,6 +95,15 @@ public class SocialLogic {
 	 */
 	protected String getHowAreYou() {
 		return generateRandomAnswer(SocialConstants.howAreYou);
+	}
+	
+	/**
+	 * receive a number of sample sentences
+	 * @param nmbSentences number of sentences
+	 * @return the sentences
+	 */
+	protected String[] getSampleSentences(int nmbSentences) {
+		return this.info.getAnySampleSentences(nmbSentences);
 	}
 	
 	/**

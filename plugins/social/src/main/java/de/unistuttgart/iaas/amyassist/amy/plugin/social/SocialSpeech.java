@@ -75,6 +75,23 @@ public class SocialSpeech {
 		return this.logic.getHowAreYou();
 	}
 	
+	/**
+	 * returns 4 sample sentences that may be told to amy
+	 * @param entities of input
+	 * @return the answer
+	 */
+	@Intent
+	public String sampleSentences(Map<String, EntityData> entities) {
+		String s = "You may ask me for example";
+		s += "\n" +  StringUtils.join(this.logic.getSampleSentences(4), "\n");
+		return s;
+	}
+	
+	/**
+	 * returns the names of all installed plugins
+	 * @param entities of input
+	 * @return the answer
+	 */
 	@Intent
 	public String getInstalledPlugins(Map<String, EntityData> entities) {
 		String s = "These are my currenty installed plugins";
@@ -83,6 +100,11 @@ public class SocialSpeech {
 		return s;
 	}
 	
+	/**
+	 * returns the description of a plugin
+	 * @param entities of input
+	 * @return the answer
+	 */
 	@Intent
 	public String tellMeAboutPlugin(Map<String, EntityData> entities) {
 		String pluginName = entities.get("plugin").getString();
