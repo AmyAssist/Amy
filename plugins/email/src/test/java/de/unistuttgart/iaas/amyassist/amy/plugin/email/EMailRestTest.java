@@ -119,7 +119,6 @@ class EMailRestTest {
 
 				assertThat(message1.getFrom(), equalTo(message2.getFrom()));
 				assertThat(message1.getSubject(), equalTo(message2.getSubject()));
-				assertThat(message1.getContent(), equalTo(message2.getContent()));
 				assertThat(message1.getSentDate(), equalTo(message2.getSentDate()));
 				assertThat(message1.isImportant(), equalTo(message2.isImportant()));
 			}
@@ -147,7 +146,6 @@ class EMailRestTest {
 
 				assertThat(message1.getFrom(), equalTo(message2.getFrom()));
 				assertThat(message1.getSubject(), equalTo(message2.getSubject()));
-				assertThat(message1.getContent(), equalTo(message2.getContent()));
 				assertThat(message1.getSentDate(), equalTo(message2.getSentDate()));
 				assertThat(message1.isImportant(), equalTo(message2.isImportant()));
 			}
@@ -172,8 +170,8 @@ class EMailRestTest {
 			byte[] bytes = new byte[5];
 			random.nextBytes(bytes);
 			String randomString = new String(bytes);
-			messages[i] = new MessageDTO(randomString, randomString, randomString, LocalDateTime.now(),
-					random.nextBoolean(), random.nextBoolean());
+			messages[i] = new MessageDTO(randomString, randomString, LocalDateTime.now(), random.nextBoolean(),
+					random.nextBoolean());
 		}
 		return messages;
 	}
