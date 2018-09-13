@@ -61,11 +61,20 @@ public class PlayerLogic {
 	private boolean suppressed = false;
 	private PostSuppressionAction postSuppressionAction = PostSuppressionAction.NONE;
 
+	/**
+	 * save a album or playlist uri to play after the speech output
+	 */
 	private String collectionUriToPlay;
+	/**
+	 * save a track uri to play after the speech output
+	 */
 	private String trackUriToPlay;
 
+	/**
+	 * actions to be performed after the mute
+	 */
 	private enum PostSuppressionAction {
-		NONE, PAUSE, PLAY_COLLECTION, PLAY_TRACK
+		NONE, PAUSE, PLAY_COLLECTION, PLAY_TRACK, SKIP, BACK
 	}
 
 	private static final int VOLUME_MUTE_VALUE = 0;
@@ -257,7 +266,7 @@ public class PlayerLogic {
 	 */
 	public boolean skip() {
 		if (this.suppressed) {
-			this.postSuppressionAction = PostSuppressionAction.NONE;
+			this.postSuppressionAction = PostSuppressionAction.SKIP;
 			return true;
 		}
 		return this.spotifyAPICalls.skip();
@@ -270,7 +279,7 @@ public class PlayerLogic {
 	 */
 	public boolean back() {
 		if (this.suppressed) {
-			this.postSuppressionAction = PostSuppressionAction.NONE;
+			this.postSuppressionAction = PostSuppressionAction.BACK;
 			return true;
 		}
 		return this.spotifyAPICalls.back();
@@ -357,25 +366,30 @@ public class PlayerLogic {
 			boolean isPlaying = this.spotifyAPICalls.getIsPlaying();
 
 			if (!suppressed && !isPlaying) {
+				this.suppressed = false;
 				// Consider resuming playback
 				if (this.postSuppressionAction == PostSuppressionAction.PAUSE) {
-					// Already paused, do nothing
-					this.postSuppressionAction = PostSuppressionAction.NONE;
+					// Nothing to do here. is already paused
 				} else if (this.postSuppressionAction == PostSuppressionAction.PLAY_TRACK) {
 					this.spotifyAPICalls.playSongFromUri(this.trackUriToPlay);
-					this.postSuppressionAction = PostSuppressionAction.NONE;
 				} else if (this.postSuppressionAction == PostSuppressionAction.PLAY_COLLECTION) {
 					this.spotifyAPICalls.playListFromUri(this.collectionUriToPlay);
-					this.postSuppressionAction = PostSuppressionAction.NONE;
+				} else if (this.postSuppressionAction == PostSuppressionAction.BACK) {
+					back();
+				} else if (this.postSuppressionAction == PostSuppressionAction.SKIP) {
+					skip();
 				} else {
 					resume();
 				}
-				this.suppressed = false;
+				this.postSuppressionAction = PostSuppressionAction.NONE;
 			} else if (suppressed) {
-				if(isPlaying) {
+				if (isPlaying) {
+					// only pause if playing
 					pause();
+				} else {
+					// is already paused, may be overwritten from other methods while suppressed
+					this.postSuppressionAction = PostSuppressionAction.PAUSE;
 				}
-				// Consider pausing playback
 				this.suppressed = true;
 			}
 		}

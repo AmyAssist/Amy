@@ -105,16 +105,20 @@ public class SpotifySpeech {
 	@Intent()
 	public String getPlaylists(Map<String, EntityData> entites) {
 		StringBuilder builder = new StringBuilder();
+		int amount = LIMIT_FOR_SEARCH;
+		if (entites.get("number") != null) {
+			amount = entites.get("number").getNumber();
+		}
 		if (entites.get("type").getString() != null) {
 			switch (entites.get("type").getString()) {
 			case "featured":
-				for (PlaylistEntity playlist : this.search.searchFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
+				for (PlaylistEntity playlist : this.search.searchFeaturedPlaylists(amount)) {
 					builder = builder.append(playlist.toString()).append("\n");
 				}
 				break;
 			case "own":
 			case "on":
-				for (PlaylistEntity playlist : this.search.searchOwnPlaylists(LIMIT_FOR_SEARCH)) {
+				for (PlaylistEntity playlist : this.search.searchOwnPlaylists(amount)) {
 					builder = builder.append(playlist.toString()).append("\n");
 				}
 				break;
@@ -162,6 +166,7 @@ public class SpotifySpeech {
 			break;
 		case "pause":
 		case "pass":
+		case "stop":
 			this.playerLogic.pause();
 			break;
 		case "resume":

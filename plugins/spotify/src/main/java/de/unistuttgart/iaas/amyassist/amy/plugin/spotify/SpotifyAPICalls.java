@@ -454,7 +454,11 @@ public class SpotifyAPICalls {
 	 * @return true if currently playing, false otherwise
 	 */
 	public boolean getIsPlaying() {
-		return getCurrentPlayingContext().getIs_playing();
+		CurrentlyPlayingContext context = getCurrentPlayingContext();
+		if (context != null) {
+			return getCurrentPlayingContext().getIs_playing();
+		}
+		return false;
 	}
 
 	/**
