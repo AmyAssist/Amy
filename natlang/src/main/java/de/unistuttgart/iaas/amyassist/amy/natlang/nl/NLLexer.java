@@ -90,6 +90,7 @@ public class NLLexer {
 		toLex = this.language.getTimeUtility().formatTime(toLex);
 		toLex = this.language.getTimeUtility().formatDate(toLex);
 		toLex = this.language.getContraction().disassemblingContraction(toLex);
+		toLex = this.language.getSpecialCharacterConversion().format(toLex);
 
 		StringBuilder currentWord = new StringBuilder();
 		if (!toLex.isEmpty()) {
