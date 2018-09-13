@@ -27,16 +27,20 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
+import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+
 /**
- * Information about the implementation of a Service and the context in which the service is provided. This Descriptor
- * is created from The ServiceProvider which should provide the Service. The Informations is needed by the Dependency
- * Injection to manage the Service instance.
+ * Information needed to instantiate the Service. This includes information about the implementation of a Service and
+ * the context in which the service is provided. This Descriptor is created from the
+ * {@link ServiceProvider#getServiceInstantiationDescription(ContextLocator, ServiceConsumer)} which should provide the
+ * Service. The Informations is needed by the Dependency Injection to manage the Service instance.
  * 
  * @author Leon Kiefer
  * @param <T>
  *            the type of the service
  */
-public interface ServiceImplementationDescription<T> {
+public interface ServiceInstantiationDescription<T> {
 	/**
 	 * The Service description independent of this implementation specific description. It is used to find a matching
 	 * ServiceProvider.
@@ -65,5 +69,5 @@ public interface ServiceImplementationDescription<T> {
 	 *         that implements the contract types
 	 */
 	@Nonnull
-	public Class<?> getImplementationClass();
+	Class<?> getImplementationClass();
 }

@@ -21,31 +21,33 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter;
+
+import java.time.Duration;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * A exception of the dependency injection, signaling, that a service is already registered
+ * An adapter for LocalDateTime objects to parse and get Strings according to ISO-8601
  * 
- * @author Leon Kiefer
+ * @author Muhammed Kaya
  */
-public class DuplicateServiceException extends RuntimeException {
+public class DurationAdapter extends XmlAdapter<String, Duration> {
 
 	/**
-	 * Generated serial version UID
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
 	 */
-	private static final long serialVersionUID = -4001860407694050099L;
-	private final String serviceDescription;
-
-	/**
-	 * @param serviceDescription
-	 *            the serviceDescription of the duplicate Service
-	 */
-	public DuplicateServiceException(ServiceDescription<?> serviceDescription) {
-		this.serviceDescription = serviceDescription.toString();
-	}
-
 	@Override
-	public String getMessage() {
-		return this.serviceDescription;
+	public String marshal(Duration v) {
+		return v.toString();
 	}
+
+	/**
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
+	@Override
+	public Duration unmarshal(String v) {
+		return Duration.parse(v);
+	}
+
 }
