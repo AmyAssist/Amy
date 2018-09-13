@@ -23,8 +23,11 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.social;
 
-import java.util.Random;
+import java.util.*;
 
+import de.unistuttgart.iaas.amyassist.amy.core.Configuration;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 
 /**
@@ -34,6 +37,34 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
  */
 @Service
 public class SocialLogic {
+	
+	/**
+	 * provides information about installed plugins
+	 */
+	@Reference 
+	Configuration constants;
+	
+	/**
+	 * map of internal and human readable plugin names
+	 * the key are human readable names and values are the internal ones
+	 */
+	Map<String, String> pluginNames;
+	
+	/**
+	 * initializes plugin information
+	 */
+	@PostConstruct
+	public void init() {
+		String[] pluginInfo = this.constants.getInstalledPlugins();
+		String pluginHumanReadableName;
+		this.pluginNames = new HashMap<>();
+		
+		for(int i=0; i < pluginInfo.length; i++) {
+			pluginHumanReadableName = pluginInfo[i].substring(pluginInfo[i].lastIndexOf("plugin-")+7, pluginInfo[i].length());
+			this.pluginNames.put(
+					pluginHumanReadableName, pluginInfo[i]);
+		}
+	}
 
 	/**
 	 * receive a random greeting
@@ -51,8 +82,33 @@ public class SocialLogic {
 		return generateRandomAnswer(SocialConstants.whatsUp);
 	}
 	
+	/**
+	 * receive a random string answer
+	 * @return answer
+	 */
 	protected String getHowAreYou() {
 		return generateRandomAnswer(SocialConstants.howAreYou);
+	}
+	
+	/**
+	 * provides a list of installed plugin names
+	 * @return the list
+	 */
+	protected String[] getInstalledPluginNames() {
+		return this.pluginNames.keySet().toArray(new String[this.pluginNames.size()]);
+		
+	}
+	
+	/**
+	 * provides information about a specific plugin
+	 * @param pluginname name of the plugin
+	 * @return the information
+	 */
+	protected String getPluginInformation(String pluginname) {
+		if(this.pluginNames.get(pluginname) != null) {
+			return this.constants.getPluginDescription(this.pluginNames.get(pluginname));
+		}
+		return null;
 	}
 	
 	/*

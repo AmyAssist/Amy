@@ -25,6 +25,8 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.social;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
@@ -63,9 +65,37 @@ public class SocialSpeech {
 		return this.logic.getWhatsUp();
 	}
 	
+	/**
+	 * get an answer to "how are you" or similar phrases
+	 * @param entities entities of input
+	 * @return the answer
+	 */
 	@Intent
 	public String howAreYou(Map<String, EntityData> entities) {
 		return this.logic.getHowAreYou();
 	}
+	
+	@Intent
+	public String getInstalledPlugins(Map<String, EntityData> entities) {
+		String s = "These are my currenty installed plugins";
+		 s += "\n" +  StringUtils.join(this.logic.getInstalledPluginNames(), ", ");
+		 s += "\nfeel free to add more!";
+		return s;
+	}
+	
+	@Intent
+	public String tellMeAboutPlugin(Map<String, EntityData> entities) {
+		String pluginName = entities.get("plugin").getString();
+		String info = this.logic.getPluginInformation(pluginName);
+		if(info != null) {
+			return info;
+		}
+		return "i don't know about " + pluginName + " yet";
+	}
 
 }
+
+
+
+
+
