@@ -70,13 +70,13 @@ final class ServicePoolKey<T> {
 	 * Create a Key from a provider and a ServiceImplementation
 	 * 
 	 * @param serviceProvider
-	 * @param serviceImplementationDescription
+	 * @param serviceInstantiationDescription
 	 */
 	public ServicePoolKey(@Nonnull ServiceProvider<T> serviceProvider,
-			ServiceImplementationDescription<T> serviceImplementationDescription) {
-		this(serviceProvider, serviceImplementationDescription.getContext(),
-				serviceImplementationDescription.getServiceDescription().getServiceType(),
-				serviceImplementationDescription.getImplementationClass());
+			ServiceInstantiationDescription<T> serviceInstantiationDescription) {
+		this(serviceProvider, serviceInstantiationDescription.getContext(),
+				serviceInstantiationDescription.getServiceDescription().getServiceType(),
+				serviceInstantiationDescription.getImplementationClass());
 	}
 
 	@Override

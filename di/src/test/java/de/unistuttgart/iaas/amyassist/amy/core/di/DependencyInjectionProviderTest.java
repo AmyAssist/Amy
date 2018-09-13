@@ -33,11 +33,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandleImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceImplementationDescriptionImpl;
+import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 /**
@@ -65,22 +63,23 @@ class DependencyInjectionProviderTest {
 			}
 
 			@Override
-			public ServiceImplementationDescription<ServiceWithServiceLocator> getServiceImplementationDescription(
+			public ServiceInstantiationDescription<ServiceWithServiceLocator> getServiceInstantiationDescription(
 					@Nonnull ContextLocator locator,
 					@Nonnull ServiceConsumer<ServiceWithServiceLocator> serviceConsumer) {
-				return new ServiceImplementationDescriptionImpl<>(this.getServiceDescription(),
+				return new ServiceInstantiationDescriptionImpl<>(this.getServiceDescription(),
 						ServiceWithServiceLocator.class);
 			}
 
 			@Override
 			@Nonnull
-			public ServiceHandle<ServiceWithServiceLocator> createService(@Nonnull SimpleServiceLocator locator,
-					@Nonnull ServiceImplementationDescription<ServiceWithServiceLocator> serviceImplementationDescription) {
-				return new ServiceHandleImpl<>(new ServiceWithServiceLocator(locator));
+			public ServiceWithServiceLocator createService(@Nonnull SimpleServiceLocator locator,
+					@Nonnull ServiceInstantiationDescription<ServiceWithServiceLocator> serviceInstantiationDescription) {
+				return new ServiceWithServiceLocator(locator);
 			}
 
 			@Override
-			public void dispose(ServiceHandle<ServiceWithServiceLocator> service) {
+			public void dispose(@Nonnull ServiceWithServiceLocator service,
+					@Nonnull ServiceInstantiationDescription<ServiceWithServiceLocator> serviceInstantiationDescription) {
 			}
 		});
 		ServiceWithServiceLocator service = this.dependencyInjection.getService(ServiceWithServiceLocator.class);
