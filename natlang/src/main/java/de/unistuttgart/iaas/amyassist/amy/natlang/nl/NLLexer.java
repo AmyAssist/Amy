@@ -23,11 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.natlang.nl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +45,7 @@ public class NLLexer {
 	/**
 	 * contains regex with the corresponding WordTokenType
 	 */
-	private final Map<String, WordTokenType> regexTokenType = new HashMap<>();
+	private final Map<String, WordTokenType> regexTokenType = new LinkedHashMap<>();
 
 	private ChooseLanguage language;
 
@@ -72,9 +68,8 @@ public class NLLexer {
 		} else {
 			this.logger.error("problem with numbers file, written numbers will not be recognized");
 		}
-
-		this.regexTokenType.put("(\\p{Lo}|\\p{L})+", WordTokenType.WORD);
 		this.regexTokenType.put("[0-9]+", WordTokenType.NUMBER);
+		this.regexTokenType.put("(\\p{Lo}|\\p{L})+", WordTokenType.WORD);
 	}
 
 	/**
