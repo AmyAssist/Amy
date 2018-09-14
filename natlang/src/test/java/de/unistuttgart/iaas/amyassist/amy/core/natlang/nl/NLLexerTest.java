@@ -73,8 +73,8 @@ public class NLLexerTest {
 	public static Stream<Character> badCharacters() {
 		// every ascii character except numbers of letters
 		return IntStream.range(0, 128).mapToObj(i -> (char) i)
-				.filter(c -> (0 > c && c > 33) || (34 < c && c != 37 && !(43 < c && c < 47) && c < 48)
-						|| (59 < c && c < 65 && c != 63) || (90 < c && c < 97) || 122 < c);
+				.filter(c -> ((0 > c && c > 33) || (34 < c && !(43 < c && c < 47) && c != 36 && c != 37 && c < 48)
+						|| (59 < c && c < 65 && c != 63) || (90 < c && c < 97) || 122 < c));
 	}
 
 	/**

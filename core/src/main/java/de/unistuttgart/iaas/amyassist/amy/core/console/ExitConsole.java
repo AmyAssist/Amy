@@ -24,8 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.core.console;
 
 import asg.cliche.Command;
-import de.unistuttgart.iaas.amyassist.amy.core.Core;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * The Exit Command to shutdown Amy.
@@ -34,11 +32,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
  */
 public class ExitConsole {
 
-	@Reference
-	private Core core;
-
+	/**
+	 * Stops the program
+	 */
 	@Command
 	public void exit() {
-		this.core.stop();
+		System.exit(0); // NOSONAR
 	}
 }

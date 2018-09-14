@@ -35,6 +35,7 @@
 		<amy.utility.version>0.6.0-Snapshot</amy.utility.version>
 		<amy.registry.version>0.6.0-Snapshot</amy.registry.version>
 		<amy.remote-sr.version>0.6.0-Snapshot</amy.remote-sr.version>
+		<amy.chatsocket.version>0.6.0-Snapshot</amy.chatsocket.version>
 		<deployment.descriptor.utility.version>0.6.0-Snapshot</deployment.descriptor.utility.version>
 
 		<!-- External dependency versions. Only project wide or core dependencies 
@@ -72,6 +73,7 @@
 		<module>plugins/example</module>
 		<module>plugins/spotify</module>
 		<module>plugins/systemtime</module>
+		<module>plugins/timer</module>
 		<module>plugins/weather</module>
 		<module>plugins/navigation</module>
 		<module>plugins/social</module>
@@ -80,6 +82,7 @@
 		<module>remote-sr</module>
 		<module>deployment-descriptor-utility</module>
 		<module>natlang-api</module>
+		<module>chat-socket</module>
 		<module>natlang</module>
 	</modules>
 	<licenses>
@@ -169,6 +172,11 @@
 				<groupId>de.unistuttgart.iaas.amyassist</groupId>
 				<artifactId>amy-natlang</artifactId>
 				<version>${amy.natlang.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<artifactId>amy-chat-socket</artifactId>
+				<version>${amy.chatsocket.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.unistuttgart.iaas.amyassist</groupId>
