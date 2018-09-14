@@ -78,22 +78,20 @@ public class NavigationSpeech {
 	public String goToAt(Map<String, EntityData> entities) {
 		if (entities.get("time") != null) {
 			DateTime time = dateTimeConversion(entities.get("time"));
-			if (time != null) {
-				ReadableInstant outputTime = null;
-				outputTime = this.logic.whenIHaveToGo(
-						this.registryConnection.getAddress(cutEndWords(entities.get(START_KEY).getString(), "to")),
-						this.registryConnection.getAddress(cutEndWords(entities.get(END_KEY).getString(), "by")),
-						this.logic.getTravelMode(entities.get("mode").getString().trim()), time);
-				if (outputTime != null) {
-					if(outputTime.get(DateTimeFieldType.minuteOfHour()) > 9) {
+			ReadableInstant outputTime = null;
+			outputTime = this.logic.whenIHaveToGo(
+					this.registryConnection.getAddress(cutEndWords(entities.get(START_KEY).getString(), "to")),
+					this.registryConnection.getAddress(cutEndWords(entities.get(END_KEY).getString(), "by")),
+					this.logic.getTravelMode(entities.get("mode").getString().trim()), time);
+			if (outputTime != null) {
+				if (outputTime.get(DateTimeFieldType.minuteOfHour()) > 9) {
 					return "You should go at ".concat(String.valueOf(outputTime.get(DateTimeFieldType.hourOfDay())))
 							.concat(":").concat(String.valueOf(outputTime.get(DateTimeFieldType.minuteOfHour())));
-					}
-					return "You should go at ".concat(String.valueOf(outputTime.get(DateTimeFieldType.hourOfDay())))
-							.concat(":0").concat(String.valueOf(outputTime.get(DateTimeFieldType.minuteOfHour())));
 				}
-				return "You are too late";
+				return "You should go at ".concat(String.valueOf(outputTime.get(DateTimeFieldType.hourOfDay())))
+						.concat(":0").concat(String.valueOf(outputTime.get(DateTimeFieldType.minuteOfHour())));
 			}
+			return "You are too late";
 		}
 		return WRONG_TIME;
 	}
@@ -109,14 +107,12 @@ public class NavigationSpeech {
 	public String bestTransport(Map<String, EntityData> entities) {
 		if (entities.get("time") != null) {
 			DateTime time = dateTimeConversion(entities.get("time"));
-			if (time != null) {
-				BestTransportResult result = this.logic.getBestTransportInTime(
-						this.registryConnection.getAddress(cutEndWords(entities.get(START_KEY).getString(), "to")),
-						this.registryConnection.getAddress(cutEndWords(entities.get(END_KEY).getString(), "at")), time);
-				if (result != null) {
-					return "The best transport Mode is ".concat(result.getMode().toString()).concat(".\n")
-							.concat(result.routeToShortString());
-				}
+			BestTransportResult result = this.logic.getBestTransportInTime(
+					this.registryConnection.getAddress(cutEndWords(entities.get(START_KEY).getString(), "to")),
+					this.registryConnection.getAddress(cutEndWords(entities.get(END_KEY).getString(), "at")), time);
+			if (result != null) {
+				return "The best transport Mode is ".concat(result.getMode().toString()).concat(".\n")
+						.concat(result.routeToShortString());
 			}
 		}
 		return WRONG_TIME;
@@ -133,12 +129,12 @@ public class NavigationSpeech {
 	public String routeFromtTo(Map<String, EntityData> entities) {
 		if (entities.get("time") != null) {
 			DateTime time = dateTimeConversion(entities.get("time"));
-			if (time != null) {
-				return this.logic.fromToWithDeparture(
-						this.registryConnection.getAddress(cutEndWords(entities.get(START_KEY).getString(), "to")),
-						this.registryConnection.getAddress(cutEndWords(entities.get(END_KEY).getString(), "by")),
-						this.logic.getTravelMode(entities.get("mode").getString().trim()), time).routeToShortString();
-			}
+			return this.logic
+					.fromToWithDeparture(
+							this.registryConnection.getAddress(cutEndWords(entities.get(START_KEY).getString(), "to")),
+							this.registryConnection.getAddress(cutEndWords(entities.get(END_KEY).getString(), "by")),
+							this.logic.getTravelMode(entities.get("mode").getString().trim()), time)
+					.routeToShortString();
 		}
 		return this.logic
 				.fromToWithDeparture(

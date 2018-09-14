@@ -41,6 +41,7 @@ public class BestTransportResult {
 
 	private static final String THE_ROUTE_IS = "The route is ";
 	private static final String LONG_AND_NEED = " long and you will need ";
+	private static final String TIME_FORMAT = "HH:mm";
 
 	/**
 	 * constructor
@@ -110,19 +111,19 @@ public class BestTransportResult {
 					i++;
 				}
 				if (i > 0) {
-					return builder.append("you should go at ").append(leg.departureTime.toString("HH:mm"))
+					return builder.append("you should go at ").append(leg.departureTime.toString(TIME_FORMAT))
 							.append(". departure time of the first public transport is ")
-							.append(leg.steps[i].transitDetails.departureTime.toString("HH:mm"))
+							.append(leg.steps[i].transitDetails.departureTime.toString(TIME_FORMAT))
 							.append(" at the station ").append(leg.steps[i].transitDetails.departureStop.name)
 							.append(" with line ").append(leg.steps[i].transitDetails.line.shortName).append(" to ")
 							.append(leg.steps[i].transitDetails.headsign).append(". The arrival time is ")
-							.append(leg.arrivalTime.toString("HH:mm")).toString();
+							.append(leg.arrivalTime.toString(TIME_FORMAT)).toString();
 				}
-				return builder.append("Departure is ").append(leg.departureTime.toString("HH:mm")).append(" at ")
+				return builder.append("Departure is ").append(leg.departureTime.toString(TIME_FORMAT)).append(" at ")
 						.append(leg.steps[i].transitDetails.departureStop.name).append(" with line ")
 						.append(leg.steps[i].transitDetails.line.shortName).append(" to ")
 						.append(leg.steps[i].transitDetails.headsign).append(", arrival time is ")
-						.append(leg.arrivalTime.toString("HH:mm")).toString();
+						.append(leg.arrivalTime.toString(TIME_FORMAT)).toString();
 			case BICYCLING:
 				return builder.append(THE_ROUTE_IS).append(leg.distance.humanReadable).append(LONG_AND_NEED)
 						.append(leg.duration.humanReadable).append(" time").toString();
