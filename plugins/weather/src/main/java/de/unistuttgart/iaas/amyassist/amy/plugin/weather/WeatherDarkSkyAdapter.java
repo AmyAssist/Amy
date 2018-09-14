@@ -82,7 +82,7 @@ public class WeatherDarkSkyAdapter {
 	 * 
 	 * @return current weather forecast
 	 */
-	public WeatherReport getWeatherReport(String latitude, String longitude) {
+	WeatherReport getWeatherReport(String latitude, String longitude) {
 		ForecastIO fio = new ForecastIO(this.apiSecret);
 		fio.setUnits(ForecastIO.UNITS_SI);
 		fio.setExcludeURL("[minutely,hourly]");

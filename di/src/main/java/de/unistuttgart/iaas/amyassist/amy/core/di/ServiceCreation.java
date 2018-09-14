@@ -38,7 +38,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
  * @param <T>
  *            the type of the created service
  */
-class ServiceCreation<T> {
+public class ServiceCreation<T> {
 	CompletableFuture<ServiceHandle<T>> completableFuture;
 	private final Set<ServiceCreation<?>> dependents = new HashSet<>();
 	private final String name;
@@ -91,6 +91,11 @@ class ServiceCreation<T> {
 		return this.print();
 	}
 
+	/**
+	 * Create a tree of the dependents.
+	 * 
+	 * @return the tree as string to print to the console
+	 */
 	public String print() {
 		return this.print("\n");
 	}

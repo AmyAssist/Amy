@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService;
 import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;

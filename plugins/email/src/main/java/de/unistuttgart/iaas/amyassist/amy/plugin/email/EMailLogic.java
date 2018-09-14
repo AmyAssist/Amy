@@ -23,13 +23,15 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
-import javax.mail.*;
+import javax.mail.Flags;
 import javax.mail.Flags.Flag;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.search.FlagTerm;
 
@@ -148,12 +150,9 @@ public class EMailLogic {
 				Message m = messagesToPrint.get(i);
 				sb.append(getFrom(m) + "\n");
 				sb.append(m.getSubject() + "\n");
-				sb.append(getContentFromMessage(m) + "\n\n");
 			}
 		} catch (MessagingException me) {
 			this.logger.error("Operations on the message failed", me);
-		} catch (IOException ioe) {
-			this.logger.error("Getting content from message failed", ioe);
 		}
 		return sb.toString();
 	}
@@ -200,47 +199,6 @@ public class EMailLogic {
 	}
 
 	/**
-	 * Get content in the message
-	 * 
-	 * @param message
-	 *            the message
-	 * @return content of the message as readable String
-	 * @throws MessagingException
-	 *             if something went wrong
-	 * @throws IOException
-	 *             if something went wrong
-	 */
-	String getContentFromMessage(Message message) throws MessagingException, IOException {
-		if (message.isMimeType("text/plain")) {
-			return message.getContent().toString();
-		} else if (message.isMimeType("multipart/*")) {
-			StringBuilder sb = new StringBuilder();
-			try {
-				Multipart mp = (Multipart) message.getContent();
-				for (int i = 0; i < mp.getCount(); i++) {
-					Part part = mp.getBodyPart(i);
-					if (part.isMimeType("text/plain")) {
-						sb.append(i + part.getContent().toString() + "\n");
-					} else {
-						sb.append(i + "Body part is not plain text\n");
-					}
-				}
-			} catch (ClassCastException cce) {
-				/*
-				 * Normally, casting should work fine when the content type is multipart, but there seems to be a
-				 * problem with finding the mail configuration, for more info, see:
-				 * https://javaee.github.io/javamail/FAQ#castmultipart
-				 */
-				this.logger.debug("Still getting a stream back", cce);
-				sb.append("Cannot read message content");
-			}
-			return sb.toString();
-		}
-		return "Message content not readable";
-
-	}
-
-	/**
 	 * Get all mails in the inbox and convert them to MessageDTO objects for the REST class to send to the web app
 	 * 
 	 * @param amount
@@ -261,11 +219,11 @@ public class EMailLogic {
 				// we switch order because we get the messages from the inbox from oldest to newest
 				Message m = messages[messages.length - 1 - i];
 				LocalDateTime sentDate = m.getSentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-				messagesToSend[i] = new MessageDTO(getFrom(m), m.getSubject(), getContentFromMessage(m), sentDate,
-						isImportantMessage(m), m.isSet(Flag.SEEN));
+				messagesToSend[i] = new MessageDTO(getFrom(m), m.getSubject(), sentDate, isImportantMessage(m),
+						m.isSet(Flag.SEEN));
 			}
 			return messagesToSend;
-		} catch (MessagingException | IOException e) {
+		} catch (MessagingException e) {
 			this.logger.error("There were problems handling the messages", e);
 			return new MessageDTO[0];
 		}
