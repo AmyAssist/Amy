@@ -45,7 +45,7 @@ public interface DialogHandler {
 	 *            callback for consumer
 	 * @return the matching uuid
 	 */
-	UUID createDialog(Consumer<String> cons);
+	UUID createDialog(Consumer<Response> cons);
 
 	/**
 	 * deletes a save dialog - this should be called once in a while if the core is running for any long amounts of time

@@ -102,9 +102,9 @@ class SpotifySpeechTest {
 	void testGetCurrentSong() {
 		when(this.track.toString()).thenReturn("test");
 		when(this.playerlogic.getCurrentSong()).thenReturn(this.track);
-		assertThat(this.speech.getCurrentSong(new HashMap<>()), equalTo("track: test"));
+		assertThat(this.speech.getCurrentSong(new HashMap<>()).getText(), equalTo("track: test"));
 		when(this.playerlogic.getCurrentSong()).thenReturn(null);
-		assertThat(this.speech.getCurrentSong(new HashMap<>()), equalTo("No song is playing"));
+		assertThat(this.speech.getCurrentSong(new HashMap<>()).getText(), equalTo("No song is playing"));
 	}
 
 	@Test

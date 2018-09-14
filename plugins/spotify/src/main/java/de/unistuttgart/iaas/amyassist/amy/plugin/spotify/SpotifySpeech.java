@@ -29,10 +29,7 @@ import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.*;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.*;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
@@ -90,9 +87,9 @@ public class SpotifySpeech {
 	 * @return the speech output string
 	 */
 	@Intent()
-	public String getCurrentSong(Map<String, EntityData> entites) {
+	public Response getCurrentSong(Map<String, EntityData> entites) {
 		TrackEntity track = this.playerLogic.getCurrentSong();
-		return (track != null) ? "track: " + track.toString() : "No song is playing";
+		return Response.text((track != null) ? "track: " + track.toString() : "No song is playing").build();
 	}
 
 	/**

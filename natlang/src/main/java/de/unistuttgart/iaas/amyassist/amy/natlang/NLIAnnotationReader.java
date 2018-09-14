@@ -32,12 +32,8 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.*;
 import org.apache.commons.lang3.reflect.MethodUtils;
-
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProviders;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * This class is responsible to read the annotations of a given class
@@ -123,8 +119,9 @@ public class NLIAnnotationReader {
 			throw new IllegalArgumentException("The method " + method.toString()
 					+ " does not have the correct parameter type. It should be a Map.");
 		}
-		if (!method.getReturnType().equals(String.class)) {
-			throw new IllegalArgumentException("The returntype of a method annotated with @Intent should be String.");
+		if (!method.getReturnType().equals(String.class) && !method.getReturnType().equals(Response.class)) {
+			throw new IllegalArgumentException("The returntype of a method annotated with @Intent should be either " +
+					"String or Response.");
 		}
 		if (method.getExceptionTypes().length > 0) {
 			throw new IllegalArgumentException("The method annotated with @Intent should should not throw exceptions.");
@@ -144,11 +141,16 @@ public class NLIAnnotationReader {
 	 * @throws IllegalArgumentException
 	 *             if the annotated methods not valid
 	 */
-	public static String callNLIMethod(@Nonnull Method method, @Nonnull Object instance, Object[] arg) {
+	public static Response callNLIMethod(@Nonnull Method method, @Nonnull Object instance, Object[] arg) {
 		assertValid(method);
 		try {
 			method.setAccessible(true);
-			return (String) method.invoke(instance, arg);
+			Object response = method.invoke(instance, arg);
+			if (response instanceof String)
+				return Response.text((String)response).build();
+			else if (response instanceof Response)
+				return (Response)response;
+			throw new IllegalArgumentException("Invalid return type from NLI method: " + response.getClass().toString());
 		} catch (IllegalAccessException e) {
 			throw new IllegalArgumentException("tryed to invoke method " + method + " but got an error", e);
 		} catch (InvocationTargetException e) {
