@@ -93,7 +93,7 @@ public class BestTransportResult {
 	 * @return
 	 */
 	public String routeToShortString() {
-		if (this.route != null && this.route.legs != null) {
+		if (this.route != null && this.route.legs != null && this.route.legs[0] != null) {
 			DirectionsLeg leg = this.route.legs[0];
 			StringBuilder builder = new StringBuilder();
 			switch (this.mode) {
@@ -105,10 +105,23 @@ public class BestTransportResult {
 				return builder.append(THE_ROUTE_IS).append(leg.distance.humanReadable).append(LONG_AND_NEED)
 						.append(leg.duration.humanReadable).append(" time").toString();
 			case TRANSIT:
-				return builder.append("Departure time is ").append(leg.departureTime.toString("HH:mm")).append(" at ")
-						.append(leg.steps[0].transitDetails.departureStop.name).append(" with line ")
-						.append(leg.steps[0].transitDetails.line.shortName).append(" to ")
-						.append(leg.steps[0].transitDetails.headsign).append(", arrival time is ")
+				int i = 0;
+				while (leg.steps[i].transitDetails == null) {
+					i++;
+				}
+				if (i > 0) {
+					return builder.append("you should go at ").append(leg.departureTime.toString("HH:mm"))
+							.append(". departure time of the first public transport is ")
+							.append(leg.steps[i].transitDetails.departureTime.toString("HH:mm"))
+							.append(" at the station ").append(leg.steps[i].transitDetails.departureStop.name)
+							.append(" with line ").append(leg.steps[i].transitDetails.line.shortName).append(" to ")
+							.append(leg.steps[i].transitDetails.headsign).append(". The arrival time is ")
+							.append(leg.arrivalTime.toString("HH:mm")).toString();
+				}
+				return builder.append("Departure is ").append(leg.departureTime.toString("HH:mm")).append(" at ")
+						.append(leg.steps[i].transitDetails.departureStop.name).append(" with line ")
+						.append(leg.steps[i].transitDetails.line.shortName).append(" to ")
+						.append(leg.steps[i].transitDetails.headsign).append(", arrival time is ")
 						.append(leg.arrivalTime.toString("HH:mm")).toString();
 			case BICYCLING:
 				return builder.append(THE_ROUTE_IS).append(leg.distance.humanReadable).append(LONG_AND_NEED)
@@ -117,7 +130,7 @@ public class BestTransportResult {
 				break;
 			}
 		}
-		return "";
+		return "No route found";
 	}
 
 	/**
