@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.natlang;
 
 import java.util.function.Consumer;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
 import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.Prompt;
 import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntent;
 
@@ -35,7 +36,7 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntent;
  */
 public class Dialog {
 
-	private Consumer<String> consumer;
+	private Consumer<Response> consumer;
 
 	/**
 	 * constructor
@@ -43,7 +44,7 @@ public class Dialog {
 	 * @param cons
 	 *            consumer for callback
 	 */
-	public Dialog(Consumer<String> cons) {
+	public Dialog(Consumer<Response> cons) {
 		this.consumer = cons;
 	}
 
@@ -63,7 +64,7 @@ public class Dialog {
 	 * @param answerOutput
 	 *            the string to output
 	 */
-	public void output(String answerOutput) {
+	public void output(Response answerOutput) {
 		this.consumer.accept(answerOutput);
 	}
 

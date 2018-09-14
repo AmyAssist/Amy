@@ -95,7 +95,7 @@ public class SpeechManager implements RunnableService {
 	private void init() {
 		loadAndCheckProperties();
 		if (this.recognitionEnabled) {
-			this.dialogId = this.dialogHandler.createDialog(this::voiceOutput);
+			this.dialogId = this.dialogHandler.createDialog((response) -> this.voiceOutput(response.getText()));
 			this.sphinxGrammarCreator.createGrammar(SPHINX_MAIN_GARMMAR_NAME, this.keywordStartSingle,
 					this.keywordStartMulti, this.keywordEndMulti, this.keywordStopOutput);
 		}

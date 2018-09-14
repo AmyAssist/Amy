@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
@@ -60,7 +61,7 @@ public class DialogHandlerImpl implements DialogHandler {
 	private Map<UUID, Dialog> map = new HashMap<>();
 
 	@Override
-	public UUID createDialog(Consumer<String> cons) {
+	public UUID createDialog(Consumer<Response> cons) {
 		UUID uuid = UUID.randomUUID();
 		this.map.put(uuid, new Dialog(cons));
 		return uuid;
