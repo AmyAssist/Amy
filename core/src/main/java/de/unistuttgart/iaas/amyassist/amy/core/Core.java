@@ -28,7 +28,6 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.console.ExitConsole;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
@@ -47,6 +46,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableServiceExtension;
  * @author Tim Neumann, Leon Kiefer
  */
 public class Core {
+
+	private static final int EXIT_CODE_ALL_GOOD = 0;
+	private static final int EXIT_CODE_CMA_FLAGS_INVALID = 11;
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
@@ -80,8 +82,11 @@ public class Core {
 				new ServiceDescriptionImpl<>(CommandLineArgumentHandlerService.class))).getService();
 		cmaHandler.load(args, System.out::println);
 		if (cmaHandler.shouldProgramContinue()) {
-			this.di.register(new SingletonServiceProvider<>(CommandLineArgumentInfo.class, cmaHandler.getInfo()));
+			CommandLineArgumentInfo cmaInfo = cmaHandler.getInfo();
+			this.di.register(new SingletonServiceProvider<>(CommandLineArgumentInfo.class, cmaInfo));
 			this.run();
+		} else {
+			System.exit(cmaHandler.areFlagsValid() ? EXIT_CODE_ALL_GOOD : EXIT_CODE_CMA_FLAGS_INVALID); // NOSONAR
 		}
 	}
 
@@ -100,8 +105,6 @@ public class Core {
 	 * register all instances and classes in the DI
 	 */
 	private void registerAllCoreServices() {
-		this.di.register(new SingletonServiceProvider<>(Core.class, this));
-
 		this.di.loadServices();
 	}
 
@@ -136,14 +139,6 @@ public class Core {
 	private void start() {
 		this.runnableServiceExtension.start();
 		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
-	}
-
-	/**
-	 * stop all Threads and terminate the application. This is call form the {@link ExitConsole}
-	 */
-	public void stop() {
-		Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
-		this.doStop();
 	}
 
 	private void doStop() {
