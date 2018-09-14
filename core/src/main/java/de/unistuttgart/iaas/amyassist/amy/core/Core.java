@@ -24,12 +24,10 @@
 package de.unistuttgart.iaas.amyassist.amy.core;
 
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.console.ExitConsole;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
@@ -62,10 +60,6 @@ public class Core {
 
 	private DeploymentContainerServiceExtension deploymentContainerServiceExtension;
 
-	private CommandLineArgumentInfo cmaInfo;
-
-	private CompletableFuture<Integer> exitFuture;
-
 	/**
 	 * 
 	 */
@@ -73,7 +67,6 @@ public class Core {
 		this.runnableServiceExtension = new RunnableServiceExtension();
 		this.deploymentContainerServiceExtension = new DeploymentContainerServiceExtension();
 		this.di = new DependencyInjection(this.runnableServiceExtension, this.deploymentContainerServiceExtension);
-		this.exitFuture = new CompletableFuture<>();
 	}
 
 	/**
@@ -81,22 +74,20 @@ public class Core {
 	 *
 	 * @param args
 	 *            The arguments for the core.
-	 * @return The future, which is completed, when the core has shut down. The argument is the exit code.
 	 */
-	CompletableFuture<Integer> start(String[] args) {
+	void start(String[] args) {
 		this.registerAllCoreServices();
 		this.init();
 		CommandLineArgumentHandlerService cmaHandler = this.di.getService(new ServiceConsumerImpl<>(this.getClass(),
 				new ServiceDescriptionImpl<>(CommandLineArgumentHandlerService.class))).getService();
 		cmaHandler.load(args, System.out::println);
 		if (cmaHandler.shouldProgramContinue()) {
-			this.cmaInfo = cmaHandler.getInfo();
-			this.di.register(new SingletonServiceProvider<>(CommandLineArgumentInfo.class, this.cmaInfo));
+			CommandLineArgumentInfo cmaInfo = cmaHandler.getInfo();
+			this.di.register(new SingletonServiceProvider<>(CommandLineArgumentInfo.class, cmaInfo));
 			this.run();
 		} else {
-			this.exitFuture.complete(cmaHandler.areFlagsValid() ? EXIT_CODE_ALL_GOOD : EXIT_CODE_CMA_FLAGS_INVALID);
+			System.exit(cmaHandler.areFlagsValid() ? EXIT_CODE_ALL_GOOD : EXIT_CODE_CMA_FLAGS_INVALID); // NOSONAR
 		}
-		return this.exitFuture;
 	}
 
 	/**
@@ -152,20 +143,11 @@ public class Core {
 		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
 	}
 
-	/**
-	 * stop all Threads and terminate the application. This is call form the {@link ExitConsole}
-	 */
-	public void stop() {
-		Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
-		this.doStop();
-	}
-
 	private void doStop() {
 		this.logger.info("stop");
 		this.runnableServiceExtension.stop();
 		this.di.shutdown();
 		this.logger.info("stopped");
-		this.exitFuture.complete(EXIT_CODE_ALL_GOOD);
 	}
 
 }

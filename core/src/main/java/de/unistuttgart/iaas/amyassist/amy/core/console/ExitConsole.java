@@ -37,8 +37,11 @@ public class ExitConsole {
 	@Reference
 	private Core core;
 
+	/**
+	 * Stops the program
+	 */
 	@Command
 	public void exit() {
-		this.core.stop();
+		System.exit(0); // NOSONAR
 	}
 }
