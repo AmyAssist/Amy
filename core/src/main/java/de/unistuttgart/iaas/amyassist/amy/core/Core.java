@@ -105,8 +105,6 @@ public class Core {
 	 * register all instances and classes in the DI
 	 */
 	private void registerAllCoreServices() {
-		this.di.register(new SingletonServiceProvider<>(Core.class, this));
-
 		this.di.loadServices();
 	}
 
