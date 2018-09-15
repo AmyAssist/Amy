@@ -95,7 +95,7 @@ public class WeatherTestUtil {
 	public static WeatherReportDay generateWeatherReportDay(Random rng) {
 		return new WeatherReportDay(randomString(rng, rng.nextInt(40)), rng.nextDouble(), rPerType(rng),
 				randomDoubleWithNegative(rng, 40), randomDoubleWithNegative(rng, 40), rng.nextLong(), rng.nextLong(),
-				rng.nextLong(), randomDouble(rng, 50), rIconType(rng));
+				rng.nextLong(), randomDouble(rng, 50), rIconType(rng), "Europe/Berlin");
 	}
 
 	/**
