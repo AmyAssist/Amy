@@ -41,6 +41,7 @@ public class BestTransportResult {
 
 	private static final String THE_ROUTE_IS = "The route is ";
 	private static final String LONG_AND_NEED = " long and you will need ";
+	private static final String TIME_FORMAT = "HH:mm";
 
 	/**
 	 * constructor
@@ -93,28 +94,44 @@ public class BestTransportResult {
 	 * @return
 	 */
 	public String routeToShortString() {
-		if (this.route != null && this.route.legs != null) {
+		if (this.route != null && this.route.legs != null && this.route.legs[0] != null) {
 			DirectionsLeg leg = this.route.legs[0];
+			StringBuilder builder = new StringBuilder();
 			switch (this.mode) {
 			case DRIVING:
 				if (leg.durationInTraffic != null) {
-					return THE_ROUTE_IS.concat(leg.distance.humanReadable)
-							.concat(LONG_AND_NEED.concat(leg.durationInTraffic.humanReadable))
-							.concat(" time in traffic");
+					return builder.append(THE_ROUTE_IS).append(leg.distance.humanReadable).append(LONG_AND_NEED)
+							.append(leg.durationInTraffic.humanReadable).append(" time in traffic").toString();
 				}
-				return THE_ROUTE_IS.concat(leg.distance.humanReadable)
-						.concat(LONG_AND_NEED.concat(leg.duration.humanReadable)).concat(" time");
+				return builder.append(THE_ROUTE_IS).append(leg.distance.humanReadable).append(LONG_AND_NEED)
+						.append(leg.duration.humanReadable).append(" time").toString();
 			case TRANSIT:
-				return "Departure time is ".concat(leg.departureTime.toString("HH:mm")).concat(", arrival time is ")
-						.concat(leg.arrivalTime.toString("HH:mm"));
+				int i = 0;
+				while (leg.steps[i].transitDetails == null) {
+					i++;
+				}
+				if (i > 0) {
+					return builder.append("You should go at ").append(leg.departureTime.toString(TIME_FORMAT))
+							.append(". departure time of the first public transport is ")
+							.append(leg.steps[i].transitDetails.departureTime.toString(TIME_FORMAT))
+							.append(" at the station ").append(leg.steps[i].transitDetails.departureStop.name)
+							.append(" with line ").append(leg.steps[i].transitDetails.line.shortName).append(" to ")
+							.append(leg.steps[i].transitDetails.headsign).append(". The arrival time is ")
+							.append(leg.arrivalTime.toString(TIME_FORMAT)).toString();
+				}
+				return builder.append("Departure is ").append(leg.departureTime.toString(TIME_FORMAT)).append(" at ")
+						.append(leg.steps[i].transitDetails.departureStop.name).append(" with line ")
+						.append(leg.steps[i].transitDetails.line.shortName).append(" to ")
+						.append(leg.steps[i].transitDetails.headsign).append(", arrival time is ")
+						.append(leg.arrivalTime.toString(TIME_FORMAT)).toString();
 			case BICYCLING:
-				return THE_ROUTE_IS.concat(leg.distance.humanReadable)
-						.concat(LONG_AND_NEED.concat(leg.duration.humanReadable)).concat(" time");
+				return builder.append(THE_ROUTE_IS).append(leg.distance.humanReadable).append(LONG_AND_NEED)
+						.append(leg.duration.humanReadable).append(" time").toString();
 			default:
 				break;
 			}
 		}
-		return "";
+		return "No route found";
 	}
 
 	/**

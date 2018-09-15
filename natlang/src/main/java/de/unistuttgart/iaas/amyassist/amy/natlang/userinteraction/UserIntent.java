@@ -24,10 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
@@ -68,7 +65,7 @@ public class UserIntent {
 	/**
 	 * internal list of all entities
 	 */
-	private Map<String, Entity> entityList = new HashMap<>();
+	private Map<String, Entity> entityList = new LinkedHashMap<>();
 
 	/**
 	 * Represents an intent of a user
@@ -101,12 +98,9 @@ public class UserIntent {
 
 		}
 
-		Map<String, Prompt> idToPrompt = new HashMap<>();
 		for (XMLPrompt xmlPrompt : this.aimIntent.getPrompts()) {
-			idToPrompt.put(xmlPrompt.getEntityTemplateId(),
-					new Prompt(parseStringToAGF(xmlPrompt.getGram()), xmlPrompt.getText()));
 			Entity e = this.entityList.get(xmlPrompt.getEntityTemplateId());
-			e.setPrompt(idToPrompt.get(xmlPrompt.getEntityTemplateId()));
+			e.setPrompt(new Prompt(parseStringToAGF(xmlPrompt.getGram()), xmlPrompt.getText()));
 			e.setMethod(NLIAnnotationReader.getValidEnityProviderMethod(this.partialNLIClass, e.getEntityId()));
 			this.entityList.replace(xmlPrompt.getEntityTemplateId(), e);
 		}
