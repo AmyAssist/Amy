@@ -58,6 +58,26 @@ public class SocialSpeech {
 	}
 	
 	/**
+	 * greets user back
+	 * @param entities of input
+	 * @return the greeting
+	 */
+	@Intent
+	public String userName(Map<String, EntityData> entities) {
+		return "Nice to meet you, " + entities.get("name").getString();
+	}
+	
+	/**
+	 * tells user amys name
+	 * @param entities of input
+	 * @return the greeting
+	 */
+	@Intent
+	public String askForName(Map<String, EntityData> entities) {
+		return "My name is Amy, nice to meet you";
+	}
+	
+	/**
 	 * get a "whats up" answer
 	 * @param entities of input
 	 * @return the greeting
@@ -84,22 +104,23 @@ public class SocialSpeech {
 	 */
 	@Intent
 	public String sampleSentences(Map<String, EntityData> entities) {
-		String s = "You may ask me for example";
+		StringBuilder s = new StringBuilder();
+		s.append("You may ask me for example");
 		
 		if(entities.get("pluginname") == null) {
-			s += "\n" +  StringUtils.join(
-					this.logic.getSampleSentences(NMB_SAMPLE_SENTENCES), "\n");
+			s.append("\n" +  StringUtils.join(
+					this.logic.getSampleSentences(NMB_SAMPLE_SENTENCES), "\n"));
 		}else {
 			String keyword = entities.get("pluginname").getString();
 			String[] results = this.logic.getSampleSentencesWithKeyword(keyword, NMB_SAMPLE_SENTENCES);
 			if(!results[0].equals("")) {
-				s += "\n" +  StringUtils.join(
-						this.logic.getSampleSentencesWithKeyword(keyword, NMB_SAMPLE_SENTENCES), "\n");
+				s.append("\n" +  StringUtils.join(
+						this.logic.getSampleSentencesWithKeyword(keyword, NMB_SAMPLE_SENTENCES), "\n"));
 			} else {
 				return "I don't know anything about this";
 			}
 		}
-		return s;
+		return s.toString();
 	}
 	
 	/**
@@ -109,10 +130,11 @@ public class SocialSpeech {
 	 */
 	@Intent
 	public String getInstalledPlugins(Map<String, EntityData> entities) {
-		String s = "These are my currenty installed plugins";
-		 s += "\n" +  StringUtils.join(this.logic.getInstalledPluginNames(), ", ");
-		 s += "\nfeel free to add more!";
-		return s;
+		StringBuilder s = new StringBuilder();
+		s.append("These are my currenty installed plugins");
+		s.append("\n" +  StringUtils.join(this.logic.getInstalledPluginNames(), ", "));
+		s.append("\nfeel free to add more!");
+		return s.toString();
 	}
 	
 	/**

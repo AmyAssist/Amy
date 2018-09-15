@@ -137,8 +137,10 @@ public class SocialLogic {
 		return null;
 	}
 		
-	/*
+	/**
 	 * generates a random answer from a string array
+	 * @param strings possible to select
+	 * @return selected string
 	 */
 	private String generateRandomAnswer(String[] strings) {
 		Random rand = new Random();

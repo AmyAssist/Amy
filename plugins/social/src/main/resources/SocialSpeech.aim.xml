@@ -5,6 +5,19 @@
 		<gram>(hello|hi|good (morning|evening|day)) [amy]</gram>
 	</Intent>
 	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.userName">
+		<gram>(i am | my name is) {name}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="name" required="true">
+				<gram>*</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.askForName">
+		<gram>(what|whats) (is|s) your name</gram>
+	</Intent>
+	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.whatsUp">
 		<gram>(what is| what s) (up|going on)</gram>
 	</Intent>
