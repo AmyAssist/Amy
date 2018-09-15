@@ -34,10 +34,7 @@ import java.util.*;
 import javax.annotation.Nullable;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.*;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherLogic.GeoCoordinatePair;
 import de.unistuttgart.iaas.amyassist.amy.registry.Location;
@@ -241,16 +238,22 @@ public class WeatherSpeechCommand {
 	}
 
 	@Intent()
-	public String weatherAtLocation(Map<String, EntityData> entities) {
+	public Response weatherAtLocation(Map<String, EntityData> entities) {
 		String locationName = entities.get("locationname").getString();
 		try {
 			Pair<Double, Double> coordinates = geocoder.geocodeAddress(locationName);
 			GeoCoordinatePair pair = new GeoCoordinatePair(coordinates.getRight(), coordinates.getLeft());
 			WeatherReport report = weatherLogic.getWeatherReport(pair);
-			return stringifyDayWeatherReport("This is the weather report for " + locationName + ". ",
-					report.getWeek().getDays()[0], report.getTimezone(), false);
+
+
+			WeatherReportDay day = report.getWeek().getDays()[0];
+			String text = stringifyDayWeatherReport("This is the weather report for " + locationName + ". ",
+					day, report.getTimezone(), false);
+
+			return Response.text(text).link("app-weather-day").attachment(day).build();
+
 		} catch (GeocoderException e) {
-			return "I couldn't find this location";
+			return Response.text("I couldn't find this location").build();
 		}
 	}
 }
