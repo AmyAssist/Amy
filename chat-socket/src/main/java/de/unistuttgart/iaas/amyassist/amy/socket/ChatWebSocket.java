@@ -40,7 +40,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 /**
  * A web socket for the chat communication 
  *  
- * @author Christian Bräuner
+ * @author Christian Bräuner, Benno Krauß
  */
 public class ChatWebSocket extends WebSocketServer {
 	
