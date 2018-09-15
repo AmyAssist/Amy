@@ -23,16 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-
-import javax.annotation.Nullable;
-
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.*;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
@@ -42,6 +32,17 @@ import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
 import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.GeocoderException;
 import org.apache.commons.lang3.tuple.Pair;
+
+import javax.annotation.Nullable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * 
