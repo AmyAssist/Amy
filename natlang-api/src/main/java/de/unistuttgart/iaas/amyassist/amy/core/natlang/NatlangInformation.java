@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.natlang;
 
+import java.util.List;
+
 /**
  * Natlang information interface provides informations about agf grammars beeing used in natural language recognition
  * 
@@ -39,18 +41,7 @@ public interface NatlangInformation {
 	 *            how many sentences should be provided at max
 	 * @return a list of sentences
 	 */
-	public String[] getSampleSentencesFromKeyword(String keyword, int nmbSentences);
-
-	/**
-	 * provides possible sentences from a loaded plugin
-	 * 
-	 * @param pluginName
-	 *            display name of the plugin
-	 * @param nmbSentences
-	 *            how many sentences should be provided at max
-	 * @return a list of sentences
-	 */
-	public String[] getSampleSentencesFromPlugin(String pluginName, int nmbSentences);
+	public List<String> getSampleSentencesFromKeyword(String keyword, int nmbSentences);
 
 	/**
 	 * provides any number of possible sentences
@@ -59,6 +50,6 @@ public interface NatlangInformation {
 	 *            how many sentences should be provided
 	 * @return a list of sentences
 	 */
-	public String[] getAnySampleSentences(int nmbSentences);
+	public List<String> getAnySampleSentences(int nmbSentences);
 
 }

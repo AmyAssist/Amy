@@ -103,7 +103,17 @@ public class SocialLogic {
 	 * @return the sentences
 	 */
 	protected String[] getSampleSentences(int nmbSentences) {
-		return this.info.getAnySampleSentences(nmbSentences);
+		return this.info.getAnySampleSentences(nmbSentences).toArray(new String[nmbSentences]);
+	}
+	
+	/**
+	 * receive a number of sample sentences containing a keyword
+	 * @param nmbSentences number of sentences
+	 * @param keyword to match
+	 * @return the sentences
+	 */
+	protected String[] getSampleSentencesWithKeyword(String keyword, int nmbSentences) {
+		return this.info.getSampleSentencesFromKeyword(keyword, nmbSentences).toArray(new String[nmbSentences]);
 	}
 	
 	/**
@@ -126,7 +136,7 @@ public class SocialLogic {
 		}
 		return null;
 	}
-	
+		
 	/*
 	 * generates a random answer from a string array
 	 */

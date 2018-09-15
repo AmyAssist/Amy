@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.natlang;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -31,6 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.NatlangInformation;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.WordNode;
 
 /**
  * Service which provides information of possible sentences to tell amy
@@ -48,35 +50,40 @@ public class NatlangInformationImpl implements NatlangInformation {
 	 *      int)
 	 */
 	@Override
-	public String[] getSampleSentencesFromKeyword(String keyword, int nmbSentences) {
-		//for future use
-		return null;
-	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NatlangInformation#getSampleSentencesFromPlugin(java.lang.String,
-	 *      int)
-	 */
-	@Override
-	public String[] getSampleSentencesFromPlugin(String pluginName, int nmbSentences) {
-		//for future use
-		return null;
+	public List<String> getSampleSentencesFromKeyword(String keyword, int nmbSentences) {
+		List<AGFNode> grams = this.manager.getPossibleGrammars();
+		List<String> result = new ArrayList<>();
+		
+		for(AGFNode node : grams) {
+			List<WordNode> words = node.getChildWordNodes();
+			boolean b = words.stream().anyMatch(w -> 
+				w.getContent().equals(keyword)
+			);
+			if(b)
+				result.add(generateSentenceFromGrammar(node));
+		}
+		return result;
 	}
 
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NatlangInformation#getAnySampleSentences(int)
 	 */
 	@Override
-	public String[] getAnySampleSentences(int nmbSentences) {
-		String[] sentences = new String[nmbSentences];
+	public List<String> getAnySampleSentences(int nmbSentences) {
+		List<String> result = new ArrayList<>(nmbSentences);
 		List<AGFNode> grams = this.manager.getPossibleGrammars();
 		Collections.shuffle(grams);
-		for(int i=0; i < nmbSentences; i++) {
-			sentences[i] =  generateSentenceFromGrammar(grams.get(i));
+		for(AGFNode node : grams) {
+			result.add(generateSentenceFromGrammar(node));
 		}
-		return sentences;
+		return result;
 	}
 	
+	/**
+	 * convenience method to generate a valid sentence from a grammar
+	 * @param node grammar to generate from
+	 * @return a matching string
+	 */
 	private String generateSentenceFromGrammar(AGFNode node) {
 		String result = "";
 		Random random = new Random();

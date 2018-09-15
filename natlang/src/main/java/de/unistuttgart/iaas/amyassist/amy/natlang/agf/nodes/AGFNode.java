@@ -162,6 +162,25 @@ public class AGFNode {
 	}
 	
 	/**
+	 * returns all contained child nodes 
+	 * 
+	 * @return List<EntityNode> 
+	 */
+	public List<WordNode> getChildWordNodes() {
+		List<WordNode> result = new ArrayList<>();
+
+		for (AGFNode node : this.childs) {
+			if (node.getType() == AGFNodeType.WORD) {
+				WordNode entity = (WordNode) node;
+				result.add(entity);
+			}
+			result.addAll(node.getChildWordNodes());
+		}
+
+		return result;
+	}
+	
+	/**
 	 * deletes content of all entity nodes
 	 */
 	public void deleteEntityContent() {

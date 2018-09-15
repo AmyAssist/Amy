@@ -14,11 +14,16 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.sampleSentences">
-		<gram>(what (can|may) i ask you [about] | help )</gram>
+		<gram>(what (can|may) i ask you [about] | help [me]) [{pluginname}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="pluginname" required="false">
+				<gram>[with] [the plugin] *</gram>
+			</EntityTemplate>
+		</EntityTemplates>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.getInstalledPlugins">
-		<gram>(what plugins are installed | tell me about your plugins)</gram>
+		<gram>(what plugins are installed | (tell me about your [installed] | installed) plugins)</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.tellMeAboutPlugin">

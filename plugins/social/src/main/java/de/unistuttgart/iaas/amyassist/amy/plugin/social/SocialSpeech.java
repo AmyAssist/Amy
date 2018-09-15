@@ -44,6 +44,8 @@ public class SocialSpeech {
 
 	@Reference
 	private SocialLogic logic;
+	
+	private static final int NMB_SAMPLE_SENTENCES = 4;
 
 	/**
 	 * returns a greeting
@@ -83,7 +85,20 @@ public class SocialSpeech {
 	@Intent
 	public String sampleSentences(Map<String, EntityData> entities) {
 		String s = "You may ask me for example";
-		s += "\n" +  StringUtils.join(this.logic.getSampleSentences(4), "\n");
+		
+		if(entities.get("pluginname") == null) {
+			s += "\n" +  StringUtils.join(
+					this.logic.getSampleSentences(NMB_SAMPLE_SENTENCES), "\n");
+		}else {
+			String keyword = entities.get("pluginname").getString();
+			String[] results = this.logic.getSampleSentencesWithKeyword(keyword, NMB_SAMPLE_SENTENCES);
+			if(!results[0].equals("")) {
+				s += "\n" +  StringUtils.join(
+						this.logic.getSampleSentencesWithKeyword(keyword, NMB_SAMPLE_SENTENCES), "\n");
+			} else {
+				return "I don't know anything about this";
+			}
+		}
 		return s;
 	}
 	
