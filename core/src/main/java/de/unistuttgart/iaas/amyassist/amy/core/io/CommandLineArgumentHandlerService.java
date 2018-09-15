@@ -164,6 +164,15 @@ public class CommandLineArgumentHandlerService {
 	}
 
 	/**
+	 * Checks whether the flags are valid.
+	 * 
+	 * @return Whether the flags are valid.
+	 */
+	public boolean areFlagsValid() {
+		return this.flagsValid;
+	}
+
+	/**
 	 * @return Whether the program should continue execution.
 	 * @throws IllegalStateException
 	 *             When load was not called before.
