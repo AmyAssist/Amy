@@ -47,6 +47,8 @@ public class WeatherReportDay {
 	private final long sunsetTime;
 	/** The wind speed in meters per second */
 	private final double windSpeed;
+	/** The local timezone for this weather report. */
+	private final String timezone;
 	/**
 	 * The kind of icon appropriate for this report.
 	 * <p>
@@ -81,7 +83,7 @@ public class WeatherReportDay {
 	 */
 	public WeatherReportDay(String pSummary, double pPrecipitationProbability, String pPrecipitationType,
 			double pTemperatureMin, double pTemperatureMax, long pTimestamp, long pSunriseTime, long pSunsetTime,
-			double pWindSpeed, String pIconType) {
+			double pWindSpeed, String pIconType, String timezone) {
 		this.summary = pSummary;
 		this.precipProbability = pPrecipitationProbability;
 		this.precipType = pPrecipitationType;
@@ -92,6 +94,7 @@ public class WeatherReportDay {
 		this.sunsetTime = pSunsetTime;
 		this.windSpeed = pWindSpeed;
 		this.iconType = pIconType;
+		this.timezone = timezone;
 	}
 
 	/**
@@ -182,5 +185,14 @@ public class WeatherReportDay {
 	 */
 	public String getIconType() {
 		return this.iconType;
+	}
+
+	/**
+	 * Get's {@link #timezone timezone}
+	 *
+	 * @return iconType
+	 */
+	public String getTimezone() {
+		return this.timezone;
 	}
 }
