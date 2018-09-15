@@ -87,12 +87,16 @@ public class CalendarSpeech {
 	 */
 	@Intent
 	public String createNewEvent(Map<String, EntityData> entities) {
-//		this.setAllDay(entities.get("allday").getString());
-//		this.setStartAndEnd(entities.get("startdate").getDate(), entities.get("enddate").getDate(), entities.get("starttime").getTime(), entities.get("endtime").getTime());
-//		if(this.start == null || this.end == null) {
-//			return "You have to restart the creation of a new event and please make sure that you add a time to the start and to the end if you choose an non all day event.";
-//		}
-		return "created event: " + entities.get("title").getString(); 
+		this.setAllDay(entities.get("allday").getString());
+		if(this.allDay) {
+			this.setStartAndEnd(entities.get("startdate").getDate(), entities.get("enddate").getDate(), this.zero, this.zero);
+		} else {
+			if(entities.get("starttime") == null || entities.get("endtime") == null) {
+				return "You have to restart the creation of a new event and please make sure that you add a time to the start and to the end if you choose an non all day event.";
+			}
+			this.setStartAndEnd(entities.get("startdate").getDate(), entities.get("enddate").getDate(), entities.get("starttime").getTime(), entities.get("endtime").getTime());
+		}		
+		return "created event: " + entities.get("title").getString() + " " + this.allDay; 
 	}
 	
 	private void setAllDay(String allDayString) {
