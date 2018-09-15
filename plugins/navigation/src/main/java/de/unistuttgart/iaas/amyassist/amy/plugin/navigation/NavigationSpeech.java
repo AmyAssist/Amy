@@ -63,7 +63,7 @@ public class NavigationSpeech {
 	@Reference
 	private Logger logger;
 
-	private static final String WRONG_TIME = "Time Input is wrong. Please dry again";
+	private static final String WRONG_TIME = "Time Input is wrong. Please try again";
 	private static final String END_KEY = "end";
 	private static final String START_KEY = "start";
 

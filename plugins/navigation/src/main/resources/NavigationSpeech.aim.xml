@@ -30,20 +30,20 @@
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="mode">
-			<text>by car, public transport or bike?</text>
+			<text>By car, public transport or bike?</text>
 			<gram>[by] {mode} </gram>
 		</Prompt>
 		<Prompt entityTemplateId="start">
-			<text>from which location?</text>
+			<text>From which location?</text>
 			<gram>[from] {start}</gram>
 		</Prompt>
 
 		<Prompt entityTemplateId="end">
-			<text>to which location? </text>
+			<text>To which location? </text>
 			<gram>[to] {end}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="time">
-			<text>when do you want to arrive? </text>
+			<text>When do you want to arrive? </text>
 			<gram>[at] {time}</gram>
 		</Prompt>
 	</Intent>
@@ -67,11 +67,11 @@
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="mode">
-			<text>by car, public transport or bike?</text>
+			<text>By car, public transport or bike?</text>
 			<gram>[by] {mode} </gram>
 		</Prompt>
 		<Prompt entityTemplateId="time">
-			<text>when do you want to arrive? </text>
+			<text>When do you want to arrive? </text>
 			<gram>[at] {time}</gram>
 		</Prompt>
 	</Intent>
@@ -103,12 +103,12 @@
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="start">
-			<text>from which location?</text>
+			<text>From which location?</text>
 			<gram>[from] {start}</gram>
 		</Prompt>
 
 		<Prompt entityTemplateId="end">
-			<text>to which location? </text>
+			<text>To which location? </text>
 			<gram>[to] {end}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="time">
@@ -168,7 +168,7 @@
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="start">
-			<text>from which location?</text>
+			<text>From which location?</text>
 			<gram>[from] {start}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="time">
@@ -176,11 +176,11 @@
 			<gram> {time}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="end">
-			<text>to which location? </text>
+			<text>To which location? </text>
 			<gram>[to] {end}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="mode">
-			<text>by car, public transport or bike?</text>
+			<text>By car, public transport or bike?</text>
 			<gram>[by] {mode} </gram>
 		</Prompt>
 	</Intent>

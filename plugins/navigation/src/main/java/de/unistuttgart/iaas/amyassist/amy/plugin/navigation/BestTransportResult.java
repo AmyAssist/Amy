@@ -111,7 +111,7 @@ public class BestTransportResult {
 					i++;
 				}
 				if (i > 0) {
-					return builder.append("you should go at ").append(leg.departureTime.toString(TIME_FORMAT))
+					return builder.append("You should go at ").append(leg.departureTime.toString(TIME_FORMAT))
 							.append(". departure time of the first public transport is ")
 							.append(leg.steps[i].transitDetails.departureTime.toString(TIME_FORMAT))
 							.append(" at the station ").append(leg.steps[i].transitDetails.departureStop.name)
