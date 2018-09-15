@@ -32,7 +32,6 @@ import java.util.Properties;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -51,6 +50,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.plugin.calendar.google.VerificationCodeReceiverService;
 
 /**
  * This class authorizes Amy to connect to the google calendar, this is a modified version from
@@ -69,6 +69,9 @@ public class CalendarService {
 	private Properties configuration;
 	@Reference
 	private Environment environment;
+
+	@Reference
+	private VerificationCodeReceiverService codeReceiverService;
 
 	private Calendar service;
 
@@ -97,7 +100,8 @@ public class CalendarService {
 						.setDataStoreFactory(new FileDataStoreFactory(this.environment.getWorkingDirectory()
 								.resolve("temp/calendarauth").toAbsolutePath().toFile()))
 						.setAccessType("offline").build();
-		return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+		return new AuthorizationCodeInstalledApp(flow, this.codeReceiverService.newVerificationCodeReceiver())
+				.authorize("user");
 	}
 
 	/**
