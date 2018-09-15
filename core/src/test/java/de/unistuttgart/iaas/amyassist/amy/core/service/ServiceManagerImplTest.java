@@ -45,7 +45,7 @@ class ServiceManagerImplTest {
 	public void setup() {
 		this.runnableServiceExtension = new RunnableServiceExtension();
 		this.di = new DependencyInjection(this.runnableServiceExtension);
-		this.di.register(ServiceManagerImpl.class);
+		this.di.getConfiguration().register(ServiceManagerImpl.class);
 	}
 
 	/**
@@ -53,12 +53,11 @@ class ServiceManagerImplTest {
 	 */
 	@Test
 	void testStart() {
-
-		this.di.register(TestRunnableService.class);
+		this.di.getConfiguration().register(TestRunnableService.class);
 		this.runnableServiceExtension.deploy();
 		this.runnableServiceExtension.start();
 
-		TestRunnableService service = this.di.getService(TestRunnableService.class);
+		TestRunnableService service = this.di.getServiceLocator().getService(TestRunnableService.class);
 		assertThat(service.run, is(true));
 		this.runnableServiceExtension.stop();
 		assertThat(service.run, is(false));
@@ -80,12 +79,11 @@ class ServiceManagerImplTest {
 	 */
 	@Test
 	void testStartRunnableServiceFromInterface() {
-
-		this.di.register(SimpleServiceImpl.class);
+		this.di.getConfiguration().register(SimpleServiceImpl.class);
 		this.runnableServiceExtension.deploy();
 		this.runnableServiceExtension.start();
 
-		SimpleService service = this.di.getService(SimpleService.class);
+		SimpleService service = this.di.getServiceLocator().getService(SimpleService.class);
 		assertThat(service.getRun(), is(true));
 		this.runnableServiceExtension.stop();
 		assertThat(service.getRun(), is(false));

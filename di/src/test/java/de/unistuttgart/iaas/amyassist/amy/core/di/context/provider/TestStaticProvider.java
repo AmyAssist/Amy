@@ -45,15 +45,16 @@ public class TestStaticProvider {
 
 	@Test
 	void testUseAnnoations() {
-		this.dependencyInjection.register(ServiceWithAnnotationContext.class);
-		this.dependencyInjection.register(ServiceWithDependencies.class);
+		this.dependencyInjection.getConfiguration().register(ServiceWithAnnotationContext.class);
+		this.dependencyInjection.getConfiguration().register(ServiceWithDependencies.class);
 
-		this.dependencyInjection.registerContextProvider("annotation",
+		this.dependencyInjection.getConfiguration().registerContextProvider("annotation",
 				consumer -> consumer.getServiceDescription().getAnnotations().stream()
 						.filter(annotation -> annotation instanceof AnnotatoinWithValue).findFirst()
 						.map(annotation -> ((AnnotatoinWithValue) annotation).value()).orElse(null));
 
-		ServiceWithDependencies service = this.dependencyInjection.getService(ServiceWithDependencies.class);
+		ServiceWithDependencies service = this.dependencyInjection.getServiceLocator()
+				.getService(ServiceWithDependencies.class);
 		assertThat(service.getValueOfService1(), is("1"));
 		assertThat(service.getValueOfService2(), is("2"));
 	}
