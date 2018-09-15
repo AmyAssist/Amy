@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
+import java.time.Instant;
 import java.util.Random;
 import java.util.TimeZone;
 
@@ -94,7 +95,7 @@ public class WeatherTestUtil {
 	 */
 	public static WeatherReportDay generateWeatherReportDay(Random rng) {
 		return new WeatherReportDay(randomString(rng, rng.nextInt(40)), rng.nextDouble(), rPerType(rng),
-				randomDoubleWithNegative(rng, 40), randomDoubleWithNegative(rng, 40), rng.nextLong(), rng.nextLong(),
+				randomDoubleWithNegative(rng, 40), randomDoubleWithNegative(rng, 40), Instant.now().getEpochSecond(), rng.nextLong(),
 				rng.nextLong(), randomDouble(rng, 50), rIconType(rng), "Europe/Berlin");
 	}
 
