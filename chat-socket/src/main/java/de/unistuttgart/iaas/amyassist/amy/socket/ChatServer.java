@@ -23,16 +23,15 @@
 
 package de.unistuttgart.iaas.amyassist.amy.socket;
 
-import java.io.IOException;
-import java.util.Properties;
-
-import org.slf4j.Logger;
-
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+
+import static de.unistuttgart.iaas.amyassist.amy.socket.ChatConfig.PROPERTY_PORT;
 
 /**
  * the class running the server socket for the chat 
@@ -41,14 +40,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
  */
 @Service(ChatServer.class)
 public class ChatServer implements RunnableService {
-	
-	/** The name of the config used by this class */
-	public static final String CONFIG_NAME = "socket.config";
-	/** The name of the property, which specifies the port */
-	public static final String PROPERTY_PORT = "web.socket.port";
 
 	@Reference
-	private ConfigurationManager configurationManager;
+	ChatConfig config;
 	
 	@Reference
 	private Logger logger;
@@ -64,9 +58,8 @@ public class ChatServer implements RunnableService {
 	 */
 	@Override
 	public void start() {
-		Properties conf = this.configurationManager.getConfigurationWithDefaults(CONFIG_NAME);
-		int port = Integer.parseInt(conf.getProperty(PROPERTY_PORT));
-		
+
+		int port = Integer.parseInt(config.get(PROPERTY_PORT));
 		this.socket = new ChatWebSocket(port, this.handler);
 		this.socket.start();
 
