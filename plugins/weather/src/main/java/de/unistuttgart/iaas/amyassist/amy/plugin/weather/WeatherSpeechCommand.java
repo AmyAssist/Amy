@@ -192,8 +192,7 @@ public class WeatherSpeechCommand {
 			String saturdayReport = null;
 			String sundayReport = null;
 			for (WeatherReportDay d : report.getWeek().getDays()) {
-				Instant instant = Instant.ofEpochSecond(d.getTimestamp());
-				ZonedDateTime date = ZonedDateTime.ofInstant(instant, ZoneId.of(report.getTimezone()));
+				ZonedDateTime date = d.getTimestamp();
 				DayOfWeek day = date.getDayOfWeek();
 				if (day == DayOfWeek.SATURDAY) {
 					saturdayReport = stringifyDayWeatherReport("", d, report.getTimezone(), true);

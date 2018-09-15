@@ -29,7 +29,12 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -52,7 +57,7 @@ public class ChatWebSocket extends WebSocketServer {
 	
 	private Map<InetSocketAddress,UUID> dialogMap = new HashMap<>();
 
-	private ObjectMapper mapper = new ObjectMapper();
+	private ObjectMapper mapper;
 	
 	/**
 	 *creates a new web socket server
@@ -64,8 +69,15 @@ public class ChatWebSocket extends WebSocketServer {
 	public ChatWebSocket(int port, DialogHandler handler) {
 		super(new InetSocketAddress(port));
 		this.handler = handler;
+
+		AnnotationIntrospector firstInspector = new JacksonAnnotationIntrospector();
+		AnnotationIntrospector secondInspector = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
+		AnnotationIntrospector inspectors = AnnotationIntrospector.pair(firstInspector, secondInspector);
+
+		mapper = new ObjectMapper();
+		mapper.setAnnotationIntrospector(inspectors);
 	}
-	
+
 	/**
 	 * @see org.java_websocket.server.WebSocketServer#onClose(org.java_websocket.WebSocket, int, java.lang.String, boolean)
 	 */
