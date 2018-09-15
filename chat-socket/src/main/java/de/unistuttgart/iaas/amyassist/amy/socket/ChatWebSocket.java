@@ -28,7 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import com.eclipsesource.json.Json;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -50,6 +51,8 @@ public class ChatWebSocket extends WebSocketServer {
 	private DialogHandler handler;
 	
 	private Map<InetSocketAddress,UUID> dialogMap = new HashMap<>();
+
+	private ObjectMapper mapper = new ObjectMapper();
 	
 	/**
 	 *creates a new web socket server
@@ -100,7 +103,11 @@ public class ChatWebSocket extends WebSocketServer {
 	}
 
 	private void send(WebSocket socket, Response response) {
-		socket.send(Json.object().add("msg", response.getText()).add("link", response.getLink()).toString());
+		try {
+			socket.send(mapper.writeValueAsString(response));
+		} catch (JsonProcessingException e) {
+			logger.error("Error serializing Response-object", e);
+		}
 	}
 
 	/**
