@@ -85,7 +85,7 @@ public class NatlangInformationImpl implements NatlangInformation {
 	 * @return a matching string
 	 */
 	private String generateSentenceFromGrammar(AGFNode node) {
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		Random random = new Random();
 		
 		switch(node.getType()) {
@@ -97,23 +97,23 @@ public class NatlangInformationImpl implements NatlangInformation {
 			//$FALL-THROUGH$
 		case ORG:
 			int i = random.nextInt(node.getChilds().size());
-			return result + generateSentenceFromGrammar(node.getChilds().get(i));
+			return result.append(generateSentenceFromGrammar(node.getChilds().get(i))).toString();
 		case SHORTWC:
-			return result + " +";
+			return result.append(" +").toString();
 		case LONGWC:
-			return result + " *";
+			return result.append(" *").toString();
 		case WORD:
-			return result + " " + node.getContent();
+			return result.append(" " + node.getContent()).toString();
 		case NUMBER:
 			return result + " <number>";
 		default:
 			for(AGFNode gram : node.getChilds()) {
-				result += generateSentenceFromGrammar(gram);
+				result.append(generateSentenceFromGrammar(gram));
 			}
 			break;
 		}
 		
-		return result;
+		return result.toString();
 	}
 	
 
