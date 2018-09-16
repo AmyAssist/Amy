@@ -23,7 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Map;
@@ -90,10 +89,12 @@ public class CalendarSpeech {
 	@Intent
 	public String setEvent(Map<String, EntityData> entities) {
 		if (!this.setStartAndEnd(entities)) {
-			return "You have to restart the creation of a new event and please make sure that you add a time to the start and to the end if you choose an non all day event.";
+			return "You have to restart the creation of a new event and please make sure that you add a time to the "
+					+ "start and to the end if you choose an non all day event.";
 		}
 		if (!this.startBeforeEnd) {
-			return  "You have to restart the creation of a new event and please make sure that the start of the event is before the end.";
+			return  "You have to restart the creation of a new event and please make sure that the start of the event "
+					+ "is before the end.";
 		}
 		this.createNewEvent(entities);
 		return "I set up the event " + this.calendarEvent.getSummary() + " for you."; 
@@ -143,7 +144,8 @@ public class CalendarSpeech {
 	 * 			informations for the new event
 	 */
 	private void createNewEvent(Map<String, EntityData> entities) {
-		String location, description;
+		String location;
+		String description;
 		if (entities.get("location") == null) {
 			location = "";
 		} else {
@@ -164,7 +166,8 @@ public class CalendarSpeech {
 		if (reminderTimeUnit.equals("days")) {
 			reminderTime *= 60 * 24;
 		}
-		this.calendarEvent = new CalendarEvent(this.start, this.end, entities.get("title").getString(), location, description, entities.get("remindertype").getString(), reminderTime, "", this.allDay);
+		this.calendarEvent = new CalendarEvent(this.start, this.end, entities.get("title").getString(), location, 
+				description, entities.get("remindertype").getString(), reminderTime, "", this.allDay);
 		this.calendar.setEvent(this.calendarEvent);
 	}
 
