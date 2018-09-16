@@ -24,7 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
+import static org.hamcrest.Matchers.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -246,6 +247,17 @@ public class CalendarLogicTest {
 					.equals(EDTfromLocalDateTime(calendarEvent.getEnd(), allDay).getDateTime());
 		}
 		return startCorrect && endCorrect;
+	}
+	
+	/**
+	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarLogic#isAllDay(java.lang.String)}.
+	 */
+	@Test
+	void testIsAllDay() {
+		assertThat(CalendarLogic.isAllDay("yes"), is(true));
+		assertThat(CalendarLogic.isAllDay("true"), is(true));
+		assertThat(CalendarLogic.isAllDay("no"), is(false));
+		assertThat(CalendarLogic.isAllDay("false"), is(false));
 	}
 
 }
