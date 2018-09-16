@@ -26,7 +26,19 @@
 			<gram> {day} </gram>
 		</Prompt>
 	</Intent>
-	
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsAt">
+		<gram>[which] events [do i have] at [{date}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="date" required="true">
+				<gram>{amydate}</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="date">
+			<text>At which date?</text>
+			<gram>{date}</gram>
+		</Prompt>
+	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.setEvent">
 		<gram>[create] new event</gram>
