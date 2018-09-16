@@ -21,22 +21,32 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.console;
+package de.unistuttgart.iaas.amyassist.amy.socket;
 
-import asg.cliche.Command;
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
+import static de.unistuttgart.iaas.amyassist.amy.socket.ChatConfig.WEBSOCKET_URL;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 /**
- * The Exit Command to shutdown Amy.
- * 
- * @author Leon Kiefer
+ * Rest class to provide the web client the websocket endpoint URL
+ *
+ * @author Benno Krauß
  */
-public class ExitConsole {
+@Path("chat")
+public class RestResource {
 
-	/**
-	 * Stops the program
-	 */
-	@Command
-	public void exit() {
-		System.exit(0); // NOSONAR
-	}
+    @Reference
+    ChatConfig config;
+
+    @Path("url")
+    @Produces(TEXT_PLAIN)
+    @GET
+    public String getChatURL() {
+        return config.get(WEBSOCKET_URL);
+    }
 }

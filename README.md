@@ -6,6 +6,9 @@
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=de.unistuttgart.iaas.amyassist%3Aamy&metric=bugs)](https://sonarcloud.io/component_measures?id=de.unistuttgart.iaas.amyassist%3Aamy&metric=Reliability)
 [![Reliability](https://sonarcloud.io/api/project_badges/measure?project=de.unistuttgart.iaas.amyassist%3Aamy&metric=reliability_rating)](https://sonarcloud.io/component_measures?id=de.unistuttgart.iaas.amyassist%3Aamy&metric=Reliability)
 
+[![Docker](http://dockeri.co/image/amyassist/amy)](https://hub.docker.com/r/amyassist/amy/)
+
+
 ### Personal Assistance System
 
 This is a research project from students of the University of Stuttgart. No functionality is tested. There may be harmful errors.  
