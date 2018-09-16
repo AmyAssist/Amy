@@ -28,6 +28,7 @@ import java.util.Set;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.extension.Extension;
 
@@ -38,13 +39,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.extension.Extension;
  */
 public class DeploymentContainerServiceExtension implements Extension {
 
-	private DependencyInjection di;
+	private ServiceLocator serviceLocator;
 
 	private final Set<ServiceDescription<?>> deploymentContainerServices = new HashSet<>();
 
 	@Override
 	public void postConstruct(DependencyInjection dependencyInjection) {
-		this.di = dependencyInjection;
+		this.serviceLocator = dependencyInjection.getServiceLocator();
 	}
 
 	@Override
@@ -59,7 +60,7 @@ public class DeploymentContainerServiceExtension implements Extension {
 	 */
 	public void deploy() {
 		for (ServiceDescription<?> deploymentContainerServiceDescription : this.deploymentContainerServices) {
-			DeploymentContainerService deploymentContainerService = (DeploymentContainerService) this.di
+			DeploymentContainerService deploymentContainerService = (DeploymentContainerService) this.serviceLocator
 					.getService(new ServiceConsumerImpl<>(this.getClass(), deploymentContainerServiceDescription))
 					.getService();
 			deploymentContainerService.deploy();

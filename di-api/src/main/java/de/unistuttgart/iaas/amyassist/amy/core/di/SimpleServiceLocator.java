@@ -37,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
  */
 public interface SimpleServiceLocator {
 	/**
-	 * Get a service for the given service consumer. This Method track the caller to prevent the service get created
+	 * Get a service for the given service consumer. This method track the caller to prevent the service get created
 	 * twice and to run in a dependency circle.
 	 * 
 	 * @param serviceConsumer
