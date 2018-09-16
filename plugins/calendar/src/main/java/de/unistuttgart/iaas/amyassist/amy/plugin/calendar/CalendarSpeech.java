@@ -123,8 +123,8 @@ public class CalendarSpeech {
 	private boolean setStartAndEnd(Map<String, EntityData> entities) {
 		this.setAllDay(entities.get("allday").getString());
 		if(this.allDay) {
-			this.start = LocalDateTime.of(entities.get("startdate").getDate(), this.zero);
-			this.end = LocalDateTime.of(entities.get("enddate").getDate(), this.zero);
+			this.start = LocalDateTime.of(entities.get("startdate").getDate().plusDays(1), this.zero);
+			this.end = LocalDateTime.of(entities.get("enddate").getDate().plusDays(2), this.zero);
 			this.startBeforeEnd = this.start.isBefore(this.end) || this.start.isEqual(this.end);	
 		} else if(entities.get("starttime") == null || entities.get("endtime") == null) {
 			return false;
@@ -158,7 +158,7 @@ public class CalendarSpeech {
 		}
 		int reminderTime = entities.get("remindertimevalue").getNumber();
 		String reminderTimeUnit = entities.get("remindertimeunit").getString();
-		if (reminderTimeUnit.equals("hours")) {
+		if (reminderTimeUnit.equals("hours") || reminderTimeUnit.equals("h")) {
 			reminderTime *= 60;
 		}
 		if (reminderTimeUnit.equals("days")) {

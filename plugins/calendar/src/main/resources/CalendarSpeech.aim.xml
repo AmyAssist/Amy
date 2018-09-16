@@ -68,7 +68,7 @@
 				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 			<EntityTemplate id="remindertimeunit" required="false">
-				<gram>(minutes|hours|days)</gram>
+				<gram>(minutes|min|hours|h|days)</gram>
 			</EntityTemplate>
 			<EntityTemplate id="remindertime" required="true">
 				<gram>{remindertimevalue} {remindertimeunit}</gram>
