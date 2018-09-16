@@ -71,6 +71,11 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private static final String QUIT_INTENT_USER_INPUT = "(never mind|quit|forget that|nevermind)";
 
 	private static final String[] QUIT_INTENT_ANSWER = { "ok", "sure", "what else can i do for you?" };
+	
+	/**
+	 * maps agf node grammars to the user intent template
+	 */
+	protected Map<AGFNode, UserIntentTemplate> nodeToMethodAIMPair = new HashMap<>();
 
 	@Reference
 	private Logger logger;
@@ -80,8 +85,6 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	@Reference
 	private ServiceLocator serviceLocator;
-
-	private Map<AGFNode, UserIntentTemplate> nodeToMethodAIMPair = new HashMap<>();
 
 	@Reference
 	private ConfigurationManager configurationLoader;
@@ -264,5 +267,15 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		Random rand = new Random();
 		int rndm = rand.nextInt(strings.length);
 		return strings[rndm];
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#getPossibleGrammars()
+	 */
+	@Override
+	public List<AGFNode> getPossibleGrammars() {
+		List<AGFNode> list = new ArrayList<>();
+		list.addAll(this.nodeToMethodAIMPair.keySet());
+		return list;
 	}
 }

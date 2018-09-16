@@ -1,3 +1,4 @@
 de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManagerImpl
 de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.LoadAIMService
 de.unistuttgart.iaas.amyassist.amy.natlang.DialogHandlerImpl
+de.unistuttgart.iaas.amyassist.amy.natlang.NatlangInformationImpl
