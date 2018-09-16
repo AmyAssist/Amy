@@ -89,7 +89,8 @@ public class CalendarService {
 	 */
 	private Credential getCredentials(final NetHttpTransport xHTTPTRANSPORT) throws IOException {
 		// Load client secrets
-		String clientSecretIn = this.configuration.getProperty("JSON");
+		String clientSecretIn = this.configuration.getProperty("CREDENTIALS_JSON");
+		String storedCredentialsPath = this.configuration.getProperty("STORED_CREDENTIALS_PATH");
 		if (clientSecretIn.isEmpty()) {
 			throw new IllegalStateException("Missing client secrets");
 		}
@@ -98,7 +99,7 @@ public class CalendarService {
 		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(xHTTPTRANSPORT, JSON_FACTORY,
 				clientSecrets, SCOPES)
 						.setDataStoreFactory(new FileDataStoreFactory(this.environment.getWorkingDirectory()
-								.resolve("temp/calendarauth").toAbsolutePath().toFile()))
+								.resolve(storedCredentialsPath).toAbsolutePath().toFile()))
 						.setAccessType("offline").build();
 		return new AuthorizationCodeInstalledApp(flow, this.codeReceiverService.newVerificationCodeReceiver())
 				.authorize("user");
