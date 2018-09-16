@@ -232,13 +232,14 @@ public class WeatherSpeechCommand {
 			report = this.weatherLogic.getWeatherReport(curr);
 		}
 		
+		String chanceOf = "% chance of ";
 		String timespan = entities.get("timespan").getString();
 		if(timespan.equals("today")) {
 			WeatherReportDay today = report.getWeek().getDays()[0];
-			return round(today.getPrecipProbability() * 100) + "% chance of " + today.getPrecipType() + " today";
+			return round(today.getPrecipProbability() * 100) + chanceOf + today.getPrecipType() + " today";
 		}else if(timespan.equals("tomorrow")) {
 			WeatherReportDay tomorrow = report.getWeek().getDays()[1];
-			return round(tomorrow.getPrecipProbability() * 100) + "% chance of " + tomorrow.getPrecipType() + " tomorrow";
+			return round(tomorrow.getPrecipProbability() * 100) + chanceOf + tomorrow.getPrecipType() + " tomorrow";
 		}else if(timespan.equals("at the weekend")) {
 			StringBuilder builder = new StringBuilder();
 			String sat = "";
@@ -248,9 +249,9 @@ public class WeatherSpeechCommand {
 				ZonedDateTime date = ZonedDateTime.ofInstant(instant, ZoneId.of(report.getTimezone()));
 				DayOfWeek day = date.getDayOfWeek();
 				if (day == DayOfWeek.SATURDAY) {
-					sat = round(d.getPrecipProbability() * 100) + "% chance of " + d.getPrecipType() + " on Saturday";
+					sat = round(d.getPrecipProbability() * 100) + chanceOf + d.getPrecipType() + " on Saturday";
 				} else if (day == DayOfWeek.SUNDAY) {
-					sun = round(d.getPrecipProbability() * 100) + "% chance of " + d.getPrecipType() + " on Sunday";
+					sun = round(d.getPrecipProbability() * 100) + chanceOf + d.getPrecipType() + " on Sunday";
 				}
 			}
 			builder.append(sat + "\n" + sun);
