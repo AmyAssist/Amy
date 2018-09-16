@@ -207,6 +207,58 @@ public class WeatherSpeechCommand {
 			return "On Saturday, " + saturdayReport + " and on Sunday " + sundayReport;
 		}
 	}
+	
+	/**
+	 * tells user if its gonna rain today / tomorrow etc
+	 * @param entities information 
+	 * @return the answer
+	 */
+	@Intent
+	public String rainCheck(Map<String, EntityData> entities) {
+		WeatherReport report;
+		if(entities.get("locationname") != null) {
+       		String locationName = entities.get("locationname").getString();
+       		try {
+       			Pair<Double, Double> coordinates = this.geocoder.geocodeAddress(locationName);
+       			GeoCoordinatePair pair = new GeoCoordinatePair(coordinates.getRight(), coordinates.getLeft());
+       			report = this.weatherLogic.getWeatherReport(pair);
+       		}catch(GeocoderException e) {
+       			return "I couldn't find this location";
+       		}
+		}else {
+			GeoCoordinatePair curr = getCurrentLocation();
+			if (curr == null)
+				return NO_LOCATION_STRING;
+			report = this.weatherLogic.getWeatherReport(curr);
+		}
+		
+		String timespan = entities.get("timespan").getString();
+		if(timespan.equals("today")) {
+			WeatherReportDay today = report.getWeek().getDays()[0];
+			return round(today.getPrecipProbability() * 100) + "% chance of " + today.getPrecipType() + " today";
+		}else if(timespan.equals("tomorrow")) {
+			WeatherReportDay tomorrow = report.getWeek().getDays()[1];
+			return round(tomorrow.getPrecipProbability() * 100) + "% chance of " + tomorrow.getPrecipType() + " tomorrow";
+		}else if(timespan.equals("at the weekend")) {
+			StringBuilder builder = new StringBuilder();
+			String sat = "";
+			String sun = "";
+			for(WeatherReportDay d : report.getWeek().getDays()) {
+				Instant instant = Instant.ofEpochSecond(d.getTimestamp());
+				ZonedDateTime date = ZonedDateTime.ofInstant(instant, ZoneId.of(report.getTimezone()));
+				DayOfWeek day = date.getDayOfWeek();
+				if (day == DayOfWeek.SATURDAY) {
+					sat = round(d.getPrecipProbability() * 100) + "% chance of " + d.getPrecipType() + " on Saturday";
+				} else if (day == DayOfWeek.SUNDAY) {
+					sun = round(d.getPrecipProbability() * 100) + "% chance of " + d.getPrecipType() + " on Sunday";
+				}
+			}
+			builder.append(sat + "\n" + sun);
+			return builder.toString();
+		}
+		
+		return "i don't understand the date";
+	}
 
 	/**
 	 * speech command to set a new weather location. only registry entries are allowed

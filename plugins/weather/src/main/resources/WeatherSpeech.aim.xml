@@ -17,6 +17,18 @@
 		<gram>[how is the] weather [at the] weekend</gram>
 	</Intent>
 	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherSpeechCommand.rainCheck">
+		<gram>is it gonna rain {timespan} [(at|in) {locationname}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="timespan" required="false">
+				<gram>(today|tomorrow|at the weekend)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="locationname" required="false">
+				<gram>*</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherSpeechCommand.setLocation">
 		<gram>set weather location [to {weatherlocation}]</gram>
 		<EntityTemplates>
