@@ -113,7 +113,7 @@ public class SocialSpeech {
 		}else {
 			String keyword = entities.get("pluginname").getString();
 			String[] results = this.logic.getSampleSentencesWithKeyword(keyword, NMB_SAMPLE_SENTENCES);
-			if(!results[0].equals("")) {
+			if(results[0] != null && !results[0].equals("")) {
 				s.append("\n" +  StringUtils.join(
 						this.logic.getSampleSentencesWithKeyword(keyword, NMB_SAMPLE_SENTENCES), "\n"));
 			} else {

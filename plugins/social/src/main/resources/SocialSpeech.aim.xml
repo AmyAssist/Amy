@@ -27,10 +27,10 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.sampleSentences">
-		<gram>(what (can|may) i ask you [about] | help [me]) [{pluginname}]</gram>
+		<gram>(what (can|may) i ask you [about] | help [me]) [[with] [the plugin] {pluginname}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="pluginname" required="false">
-				<gram>[with] [the plugin] *</gram>
+				<gram>*</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>
