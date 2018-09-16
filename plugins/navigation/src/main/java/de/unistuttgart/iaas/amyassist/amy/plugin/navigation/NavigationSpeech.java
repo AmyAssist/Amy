@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.*;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.ReadableInstant;
@@ -38,10 +39,6 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * Speech class for the navigation plugin
@@ -126,22 +123,19 @@ public class NavigationSpeech {
 	 * @return a output string
 	 */
 	@Intent()
-	public String routeFromtTo(Map<String, EntityData> entities) {
-		if (entities.get("time") != null) {
-			DateTime time = dateTimeConversion(entities.get("time"));
-			return this.logic
-					.fromToWithDeparture(
-							this.registryConnection.getAddress(cutEndWords(entities.get(START_KEY).getString(), "to")),
-							this.registryConnection.getAddress(cutEndWords(entities.get(END_KEY).getString(), "by")),
-							this.logic.getTravelMode(entities.get("mode").getString().trim()), time)
-					.routeToShortString();
-		}
-		return this.logic
-				.fromToWithDeparture(
-						this.registryConnection.getAddress(cutEndWords(entities.get(START_KEY).getString(), "to")),
-						this.registryConnection.getAddress(cutEndWords(entities.get(END_KEY).getString(), "by")),
-						this.logic.getTravelMode(entities.get("mode").getString().trim()), DateTime.now())
-				.routeToShortString();
+	public Response routeFromtTo(Map<String, EntityData> entities) {
+
+		DateTime time = entities.get("time") != null ? dateTimeConversion(entities.get("time")) : DateTime.now();
+
+		BestTransportResult result = this.logic.fromToWithDeparture(
+			this.registryConnection.getAddress(cutEndWords(entities.get(START_KEY).getString(), "to")),
+			this.registryConnection.getAddress(cutEndWords(entities.get(END_KEY).getString(), "by")),
+			this.logic.getTravelMode(entities.get("mode").getString().trim()),
+			time
+		);
+
+		return Response.text(result.routeToShortString()).widget("app-route-widget")
+				.attachment(result.routeToWidgetInfo()).build();
 	}
 
 	/**
