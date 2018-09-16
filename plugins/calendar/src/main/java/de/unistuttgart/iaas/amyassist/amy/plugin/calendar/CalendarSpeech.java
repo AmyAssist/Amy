@@ -87,7 +87,6 @@ public class CalendarSpeech {
 	@Intent
 	public String getEventsAt(Map<String, EntityData> entities) {
 		return this.calendar.getEventsAtAsString(LocalDateTime.of(entities.get("date").getDate(), this.zero));
-
 	}
 	
 	/**
