@@ -59,9 +59,9 @@ public class RegistryConnection {
 		if (!locations.isEmpty()) {
 			address = locations.get(0);
 		} else {
-			// Try to find by name
+			// Try to find by name or tag ignoring case
 			for (Location location : this.locationRegistry.getAll()) {
-				if (location.getName().equals(name)) {
+				if (name.equalsIgnoreCase(location.getName()) || name.equalsIgnoreCase(location.getTag())) {
 					address = location;
 					break;
 				}
