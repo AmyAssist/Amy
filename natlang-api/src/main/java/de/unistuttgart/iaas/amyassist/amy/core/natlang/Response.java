@@ -37,7 +37,7 @@ public class Response {
      */
 
     private String text;
-    private String link;
+    private String widget;
     private Object attachment;
 
     /*
@@ -46,7 +46,7 @@ public class Response {
 
     public static class ResponseBuilder {
         private String text = null;
-        private String link = null;
+        private String widget = null;
         private Object attachment = null;
 
         private ResponseBuilder() {
@@ -57,8 +57,8 @@ public class Response {
             return this;
         }
 
-        public ResponseBuilder link(String link) {
-            this.link = link;
+        public ResponseBuilder widget(String widget) {
+            this.widget = widget;
             return this;
         }
 
@@ -68,7 +68,7 @@ public class Response {
         }
 
         public Response build() {
-            return new Response(text, link, attachment);
+            return new Response(text, widget, attachment);
         }
     }
 
@@ -80,8 +80,8 @@ public class Response {
         return new ResponseBuilder().text(text);
     }
 
-    public static ResponseBuilder link(String link) {
-        return new ResponseBuilder().link(link);
+    public static ResponseBuilder widget(String widget) {
+        return new ResponseBuilder().widget(widget);
     }
 
     public static ResponseBuilder attachment(Object attachment) {
@@ -92,9 +92,9 @@ public class Response {
     CONSTRUCTOR
      */
 
-    private Response(String text, String link, Object attachment) {
+    private Response(String text, String widget, Object attachment) {
         this.text = text;
-        this.link = link;
+        this.widget = widget;
         this.attachment = attachment;
     }
 
@@ -109,8 +109,8 @@ public class Response {
         return text;
     }
 
-    public String getLink() {
-        return link;
+    public String getWidget() {
+        return widget;
     }
 
     public Object getAttachment() {

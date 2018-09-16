@@ -249,8 +249,7 @@ public class WeatherSpeechCommand {
 			WeatherReportDay day = report.getWeek().getDays()[0];
 			String text = stringifyDayWeatherReport("This is the weather report for " + locationName + ". ",
 					day, report.getTimezone(), false);
-
-			return Response.text(text).link("app-weather-day").attachment(day).build();
+			return Response.text(text).widget("app-weather-day").attachment(day).build();
 
 		} catch (GeocoderException e) {
 			return Response.text("I couldn't find this location").build();
