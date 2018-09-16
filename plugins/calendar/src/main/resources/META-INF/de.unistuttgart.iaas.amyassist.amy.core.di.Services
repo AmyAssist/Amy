@@ -1,2 +1,3 @@
 de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarLogic
 de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarService
+de.unistuttgart.iaas.amyassist.amy.plugin.calendar.google.VerificationCodeReceiverService
