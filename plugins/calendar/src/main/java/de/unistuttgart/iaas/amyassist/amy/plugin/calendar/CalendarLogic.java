@@ -145,10 +145,10 @@ public class CalendarLogic {
 		
 		int reminderTime = entities.get("remindertimevalue").getNumber();
 		String reminderTimeUnit = entities.get("remindertimeunit").getString();
-		if (reminderTimeUnit.equals("hours") || reminderTimeUnit.equals("h")) {
+		if (reminderTimeUnit.equals("hours") || reminderTimeUnit.equals("hour")) {
 			reminderTime *= 60;
 		}
-		if (reminderTimeUnit.equals("days")) {
+		if (reminderTimeUnit.equals("days") || reminderTimeUnit.equals("day")) {
 			reminderTime *= 60 * 24;
 		}
 
