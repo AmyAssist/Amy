@@ -23,8 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -43,15 +41,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 public class CalendarSpeech {
 
 	@Reference
-	private CalendarLogic calendar;
-	
-	private boolean allDay;
-	private boolean startBeforeEnd;
-	private LocalDateTime start;
-	private LocalDateTime end;
-	private LocalTime zero = LocalTime.of(0, 0, 0, 0);
-	private CalendarEvent calendarEvent;
-	
+	private CalendarLogic calendar;	
 
 	/**
 	 *
@@ -86,7 +76,7 @@ public class CalendarSpeech {
 	 */
 	@Intent
 	public String getEventsAt(Map<String, EntityData> entities) {
-		return this.calendar.getEventsAtAsString(LocalDateTime.of(entities.get("date").getDate(), this.zero));
+		return this.calendar.getEventsAtAsString(entities.get("date").getDate());
 	}
 	
 	/**
@@ -98,87 +88,6 @@ public class CalendarSpeech {
 	 */
 	@Intent
 	public String setEvent(Map<String, EntityData> entities) {
-		if (!this.setStartAndEnd(entities)) {
-			return "You have to restart the creation of a new event and please make sure that you add a time to the "
-					+ "start and to the end if you choose an non all day event.";
-		}
-		if (!this.startBeforeEnd) {
-			return  "You have to restart the creation of a new event and please make sure that the start of the event "
-					+ "is before the end.";
-		}
-		this.createNewEvent(entities);
-		return "I set up the event " + this.calendarEvent.getSummary() + " for you."; 
+		return this.calendar.createNewEvent(entities);
 	}
-	
-	/**
-	 * This method sets the allDay variable
-	 * 	
-	 * @param allDayString
-	 * 			the String from which the boolean is parsed.
-	 */
-	private void setAllDay(String allDayString) {
-		if(allDayString.equals("yes") || allDayString.equals("true")) {
-			this.allDay = true;
-		} else {
-			this.allDay = false;
-		}
-	}
-	
-	/**
-	 * This method sets the start and the end of the event
-	 * 
-	 * @param entities
-	 * 			contain the information for the start and the end
-	 * @return if everything went well
-	 */
-	private boolean setStartAndEnd(Map<String, EntityData> entities) {
-		this.setAllDay(entities.get("allday").getString());
-		if(this.allDay) {
-			this.start = LocalDateTime.of(entities.get("startdate").getDate().plusDays(1), this.zero);
-			this.end = LocalDateTime.of(entities.get("enddate").getDate().plusDays(2), this.zero);
-			this.startBeforeEnd = this.start.isBefore(this.end) || this.start.isEqual(this.end);	
-		} else if(entities.get("starttime") == null || entities.get("endtime") == null) {
-			return false;
-		} else {
-    		this.start = LocalDateTime.of(entities.get("startdate").getDate(), entities.get("starttime").getTime());
-    		this.end = LocalDateTime.of(entities.get("enddate").getDate(), entities.get("endtime").getTime());
-    		this.startBeforeEnd = this.start.isBefore(this.end);	
-		}
-		return true;
-	}
-	
-	/**
-	 * This method creates a new event.
-	 * 
-	 * @param entities
-	 * 			informations for the new event
-	 */
-	private void createNewEvent(Map<String, EntityData> entities) {
-		String location;
-		String description;
-		if (entities.get("location") == null) {
-			location = "";
-		} else {
-			location = entities.get("location").getString();
-			if(location.equals("no")) {location = "";}
-		}
-		if (entities.get("description") == null) {
-			description = "";
-		} else {
-			description = entities.get("description").getString();
-			if(description.equals("no")) {description = "";}
-		}
-		int reminderTime = entities.get("remindertimevalue").getNumber();
-		String reminderTimeUnit = entities.get("remindertimeunit").getString();
-		if (reminderTimeUnit.equals("hours") || reminderTimeUnit.equals("h")) {
-			reminderTime *= 60;
-		}
-		if (reminderTimeUnit.equals("days")) {
-			reminderTime *= 60 * 24;
-		}
-		this.calendarEvent = new CalendarEvent(this.start, this.end, entities.get("title").getString(), location, 
-				description, entities.get("remindertype").getString(), reminderTime, "", this.allDay);
-		this.calendar.setEvent(this.calendarEvent);
-	}
-
 }
