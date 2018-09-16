@@ -28,7 +28,7 @@
 	</Intent>
 	
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.createNewEvent">
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.setEvent">
 		<gram>[create] new event</gram>
 		<EntityTemplates>
 			<EntityTemplate id="title" required="true">
@@ -53,7 +53,7 @@
 				<gram>{enddate} [at {endtime}]</gram>
 			</EntityTemplate>		
 			<EntityTemplate id="allday" required="true">
-				<gram>(yes|no)</gram>
+				<gram>(yes|true|no|false)</gram>
 			</EntityTemplate>	
 			<EntityTemplate id="description" required="true">
 				<gram>*</gram>
@@ -64,8 +64,14 @@
 			<EntityTemplate id="remindertype" required="true">
 				<gram>(email|popup)</gram>
 			</EntityTemplate>
+			<EntityTemplate id="remindertimevalue" required="false">
+				<gram>{amyinteger}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="remindertimeunit" required="false">
+				<gram>(minutes|hours|days)</gram>
+			</EntityTemplate>
 			<EntityTemplate id="remindertime" required="true">
-				<gram>{amyinteger} (minutes|hours|days)</gram>
+				<gram>{remindertimevalue} {remindertimeunit}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="title">
@@ -101,26 +107,4 @@
 			<gram>{remindertime}</gram>
 		</Prompt>
 	</Intent>
-	
-	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getADate">
-		<gram>{date}</gram>
-		<EntityTemplates>
-			<EntityTemplate id="date" required="true">
-				<gram>{amydate}</gram>
-			</EntityTemplate>
-		</EntityTemplates>
-	</Intent>
-	
-	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getADateTime">
-		<gram>{datetime}</gram>
-		<EntityTemplates>
-			<EntityTemplate id="datetime" required="true">
-				<gram>{amydatetime}</gram>
-			</EntityTemplate>
-		</EntityTemplates>
-
-	</Intent>
-
 </AmyInteractionModel>

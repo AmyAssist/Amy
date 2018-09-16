@@ -37,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 /**
  * This is the speech class, which contains the commands for the calendar
  *
- * @author Patrick Gebhardt, Florian Bauer
+ * @author Florian Bauer, Patrick Gebhardt
  */
 @Service
 @SpeechCommand
@@ -47,9 +47,11 @@ public class CalendarSpeech {
 	private CalendarLogic calendar;
 	
 	private boolean allDay;
+	private boolean startBeforeEnd;
 	private LocalDateTime start;
 	private LocalDateTime end;
 	private LocalTime zero = LocalTime.of(0, 0, 0, 0);
+	private CalendarEvent calendarEvent;
 	
 
 	/**
@@ -79,71 +81,91 @@ public class CalendarSpeech {
 	}
 	
 	/**
-	 * This method creates a new event
+	 * This method handles Amy response for creating a new event
 	 * 
 	 * @param entities
 	 * 			from the speech
-	 * @return if event could be created
+	 * @return if the event was successfully created or if not why
 	 */
 	@Intent
-	public String createNewEvent(Map<String, EntityData> entities) {
-		this.setAllDay(entities.get("allday").getString());
-		if(this.allDay) {
-			this.setStartAndEnd(entities.get("startdate").getDate(), entities.get("enddate").getDate(), this.zero, this.zero);
-		} else {
-			if(entities.get("starttime") == null || entities.get("endtime") == null) {
-				return "You have to restart the creation of a new event and please make sure that you add a time to the start and to the end if you choose an non all day event.";
-			}
-			this.setStartAndEnd(entities.get("startdate").getDate(), entities.get("enddate").getDate(), entities.get("starttime").getTime(), entities.get("endtime").getTime());
-		}		
-		return "created event: " + entities.get("title").getString() + " " + this.allDay; 
+	public String setEvent(Map<String, EntityData> entities) {
+		if (!this.setStartAndEnd(entities)) {
+			return "You have to restart the creation of a new event and please make sure that you add a time to the start and to the end if you choose an non all day event.";
+		}
+		if (!this.startBeforeEnd) {
+			return  "You have to restart the creation of a new event and please make sure that the start of the event is before the end.";
+		}
+		this.createNewEvent(entities);
+		return "I set up the event " + this.calendarEvent.getSummary() + " for you."; 
 	}
 	
+	/**
+	 * This method sets the allDay variable
+	 * 	
+	 * @param allDayString
+	 * 			the String from which the boolean is parsed.
+	 */
 	private void setAllDay(String allDayString) {
-		if(allDayString.equals("yes")) {
+		if(allDayString.equals("yes") || allDayString.equals("true")) {
 			this.allDay = true;
 		} else {
 			this.allDay = false;
 		}
 	}
 	
-	
-	private void setStartAndEnd(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+	/**
+	 * This method sets the start and the end of the event
+	 * 
+	 * @param entities
+	 * 			contain the information for the start and the end
+	 * @return if everything went well
+	 */
+	private boolean setStartAndEnd(Map<String, EntityData> entities) {
+		this.setAllDay(entities.get("allday").getString());
 		if(this.allDay) {
-			this.start = LocalDateTime.of(startDate, this.zero);
-			this.end = LocalDateTime.of(endDate, this.zero);
+			this.start = LocalDateTime.of(entities.get("startdate").getDate(), this.zero);
+			this.end = LocalDateTime.of(entities.get("enddate").getDate(), this.zero);
+			this.startBeforeEnd = this.start.isBefore(this.end) || this.start.isEqual(this.end);	
+		} else if(entities.get("starttime") == null || entities.get("endtime") == null) {
+			return false;
 		} else {
-			if(startTime != null) {
-				this.start = LocalDateTime.of(startDate, startTime);
-			} else {
-				this.start = null;
-			}
-			if(endTime != null) {
-				this.end = LocalDateTime.of(endDate, endTime);
-			}
+    		this.start = LocalDateTime.of(entities.get("startdate").getDate(), entities.get("starttime").getTime());
+    		this.end = LocalDateTime.of(entities.get("enddate").getDate(), entities.get("endtime").getTime());
+    		this.startBeforeEnd = this.start.isBefore(this.end);	
 		}
+		return true;
 	}
-
+	
 	/**
-	 * example method
+	 * This method creates a new event.
 	 * 
 	 * @param entities
-	 * @return
+	 * 			informations for the new event
 	 */
-	@Intent
-	public String getADate(Map<String, EntityData> entities) {
-		return "Date: " + entities.get("date").getDate().toString();
-	}
-
-	/**
-	 * example method
-	 * 
-	 * @param entities
-	 * @return
-	 */
-	@Intent
-	public String getADateTime(Map<String, EntityData> entities) {
-		return "DateTime: " + entities.get("datetime").getDateTime().toString();
+	private void createNewEvent(Map<String, EntityData> entities) {
+		String location, description;
+		if (entities.get("location") == null) {
+			location = "";
+		} else {
+			location = entities.get("location").getString();
+			if(location.equals("no")) {location = "";}
+		}
+		if (entities.get("description") == null) {
+			description = "";
+		} else {
+			description = entities.get("description").getString();
+			if(description.equals("no")) {description = "";}
+		}
+		int reminderTime = entities.get("remindertimevalue").getNumber();
+		String reminderTimeUnit = entities.get("remindertimeunit").getString();
+		if (reminderTimeUnit.equals("hours")) {
+			reminderTime *= 60;
+		}
+		if (reminderTimeUnit.equals("days")) {
+			reminderTime *= 60 * 24;
+		}
+		this.calendarEvent = new CalendarEvent(this.start, this.end, entities.get("title").getString(), location, description, entities.get("remindertype").getString(), reminderTime, "", this.allDay);
+		this.calendar.setEvent(this.calendarEvent);
 	}
 
 }
