@@ -14,14 +14,14 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherSpeechCommand.weatherWeekend">
-		<gram>[how is the] weather [at the] weekend</gram>
+		<gram>[how is the] weather [on the] weekend</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherSpeechCommand.rainCheck">
-		<gram>is it gonna rain {timespan} [(at|in) {locationname}]</gram>
+		<gram>is it (gonna|going to) rain {timespan} [(at|in) {locationname}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="timespan" required="false">
-				<gram>(today|tomorrow|at the weekend)</gram>
+				<gram>(today|tomorrow|on the weekend)</gram>
 			</EntityTemplate>
 			<EntityTemplate id="locationname" required="false">
 				<gram>*</gram>
