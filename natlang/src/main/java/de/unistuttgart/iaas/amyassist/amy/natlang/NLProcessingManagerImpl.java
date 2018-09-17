@@ -131,7 +131,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Override
 	public void processIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language);
-		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
+		List<EndToken> tokens = nlLexer.tokenize(naturalLanguageText);
 		if (!promptGrammarFound(dialog, tokens)) {
 			// try to skip prefixes and suffixes until a grammar matches
 			for (int i = 0; i <= tokens.size(); i++) {
@@ -146,7 +146,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		}
 	}
 
-	private boolean promptGrammarFound(Dialog dialog, List<WordToken> tokens) {
+	private boolean promptGrammarFound(Dialog dialog, List<EndToken> tokens) {
 		List<AGFNode> promptGrams = new ArrayList<>();
 		if (dialog.getNextPrompt() != null) {
 			promptGrams.add(dialog.getNextPrompt().getGrammar());
@@ -215,11 +215,13 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Override
 	public Dialog decideIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language);
-		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
+		List<EndToken> tokens = nlLexer.tokenize(naturalLanguageText);
 
 		if (intentFound(dialog, tokens)) {
 			return dialog;
 		}
+		
+		System.out.println("skipping");
 
 		// try to skip prefixes and suffixes until a grammar matches
 		for (int i = 0; i <= tokens.size(); i++) {
@@ -236,7 +238,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	}
 
-	private boolean intentFound(Dialog dialog, List<WordToken> tokens) {
+	private boolean intentFound(Dialog dialog, List<EndToken> tokens) {
 		INLParser nlParser = new NLParser(new ArrayList<>(this.nodeToMethodAIMPair.keySet()),
 				this.language.getStemmer());
 		AGFNode node;

@@ -49,7 +49,7 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ChooseLangua
 import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishNumberConversion;
 import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLParser;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.WordToken;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.EndToken;
 import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntent;
 
 /**
@@ -86,7 +86,7 @@ public class NLParserTest {
 	@Test
 	public void test() {
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
-		List<WordToken> tokens = lex.tokenize("greet me");
+		List<EndToken> tokens = lex.tokenize("greet me");
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(0).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
@@ -97,7 +97,7 @@ public class NLParserTest {
 	@Test
 	public void finished() {
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
-		List<WordToken> tokens = lex.tokenize("greet me with good morning test ten oh twenty");
+		List<EndToken> tokens = lex.tokenize("greet me with good morning test ten oh twenty");
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(0).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
@@ -109,7 +109,7 @@ public class NLParserTest {
 	@Test
 	public void shortWildcardTest() {
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
-		List<WordToken> tokens = lex.tokenize("test the four sign long wildcard here");
+		List<EndToken> tokens = lex.tokenize("test the four sign long wildcard here");
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(1).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
@@ -126,7 +126,7 @@ public class NLParserTest {
 		}
 		b.append(" long");
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
-		List<WordToken> tokens = lex.tokenize(b.toString());
+		List<EndToken> tokens = lex.tokenize(b.toString());
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(2).getGrammar());
 		NLParser parser = new NLParser(nodes, null);

@@ -24,30 +24,47 @@
 package de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes;
 
 /**
- * a word node
- * 
+ * Helper class acting as a parent for all 
+ * nodes that are end nodes - e.g. word nodes or number nodes
  * @author Felix Burk
  */
-public class WordNode extends EndNode {
+public class EndNode extends AGFNode {
 
 	/**
-	 * constructor
-	 * 
 	 * @param content
-	 *                    of node
 	 */
-	public WordNode(String content) {
+	public EndNode(String content) {
 		super(content);
+		// TODO Auto-generated constructor stub
 	}
-
+	
 	/**
-	 * returns the node type
-	 * 
-	 * @return the type
+	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode#getType()
 	 */
 	@Override
 	public AGFNodeType getType() {
-		return AGFNodeType.WORD;
+		//this is only a helper class and does not have an own agf node type
+		return null;
+	}
+	
+	/**
+	 * special print self method, because this node my never have children
+	 * 
+	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode#printSelf(java.lang.String, int)
+	 */
+	@Override
+	public String printSelf(String name, int indent) {
+		StringBuilder b = new StringBuilder();
+		b.append("+" + name);
+		b.append("\n");
+
+		for (int i = 0; i < indent; i++) {
+			b.append("|");
+			b.append("   ");
+		}
+		b.append("|---" + "<content> " + this.getContent());
+		b.append("\n");
+		return b.toString();
 	}
 
 }

@@ -24,20 +24,56 @@
 package de.unistuttgart.iaas.amyassist.amy.natlang.nl;
 
 /**
- * types of word tokens
+ * Word Token class used in the Lexer and parser
  * 
  * @author Felix Burk
  */
-public enum WordTokenType {
+public class EndToken {
+
+	private final String content;
+
+	private EndTokenType type;
 
 	/**
-	 * just some word
+	 * constructor for word token
+	 * 
+	 * @param content
+	 *                    the content
 	 */
-	WORD,
+	public EndToken(String content) {
+		this.content = content;
+	}
 
 	/**
-	 * some number, written or as digit
+	 * getter for string content
+	 * 
+	 * @return the content
 	 */
-	NUMBER;
+	public String getContent() {
+		return this.content;
+	}
 
+	/**
+	 * setter for type
+	 * 
+	 * @param type
+	 *                 the type to set
+	 */
+	public void setType(EndTokenType type) {
+		this.type = type;
+	}
+
+	/**
+	 * returns the type
+	 * 
+	 * @return the type
+	 */
+	public EndTokenType getType() {
+		return this.type;
+	}
+
+	@Override
+	public String toString() {
+		return this.content;
+	}
 }
