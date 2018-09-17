@@ -23,7 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.natlang.nl;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParseException;
@@ -46,11 +48,13 @@ public class NLParser implements INLParser {
 	/**
 	 * list of read tokens
 	 */
-	private List<WordToken> mRead;
+	private List<EndToken> mRead;
 
 	private int currentIndex;
 
 	private Stemmer stemmer;
+	
+	private Deque<AGFNode> shortWCStopper;
 
 	/**
 	 *
@@ -65,9 +69,10 @@ public class NLParser implements INLParser {
 	}
 
 	@Override
-	public AGFNode matchingNode(List<WordToken> nl) {
+	public AGFNode matchingNode(List<EndToken> nl) {
 		this.mRead = nl;
 		for (AGFNode agf : this.grammars) {
+			this.shortWCStopper = generateStopperStack(agf);
 			agf.deleteEntityContent();
 			AGFNode nodeSorted = sortChildsOfOrAndOp(agf);
 			this.currentIndex = 0;
@@ -76,6 +81,37 @@ public class NLParser implements INLParser {
 			}
 		}
 		throw new NLParserException("could not find matching grammar for tokens" + nl);
+	}
+
+	/**
+	 * @param agf
+	 * @return
+	 */
+	private Deque<AGFNode> generateStopperStack(AGFNode agf) {
+		Deque<AGFNode> stack = new ArrayDeque<>();
+		generateStopperStack(agf, stack, false);
+		return stack;
+	}
+
+	
+	boolean x = false;
+	/**
+	 * @param agf
+	 * @param stack 
+	 * @param b
+	 */
+	private void generateStopperStack(AGFNode agf, Deque<AGFNode> stack, boolean b) {
+		for(AGFNode node : agf.getChilds()) {
+			if(node.getType() == AGFNodeType.SHORTWC && !x) {
+				x = true;
+				generateStopperStack(node, stack, true);
+			}else if(x) {
+				x = false;
+				stack.push(node);
+			}else {
+				generateStopperStack(node, stack, b);
+			}
+		}
 	}
 
 	/**
@@ -105,14 +141,9 @@ public class NLParser implements INLParser {
 	}
 
 	@Override
-	public int matchingNodeIndex(List<WordToken> nl) {
+	public int matchingNodeIndex(List<EndToken> nl) {
 		return this.grammars.indexOf(matchingNode(nl));
 	}
-
-	/**
-	 * ugly internal state variable to show how many skips are allowed currently
-	 */
-	int wcSkips = 0;
 
 	/**
 	 * another ugly internal state for wildcards if this is true everything will be skipped and return true
@@ -161,8 +192,7 @@ public class NLParser implements INLParser {
 			}
 			break;
 		case SHORTWC:
-			this.wcSkips = ((ShortWNode) agf).getMaxWordLength();
-			break;
+			return matchShortWC(agf);
 		case LONGWC:
 			this.wildcardSkip = true;
 			for (int i = this.currentIndex; i < this.mRead.size(); i++) {
@@ -183,6 +213,35 @@ public class NLParser implements INLParser {
 	}
 
 	/**
+	 * matches a short wildcard with fixed skip size
+	 * this uses the internal stack to check the end of the wildcards
+	 * @param agf to check
+	 * @return if the short wildcard matched
+	 */
+	private boolean matchShortWC(AGFNode agf) {
+		AGFNode endNode = this.shortWCStopper.peek();
+		if(endNode == null) {
+			return false;
+		}
+		ShortWNode wc = (ShortWNode) agf;
+		int i;
+		int index = this.currentIndex;
+		for(i=0; (i <= wc.getMaxWordLength() && i < this.mRead.size()-index); i++) {
+			EndToken token = this.lookAhead(0);
+			if(checkNode(endNode)) {
+				//undo consume from checkNode
+				this.currentIndex--;
+				this.shortWCStopper.pop();
+				break;
+			}else if(token != null) {
+				//skip current word because it did not match the end criteria
+				consume();
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * checks if a number is at the current index and if the number matches the conditions of the NumberNode e.g. is in
 	 * correct range and stepsize
 	 *
@@ -191,8 +250,11 @@ public class NLParser implements INLParser {
 	 * @return true if the node matches
 	 */
 	private boolean matchNumber(AGFNode agf) {
-		WordToken token = lookAhead(0);
-
+		EndToken token = lookAhead(0);
+		return matchNumber(agf, token);
+	}
+	
+	private boolean matchNumber(AGFNode agf, EndToken token) {
 		if (token == null || token.getContent() == null) {
 			return false;
 		}
@@ -245,35 +307,16 @@ public class NLParser implements INLParser {
 	 * @return if it matched
 	 */
 	private boolean match(AGFNode toMatch) {
-		WordToken token = lookAhead(0);
+		EndToken token = lookAhead(0);
 
 		if (compareWord(toMatch, token)) {
 			consume();
 			return true;
 		}
-
-		// greedy match words with fixed size of skips for wildcards
-		if (this.wcSkips != 0) {
-			int lookaheadSize = 0;
-			for (int i = 1; i <= this.wcSkips; i++) {
-				WordToken temp = lookAhead(i);
-				if (compareWord(toMatch, temp)) {
-					lookaheadSize = i;
-					break;
-				}
-			}
-			for (int i = 0; i < lookaheadSize + 1; i++) {
-				consume();
-			}
-			if (lookaheadSize != 0) {
-				return true;
-			}
-		}
-		this.wcSkips = 0;
 		return false;
 	}
 
-	private boolean compareWord(AGFNode toMatch, WordToken token) {
+	private boolean compareWord(AGFNode toMatch, EndToken token) {
 		if(toMatch == null || toMatch.getContent() == null || token == null || token.getContent() == null) 
 			return false;
 		
@@ -295,7 +338,7 @@ public class NLParser implements INLParser {
 	 *
 	 * @return consumed token
 	 */
-	private WordToken consume() {
+	private EndToken consume() {
 		if (this.mRead.size() > this.currentIndex) {
 			return this.mRead.get(this.currentIndex++);
 		}
@@ -309,7 +352,7 @@ public class NLParser implements INLParser {
 	 *            needed
 	 * @return token at distance
 	 */
-	private WordToken lookAhead(int distance) {
+	private EndToken lookAhead(int distance) {
 		int index = this.currentIndex + distance;
 		if (this.mRead.size() > index) {
 			// Get the queued token.
