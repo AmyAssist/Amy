@@ -369,10 +369,9 @@ public class CalendarLogic {
 		String eventEndDate = dateOutput(endDate, withEndDate, withTime);
 		String eventStartTime = "";
 		String eventEndTime = "";
-		DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm");
 		if (withTime) {
-			eventStartTime = " " + time.format(startDate);
-			eventEndTime = " " + time.format(endDate);
+			eventStartTime = " " + getCorrectTime(startDate); 
+			eventEndTime = " " + getCorrectTime(endDate);
 		}
 		switch (outputCase) {
 		case STARTINPAST:
@@ -396,10 +395,10 @@ public class CalendarLogic {
 			break;
 		case SINGLEDAY:
 			if (withStartDate) {
-				eventData += " on the " + getDate(startDate) + " at " + time.format(startDate) + " until "
-						+ time.format(endDate) + ". \n";
+				eventData += " on the " + getDate(startDate) + " at " + getCorrectTime(startDate) + " until "
+						+ getCorrectTime(endDate) + ". \n";
 			} else {
-				eventData += " from " + time.format(startDate) + " until " + time.format(endDate) + ". \n";
+				eventData += " from " + getCorrectTime(startDate) + " until " + getCorrectTime(endDate) + ". \n";
 			}
 			break;
 
@@ -409,6 +408,21 @@ public class CalendarLogic {
 		}
 
 		return eventData;
+	}
+	
+	/**
+	 * 
+	 * @param localDateTime
+	 * 			input time as LocalDateTime
+	 * @return correct time in 24 hour format with am/pm
+	 */
+	public String getCorrectTime(LocalDateTime localDateTime) {		
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+		if(localDateTime.getHour() > 11) {
+			return timeFormatter.format(localDateTime) + " pm";
+		}
+		return timeFormatter.format(localDateTime) + " am";
+		
 	}
 	
 	/**
