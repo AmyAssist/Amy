@@ -246,15 +246,15 @@ public class CalendarLogic {
 		Events events = this.calendarService.getEvents(min, max);
 		List<Event> items = events.getItems();
 		if (items.isEmpty()) {
-			return "No events found for the " + getDate(chosenDay) + ".";
+			return "No events found for the " + getDate(chosenDay) + " " + chosenDay.getYear() + ".";
 		}
 		for (Event event : items) {
 			eventList.add(this.checkDay(chosenDay, event, false));
 		}
 		if (eventList.isEmpty()) {
-			return "There are no events on the " + getDate(chosenDay) + ".";
+			return "There are no events on the " + getDate(chosenDay) + " " + chosenDay.getYear() + ".";
 		}
-		return "You have following events on the " + getDate(chosenDay) + ":\n" + String.join("\n", eventList);
+		return "You have following events on the " + getDate(chosenDay) + " " + chosenDay.getYear() + ":\n" + String.join("\n", eventList);
 	}
 
 	/**
