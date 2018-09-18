@@ -254,7 +254,8 @@ public class CalendarLogic {
 		if (eventList.isEmpty()) {
 			return "There are no events on the " + getDate(chosenDay) + " " + chosenDay.getYear() + ".";
 		}
-		return "You have following events on the " + getDate(chosenDay) + " " + chosenDay.getYear() + ":\n" + String.join("\n", eventList);
+		return "You have following events on the " + getDate(chosenDay) + " " + chosenDay.getYear() + ":\n"
+				+ String.join("\n", eventList);
 	}
 
 	/**
