@@ -270,12 +270,12 @@ public class NLParser implements INLParser {
 	 * @return true if the entity matched
 	 */
 	private boolean fillEntity(AGFNode agf) {
-		int startIndex = this.matchedStrings.size();
+		int startIndex = this.currentIndex;
 		boolean matched = true;
 		for (AGFNode node : agf.getChilds()) {
 			matched = checkNode(node) && matched;
 		}
-		int endIndex = this.matchedStrings.size();
+		int endIndex = this.currentIndex;
 
 		try {
 			EntityNode entity = (EntityNode) agf;
