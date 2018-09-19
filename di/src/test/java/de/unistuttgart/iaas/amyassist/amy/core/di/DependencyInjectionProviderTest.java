@@ -54,7 +54,7 @@ class DependencyInjectionProviderTest {
 
 	@Test
 	void testServiceAnnotation() {
-		this.dependencyInjection.register(new ServiceProvider<ServiceWithServiceLocator>() {
+		this.dependencyInjection.getConfiguration().register(new ServiceProvider<ServiceWithServiceLocator>() {
 
 			@Override
 			@Nonnull
@@ -82,7 +82,8 @@ class DependencyInjectionProviderTest {
 					@Nonnull ServiceInstantiationDescription<ServiceWithServiceLocator> serviceInstantiationDescription) {
 			}
 		});
-		ServiceWithServiceLocator service = this.dependencyInjection.getService(ServiceWithServiceLocator.class);
+		ServiceWithServiceLocator service = this.dependencyInjection.getServiceLocator()
+				.getService(ServiceWithServiceLocator.class);
 
 		ServiceConsumer<Service1> serviceConsumer = Mockito.mock(ServiceConsumer.class);
 		assertThrows(RuntimeException.class, () -> service.getLocator().getService(serviceConsumer));

@@ -34,6 +34,7 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.slf4j.Logger;
 
@@ -45,6 +46,7 @@ import com.google.api.services.calendar.model.Events;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 
 /**
  * This class implements all the functions that our calendar plugin is capable of, e.g. get calendar events and set
@@ -68,7 +70,7 @@ public class CalendarLogic {
 
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 	private LocalTime zero = LocalTime.of(0, 0, 0, 0);
-
+	
 	/**
 	 * Natural language response of Amy when the event list is empty.
 	 */
@@ -106,6 +108,54 @@ public class CalendarLogic {
 
 		event.setReminders(calendarEvent.getReminders());
 		this.calendarService.addEvent("primary", event);
+	}
+	
+	/**
+	 * @param entities
+	 * 			from the speech
+	 * @return if the event was successfully created or if not why
+	 */
+	public String createNewEvent(Map<String, EntityData> entities) {
+		boolean allDay = isAllDay(entities.get("allday").getString());
+		
+		boolean startBeforeEnd = true;
+		LocalDateTime start;
+		LocalDateTime end;
+		if(allDay) {
+			start = LocalDateTime.of(entities.get("startdate").getDate().plusDays(1), this.zero);
+			end = LocalDateTime.of(entities.get("enddate").getDate().plusDays(2), this.zero);
+			startBeforeEnd = start.isBefore(end) || start.isEqual(end);	
+		} else if(entities.get("starttime") == null || entities.get("endtime") == null) {
+			return "You have to restart the creation of a new event and please make sure that you add a time to the "
+					+ "start and to the end if you choose an non all day event.";
+		} else {
+    		start = LocalDateTime.of(entities.get("startdate").getDate(), entities.get("starttime").getTime());
+    		end = LocalDateTime.of(entities.get("enddate").getDate(), entities.get("endtime").getTime());
+    		startBeforeEnd = start.isBefore(end);	
+		}
+		if (!startBeforeEnd) {
+			return  "You have to restart the creation of a new event and please make sure that the start of the event "
+					+ "is before the end.";
+		}
+		
+		String location = entities.get("location").getString();
+		if (location.equals("no")) { location = ""; }
+		String description = entities.get("description").getString();
+		if (description.equals("no")) { description = ""; }
+		
+		int reminderTime = entities.get("remindertimevalue").getNumber();
+		String reminderTimeUnit = entities.get("remindertimeunit").getString();
+		if (reminderTimeUnit.equals("hours") || reminderTimeUnit.equals("hour")) {
+			reminderTime *= 60;
+		}
+		if (reminderTimeUnit.equals("days") || reminderTimeUnit.equals("day")) {
+			reminderTime *= 60 * 24;
+		}
+
+		CalendarEvent calendarEvent = new CalendarEvent(start, end, entities.get("title").getString(), location, 
+				description, entities.get("remindertype").getString(), reminderTime, "", allDay);
+		this.setEvent(calendarEvent);
+		return "I set up the event " + calendarEvent.getSummary() + " for you."; 
 	}
 
 	/**
@@ -184,19 +234,19 @@ public class CalendarLogic {
 
 	/**
 	 * This method contains the logic to show the calendar events on a specific date as natural language output
-	 *
-	 * @param chosenDay
-	 *            LocalDateTime variable
+	 * @param localDate 
+	 *            LocalDate variable
 	 * @return the events of the chosen day
 	 */
-	public String getEventsAtAsString(LocalDateTime chosenDay) {
+	public String getEventsAtAsString(LocalDate localDate) {
 		List<String> eventList = new ArrayList<>();
+		LocalDateTime chosenDay = LocalDateTime.of(localDate, this.zero);
 		DateTime min = getDateTime(chosenDay, 0);
 		DateTime max = getDateTime(chosenDay, 1);
 		Events events = this.calendarService.getEvents(min, max);
 		List<Event> items = events.getItems();
 		if (items.isEmpty()) {
-			return this.noEventsFound;
+			return "No events found for the " + getDate(chosenDay) + ".";
 		}
 		for (Event event : items) {
 			eventList.add(this.checkDay(chosenDay, event, false));
@@ -423,6 +473,15 @@ public class CalendarLogic {
 	 */
 	public static boolean isAllDay(Event event) {
 		return event.getStart().getDate() != null;
+	}
+	
+	/** 	
+	 * @param allDayString
+	 * 			the String from which the boolean is parsed.
+	 * @return if the event is all day
+	 */
+	public static boolean isAllDay(String allDayString) {
+		return allDayString.equals("yes") || allDayString.equals("true");
 	}
 
 	/**

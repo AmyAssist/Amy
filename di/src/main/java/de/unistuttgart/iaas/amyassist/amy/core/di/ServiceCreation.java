@@ -48,7 +48,7 @@ public class ServiceCreation<T> {
 	 *            the name for the debugging
 	 * 
 	 */
-	public ServiceCreation(String name) {
+	ServiceCreation(String name) {
 		this.name = name;
 	}
 
