@@ -180,7 +180,7 @@ public class AGFNode {
 	 * @return String to print
 	 */
 	public String printSelf() {
-		return printSelf("AGFNode", 0);
+		return printSelf(this.getClass().getSimpleName(), 0);
 	}
 
 	/**

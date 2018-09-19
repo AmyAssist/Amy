@@ -31,6 +31,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,11 +75,13 @@ public class NLParserTest {
 		UserIntent int0 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(0));
 		UserIntent int1 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(1));
 		UserIntent int2 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(2));
+		UserIntent int3 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(3));
 		
 		this.intents = new ArrayList<>();
 		this.intents.add(int0);
 		this.intents.add(int1);
 		this.intents.add(int2);
+		this.intents.add(int3);
 		
 	}
 	
@@ -104,6 +107,20 @@ public class NLParserTest {
 		
 		assertEquals(parser.matchingNodeIndex(tokens),0);
 		assertEquals(getEntityNodeContent(parser.matchingNode(tokens)), "good morning10 oh 20");
+	}
+	
+	@Test
+	public void fuckingGrammar() {
+		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
+		List<EndToken> tokens = lex.tokenize("best transport from stuttgart test to berlin x test");
+		List<AGFNode> nodes = new ArrayList<>();
+		nodes.add(this.intents.get(3).getGrammar());
+		NLParser parser = new NLParser(nodes, null);
+		Deque<AGFNode> queue = parser.generateStopperDeque(nodes.get(0));
+		while(!queue.isEmpty()) {
+			System.out.println("next " + queue.pollLast().printSelf());
+		}
+		System.out.println(getEntityNodeContent(parser.matchingNode(tokens)));
 	}
 	
 	@Test

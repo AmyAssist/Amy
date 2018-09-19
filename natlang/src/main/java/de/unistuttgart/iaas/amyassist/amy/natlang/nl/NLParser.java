@@ -97,14 +97,26 @@ public class NLParser implements INLParser {
 	 * @param agf node to generate stack from
 	 * @return the generated deque
 	 */
-	private Deque<AGFNode> generateStopperDeque(AGFNode agf) {
+	public Deque<AGFNode> generateStopperDeque(AGFNode agf) {
 		Deque<AGFNode> stack = new ArrayDeque<>();
+		this.possibleStoppers = new ArrayList<>();
 		generateStopperDeque(agf, stack);
+		if(!this.possibleStoppers.isEmpty()) {
+			AGFNode agfNode = new AGFNode("");
+			ORGroupNode orGroup = new ORGroupNode("");
+			for(AGFNode stopper : this.possibleStoppers) {
+				orGroup.addChild(stopper);
+			}
+			agfNode.addChild(orGroup);
+			stack.push(agfNode);
+			this.foundShortWC = false;
+		}
 		return stack;
 	}
 
 	
 	private boolean foundShortWC = false;
+	private List<AGFNode> possibleStoppers;
 	/**
 	 * generates a deque which tells a short wildcard when to stop
 	 * e.g. in the grammar "test + testi + testo" 
@@ -120,10 +132,25 @@ public class NLParser implements INLParser {
 		for(AGFNode node : agf.getChilds()) {
 			if(node.getType() == AGFNodeType.SHORTWC && !this.foundShortWC) {
 				this.foundShortWC = true;
-				generateStopperDeque(node, stack);
 			}else if(this.foundShortWC) {
-				this.foundShortWC = false;
-				stack.push(node);
+				//optinal group hack
+				if(node.getType() == AGFNodeType.OPG) {
+					for(AGFNode opChild : node.getChilds()) {
+						this.possibleStoppers.add(opChild);
+					}
+				}else {
+					AGFNode agfNode = new AGFNode("");
+					ORGroupNode orGroup = new ORGroupNode("");
+					for(AGFNode stopper : this.possibleStoppers) {
+						orGroup.addChild(stopper);
+					}
+					orGroup.addChild(node);
+					agfNode.addChild(orGroup);
+					this.possibleStoppers = new ArrayList<>();
+					stack.push(this.sortChildsOfOrAndOp(agfNode));
+					this.foundShortWC = false;
+				}
+				
 			}else {
 				generateStopperDeque(node, stack);
 			}
@@ -245,17 +272,20 @@ public class NLParser implements INLParser {
 		
 		ShortWNode wc = (ShortWNode) agf;
 		int i;
+		int skips = 0;
 		int index = this.currentIndex;
 		for(i=0; (i <= wc.getMaxWordLength() && i < this.mRead.size()-index); i++) {
 			EndToken token = this.lookAhead(0);
 			if(checkNode(endNode)) {
 				//undo consume from checkNode
-				this.currentIndex--;
+				System.out.println("stop at \n" + token.getContent());
+				this.currentIndex = index+skips;
 				this.shortWCStopper.pollLast();
 				break;
 			}else if(token != null) {
 				//skip current word because it did not match the end criteria
 				this.matchedStrings.add(token.getContent());
+				skips++;
 				consume();
 			}
 		}
