@@ -66,7 +66,7 @@ public class PreDefinedEntityTypes {
 					"(january|february|march|april|may|june|july|august|september|october|november|december|$(1,12,1))");
 			grammars.put("amytime", "(({amyhour} (x|oh) {amyminute}| (({amyhour}|quarter|half)"
 					+ " (past|to) {amyminute} )|{amyhour}  [o clock])[am|pm]|now|no)");
-			grammars.put("amyyear", "{amyinteger}");
+			grammars.put("amyyear", "$(1000,9999,1)");
 			grammars.put("amydate", " ([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{amyyear}]|tomorrow|today)");
 			grammars.put("amydatetime", "{amydate} at {amytime}");
 		}
