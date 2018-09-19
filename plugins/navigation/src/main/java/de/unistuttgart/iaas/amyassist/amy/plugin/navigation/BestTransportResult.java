@@ -23,22 +23,19 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest.WidgetRouteInfo;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
-import java.util.function.Function;
 
 /**
  * This class is needed to store the best route and the transport type
