@@ -36,6 +36,9 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.slf4j.Logger;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonValue;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -48,8 +51,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 @Service
 public class JokeAPICaller {
 
-	private static final String GEEK_JOKES_API = "https://geek-jokes.sameerkumar.website/api";
-	// private static final String DAD_JOKES_API = "https://icanhazdadjoke.com";
+	private static final String DAD_JOKES_API = "https://icanhazdadjoke.com";
 
 	private List<String> jokeAPIs;
 
@@ -64,26 +66,35 @@ public class JokeAPICaller {
 	protected String getRandomJoke() {
 		Random r = new Random();
 		final int apiIndex = r.nextInt(this.jokeAPIs.size());
-		return callJokeAPI(apiIndex);
+		return callJokeAPI(this.jokeAPIs.get(apiIndex));
 	}
 
-	private String callJokeAPI(int apiIndex) {
+	private String callJokeAPI(String jokeURL) {
 		try {
-			URL url = new URL(this.jokeAPIs.get(apiIndex));
+			URL url = new URL(jokeURL);
 			HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 			connection.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+			connection.setRequestProperty("Accept", "application/json");
 
 			if (connection.getResponseCode() != 200) {
 				return "Calling API failed";
 			}
-			BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			String s;
+
 			StringBuilder sb = new StringBuilder();
-			while ((s = br.readLine()) != null) {
-				sb.append(s);
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+				String s;
+				while ((s = br.readLine()) != null) {
+					sb.append(s);
+				}
 			}
-			return sb.toString();
+			final String response = sb.toString();
+			if (response.startsWith("{")) {
+				JsonValue json = Json.parse(response);
+				return json.asObject().get("joke").toString();
+			}
+			return response;
+
 		} catch (MalformedURLException e) {
 			this.logger.error("URL malformed", e);
 			return "URL malformed";
@@ -96,7 +107,6 @@ public class JokeAPICaller {
 	@PostConstruct
 	private void init() {
 		this.jokeAPIs = new ArrayList<>();
-		this.jokeAPIs.add(GEEK_JOKES_API);
-		// this.jokeAPIs.add(DAD_JOKES_API);
+		this.jokeAPIs.add(DAD_JOKES_API);
 	}
 }
