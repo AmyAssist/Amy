@@ -89,27 +89,33 @@ public class NLParser implements INLParser {
 	 */
 	private Deque<AGFNode> generateStopperStack(AGFNode agf) {
 		Deque<AGFNode> stack = new ArrayDeque<>();
-		generateStopperStack(agf, stack, false);
+		generateStopperStack(agf, stack);
 		return stack;
 	}
 
 	
-	boolean x = false;
+	private boolean foundShortWC = false;
 	/**
-	 * @param agf
-	 * @param stack 
-	 * @param b
+	 * generates a deque which tells a short wildcard when to stop
+	 * e.g. in the grammar "test + testi + testo" 
+	 * the stack would contain "testo", "testi". The first + wildcard then knows
+	 * to stop at "testi", because its on last in the queue
+	 *  "testi" gets removed after + matched. 
+	 * Then the next + knows to stop at testo because its last in the queue.
+	 * 
+	 * @param agf node to generate stack from
+	 * @param stack the stack
 	 */
-	private void generateStopperStack(AGFNode agf, Deque<AGFNode> stack, boolean b) {
+	private void generateStopperStack(AGFNode agf, Deque<AGFNode> stack) {
 		for(AGFNode node : agf.getChilds()) {
-			if(node.getType() == AGFNodeType.SHORTWC && !x) {
-				x = true;
-				generateStopperStack(node, stack, true);
-			}else if(x) {
-				x = false;
+			if(node.getType() == AGFNodeType.SHORTWC && !this.foundShortWC) {
+				this.foundShortWC = true;
+				generateStopperStack(node, stack);
+			}else if(this.foundShortWC) {
+				this.foundShortWC = false;
 				stack.push(node);
 			}else {
-				generateStopperStack(node, stack, b);
+				generateStopperStack(node, stack);
 			}
 		}
 	}
@@ -219,10 +225,11 @@ public class NLParser implements INLParser {
 	 * @return if the short wildcard matched
 	 */
 	private boolean matchShortWC(AGFNode agf) {
-		AGFNode endNode = this.shortWCStopper.peek();
+		AGFNode endNode = this.shortWCStopper.peekLast();
 		if(endNode == null) {
 			return false;
 		}
+		
 		ShortWNode wc = (ShortWNode) agf;
 		int i;
 		int index = this.currentIndex;
@@ -231,7 +238,7 @@ public class NLParser implements INLParser {
 			if(checkNode(endNode)) {
 				//undo consume from checkNode
 				this.currentIndex--;
-				this.shortWCStopper.pop();
+				this.shortWCStopper.pollLast();
 				break;
 			}else if(token != null) {
 				//skip current word because it did not match the end criteria
