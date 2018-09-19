@@ -231,13 +231,13 @@ public class CalendarLogic {
 	/**
 	 * This method contains the logic to show the calendar events on a specific date as natural language output
 	 *
-	 * @param localDate
-	 *            LocalDate variable
+	 * @param entities
+	 *            entities from speech
 	 * @return the events of the chosen day
 	 */
 	public String getEventsAtAsString(Map<String, EntityData> entities) {
 		LocalDateTime chosenDay = LocalDateTime.of(entities.get("date").getDate(), this.zero);
-		if (entities.get("eventyear").equals("") || chosenDay.isBefore(LocalDateTime.now())) {
+		if (entities.get("eventyear").getString().equals("") || chosenDay.isBefore(LocalDateTime.now())) {
 			chosenDay = chosenDay.withYear(LocalDate.now().getYear() + 1);
 		}
 		List<String> eventList = new ArrayList<>();
