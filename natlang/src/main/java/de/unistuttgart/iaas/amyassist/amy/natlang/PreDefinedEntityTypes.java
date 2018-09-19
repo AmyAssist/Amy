@@ -24,7 +24,9 @@
 package de.unistuttgart.iaas.amyassist.amy.natlang;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParser;
@@ -42,9 +44,6 @@ public class PreDefinedEntityTypes {
 	private static Map<String, AGFNode> map;
 	private static Map<String, String> grammars;
 
-	private static final String[] ids = { "amyinteger", "amyhour", "amyminute", "amytime", "amydayofmonth",
-			"amydayofweek", "amymonth", "amydate", "amydatetime" };
-
 	private PreDefinedEntityTypes() {
 		// hide constructor
 	}
@@ -57,17 +56,18 @@ public class PreDefinedEntityTypes {
 	public static Map<String, AGFNode> getTypes() {
 
 		if (grammars == null) {
-			grammars = new HashMap<>();
+			grammars = new LinkedHashMap<>();
 			grammars.put("amyinteger", "$(0,1000000000, 1)");
-			grammars.put("amyhour", "$(0,24,1)");
-			grammars.put("amyminute", "$(0,60,1)");
+			grammars.put("amyhour", "$(0,23,1)");
+			grammars.put("amyminute", "$(0,59,1)");
 			grammars.put("amydayofmonth", "$(1,31,1)");
 			grammars.put("amydayofweek", "(monday|tuesday|wednesday|thursday|friday|saturday|sunday)");
 			grammars.put("amymonth",
 					"(january|february|march|april|may|june|july|august|september|october|november|december|$(1,12,1))");
 			grammars.put("amytime", "(({amyhour} (x|oh) {amyminute}| (({amyhour}|quarter|half)"
 					+ " (past|to) {amyminute} )|{amyhour}  [o clock])[am|pm]|now|no)");
-			grammars.put("amydate", " ([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{amyinteger}]|tomorrow|today)");
+			grammars.put("amyyear", "{amyinteger}");
+			grammars.put("amydate", " ([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{amyyear}]|tomorrow|today)");
 			grammars.put("amydatetime", "{amydate} at {amytime}");
 		}
 		if (map == null) {
@@ -84,10 +84,10 @@ public class PreDefinedEntityTypes {
 	 *            hashmap of grammars to generate
 	 */
 	private static void generateAGFNodes(Map<String, String> grmrs) {
-		for (String s : ids) {
-			AGFLexer lex = new AGFLexer(grmrs.get(s));
+		for (Entry<String, String> entry : grmrs.entrySet()) {
+			AGFLexer lex = new AGFLexer(entry.getValue());
 			AGFParser parser = new AGFParser(lex, map);
-			map.put(s.toLowerCase(), parser.parseWholeExpression());
+			map.put(entry.getKey().toLowerCase(), parser.parseWholeExpression());
 		}
 	}
 }
