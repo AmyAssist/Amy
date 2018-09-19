@@ -29,6 +29,7 @@ import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
 import de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest.WidgetRouteInfo;
 
 import java.io.UnsupportedEncodingException;
@@ -148,34 +149,34 @@ public class BestTransportResult {
 		return URLEncoder.encode(string, StandardCharsets.UTF_8.name());
 	}
 
-	public WidgetRouteInfo routeToWidgetInfo() {
+	public WidgetRouteInfo routeToWidgetInfo(String mapsStaticAPIKey) {
 
 		try {
-			LatLng start = this.route.legs[0].startLocation;
-			LatLng end = this.route.legs[0].endLocation;
-			String travelMode = this.mode.toUrlValue();
+			if (this.route.legs != null && this.route.legs.length > 0) {
+				LatLng start = this.route.legs[0].startLocation;
+				LatLng end = this.route.legs[0].endLocation;
+				String travelMode = this.mode.toUrlValue();
 
-			// Locale.ROOT is used to force points as decimal separators as those are requires by the gmaps web api
-			String linkURLString = String.format(Locale.ROOT, "https://www.google.com/maps/dir/?api=1&" +
-							"origin=%f,%f&destination=%f,%f&travelmode=%s",
-					start.lat, start.lng, end.lat, end.lng, travelMode);
-			URL link = new URL(linkURLString);
+				// Locale.ROOT is used to force points as decimal separators as those are requires by the gmaps web api
+				String linkURLString = String.format(Locale.ROOT, "https://www.google.com/maps/dir/?api=1&" +
+								"origin=%f,%f&destination=%f,%f&travelmode=%s",
+						start.lat, start.lng, end.lat, end.lng, travelMode);
+				URL link = new URL(linkURLString);
 
-			// TODO: Remove API key from the url
-			String imageURLString = String.format(Locale.ROOT, "https://maps.googleapis.com/maps/api/staticmap?" +
-							"size=300x300&path=enc:%s&markers=%s&markers=%s&key=%s",
-					this.urlEncode(this.route.overviewPolyline.getEncodedPath()),
-					this.urlEncode("color:blue|label:S|" + start.toUrlValue()),
-					this.urlEncode("color:red|label:E|" + end.toUrlValue()),
-					""
-			);
-			URL image = new URL(imageURLString);
 
-			return new WidgetRouteInfo(image, link, "Tap to open in Google Maps");
+				String imageURLString = String.format(Locale.ROOT, "https://maps.googleapis.com/maps/api/staticmap?" +
+								"size=300x300&path=enc:%s&markers=%s&markers=%s&key=%s",
+						this.urlEncode(this.route.overviewPolyline.getEncodedPath()),
+						this.urlEncode("color:blue|label:S|" + start.toUrlValue()),
+						this.urlEncode("color:red|label:E|" + end.toUrlValue()),
+						mapsStaticAPIKey
+				);
+				URL image = new URL(imageURLString);
 
-		} catch (UnsupportedEncodingException | MalformedURLException e) {
-			return null;
-		}
+				return new WidgetRouteInfo(image, link, "Start in Google Maps");
+			}
+		} catch (UnsupportedEncodingException | MalformedURLException e) {}
+		return null;
 	}
 
 	/**

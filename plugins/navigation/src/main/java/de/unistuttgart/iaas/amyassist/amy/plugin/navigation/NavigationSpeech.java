@@ -135,7 +135,7 @@ public class NavigationSpeech {
 		);
 
 		return Response.text(result.routeToShortString()).widget("app-route-widget")
-				.attachment(result.routeToWidgetInfo()).build();
+				.attachment(result.routeToWidgetInfo(this.logic.getStaticAPIKey())).build();
 	}
 
 	/**
