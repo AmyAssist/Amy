@@ -26,6 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.natlang;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParser;
@@ -83,10 +84,10 @@ public class PreDefinedEntityTypes {
 	 *            hashmap of grammars to generate
 	 */
 	private static void generateAGFNodes(Map<String, String> grmrs) {
-		for (String s : grmrs.keySet()) {
-			AGFLexer lex = new AGFLexer(grmrs.get(s));
+		for (Entry<String, String> entry : grmrs.entrySet()) {
+			AGFLexer lex = new AGFLexer(entry.getValue());
 			AGFParser parser = new AGFParser(lex, map);
-			map.put(s.toLowerCase(), parser.parseWholeExpression());
+			map.put(entry.getKey().toLowerCase(), parser.parseWholeExpression());
 		}
 	}
 }
