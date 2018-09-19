@@ -93,7 +93,6 @@ public class LoadAIMService implements DeploymentContainerService {
 				for (String s : aimFiles) {
 					aimIntents.addAll(extractIntents(plugin, s));
 				}
-
 				matchAndRegister(aimIntents, plugin.getClassLoader());
 
 			} catch (IOException e) {

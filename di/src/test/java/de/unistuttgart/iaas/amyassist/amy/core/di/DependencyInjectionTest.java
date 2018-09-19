@@ -49,57 +49,61 @@ import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 class DependencyInjectionTest {
 
 	private DependencyInjection dependencyInjection;
+	private Configuration configuration;
+	private ServiceLocator serviceLocator;
 
 	@BeforeEach
 	public void setup() {
 		this.dependencyInjection = new DependencyInjection();
-		this.dependencyInjection.register(Service1.class);
-		this.dependencyInjection.register(Service2.class);
-		this.dependencyInjection.register(Service3.class);
+		this.configuration = this.dependencyInjection.getConfiguration();
+		this.serviceLocator = this.dependencyInjection.getServiceLocator();
+		this.configuration.register(Service1.class);
+		this.configuration.register(Service2.class);
+		this.configuration.register(Service3.class);
 	}
 
 	@Test
 	void testServiceAnnotation() {
-		Service1 service1 = this.dependencyInjection.getService(Service1.class);
+		Service1 service1 = this.serviceLocator.getService(Service1.class);
 		assertThat(service1, is(instanceOf(Service1.class)));
 	}
 
 	@Test
 	void testDependencyInjection() {
-		Service2 service2 = this.dependencyInjection.getService(Service2.class);
+		Service2 service2 = this.serviceLocator.getService(Service2.class);
 		assertThat(service2.checkServices(), is(true));
 	}
 
 	@Test
 	void testServiceRegistry() {
-		Service1 s1 = this.dependencyInjection.getService(Service1.class);
-		Service1 s2 = this.dependencyInjection.getService(Service1.class);
+		Service1 s1 = this.serviceLocator.getService(Service1.class);
+		Service1 s2 = this.serviceLocator.getService(Service1.class);
 		assertThat(s1, theInstance(s2));
 	}
 
 	@Test
 	void testCircularDependencies() {
-		this.dependencyInjection.register(Service4.class);
-		this.dependencyInjection.register(Service5.class);
+		this.configuration.register(Service4.class);
+		this.configuration.register(Service5.class);
 
 		assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
-			assertThrows(RuntimeException.class, () -> this.dependencyInjection.getService(Service4.class));
+			assertThrows(RuntimeException.class, () -> this.serviceLocator.getService(Service4.class));
 		});
 	}
 
 	@Test()
 	void testRegisterNotAService() {
 		String message = assertThrows(ClassIsNotAServiceException.class,
-				() -> this.dependencyInjection.register(NotAService.class)).getMessage();
+				() -> this.configuration.register(NotAService.class)).getMessage();
 
 		assertThat(message, equalTo("The class " + NotAService.class.getName() + " is not a Service"));
 	}
 
 	@Test()
 	void testServiceNotFoundException() {
-		this.dependencyInjection.register(Service6.class);
+		this.configuration.register(Service6.class);
 		String message = assertThrows(ServiceNotFoundException.class,
-				() -> this.dependencyInjection.getService(Service6.class)).getMessage();
+				() -> this.serviceLocator.getService(Service6.class)).getMessage();
 
 		assertThat(message, equalTo("No Service of type " + Service7API.class.getName()
 				+ " with qualifier [] is registered in the DI." + "\nRequired by:"
@@ -117,21 +121,21 @@ class DependencyInjectionTest {
 
 	@Test()
 	void testDuplicateServiceException() {
-		this.dependencyInjection.register(Service6.class);
-		assertThrows(DuplicateServiceException.class, () -> this.dependencyInjection.register(Service6.class));
+		this.configuration.register(Service6.class);
+		assertThrows(DuplicateServiceException.class, () -> this.configuration.register(Service6.class));
 	}
 
 	@Test()
 	void testDuplicateServiceException2() {
-		this.dependencyInjection.register(new SingletonServiceProvider<>(Service7API.class, new Service7()));
-		assertThrows(DuplicateServiceException.class, () -> this.dependencyInjection
-				.register(new SingletonServiceProvider<>(Service7API.class, new Service7())));
+		this.configuration.register(new SingletonServiceProvider<>(Service7API.class, new Service7()));
+		assertThrows(DuplicateServiceException.class,
+				() -> this.configuration.register(new SingletonServiceProvider<>(Service7API.class, new Service7())));
 	}
 
 	@Test()
 	void testConstructorCheck() {
 		String message = assertThrows(IllegalArgumentException.class,
-				() -> this.dependencyInjection.register(ServiceWithConstructor.class)).getMessage();
+				() -> this.configuration.register(ServiceWithConstructor.class)).getMessage();
 
 		assertThat(message, equalTo("There is a problem with the class " + ServiceWithConstructor.class.getName()
 				+ ". It can't be used as a Service"));
@@ -141,49 +145,48 @@ class DependencyInjectionTest {
 	void testServiceWithDuplicateDependency() {
 		TestLogger logger = TestLoggerFactory.getTestLogger(ServiceProvider.class);
 
-		this.dependencyInjection.register(ServiceWithDuplicateDependency.class);
-		ServiceWithDuplicateDependency service = this.dependencyInjection
-				.getService(ServiceWithDuplicateDependency.class);
+		this.configuration.register(ServiceWithDuplicateDependency.class);
+		ServiceWithDuplicateDependency service = this.serviceLocator.getService(ServiceWithDuplicateDependency.class);
 		assertThat(service, is(notNullValue()));
 	}
 
 	@Test()
 	void testPostConstruct() {
-		Service1 service1 = this.dependencyInjection.getService(Service1.class);
+		Service1 service1 = this.serviceLocator.getService(Service1.class);
 		assertThat(service1.init, is(1));
-		this.dependencyInjection.postConstruct(service1);
+		this.serviceLocator.postConstruct(service1);
 		assertThat(service1.init, is(2));
 	}
 
 	@Test()
 	void testCreateAndInitializeService() {
-		Service2 s2_1 = this.dependencyInjection.getService(Service2.class);
-		Service2 s2_2 = this.dependencyInjection.createAndInitialize(Service2.class);
+		Service2 s2_1 = this.serviceLocator.getService(Service2.class);
+		Service2 s2_2 = this.serviceLocator.createAndInitialize(Service2.class);
 		assertThat(s2_1, not(theInstance(s2_2)));
 		assertThat(s2_1.getService3(), theInstance(s2_2.getService3()));
 	}
 
 	@Test()
 	void testCreateAndInitializeServicePostConstruct() {
-		Service18 service18 = this.dependencyInjection.createAndInitialize(Service18.class);
+		Service18 service18 = this.serviceLocator.createAndInitialize(Service18.class);
 		assertThat(service18.setup, is(true));
 	}
 
 	@Test()
 	void testCreateNotAService() {
-		NotAService2 nas = this.dependencyInjection.createAndInitialize(NotAService2.class);
+		NotAService2 nas = this.serviceLocator.createAndInitialize(NotAService2.class);
 		assertThat(nas.getInit(), is(1));
-		Service1 s1 = this.dependencyInjection.getService(Service1.class);
-		this.dependencyInjection.postConstruct(s1);
+		Service1 s1 = this.serviceLocator.getService(Service1.class);
+		this.serviceLocator.postConstruct(s1);
 		assertThat(nas.getInit(), is(2));
-		NotAService2 nas2 = this.dependencyInjection.createAndInitialize(NotAService2.class);
+		NotAService2 nas2 = this.serviceLocator.createAndInitialize(NotAService2.class);
 		assertThat(nas2, not(theInstance(nas)));
 	}
 
 	@Test()
 	void testCreateIllegalAccessException() {
 		String message = assertThrows(IllegalArgumentException.class,
-				() -> this.dependencyInjection.createAndInitialize(Service8.class)).getMessage();
+				() -> this.serviceLocator.createAndInitialize(Service8.class)).getMessage();
 
 		assertThat(message, equalTo(
 				"There is a problem with the class " + Service8.class.getName() + ". It can't be used as a Service"));
@@ -192,19 +195,19 @@ class DependencyInjectionTest {
 	@Test()
 	void testSingletonServiceProvider() {
 		Service7 service7 = new Service7();
-		this.dependencyInjection.register(new SingletonServiceProvider<>(Service7API.class, service7));
-		assertThat(this.dependencyInjection.getService(Service7API.class), is(theInstance(service7)));
+		this.configuration.register(new SingletonServiceProvider<>(Service7API.class, service7));
+		assertThat(this.serviceLocator.getService(Service7API.class), is(theInstance(service7)));
 	}
 
 	@Test()
 	void testAbstractService() {
-		assertThrows(IllegalArgumentException.class, () -> this.dependencyInjection.register(AbstractService.class));
+		assertThrows(IllegalArgumentException.class, () -> this.configuration.register(AbstractService.class));
 	}
 
 	@Test()
 	void testInject() {
 		Service10 service10 = new Service10(10);
-		this.dependencyInjection.inject(service10);
+		this.serviceLocator.inject(service10);
 		assertThat(service10.isInit(), is(false));
 		assertThat(service10.getService1(), is(notNullValue()));
 		assertThat(service10.getService1(), is(instanceOf(Service1.class)));
@@ -212,24 +215,24 @@ class DependencyInjectionTest {
 
 	@Test()
 	void testServiceType() {
-		assertThrows(IllegalArgumentException.class, () -> this.dependencyInjection.register(Service17.class));
+		assertThrows(IllegalArgumentException.class, () -> this.configuration.register(Service17.class));
 	}
 
 	@Test()
 	void testRegisterServiceTypeFromInterface() {
-		this.dependencyInjection.register(Service7Impl.class);
-		assertThat(this.dependencyInjection.getService(Service7API.class), is(notNullValue()));
+		this.configuration.register(Service7Impl.class);
+		assertThat(this.serviceLocator.getService(Service7API.class), is(notNullValue()));
 	}
 
 	@Test()
 	void testRegisterServiceTypeFromMultipleInterfaces() {
 		assertThrows(IllegalArgumentException.class,
-				() -> this.dependencyInjection.register(ServiceImplementingMultipleInterfaces.class));
+				() -> this.configuration.register(ServiceImplementingMultipleInterfaces.class));
 	}
 
 	@Test()
 	void testCreateAndInitialize() {
-		Service1 service1 = this.dependencyInjection.createAndInitialize(Service1.class);
+		Service1 service1 = this.serviceLocator.createAndInitialize(Service1.class);
 		assertThat(service1, notNullValue());
 		assertThat(service1.init, is(1));
 	}

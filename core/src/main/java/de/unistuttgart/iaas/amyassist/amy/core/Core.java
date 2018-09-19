@@ -78,12 +78,14 @@ public class Core {
 	void start(String[] args) {
 		this.registerAllCoreServices();
 		this.init();
-		CommandLineArgumentHandlerService cmaHandler = this.di.getService(new ServiceConsumerImpl<>(this.getClass(),
-				new ServiceDescriptionImpl<>(CommandLineArgumentHandlerService.class))).getService();
+		CommandLineArgumentHandlerService cmaHandler = this.di.getServiceLocator()
+				.getService(new ServiceConsumerImpl<>(this.getClass(),
+						new ServiceDescriptionImpl<>(CommandLineArgumentHandlerService.class)))
+				.getService();
 		cmaHandler.load(args, System.out::println);
 		if (cmaHandler.shouldProgramContinue()) {
-			CommandLineArgumentInfo cmaInfo = cmaHandler.getInfo();
-			this.di.register(new SingletonServiceProvider<>(CommandLineArgumentInfo.class, cmaInfo));
+			this.di.getConfiguration()
+					.register(new SingletonServiceProvider<>(CommandLineArgumentInfo.class, cmaHandler.getInfo()));
 			this.run();
 		} else {
 			System.exit(cmaHandler.areFlagsValid() ? EXIT_CODE_ALL_GOOD : EXIT_CODE_CMA_FLAGS_INVALID); // NOSONAR
@@ -116,7 +118,7 @@ public class Core {
 	}
 
 	private void loadPlugins() {
-		PluginManager pluginManager = this.di
+		PluginManager pluginManager = this.di.getServiceLocator()
 				.getService(
 						new ServiceConsumerImpl<>(this.getClass(), new ServiceDescriptionImpl<>(PluginManager.class)))
 				.getService();
@@ -125,7 +127,8 @@ public class Core {
 		} catch (IOException e) {
 			throw new IllegalStateException("Could not load plugins due to an IOException.", e);
 		}
-		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
+		this.di.getConfiguration().registerContextProvider(Context.PLUGIN,
+				new PluginProvider(pluginManager.getPlugins()));
 	}
 
 	/**
@@ -144,7 +147,6 @@ public class Core {
 	private void doStop() {
 		this.logger.info("stop");
 		this.runnableServiceExtension.stop();
-		this.di.shutdown();
 		this.logger.info("stopped");
 	}
 

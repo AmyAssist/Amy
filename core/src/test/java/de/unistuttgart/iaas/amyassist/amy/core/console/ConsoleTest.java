@@ -53,9 +53,9 @@ class ConsoleTest {
 		ConfigurationManager configurationManager = Mockito.mock(ConfigurationManager.class);
 		this.properties = new Properties();
 		Mockito.when(configurationManager.getConfigurationWithDefaults("core.config")).thenReturn(this.properties);
-		this.dependencyInjection
+		this.dependencyInjection.getConfiguration()
 				.register(new SingletonServiceProvider<>(ConfigurationManager.class, configurationManager));
-		this.dependencyInjection.register(new LoggerProvider());
+		this.dependencyInjection.getConfiguration().register(new LoggerProvider());
 	}
 
 	@Test
@@ -68,8 +68,9 @@ class ConsoleTest {
 
 		Mockito.when(handler.createDialog(ArgumentMatchers.any())).thenReturn(uuid);
 
-		this.dependencyInjection.register(new SingletonServiceProvider<>(DialogHandler.class, handler));
-		SpeechConsole console = this.dependencyInjection.createAndInitialize(SpeechConsole.class);
+		this.dependencyInjection.getConfiguration()
+				.register(new SingletonServiceProvider<>(DialogHandler.class, handler));
+		SpeechConsole console = this.dependencyInjection.getServiceLocator().createAndInitialize(SpeechConsole.class);
 
 		console.say(testInput);
 		Mockito.verify(handler).process(expected, uuid);

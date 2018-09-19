@@ -55,7 +55,17 @@ class ExtensionTest {
 
 	@Test
 	void testOnRegister() {
-		this.dependencyInjection.register(Service1.class);
+		this.dependencyInjection.getConfiguration().register(Service1.class);
+
+		Mockito.verify(this.mockExtension).onRegister(ArgumentMatchers.any(), ArgumentMatchers.eq(Service1.class));
+	}
+
+	@Test
+	void testOnRegisterFromService() {
+		this.dependencyInjection.getConfiguration().register(ServiceConfigurationChange.class);
+		Mockito.verify(this.mockExtension).onRegister(ArgumentMatchers.any(),
+				ArgumentMatchers.eq(ServiceConfigurationChange.class));
+		this.dependencyInjection.getServiceLocator().getService(ServiceConfigurationChange.class).install();
 
 		Mockito.verify(this.mockExtension).onRegister(ArgumentMatchers.any(), ArgumentMatchers.eq(Service1.class));
 	}
