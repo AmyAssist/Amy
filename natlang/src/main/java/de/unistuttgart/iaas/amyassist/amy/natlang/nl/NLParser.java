@@ -180,6 +180,7 @@ public class NLParser implements INLParser {
 			for (AGFNode node : agf.getChilds()) {
 				if (!checkNode(node)) {
 					this.currentIndex = traceBack;
+					this.matchedStrings = this.matchedStrings.subList(0, this.currentIndex);
 					agf.deleteEntityContent();
 					return false;
 				}
@@ -269,23 +270,17 @@ public class NLParser implements INLParser {
 	 * @return true if the entity matched
 	 */
 	private boolean fillEntity(AGFNode agf) {
-		int startIndex = this.currentIndex;
-		this.matchedStrings = new ArrayList<>();
+		int startIndex = this.matchedStrings.size();
 		boolean matched = true;
 		for (AGFNode node : agf.getChilds()) {
 			matched = checkNode(node) && matched;
 		}
-		int endIndex = this.currentIndex;
+		int endIndex = this.matchedStrings.size();
 
 		try {
 			EntityNode entity = (EntityNode) agf;
-			StringBuilder b = new StringBuilder();
-			for (int i = startIndex; i <= endIndex - 1; i++) {
-				b.append(this.mRead.get(i) + " ");
-			}
 			if (matched) {
-				String content = StringUtils.join(this.matchedStrings, " ");
-				System.out.println(content);
+				String content = StringUtils.join(this.matchedStrings.subList(startIndex, endIndex), " ");
 				entity.setUserProvidedContent(content);
 
 			}
