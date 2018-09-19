@@ -23,10 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.natlang.nl;
 
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParseException;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.*;
@@ -55,6 +54,13 @@ public class NLParser implements INLParser {
 	private Stemmer stemmer;
 	
 	private Deque<AGFNode> shortWCStopper;
+	
+	/**
+	 * contains all matched strings
+	 * meaning the content of the node that matched
+	 * and if a wildcard matched to matching string
+	 */
+	private List<String> matchedStrings;
 
 	/**
 	 *
@@ -72,7 +78,8 @@ public class NLParser implements INLParser {
 	public AGFNode matchingNode(List<EndToken> nl) {
 		this.mRead = nl;
 		for (AGFNode agf : this.grammars) {
-			this.shortWCStopper = generateStopperStack(agf);
+			this.matchedStrings = new ArrayList<>();
+			this.shortWCStopper = generateStopperDeque(agf);
 			agf.deleteEntityContent();
 			AGFNode nodeSorted = sortChildsOfOrAndOp(agf);
 			this.currentIndex = 0;
@@ -84,12 +91,15 @@ public class NLParser implements INLParser {
 	}
 
 	/**
-	 * @param agf
-	 * @return
+	 * use this method to generate the stack
+	 * see {@link #generateStopperDeque(AGFNode, Deque) generateStopperStack}}
+	 * 
+	 * @param agf node to generate stack from
+	 * @return the generated deque
 	 */
-	private Deque<AGFNode> generateStopperStack(AGFNode agf) {
+	private Deque<AGFNode> generateStopperDeque(AGFNode agf) {
 		Deque<AGFNode> stack = new ArrayDeque<>();
-		generateStopperStack(agf, stack);
+		generateStopperDeque(agf, stack);
 		return stack;
 	}
 
@@ -106,16 +116,16 @@ public class NLParser implements INLParser {
 	 * @param agf node to generate stack from
 	 * @param stack the stack
 	 */
-	private void generateStopperStack(AGFNode agf, Deque<AGFNode> stack) {
+	private void generateStopperDeque(AGFNode agf, Deque<AGFNode> stack) {
 		for(AGFNode node : agf.getChilds()) {
 			if(node.getType() == AGFNodeType.SHORTWC && !this.foundShortWC) {
 				this.foundShortWC = true;
-				generateStopperStack(node, stack);
+				generateStopperDeque(node, stack);
 			}else if(this.foundShortWC) {
 				this.foundShortWC = false;
 				stack.push(node);
 			}else {
-				generateStopperStack(node, stack);
+				generateStopperDeque(node, stack);
 			}
 		}
 	}
@@ -202,6 +212,8 @@ public class NLParser implements INLParser {
 		case LONGWC:
 			this.wildcardSkip = true;
 			for (int i = this.currentIndex; i < this.mRead.size(); i++) {
+				EndToken token = lookAhead(0);
+				this.matchedStrings.add(token.getContent());
 				consume();
 			}
 			break;
@@ -242,37 +254,9 @@ public class NLParser implements INLParser {
 				break;
 			}else if(token != null) {
 				//skip current word because it did not match the end criteria
+				this.matchedStrings.add(token.getContent());
 				consume();
 			}
-		}
-		return true;
-	}
-
-	/**
-	 * checks if a number is at the current index and if the number matches the conditions of the NumberNode e.g. is in
-	 * correct range and stepsize
-	 *
-	 * @param agf
-	 *            to match
-	 * @return true if the node matches
-	 */
-	private boolean matchNumber(AGFNode agf) {
-		EndToken token = lookAhead(0);
-		return matchNumber(agf, token);
-	}
-	
-	private boolean matchNumber(AGFNode agf, EndToken token) {
-		if (token == null || token.getContent() == null) {
-			return false;
-		}
-		try {
-			NumberNode numberNode = (NumberNode) agf;
-			numberNode.setContainedNumber(token.getContent().trim());
-			consume();
-		} catch (ClassCastException e) {
-			throw new NLParserException("Node Type Number was no NumberNode " + e);
-		} catch (NumberFormatException e) {
-			return false;
 		}
 		return true;
 	}
@@ -286,6 +270,7 @@ public class NLParser implements INLParser {
 	 */
 	private boolean fillEntity(AGFNode agf) {
 		int startIndex = this.currentIndex;
+		this.matchedStrings = new ArrayList<>();
 		boolean matched = true;
 		for (AGFNode node : agf.getChilds()) {
 			matched = checkNode(node) && matched;
@@ -298,8 +283,12 @@ public class NLParser implements INLParser {
 			for (int i = startIndex; i <= endIndex - 1; i++) {
 				b.append(this.mRead.get(i) + " ");
 			}
-			if (matched) 
-				entity.setUserProvidedContent(b.toString().trim());
+			if (matched) {
+				String content = StringUtils.join(this.matchedStrings, " ");
+				System.out.println(content);
+				entity.setUserProvidedContent(content);
+
+			}
 			return matched;
 		} catch (ClassCastException e) {
 			throw new NLParserException("Node Type Entity was no EntityNode " + e);
@@ -335,10 +324,46 @@ public class NLParser implements INLParser {
 			tokenContent = this.stemmer.stem(token.getContent());
 		}
 		if (nodeContent.equals(tokenContent)) {
+			this.matchedStrings.add(toMatch.getContent());
 			return true;
 		}
-		return !CompareWords.isDistanceBigger(nodeContent, tokenContent, 1);
+		if(!CompareWords.isDistanceBigger(nodeContent, tokenContent, 1)) {
+			this.matchedStrings.add(toMatch.getContent());
+			return true;
+		}
+		return false;
 	}
+	
+	/**
+	 * checks if a number is at the current index and if the number matches the conditions of the NumberNode e.g. is in
+	 * correct range and stepsize
+	 *
+	 * @param agf
+	 *            to match
+	 * @return true if the node matches
+	 */
+	private boolean matchNumber(AGFNode agf) {
+		EndToken token = lookAhead(0);
+		return matchNumber(agf, token);
+	}
+	
+	private boolean matchNumber(AGFNode agf, EndToken token) {
+		if (token == null || token.getContent() == null) {
+			return false;
+		}
+		try {
+			NumberNode numberNode = (NumberNode) agf;
+			numberNode.setContainedNumber(token.getContent().trim());
+			consume();
+		} catch (ClassCastException e) {
+			throw new NLParserException("Node Type Number was no NumberNode " + e);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		this.matchedStrings.add(token.getContent());
+		return true;
+	}
+
 
 	/**
 	 * consume a token

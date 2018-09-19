@@ -221,8 +221,6 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			return dialog;
 		}
 		
-		System.out.println("skipping");
-
 		// try to skip prefixes and suffixes until a grammar matches
 		for (int i = 0; i <= tokens.size(); i++) {
 			for (int j = tokens.size(); j > i; j--) {

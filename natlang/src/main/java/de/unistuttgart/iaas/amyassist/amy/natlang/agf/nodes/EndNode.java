@@ -35,7 +35,6 @@ public class EndNode extends AGFNode {
 	 */
 	public EndNode(String content) {
 		super(content);
-		// TODO Auto-generated constructor stub
 	}
 	
 	/**
