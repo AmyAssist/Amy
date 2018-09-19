@@ -172,7 +172,9 @@ public class BestTransportResult {
 
 				return new WidgetRouteInfo(image, link, "Start in Google Maps");
 			}
-		} catch (UnsupportedEncodingException | MalformedURLException e) {}
+		} catch (UnsupportedEncodingException | MalformedURLException e) {
+			throw new IllegalStateException("Couldn't create widget info", e);
+		}
 		return null;
 	}
 
