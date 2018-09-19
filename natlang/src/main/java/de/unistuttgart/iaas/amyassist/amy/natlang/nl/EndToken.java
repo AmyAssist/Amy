@@ -21,33 +21,59 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes;
+package de.unistuttgart.iaas.amyassist.amy.natlang.nl;
 
 /**
- * a word node
+ * Word Token class used in the Lexer and parser
  * 
  * @author Felix Burk
  */
-public class WordNode extends EndNode {
+public class EndToken {
+
+	private final String content;
+
+	private EndTokenType type;
 
 	/**
-	 * constructor
+	 * constructor for word token
 	 * 
 	 * @param content
-	 *                    of node
+	 *                    the content
 	 */
-	public WordNode(String content) {
-		super(content);
+	public EndToken(String content) {
+		this.content = content;
 	}
 
 	/**
-	 * returns the node type
+	 * getter for string content
+	 * 
+	 * @return the content
+	 */
+	public String getContent() {
+		return this.content;
+	}
+
+	/**
+	 * setter for type
+	 * 
+	 * @param type
+	 *                 the type to set
+	 */
+	public void setType(EndTokenType type) {
+		this.type = type;
+	}
+
+	/**
+	 * returns the type
 	 * 
 	 * @return the type
 	 */
-	@Override
-	public AGFNodeType getType() {
-		return AGFNodeType.WORD;
+	public EndTokenType getType() {
+		return this.type;
 	}
 
+	@Override
+	public String toString() {
+		return this.content;
+	}
 }

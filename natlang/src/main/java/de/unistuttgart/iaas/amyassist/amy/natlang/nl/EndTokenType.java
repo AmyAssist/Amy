@@ -21,33 +21,23 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes;
+package de.unistuttgart.iaas.amyassist.amy.natlang.nl;
 
 /**
- * a word node
+ * types of word tokens
  * 
  * @author Felix Burk
  */
-public class WordNode extends EndNode {
+public enum EndTokenType {
 
 	/**
-	 * constructor
-	 * 
-	 * @param content
-	 *                    of node
+	 * just some word
 	 */
-	public WordNode(String content) {
-		super(content);
-	}
+	WORD,
 
 	/**
-	 * returns the node type
-	 * 
-	 * @return the type
+	 * some number, written or as digit
 	 */
-	@Override
-	public AGFNodeType getType() {
-		return AGFNodeType.WORD;
-	}
+	NUMBER;
 
 }

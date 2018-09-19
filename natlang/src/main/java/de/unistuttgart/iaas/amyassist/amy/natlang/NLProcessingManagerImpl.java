@@ -71,11 +71,6 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private static final String QUIT_INTENT_USER_INPUT = "(never mind|quit|forget that|nevermind)";
 
 	private static final String[] QUIT_INTENT_ANSWER = { "ok", "sure", "what else can i do for you?" };
-	
-	/**
-	 * maps agf node grammars to the user intent template
-	 */
-	protected Map<AGFNode, UserIntentTemplate> nodeToMethodAIMPair = new HashMap<>();
 
 	@Reference
 	private Logger logger;
@@ -85,6 +80,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	@Reference
 	private ServiceLocator serviceLocator;
+
+	private Map<AGFNode, UserIntentTemplate> nodeToMethodAIMPair = new HashMap<>();
 
 	@Reference
 	private ConfigurationManager configurationLoader;
@@ -134,7 +131,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Override
 	public void processIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language);
-		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
+		List<EndToken> tokens = nlLexer.tokenize(naturalLanguageText);
 		if (!promptGrammarFound(dialog, tokens)) {
 			// try to skip prefixes and suffixes until a grammar matches
 			for (int i = 0; i <= tokens.size(); i++) {
@@ -149,7 +146,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		}
 	}
 
-	private boolean promptGrammarFound(Dialog dialog, List<WordToken> tokens) {
+	private boolean promptGrammarFound(Dialog dialog, List<EndToken> tokens) {
 		List<AGFNode> promptGrams = new ArrayList<>();
 		if (dialog.getNextPrompt() != null) {
 			promptGrams.add(dialog.getNextPrompt().getGrammar());
@@ -218,11 +215,13 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Override
 	public Dialog decideIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language);
-		List<WordToken> tokens = nlLexer.tokenize(naturalLanguageText);
+		List<EndToken> tokens = nlLexer.tokenize(naturalLanguageText);
 
 		if (intentFound(dialog, tokens)) {
 			return dialog;
 		}
+		
+		System.out.println("skipping");
 
 		// try to skip prefixes and suffixes until a grammar matches
 		for (int i = 0; i <= tokens.size(); i++) {
@@ -239,7 +238,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 	}
 
-	private boolean intentFound(Dialog dialog, List<WordToken> tokens) {
+	private boolean intentFound(Dialog dialog, List<EndToken> tokens) {
 		INLParser nlParser = new NLParser(new ArrayList<>(this.nodeToMethodAIMPair.keySet()),
 				this.language.getStemmer());
 		AGFNode node;
@@ -268,7 +267,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		int rndm = rand.nextInt(strings.length);
 		return strings[rndm];
 	}
-
+	
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#getPossibleGrammars()
 	 */

@@ -57,7 +57,7 @@ public interface NLProcessingManager {
 	 * @return matching dialog containing matching intent
 	 */
 	Dialog decideIntent(Dialog dialog, String naturalLanguageText);
-	
+
 	/**
 	 * returns a list of possible grammars that will be understood by amy
 	 * @return list of agf nodes
