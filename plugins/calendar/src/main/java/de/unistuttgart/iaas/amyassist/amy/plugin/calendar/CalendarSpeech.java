@@ -68,22 +68,22 @@ public class CalendarSpeech {
 		return this.calendar.getEventsTomorrow();
 
 	}
-	
+
 	/**
 	 * @param entities
-	 * 			from the speech
+	 *            from the speech
 	 * @return events on the chosen date
 	 */
 	@Intent
 	public String getEventsAt(Map<String, EntityData> entities) {
-		return this.calendar.getEventsAtAsString(entities.get("date").getDate());
+		return this.calendar.getEventsAtAsString(entities);
 	}
-	
+
 	/**
 	 * This method handles Amy response for creating a new event
-	 * 
+	 *
 	 * @param entities
-	 * 			from the speech
+	 *            from the speech
 	 * @return if the event was successfully created or if not why
 	 */
 	@Intent

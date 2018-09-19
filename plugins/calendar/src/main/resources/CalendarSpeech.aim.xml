@@ -30,8 +30,11 @@
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsAt">
 		<gram>[which] events [do i have] at [{date}]</gram>
 		<EntityTemplates>
+			<EntityTemplate id="eventyear" required="true">
+				<gram>(|{amyyear})</gram>
+			</EntityTemplate>
 			<EntityTemplate id="date" required="true">
-				<gram>{amydate}</gram>
+				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{eventyear}]|tomorrow|today)</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="date">
@@ -45,12 +48,18 @@
 		<EntityTemplates>
 			<EntityTemplate id="title" required="true">
 				<gram>*</gram>
-			</EntityTemplate>	
+			</EntityTemplate>				
+			<EntityTemplate id="startyear" required="false">
+				<gram>(|{amyyear})</gram>
+			</EntityTemplate>						
+			<EntityTemplate id="endyear" required="false">
+				<gram>(|{amyyear})</gram>
+			</EntityTemplate>
 			<EntityTemplate id="startdate" required="false">
-				<gram>{amydate}</gram>
+				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{startyear}]|tomorrow|today)</gram>
 			</EntityTemplate>
 			<EntityTemplate id="enddate" required="false">
-				<gram>{amydate}</gram>
+				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{endyear}]|tomorrow|today)</gram>
 			</EntityTemplate>
 			<EntityTemplate id="starttime" required="false">
 				<gram>{amytime}</gram>

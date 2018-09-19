@@ -23,11 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -234,13 +230,17 @@ public class CalendarLogic {
 
 	/**
 	 * This method contains the logic to show the calendar events on a specific date as natural language output
-	 * @param localDate 
+	 *
+	 * @param localDate
 	 *            LocalDate variable
 	 * @return the events of the chosen day
 	 */
-	public String getEventsAtAsString(LocalDate localDate) {
+	public String getEventsAtAsString(Map<String, EntityData> entities) {
+		LocalDateTime chosenDay = LocalDateTime.of(entities.get("date").getDate(), this.zero);
+		if (entities.get("eventyear").equals("") || chosenDay.isBefore(LocalDateTime.now())) {
+			chosenDay = chosenDay.withYear(LocalDate.now().getYear() + 1);
+		}
 		List<String> eventList = new ArrayList<>();
-		LocalDateTime chosenDay = LocalDateTime.of(localDate, this.zero);
 		DateTime min = getDateTime(chosenDay, 0);
 		DateTime max = getDateTime(chosenDay, 1);
 		Events events = this.calendarService.getEvents(min, max);
@@ -371,7 +371,7 @@ public class CalendarLogic {
 		String eventStartTime = "";
 		String eventEndTime = "";
 		if (withTime) {
-			eventStartTime = " " + getCorrectTime(startDate); 
+			eventStartTime = " " + getCorrectTime(startDate);
 			eventEndTime = " " + getCorrectTime(endDate);
 		}
 		switch (outputCase) {
@@ -410,30 +410,31 @@ public class CalendarLogic {
 
 		return eventData;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param localDateTime
-	 * 			input time as LocalDateTime
+	 *            input time as LocalDateTime
 	 * @return correct time in 24 hour format with am/pm
 	 */
-	public String getCorrectTime(LocalDateTime localDateTime) {		
+	public String getCorrectTime(LocalDateTime localDateTime) {
 		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-		if(localDateTime.getHour() > 11) {
+		if (localDateTime.getHour() > 11) {
 			return timeFormatter.format(localDateTime) + " pm";
 		}
 		return timeFormatter.format(localDateTime) + " am";
-		
+
 	}
-	
+
 	/**
 	 * Checks if given event summary is empty/ null and returns an alternative String or the title
-	 * 
-	 * @param title the title String of the event
+	 *
+	 * @param title
+	 *            the title String of the event
 	 * @return the title part of the event for Amy output
 	 */
 	private String convertEventTitle(String title) {
-		if(title == null || title.equals("")) {
+		if (title == null || title.equals("")) {
 			return "An event without a title";
 		}
 		return title;
@@ -489,10 +490,10 @@ public class CalendarLogic {
 	public static boolean isAllDay(Event event) {
 		return event.getStart().getDate() != null;
 	}
-	
-	/** 	
+
+	/**
 	 * @param allDayString
-	 * 			the String from which the boolean is parsed.
+	 *            the String from which the boolean is parsed.
 	 * @return if the event is all day
 	 */
 	public static boolean isAllDay(String allDayString) {
