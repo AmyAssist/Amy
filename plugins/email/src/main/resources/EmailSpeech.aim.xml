@@ -2,7 +2,7 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.newMessages">
-		<gram>[do i have] new [{important}] (messages|mails)</gram>
+		<gram>[do i have] [any] new [{important}] (messages|mails|emails|miles)</gram>
 		<EntityTemplates>
 			<EntityTemplate id="important" required="false">
 				<gram>important </gram>
@@ -28,7 +28,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.readRecentMails">
-		<gram>read ({selection}) [{important}] (messages|mails)</gram>
+		<gram>(read|get) ({selection}) [{important}] (messages|mails)</gram>
 		<EntityTemplates>
 			<EntityTemplate id="important" required="false">
 				<gram>important</gram>

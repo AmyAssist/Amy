@@ -2,7 +2,7 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.goToAt">
-		<gram>when [do] i have to go [by {mode}]</gram>
+		<gram>when [do] i have to (go|leave) [by {mode}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="startregistry" required="false">
 				<gram>start</gram>
@@ -50,7 +50,7 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.goToAt">
-		<gram>when [do] i have to go from {start} {end} [{mode}] [at {time}]
+		<gram>when [do] i have to (go|leave) from {start} to {end} [{mode}] [at {time}]
 		</gram>
 		<EntityTemplates>
 			<EntityTemplate id="start" required="true">

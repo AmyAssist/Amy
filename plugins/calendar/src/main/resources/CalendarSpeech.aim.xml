@@ -15,7 +15,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsToday">
-		<gram>[which] events [do i have] [{day}]</gram>
+		<gram>[which|what] events [do i have] [{day}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="day" required="true">
 				<gram>(today|tomorrow)</gram>
@@ -28,7 +28,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsAt">
-		<gram>[which] events [do i have] at [{date}]</gram>
+		<gram>[which|what] events [do i have] at [{date}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="date" required="true">
 				<gram>{amydate}</gram>
