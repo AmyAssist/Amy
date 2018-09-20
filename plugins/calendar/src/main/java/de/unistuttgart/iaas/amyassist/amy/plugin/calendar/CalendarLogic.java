@@ -67,10 +67,10 @@ public class CalendarLogic {
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 	private LocalTime zero = LocalTime.of(0, 0, 0, 0);
 	
-	private final String TODAY = "today";
-	private final String TOMORROW = "tomorrow";
-	private final String STARTDATE = "startdate";
-	private final String ENDDATE = "enddate";
+	private String TODAY = "today";
+	private String TOMORROW = "tomorrow";
+	private String STARTDATE = "startdate";
+	private String ENDDATE = "enddate";
 	
 	/**
 	 * Natural language response of Amy when the event list is empty.
@@ -284,10 +284,9 @@ public class CalendarLogic {
 	public String getEventsAtAsString(Map<String, EntityData> entities) {
 		LocalDateTime chosenDay = LocalDateTime.of(entities.get("date").getDate(), this.zero);
 		if (!entities.get("date").getString().equals(this.TODAY) && !entities.get("date").getString()
-				.equals(this.TOMORROW)) {
-			if (entities.get("eventyear").getString().equals("") || chosenDay.isBefore(LocalDateTime.now())) {
-				chosenDay = chosenDay.withYear(LocalDate.now().getYear() + 1);
-			}	
+				.equals(this.TOMORROW) && (entities.get("eventyear").getString().equals("") || chosenDay
+						.isBefore(LocalDateTime.now()))) {
+			chosenDay = chosenDay.withYear(LocalDate.now().getYear() + 1);
 		}		
 		List<String> eventList = new ArrayList<>();
 		DateTime min = getDateTime(chosenDay, 0);
