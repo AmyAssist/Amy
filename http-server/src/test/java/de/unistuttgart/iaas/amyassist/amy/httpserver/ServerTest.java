@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 
 /**
@@ -47,6 +48,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvi
 class ServerTest {
 
 	private DependencyInjection dependencyInjection;
+	private ServiceLocator locator;
 
 	@BeforeEach
 	void setup() {
@@ -60,14 +62,17 @@ class ServerTest {
 		Mockito.when(configManager.getConfigurationWithDefaults(ServerImpl.CONFIG_NAME)).thenReturn(serverConfig);
 
 		this.dependencyInjection = new DependencyInjection();
-		this.dependencyInjection.register(new SingletonServiceProvider<>(ConfigurationManager.class, configManager));
-		this.dependencyInjection.register(new SingletonServiceProvider<>(Logger.class, LoggerFactory.getLogger(ServerImpl.class)));
+		this.locator = this.dependencyInjection.getServiceLocator();
+		this.dependencyInjection.getConfiguration()
+				.register(new SingletonServiceProvider<>(ConfigurationManager.class, configManager));
+		this.dependencyInjection.getConfiguration()
+				.register(new SingletonServiceProvider<>(Logger.class, LoggerFactory.getLogger(ServerImpl.class)));
 	}
 
 	@Test
 	void test() {
 		assertTimeout(ofSeconds(2), () -> {
-			ServerImpl server = this.dependencyInjection.createAndInitialize(ServerImpl.class);
+			ServerImpl server = this.locator.createAndInitialize(ServerImpl.class);
 			server.startWithResources(TestRestResource.class);
 			server.stop();
 		}, "The Server start and shotdown takes longer then 2 Seconds");
@@ -76,7 +81,7 @@ class ServerTest {
 
 	@Test
 	void testCantStartServerTwice() {
-		ServerImpl server = this.dependencyInjection.createAndInitialize(ServerImpl.class);
+		ServerImpl server = this.locator.createAndInitialize(ServerImpl.class);
 		String message = assertThrows(IllegalStateException.class, () -> {
 			server.startWithResources(TestRestResource.class);
 			server.startWithResources(TestRestResource.class);
@@ -87,7 +92,7 @@ class ServerTest {
 
 	@Test
 	void testRegister() {
-		ServerImpl server = this.dependencyInjection.createAndInitialize(ServerImpl.class);
+		ServerImpl server = this.locator.createAndInitialize(ServerImpl.class);
 		server.register(TestRestResource.class);
 		server.start();
 		server.stop();
@@ -95,7 +100,7 @@ class ServerTest {
 
 	@Test
 	void testRegisterNonResourceClass() {
-		ServerImpl server = this.dependencyInjection.createAndInitialize(ServerImpl.class);
+		ServerImpl server = this.locator.createAndInitialize(ServerImpl.class);
 		assertThrows(IllegalArgumentException.class, () -> {
 			server.register(ServerTest.class);
 		}, "The Server dont throw an IllegalArgumentException if a registered class is not a Rest Resource");

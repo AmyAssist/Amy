@@ -4,9 +4,6 @@
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.goToAt">
 		<gram>when [do] i have to go [by {mode}]</gram>
 		<EntityTemplates>
-			<EntityTemplate id="time" required="true">
-				<gram>{amytime}</gram>
-			</EntityTemplate>
 			<EntityTemplate id="startregistry" required="false">
 				<gram>start</gram>
 			</EntityTemplate>
@@ -26,24 +23,27 @@
 				<gram>({endregistry}|{endwildcard})</gram>
 			</EntityTemplate>
 			<EntityTemplate id="mode" required="true">
-				<gram>(car|transit|bike|bicycle)</gram>
+				<gram>(car|[public] (transport|transit)|bike|bicycle)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="time" required="true">
+				<gram>({amytime}|{amydatetime})</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="mode">
-			<text>by car, transit or bike?</text>
+			<text>By car, public transport or bike?</text>
 			<gram>[by] {mode} </gram>
 		</Prompt>
 		<Prompt entityTemplateId="start">
-			<text>from which location?</text>
+			<text>From which location?</text>
 			<gram>[from] {start}</gram>
 		</Prompt>
 
 		<Prompt entityTemplateId="end">
-			<text>to which location? </text>
+			<text>To which location? </text>
 			<gram>[to] {end}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="time">
-			<text>when do you want to arrive? </text>
+			<text>When do you want to arrive? </text>
 			<gram>[at] {time}</gram>
 		</Prompt>
 	</Intent>
@@ -53,9 +53,6 @@
 		<gram>when [do] i have to go from {start} {end} [{mode}] [at {time}]
 		</gram>
 		<EntityTemplates>
-			<EntityTemplate id="time" required="true">
-				<gram>{amytime}</gram>
-			</EntityTemplate>
 			<EntityTemplate id="start" required="true">
 				<gram>+ to</gram>
 			</EntityTemplate>
@@ -63,15 +60,18 @@
 				<gram>+ by</gram>
 			</EntityTemplate>
 			<EntityTemplate id="mode" required="true">
-				<gram>(car|transit|bike|bicycle)</gram>
+				<gram>(car|[public] (transport|transit)|bike|bicycle)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="time" required="true">
+				<gram>({amytime}|{amydatetime})</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="mode">
-			<text>by car, transit or bike?</text>
+			<text>By car, public transport or bike?</text>
 			<gram>[by] {mode} </gram>
 		</Prompt>
 		<Prompt entityTemplateId="time">
-			<text>when do you want to arrive? </text>
+			<text>When do you want to arrive? </text>
 			<gram>[at] {time}</gram>
 		</Prompt>
 	</Intent>
@@ -80,9 +80,6 @@
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.bestTransport">
 		<gram>best transport</gram>
 		<EntityTemplates>
-			<EntityTemplate id="time" required="true">
-				<gram>({amytime})</gram>
-			</EntityTemplate>
 			<EntityTemplate id="startregistry" required="false">
 				<gram>start</gram>
 			</EntityTemplate>
@@ -101,14 +98,17 @@
 			<EntityTemplate id="end" required="true">
 				<gram>({endregistry}|{endwildcard})</gram>
 			</EntityTemplate>
+			<EntityTemplate id="time" required="true">
+				<gram>({amytime}|{amydatetime})</gram>
+			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="start">
-			<text>from which location?</text>
+			<text>From which location?</text>
 			<gram>[from] {start}</gram>
 		</Prompt>
 
 		<Prompt entityTemplateId="end">
-			<text>to which location? </text>
+			<text>To which location? </text>
 			<gram>[to] {end}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="time">
@@ -122,7 +122,7 @@
 		<gram>best transport from {start} {end} [{time}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="time" required="true">
-				<gram>({amytime})</gram>
+				<gram>({amytime}|{amydatetime})</gram>
 			</EntityTemplate>
 			<EntityTemplate id="start" required="true">
 				<gram>+ to</gram>
@@ -140,7 +140,7 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.routeFromtTo">
-		<gram>get route [by {mode}]</gram>
+		<gram>route [by {mode}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="startregistry" required="false">
 				<gram>start</gram>
@@ -161,27 +161,33 @@
 				<gram>({endregistry}|{endwildcard})</gram>
 			</EntityTemplate>
 			<EntityTemplate id="mode" required="true">
-				<gram>(car|transit|bike|bicycle)</gram>
+				<gram>(car|[public] (transport|transit)|bike|bicycle)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="time" required="true">
+				<gram>({amytime}|{amydatetime})</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="start">
-			<text>from which location?</text>
+			<text>From which location?</text>
 			<gram>[from] {start}</gram>
 		</Prompt>
-
+		<Prompt entityTemplateId="time">
+			<text>When are you leaving?</text>
+			<gram> {time}</gram>
+		</Prompt>
 		<Prompt entityTemplateId="end">
-			<text>to which location? </text>
+			<text>To which location? </text>
 			<gram>[to] {end}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="mode">
-			<text>by car, transit or bike?</text>
+			<text>By car, public transport or bike?</text>
 			<gram>[by] {mode} </gram>
 		</Prompt>
 	</Intent>
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.routeFromtTo">
-		<gram>get route from {start} {end} {mode}</gram>
+		<gram>[route] from {start} {end} {mode} [[at]{time}] </gram>
 		<EntityTemplates>
 			<EntityTemplate id="start" required="true">
 				<gram>+ to</gram>
@@ -190,7 +196,10 @@
 				<gram>+ by</gram>
 			</EntityTemplate>
 			<EntityTemplate id="mode" required="true">
-				<gram>(car|transit|bike)</gram>
+				<gram>(car|[public] (transport|transit)|bike|bicycle)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="time" required="false">
+				<gram>({amytime}|{amydatetime})</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>

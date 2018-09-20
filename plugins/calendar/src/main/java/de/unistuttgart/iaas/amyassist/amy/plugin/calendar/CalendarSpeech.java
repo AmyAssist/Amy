@@ -34,61 +34,60 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 /**
  * This is the speech class, which contains the commands for the calendar
  *
- * @author Patrick Gebhardt, Florian Bauer
+ * @author Florian Bauer, Patrick Gebhardt
  */
 @Service
 @SpeechCommand
 public class CalendarSpeech {
 
 	@Reference
-	private CalendarLogic calendar;
+	private CalendarLogic calendar;	
 
 	/**
 	 *
-	 * @param entites
+	 * @param entities
 	 *            from the speech
 	 *
 	 * @return the upcoming X events from the calendar
 	 */
 	@Intent
-	public String getEvents(Map<String, EntityData> entites) {
-		return this.calendar.getEvents(entites.get("number").getNumber());
+	public String getEvents(Map<String, EntityData> entities) {
+		return this.calendar.getEvents(entities.get("number").getNumber());
 	}
 
 	/**
-	 * @param entites
+	 * @param entities
 	 *            from the speech
 	 * @return upcoming events today or tomorrow depending on input
 	 */
 	@Intent
-	public String getEventsToday(Map<String, EntityData> entites) {
-		if (entites.get("day").getString().equalsIgnoreCase("today")) {
+	public String getEventsToday(Map<String, EntityData> entities) {
+		if (entities.get("day").getString().equalsIgnoreCase("today")) {
 			return this.calendar.getEventsToday();
 		}
 		return this.calendar.getEventsTomorrow();
 
 	}
-
+	
 	/**
-	 * example method
-	 * 
 	 * @param entities
-	 * @return
+	 * 			from the speech
+	 * @return events on the chosen date
 	 */
 	@Intent
-	public String getADate(Map<String, EntityData> entities) {
-		return entities.get("date").getDate().toString();
+	public String getEventsAt(Map<String, EntityData> entities) {
+		return this.calendar.getEventsAtAsString(entities.get("date").getDate());
 	}
-
+	
 	/**
-	 * example method
+	 * This method handles Amy response for creating a new event
 	 * 
 	 * @param entities
-	 * @return
+	 * 			from the speech
+	 * @return if the event was successfully created or if not why
 	 */
 	@Intent
-	public String getADateTime(Map<String, EntityData> entities) {
-		return entities.get("datetime").getDateTime().toString();
+	public String setEvent(Map<String, EntityData> entities) {
+		return this.calendar.createNewEvent(entities);
 	}
-
 }

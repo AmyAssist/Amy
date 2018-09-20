@@ -12,6 +12,11 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-http-server-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
 		<!-- Google Calendar API -->
 		<dependency>
 			<groupId>com.google.apis</groupId>
@@ -32,7 +37,6 @@
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
 		</dependency>
-
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

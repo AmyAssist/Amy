@@ -32,7 +32,6 @@ import java.util.Properties;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -51,6 +50,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.plugin.calendar.google.VerificationCodeReceiverService;
 
 /**
  * This class authorizes Amy to connect to the google calendar, this is a modified version from
@@ -70,6 +70,9 @@ public class CalendarService {
 	@Reference
 	private Environment environment;
 
+	@Reference
+	private VerificationCodeReceiverService codeReceiverService;
+
 	private Calendar service;
 
 	private String primary = "primary";
@@ -86,7 +89,8 @@ public class CalendarService {
 	 */
 	private Credential getCredentials(final NetHttpTransport xHTTPTRANSPORT) throws IOException {
 		// Load client secrets
-		String clientSecretIn = this.configuration.getProperty("JSON");
+		String clientSecretIn = this.configuration.getProperty("CREDENTIALS_JSON");
+		String storedCredentialsPath = this.configuration.getProperty("STORED_CREDENTIALS_PATH");
 		if (clientSecretIn.isEmpty()) {
 			throw new IllegalStateException("Missing client secrets");
 		}
@@ -95,9 +99,10 @@ public class CalendarService {
 		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(xHTTPTRANSPORT, JSON_FACTORY,
 				clientSecrets, SCOPES)
 						.setDataStoreFactory(new FileDataStoreFactory(this.environment.getWorkingDirectory()
-								.resolve("temp/calendarauth").toAbsolutePath().toFile()))
+								.resolve(storedCredentialsPath).toAbsolutePath().toFile()))
 						.setAccessType("offline").build();
-		return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+		return new AuthorizationCodeInstalledApp(flow, this.codeReceiverService.newVerificationCodeReceiver())
+				.authorize("user");
 	}
 
 	/**
