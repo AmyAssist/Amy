@@ -67,6 +67,11 @@ public class CalendarLogic {
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 	private LocalTime zero = LocalTime.of(0, 0, 0, 0);
 	
+	private final String TODAY = "today";
+	private final String TOMORROW = "tomorrow";
+	private final String STARTDATE = "startdate";
+	private final String ENDDATE = "enddate";
+	
 	/**
 	 * Natural language response of Amy when the event list is empty.
 	 */
@@ -161,20 +166,22 @@ public class CalendarLogic {
 		boolean startYear = true;
 		boolean endYear = true;
 		if (allDay) {
-			start = LocalDateTime.of(entities.get("startdate").getDate().plusDays(1), this.zero);
-			end = LocalDateTime.of(entities.get("enddate").getDate().plusDays(2), this.zero);
+			start = LocalDateTime.of(entities.get(this.STARTDATE).getDate().plusDays(1), this.zero);
+			end = LocalDateTime.of(entities.get(this.ENDDATE).getDate().plusDays(2), this.zero);
 		} else if(entities.get("starttime") == null || entities.get("endtime") == null) {
 			return new LocalDateTime[] {null, null};
 		} else {
-    		start = LocalDateTime.of(entities.get("startdate").getDate(), entities.get("starttime").getTime());
-    		end = LocalDateTime.of(entities.get("enddate").getDate(), entities.get("endtime").getTime());
+    		start = LocalDateTime.of(entities.get(this.STARTDATE).getDate(), entities.get("starttime").getTime());
+    		end = LocalDateTime.of(entities.get(this.ENDDATE).getDate(), entities.get("endtime").getTime());
 		}
 		
-		if (!entities.get("startdate").getString().equals("today") && !entities.get("startdate").getString().equals("tomorrow")) {
+		if (!entities.get(this.STARTDATE).getString().equals(this.TODAY) && !entities.get(this.STARTDATE).getString()
+				.equals(this.TOMORROW)) {
 			startYear = !entities.get("startyear").getString().equals("");
 		}
 		
-		if (!entities.get("enddate").getString().equals("today") && !entities.get("enddate").getString().equals("tomorrow")) {
+		if (!entities.get(this.ENDDATE).getString().equals(this.TODAY) && !entities.get(this.ENDDATE).getString()
+				.equals(this.TOMORROW)) {
 			endYear = !entities.get("endyear").getString().equals("");
 		}
 		
@@ -184,12 +191,10 @@ public class CalendarLogic {
 		} else if (!startYear && endYear) {
 			// set start to the same year as end if only end got a year from user
 			start = start.withYear(end.getYear());
-		} else if (!startYear && !endYear) {
-			if (end.isBefore(LocalDateTime.now())) {
-				// if both got no year from user and are in the past it makes sure that the event is in the future
-				start = start.withYear(LocalDateTime.now().getYear() + 1);
-				end = end.withYear(LocalDateTime.now().getYear() + 1);
-			}
+		} else if (!startYear && !endYear && end.isBefore(LocalDateTime.now())) {
+			// if both got no year from user and are in the past it makes sure that the event is in the future
+			start = start.withYear(LocalDateTime.now().getYear() + 1);
+			end = end.withYear(LocalDateTime.now().getYear() + 1);
 		}
 		
 		return new LocalDateTime[] {start, end};
@@ -278,7 +283,8 @@ public class CalendarLogic {
 	 */
 	public String getEventsAtAsString(Map<String, EntityData> entities) {
 		LocalDateTime chosenDay = LocalDateTime.of(entities.get("date").getDate(), this.zero);
-		if (!entities.get("date").getString().equals("today") && !entities.get("date").getString().equals("tomorrow")) {
+		if (!entities.get("date").getString().equals(this.TODAY) && !entities.get("date").getString()
+				.equals(this.TOMORROW)) {
 			if (entities.get("eventyear").getString().equals("") || chosenDay.isBefore(LocalDateTime.now())) {
 				chosenDay = chosenDay.withYear(LocalDate.now().getYear() + 1);
 			}	
