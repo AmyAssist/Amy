@@ -91,16 +91,16 @@ public class JokeAPICaller {
 			final String response = sb.toString();
 			if (response.startsWith("{")) {
 				JsonValue json = Json.parse(response);
-				return json.asObject().get("joke").toString();
+				return json.asObject().get("joke").toString().replaceAll("\"", "");
 			}
 			return response;
 
 		} catch (MalformedURLException e) {
 			this.logger.error("URL malformed", e);
-			return "URL malformed";
+			return "It looks like the API URL you provided is not valid";
 		} catch (IOException e) {
-			this.logger.error("Couldn't set up connection", e);
-			return "Couldn't set up connection";
+			this.logger.error("There are connection issues", e);
+			return "I am having problems establishing a connection";
 		}
 	}
 
