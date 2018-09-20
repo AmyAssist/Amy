@@ -31,10 +31,10 @@
 		<gram>[which] events [do i have] at [{date}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="eventyear" required="true">
-				<gram>(|{amyyear})</gram>
+				<gram>{amyyear}</gram>
 			</EntityTemplate>
 			<EntityTemplate id="date" required="true">
-				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} {eventyear}|tomorrow|today)</gram>
+				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{eventyear}]|tomorrow|today)</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="date">
@@ -50,16 +50,16 @@
 				<gram>*</gram>
 			</EntityTemplate>				
 			<EntityTemplate id="startyear" required="false">
-				<gram>(|{amyyear})</gram>
+				<gram>{amyyear}</gram>
 			</EntityTemplate>						
 			<EntityTemplate id="endyear" required="false">
-				<gram>(|{amyyear})</gram>
+				<gram>{amyyear}</gram>
 			</EntityTemplate>
 			<EntityTemplate id="startdate" required="false">
-				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} {startyear}|tomorrow|today)</gram>
+				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{startyear}]|tomorrow|today)</gram>
 			</EntityTemplate>
 			<EntityTemplate id="enddate" required="false">
-				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} {endyear}|tomorrow|today)</gram>
+				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{endyear}]|tomorrow|today)</gram>
 			</EntityTemplate>
 			<EntityTemplate id="starttime" required="false">
 				<gram>{amytime}</gram>
