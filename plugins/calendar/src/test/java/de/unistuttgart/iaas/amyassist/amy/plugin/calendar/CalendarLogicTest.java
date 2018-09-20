@@ -161,7 +161,7 @@ public class CalendarLogicTest {
     void testGetDateTime() {
         assertThat(this.callog.getDateTime(LocalDateTime.of(2018, 9, 20, 12, 00), 0), 
         		is(new DateTime(ZonedDateTime.of(2018, 9, 20, 0, 0, 0, 0, ZoneId.of("Europe/Berlin"))
-        				.toInstant().toEpochMilli(), 120)));
+        				.toInstant().toEpochMilli())));
     }
 	
     /**
