@@ -34,7 +34,7 @@
 				<gram>(|{amyyear})</gram>
 			</EntityTemplate>
 			<EntityTemplate id="date" required="true">
-				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{eventyear}]|tomorrow|today)</gram>
+				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} {eventyear}|tomorrow|today)</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="date">
@@ -56,10 +56,10 @@
 				<gram>(|{amyyear})</gram>
 			</EntityTemplate>
 			<EntityTemplate id="startdate" required="false">
-				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{startyear}]|tomorrow|today)</gram>
+				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} {startyear}|tomorrow|today)</gram>
 			</EntityTemplate>
 			<EntityTemplate id="enddate" required="false">
-				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{endyear}]|tomorrow|today)</gram>
+				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} {endyear}|tomorrow|today)</gram>
 			</EntityTemplate>
 			<EntityTemplate id="starttime" required="false">
 				<gram>{amytime}</gram>

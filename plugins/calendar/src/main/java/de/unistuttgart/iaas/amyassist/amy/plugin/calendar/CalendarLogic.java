@@ -113,23 +113,16 @@ public class CalendarLogic {
 	 */
 	public String createNewEvent(Map<String, EntityData> entities) {
 		boolean allDay = isAllDay(entities.get("allday").getString());
+		LocalDateTime[] startAndEnd = calculateStartAndEnd(entities, allDay);
+		LocalDateTime start = startAndEnd[0];
+		LocalDateTime end = startAndEnd[1];
 		
-		boolean startBeforeEnd = true;
-		LocalDateTime start;
-		LocalDateTime end;
-		if(allDay) {
-			start = LocalDateTime.of(entities.get("startdate").getDate().plusDays(1), this.zero);
-			end = LocalDateTime.of(entities.get("enddate").getDate().plusDays(2), this.zero);
-			startBeforeEnd = start.isBefore(end) || start.isEqual(end);	
-		} else if(entities.get("starttime") == null || entities.get("endtime") == null) {
+		if(start == null || end == null) {
 			return "You have to restart the creation of a new event and please make sure that you add a time to the "
 					+ "start and to the end if you choose an non all day event.";
-		} else {
-    		start = LocalDateTime.of(entities.get("startdate").getDate(), entities.get("starttime").getTime());
-    		end = LocalDateTime.of(entities.get("enddate").getDate(), entities.get("endtime").getTime());
-    		startBeforeEnd = start.isBefore(end);	
 		}
-		if (!startBeforeEnd) {
+		
+		if (end.isBefore(start)) {
 			return  "You have to restart the creation of a new event and please make sure that the start of the event "
 					+ "is before the end.";
 		}
@@ -152,6 +145,54 @@ public class CalendarLogic {
 				description, entities.get("remindertype").getString(), reminderTime, "", allDay);
 		this.setEvent(calendarEvent);
 		return "I set up the event " + calendarEvent.getSummary() + " for you."; 
+	}
+	
+	/**
+	 * 
+	 * @param entities
+	 * 			from the speech
+	 * @param allDay
+	 * 			if it is an allDay Event
+	 * @return the correct start and end in an LocalDateTime Array
+	 */
+	public LocalDateTime[] calculateStartAndEnd(Map<String, EntityData> entities, boolean allDay) {
+		LocalDateTime start = null;
+		LocalDateTime end = null;
+		boolean startYear = true;
+		boolean endYear = true;
+		if (allDay) {
+			start = LocalDateTime.of(entities.get("startdate").getDate().plusDays(1), this.zero);
+			end = LocalDateTime.of(entities.get("enddate").getDate().plusDays(2), this.zero);
+		} else if(entities.get("starttime") == null || entities.get("endtime") == null) {
+			return new LocalDateTime[] {null, null};
+		} else {
+    		start = LocalDateTime.of(entities.get("startdate").getDate(), entities.get("starttime").getTime());
+    		end = LocalDateTime.of(entities.get("enddate").getDate(), entities.get("endtime").getTime());
+		}
+		
+		if (!entities.get("startdate").getString().equals("today") && !entities.get("startdate").getString().equals("tomorrow")) {
+			startYear = !entities.get("startyear").getString().equals("");
+		}
+		
+		if (!entities.get("enddate").getString().equals("today") && !entities.get("enddate").getString().equals("tomorrow")) {
+			endYear = !entities.get("endyear").getString().equals("");
+		}
+		
+		if (startYear && !endYear) {
+			// set end to the same year as start if only start got a year from user
+			end = end.withYear(start.getYear());
+		} else if (!startYear && endYear) {
+			// set start to the same year as end if only end got a year from user
+			start = start.withYear(end.getYear());
+		} else if (!startYear && !endYear) {
+			if (end.isBefore(LocalDateTime.now())) {
+				// if both got no year from user and are in the past it makes sure that the event is in the future
+				start = start.withYear(LocalDateTime.now().getYear() + 1);
+				end = end.withYear(LocalDateTime.now().getYear() + 1);
+			}
+		}
+		
+		return new LocalDateTime[] {start, end};
 	}
 
 	/**
@@ -237,9 +278,11 @@ public class CalendarLogic {
 	 */
 	public String getEventsAtAsString(Map<String, EntityData> entities) {
 		LocalDateTime chosenDay = LocalDateTime.of(entities.get("date").getDate(), this.zero);
-		if (entities.get("eventyear").getString().equals("") || chosenDay.isBefore(LocalDateTime.now())) {
-			chosenDay = chosenDay.withYear(LocalDate.now().getYear() + 1);
-		}
+		if (!entities.get("date").getString().equals("today") && !entities.get("date").getString().equals("tomorrow")) {
+			if (entities.get("eventyear").getString().equals("") || chosenDay.isBefore(LocalDateTime.now())) {
+				chosenDay = chosenDay.withYear(LocalDate.now().getYear() + 1);
+			}	
+		}		
 		List<String> eventList = new ArrayList<>();
 		DateTime min = getDateTime(chosenDay, 0);
 		DateTime max = getDateTime(chosenDay, 1);
