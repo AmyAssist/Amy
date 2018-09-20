@@ -116,4 +116,13 @@ public class Response {
     public Object getAttachment() {
         return attachment;
     }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+            "text='" + text + '\'' +
+            ", widget='" + widget + '\'' +
+            ", attachment='" + attachment +
+            '}';
+    }
 }
