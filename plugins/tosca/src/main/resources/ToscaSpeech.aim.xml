@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AmyInteractionModel>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.time">
-		<gram>(what is|tell me) the time</gram>
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.tosca.ToscaSpeech.listApps">
+		<gram>[list] [installed] (apps|applications)</gram>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.date">
-		<gram>(what is|tell me) the date</gram>
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.tosca.ToscaSpeech.install">
+		<gram>(install|deploy)</gram>
+		<EntityTemplates>
+			<EntityTemplate id="app" required="true">
+				<gram>*</gram>
+			</EntityTemplate>
+			<EntityTemplate id="config" required="true">
+				<gram>*</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="app">
+			<text>Which app should I install?</text>
+			<gram>{app}</gram>
+		</Prompt>
+		<Prompt entityTemplateId="config">
+			<text>Which config should I use?</text>
+			<gram>{config}</gram>
+		</Prompt>
 	</Intent>
-	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.year">
-		<gram>(what is|tell me) the year</gram>
-	</Intent>
-
 </AmyInteractionModel>

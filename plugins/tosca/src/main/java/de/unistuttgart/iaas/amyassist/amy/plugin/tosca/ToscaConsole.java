@@ -23,9 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.tosca;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.opentosca.containerapi.client.model.Application;
 
@@ -51,7 +50,14 @@ public class ToscaConsole {
 	public String listApps() {
 		List<Application> apps = this.logic.getInstalledApps();
 
-		StringBuilder ret = new StringBuilder("Found " + apps.size() + " applications. \n");
+		StringBuilder ret = new StringBuilder("Found ");
+
+		ret.append(apps.size());
+		ret.append(" application");
+		if (apps.size() != 1) {
+			ret.append('s');
+		}
+		ret.append(": \n");
 
 		apps.forEach(a -> {
 			ret.append("  ");
@@ -60,33 +66,30 @@ public class ToscaConsole {
 			ret.append(a.getDescription());
 			ret.append("\n ");
 		});
+		ret.setLength(ret.length() - 2);
 
 		return ret.toString();
 	}
 
 	/**
-	 * Install the first app
+	 * Install a app
 	 * 
-	 * @return A strin to output.
+	 * @param app
+	 *            The app name
+	 * @param config
+	 *            The config name
+	 * 
+	 * @return A string to output.
 	 */
 	@Command
-	public String installTinyTodo() {
-		List<Application> apps = this.logic.getInstalledApps();
-
-		Map<String, String> params = new HashMap<>();
-
-		params.put("ApplicationPort", "9990");
-		params.put("DockerEngineURL", "tcp://dind:2375");
-
-		for (Application app : apps) {
-			if (app.getDisplayName().equals("MyTinyToDo Docker Service")) {
-				this.logic.install(app, params);
-				return "installing";
-
-			}
+	public String install(String app, String config) {
+		try {
+			this.logic.install(app, config);
+		} catch (NoSuchElementException | IllegalArgumentException e) {
+			return e.getMessage();
 		}
 
-		return "my tiny todo not found";
+		return "Installing.";
 
 	}
 }
