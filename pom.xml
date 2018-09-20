@@ -48,7 +48,7 @@
 		<jackson.version>2.27</jackson.version>
 		<javax.ws.rs.version>2.1</javax.ws.rs.version>
 		<slf4j.version>1.7.25</slf4j.version>
-		<httpcore.version>4.4.9</httpcore.version>
+		<httpcore.version>4.4.10</httpcore.version>
 		<swagger.version>2.0.2</swagger.version>
 		<commons-lang3.version>3.7</commons-lang3.version>
 		<cliche.version>110413</cliche.version>
@@ -77,6 +77,7 @@
 		<module>plugins/weather</module>
 		<module>plugins/navigation</module>
 		<module>plugins/social</module>
+		<module>plugins/webpush</module>
 		<module>amy-message-hub-api</module>
 		<module>amy-message-hub</module>
 		<module>remote-sr</module>
@@ -221,6 +222,11 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpcore</artifactId>
+				<version>${httpcore.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore-nio</artifactId>
 				<version>${httpcore.version}</version>
 			</dependency>
 			<dependency>
