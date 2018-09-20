@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -82,7 +83,8 @@ public class JokeAPICaller {
 			}
 
 			StringBuilder sb = new StringBuilder();
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+			try (BufferedReader br = new BufferedReader(
+					new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
 				String s;
 				while ((s = br.readLine()) != null) {
 					sb.append(s);
