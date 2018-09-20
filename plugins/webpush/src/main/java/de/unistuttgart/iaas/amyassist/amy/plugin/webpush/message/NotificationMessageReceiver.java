@@ -28,10 +28,11 @@ import java.util.Collections;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceiver;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.Subscription;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevel;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SystemTopics;
 import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.SimpleWebPushService;
+import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.WebPushNameService;
+import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.model.Notification;
 import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.model.NotificationImp;
 
 /**
@@ -45,11 +46,21 @@ public class NotificationMessageReceiver {
 	@Reference
 	private SimpleWebPushService simpleWebPushService;
 
+	@Reference
+	private WebPushNameService webPushNameService;
+
 	@Subscription(SystemTopics.USER + "/+/notification")
 	public void notifyUser(String message, TopicName topic) {
-		TopicLevel topicLevel = topic.getTopicLevels().get(1);
-		this.simpleWebPushService.sendPushNotification(Integer.parseInt(topicLevel.getStringRepresentation()),
-				new NotificationImp("Amy Message Notification", message, "assets/icons/icon-512x512.png",
-						new int[] { 100, 50, 100 }, "", Collections.emptyList()));
+		String userName = topic.getTopicLevels().get(1).getStringRepresentation();
+
+		Notification notification = new NotificationImp("Amy Message Notification", message,
+				"assets/icons/icon-512x512.png", new int[] { 100, 50, 100 }, "", Collections.emptyList());
+		if (userName.equals("all")) {
+			for (int id : this.webPushNameService.getAllIDs()) {
+				this.simpleWebPushService.sendPushNotification(id, notification);
+			}
+		} else {
+			this.simpleWebPushService.sendPushNotification(userName, notification);
+		}
 	}
 }
