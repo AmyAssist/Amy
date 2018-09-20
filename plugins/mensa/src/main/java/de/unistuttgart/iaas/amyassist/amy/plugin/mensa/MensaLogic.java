@@ -28,10 +28,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
+import org.ccil.cowan.tagsoup.jaxp.SAXFactoryImpl;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
-
-import org.ccil.cowan.tagsoup.jaxp.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -44,7 +43,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Mensa logic class
