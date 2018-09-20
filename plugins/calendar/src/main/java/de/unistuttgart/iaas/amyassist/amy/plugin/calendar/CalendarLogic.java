@@ -145,7 +145,7 @@ public class CalendarLogic {
 	 *            the number of days you want to add
 	 * @return DateTime of input
 	 */
-	private DateTime getDateTime(LocalDateTime ldt, int plusDays) {
+	public DateTime getDateTime(LocalDateTime ldt, int plusDays) {
 		LocalDate nextDay = ldt.plusDays(plusDays).toLocalDate();
 		LocalDateTime endOfDay = LocalDateTime.of(nextDay, this.zero);
 		ZonedDateTime zdt = endOfDay.atZone(ZoneId.systemDefault());
