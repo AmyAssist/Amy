@@ -33,7 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.model.Subscription;
  * @author Leon Kiefer
  */
 public interface WebPushNameService {
-	int subscribe(Subscription subscription, String Name);
+	int subscribe(Subscription subscription, String name);
 
 	String getName(int id);
 
