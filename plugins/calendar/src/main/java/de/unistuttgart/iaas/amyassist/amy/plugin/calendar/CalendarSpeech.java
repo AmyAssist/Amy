@@ -24,6 +24,7 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import java.time.*;
+import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ public class CalendarSpeech {
 	}
 
 	private static final LocalTime ZERO = LocalTime.of(0, 0, 0, 0);
+	private static final String TODAY = "today";
 
 	/**
 	 *
@@ -98,8 +100,8 @@ public class CalendarSpeech {
 		List<CalendarEvent> events;
 		List<String> eventList = new ArrayList<>();
 		LocalDateTime now = this.environment.getCurrentLocalDateTime();
-		String todayOrTomorrow = "today";
-		if (!entities.get("day").getString().equalsIgnoreCase("today")) {
+		String todayOrTomorrow = TODAY;
+		if (!entities.get("day").getString().equalsIgnoreCase(TODAY)) {
 			now = now.plusDays(1);
 			todayOrTomorrow = "tomorrow";
 		}
@@ -124,7 +126,7 @@ public class CalendarSpeech {
 		List<CalendarEvent> events;
 		List<String> eventList = new ArrayList<>();
 		LocalDateTime chosenDate = LocalDateTime.of(entities.get("date").getDate(), ZERO);
-		if (!entities.get("date").getString().equals("today") && !entities.get("date").getString().equals("tomorrow")
+		if (!entities.get("date").getString().equals(TODAY) && !entities.get("date").getString().equals("tomorrow")
 				&& entities.get("eventyear") == null && entities.get("date").getDate()
 				.isBefore(this.environment.getCurrentLocalDateTime().toLocalDate())) {
 			chosenDate = chosenDate.withYear(this.environment.getCurrentLocalDateTime().getYear() + 1);
@@ -398,7 +400,7 @@ public class CalendarSpeech {
 	 *            the default OutputCase
 	 * @return which OutputCase is needed
 	 */
-	public static OutputCase eventType(LocalDate date1, LocalDate date2, CalendarEvent event,
+	public static OutputCase eventType(ChronoLocalDate date1, ChronoLocalDate date2, CalendarEvent event,
 			OutputCase defaultCase) {
 		if (date1.isEqual(date2)) {
 			if (event.isAllDay()) {
