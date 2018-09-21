@@ -171,11 +171,6 @@ public class CalendarSpeech {
 			end = end.withYear(now.getYear() + 1);
 		}
 		
-		if (start == null || end == null) {
-			return "You have to restart the creation of a new event and please make sure that you add a time to the "
-					+ "start and to the end if you choose an non all day event.";
-		}
-		
 		if (end.isBefore(start)) {
 			return  "You have to restart the creation of a new event and please make sure that the start of the event "
 					+ "is before the end.";
