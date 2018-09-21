@@ -306,17 +306,21 @@ public class AlarmClockLogicTest {
 
 	/**
 	 * Get's {@link #messageHub messageHub}
-	 * @return  messageHub
+	 * 
+	 * @return messageHub
 	 */
-	public MessageHub getMessageHub() {
+	@SuppressWarnings("unused")
+	private MessageHub getMessageHub() {
 		return this.messageHub;
 	}
 
 	/**
 	 * Set's {@link #messageHub messageHub}
-	 * @param messageHub  messageHub
+	 * 
+	 * @param messageHub
+	 *            messageHub
 	 */
-	public void setMessageHub(MessageHub messageHub) {
+	private void setMessageHub(MessageHub messageHub) {
 		this.messageHub = messageHub;
 	}
 }
