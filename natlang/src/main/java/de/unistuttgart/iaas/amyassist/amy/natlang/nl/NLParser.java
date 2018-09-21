@@ -49,10 +49,21 @@ public class NLParser implements INLParser {
 	 */
 	private List<EndToken> mRead;
 
+	/**
+	 * current index of read tokens
+	 */
 	private int currentIndex;
 
+	/**
+	 * a stemmer instance - this handles matches like
+	 * likes - like
+	 */
 	private Stemmer stemmer;
 	
+	/**
+	 * a deque containing helper ORGroups to indicate 
+	 * the + wildcard when to stop matching
+	 */
 	private Deque<AGFNode> shortWCStopper;
 	
 	/**
@@ -102,20 +113,43 @@ public class NLParser implements INLParser {
 		this.possibleStoppers = new ArrayList<>();
 		generateStopperDeque(agf, stack);
 		if(!this.possibleStoppers.isEmpty()) {
-			AGFNode agfNode = new AGFNode("");
-			ORGroupNode orGroup = new ORGroupNode("");
-			for(AGFNode stopper : this.possibleStoppers) {
-				orGroup.addChild(stopper);
-			}
-			agfNode.addChild(orGroup);
-			stack.push(agfNode);
+			stack.push(generateHelperORGroup(this.possibleStoppers));
 			this.foundShortWC = false;
 		}
 		return stack;
 	}
-
 	
+	/**
+	 * generates a helper ORGroup.
+	 * This ORGroup is used in {{@link #generateStopperDeque(AGFNode, Deque)}
+	 * the children in the group are possible stoppers for short wildcards.
+	 * for example:
+	 * test + [test2] [test3] test4
+	 * then the helperORGroup used as a stopper would look like this
+	 * (test2|test3|test4) 
+	 * because the optional groups might not be used
+	 * 
+	 * @param children to add to group
+	 * @return ORGroup inside an AGFNode to maintain the traceback ability
+	 */
+	private AGFNode generateHelperORGroup(List<AGFNode> children) {
+		AGFNode parent = new AGFNode("");
+		ORGroupNode orGroup = new ORGroupNode("");
+		for(AGFNode node : children) {
+			orGroup.addChild(node);
+		}
+		parent.addChild(orGroup);
+		return parent;
+	}
+
+	/**
+	 * indicated if a + wildcard has been found
+	 */
 	private boolean foundShortWC = false;
+	/**
+	 * a list of all possible stoppers for + wildcards
+	 * that will be combined in a generated Helper ORGroup
+	 */
 	private List<AGFNode> possibleStoppers;
 	/**
 	 * generates a deque which tells a short wildcard when to stop
@@ -139,15 +173,10 @@ public class NLParser implements INLParser {
 						this.possibleStoppers.add(opChild);
 					}
 				}else {
-					AGFNode agfNode = new AGFNode("");
-					ORGroupNode orGroup = new ORGroupNode("");
-					for(AGFNode stopper : this.possibleStoppers) {
-						orGroup.addChild(stopper);
-					}
-					orGroup.addChild(node);
-					agfNode.addChild(orGroup);
+					this.possibleStoppers.add(node);
+					stack.push(generateHelperORGroup(this.possibleStoppers));
 					this.possibleStoppers = new ArrayList<>();
-					stack.push(this.sortChildsOfOrAndOp(agfNode));
+
 					this.foundShortWC = false;
 				}
 				
@@ -189,7 +218,8 @@ public class NLParser implements INLParser {
 	}
 
 	/**
-	 * another ugly internal state for wildcards if this is true everything will be skipped and return true
+	 * another ugly internal state for infinite * wildcards 
+	 * if this is true everything will be skipped and return true
 	 */
 	boolean wildcardSkip = false;
 
@@ -259,8 +289,9 @@ public class NLParser implements INLParser {
 	}
 
 	/**
-	 * matches a short wildcard with fixed skip size
-	 * this uses the internal stack to check the end of the wildcards
+	 * matches a short non greedy wildcard with fixed skip size
+	 * this uses the internal deque to check the end of the wildcards
+	 * 
 	 * @param agf to check
 	 * @return if the short wildcard matched
 	 */
@@ -337,6 +368,13 @@ public class NLParser implements INLParser {
 		return false;
 	}
 
+	/**
+	 * compare a AGFNode to a word endtoken
+	 * 
+	 * @param toMatch node to compare to
+	 * @param token to compare to
+	 * @return if a match is possible
+	 */
 	private boolean compareWord(AGFNode toMatch, EndToken token) {
 		if(toMatch == null || toMatch.getContent() == null || token == null || token.getContent() == null) 
 			return false;
@@ -372,6 +410,13 @@ public class NLParser implements INLParser {
 		return matchNumber(agf, token);
 	}
 	
+	/**
+	 * checks if a endtoken number matches an AGFNode
+	 * 
+	 * @param agf to compare to
+	 * @param token to compare to
+	 * @return if a match is possible
+	 */
 	private boolean matchNumber(AGFNode agf, EndToken token) {
 		if (token == null || token.getContent() == null) {
 			return false;
