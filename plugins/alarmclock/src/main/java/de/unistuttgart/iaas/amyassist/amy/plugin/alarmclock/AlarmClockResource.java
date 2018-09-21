@@ -24,7 +24,6 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -41,6 +40,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
 import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
 
@@ -59,6 +59,9 @@ public class AlarmClockResource implements Resource {
 
 	@Reference
 	private AlarmClockLogic logic;
+	
+	@Reference
+	private Environment environment;
 
 	@Context
 	private UriInfo uri;
@@ -118,7 +121,7 @@ public class AlarmClockResource implements Resource {
 	public Alarm editAlarm(@PathParam("pathid") int alarmNumber, Alarm alarmInc) {
 		Alarm alarm = alarmInc;
 		int day;
-		if (LocalDateTime.now().getDayOfMonth() == alarm.getAlarmTime().getDayOfMonth()) {
+		if (this.environment.getCurrentLocalDateTime().getDayOfMonth() == alarm.getAlarmTime().getDayOfMonth()) {
 			day = -1;
 		} else {
 			day = 1;
@@ -175,7 +178,7 @@ public class AlarmClockResource implements Resource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Alarm newAlarm(Alarm alarm) {
 		int day;
-		if (LocalDateTime.now().getDayOfMonth() == alarm.getAlarmTime().getDayOfMonth()) {
+		if (this.environment.getCurrentLocalDateTime().getDayOfMonth() == alarm.getAlarmTime().getDayOfMonth()) {
 			day = -1;
 		} else {
 			day = 1;
