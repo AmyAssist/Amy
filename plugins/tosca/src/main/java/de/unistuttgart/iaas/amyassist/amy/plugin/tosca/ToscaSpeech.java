@@ -41,7 +41,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.Configurat
 /**
  * The speech class for the tosca plugin
  * 
- * @author Felix Burk
+ * @author Felix Burk, Tim Neumann
  */
 @Service
 @SpeechCommand

@@ -32,9 +32,9 @@ import asg.cliche.Command;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 
 /**
- * The console class fo the tosca plugin
+ * The console class for the tosca plugin
  * 
- * @author Leon Kiefer
+ * @author Leon Kiefer, Tim Neumann
  */
 public class ToscaConsole {
 
