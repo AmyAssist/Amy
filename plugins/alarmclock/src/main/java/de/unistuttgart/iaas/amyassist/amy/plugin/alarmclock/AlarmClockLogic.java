@@ -61,6 +61,7 @@ public class AlarmClockLogic implements RunnableService {
 
 	private String alarmS = "Alarm ";
 
+	@Reference
 	private MessageHub messageHub;
 
 	/**
