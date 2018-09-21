@@ -23,17 +23,15 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.social;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javax.net.ssl.HttpsURLConnection;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 import org.slf4j.Logger;
 
@@ -71,39 +69,21 @@ public class JokeAPICaller {
 	}
 
 	private String callJokeAPI(String jokeURL) {
-		try {
-			URL url = new URL(jokeURL);
-			HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-			connection.setRequestProperty("User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
-			connection.setRequestProperty("Accept", "application/json");
-
-			if (connection.getResponseCode() != 200) {
+		WebTarget target = ClientBuilder.newClient().target(UriBuilder.fromPath(jokeURL));
+		try (Response response = target.request(MediaType.APPLICATION_JSON).get()) {
+			if (response.getStatus() != 200) {
 				return "Calling API failed";
 			}
 
-			StringBuilder sb = new StringBuilder();
-			try (BufferedReader br = new BufferedReader(
-					new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
-				String s;
-				while ((s = br.readLine()) != null) {
-					sb.append(s);
-				}
-			}
-			final String response = sb.toString();
-			if (response.startsWith("{")) {
-				JsonValue json = Json.parse(response);
+			final String responseString = response.readEntity(String.class);
+
+			if (responseString.startsWith("{")) {
+				JsonValue json = Json.parse(responseString);
 				return json.asObject().get("joke").toString().replaceAll("\"", "");
 			}
-			return response;
-
-		} catch (MalformedURLException e) {
-			this.logger.error("URL malformed", e);
-			return "It looks like the API URL you provided is not valid";
-		} catch (IOException e) {
-			this.logger.error("There are connection issues", e);
-			return "I am having problems establishing a connection";
+			return responseString;
 		}
+
 	}
 
 	@PostConstruct
