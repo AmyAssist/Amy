@@ -268,13 +268,7 @@ public class NLParser implements INLParser {
 		case SHORTWC:
 			return matchShortWC(agf);
 		case LONGWC:
-			this.wildcardSkip = true;
-			for (int i = this.currentIndex; i < this.mRead.size(); i++) {
-				EndToken token = lookAhead(0);
-				this.matchedStrings.add(token.getContent());
-				consume();
-			}
-			break;
+			return matchLongWC(agf);
 		case WORD:
 			return match(agf);
 		case NUMBER:
@@ -284,6 +278,25 @@ public class NLParser implements INLParser {
 		default:
 			return false;
 
+		}
+		return true;
+	}
+
+	/**
+	 * matches a greedy long wildcard * with infinite input
+	 * @param agf to match 
+	 * @return if it matches
+	 */
+	private boolean matchLongWC(AGFNode agf) {
+		this.wildcardSkip = true;
+		for (int i = this.currentIndex; i < this.mRead.size(); i++) {
+			EndToken token = lookAhead(0);
+			if(token != null) {
+				this.matchedStrings.add(token.getContent());
+				consume();
+			}else {
+				break;
+			}
 		}
 		return true;
 	}
@@ -309,7 +322,6 @@ public class NLParser implements INLParser {
 			EndToken token = this.lookAhead(0);
 			if(checkNode(endNode)) {
 				//undo consume from checkNode
-				System.out.println("stop at \n" + token.getContent());
 				this.currentIndex = index+skips;
 				this.shortWCStopper.pollLast();
 				break;
