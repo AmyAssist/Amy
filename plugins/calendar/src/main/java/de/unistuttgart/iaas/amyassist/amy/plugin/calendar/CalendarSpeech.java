@@ -162,8 +162,8 @@ public class CalendarSpeech {
 			return "You have to restart the creation of a new event and please make sure that you add a time to the "
 					+ "start and to the end if you choose an non all day event.";
 		} else {
-    		start = LocalDateTime.of(entities.get("startdate").getDate(), entities.get("starttime").getTime());
-    		end = LocalDateTime.of(entities.get("enddate").getDate(), entities.get("endtime").getTime());
+			start = LocalDateTime.of(entities.get("startdate").getDate(), entities.get("starttime").getTime());
+			end = LocalDateTime.of(entities.get("enddate").getDate(), entities.get("endtime").getTime());
 		}
 		LocalDateTime now = this.environment.getCurrentLocalDateTime();
 		if (entities.get("startyear") == null && entities.get("endyear") == null && start.isBefore(now)) {
