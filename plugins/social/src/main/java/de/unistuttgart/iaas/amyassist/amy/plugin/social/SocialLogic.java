@@ -23,7 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.social;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 import de.unistuttgart.iaas.amyassist.amy.core.Configuration;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
@@ -38,25 +40,27 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.NatlangInformation;
  */
 @Service
 public class SocialLogic {
-	
+
 	/**
 	 * receive information about possible grammars to use
 	 */
 	@Reference
 	NatlangInformation info;
-	
+
 	/**
 	 * provides information about installed plugins
 	 */
-	@Reference 
+	@Reference
 	Configuration constants;
-	
+
+	@Reference
+	private JokeAPICaller joker;
+
 	/**
-	 * map of internal and human readable plugin names
-	 * the key are human readable names and values are the internal ones
+	 * map of internal and human readable plugin names the key are human readable names and values are the internal ones
 	 */
 	Map<String, String> pluginNames;
-	
+
 	/**
 	 * initializes plugin information
 	 */
@@ -65,81 +69,103 @@ public class SocialLogic {
 		String[] pluginInfo = this.constants.getInstalledPlugins();
 		String pluginHumanReadableName;
 		this.pluginNames = new HashMap<>();
-		
-		for(int i=0; i < pluginInfo.length; i++) {
-			pluginHumanReadableName = pluginInfo[i].substring(pluginInfo[i].lastIndexOf("plugin-")+7, pluginInfo[i].length());
-			this.pluginNames.put(
-					pluginHumanReadableName, pluginInfo[i]);
+
+		for (int i = 0; i < pluginInfo.length; i++) {
+			pluginHumanReadableName = pluginInfo[i].substring(pluginInfo[i].lastIndexOf("plugin-") + 7,
+					pluginInfo[i].length());
+			this.pluginNames.put(pluginHumanReadableName, pluginInfo[i]);
 		}
 	}
 
 	/**
 	 * receive a random greeting
+	 * 
 	 * @return the greeting string
 	 */
 	protected String getGreeting() {
 		return generateRandomAnswer(SocialConstants.greeting);
 	}
-	
+
 	/**
 	 * receive a random string answer
+	 * 
 	 * @return answer
 	 */
 	protected String getWhatsUp() {
 		return generateRandomAnswer(SocialConstants.whatsUp);
 	}
-	
+
 	/**
 	 * receive a random string answer
+	 * 
 	 * @return answer
 	 */
 	protected String getHowAreYou() {
 		return generateRandomAnswer(SocialConstants.howAreYou);
 	}
-	
+
 	/**
 	 * receive a number of sample sentences
-	 * @param nmbSentences number of sentences
+	 * 
+	 * @param nmbSentences
+	 *            number of sentences
 	 * @return the sentences
 	 */
 	protected String[] getSampleSentences(int nmbSentences) {
 		return this.info.getAnySampleSentences(nmbSentences).toArray(new String[nmbSentences]);
 	}
-	
+
 	/**
 	 * receive a number of sample sentences containing a keyword
-	 * @param nmbSentences number of sentences
-	 * @param keyword to match
+	 * 
+	 * @param nmbSentences
+	 *            number of sentences
+	 * @param keyword
+	 *            to match
 	 * @return the sentences
 	 */
 	protected String[] getSampleSentencesWithKeyword(String keyword, int nmbSentences) {
 		return this.info.getSampleSentencesFromKeyword(keyword, nmbSentences).toArray(new String[nmbSentences]);
 	}
-	
+
 	/**
 	 * provides a list of installed plugin names
+	 * 
 	 * @return the list
 	 */
 	protected String[] getInstalledPluginNames() {
 		return this.pluginNames.keySet().toArray(new String[this.pluginNames.size()]);
-		
+
 	}
-	
+
 	/**
 	 * provides information about a specific plugin
-	 * @param pluginname name of the plugin
+	 * 
+	 * @param pluginname
+	 *            name of the plugin
 	 * @return the information
 	 */
 	protected String getPluginInformation(String pluginname) {
-		if(this.pluginNames.get(pluginname) != null) {
+		if (this.pluginNames.get(pluginname) != null) {
 			return this.constants.getPluginDescription(this.pluginNames.get(pluginname));
 		}
 		return null;
 	}
-		
+
+	/**
+	 * Get a random joke from an API
+	 * 
+	 * @return a random joke
+	 */
+	protected String getJoke() {
+		return this.joker.getRandomJoke();
+	}
+
 	/**
 	 * generates a random answer from a string array
-	 * @param strings possible to select
+	 * 
+	 * @param strings
+	 *            possible to select
 	 * @return selected string
 	 */
 	private String generateRandomAnswer(String[] strings) {
