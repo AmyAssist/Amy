@@ -45,15 +45,15 @@ public class SimpleWebPushServiceImpl implements SimpleWebPushService {
 
 	@Override
 	public void sendPushNotification(int id, Notification notification) {
-		this.webPushService.sendPushNotification(id, this.convertNotification(notification));
+		this.webPushService.sendPushNotification(id, this.marshallNotification(notification));
 	}
 
 	@Override
 	public void sendPushNotification(String name, Notification notification) {
-		this.webPushNameService.sendPushNotification(name, this.convertNotification(notification));
+		this.webPushNameService.sendPushNotification(name, this.marshallNotification(notification));
 	}
 
-	private byte[] convertNotification(Notification notification) {
+	private byte[] marshallNotification(Notification notification) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			return objectMapper.writeValueAsBytes(new Payload(notification));

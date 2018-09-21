@@ -33,7 +33,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.model.Notification;
 public interface SimpleWebPushService {
 
 	/**
-	 * Send a Push notification to the client with the given id.
+	 * Send a Push notification to the single client with the given unique id.
 	 * 
 	 * @param id
 	 *            the id of the client subscription

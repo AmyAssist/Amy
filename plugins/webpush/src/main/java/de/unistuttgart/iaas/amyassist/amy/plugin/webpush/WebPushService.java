@@ -46,10 +46,10 @@ public interface WebPushService {
 	String getPublicVAPIDKey();
 
 	/**
-	 * Send a Push notification to the client with the given id.
+	 * Send a Push notification to a single client with the given id.
 	 * 
 	 * @param id
-	 *            the id of the client subscription
+	 *            the unique id of the client subscription
 	 * @param payload
 	 *            the notification payload
 	 */
