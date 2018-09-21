@@ -21,35 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations;
 
-import java.util.List;
+import javax.ws.rs.Path;
+
+import de.unistuttgart.iaas.amyassist.amy.registry.rest.AbstractRegistryResource;
 
 /**
- * Natlang information interface provides informations about agf grammars beeing used in natural language recognition
+ * The configuration resource
  * 
- * @author Felix Burk
+ * @author Tim Neumann
  */
-public interface NatlangInformation {
-
-	/**
-	 * provides possible sentences that contain a keyword
-	 * 
-	 * @param keyword
-	 *            the sentence contains
-	 * @param nmbSentences
-	 *            how many sentences sahould be provided at max
-	 * @return a list of sentences
-	 */
-	public List<String> getSampleSentencesFromKeyword(String keyword, int nmbSentences);
-
-	/**
-	 * provides any number of possible sentences
-	 * 
-	 * @param nmbSentences
-	 *            how many sentences should be provided
-	 * @return a list of sentences
-	 */
-	public List<String> getAnySampleSentences(int nmbSentences);
-
+@Path("tosca/configurations")
+public class ConfigurationResource
+		extends AbstractRegistryResource<ConfigurationRegistry, ConfigurationEntry, ConfigurationEntry, Integer> {
 }
