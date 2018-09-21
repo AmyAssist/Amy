@@ -21,35 +21,59 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
-
-import java.util.List;
+package de.unistuttgart.iaas.amyassist.amy.natlang.nl;
 
 /**
- * Natlang information interface provides informations about agf grammars beeing used in natural language recognition
+ * Word Token class used in the Lexer and parser
  * 
  * @author Felix Burk
  */
-public interface NatlangInformation {
+public class EndToken {
+
+	private final String content;
+
+	private EndTokenType type;
 
 	/**
-	 * provides possible sentences that contain a keyword
+	 * constructor for word token
 	 * 
-	 * @param keyword
-	 *            the sentence contains
-	 * @param nmbSentences
-	 *            how many sentences sahould be provided at max
-	 * @return a list of sentences
+	 * @param content
+	 *                    the content
 	 */
-	public List<String> getSampleSentencesFromKeyword(String keyword, int nmbSentences);
+	public EndToken(String content) {
+		this.content = content;
+	}
 
 	/**
-	 * provides any number of possible sentences
+	 * getter for string content
 	 * 
-	 * @param nmbSentences
-	 *            how many sentences should be provided
-	 * @return a list of sentences
+	 * @return the content
 	 */
-	public List<String> getAnySampleSentences(int nmbSentences);
+	public String getContent() {
+		return this.content;
+	}
 
+	/**
+	 * setter for type
+	 * 
+	 * @param type
+	 *                 the type to set
+	 */
+	public void setType(EndTokenType type) {
+		this.type = type;
+	}
+
+	/**
+	 * returns the type
+	 * 
+	 * @return the type
+	 */
+	public EndTokenType getType() {
+		return this.type;
+	}
+
+	@Override
+	public String toString() {
+		return this.content;
+	}
 }
