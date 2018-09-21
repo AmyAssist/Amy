@@ -45,8 +45,8 @@ import com.google.common.collect.Lists;
 import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
 import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLLexerException;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.WordToken;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.WordTokenType;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.EndToken;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.EndTokenType;
 
 /**
  * Test for NL Lexer
@@ -111,8 +111,8 @@ public class NLLexerTest {
 	@MethodSource("testWords")
 	public void checkInput(List<String> input) {
 		NLLexer lexer = new NLLexer(this.lang);
-		List<WordToken> tokenize = lexer.tokenize(String.join(" ", input));
-		assertThat(Lists.transform(tokenize, WordToken::getContent), is(input));
+		List<EndToken> tokenize = lexer.tokenize(String.join(" ", input));
+		assertThat(Lists.transform(tokenize, EndToken::getContent), is(input));
 	}
 
 	/**
@@ -121,20 +121,20 @@ public class NLLexerTest {
 	@Test
 	public void testTypes() {
 		NLLexer lex = new NLLexer(this.lang);
-		List<WordToken> tokenize = lex.tokenize("wajjo 9 0 oh 99 oh one");
-		assertThat(Lists.transform(tokenize, WordToken::getType),
-				contains(WordTokenType.WORD, WordTokenType.NUMBER, WordTokenType.NUMBER, WordTokenType.WORD,
-						WordTokenType.NUMBER, WordTokenType.WORD, WordTokenType.NUMBER));
+		List<EndToken> tokenize = lex.tokenize("wajjo 9 0 oh 99 oh one");
+		assertThat(Lists.transform(tokenize, EndToken::getType),
+				contains(EndTokenType.WORD, EndTokenType.NUMBER, EndTokenType.NUMBER, EndTokenType.WORD,
+						EndTokenType.NUMBER, EndTokenType.WORD, EndTokenType.NUMBER));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("badCharacters")
 	public void testRemoveBadCharacters(Character badCharacter) {
 		NLLexer lex = new NLLexer(this.lang);
-		List<WordToken> tokenize = lex.tokenize("wajjo" + badCharacter + " 9 0 oh 99 oh one");
-		assertThat(Lists.transform(tokenize, WordToken::getType),
-				contains(WordTokenType.WORD, WordTokenType.NUMBER, WordTokenType.NUMBER, WordTokenType.WORD,
-						WordTokenType.NUMBER, WordTokenType.WORD, WordTokenType.NUMBER));
+		List<EndToken> tokenize = lex.tokenize("wajjo" + badCharacter + " 9 0 oh 99 oh one");
+		assertThat(Lists.transform(tokenize, EndToken::getType),
+				contains(EndTokenType.WORD, EndTokenType.NUMBER, EndTokenType.NUMBER, EndTokenType.WORD,
+						EndTokenType.NUMBER, EndTokenType.WORD, EndTokenType.NUMBER));
 	}
 
 	/**
@@ -145,10 +145,10 @@ public class NLLexerTest {
 	@Test
 	public void testConcatNumbers() {
 		NLLexer lex = new NLLexer(this.lang);
-		List<WordToken> tokenize = lex.tokenize("test one hundred twenty two test");
+		List<EndToken> tokenize = lex.tokenize("test one hundred twenty two test");
 
-		assertThat(Lists.transform(tokenize, WordToken::getType),
-				contains(WordTokenType.WORD, WordTokenType.NUMBER, WordTokenType.WORD));
+		assertThat(Lists.transform(tokenize, EndToken::getType),
+				contains(EndTokenType.WORD, EndTokenType.NUMBER, EndTokenType.WORD));
 		assertThat(new Boolean(true), is(tokenize.get(1).getContent().equals("122")));
 	}
 
@@ -199,7 +199,7 @@ public class NLLexerTest {
 	@MethodSource("numberStringToInt")
 	public void testNumberConversion(Pair<String, Integer> pair) {
 		NLLexer lex = new NLLexer(this.lang);
-		List<WordToken> numbers = lex.tokenize(pair.getLeft());
+		List<EndToken> numbers = lex.tokenize(pair.getLeft());
 		assertThat(new Boolean(true), is(numbers.get(0).getContent().equals((String.valueOf(pair.getRight())))));
 
 	}

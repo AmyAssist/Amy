@@ -31,6 +31,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ChooseLangua
 import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishNumberConversion;
 import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLLexer;
 import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLParser;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.WordToken;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.EndToken;
 import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntent;
 
 /**
@@ -74,11 +75,13 @@ public class NLParserTest {
 		UserIntent int0 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(0));
 		UserIntent int1 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(1));
 		UserIntent int2 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(2));
+		UserIntent int3 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(3));
 		
 		this.intents = new ArrayList<>();
 		this.intents.add(int0);
 		this.intents.add(int1);
 		this.intents.add(int2);
+		this.intents.add(int3);
 		
 	}
 	
@@ -86,7 +89,7 @@ public class NLParserTest {
 	@Test
 	public void test() {
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
-		List<WordToken> tokens = lex.tokenize("greet me");
+		List<EndToken> tokens = lex.tokenize("greet me");
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(0).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
@@ -97,7 +100,7 @@ public class NLParserTest {
 	@Test
 	public void finished() {
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
-		List<WordToken> tokens = lex.tokenize("greet me with good morning test ten oh twenty");
+		List<EndToken> tokens = lex.tokenize("greet me with good morning test ten oh twenty");
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(0).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
@@ -106,10 +109,35 @@ public class NLParserTest {
 		assertEquals(getEntityNodeContent(parser.matchingNode(tokens)), "good morning10 oh 20");
 	}
 	
+	/**
+	 * tests stop conditions in + wildcards
+	 */
+	@Test
+	public void entityStopperGrammar() {
+		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
+		List<EndToken> tokens = lex.tokenize("best transport from stuttgart test to berlin x test");
+		List<AGFNode> nodes = new ArrayList<>();
+		nodes.add(this.intents.get(3).getGrammar());
+		NLParser parser = new NLParser(nodes, null);
+		
+		Deque<AGFNode> queue = parser.generateStopperDeque(nodes.get(0));
+		AGFNode queueLast = queue.pollLast();
+		assertEquals(AGFNodeType.AGF, queueLast.getType());
+		AGFNode orGroup = queueLast.getChilds().get(0);
+		assertEquals(AGFNodeType.ORG, orGroup.getType());
+		assertEquals(1, orGroup.getChilds().size());
+		
+		AGFNode queueSecond = queue.pollLast();
+		assertEquals(AGFNodeType.AGF, queueSecond.getType());
+		AGFNode orGroupSecond = queueSecond.getChilds().get(0);
+		assertEquals(AGFNodeType.ORG, orGroupSecond.getType());
+		assertEquals(2, orGroupSecond.getChilds().size());
+	}
+	
 	@Test
 	public void shortWildcardTest() {
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
-		List<WordToken> tokens = lex.tokenize("test the four sign long wildcard here");
+		List<EndToken> tokens = lex.tokenize("test the four sign wildcard long here");
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(1).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
@@ -126,7 +154,7 @@ public class NLParserTest {
 		}
 		b.append(" long");
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
-		List<WordToken> tokens = lex.tokenize(b.toString());
+		List<EndToken> tokens = lex.tokenize(b.toString());
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(2).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
