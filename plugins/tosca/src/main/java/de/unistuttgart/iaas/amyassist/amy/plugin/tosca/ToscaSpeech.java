@@ -36,6 +36,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
 
 /**
  * The speech class for the tosca plugin
@@ -107,7 +108,7 @@ public class ToscaSpeech {
 	 */
 	@EntityProvider("config")
 	public List<String> provideConfigurations() {
-		return this.logic.getConfigurations().stream().map(c -> c.getTag()).collect(Collectors.toList());
+		return this.logic.getConfigurations().stream().map(ConfigurationEntry::getTag).collect(Collectors.toList());
 	}
 
 	/**
@@ -117,7 +118,7 @@ public class ToscaSpeech {
 	 */
 	@EntityProvider("app")
 	public List<String> provideApps() {
-		return this.logic.getInstalledApps().stream().map(a -> a.getDisplayName()).collect(Collectors.toList());
+		return this.logic.getInstalledApps().stream().map(Application::getDisplayName).collect(Collectors.toList());
 	}
 
 }
