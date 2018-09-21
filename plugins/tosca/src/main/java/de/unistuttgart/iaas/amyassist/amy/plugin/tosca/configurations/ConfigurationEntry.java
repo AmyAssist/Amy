@@ -35,7 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.registry.Taggable;
  */
 @Entity
 @PersistenceUnit(unitName = "ConfigurationRegistry")
-public class ConfiguartionEntry implements RegistryEntity, Taggable {
+public class ConfigurationEntry implements RegistryEntity, Taggable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

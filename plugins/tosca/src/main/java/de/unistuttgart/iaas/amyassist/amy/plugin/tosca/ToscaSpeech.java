@@ -49,6 +49,13 @@ public class ToscaSpeech {
 	@Reference
 	private ToscaLogic logic;
 
+	/**
+	 * Speech method to lists the apps
+	 * 
+	 * @param entities
+	 *            The speech entities. Not used.
+	 * @return A string to output, which contains the number of installed apps and their names.
+	 */
 	@Intent
 	public String listApps(Map<String, EntityData> entities) {
 		List<Application> apps = this.logic.getInstalledApps();
@@ -72,6 +79,14 @@ public class ToscaSpeech {
 		return ret.toString();
 	}
 
+	/**
+	 * Speech method o install a plugin. The name of the app and the config are in the entities under app and config
+	 * respectively
+	 * 
+	 * @param entities
+	 *            The speech entities to use
+	 * @return A string to output which contains any error or a confirmation that installation is in progres
+	 */
 	@Intent
 	public String install(Map<String, EntityData> entities) {
 		String app = entities.get("app").getString();
@@ -85,11 +100,21 @@ public class ToscaSpeech {
 		return "Installing.";
 	}
 
+	/**
+	 * Provides the names of the configurations
+	 * 
+	 * @return A list of config names.
+	 */
 	@EntityProvider("config")
 	public List<String> provideConfigurations() {
 		return this.logic.getConfigurations().stream().map(c -> c.getTag()).collect(Collectors.toList());
 	}
 
+	/**
+	 * Provides the names of the apps
+	 * 
+	 * @return A list of app names.
+	 */
 	@EntityProvider("app")
 	public List<String> provideApps() {
 		return this.logic.getInstalledApps().stream().map(a -> a.getDisplayName()).collect(Collectors.toList());

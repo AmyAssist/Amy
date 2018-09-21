@@ -21,35 +21,32 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations;
+package de.unistuttgart.iaas.amyassist.amy.plugin.tosca;
 
-import javax.annotation.Nonnull;
+import org.opentosca.containerapi.client.IOpenTOSCAContainerAPIClient;
+import org.opentosca.containerapi.client.impl.OpenTOSCAContainerLegacyAPIClient;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.registry.AbstractTaggableRegistry;
 
 /**
- * The configuration registry
+ * Adapter to the tosca client library
  * 
  * @author Tim Neumann
  */
-@Service(ConfigurationRegistry.class)
-public class ConfigurationRegistry extends AbstractTaggableRegistry<ConfigurationEntry> {
+@Service
+public class ToscaLibraryAdapter {
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry#getPersistenceUnitName()
+	 * Initializes the tosca library and returns its client.
+	 * 
+	 * @param containerHost
+	 *            The container host to use.
+	 * @param containerHostInternal
+	 *            The internal container host to use.
+	 * @return The created client
+	 * @see OpenTOSCAContainerLegacyAPIClient#OpenTOSCAContainerLegacyAPIClient(String, String)
 	 */
-	@Override
-	protected String getPersistenceUnitName() {
-		return "ConfigurationRegistry";
+	public IOpenTOSCAContainerAPIClient createLibrary(String containerHost, String containerHostInternal) {
+		return new OpenTOSCAContainerLegacyAPIClient(containerHost, containerHostInternal);
 	}
-
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry#getEntityClass()
-	 */
-	@Override
-	protected @Nonnull Class<? extends ConfigurationEntry> getEntityClass() {
-		return ConfigurationEntry.class;
-	}
-
 }

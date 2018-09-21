@@ -34,5 +34,5 @@ import de.unistuttgart.iaas.amyassist.amy.registry.rest.AbstractRegistryResource
  */
 @Path("tosca/configurations")
 public class ConfigurationResource
-		extends AbstractRegistryResource<ConfigurationRegistry, ConfiguartionEntry, ConfiguartionEntry, Integer> {
+		extends AbstractRegistryResource<ConfigurationRegistry, ConfigurationEntry, ConfigurationEntry, Integer> {
 }
