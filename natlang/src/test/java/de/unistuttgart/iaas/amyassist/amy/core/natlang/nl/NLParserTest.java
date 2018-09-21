@@ -109,24 +109,35 @@ public class NLParserTest {
 		assertEquals(getEntityNodeContent(parser.matchingNode(tokens)), "good morning10 oh 20");
 	}
 	
+	/**
+	 * tests stop conditions in + wildcards
+	 */
 	@Test
-	public void fuckingGrammar() {
+	public void entityStopperGrammar() {
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
 		List<EndToken> tokens = lex.tokenize("best transport from stuttgart test to berlin x test");
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(3).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
+		
 		Deque<AGFNode> queue = parser.generateStopperDeque(nodes.get(0));
-		while(!queue.isEmpty()) {
-			System.out.println("next " + queue.pollLast().printSelf());
-		}
-		System.out.println(getEntityNodeContent(parser.matchingNode(tokens)));
+		AGFNode queueLast = queue.pollLast();
+		assertEquals(AGFNodeType.AGF, queueLast.getType());
+		AGFNode orGroup = queueLast.getChilds().get(0);
+		assertEquals(AGFNodeType.ORG, orGroup.getType());
+		assertEquals(1, orGroup.getChilds().size());
+		
+		AGFNode queueSecond = queue.pollLast();
+		assertEquals(AGFNodeType.AGF, queueSecond.getType());
+		AGFNode orGroupSecond = queueSecond.getChilds().get(0);
+		assertEquals(AGFNodeType.ORG, orGroupSecond.getType());
+		assertEquals(2, orGroupSecond.getChilds().size());
 	}
 	
 	@Test
 	public void shortWildcardTest() {
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
-		List<EndToken> tokens = lex.tokenize("test the four sign long wildcard here");
+		List<EndToken> tokens = lex.tokenize("test the four sign wildcard long here");
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(1).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
