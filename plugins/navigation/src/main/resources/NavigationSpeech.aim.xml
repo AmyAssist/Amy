@@ -54,10 +54,10 @@
 		</gram>
 		<EntityTemplates>
 			<EntityTemplate id="start" required="true">
-				<gram>+ to</gram>
+				<gram>+</gram>
 			</EntityTemplate>
 			<EntityTemplate id="end" required="true">
-				<gram>+ by</gram>
+				<gram>+</gram>
 			</EntityTemplate>
 			<EntityTemplate id="mode" required="true">
 				<gram>(car|[public] (transport|transit)|bike|bicycle)</gram>
@@ -130,13 +130,12 @@
 			<EntityTemplate id="end" required="true">
 				<gram>+</gram>
 			</EntityTemplate>
+		</EntityTemplates>
 			<Prompt entityTemplateId="time">
 				<text>When are you leaving?</text>
 				<gram> {time}</gram>
 			</Prompt>
-		</EntityTemplates>
 	</Intent>
-
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.routeFromtTo">
