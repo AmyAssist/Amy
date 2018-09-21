@@ -84,7 +84,7 @@ public class AlarmClockLogicTest {
 		this.scheduler = this.framework.mockService(TaskScheduler.class);
 		this.setAbs(this.framework.mockService(AlarmBeepService.class));
 		this.alarmStorage = this.framework.mockService(AlarmRegistry.class);
-		this.setMessageHub(this.framework.mockService(MessageHub.class));
+		this.messageHub = this.framework.mockService(MessageHub.class);
 		this.acl = this.framework.setServiceUnderTest(AlarmClockLogic.class);
 
 		when(this.alarmStorage.getAll()).thenReturn(this.alarms);
@@ -302,25 +302,5 @@ public class AlarmClockLogicTest {
 	 */
 	public void setAbs(AlarmBeepService abs) {
 		this.abs = abs;
-	}
-
-	/**
-	 * Get's {@link #messageHub messageHub}
-	 * 
-	 * @return messageHub
-	 */
-	@SuppressWarnings("unused")
-	private MessageHub getMessageHub() {
-		return this.messageHub;
-	}
-
-	/**
-	 * Set's {@link #messageHub messageHub}
-	 * 
-	 * @param messageHub
-	 *            messageHub
-	 */
-	private void setMessageHub(MessageHub messageHub) {
-		this.messageHub = messageHub;
 	}
 }

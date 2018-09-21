@@ -84,7 +84,7 @@ public class TimerLogicTest {
 		this.scheduler = this.framework.mockService(TaskScheduler.class);
 		this.setTbs(this.framework.mockService(TimerBeepService.class));
 		this.timerStorage = this.framework.mockService(TimerRegistry.class);
-		this.setMessageHub(this.framework.mockService(MessageHub.class));
+		this.messageHub = this.framework.mockService(MessageHub.class);
 		this.tlogic = this.framework.setServiceUnderTest(TimerLogic.class);
 
 		when(this.timerStorage.getAll()).thenReturn(this.timers);
@@ -294,25 +294,5 @@ public class TimerLogicTest {
 	 */
 	public void setTbs(TimerBeepService tbs) {
 		this.tbs = tbs;
-	}
-
-	/**
-	 * Get's {@link #messageHub messageHub}
-	 * 
-	 * @return messageHub
-	 */
-	@SuppressWarnings("unused")
-	private MessageHub getMessageHub() {
-		return this.messageHub;
-	}
-
-	/**
-	 * Set's {@link #messageHub messageHub}
-	 * 
-	 * @param messageHub
-	 *            messageHub
-	 */
-	private void setMessageHub(MessageHub messageHub) {
-		this.messageHub = messageHub;
 	}
 }
