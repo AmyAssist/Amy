@@ -77,6 +77,8 @@
 		<module>plugins/weather</module>
 		<module>plugins/navigation</module>
 		<module>plugins/social</module>
+		<module>plugins/tosca</module>
+		<module>plugins/mensa</module>
 		<module>amy-message-hub-api</module>
 		<module>amy-message-hub</module>
 		<module>remote-sr</module>

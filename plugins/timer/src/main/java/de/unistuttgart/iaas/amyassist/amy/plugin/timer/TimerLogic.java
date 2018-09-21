@@ -35,12 +35,15 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.Topics;
 
 /**
  * This class implements the logic for all the functions that our timer is capable of
  * 
  * @author Patrick Gebhardt
  */
+
 @Service(TimerLogic.class)
 public class TimerLogic implements RunnableService {
 
@@ -58,6 +61,9 @@ public class TimerLogic implements RunnableService {
 
 	private String timerS = "Timer ";
 
+	@Reference
+	private MessageHub messageHub;
+
 	/**
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
 	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel Simion
@@ -73,6 +79,8 @@ public class TimerLogic implements RunnableService {
 			Timer currenttimer = this.getTimer(timer.getId());
 			if (currenttimer.isActive()
 					&& (currenttimer.getRemainingTime().isNegative() || currenttimer.getRemainingTime().isZero())) {
+				String topic = Topics.smarthomeAll("timer");
+				this.messageHub.publish(topic, "Timer " + currenttimer.getId() + "is ringing");
 				this.timerbeep.beep(currenttimer);
 			}
 		};
