@@ -42,7 +42,7 @@ public interface INLParser {
 	 * 
 	 * @return the matching AGFNode
 	 */
-	public int matchingNodeIndex(List<WordToken> nl);
+	public int matchingNodeIndex(List<EndToken> nl);
 
 	/**
 	 * returns matching AGFNode
@@ -52,6 +52,6 @@ public interface INLParser {
 	 * 
 	 * @return the matching AGFNode
 	 */
-	public AGFNode matchingNode(List<WordToken> nl);
+	public AGFNode matchingNode(List<EndToken> nl);
 
 }

@@ -21,35 +21,35 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations;
 
-import java.util.List;
+import javax.annotation.Nonnull;
+
+import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.registry.AbstractTaggableRegistry;
 
 /**
- * Natlang information interface provides informations about agf grammars beeing used in natural language recognition
+ * The configuration registry
  * 
- * @author Felix Burk
+ * @author Tim Neumann
  */
-public interface NatlangInformation {
+@Service(ConfigurationRegistry.class)
+public class ConfigurationRegistry extends AbstractTaggableRegistry<ConfigurationEntry> {
 
 	/**
-	 * provides possible sentences that contain a keyword
-	 * 
-	 * @param keyword
-	 *            the sentence contains
-	 * @param nmbSentences
-	 *            how many sentences sahould be provided at max
-	 * @return a list of sentences
+	 * @see de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry#getPersistenceUnitName()
 	 */
-	public List<String> getSampleSentencesFromKeyword(String keyword, int nmbSentences);
+	@Override
+	protected String getPersistenceUnitName() {
+		return "ConfigurationRegistry";
+	}
 
 	/**
-	 * provides any number of possible sentences
-	 * 
-	 * @param nmbSentences
-	 *            how many sentences should be provided
-	 * @return a list of sentences
+	 * @see de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry#getEntityClass()
 	 */
-	public List<String> getAnySampleSentences(int nmbSentences);
+	@Override
+	protected @Nonnull Class<? extends ConfigurationEntry> getEntityClass() {
+		return ConfigurationEntry.class;
+	}
 
 }
