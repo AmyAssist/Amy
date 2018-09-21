@@ -21,35 +21,23 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
-
-import java.util.List;
+package de.unistuttgart.iaas.amyassist.amy.natlang.nl;
 
 /**
- * Natlang information interface provides informations about agf grammars beeing used in natural language recognition
+ * types of word tokens
  * 
  * @author Felix Burk
  */
-public interface NatlangInformation {
+public enum EndTokenType {
 
 	/**
-	 * provides possible sentences that contain a keyword
-	 * 
-	 * @param keyword
-	 *            the sentence contains
-	 * @param nmbSentences
-	 *            how many sentences sahould be provided at max
-	 * @return a list of sentences
+	 * just some word
 	 */
-	public List<String> getSampleSentencesFromKeyword(String keyword, int nmbSentences);
+	WORD,
 
 	/**
-	 * provides any number of possible sentences
-	 * 
-	 * @param nmbSentences
-	 *            how many sentences should be provided
-	 * @return a list of sentences
+	 * some number, written or as digit
 	 */
-	public List<String> getAnySampleSentences(int nmbSentences);
+	NUMBER;
 
 }

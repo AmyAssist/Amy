@@ -45,7 +45,7 @@ public class NLLexer {
 	/**
 	 * contains regex with the corresponding WordTokenType
 	 */
-	private final Map<String, WordTokenType> regexTokenType = new LinkedHashMap<>();
+	private final Map<String, EndTokenType> regexTokenType = new LinkedHashMap<>();
 
 	private ChooseLanguage language;
 
@@ -64,12 +64,12 @@ public class NLLexer {
 		if (!this.numberConversion.getWordToNumber().isEmpty()) {
 			String regex = "((\\b" + String.join("\\b|\\b", this.numberConversion.getWordToNumber().keySet())
 					+ "\\b)\\s{0,1})+";
-			this.regexTokenType.put(regex, WordTokenType.NUMBER);
+			this.regexTokenType.put(regex, EndTokenType.NUMBER);
 		} else {
 			this.logger.error("problem with numbers file, written numbers will not be recognized");
 		}
-		this.regexTokenType.put("[0-9]+", WordTokenType.NUMBER);
-		this.regexTokenType.put("(\\p{Lo}|\\p{L})+", WordTokenType.WORD);
+		this.regexTokenType.put("[0-9]+", EndTokenType.NUMBER);
+		this.regexTokenType.put("(\\p{Lo}|\\p{L})+", EndTokenType.WORD);
 	}
 
 	/**
@@ -79,8 +79,8 @@ public class NLLexer {
 	 *            the string to lex
 	 * @return returns processed list of WordTokens
 	 */
-	public List<WordToken> tokenize(String nlInput) {
-		List<WordToken> list = new LinkedList<>();
+	public List<EndToken> tokenize(String nlInput) {
+		List<EndToken> list = new LinkedList<>();
 		String toLex = nlInput.toLowerCase().trim();
 		toLex = this.language.getTimeUtility().formatTime(toLex);
 		toLex = this.language.getTimeUtility().formatDate(toLex);
@@ -104,7 +104,7 @@ public class NLLexer {
 					//$FALL-THROUGH$
 				default:
 					if (currentWord.length() != 0) {
-						list.add(parse(new WordToken(currentWord.toString())));
+						list.add(parse(new EndToken(currentWord.toString())));
 						currentWord = new StringBuilder();
 						break;
 					}
@@ -112,7 +112,7 @@ public class NLLexer {
 				}
 			}
 			if(currentWord.length() != 0) {
-				list.add(parse(new WordToken(currentWord.toString())));
+				list.add(parse(new EndToken(currentWord.toString())));
 			}
 			return concatNumbers(list);
 		}
@@ -127,11 +127,11 @@ public class NLLexer {
 	 *            of all tokens containing potential written numbers that have to be merged
 	 * @return final list containing the correct numbers
 	 */
-	private List<WordToken> concatNumbers(List<WordToken> list) {
-		List<WordToken> result = new ArrayList<>();
-		List<WordToken> numbers = new ArrayList<>();
-		for (WordToken wordToken : list) {
-			if (wordToken.getType() == WordTokenType.NUMBER && wordToken.getContent().matches("[a-zA-Z]+")) {
+	private List<EndToken> concatNumbers(List<EndToken> list) {
+		List<EndToken> result = new ArrayList<>();
+		List<EndToken> numbers = new ArrayList<>();
+		for (EndToken wordToken : list) {
+			if (wordToken.getType() == EndTokenType.NUMBER && wordToken.getContent().matches("[a-zA-Z]+")) {
 				numbers.add(wordToken);
 			} else {
 				if (!numbers.isEmpty()) {
@@ -147,10 +147,10 @@ public class NLLexer {
 		return result;
 	}
 
-	private WordToken fromNumbers(List<WordToken> numbers) {
+	private EndToken fromNumbers(List<EndToken> numbers) {
 		int finalNumber = this.numberConversion.calcNumber(numbers);
-		WordToken t = new WordToken(String.valueOf(finalNumber));
-		t.setType(WordTokenType.NUMBER);
+		EndToken t = new EndToken(String.valueOf(finalNumber));
+		t.setType(EndTokenType.NUMBER);
 		return t;
 	}
 
@@ -161,8 +161,8 @@ public class NLLexer {
 	 *            the WordToken
 	 * @return the parsed WordToken
 	 */
-	private WordToken parse(WordToken next) {
-		for (Map.Entry<String, WordTokenType> entry : this.regexTokenType.entrySet()) {
+	private EndToken parse(EndToken next) {
+		for (Map.Entry<String, EndTokenType> entry : this.regexTokenType.entrySet()) {
 			if (next.getContent().matches(entry.getKey())) {
 				next.setType(entry.getValue());
 				return next;
