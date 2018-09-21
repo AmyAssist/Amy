@@ -44,6 +44,7 @@ import org.mockito.ArgumentMatchers;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -68,6 +69,8 @@ public class TimerLogicTest {
 
 	private Environment env;
 
+	private MessageHub messageHub;
+
 	private List<Timer> timers = new ArrayList<>();
 
 	private int timerNumber;
@@ -81,6 +84,7 @@ public class TimerLogicTest {
 		this.scheduler = this.framework.mockService(TaskScheduler.class);
 		this.setTbs(this.framework.mockService(TimerBeepService.class));
 		this.timerStorage = this.framework.mockService(TimerRegistry.class);
+		this.setMessageHub(this.framework.mockService(MessageHub.class));
 		this.tlogic = this.framework.setServiceUnderTest(TimerLogic.class);
 
 		when(this.timerStorage.getAll()).thenReturn(this.timers);
@@ -290,5 +294,21 @@ public class TimerLogicTest {
 	 */
 	public void setTbs(TimerBeepService tbs) {
 		this.tbs = tbs;
+	}
+
+	/**
+	 * Get's {@link #messageHub messageHub}
+	 * @return  messageHub
+	 */
+	public MessageHub getMessageHub() {
+		return this.messageHub;
+	}
+
+	/**
+	 * Set's {@link #messageHub messageHub}
+	 * @param messageHub  messageHub
+	 */
+	public void setMessageHub(MessageHub messageHub) {
+		this.messageHub = messageHub;
 	}
 }

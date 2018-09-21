@@ -44,6 +44,7 @@ import org.mockito.ArgumentMatchers;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -68,6 +69,8 @@ public class AlarmClockLogicTest {
 
 	private Environment env;
 
+	private MessageHub messageHub;
+
 	private List<Alarm> alarms = new ArrayList<>();
 
 	private int alarmNumber;
@@ -81,6 +84,7 @@ public class AlarmClockLogicTest {
 		this.scheduler = this.framework.mockService(TaskScheduler.class);
 		this.setAbs(this.framework.mockService(AlarmBeepService.class));
 		this.alarmStorage = this.framework.mockService(AlarmRegistry.class);
+		this.setMessageHub(this.framework.mockService(MessageHub.class));
 		this.acl = this.framework.setServiceUnderTest(AlarmClockLogic.class);
 
 		when(this.alarmStorage.getAll()).thenReturn(this.alarms);
@@ -298,5 +302,21 @@ public class AlarmClockLogicTest {
 	 */
 	public void setAbs(AlarmBeepService abs) {
 		this.abs = abs;
+	}
+
+	/**
+	 * Get's {@link #messageHub messageHub}
+	 * @return  messageHub
+	 */
+	public MessageHub getMessageHub() {
+		return this.messageHub;
+	}
+
+	/**
+	 * Set's {@link #messageHub messageHub}
+	 * @param messageHub  messageHub
+	 */
+	public void setMessageHub(MessageHub messageHub) {
+		this.messageHub = messageHub;
 	}
 }
