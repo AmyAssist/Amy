@@ -25,7 +25,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
 import java.time.*;
 import java.time.chrono.ChronoLocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
@@ -336,18 +335,31 @@ public class CalendarSpeech {
 	}
 
 	/**
-	 *
 	 * @param localDateTime
 	 *            input time as LocalDateTime
-	 * @return correct time in 24 hour format with am/pm
+	 * @return correct time in 12 hour format with am/pm
 	 */
 	public String getCorrectTime(LocalDateTime localDateTime) {
-		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 		if (localDateTime.getHour() > 11) {
-			return timeFormatter.format(localDateTime) + " pm";
+			return parseTo12Hour(localDateTime) + " pm";
 		}
-		return timeFormatter.format(localDateTime) + " am";
+		return parseTo12Hour(localDateTime) + " am";
 
+	}
+	
+	/**
+	 * @param localDateTime
+	 * 				LocalDateTime from where the time is created
+	 * @return LocalTime equivalent in 12 hour format, without am or pm 
+	 */
+	public LocalTime parseTo12Hour(LocalDateTime localDateTime) {
+		int hour = localDateTime.getHour();
+		int minute = localDateTime.getMinute();
+		if (hour > 12) {
+			hour = hour % 12;
+		}
+		return LocalTime.of(hour, minute);
+		
 	}
 
 	/**
