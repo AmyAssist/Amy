@@ -98,8 +98,7 @@ public class DialogHandlerImpl implements DialogHandler {
 				Object object = this.serviceLocator.createAndInitialize(intent.getPartialNLIClass());
 				try {
 					dialog.output(dialog.getIntent().call(object, stringToEntityData));
-				// NOSONAR
-				} catch (RuntimeException e) {
+				} catch (RuntimeException e) { // NOSONAR
 					this.logger.warn("Error during plugin execution", e);
 					dialog.output("There is an error in the plugin. For more details see in the logs.");
 				}
