@@ -27,7 +27,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
 
@@ -64,11 +67,17 @@ public class TaskSchedulerImpl implements TaskScheduler, RunnableService {
 	}
 
 	@Override
-	public void schedule(Runnable task, Instant instant) {
+	public @Nonnull ScheduledFuture<?> schedule(Runnable task, Instant instant) {
 		this.logger.debug("schedule task for {}", instant);
 		long delay = ChronoUnit.MILLIS.between(this.environment.getCurrentDateTime().toInstant(), instant);
 		this.logger.debug("the delay of the task is {} ms", delay);
-		this.scheduledExecutorService.schedule(task, delay, TimeUnit.MILLISECONDS);
+		return this.scheduledExecutorService.schedule(task, delay, TimeUnit.MILLISECONDS);
+	}
+
+	@Override
+	public @Nonnull ScheduledFuture<?> schedule(Runnable task, long delay, TimeUnit timeUnit) {
+		this.logger.debug("schedule task with delay of {} {}", delay, timeUnit);
+		return this.scheduledExecutorService.schedule(task, delay, timeUnit);
 	}
 
 	/**
