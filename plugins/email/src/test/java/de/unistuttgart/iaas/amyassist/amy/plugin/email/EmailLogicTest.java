@@ -71,6 +71,8 @@ public class EmailLogicTest {
 
 	private MailSession mailSession;
 
+	private MailUpdateService updateService;
+
 	private ContactRegistry contactRegistry;
 
 	private Properties properties;
@@ -90,6 +92,7 @@ public class EmailLogicTest {
 	@BeforeEach
 	public void setup() throws MessagingException {
 		this.mailSession = this.framework.mockService(MailSession.class);
+		this.updateService = this.framework.mockService(MailUpdateService.class);
 		this.contactRegistry = this.framework.mockService(ContactRegistry.class);
 		this.properties = this.framework.mockService(Properties.class);
 		this.emailLogic = this.framework.setServiceUnderTest(EMailLogic.class);
