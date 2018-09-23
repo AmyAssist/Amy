@@ -62,7 +62,7 @@ public class MailUpdateService implements RunnableService {
 
 	private int lastMessageCount;
 
-	private static final long MINUTE_INTERVAL = 1;
+	private static final int MINUTE_INTERVAL = 1;
 
 	private void checkForNewMails() {
 		if (this.mailSession.isConnected()) {
