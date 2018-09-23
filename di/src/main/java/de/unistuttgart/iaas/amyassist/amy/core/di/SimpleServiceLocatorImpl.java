@@ -35,28 +35,29 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
  */
 class SimpleServiceLocatorImpl implements SimpleServiceLocator {
 
-	private DependencyInjection dependencyInjection;
+	private InternalServiceLocator internalServiceLocator;
 	private ServiceCreation<?> serviceCreationInfo;
 
 	/**
-	 * @param dependencyInjection
+	 * @param internalServiceLocator
 	 * @param serviceCreationInfo
 	 */
-	public SimpleServiceLocatorImpl(DependencyInjection dependencyInjection, ServiceCreation<?> serviceCreationInfo) {
-		this.dependencyInjection = dependencyInjection;
+	public SimpleServiceLocatorImpl(InternalServiceLocator internalServiceLocator,
+			ServiceCreation<?> serviceCreationInfo) {
+		this.internalServiceLocator = internalServiceLocator;
 		this.serviceCreationInfo = serviceCreationInfo;
 	}
 
 	@Override
 	public <T> ServiceHandle<T> getService(@Nonnull ServiceConsumer<T> serviceConsumer) {
-		return this.dependencyInjection.getService(this.serviceCreationInfo, serviceConsumer);
+		return this.internalServiceLocator.getService(this.serviceCreationInfo, serviceConsumer);
 	}
 
 	/**
 	 * destroy the references
 	 */
 	public void destroy() {
-		this.dependencyInjection = null;
+		this.internalServiceLocator = null;
 		this.serviceCreationInfo = null;
 	}
 }

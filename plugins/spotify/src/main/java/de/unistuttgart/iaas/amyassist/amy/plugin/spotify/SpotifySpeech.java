@@ -290,7 +290,6 @@ public class SpotifySpeech {
 			}
 			break;
 		case "artist":
-		case "artists":
 			List<ArtistEntity> artists = this.search.searchforArtists(entites.get("name").getString(), 1);
 			if (!artists.isEmpty() && artists.get(0) != null) {
 				return this.playerLogic.playArtist(0).toString();

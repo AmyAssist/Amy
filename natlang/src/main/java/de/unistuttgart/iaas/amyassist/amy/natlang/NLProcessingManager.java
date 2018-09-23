@@ -24,7 +24,9 @@
 package de.unistuttgart.iaas.amyassist.amy.natlang;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
+import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
 import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent;
 
 /**
@@ -55,5 +57,11 @@ public interface NLProcessingManager {
 	 * @return matching dialog containing matching intent
 	 */
 	Dialog decideIntent(Dialog dialog, String naturalLanguageText);
+
+	/**
+	 * returns a list of possible grammars that will be understood by amy
+	 * @return list of agf nodes
+	 */
+	List<AGFNode> getPossibleGrammars();
 
 }

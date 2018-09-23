@@ -72,6 +72,16 @@ public class ClassServiceProvider<T> implements ServiceProvider<T> {
 	}
 
 	/**
+	 * The class which is the implementation of the Service.
+	 * 
+	 * @return the class
+	 */
+	@Nonnull
+	public Class<? extends T> getImplementationClass() {
+		return this.cls;
+	}
+
+	/**
 	 * 
 	 * @param serviceDescription
 	 *            the description of the service that should be provided

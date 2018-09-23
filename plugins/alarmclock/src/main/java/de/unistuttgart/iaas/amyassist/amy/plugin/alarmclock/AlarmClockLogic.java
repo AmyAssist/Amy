@@ -34,6 +34,8 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.Topics;
 
 /**
  * This class implements the logic for all the functions that our alarm clock is capable of
@@ -59,6 +61,9 @@ public class AlarmClockLogic implements RunnableService {
 
 	private String alarmS = "Alarm ";
 
+	@Reference
+	private MessageHub messageHub;
+
 	/**
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
 	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel Simion
@@ -74,6 +79,8 @@ public class AlarmClockLogic implements RunnableService {
 			Alarm a = getAlarm(alarmNumber);
 			if (a.isActive() && this.environment.getCurrentLocalDateTime().truncatedTo(ChronoUnit.MINUTES)
 					.isEqual(a.getAlarmTime())) {
+				String topic = Topics.smarthomeAll("alarm");
+				this.messageHub.publish(topic, this.alarmS + alarmNumber + "is ringing");
 				this.alarmbeep.beep(a);
 			}
 		};

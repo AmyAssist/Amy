@@ -23,16 +23,16 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -61,6 +61,9 @@ public class CalendarLogicTest {
 
 	private CalendarLogic callog;
 	private CalendarService calendarService;
+	
+	private Event event1;
+	private Event event2;
 
 	/**
 	 * Initializes the class variables before each test
@@ -70,6 +73,8 @@ public class CalendarLogicTest {
 		this.calendarService = this.framework.mockService(CalendarService.class);
 		this.framework.mockService(Environment.class);
 		this.callog = this.framework.setServiceUnderTest(CalendarLogic.class);
+		this.event1 = eventAllDay("All Day Event", "2015-05-29", "2015-05-30");
+        this.event2 = event("Normal Event", "2015-05-28T15:30:00", "2015-05-29T15:30:00");
 	}
 
 	/**
@@ -89,7 +94,6 @@ public class CalendarLogicTest {
 							&& event.getDescription().equals(calendarEvent.getDescription()) // compare description
 							&& ((event.getStart().getDate() != null) == allDay) // compare all day status
 							&& checkDates(calendarEvent, event, allDay) // compare start and end date
-//							&& event.getRecurrence().equals(Arrays.asList(calendarEvent.getRecurrence())) // compare recurrence
 							&& event.getReminders().equals(calendarEvent.getReminders()); // compare reminders
 				}));
 	}
@@ -105,104 +109,6 @@ public class CalendarLogicTest {
 						20, "RRULE:FREQ=WEEKLY", false),
 				new CalendarEvent(LocalDateTime.parse("2018-08-15T00:00"), LocalDateTime.parse("2018-08-16T00:00"),
 						"Testing", "home", "test the addEvent code", "popup", 85, "", true));
-	}
-
-	/**
-	 * @param testCase
-	 *            a combination of the input variables and the expected outcome
-	 */
-	@ParameterizedTest
-	@MethodSource("testEventsWithDate")
-	public void testCheckDayWithDate(Pair<Event, String> testCase) {
-		String checkDay = this.callog.checkDay(LocalDateTime.parse("2015-05-28T09:00:00"), testCase.getLeft(), true);
-		assertThat(checkDay, equalToIgnoringWhiteSpace(testCase.getRight()));
-	}
-
-	/**
-	 * @param testCase
-	 *            a combination of the input variables and the expected outcome
-	 */
-	@ParameterizedTest
-	@MethodSource("testEventsWithoutDate")
-	public void testCheckDayWithoutDate(Pair<Event, String> testCase) {
-		String checkDay = this.callog.checkDay(LocalDateTime.parse("2015-05-28T09:00:00"), testCase.getLeft(), false);
-		assertThat(checkDay, equalToIgnoringWhiteSpace(testCase.getRight()));
-	}
-
-	/**
-	 *
-	 * @return the test cases used in the {@link #testCheckDayWithDate(Pair)} test
-	 */
-	public static Stream<Pair<Event, String>> testEventsWithDate() {
-		return Stream.of(
-				Pair.of(event("test event", "2015-05-29T08:00:00", "2015-05-29T09:30:00"),
-						"test event on the 29th of may at 08:00 until 09:30."),
-				Pair.of(event("write tests in Java", "2015-05-28T12:59:15", "2015-05-28T20:30:00"),
-						"write tests in Java on the 28th of may at 12:59 until 20:30."),
-				Pair.of(event("event start in past", "2015-05-12T13:05:00", "2015-05-29T15:30:00"),
-						"event start in past since the 12th of may at 13:05 until the 29th of may at 15:30."),
-				Pair.of(event("event same day start past", "2015-05-28T04:35:02", "2015-05-28T10:15:00"),
-						"event same day start past on the 28th of may at 04:35 until 10:15."),
-				Pair.of(event("event end in future", "2015-05-28T07:30:00", "2015-05-29T12:00:00"),
-						"event end in future since the 28th of may at 07:30 until the 29th of may at 12:00."),
-				Pair.of(event("event end today", "2015-05-27T22:00:00", "2015-05-28T10:00:00"),
-						"event end today since the 27th of may at 22:00 until the 28th of may at 10:00."),
-				Pair.of(event("event start today end tomorrow", "2015-05-28T15:30:00", "2015-05-29T15:30:00"),
-						"event start today end tomorrow from the 28th of may at 15:30 until the 29th of may at 15:30."),
-				Pair.of(eventAllDay("event tomorrow all day", "2015-05-29", "2015-05-30"),
-						"event tomorrow all day on the 29th of may all day long."),
-				Pair.of(eventAllDay("", "2015-05-29", "2015-05-30"),
-						"An event without a title on the 29th of may all day long."),
-				Pair.of(eventAllDay(null, "2015-05-29", "2015-05-30"),
-						"An event without a title on the 29th of may all day long."));
-	}
-
-	/**
-	 *
-	 * @return the test cases used in the {@link #testCheckDayWithoutDate(Pair)} test
-	 */
-	public static Stream<Pair<Event, String>> testEventsWithoutDate() {
-		return Stream.of(
-				Pair.of(event("event later that day", "2015-05-28T14:00:00", "2015-05-28T16:30:00"),
-						"event later that day from 14:00 until 16:30."),
-				Pair.of(eventAllDay("event all day", "2015-05-28", "2015-05-29"), "event all day all day long."),
-				Pair.of(event("event finish today", "2015-05-27T23:00:00", "2015-05-28T10:00:00"),
-						"event finish today since the 27th of may at 23:00 until 10:00."));
-	}
-
-	private static Event event(String summary, String start, String end) {
-		Event event = new Event();
-		event.setSummary(summary);
-		event.setStart(new EventDateTime().setDateTime(fromISO(start)));
-		event.setEnd(new EventDateTime().setDateTime(fromISO(end)));
-		return event;
-	}
-
-	private static Event eventAllDay(String summary, String start, String end) {
-		Event event = new Event();
-		event.setSummary(summary);
-		event.setStart(new EventDateTime().setDate(new DateTime(start)));
-		event.setEnd(new EventDateTime().setDate(new DateTime(end)));
-		return event;
-	}
-
-	/**
-	 * @param iso
-	 *            date-time without a time-zone
-	 * @return the DateTime of a String with correct time-zone
-	 */
-	private static DateTime fromISO(String iso) {
-		return fromLocalDateTime(LocalDateTime.parse(iso));
-	}
-
-	/**
-	 *
-	 * @param localDateTime
-	 *            the LocalDateTime which will be converted into EventDateTime
-	 * @return DateTime
-	 */
-	private static DateTime fromLocalDateTime(LocalDateTime localDateTime) {
-		return new DateTime(localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
 	}
 
 	/**
@@ -247,5 +153,80 @@ public class CalendarLogicTest {
 		}
 		return startCorrect && endCorrect;
 	}
+	
+	/**
+     *  Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarLogic#getDateTime(LocalDateTime, int)}.
+     */
+    @Test
+    void testGetDateTime() {
+        assertThat(this.callog.getDateTime(LocalDateTime.of(2018, 9, 20, 12, 00), 0), 
+        		is(new DateTime(ZonedDateTime.of(2018, 9, 20, 0, 0, 0, 0, ZoneId.systemDefault())
+        				.toInstant().toEpochMilli())));
+    }
+	
+    /**
+     *  Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarLogic#isAllDay(Event)}.
+     */
+    @Test
+    void testIsAllDay() {
+        assertThat(CalendarLogic.isAllDay(this.event1), is(true));
+        assertThat(CalendarLogic.isAllDay(this.event2), is(false));
+    }
+    
+    /**
+     *  Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarLogic#getLocalDateTimeStart(Event)}.
+     */
+    @Test
+    void testGetLocalDateTimeStart() {
+        assertThat(this.callog.getLocalDateTimeStart(this.event1), is(LocalDateTime.of(2015, 05, 29, 00, 00)));
+        assertThat(this.callog.getLocalDateTimeStart(this.event2), is(LocalDateTime.of(2015, 05, 28, 15, 30)));
+    }
+    
+    /**
+     *  Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarLogic#getLocalDateTimeEnd(Event)}.
+     */
+    @Test
+    void testGetLocalDateTimeEnd() {
+        assertThat(this.callog.getLocalDateTimeEnd(this.event1), 
+        		is(LocalDateTime.of(2015, 05, 29, 23, 59, 59, 999000000)));
+        assertThat(this.callog.getLocalDateTimeEnd(this.event2), is(LocalDateTime.of(2015, 05, 29, 15, 30)));
+    }
+    
+    private static Event event(String summary, String start, String end) {
+        Event event = new Event();
+        event.setSummary(summary);
+        event.setStart(new EventDateTime().setDateTime(fromISO(start)));
+        event.setEnd(new EventDateTime().setDateTime(fromISO(end)));
+        return event;
+    }
+
+    private static Event eventAllDay(String summary, String start, String end) {
+        Event event = new Event();
+        event.setSummary(summary);
+        event.setStart(new EventDateTime().setDate(new DateTime(start)));
+        event.setEnd(new EventDateTime().setDate(new DateTime(end)));
+        return event;
+    }
+
+    
+    /**
+     * @param iso
+     *            date-time without a time-zone
+     * @return the DateTime of a String with correct time-zone
+     */
+    private static DateTime fromISO(String iso) {
+        return fromLocalDateTime(LocalDateTime.parse(iso));
+    }
+
+    /**
+     *
+     * @param localDateTime
+     *            the LocalDateTime which will be converted into EventDateTime
+     * @return DateTime
+     */
+    private static DateTime fromLocalDateTime(LocalDateTime localDateTime) {
+        return new DateTime(localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+    }
+
 
 }
