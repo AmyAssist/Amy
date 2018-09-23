@@ -71,7 +71,7 @@ public class MailUpdateService implements RunnableService {
 				final int currentMessageCount = inbox.getMessageCount();
 				if (currentMessageCount > this.lastMessageCount) {
 					final String mailAddress = inbox.getStore().getURLName().getUsername();
-					this.messageHub.publish("user/" + mailAddress + "/mail", "You've got new mail", 0, false);
+					this.messageHub.publish("user/" + mailAddress + "/mail", "You've got new mail");
 				}
 				this.lastMessageCount = currentMessageCount;
 			} catch (MessagingException e) {
