@@ -346,6 +346,6 @@ public class EMailLogic {
 		if (credentials != null) {
 			connectToMailServer(credentials);
 		}
-		this.updateService.run();
+		this.updateService.start();
 	}
 }

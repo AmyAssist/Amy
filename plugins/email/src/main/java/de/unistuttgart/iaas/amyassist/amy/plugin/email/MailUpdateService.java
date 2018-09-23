@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
@@ -43,7 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
  * @author Patrick Singer
  */
 @Service(MailUpdateService.class)
-public class MailUpdateService implements Runnable {
+public class MailUpdateService implements RunnableService {
 
 	@Reference
 	private MailSession mailSession;
@@ -61,11 +62,7 @@ public class MailUpdateService implements Runnable {
 
 	private static final int MINUTE_INTERVAL = 1;
 
-	/**
-	 * @see java.lang.Runnable#run()
-	 */
-	@Override
-	public void run() {
+	private void checkForNewMails() {
 		if (this.mailSession.isConnected()) {
 			try (final Folder inbox = this.mailSession.getInbox()) {
 				final int currentMessageCount = inbox.getMessageCount();
@@ -78,7 +75,23 @@ public class MailUpdateService implements Runnable {
 				this.logger.error("Checking for new mails failed", e);
 			}
 
-			this.scheduler.schedule(this, Instant.now().plus(MINUTE_INTERVAL, ChronoUnit.MINUTES));
+			this.scheduler.schedule(this::checkForNewMails, Instant.now().plus(MINUTE_INTERVAL, ChronoUnit.MINUTES));
 		}
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
+	 */
+	@Override
+	public void start() {
+		checkForNewMails();
+	}
+
+	/**
+	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
+	 */
+	@Override
+	public void stop() {
+		// no implementation needed
 	}
 }
