@@ -144,7 +144,7 @@ public class SocialSpeech {
 	@Intent
 	public String getInstalledPlugins(Map<String, EntityData> entities) {
 		StringBuilder s = new StringBuilder();
-		s.append("These are my currenty installed plugins");
+		s.append("These are my currently installed plugins");
 		s.append("\n" + StringUtils.join(this.logic.getInstalledPluginNames(), ", "));
 		s.append("\nfeel free to add more!");
 		return s.toString();

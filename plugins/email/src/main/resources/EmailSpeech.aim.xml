@@ -19,7 +19,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.numberOfNewMails">
-		<gram>how many [new] [{important}] (messages|mails) [do i have]</gram>
+		<gram>how many [new] [{important}] (messages|mails|miles) [do i have]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="important" required="false">
 				<gram>important</gram>
