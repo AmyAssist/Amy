@@ -77,29 +77,9 @@ public class MailUpdateService implements RunnableService {
 			} catch (MessagingException e) {
 				this.logger.error("Checking for new mails failed", e);
 			}
-
-			this.nextScheduledCall = this.scheduler.schedule(this::checkForNewMails,
-					Instant.now().plus(MINUTE_INTERVAL, ChronoUnit.MINUTES));
 		}
-	}
-
-	/**
-	 * Restarts the update service, if necessary
-	 */
-	public void revive() {
-		if (this.nextScheduledCall != null
-				&& (this.nextScheduledCall.isDone() || this.nextScheduledCall.isCancelled())) {
-			checkForNewMails();
-		}
-	}
-
-	/**
-	 * Cancels the next check for new mails. Use this if you disconnect from the mail server for example
-	 */
-	public void cancelNextCall() {
-		if (this.nextScheduledCall != null) {
-			this.nextScheduledCall.cancel(true);
-		}
+		this.nextScheduledCall = this.scheduler.schedule(this::checkForNewMails,
+				Instant.now().plus(MINUTE_INTERVAL, ChronoUnit.MINUTES));
 	}
 
 	/**
@@ -115,6 +95,8 @@ public class MailUpdateService implements RunnableService {
 	 */
 	@Override
 	public void stop() {
-		cancelNextCall();
+		if (this.nextScheduledCall != null) {
+			this.nextScheduledCall.cancel(true);
+		}
 	}
 }
