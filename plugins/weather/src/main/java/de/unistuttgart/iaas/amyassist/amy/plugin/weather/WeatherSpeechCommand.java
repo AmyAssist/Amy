@@ -238,14 +238,15 @@ public class WeatherSpeechCommand {
 			report = this.weatherLogic.getWeatherReport(curr);
 		}
 
-		String chanceOf = "% chance of ";
 		String timespan = entities.get("timespan").getString();
 		if (timespan.equals("today")) {
 			WeatherReportDay today = report.getWeek().getDays()[0];
-			return round(today.getPrecipProbability() * 100) + chanceOf + today.getPrecipType() + " today";
+			return stringifyRainCheck(today.getPrecipProbability(), today.getPrecipType(), "today");
+			
 		} else if (timespan.equals("tomorrow")) {
 			WeatherReportDay tomorrow = report.getWeek().getDays()[1];
-			return round(tomorrow.getPrecipProbability() * 100) + chanceOf + tomorrow.getPrecipType() + " tomorrow";
+			return stringifyRainCheck(tomorrow.getPrecipProbability(), tomorrow.getPrecipType(), "tomorrow");
+			
 		} else if (timespan.equals("on the weekend")) {
 			StringBuilder builder = new StringBuilder();
 			String sat = "";
@@ -255,9 +256,9 @@ public class WeatherSpeechCommand {
 				ZonedDateTime date = ZonedDateTime.ofInstant(instant, ZoneId.of(report.getTimezone()));
 				DayOfWeek day = date.getDayOfWeek();
 				if (day == DayOfWeek.SATURDAY) {
-					sat = round(d.getPrecipProbability() * 100) + chanceOf + d.getPrecipType() + " on Saturday";
+					sat = stringifyRainCheck(d.getPrecipProbability(), d.getPrecipType(), "on Saturday");
 				} else if (day == DayOfWeek.SUNDAY) {
-					sun = round(d.getPrecipProbability() * 100) + chanceOf + d.getPrecipType() + " on Sunday";
+					sun = stringifyRainCheck(d.getPrecipProbability(), d.getPrecipType(), "on Sunday");
 				}
 			}
 			builder.append(sat + "\n" + sun);
@@ -265,6 +266,17 @@ public class WeatherSpeechCommand {
 		}
 
 		return "i don't understand the date";
+	}
+	
+	private String stringifyRainCheck(double probability, String precipType, String suffix) {
+		final String chanceOf = "% chance of ";
+
+		if(round(probability) == 0) {
+			return "0% chance of rain " + suffix + "!";
+		}
+		
+		return round(probability * 100) + chanceOf + precipType + suffix;
+		
 	}
 
 	/**
