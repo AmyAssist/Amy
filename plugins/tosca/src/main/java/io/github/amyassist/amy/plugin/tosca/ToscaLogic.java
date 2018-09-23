@@ -74,7 +74,8 @@ public class ToscaLogic {
 		String containerHost = this.configuration.getProperty("CONTAINER_HOST");
 		String containerHostInternal = this.configuration.getProperty("CONTAINER_HOST_INTERNAL");
 		if(containerHost.isEmpty() || containerHostInternal.isEmpty()) {
-			throw new IllegalStateException("configuration is not provided - either container host or container host internal is missing");
+			throw new IllegalStateException("configuration is not provided"
+					+ " - either container host or container host internal is missing");
 		}
 		this.apiClient = this.adapter.createLibrary(containerHost, containerHostInternal);
 	}
