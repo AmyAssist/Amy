@@ -25,6 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.ScheduledFuture;
 
 import javax.mail.Folder;
 import javax.mail.MessagingException;
@@ -58,6 +59,8 @@ public class MailUpdateService implements RunnableService {
 	@Reference
 	private Logger logger;
 
+	private ScheduledFuture<?> nextScheduledCall;
+
 	private int lastMessageCount;
 
 	private static final int MINUTE_INTERVAL = 1;
@@ -75,7 +78,8 @@ public class MailUpdateService implements RunnableService {
 				this.logger.error("Checking for new mails failed", e);
 			}
 
-			this.scheduler.schedule(this::checkForNewMails, Instant.now().plus(MINUTE_INTERVAL, ChronoUnit.MINUTES));
+			this.nextScheduledCall = this.scheduler.schedule(this::checkForNewMails,
+					Instant.now().plus(MINUTE_INTERVAL, ChronoUnit.MINUTES));
 		}
 	}
 
@@ -92,6 +96,6 @@ public class MailUpdateService implements RunnableService {
 	 */
 	@Override
 	public void stop() {
-		// remove checkForNewMails call from TaskScheduler
+		this.nextScheduledCall.cancel(true);
 	}
 }
