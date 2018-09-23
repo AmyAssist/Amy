@@ -59,9 +59,6 @@ public class EMailLogic {
 	private MailSession mailSession;
 
 	@Reference
-	private MailUpdateService updateService;
-
-	@Reference
 	private ContactRegistry contactRegistry;
 
 	@Reference
@@ -346,6 +343,5 @@ public class EMailLogic {
 		if (credentials != null) {
 			connectToMailServer(credentials);
 		}
-		this.updateService.start();
 	}
 }

@@ -92,6 +92,6 @@ public class MailUpdateService implements RunnableService {
 	 */
 	@Override
 	public void stop() {
-		// no implementation needed
+		// remove checkForNewMails call from TaskScheduler
 	}
 }
