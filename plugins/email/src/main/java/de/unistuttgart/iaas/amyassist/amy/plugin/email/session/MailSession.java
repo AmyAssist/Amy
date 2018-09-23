@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.plugin.email.MailUpdateService;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
 
 /**
@@ -42,6 +43,9 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
  */
 @Service
 public class MailSession {
+
+	@Reference
+	private MailUpdateService mailUpdater;
 
 	@Reference
 	private Logger logger;
@@ -84,6 +88,7 @@ public class MailSession {
 			this.store = session.getStore(PROTOCOL);
 			this.store.connect(credentials.getImapServer(), credentials.getUsername(), credentials.getPassword());
 			this.connected = true;
+			this.mailUpdater.revive();
 			return true;
 		} catch (MessagingException e) {
 			this.logger.error("Couldn't connect to service", e);
@@ -114,6 +119,7 @@ public class MailSession {
 				this.logger.error("Couldn't close previously opened mail store", e);
 			}
 		}
+		this.mailUpdater.cancelNextCall();
 		this.connected = false;
 	}
 }

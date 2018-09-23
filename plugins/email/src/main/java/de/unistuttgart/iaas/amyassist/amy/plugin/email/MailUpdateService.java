@@ -84,6 +84,25 @@ public class MailUpdateService implements RunnableService {
 	}
 
 	/**
+	 * Restarts the update service, if necessary
+	 */
+	public void revive() {
+		if (this.nextScheduledCall != null
+				&& (this.nextScheduledCall.isDone() || this.nextScheduledCall.isCancelled())) {
+			checkForNewMails();
+		}
+	}
+
+	/**
+	 * Cancels the next check for new mails. Use this if you disconnect from the mail server for example
+	 */
+	public void cancelNextCall() {
+		if (this.nextScheduledCall != null) {
+			this.nextScheduledCall.cancel(true);
+		}
+	}
+
+	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
 	 */
 	@Override
@@ -96,8 +115,6 @@ public class MailUpdateService implements RunnableService {
 	 */
 	@Override
 	public void stop() {
-		if (this.nextScheduledCall != null) {
-			this.nextScheduledCall.cancel(true);
-		}
+		cancelNextCall();
 	}
 }
