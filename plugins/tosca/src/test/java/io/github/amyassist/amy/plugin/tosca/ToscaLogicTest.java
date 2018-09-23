@@ -100,7 +100,8 @@ public class ToscaLogicTest {
 	 */
 	@BeforeEach
 	public void setup() throws Exception {
-		this.framework.mockService(Properties.class);
+		Properties properties = this.framework.mockService(Properties.class);
+		Mockito.when(properties.getProperty(ArgumentMatchers.anyString())).thenReturn("test");
 		TaskScheduler scheduler = this.framework.mockService(TaskScheduler.class);
 		Mockito.doAnswer(new Answer<Void>() {
 			@Override
@@ -113,13 +114,15 @@ public class ToscaLogicTest {
 
 		ConfigurationRegistry registry = this.framework.mockService(ConfigurationRegistry.class);
 		List<ConfigurationEntry> config = createConfig();
+		
 		Mockito.when(registry.getAll()).thenReturn(config);
+				
 		this.toscaClient = Mockito.mock(OpenTOSCAContainerLegacyAPIClient.class);
 		this.apps = createApps();
 		Mockito.when(this.toscaClient.getApplications()).thenReturn(this.apps);
 
 		ToscaLibraryAdapter adap = this.framework.mockService(ToscaLibraryAdapter.class);
-		Mockito.when(adap.createLibrary(null, null)).thenReturn(this.toscaClient);
+		Mockito.when(adap.createLibrary(ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(this.toscaClient);
 
 		this.toskaLogic = this.framework.setServiceUnderTest(ToscaLogic.class);
 	}
