@@ -73,7 +73,7 @@ public class ToscaLogic {
 	private void connect() {
 		String containerHost = this.configuration.getProperty("CONTAINER_HOST");
 		String containerHostInternal = this.configuration.getProperty("CONTAINER_HOST_INTERNAL");
-		if(containerHost == null || containerHostInternal == null) {
+		if(containerHost.isEmpty() || containerHostInternal.isEmpty()) {
 			throw new IllegalStateException("configuration is not provided - either container host or container host internal is missing");
 		}
 		this.apiClient = this.adapter.createLibrary(containerHost, containerHostInternal);
@@ -147,9 +147,6 @@ public class ToscaLogic {
 	}
 
 	private void installWait(Application app, Map<String, String> parameters) {
-		if(this.apiClient == null) {
-			throw new IllegalStateException("configuration is not provided - either container host or container host internal is missing");
-		}
 		this.storage.put(STORAGE_KEY, app.getId());
 
 		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
@@ -195,9 +192,6 @@ public class ToscaLogic {
 	 * @return A list of installed apps.
 	 */
 	public List<Application> getInstalledApps() {
-		if(this.apiClient == null) {
-			throw new IllegalStateException("configuration is not provided - either container host or container host internal is missing");
-		}
 		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 		return this.apiClient.getApplications();
 	}
