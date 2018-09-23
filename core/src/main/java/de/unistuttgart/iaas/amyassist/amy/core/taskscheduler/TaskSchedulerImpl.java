@@ -61,9 +61,20 @@ public class TaskSchedulerImpl implements TaskScheduler, RunnableService {
 		this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "TaskScheduler"));
 	}
 
+	private Runnable handleException(Runnable task) {
+		return () -> {
+			try {
+				task.run();
+			} catch (RuntimeException e) {
+				this.logger.error("Exception while executing scheduled task.", e);
+				throw e;
+			}
+		};
+	}
+
 	@Override
 	public void execute(Runnable runnable) {
-		this.scheduledExecutorService.execute(runnable);
+		this.scheduledExecutorService.execute(this.handleException(runnable));
 	}
 
 	@Override
@@ -71,26 +82,20 @@ public class TaskSchedulerImpl implements TaskScheduler, RunnableService {
 		this.logger.debug("schedule task for {}", instant);
 		long delay = ChronoUnit.MILLIS.between(this.environment.getCurrentDateTime().toInstant(), instant);
 		this.logger.debug("the delay of the task is {} ms", delay);
-		return this.scheduledExecutorService.schedule(task, delay, TimeUnit.MILLISECONDS);
+		return this.scheduledExecutorService.schedule(this.handleException(task), delay, TimeUnit.MILLISECONDS);
 	}
 
 	@Override
 	public @Nonnull ScheduledFuture<?> schedule(Runnable task, long delay, TimeUnit timeUnit) {
 		this.logger.debug("schedule task with delay of {} {}", delay, timeUnit);
-		return this.scheduledExecutorService.schedule(task, delay, timeUnit);
+		return this.scheduledExecutorService.schedule(this.handleException(task), delay, timeUnit);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
-	 */
 	@Override
 	public void start() {
 		// Do nothing.
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
-	 */
 	@Override
 	public void stop() {
 		this.scheduledExecutorService.shutdownNow();
