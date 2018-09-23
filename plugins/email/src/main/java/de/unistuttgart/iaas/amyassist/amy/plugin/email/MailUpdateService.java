@@ -96,6 +96,8 @@ public class MailUpdateService implements RunnableService {
 	 */
 	@Override
 	public void stop() {
-		this.nextScheduledCall.cancel(true);
+		if (this.nextScheduledCall != null) {
+			this.nextScheduledCall.cancel(true);
+		}
 	}
 }
