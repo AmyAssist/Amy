@@ -46,6 +46,8 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.Configurat
 @Service
 public class ToscaLogic {
 
+	private static final String STORAGE_KEY = "installing";
+
 	@WithDefault
 	@Reference
 	private Properties configuration;
@@ -142,7 +144,7 @@ public class ToscaLogic {
 	}
 
 	private void installWait(Application app, Map<String, String> parameters) {
-		this.storage.put("installing", app.getId());
+		this.storage.put(STORAGE_KEY, app.getId());
 		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 		this.apiClient.createServiceInstance(app, parameters);
 	}
@@ -154,8 +156,8 @@ public class ToscaLogic {
 		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 		boolean wait = true;
 		while (!Thread.currentThread().isInterrupted() && wait) {
-			if (this.storage.has("installing")) {
-				String id = this.storage.get("installing");
+			if (this.storage.has(STORAGE_KEY)) {
+				String id = this.storage.get(STORAGE_KEY);
 				Application application = this.apiClient.getApplication(id);
 				wait = this.isCreating(application);
 			} else {
