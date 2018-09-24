@@ -23,20 +23,16 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
-import javax.annotation.meta.When;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.internal.verification.NoMoreInteractions;
-import static org.mockito.Mockito.times;
-import org.mockito.junit.jupiter.MockitoExtension;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
@@ -44,42 +40,61 @@ import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
  * test class for system Time speech
- * @author Lars Buttgereit
+ *
+ * @author Lars Buttgereit, Florian Bauer
  */
-@ExtendWith({ MockitoExtension.class, FrameworkExtension.class })
+@ExtendWith(FrameworkExtension.class)
 public class SystemTimeSpeechTest {
 
 	@Reference
 	private TestFramework testFramework;
-	
+
 	private SystemTimeLogic logic;
 	private SystemTimeSpeech speech;
-	
+
+	/**
+	 * initialize the test
+	 */
 	@BeforeEach
 	void init() {
 		this.logic = this.testFramework.mockService(SystemTimeLogic.class);
 		this.speech = this.testFramework.setServiceUnderTest(SystemTimeSpeech.class);
 	}
-	
+
+	/**
+	 * Test time(Map<String, EntityData>)
+	 */
 	@Test
 	void testTime() {
-		when(this.logic.getTime()).thenReturn("20:20");
-		this.speech.time(new HashMap<>());
-		verify(this.logic, times(3)).getTime();
-		when(this.logic.getTime()).thenReturn(null);
-		this.speech.time(new HashMap<>());
-		verify(this.logic, times(5)).getTime();
+		when(this.logic.getTimeStamp()).thenReturn(LocalDateTime.of(2018, 8, 20, 20, 15, 28));
+		assertThat(this.speech.time(new HashMap<>()), equalToIgnoringWhiteSpace("It is 20:15."));
 	}
-	
+
+	/**
+	 * Test date(Map<String, EntityData>)
+	 */
 	@Test
 	void testDate() {
-		this.speech.date(new HashMap<>());
-		verify(this.logic).getDate();
+		when(this.logic.getTimeStamp()).thenReturn(LocalDateTime.of(2018, 8, 20, 20, 15, 28));
+		assertThat(this.speech.date(new HashMap<>()), equalToIgnoringWhiteSpace("It is the 20th of august."));
 	}
-	
+
+	/**
+	 * Test year(Map<String, EntityData>)
+	 */
 	@Test
 	void testYear() {
-		this.speech.year(new HashMap<>());
-		verify(this.logic).getYear();
+		when(this.logic.getTimeStamp()).thenReturn(LocalDateTime.of(2018, 8, 20, 20, 15, 28));
+		assertThat(this.speech.year(new HashMap<>()), equalToIgnoringWhiteSpace("It is 2018."));
+	}
+
+	/**
+	 * Test ordinal(int)
+	 */
+	@Test
+	void testOrdinal() {
+		assertThat(SystemTimeSpeech.ordinal(1), equalToIgnoringWhiteSpace("1st"));
+		assertThat(SystemTimeSpeech.ordinal(11), equalToIgnoringWhiteSpace("11th"));
+		assertThat(SystemTimeSpeech.ordinal(21), equalToIgnoringWhiteSpace("21st"));
 	}
 }

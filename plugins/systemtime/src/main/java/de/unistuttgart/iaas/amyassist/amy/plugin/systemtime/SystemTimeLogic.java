@@ -23,11 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.Locale;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -45,51 +41,10 @@ public class SystemTimeLogic {
 	private Environment environment;
 
 	/**
-	 * 
+	 *
 	 * @return object of type Date
 	 */
 	public LocalDateTime getTimeStamp() {
 		return this.environment.getCurrentLocalDateTime();
-	}
-
-	/**
-	 *
-	 * @return current year, e.g. 2018
-	 */
-	public int getYear() {
-		return this.getTimeStamp().getYear();
-	}
-
-	/**
-	 *
-	 * @return current date as String, e.g. "1st of april"
-	 */
-	public String getDate() {
-		LocalDate localDate = this.getTimeStamp().toLocalDate();
-		return ordinal(localDate.getDayOfMonth()) + " of "
-				+ localDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-	}
-
-	/**
-	 * 
-	 * @return current time as String (HH:mm:ss), e.g. 12:45:20
-	 */
-	public String getTime() {
-		return this.getTimeStamp().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-	}
-
-	/**
-	 * A method to convert the integer day to an ordinal (from 1 to 31)
-	 * 
-	 * @param i
-	 *            the day as integer
-	 * @return the day as ordinal, e.g. 1st
-	 */
-	public static String ordinal(int i) {
-		String[] ordinals = { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
-		if (10 < i && i < 14) {
-			return i + "th";
-		}
-		return i + ordinals[i % 10];
 	}
 }

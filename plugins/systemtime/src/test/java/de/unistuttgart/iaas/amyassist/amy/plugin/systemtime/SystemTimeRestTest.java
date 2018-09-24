@@ -23,15 +23,11 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.Locale;
+import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.status;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.equalTo;
+import java.time.LocalDateTime;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
@@ -83,49 +79,6 @@ class SystemTimeRestTest {
 			assertThat(response.readEntity(String.class), equalTo(this.ldt.toString()));
 			assertThat(response, status(200));
 			Mockito.verify(this.logic).getTimeStamp();
-		}
-	}
-
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeResource#getYear()()}.
-	 */
-	@Test
-	void testGetYear() {
-		Mockito.when(this.logic.getYear()).thenReturn(this.ldt.getYear());
-		try (Response response = this.target.path("year").request().get()) {
-			assertThat(response.readEntity(int.class), is(this.ldt.getYear()));
-			assertThat(response, status(200));
-			Mockito.verify(this.logic).getYear();
-		}
-	}
-
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeResource#getTime()}.
-	 */
-	@Test
-	void testGetTime() {
-		Mockito.when(this.logic.getTime()).thenReturn(this.ldt.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-		try (Response response = this.target.path("time").request().get()) {
-			assertThat(
-					response.readEntity(String.class), equalTo(this.ldt.format(DateTimeFormatter.ofPattern("HH:mm:ss"))));
-			assertThat(response, status(200));
-			Mockito.verify(this.logic).getTime();
-		}
-	}
-
-	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeResource#getDate()}.
-	 */
-	@Test
-	void testGetDate() {
-		this.ldt.toLocalDate();
-		String date = this.ldt.getDayOfMonth() + " of "
-				+ this.ldt.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-		Mockito.when(this.logic.getDate()).thenReturn(date);
-		try (Response response = this.target.path("date").request().get()) {
-			assertThat(response.readEntity(String.class), equalTo(date.toString()));
-			assertThat(response, status(200));
-			Mockito.verify(this.logic).getDate();
 		}
 	}
 

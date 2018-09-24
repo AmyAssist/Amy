@@ -27,8 +27,6 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,8 +39,8 @@ import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
 /**
- * TODO: Description
- * 
+ * test class for system Time logic
+ *
  * @author Leon Kiefer, Florian Bauer
  */
 @ExtendWith(FrameworkExtension.class)
@@ -54,59 +52,24 @@ class SystemTimeLogicTest {
 	private SystemTimeLogic systemTimeLogic;
 	private Environment environment;
 
+	/**
+	 * setup of the test
+	 */
 	@BeforeEach
 	public void setup() {
 		this.environment = this.framework.mockService(Environment.class);
 		this.systemTimeLogic = this.framework.setServiceUnderTest(SystemTimeLogic.class);
 	}
 
+	/**
+	 * test getTimeStamp()
+	 */
 	@Test
 	void test() {
 		LocalDateTime localDateTime = LocalDateTime.parse("2015-05-29T08:00:00");
 		Mockito.doReturn(localDateTime).when(this.environment).getCurrentLocalDateTime();
 
 		assertThat(this.systemTimeLogic.getTimeStamp(), is(localDateTime));
-	}
-
-	@Test
-	void test4() {
-		LocalDateTime localDateTime = LocalDateTime.parse("2015-05-29T08:00:00");
-		Mockito.doReturn(localDateTime).when(this.environment).getCurrentLocalDateTime();
-
-		assertThat(this.systemTimeLogic.getYear(), equalTo(2015));
-
-	}
-
-	@Test
-	void test5() {
-		LocalDateTime localDateTime = LocalDateTime.parse("2015-05-29T08:00:00");
-		Mockito.doReturn(localDateTime).when(this.environment).getCurrentLocalDateTime();
-
-		assertThat(this.systemTimeLogic.getDate(), equalTo("29th of May"));
-	}
-
-	@Test
-	void test9() {
-		LocalDateTime localDateTime = LocalDateTime.parse("2015-05-29T08:00:00");
-		Mockito.doReturn(localDateTime).when(this.environment).getCurrentLocalDateTime();
-
-		assertThat(this.systemTimeLogic.getTime(), equalTo("08:00:00"));
-	}
-
-	@Test
-	void test8() {
-		LocalDateTime localDateTime = LocalDateTime.parse("2015-06-01T00:00:00");
-		Mockito.doReturn(localDateTime).when(this.environment).getCurrentLocalDateTime();
-
-		assertThat(this.systemTimeLogic.getDate(), equalTo("1st of June"));
-	}
-
-	@Test
-	void test7() {
-		LocalDateTime localDateTime = LocalDateTime.parse("2015-06-12T12:00:00");
-		Mockito.doReturn(localDateTime).when(this.environment).getCurrentLocalDateTime();
-
-		assertThat(this.systemTimeLogic.getDate(), equalTo("12th of June"));
 	}
 
 }

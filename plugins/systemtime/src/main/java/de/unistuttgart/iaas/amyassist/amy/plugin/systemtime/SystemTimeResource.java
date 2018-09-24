@@ -63,42 +63,6 @@ public class SystemTimeResource implements Resource {
 	}
 
 	/**
-	 *get the current system year
-	 *
-	 * @return current year, e.g. 2018
-	 */
-	@GET
-	@Path("year")
-	@Produces(MediaType.TEXT_PLAIN)
-	public int getYear() {
-		return this.logic.getYear();
-	}
-	
-	/**
-	 * get the current system time
-	 * 
-	 * @return current time (hour minute second) in a string
-	 */
-	@GET
-	@Path("time")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getTime() {
-		return this.logic.getTime();
-	}
-
-	/**
-	 * get the current system date
-	 * 
-	 * @return current date (day month year) in a string
-	 */
-	@GET
-	@Path("date")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getDate() {
-		return this.logic.getDate();
-	}
-
-	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
 	 */
 	@Override

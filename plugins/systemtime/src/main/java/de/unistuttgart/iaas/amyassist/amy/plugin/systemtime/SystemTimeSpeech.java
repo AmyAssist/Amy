@@ -23,6 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
@@ -46,34 +49,53 @@ public class SystemTimeSpeech {
 	/**
 	 * A method which returns the current time
 	 *
-	 * @return current time (hour minute) in a string, e.g. it is 10:30
+	 * @param entities
+	 *            from the speech
+	 * @return current time (hour minute) in a string, e.g. It is 10:30
 	 */
 	@Intent()
 	public String time(Map<String, EntityData> entities) {
-		if (this.logic.getTime() != null && this.logic.getTime().length() > 4) {
-			return "it is " + this.logic.getTime().substring(0, 5);
-		}
-		return "couldn't find correct time, this is what I found: " + this.logic.getTime();
+		return "It is " + this.logic.getTimeStamp().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")) + ".";
 	}
 
 	/**
 	 * A method which returns the current date
 	 *
-	 * @return current date (day month year) in a string, e.g. it is the 20th of june
+	 * @param entities
+	 *            from the speech
+	 * @return current date (day month year) in a string, e.g. It is the 20th of june
 	 */
 	@Intent()
 	public String date(Map<String, EntityData> entities) {
-		return "it is the " + this.logic.getDate();
+		return "It is the " + ordinal(this.logic.getTimeStamp().getDayOfMonth()) + " of "
+				+ this.logic.getTimeStamp().getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
 	}
 
 	/**
 	 * A method which returns the current year
-	 * 
-	 * @return current year in a string, e.g. it is 2018
+	 *
+	 * @param entities
+	 *            from the speech
+	 * @return current year in a string, e.g. It is 2018
 	 */
 	@Intent
 	public String year(Map<String, EntityData> entities) {
-		return "it is " + this.logic.getYear();
+		return "It is " + this.logic.getTimeStamp().getYear() + ".";
+	}
+
+	/**
+	 * A method to convert the integer day to an ordinal (from 1 to 31)
+	 *
+	 * @param i
+	 *            the day as integer
+	 * @return the day as ordinal, e.g. 1st
+	 */
+	public static String ordinal(int i) {
+		String[] ordinals = { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
+		if (10 < i && i < 14) {
+			return i + "th";
+		}
+		return i + ordinals[i % 10];
 	}
 
 }
