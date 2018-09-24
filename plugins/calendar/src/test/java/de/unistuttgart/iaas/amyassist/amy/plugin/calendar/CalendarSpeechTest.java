@@ -67,13 +67,9 @@ class CalendarSpeechTest {
 	private EntityData number;
 	private EntityData day;
 	private EntityData date;
-	private static EntityData allday;
+	private static EntityData allDay;
 	private static EntityData startdate;
-	private static EntityData startyear;
-	private static EntityData starttime;
 	private static EntityData enddate;
-	private static EntityData endyear;
-	private static EntityData endtime;
 	private static EntityData location;
 	private static EntityData description;
 	private static EntityData remindertype;
@@ -98,13 +94,9 @@ class CalendarSpeechTest {
 		this.number = Mockito.mock(EntityData.class);
 		this.day = Mockito.mock(EntityData.class);
 		this.date = Mockito.mock(EntityData.class);
-		allday = Mockito.mock(EntityData.class);
+		allDay = Mockito.mock(EntityData.class);
 		startdate = Mockito.mock(EntityData.class);
-		startyear = Mockito.mock(EntityData.class);
-		starttime = Mockito.mock(EntityData.class);
 		enddate = Mockito.mock(EntityData.class);
-		endyear = Mockito.mock(EntityData.class);
-		endtime = Mockito.mock(EntityData.class);
 		location = Mockito.mock(EntityData.class);
 		description = Mockito.mock(EntityData.class);
 		remindertype = Mockito.mock(EntityData.class);
@@ -173,8 +165,8 @@ class CalendarSpeechTest {
 	void testSetEvent() {
 		Map<String, EntityData> map = new HashMap<>();
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 00, 00));
-		when(allday.getString()).thenReturn("yes");
-		map.put("allday", allday);
+		when(allDay.getString()).thenReturn("yes");
+		map.put("allday", allDay);
 		when(startdate.getDate()).thenReturn(LocalDate.of(2018, 9, 16));
 		map.put("startdate", startdate);
 		when(enddate.getDate()).thenReturn(LocalDate.of(2018, 9, 19));
@@ -206,8 +198,8 @@ class CalendarSpeechTest {
 	void testSetEvent2() {
 		Map<String, EntityData> map = new HashMap<>();
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 00, 00));
-		when(allday.getString()).thenReturn("yes");
-		map.put("allday", allday);
+		when(allDay.getString()).thenReturn("yes");
+		map.put("allday", allDay);
 		when(startdate.getDate()).thenReturn(LocalDate.of(2018, 9, 16));
 		map.put("startdate", startdate);
 		when(enddate.getDate()).thenReturn(LocalDate.of(2018, 9, 19));
@@ -255,29 +247,42 @@ class CalendarSpeechTest {
 				Pair.of(speechMap("no", LocalDate.of(2018, 9, 16), LocalDate.of(2018, 9, 16), "", "2018", LocalTime.of(12, 00), null),  
 						"You have to restart the creation of a new event and please make sure that you add a time to the start"
 						+ " and to the end if you choose an non all day event."),
-				Pair.of(speechMap("no", LocalDate.of(2018, 9, 16), LocalDate.of(2018, 9, 16), "2018", "", null, LocalTime.of(12, 00)),  
-						"You have to restart the creation of a new event and please make sure that you add a time to the start"
-						+ " and to the end if you choose an non all day event."),
-				Pair.of(speechMap("no", LocalDate.of(2018, 9, 21), LocalDate.of(2018, 9, 15), "", "", LocalTime.of(12, 00), LocalTime.of(12, 00)),  
+				Pair.of(speechMap("false", LocalDate.of(2018, 9, 16), LocalDate.of(2018, 9, 16), "2018", "", LocalTime.of(12, 01), LocalTime.of(12, 00)),  
 						"You have to restart the creation of a new event and please make sure that the start of the event "
 								+ "is before the end."),
-				Pair.of(speechMap("no", LocalDate.of(2018, 9, 21), LocalDate.of(2018, 9, 15), "2018", "", LocalTime.of(12, 00), LocalTime.of(12, 00)),  
+				Pair.of(speechMap("yes", LocalDate.of(2018, 9, 21), LocalDate.of(2018, 9, 15), "", "", LocalTime.of(12, 00), LocalTime.of(12, 00)),  
 						"You have to restart the creation of a new event and please make sure that the start of the event "
 								+ "is before the end."),
-				Pair.of(speechMap("no", LocalDate.of(2018, 9, 21), LocalDate.of(2018, 9, 15), "", "2018", LocalTime.of(12, 00), LocalTime.of(12, 00)),  
+				Pair.of(speechMap("true", LocalDate.of(2018, 9, 21), LocalDate.of(2018, 9, 15), "2018", "", LocalTime.of(12, 00), LocalTime.of(12, 00)),  
+						"You have to restart the creation of a new event and please make sure that the start of the event "
+								+ "is before the end."),
+				Pair.of(speechMap("all day", LocalDate.of(2018, 9, 21), LocalDate.of(2018, 9, 15), "", "2018", LocalTime.of(12, 00), LocalTime.of(12, 00)),  
 						"You have to restart the creation of a new event and please make sure that the start of the event "
 								+ "is before the end."));
 	}
 	
-	private static Map<String, EntityData> speechMap(String allDay, LocalDate startDate, LocalDate endDate, String startYear,
+	private static Map<String, EntityData> speechMap(String alldayString, LocalDate localStartDate, LocalDate localEndDate, String startYear,
 			String endYear, LocalTime startTime, LocalTime endTime) {
+		EntityData allday = Mockito.mock(EntityData.class);
+		EntityData startDate = Mockito.mock(EntityData.class);
+		EntityData startyear = Mockito.mock(EntityData.class);
+		EntityData starttime = Mockito.mock(EntityData.class);
+		EntityData endDate = Mockito.mock(EntityData.class);
+		EntityData endyear = Mockito.mock(EntityData.class);
+		EntityData endtime = Mockito.mock(EntityData.class);
+		EntityData Location = Mockito.mock(EntityData.class);
+		EntityData Description = Mockito.mock(EntityData.class);
+		EntityData reminderTimeValue = Mockito.mock(EntityData.class);
+		EntityData reminderTimeUnit = Mockito.mock(EntityData.class);
+		EntityData Title = Mockito.mock(EntityData.class);
+		EntityData reminderType = Mockito.mock(EntityData.class);
 		Map<String, EntityData> map = new HashMap<>();
-		when(allday.getString()).thenReturn(allDay);
+		when(allday.getString()).thenReturn(alldayString);
 		map.put("allday", allday);
-		when(startdate.getDate()).thenReturn(startDate);
-		map.put("startdate", startdate);
-		when(enddate.getDate()).thenReturn(endDate);
-		map.put("enddate", enddate);
+		when(startDate.getDate()).thenReturn(localStartDate);
+		map.put("startdate", startDate);
+		when(endDate.getDate()).thenReturn(localEndDate);
+		map.put("enddate", endDate);
 		if (startYear.isEmpty()) {
 			map.put("startyear", null);
 		} else {
@@ -300,18 +305,18 @@ class CalendarSpeechTest {
 			when(endtime.getTime()).thenReturn(endTime);
 			map.put("endtime", endtime);
 		}
-		when(location.getString()).thenReturn("test");
-		map.put("location", location);
-		when(description.getString()).thenReturn("test");
-		map.put("description", description);
-		when(remindertimevalue.getNumber()).thenReturn(20);
-		map.put("remindertimevalue", remindertimevalue);
-		when(remindertimeunit.getString()).thenReturn("days");
-		map.put("remindertimeunit", remindertimeunit);
-		when(title.getString()).thenReturn("Okay");
-		map.put("title", title);
-		when(remindertype.getString()).thenReturn("email");
-		map.put("remindertype", remindertype);
+		when(Location.getString()).thenReturn("test");
+		map.put("location", Location);
+		when(Description.getString()).thenReturn("test");
+		map.put("description", Description);
+		when(reminderTimeValue.getNumber()).thenReturn(20);
+		map.put("remindertimevalue", reminderTimeValue);
+		when(reminderTimeUnit.getString()).thenReturn("days");
+		map.put("remindertimeunit", reminderTimeUnit);
+		when(Title.getString()).thenReturn("Okay");
+		map.put("title", Title);
+		when(reminderType.getString()).thenReturn("email");
+		map.put("remindertype", reminderType);
 		return map;
 	}	
 
@@ -411,18 +416,6 @@ class CalendarSpeechTest {
 		String modifiedInput = input + "T23:59";
 		return LocalDateTime.parse(modifiedInput);
 	}
-	
-    /**
-     * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech#isAllDay(java.lang.String)}.
-     */
-    @Test
-    void testIsAllDay() {
-        assertThat(CalendarSpeech.isAllDay("yes"), is(true));
-        assertThat(CalendarSpeech.isAllDay("true"), is(true));
-        assertThat(CalendarSpeech.isAllDay("all day"), is(true));
-        assertThat(CalendarSpeech.isAllDay("no"), is(false));
-        assertThat(CalendarSpeech.isAllDay("false"), is(false));
-    }
 
 
 }
