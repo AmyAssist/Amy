@@ -35,8 +35,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SystemTopics;
 import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
 import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.ConfigurationRegistry;
 
@@ -149,19 +147,17 @@ public class ToscaLogic {
 		this.apiClient.createServiceInstance(app, parameters);
 	}
 
+	/**
+	 * poll the tosca api and wait for all instances of the application to be not "CREATING"
+	 */
 	public void waitForInstall() {
+		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 		boolean wait = true;
 		while (!Thread.currentThread().isInterrupted() && wait) {
-
-			String id = this.storage.get("installing");
-			if (id != null) {
+			if (this.storage.has("installing")) {
+				String id = this.storage.get("installing");
 				Application application = this.apiClient.getApplication(id);
-				for (ServiceInstance serviceInstance : this.apiClient.getServiceInstances(application)) {
-					if ("INSTALLING".equalsIgnoreCase(serviceInstance.getState())) {
-						wait = false;
-						break;
-					}
-				}
+				wait = this.isCreating(application);
 			} else {
 				wait = false;
 			}
@@ -173,6 +169,15 @@ public class ToscaLogic {
 				}
 			}
 		}
+	}
+
+	private boolean isCreating(Application application) {
+		for (ServiceInstance serviceInstance : this.apiClient.getServiceInstances(application)) {
+			if ("CREATING".equalsIgnoreCase(serviceInstance.getState())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

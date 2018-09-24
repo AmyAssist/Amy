@@ -102,7 +102,7 @@ public class ToscaSpeech {
 	}
 
 	@Intent
-	public String waitForInstall() {
+	public String waitForInstall(Map<String, EntityData> entities) {
 		this.logic.waitForInstall();
 		return "finished installation";
 	}
