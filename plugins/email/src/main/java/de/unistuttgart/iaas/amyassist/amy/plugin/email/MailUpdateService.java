@@ -93,7 +93,6 @@ public class MailUpdateService implements RunnableService {
 	 */
 	@Override
 	public void start() {
-		this.lastMessageCount = this.mailLogic.getNewMessageCount(false);
 		scheduleNextUpdate();
 	}
 
