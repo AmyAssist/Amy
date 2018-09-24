@@ -47,6 +47,8 @@ public class SystemTimeSpeech {
 	@Reference
 	private Environment environment;
 
+	private static final String ITIS = "It is ";
+
 	/**
 	 * A method which returns the current time
 	 *
@@ -56,7 +58,7 @@ public class SystemTimeSpeech {
 	 */
 	@Intent()
 	public String time(Map<String, EntityData> entities) {
-		return "It is "
+		return ITIS
 				+ this.environment.getCurrentLocalDateTime().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"))
 				+ ".";
 	}
@@ -70,7 +72,7 @@ public class SystemTimeSpeech {
 	 */
 	@Intent()
 	public String date(Map<String, EntityData> entities) {
-		return "It is the " + ordinal(this.environment.getCurrentLocalDateTime().getDayOfMonth()) + " of "
+		return ITIS + "the " + ordinal(this.environment.getCurrentLocalDateTime().getDayOfMonth()) + " of "
 				+ this.environment.getCurrentLocalDateTime().getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
 				+ ".";
 	}
@@ -84,7 +86,7 @@ public class SystemTimeSpeech {
 	 */
 	@Intent
 	public String year(Map<String, EntityData> entities) {
-		return "It is " + this.environment.getCurrentLocalDateTime().getYear() + ".";
+		return ITIS + this.environment.getCurrentLocalDateTime().getYear() + ".";
 	}
 
 	/**
@@ -96,7 +98,7 @@ public class SystemTimeSpeech {
 	 */
 	@Intent
 	public String dayOfWeek(Map<String, EntityData> entities) {
-		return "It is " + this.environment.getCurrentLocalDateTime().getDayOfWeek().getDisplayName(TextStyle.FULL,
+		return ITIS + this.environment.getCurrentLocalDateTime().getDayOfWeek().getDisplayName(TextStyle.FULL,
 				Locale.ENGLISH) + ".";
 	}
 
