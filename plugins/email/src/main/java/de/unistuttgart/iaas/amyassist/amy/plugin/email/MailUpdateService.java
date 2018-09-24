@@ -76,7 +76,7 @@ public class MailUpdateService implements RunnableService {
 					this.messageHub.publish("user/all/notification",
 							"You've got new mail from " + senderInfo + ".\nSubject: " + subjectInfo);
 				} catch (MessagingException me) {
-					this.logger.error("Getting info from message failed");
+					this.logger.error("Getting info from message failed", me);
 				}
 			}
 			this.lastMessageCount = currentMessageCount;
