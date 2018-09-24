@@ -419,6 +419,7 @@ class CalendarSpeechTest {
     void testIsAllDay() {
         assertThat(CalendarSpeech.isAllDay("yes"), is(true));
         assertThat(CalendarSpeech.isAllDay("true"), is(true));
+        assertThat(CalendarSpeech.isAllDay("all day"), is(true));
         assertThat(CalendarSpeech.isAllDay("no"), is(false));
         assertThat(CalendarSpeech.isAllDay("false"), is(false));
     }

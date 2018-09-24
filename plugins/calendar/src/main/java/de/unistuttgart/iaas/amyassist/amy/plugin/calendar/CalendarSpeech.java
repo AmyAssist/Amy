@@ -424,6 +424,6 @@ public class CalendarSpeech {
 	 * @return if the event is all day
 	 */
 	public static boolean isAllDay(String allDayString) {
-		return allDayString.equals("yes") || allDayString.equals("true");
+		return allDayString.equals("yes") || allDayString.equals("true") || allDayString.equals("all day");
 	}
 }
