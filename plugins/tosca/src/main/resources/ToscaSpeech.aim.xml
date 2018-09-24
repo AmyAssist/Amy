@@ -5,6 +5,10 @@
 		<gram>[list] [installed] (apps|applications)</gram>
 	</Intent>
 	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.tosca.ToscaSpeech.waitForInstall">
+		<gram>tell me when (finished|installed)</gram>
+	</Intent>
+	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.tosca.ToscaSpeech.install">
 		<gram>(install|deploy)</gram>
 		<EntityTemplates>
