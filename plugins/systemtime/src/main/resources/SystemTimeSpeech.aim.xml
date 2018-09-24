@@ -10,11 +10,27 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.year">
-		<gram>[what] year [do we have]</gram>
+		<gram>[what] year [do we have|is it|are we living in]</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.dayOfWeek">
 		<gram>[what] (week day|day [of the] week) [do we have|is] [today]</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.dayOfWeekOn">
+		<gram>[what] (week day|day [of the] week) [do we have|is] on [{date}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="year" required="true">
+				<gram>{amyyear}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="date" required="true">
+				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{eventyear}]|tomorrow|today)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="date">
+			<text>At which date?</text>
+			<gram>{date}</gram>
+		</Prompt>
 	</Intent>
 
 </AmyInteractionModel>

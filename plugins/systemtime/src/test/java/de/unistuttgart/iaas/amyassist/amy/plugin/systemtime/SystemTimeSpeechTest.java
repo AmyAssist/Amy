@@ -27,15 +27,23 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -109,5 +117,46 @@ public class SystemTimeSpeechTest {
 		assertThat(SystemTimeSpeech.ordinal(1), equalToIgnoringWhiteSpace("1st"));
 		assertThat(SystemTimeSpeech.ordinal(11), equalToIgnoringWhiteSpace("11th"));
 		assertThat(SystemTimeSpeech.ordinal(21), equalToIgnoringWhiteSpace("21st"));
+	}
+
+	/**
+	 * @param testCase
+	 *            a combination of the input variables and the expected outcome
+	 */
+	@ParameterizedTest
+	@MethodSource("dayOfWeekPairs")
+	public void testDayOfWeekAt(Pair<Map<String, EntityData>, String> testCase) {
+		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 00, 00));
+		String setEvent = this.speech.dayOfWeekAt(testCase.getLeft());
+		assertThat(setEvent, equalToIgnoringWhiteSpace(testCase.getRight()));
+	}
+
+	/**
+	 *
+	 * @return the test cases used in the {@link #testDayOfWeekAt(Pair)} test
+	 */
+	public static Stream<Pair<Map<String, EntityData>, String>> dayOfWeekPairs() {
+		return Stream.of(Pair.of(speechMap(LocalDate.of(2018, 9, 24), "today", ""), "Today is monday."),
+				Pair.of(speechMap(LocalDate.of(2018, 9, 25), "tomorrow", "2018"), "Tomorrow is tuesday."),
+				Pair.of(speechMap(LocalDate.of(2019, 1, 2), "", "2019"), "The 2nd of january 2019 is a wednesday."),
+				Pair.of(speechMap(LocalDate.of(2018, 4, 11), "", ""), "The 11th of april 2019 is a thursday."),
+				Pair.of(speechMap(LocalDate.of(2018, 4, 13), "", "2018"), "The 13th of april was a friday."),
+				Pair.of(speechMap(LocalDate.of(2018, 8, 18), "", "2018"), "The 18th of august was a saturday."),
+				Pair.of(speechMap(LocalDate.of(2017, 12, 24), "", "2017"), "The 24th of december 2017 was a sunday."));
+	}
+
+	private static Map<String, EntityData> speechMap(LocalDate localDate, String dateString, String yearString) {
+		EntityData date = Mockito.mock(EntityData.class);
+		EntityData year = Mockito.mock(EntityData.class);
+		Map<String, EntityData> map = new HashMap<>();
+		when(date.getDate()).thenReturn(localDate);
+		when(date.getString()).thenReturn(dateString);
+		map.put("date", date);
+		if (yearString.isEmpty()) {
+			map.put("year", null);
+		} else {
+			map.put("year", year);
+		}
+		return map;
 	}
 }

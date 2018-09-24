@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
@@ -100,6 +101,41 @@ public class SystemTimeSpeech {
 	public String dayOfWeek(Map<String, EntityData> entities) {
 		return ITIS + this.environment.getCurrentLocalDateTime().getDayOfWeek().getDisplayName(TextStyle.FULL,
 				Locale.ENGLISH) + ".";
+	}
+
+	/**
+	 * A method which returns the day of week of a chosen date.
+	 *
+	 * @param entities
+	 *            from the speech
+	 * @return current year in a string, e.g. Tomorrow is monday.
+	 */
+	@Intent
+	public String dayOfWeekAt(Map<String, EntityData> entities) {
+		LocalDate chosenDate = entities.get("date").getDate();
+		LocalDate currentDate = this.environment.getCurrentLocalDateTime().toLocalDate();
+		String tense = " is a ";
+		if (!entities.get("date").getString().equals("today") && !entities.get("date").getString().equals("tomorrow")
+				&& entities.get("year") == null && chosenDate.isBefore(currentDate)) {
+			chosenDate = chosenDate.withYear(currentDate.getYear() + 1);
+		}
+		if (entities.get("date").getString().equals("today")) {
+			return "Today is " + chosenDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
+		}
+		if (entities.get("date").getString().equals("tomorrow")) {
+			return "Tomorrow is " + chosenDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
+		}
+		if (chosenDate.isBefore(currentDate)) {
+			tense = " was a ";
+		}
+		if (chosenDate.getYear() != this.environment.getCurrentLocalDateTime().getYear()) {
+			return "The " + ordinal(chosenDate.getDayOfMonth()) + " of "
+					+ chosenDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " + chosenDate.getYear()
+					+ tense + chosenDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
+		}
+		return "The " + ordinal(chosenDate.getDayOfMonth()) + " of "
+				+ chosenDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + tense
+				+ chosenDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
 	}
 
 	/**
