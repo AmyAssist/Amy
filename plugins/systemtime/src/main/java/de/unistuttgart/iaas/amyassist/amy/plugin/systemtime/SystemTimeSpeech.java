@@ -30,13 +30,14 @@ import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * A plugin which tells time and date
- * 
+ *
  * @author Florian Bauer, Patrick Gebhardt
  */
 @Service
@@ -44,7 +45,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 public class SystemTimeSpeech {
 
 	@Reference
-	private SystemTimeLogic logic;
+	private Environment environment;
 
 	/**
 	 * A method which returns the current time
@@ -55,7 +56,9 @@ public class SystemTimeSpeech {
 	 */
 	@Intent()
 	public String time(Map<String, EntityData> entities) {
-		return "It is " + this.logic.getTimeStamp().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")) + ".";
+		return "It is "
+				+ this.environment.getCurrentLocalDateTime().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+				+ ".";
 	}
 
 	/**
@@ -67,8 +70,9 @@ public class SystemTimeSpeech {
 	 */
 	@Intent()
 	public String date(Map<String, EntityData> entities) {
-		return "It is the " + ordinal(this.logic.getTimeStamp().getDayOfMonth()) + " of "
-				+ this.logic.getTimeStamp().getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
+		return "It is the " + ordinal(this.environment.getCurrentLocalDateTime().getDayOfMonth()) + " of "
+				+ this.environment.getCurrentLocalDateTime().getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+				+ ".";
 	}
 
 	/**
@@ -80,7 +84,7 @@ public class SystemTimeSpeech {
 	 */
 	@Intent
 	public String year(Map<String, EntityData> entities) {
-		return "It is " + this.logic.getTimeStamp().getYear() + ".";
+		return "It is " + this.environment.getCurrentLocalDateTime().getYear() + ".";
 	}
 
 	/**

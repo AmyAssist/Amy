@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -49,16 +50,19 @@ public class SystemTimeSpeechTest {
 	@Reference
 	private TestFramework testFramework;
 
-	private SystemTimeLogic logic;
+	private Environment environment;
 	private SystemTimeSpeech speech;
+
+	private LocalDateTime ldt;
 
 	/**
 	 * initialize the test
 	 */
 	@BeforeEach
 	void init() {
-		this.logic = this.testFramework.mockService(SystemTimeLogic.class);
+		this.environment = this.testFramework.mockService(Environment.class);
 		this.speech = this.testFramework.setServiceUnderTest(SystemTimeSpeech.class);
+		this.ldt = LocalDateTime.of(2018, 8, 20, 20, 15, 28);
 	}
 
 	/**
@@ -66,7 +70,7 @@ public class SystemTimeSpeechTest {
 	 */
 	@Test
 	void testTime() {
-		when(this.logic.getTimeStamp()).thenReturn(LocalDateTime.of(2018, 8, 20, 20, 15, 28));
+		when(this.environment.getCurrentLocalDateTime()).thenReturn(this.ldt);
 		assertThat(this.speech.time(new HashMap<>()), equalToIgnoringWhiteSpace("It is 20:15."));
 	}
 
@@ -75,7 +79,7 @@ public class SystemTimeSpeechTest {
 	 */
 	@Test
 	void testDate() {
-		when(this.logic.getTimeStamp()).thenReturn(LocalDateTime.of(2018, 8, 20, 20, 15, 28));
+		when(this.environment.getCurrentLocalDateTime()).thenReturn(this.ldt);
 		assertThat(this.speech.date(new HashMap<>()), equalToIgnoringWhiteSpace("It is the 20th of august."));
 	}
 
@@ -84,7 +88,7 @@ public class SystemTimeSpeechTest {
 	 */
 	@Test
 	void testYear() {
-		when(this.logic.getTimeStamp()).thenReturn(LocalDateTime.of(2018, 8, 20, 20, 15, 28));
+		when(this.environment.getCurrentLocalDateTime()).thenReturn(this.ldt);
 		assertThat(this.speech.year(new HashMap<>()), equalToIgnoringWhiteSpace("It is 2018."));
 	}
 
