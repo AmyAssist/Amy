@@ -2,15 +2,15 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.time">
-		<gram>(what is|tell me) the time</gram>
+		<gram>[what|tell me the] time [is it]</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.date">
-		<gram>(what is|tell me) the date</gram>
+		<gram>[what] [is the] (date|day) [is] [today]</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.year">
-		<gram>(what is|tell me) the year</gram>
+		<gram>[what] year [do we have]</gram>
 	</Intent>
 
 </AmyInteractionModel>
