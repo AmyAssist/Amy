@@ -101,6 +101,12 @@ public class ToscaSpeech {
 		return "Installing.";
 	}
 
+	@Intent
+	public String waitForInstall() {
+		this.logic.waitForInstall();
+		return "finished installation";
+	}
+
 	/**
 	 * Provides the names of the configurations
 	 * 

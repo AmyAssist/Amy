@@ -27,12 +27,16 @@ import java.util.*;
 
 import org.opentosca.containerapi.client.IOpenTOSCAContainerAPIClient;
 import org.opentosca.containerapi.client.model.Application;
+import org.opentosca.containerapi.client.model.ServiceInstance;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.WithDefault;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SystemTopics;
 import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
 import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.ConfigurationRegistry;
 
@@ -56,6 +60,9 @@ public class ToscaLogic {
 
 	@Reference
 	private ToscaLibraryAdapter adapter;
+
+	@Reference
+	private IStorage storage;
 
 	/**
 	 * internal tosca client
@@ -137,8 +144,35 @@ public class ToscaLogic {
 	}
 
 	private void installWait(Application app, Map<String, String> parameters) {
+		this.storage.put("installing", app.getId());
 		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 		this.apiClient.createServiceInstance(app, parameters);
+	}
+
+	public void waitForInstall() {
+		boolean wait = true;
+		while (!Thread.currentThread().isInterrupted() && wait) {
+
+			String id = this.storage.get("installing");
+			if (id != null) {
+				Application application = this.apiClient.getApplication(id);
+				for (ServiceInstance serviceInstance : this.apiClient.getServiceInstances(application)) {
+					if ("INSTALLING".equalsIgnoreCase(serviceInstance.getState())) {
+						wait = false;
+						break;
+					}
+				}
+			} else {
+				wait = false;
+			}
+			if (wait) {
+				try {
+					Thread.sleep(5);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+			}
+		}
 	}
 
 	/**
