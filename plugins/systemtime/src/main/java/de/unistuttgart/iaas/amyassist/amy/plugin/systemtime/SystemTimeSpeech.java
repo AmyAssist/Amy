@@ -66,7 +66,7 @@ public class SystemTimeSpeech {
 	 *
 	 * @param entities
 	 *            from the speech
-	 * @return current date (day month year) in a string, e.g. It is the 20th of june
+	 * @return current date (day month year) in a string, e.g. It is the 20th of june.
 	 */
 	@Intent()
 	public String date(Map<String, EntityData> entities) {
@@ -80,11 +80,24 @@ public class SystemTimeSpeech {
 	 *
 	 * @param entities
 	 *            from the speech
-	 * @return current year in a string, e.g. It is 2018
+	 * @return current year in a string, e.g. It is 2018.
 	 */
 	@Intent
 	public String year(Map<String, EntityData> entities) {
 		return "It is " + this.environment.getCurrentLocalDateTime().getYear() + ".";
+	}
+
+	/**
+	 * A method which returns the current day of week
+	 *
+	 * @param entities
+	 *            from the speech
+	 * @return current year in a string, e.g. It is monday.
+	 */
+	@Intent
+	public String dayOfWeek(Map<String, EntityData> entities) {
+		return "It is " + this.environment.getCurrentLocalDateTime().getDayOfWeek().getDisplayName(TextStyle.FULL,
+				Locale.ENGLISH) + ".";
 	}
 
 	/**

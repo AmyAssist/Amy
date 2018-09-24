@@ -12,5 +12,9 @@
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.year">
 		<gram>[what] year [do we have]</gram>
 	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.dayOfWeek">
+		<gram>[what] (week day|day [of the] week) [do we have|is] [today]</gram>
+	</Intent>
 
 </AmyInteractionModel>

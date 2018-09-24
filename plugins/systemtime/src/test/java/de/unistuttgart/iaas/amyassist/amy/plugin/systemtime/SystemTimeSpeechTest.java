@@ -93,6 +93,15 @@ public class SystemTimeSpeechTest {
 	}
 
 	/**
+	 * Test dayOfWeek(Map<String, EntityData>)
+	 */
+	@Test
+	void testDayOfWeek() {
+		when(this.environment.getCurrentLocalDateTime()).thenReturn(this.ldt);
+		assertThat(this.speech.dayOfWeek(new HashMap<>()), equalToIgnoringWhiteSpace("It is monday."));
+	}
+
+	/**
 	 * Test ordinal(int)
 	 */
 	@Test
