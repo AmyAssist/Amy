@@ -110,16 +110,6 @@ public class SystemTimeSpeechTest {
 	}
 
 	/**
-	 * Test ordinal(int)
-	 */
-	@Test
-	void testOrdinal() {
-		assertThat(SystemTimeSpeech.ordinal(1), equalToIgnoringWhiteSpace("1st"));
-		assertThat(SystemTimeSpeech.ordinal(11), equalToIgnoringWhiteSpace("11th"));
-		assertThat(SystemTimeSpeech.ordinal(21), equalToIgnoringWhiteSpace("21st"));
-	}
-
-	/**
 	 * @param testCase
 	 *            a combination of the input variables and the expected outcome
 	 */
