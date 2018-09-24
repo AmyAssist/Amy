@@ -2,7 +2,7 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEvents">
-		<gram>what (is|are) my next [{number}] event</gram>
+		<gram>[what (is|are)] my next [{number}] (event|events|appointment|appointments) </gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>
@@ -10,25 +10,25 @@
 		</EntityTemplates>
 		<Prompt entityTemplateId="number">
 			<text>How many events should i show? </text>
-			<gram> {number} [event] </gram>
+			<gram> {number} [event|events|appointment|appointments] </gram>
 		</Prompt>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsToday">
-		<gram>[which] events [do i have] [{day}]</gram>
+		<gram>[which] (events|appointments) [do i have] [{day}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="day" required="true">
 				<gram>(today|tomorrow)</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="day">
-			<text>today or tomorrow? </text>
+			<text>Today or tomorrow? </text>
 			<gram> {day} </gram>
 		</Prompt>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsAt">
-		<gram>[which] events [do i have] at [{date}]</gram>
+		<gram>[which] (events|appointments) [do i have] at [{date}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="eventyear" required="true">
 				<gram>{amyyear}</gram>
@@ -44,7 +44,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.setEvent">
-		<gram>[create] new event</gram>
+		<gram>[create|make] new (event|appointment) [{title}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="title" required="true">
 				<gram>*</gram>
@@ -112,11 +112,11 @@
 			<gram>[at] [the] {end}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="description">
-			<text>You can add a description to the event or just type no if you don't want to.</text>
+			<text>You can add a description to the event or just say no if you don't want to.</text>
 			<gram>{description}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="location">
-			<text>You can add a location to the event or just type no if you don't want to.</text>
+			<text>You can add a location to the event or just say no if you don't want to.</text>
 			<gram>{location}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="remindertype">
