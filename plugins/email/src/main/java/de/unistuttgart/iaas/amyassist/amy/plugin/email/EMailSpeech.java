@@ -85,14 +85,18 @@ public class EMailSpeech {
 	 */
 	@Intent()
 	public String newMessages(Map<String, EntityData> entities) {
-		if (entities.get(IMPORTANT) != null && entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
-			if (this.logic.hasNewMessages(true)) {
-				return "You have new important messages.";
+		try {
+			if (entities.get(IMPORTANT) != null && entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
+				if (this.logic.hasNewMessages(true)) {
+					return "You have new important messages.";
+				}
+				return NO_IMP_MAILS;
 			}
-			return NO_IMP_MAILS;
-		}
-		if (this.logic.hasNewMessages(false)) {
-			return "You have new messages.";
+			if (this.logic.hasNewMessages(false)) {
+				return "You have new messages.";
+			}
+		} catch (IllegalStateException ise) {
+			return ise.getMessage();
 		}
 		return NO_MAILS;
 	}

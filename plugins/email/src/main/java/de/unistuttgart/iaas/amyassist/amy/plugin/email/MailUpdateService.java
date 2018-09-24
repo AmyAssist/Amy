@@ -23,10 +23,11 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.mail.Folder;
+import javax.mail.Message;
 import javax.mail.MessagingException;
 
 import org.slf4j.Logger;
@@ -36,7 +37,6 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
 
 /**
  * This class checks every few minutes if the user has received a new email
@@ -47,7 +47,7 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
 public class MailUpdateService implements RunnableService {
 
 	@Reference
-	private MailSession mailSession;
+	private EMailLogic mailLogic;
 
 	@Reference
 	private MessageHub messageHub;
@@ -65,18 +65,26 @@ public class MailUpdateService implements RunnableService {
 	private static final int MINUTE_INTERVAL = 1;
 
 	private void checkForNewMails() {
-		if (this.mailSession.isConnected()) {
-			try (final Folder inbox = this.mailSession.getInbox()) {
-				final int currentMessageCount = inbox.getMessageCount();
-				if (currentMessageCount > this.lastMessageCount) {
-					final String mailAddress = inbox.getStore().getURLName().getUsername();
-					this.messageHub.publish("user/" + mailAddress + "/mail", "You've got new mail");
+		if (this.mailLogic.isConnectedToMailServer()) {
+			final List<Message> messages = this.mailLogic.getNewMessages();
+			final int currentMessageCount = messages.size();
+			if (currentMessageCount > this.lastMessageCount) {
+				final Message newest = messages.get(0);
+				try {
+					final String senderInfo = EMailLogic.getFrom(newest);
+					final String subjectInfo = newest.getSubject();
+					this.messageHub.publish("user/all/notification",
+							"You've got new mail from " + senderInfo + ".\nSubject: " + subjectInfo);
+				} catch (MessagingException me) {
+					this.logger.error("Getting info from message failed");
 				}
-				this.lastMessageCount = currentMessageCount;
-			} catch (MessagingException e) {
-				this.logger.error("Checking for new mails failed", e);
 			}
+			this.lastMessageCount = currentMessageCount;
 		}
+		scheduleNextUpdate();
+	}
+
+	private void scheduleNextUpdate() {
 		this.nextScheduledCall = this.scheduler.schedule(this::checkForNewMails, MINUTE_INTERVAL, TimeUnit.MINUTES);
 	}
 
@@ -85,7 +93,8 @@ public class MailUpdateService implements RunnableService {
 	 */
 	@Override
 	public void start() {
-		checkForNewMails();
+		this.lastMessageCount = this.mailLogic.getNewMessageCount(false);
+		scheduleNextUpdate();
 	}
 
 	/**
