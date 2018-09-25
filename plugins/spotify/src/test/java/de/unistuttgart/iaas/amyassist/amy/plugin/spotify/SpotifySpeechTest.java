@@ -240,7 +240,7 @@ class SpotifySpeechTest {
 		map.put("name", this.songId);
 		when(this.entityData.getString()).thenReturn("track");
 		map.put("mode", this.entityData);
-		assertThat(this.speech.searchASong(map), equalTo("Element is not available"));
+		assertThat(this.speech.searchASong(map).getText(), equalTo("Element is not available"));
 		verify(this.searchLogic).searchforTracks("test", 1);
 	}
 	
