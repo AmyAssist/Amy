@@ -26,7 +26,9 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -57,15 +59,17 @@ class CalendarSpeechTest {
 
 	@Reference
 	private TestFramework framework;
+
+	private Environment environment;
 	
 	private CalendarLogic logic;
 	private CalendarSpeech speech;
 	private CalendarEvent event;
 
-	private Environment environment;
+	private List<CalendarEvent> events;
+	private List<CalendarEvent> events2;
 	
 	private EntityData number;
-	private EntityData day;
 	private EntityData date;
 	private static EntityData allDay;
 	private static EntityData startdate;
@@ -86,13 +90,15 @@ class CalendarSpeechTest {
 		this.logic = this.framework.mockService(CalendarLogic.class);
 		this.environment = this.framework.mockService(Environment.class);
 		this.speech = this.framework.setServiceUnderTest(CalendarSpeech.class);
-		this.event = Mockito.mock(CalendarEvent.class);
+		this.event = new CalendarEvent("ID", LocalDateTime.of(2018, 9, 26, 10, 00),	
+				LocalDateTime.of(2018, 9, 26, 12, 00), "Summary", "", "", false);
+		this.events = Arrays.asList(this.event);
+		this.events2 = Arrays.asList(this.event, this.event);
 		mockEntityData();
 	}
 	
 	private void mockEntityData() {
 		this.number = Mockito.mock(EntityData.class);
-		this.day = Mockito.mock(EntityData.class);
 		this.date = Mockito.mock(EntityData.class);
 		allDay = Mockito.mock(EntityData.class);
 		startdate = Mockito.mock(EntityData.class);
@@ -106,45 +112,94 @@ class CalendarSpeechTest {
 	}
 	
 	/**
-	 * test get events
+	 * test getEvents()
 	 */
 	@Test
 	void testGetEvents() {
 		Map<String, EntityData> map = new HashMap<>();
 		when(this.number.getNumber()).thenReturn(1);
 		map.put("number", this.number);
-		this.speech.getEvents(map);
-		verify(this.logic).getEvents(1);
+		String response = this.speech.getEvents(map);
+		assertThat(response, equalToIgnoringWhiteSpace("No events found."));
 	}
 	
 	/**
-	 * test getEventsToday() with today
+	 * test getEvents()
+	 */
+	@Test
+	void testGetEvents2() {
+		Map<String, EntityData> map = new HashMap<>();
+		when(this.number.getNumber()).thenReturn(1);
+		map.put("number", this.number);
+		when(this.logic.getEvents(1)).thenReturn(this.events);
+		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 10, 00));
+		String response = this.speech.getEvents(map);
+		assertThat(response, equalToIgnoringWhiteSpace("You have following upcoming event: Summary from 10:00 am until 12:00 pm."));
+	}
+	
+	/**
+	 * test getEvents()
+	 */
+	@Test
+	void testGetEvents3() {
+		Map<String, EntityData> map = new HashMap<>();
+		when(this.number.getNumber()).thenReturn(2);
+		map.put("number", this.number);
+		when(this.logic.getEvents(2)).thenReturn(this.events2);
+		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 10, 00));
+		String response = this.speech.getEvents(map);
+		assertThat(response, equalToIgnoringWhiteSpace("You have following upcoming 2 events: Summary from 10:00 am "
+				+ "until 12:00 pm. Summary from 10:00 am until 12:00 pm."));
+	}
+	
+	/**
+	 * test getEventsAt() with today
 	 */
 	@Test
 	void testGetEventsToday() {
 		Map<String, EntityData> map = new HashMap<>();
-		when(this.day.getString()).thenReturn("today");
-		map.put("day", this.day);
+		when(this.date.getDate()).thenReturn(LocalDate.of(2018, 9, 20));
+		when(this.date.getString()).thenReturn("today");
+		map.put("date", this.date);
+		map.put("eventyear", null);
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 10, 00));
-		this.speech.getEventsToday(map);
-		verify(this.logic).getEventsAt(LocalDateTime.of(2018, 9, 20, 10, 00));	
+		String response = this.speech.getEventsAt(map);
+		assertThat(response, equalToIgnoringWhiteSpace("You have no events today."));
 	}
 	
 	/**
-	 * test getEventsToday() with tomorrow
+	 * test getEventsAt() with today and events
+	 */
+	@Test
+	void testGetEventsToday2() {
+		Map<String, EntityData> map = new HashMap<>();
+		when(this.date.getDate()).thenReturn(LocalDate.of(2018, 9, 26));
+		when(this.date.getString()).thenReturn("today");
+		map.put("date", this.date);
+		map.put("eventyear", null);
+		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 26, 8, 00));
+		when(this.logic.getEventsAt(LocalDateTime.of(2018, 9, 26, 00, 00))).thenReturn(this.events);
+		String response = this.speech.getEventsAt(map);
+		assertThat(response, equalToIgnoringWhiteSpace("You have following events today: Summary from 10:00 am until 12:00 pm."));
+	}
+	
+	/**
+	 * test getEventsAt() with tomorrow
 	 */
 	@Test
 	void testGetEventsTomorrow() {
 		Map<String, EntityData> map = new HashMap<>();
-		when(this.day.getString()).thenReturn("tomorrow");
-		map.put("day", this.day);
+		when(this.date.getDate()).thenReturn(LocalDate.of(2018, 9, 21));
+		when(this.date.getString()).thenReturn("tomorrow");
+		map.put("date", this.date);
+		map.put("eventyear", null);
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 10, 00));
-		this.speech.getEventsToday(map);
-		verify(this.logic).getEventsAt(LocalDateTime.of(2018, 9, 20, 10, 00).plusDays(1));
+		String response = this.speech.getEventsAt(map);
+		assertThat(response, equalToIgnoringWhiteSpace("You have no events tomorrow."));
 	}
 	
 	/**
-	 * test getEventsToday() with tomorrow
+	 * test getEventsAt() with 20/9/2018
 	 */
 	@Test
 	void testGetEventsAt() {
@@ -154,9 +209,26 @@ class CalendarSpeechTest {
 		map.put("date", this.date);
 		map.put("eventyear", null);
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 21, 10, 00));
-		this.speech.getEventsAt(map);
-		verify(this.logic).getEventsAt(LocalDateTime.of(2019, 9, 20, 00, 00));
+		String response = this.speech.getEventsAt(map);
+		assertThat(response, equalToIgnoringWhiteSpace("No events found for the 20th of september 2019."));
 	}
+	
+	/**
+	 * test getEventsToday() with 20/9/2018 and events
+	 */
+	@Test
+	void testGetEventsAt2() {
+		Map<String, EntityData> map = new HashMap<>();
+		when(this.date.getDate()).thenReturn(LocalDate.of(2018, 9, 20));
+		when(this.date.getString()).thenReturn("");
+		map.put("date", this.date);
+		map.put("eventyear", null);
+		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 10, 00));
+		when(this.logic.getEventsAt(LocalDateTime.of(2018, 9, 20, 00, 00))).thenReturn(this.events);
+		String response = this.speech.getEventsAt(map);
+		assertThat(response, equalToIgnoringWhiteSpace("You have following events on the 20th of september 2018: "
+				+ "Summary from 10:00 am until 12:00 pm."));
+}
 	
 	/**
 	 * Test method for setEvent(Map<String,EntityData>)
@@ -185,10 +257,10 @@ class CalendarSpeechTest {
 		map.put("title", title);
 		when(remindertype.getString()).thenReturn("email");
 		map.put("remindertype", remindertype);
-		this.event = new CalendarEvent(LocalDateTime.of(2019, 9, 17, 00, 00), 
+		CalendarEvent event2 = new CalendarEvent(LocalDateTime.of(2019, 9, 17, 00, 00), 
 				LocalDateTime.of(2019, 9, 21, 00, 00), "Okay", "", "", "email", 28800, "", true);
 		this.speech.setEvent(map);
-		verify(this.logic).setEvent(this.event);		
+		verify(this.logic).setEvent(event2);		
 	}
 	
 	/**
@@ -218,10 +290,10 @@ class CalendarSpeechTest {
 		map.put("title", title);
 		when(remindertype.getString()).thenReturn("email");
 		map.put("remindertype", remindertype);
-		this.event = new CalendarEvent(LocalDateTime.of(2019, 9, 17, 00, 00), 
+		CalendarEvent event2 = new CalendarEvent(LocalDateTime.of(2019, 9, 17, 00, 00), 
 				LocalDateTime.of(2019, 9, 21, 00, 00), "Okay", "location", "description", "email", 1200, "", true);
 		this.speech.setEvent(map);
-		verify(this.logic).setEvent(this.event);		
+		verify(this.logic).setEvent(event2);		
 	}
 	
 	/**

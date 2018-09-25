@@ -61,7 +61,6 @@ public class CalendarSpeech {
 	}
 
 	private static final LocalTime ZERO = LocalTime.of(0, 0, 0, 0);
-	private static final String TODAY = "today";
 
 	/**
 	 *
@@ -92,32 +91,6 @@ public class CalendarSpeech {
 	/**
 	 * @param entities
 	 *            from the speech
-	 * @return upcoming events today or tomorrow depending on input
-	 */
-	@Intent
-	public String getEventsToday(Map<String, EntityData> entities) {
-		List<CalendarEvent> events;
-		List<String> eventList = new ArrayList<>();
-		LocalDateTime now = this.environment.getCurrentLocalDateTime();
-		String todayOrTomorrow = TODAY;
-		if (!entities.get("day").getString().equalsIgnoreCase(TODAY)) {
-			now = now.plusDays(1);
-			todayOrTomorrow = "tomorrow";
-		}
-		events = this.logic.getEventsAt(now);
-		if (events.isEmpty()) {
-			return "You have no events " + todayOrTomorrow + ".";
-		}
-		for (CalendarEvent event : events) {
-			eventList.add(this.checkDate(now, event, false));
-		}
-		return "You have following events " + todayOrTomorrow +":\n" + String.join("\n", eventList);
-
-	}
-
-	/**
-	 * @param entities
-	 *            from the speech
 	 * @return events on the chosen date
 	 */
 	@Intent
@@ -130,11 +103,17 @@ public class CalendarSpeech {
 			chosenDate = chosenDate.withYear(this.environment.getCurrentLocalDateTime().getYear() + 1);
 		}
 		events = this.logic.getEventsAt(chosenDate);
-		if (events.isEmpty()) {
-			return "No events found for the " + getDate(chosenDate) + " " + chosenDate.getYear() + ".";
-		}
 		for (CalendarEvent event : events) {
 			eventList.add(this.checkDate(chosenDate, event, false));
+		}
+		if (entities.get("date").getString().equals("today") || entities.get("date").getString().equals("tomorrow")) {
+			if (events.isEmpty()) {
+				return "You have no events " + entities.get("date").getString() + ".";
+			}
+			return "You have following events " + entities.get("date").getString() +":\n" + String.join("\n", eventList);
+		}
+		if (events.isEmpty()) {
+			return "No events found for the " + getDate(chosenDate) + " " + chosenDate.getYear() + ".";
 		}
 		return "You have following events on the " + getDate(chosenDate) + " " + chosenDate.getYear() + ":\n"
 		+ String.join("\n", eventList);
