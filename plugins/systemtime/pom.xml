@@ -11,4 +11,10 @@
 		<version>0.6.0-Snapshot</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+		</dependency>
+	</dependencies>
 </project>
