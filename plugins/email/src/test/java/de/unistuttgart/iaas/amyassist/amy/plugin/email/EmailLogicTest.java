@@ -75,7 +75,7 @@ public class EmailLogicTest {
 
 	private EMailLogic emailLogic;
 
-	private Properties configLoader;
+	private Properties properties;
 
 	private Folder inboxMock;
 
@@ -91,7 +91,7 @@ public class EmailLogicTest {
 	public void setup() throws MessagingException {
 		this.mailSession = this.framework.mockService(MailSession.class);
 		this.contactRegistry = this.framework.mockService(ContactRegistry.class);
-		this.configLoader = this.framework.mockService(Properties.class);
+		this.properties = this.framework.mockService(Properties.class);
 		this.emailLogic = this.framework.setServiceUnderTest(EMailLogic.class);
 
 		// initialize mocks
@@ -458,8 +458,8 @@ public class EmailLogicTest {
 	protected void testConnectToMailServerEmptyCredentials() {
 		when(this.mailSession.startNewMailSession(ArgumentMatchers.any(EMailCredentials.class))).thenReturn(true);
 		assertTrue(this.emailLogic.connectToMailServer(null));
-		Mockito.verify(this.configLoader).getProperty(EMailLogic.AMY_MAIL_ADDRESS_KEY);
-		Mockito.verify(this.configLoader).getProperty(EMailLogic.AMY_MAIL_PW_KEY);
+		Mockito.verify(this.properties).getProperty(EMailLogic.AMY_MAIL_ADDRESS_KEY);
+		Mockito.verify(this.properties).getProperty(EMailLogic.AMY_MAIL_PW_KEY);
 	}
 
 	/**

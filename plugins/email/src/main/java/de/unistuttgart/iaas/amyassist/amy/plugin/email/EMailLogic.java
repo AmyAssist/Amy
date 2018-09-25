@@ -64,7 +64,7 @@ public class EMailLogic {
 
 	@WithDefault
 	@Reference
-	private Properties configLoader;
+	private Properties properties;
 
 	@Reference
 	private IStorage storage;
@@ -292,8 +292,8 @@ public class EMailLogic {
 	public boolean connectToMailServer(EMailCredentials credentials) {
 		if (credentials == null) {
 			// if no credentials are given, use the standard ones for Amy
-			String amyUsername = this.configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
-			String amyPassword = this.configLoader.getProperty(AMY_MAIL_PW_KEY);
+			String amyUsername = this.properties.getProperty(AMY_MAIL_ADDRESS_KEY);
+			String amyPassword = this.properties.getProperty(AMY_MAIL_PW_KEY);
 			String amyHost = AMY_MAIL_HOST;
 
 			credentials = new EMailCredentials(amyUsername, amyPassword, amyHost);
