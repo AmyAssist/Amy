@@ -60,8 +60,14 @@ public class MailSession {
 	 * @return inbox folder
 	 * @throws MessagingException
 	 *             if folder couldn't be found or couldn't be opened
+	 * 
+	 * @throws IllegalStateException
+	 *             if session is not connected
 	 */
 	public Folder getInbox() throws MessagingException {
+		if (!this.connected) {
+			throw new IllegalStateException("Session is not connected");
+		}
 		Folder folderToOpen = this.store.getFolder(INBOX_NAME);
 		folderToOpen.open(Folder.READ_ONLY);
 		return folderToOpen;
