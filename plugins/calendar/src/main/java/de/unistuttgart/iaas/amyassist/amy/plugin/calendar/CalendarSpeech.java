@@ -125,8 +125,7 @@ public class CalendarSpeech {
 		List<CalendarEvent> events;
 		List<String> eventList = new ArrayList<>();
 		LocalDateTime chosenDate = LocalDateTime.of(entities.get("date").getDate(), ZERO);
-		if (!entities.get("date").getString().equals(TODAY) && !entities.get("date").getString().equals("tomorrow")
-				&& entities.get("eventyear") == null && entities.get("date").getDate()
+		if (entities.get("eventyear") == null && entities.get("date").getDate()
 				.isBefore(this.environment.getCurrentLocalDateTime().toLocalDate())) {
 			chosenDate = chosenDate.withYear(this.environment.getCurrentLocalDateTime().getYear() + 1);
 		}
