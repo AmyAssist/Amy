@@ -101,7 +101,7 @@ public class DialogHandlerImpl implements DialogHandler {
 					dialog.output(dialog.getIntent().call(object, stringToEntityData));
 				} catch (RuntimeException e) { // NOSONAR
 					this.logger.warn("Error during plugin execution", e);
-					dialog.output("There is an error in the plugin. For more details see in the logs.");
+					dialog.output(Response.text("There is an error in the plugin. For more details see in the logs.").build());
 				}
 			}
 			dialog.setIntent(null);
