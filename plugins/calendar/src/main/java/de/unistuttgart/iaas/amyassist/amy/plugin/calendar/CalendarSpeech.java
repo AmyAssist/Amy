@@ -61,7 +61,6 @@ public class CalendarSpeech {
 	}
 
 	private static final LocalTime ZERO = LocalTime.of(0, 0, 0, 0);
-	private static final String TODAY = "today";
 
 	/**
 	 *
@@ -92,52 +91,32 @@ public class CalendarSpeech {
 	/**
 	 * @param entities
 	 *            from the speech
-	 * @return upcoming events today or tomorrow depending on input
-	 */
-	@Intent
-	public String getEventsToday(Map<String, EntityData> entities) {
-		List<CalendarEvent> events;
-		List<String> eventList = new ArrayList<>();
-		LocalDateTime now = this.environment.getCurrentLocalDateTime();
-		String todayOrTomorrow = TODAY;
-		if (!entities.get("day").getString().equalsIgnoreCase(TODAY)) {
-			now = now.plusDays(1);
-			todayOrTomorrow = "tomorrow";
-		}
-		events = this.logic.getEventsAt(now);
-		if (events.isEmpty()) {
-			return "You have no events " + todayOrTomorrow + ".";
-		}
-		for (CalendarEvent event : events) {
-			eventList.add(this.checkDate(now, event, false));
-		}
-		return "You have following events " + todayOrTomorrow +":\n" + String.join("\n", eventList);
-
-	}
-
-	/**
-	 * @param entities
-	 *            from the speech
 	 * @return events on the chosen date
 	 */
 	@Intent
 	public String getEventsAt(Map<String, EntityData> entities) {
 		List<CalendarEvent> events;
 		List<String> eventList = new ArrayList<>();
-		LocalDateTime chosenDate = LocalDateTime.of(entities.get("date").getDate(), ZERO);
-		if (!entities.get("date").getString().equals(TODAY) && !entities.get("date").getString().equals("tomorrow")
-				&& entities.get("eventyear") == null && entities.get("date").getDate()
-				.isBefore(this.environment.getCurrentLocalDateTime().toLocalDate())) {
-			chosenDate = chosenDate.withYear(this.environment.getCurrentLocalDateTime().getYear() + 1);
+		String dateEntity = entities.get("date").getString();
+		LocalDateTime date = LocalDateTime.of(entities.get("date").getDate(), ZERO);
+		if (entities.get("eventyear") == null && date.toLocalDate().isBefore(this.environment.
+				getCurrentLocalDateTime().toLocalDate())) {
+			date = date.withYear(this.environment.getCurrentLocalDateTime().getYear() + 1);
 		}
-		events = this.logic.getEventsAt(chosenDate);
-		if (events.isEmpty()) {
-			return "No events found for the " + getDate(chosenDate) + " " + chosenDate.getYear() + ".";
-		}
+		events = this.logic.getEventsAt(date);
 		for (CalendarEvent event : events) {
-			eventList.add(this.checkDate(chosenDate, event, false));
+			eventList.add(this.checkDate(date, event, false));
 		}
-		return "You have following events on the " + getDate(chosenDate) + " " + chosenDate.getYear() + ":\n"
+		if (dateEntity.equals("today") || dateEntity.equals("tomorrow")) {
+			if (events.isEmpty()) {
+				return "You have no events " + dateEntity + ".";
+			}
+			return "You have following events " + dateEntity +":\n" + String.join("\n", eventList);
+		}
+		if (events.isEmpty()) {
+			return "No events found for the " + getDate(date) + " " + date.getYear() + ".";
+		}
+		return "You have following events on the " + getDate(date) + " " + date.getYear() + ":\n"
 		+ String.join("\n", eventList);
 	}
 
@@ -419,11 +398,11 @@ public class CalendarSpeech {
 	}
 	
 	/**
-	 * @param allDayString
+	 * @param allDayEntity
 	 *            the String from which the boolean is parsed.
 	 * @return if the event is all day
 	 */
-	public static boolean isAllDay(String allDayString) {
-		return allDayString.equals("yes") || allDayString.equals("true");
+	public static boolean isAllDay(String allDayEntity) {
+		return allDayEntity.equals("yes") || allDayEntity.equals("true") || allDayEntity.equals("all day");
 	}
 }
