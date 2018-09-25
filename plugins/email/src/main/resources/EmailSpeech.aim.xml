@@ -2,7 +2,7 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.newMessages">
-		<gram>[do i have] new [{important}] (messages|mails)</gram>
+		<gram>[do i have|are there] new [{important}] (messages|mails)</gram>
 		<EntityTemplates>
 			<EntityTemplate id="important" required="false">
 				<gram>important </gram>

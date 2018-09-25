@@ -110,18 +110,22 @@ public class EMailSpeech {
 	 */
 	@Intent()
 	public String numberOfNewMails(Map<String, EntityData> entities) {
-		if (entities.get(IMPORTANT) != null && entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
-			int count = this.logic.getNewMessageCount(true);
-			if (count > 0) {
-				return count + " new important messages";
+		try {
+			if (entities.get(IMPORTANT) != null && entities.get(IMPORTANT).getString().contains(IMPORTANT)) {
+				int count = this.logic.getNewMessageCount(true);
+				if (count > 0) {
+					return count + " new important messages";
+				}
+				return NO_IMP_MAILS;
 			}
-			return NO_IMP_MAILS;
+			int count = this.logic.getNewMessageCount(false);
+			if (count > 0) {
+				return count + " new mails.";
+			}
+			return NO_MAILS;
+		} catch (IllegalStateException ise) {
+			return ise.getMessage();
 		}
-		int count = this.logic.getNewMessageCount(false);
-		if (count > 0) {
-			return count + " new mails.";
-		}
-		return NO_MAILS;
 	}
 
 	/**
@@ -137,18 +141,22 @@ public class EMailSpeech {
 		if (entities.get(IMPORTANT) != null) {
 			important = entities.get(IMPORTANT).getString().contains(IMPORTANT);
 		}
-		if (entities.get("all") != null && entities.get("all").getString() != null) {
-			if (important) {
-				return this.logic.printMessages(-1, true);
+		try {
+			if (entities.get("all") != null && entities.get("all").getString() != null) {
+				if (important) {
+					return this.logic.printMessages(-1, true);
+				}
+				return this.logic.printMessages(-1, false);
 			}
-			return this.logic.printMessages(-1, false);
-		}
-		if (entities.get("number") != null) {
-			int amount = entities.get("number").getNumber();
-			if (important) {
-				return this.logic.printMessages(amount, true);
+			if (entities.get("number") != null) {
+				int amount = entities.get("number").getNumber();
+				if (important) {
+					return this.logic.printMessages(amount, true);
+				}
+				return this.logic.printMessages(amount, false);
 			}
-			return this.logic.printMessages(amount, false);
+		} catch (IllegalStateException ise) {
+			return ise.getMessage();
 		}
 		return "";
 	}
