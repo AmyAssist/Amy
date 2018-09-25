@@ -53,14 +53,12 @@ public class NatlangInformationImpl implements NatlangInformation {
 	public List<String> getSampleSentencesFromKeyword(String keyword, int nmbSentences) {
 		List<AGFNode> grams = this.manager.getPossibleGrammars();
 		List<String> result = new ArrayList<>();
-		
-		for(AGFNode node : grams) {
+
+		for (AGFNode node : grams) {
 			List<WordNode> words = node.getChildWordNodes();
-			boolean b = words.stream().anyMatch(w -> 
-				w.getContent().equals(keyword)
-			);
-			if(b)
-				result.add(generateSentenceFromGrammar(node));
+			boolean b = words.stream().anyMatch(w -> w.getContent().equals(keyword));
+			if (b)
+				result.add(generateSentenceFromGrammar(node).trim());
 		}
 		return result;
 	}
@@ -73,25 +71,27 @@ public class NatlangInformationImpl implements NatlangInformation {
 		List<String> result = new ArrayList<>(nmbSentences);
 		List<AGFNode> grams = this.manager.getPossibleGrammars();
 		Collections.shuffle(grams);
-		for(AGFNode node : grams) {
-			result.add(generateSentenceFromGrammar(node));
+		for (AGFNode node : grams) {
+			result.add(generateSentenceFromGrammar(node).trim());
 		}
 		return result;
 	}
-	
+
 	/**
 	 * convenience method to generate a valid sentence from a grammar
-	 * @param node grammar to generate from
+	 * 
+	 * @param node
+	 *            grammar to generate from
 	 * @return a matching string
 	 */
 	private String generateSentenceFromGrammar(AGFNode node) {
 		StringBuilder result = new StringBuilder();
 		Random random = new Random();
-		
-		switch(node.getType()) {
+
+		switch (node.getType()) {
 		case OPG:
 			boolean b = random.nextInt(2) % 2 == 0;
-			if(!b) {
+			if (!b) {
 				return "";
 			}
 			//$FALL-THROUGH$
@@ -107,14 +107,13 @@ public class NatlangInformationImpl implements NatlangInformation {
 		case NUMBER:
 			return result + " <number>";
 		default:
-			for(AGFNode gram : node.getChilds()) {
+			for (AGFNode gram : node.getChilds()) {
 				result.append(generateSentenceFromGrammar(gram));
 			}
 			break;
 		}
-		
+
 		return result.toString();
 	}
-	
 
 }

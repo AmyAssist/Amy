@@ -44,117 +44,138 @@ public class SocialSpeech {
 
 	@Reference
 	private SocialLogic logic;
-	
+
 	private static final int NMB_SAMPLE_SENTENCES = 4;
 
 	/**
 	 * returns a greeting
-	 * @param entities of input
+	 * 
+	 * @param entities
+	 *            of input
 	 * @return the greeting
 	 */
 	@Intent
 	public String greeting(Map<String, EntityData> entities) {
 		return this.logic.getGreeting();
 	}
-	
+
 	/**
 	 * greets user back
-	 * @param entities of input
+	 * 
+	 * @param entities
+	 *            of input
 	 * @return the greeting
 	 */
 	@Intent
 	public String userName(Map<String, EntityData> entities) {
 		return "Nice to meet you, " + entities.get("name").getString();
 	}
-	
+
 	/**
 	 * tells user amys name
-	 * @param entities of input
+	 * 
+	 * @param entities
+	 *            of input
 	 * @return the greeting
 	 */
 	@Intent
 	public String askForName(Map<String, EntityData> entities) {
 		return "My name is Amy, nice to meet you";
 	}
-	
+
 	/**
 	 * get a "whats up" answer
-	 * @param entities of input
+	 * 
+	 * @param entities
+	 *            of input
 	 * @return the greeting
 	 */
 	@Intent
 	public String whatsUp(Map<String, EntityData> entities) {
 		return this.logic.getWhatsUp();
 	}
-	
+
 	/**
 	 * get an answer to "how are you" or similar phrases
-	 * @param entities entities of input
+	 * 
+	 * @param entities
+	 *            entities of input
 	 * @return the answer
 	 */
 	@Intent
 	public String howAreYou(Map<String, EntityData> entities) {
 		return this.logic.getHowAreYou();
 	}
-	
+
 	/**
 	 * returns 4 sample sentences that may be told to amy
-	 * @param entities of input
+	 * 
+	 * @param entities
+	 *            of input
 	 * @return the answer
 	 */
 	@Intent
 	public String sampleSentences(Map<String, EntityData> entities) {
 		StringBuilder s = new StringBuilder();
 		s.append("You may ask me for example");
-		
-		if(entities.get("pluginname") == null) {
-			s.append("\n" +  StringUtils.join(
-					this.logic.getSampleSentences(NMB_SAMPLE_SENTENCES), "\n"));
-		}else {
+
+		if (entities.get("pluginname") == null) {
+			s.append("\n" + StringUtils.join(this.logic.getSampleSentences(NMB_SAMPLE_SENTENCES), "\n"));
+		} else {
 			String keyword = entities.get("pluginname").getString();
 			String[] results = this.logic.getSampleSentencesWithKeyword(keyword, NMB_SAMPLE_SENTENCES);
-			if(results[0] != null && !results[0].equals("")) {
-				s.append("\n" +  StringUtils.join(
-						this.logic.getSampleSentencesWithKeyword(keyword, NMB_SAMPLE_SENTENCES), "\n"));
+			if (results[0] != null && !results[0].equals("")) {
+				s.append("\n" + StringUtils
+						.join(this.logic.getSampleSentencesWithKeyword(keyword, NMB_SAMPLE_SENTENCES), "\n"));
 			} else {
 				return "I don't know anything about this";
 			}
 		}
 		return s.toString();
 	}
-	
+
 	/**
 	 * returns the names of all installed plugins
-	 * @param entities of input
+	 * 
+	 * @param entities
+	 *            of input
 	 * @return the answer
 	 */
 	@Intent
 	public String getInstalledPlugins(Map<String, EntityData> entities) {
 		StringBuilder s = new StringBuilder();
-		s.append("These are my currenty installed plugins");
-		s.append("\n" +  StringUtils.join(this.logic.getInstalledPluginNames(), ", "));
+		s.append("These are my currently installed plugins");
+		s.append("\n" + StringUtils.join(this.logic.getInstalledPluginNames(), ", "));
 		s.append("\nfeel free to add more!");
 		return s.toString();
 	}
-	
+
 	/**
 	 * returns the description of a plugin
-	 * @param entities of input
+	 * 
+	 * @param entities
+	 *            of input
 	 * @return the answer
 	 */
 	@Intent
 	public String tellMeAboutPlugin(Map<String, EntityData> entities) {
 		String pluginName = entities.get("plugin").getString();
 		String info = this.logic.getPluginInformation(pluginName);
-		if(info != null) {
+		if (info != null) {
 			return info;
 		}
 		return "i don't know about " + pluginName + " yet";
 	}
 
+	/**
+	 * Get a random joke
+	 * 
+	 * @param entities
+	 *            entities of input
+	 * @return a joke
+	 */
+	@Intent
+	public String tellJoke(Map<String, EntityData> entities) {
+		return this.logic.getJoke();
+	}
 }
-
-
-
-
-

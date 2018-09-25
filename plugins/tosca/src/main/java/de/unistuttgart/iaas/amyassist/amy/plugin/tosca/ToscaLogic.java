@@ -27,11 +27,13 @@ import java.util.*;
 
 import org.opentosca.containerapi.client.IOpenTOSCAContainerAPIClient;
 import org.opentosca.containerapi.client.model.Application;
+import org.opentosca.containerapi.client.model.ServiceInstance;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.WithDefault;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
 import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.ConfigurationRegistry;
@@ -43,6 +45,8 @@ import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.Configurat
  */
 @Service
 public class ToscaLogic {
+
+	private static final String STORAGE_KEY = "installing";
 
 	@WithDefault
 	@Reference
@@ -56,6 +60,9 @@ public class ToscaLogic {
 
 	@Reference
 	private ToscaLibraryAdapter adapter;
+
+	@Reference
+	private IStorage storage;
 
 	/**
 	 * internal tosca client
@@ -137,8 +144,42 @@ public class ToscaLogic {
 	}
 
 	private void installWait(Application app, Map<String, String> parameters) {
+		this.storage.put(STORAGE_KEY, app.getId());
 		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 		this.apiClient.createServiceInstance(app, parameters);
+	}
+
+	/**
+	 * poll the tosca api and wait for all instances of the application to be not "CREATING"
+	 */
+	public void waitForInstall() {
+		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+		boolean wait = true;
+		while (!Thread.currentThread().isInterrupted() && wait) {
+			if (this.storage.has(STORAGE_KEY)) {
+				String id = this.storage.get(STORAGE_KEY);
+				Application application = this.apiClient.getApplication(id);
+				wait = this.isCreating(application);
+			} else {
+				wait = false;
+			}
+			if (wait) {
+				try {
+					Thread.sleep(5);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+			}
+		}
+	}
+
+	private boolean isCreating(Application application) {
+		for (ServiceInstance serviceInstance : this.apiClient.getServiceInstances(application)) {
+			if ("CREATING".equalsIgnoreCase(serviceInstance.getState())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

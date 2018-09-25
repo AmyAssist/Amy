@@ -78,8 +78,13 @@ public class DatabaseStorage implements IStorage {
 
 	@Override
 	public void delete(String key) {
-		SimpleData find = this.entityManager.find(SimpleData.class, this.prefix + key);
-		this.entityManager.remove(find);
+		this.entityManager.getTransaction().begin();
+		try {
+			SimpleData find = this.entityManager.find(SimpleData.class, this.prefix + key);
+			this.entityManager.remove(find);
+		} finally {
+			this.entityManager.getTransaction().commit();
+		}
 	}
 
 	@PreDestroy
