@@ -2,7 +2,7 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEvents">
-		<gram>what (is|are) my next [{number}] event</gram>
+		<gram>[what (is|are)] my next [{number}] (events|appointments) </gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>
@@ -10,25 +10,12 @@
 		</EntityTemplates>
 		<Prompt entityTemplateId="number">
 			<text>How many events should i show? </text>
-			<gram> {number} [event] </gram>
-		</Prompt>
-	</Intent>
-	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsToday">
-		<gram>[which] events [do i have] [{day}]</gram>
-		<EntityTemplates>
-			<EntityTemplate id="day" required="true">
-				<gram>(today|tomorrow)</gram>
-			</EntityTemplate>
-		</EntityTemplates>
-		<Prompt entityTemplateId="day">
-			<text>today or tomorrow? </text>
-			<gram> {day} </gram>
+			<gram> {number} [events|appointments] </gram>
 		</Prompt>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsAt">
-		<gram>[which] events [do i have] at [{date}]</gram>
+		<gram>[which|what|do i have] [any] (events|appointments) [do i have] [at] [{date}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="eventyear" required="true">
 				<gram>{amyyear}</gram>
@@ -38,13 +25,13 @@
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="date">
-			<text>At which date?</text>
+			<text>When?</text>
 			<gram>{date}</gram>
 		</Prompt>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.setEvent">
-		<gram>[create] new event</gram>
+		<gram>[create|make] new [{allday}] (event|appointment) [from [the] {start}] [(to|until) [the] {end}] [with {remindertype} [notification]] [[at ]{remindertime}[ earlier]] [(named|called) {title}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="title" required="true">
 				<gram>*</gram>
@@ -74,7 +61,7 @@
 				<gram>{enddate} [at {endtime}]</gram>
 			</EntityTemplate>		
 			<EntityTemplate id="allday" required="true">
-				<gram>(yes|true|no|false)</gram>
+				<gram>(all day|yes|true|no|false)</gram>
 			</EntityTemplate>	
 			<EntityTemplate id="description" required="true">
 				<gram>*</gram>
@@ -96,7 +83,7 @@
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="title">
-			<text>What is the title of the event?</text>
+			<text>How should I name it?</text>
 			<gram>{title}</gram>
 		</Prompt>		
 		<Prompt entityTemplateId="allday">
@@ -104,19 +91,19 @@
 			<gram>{allday}</gram>
 		</Prompt>			
 		<Prompt entityTemplateId="start">
-			<text>When does the event start?</text>
+			<text>When does it start?</text>
 			<gram>[at] [the] {start}</gram>
 		</Prompt>		
 		<Prompt entityTemplateId="end">
-			<text>When does the event end?</text>
+			<text>When does it end?</text>
 			<gram>[at] [the] {end}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="description">
-			<text>You can add a description to the event or just type no if you don't want to.</text>
+			<text>You can skip each of the following two questions by saying "no" after I asked them. What should I write in the description?</text>
 			<gram>{description}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="location">
-			<text>You can add a location to the event or just type no if you don't want to.</text>
+			<text>What is the location of the event?</text>
 			<gram>{location}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="remindertype">
@@ -124,7 +111,7 @@
 			<gram>[via|as] {remindertype}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="remindertime">
-			<text>How many minutes/ hours/ days earlier do you want to be reminded of the event?</text>
+			<text>How much earlier do you want to be reminded of the event?</text>
 			<gram>{remindertime}</gram>
 		</Prompt>
 	</Intent>
