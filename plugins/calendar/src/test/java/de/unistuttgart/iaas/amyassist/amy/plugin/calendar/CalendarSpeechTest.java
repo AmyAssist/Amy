@@ -66,20 +66,20 @@ class CalendarSpeechTest {
 	private CalendarSpeech speech;
 	private CalendarEvent event;
 
-	private List<CalendarEvent> events;
-	private List<CalendarEvent> events2;
+	private List<CalendarEvent> oneEvent;
+	private List<CalendarEvent> twoEvents;
 	
-	private EntityData number;
-	private EntityData date;
-	private static EntityData allDay;
-	private static EntityData startdate;
-	private static EntityData enddate;
-	private static EntityData location;
-	private static EntityData description;
-	private static EntityData remindertype;
-	private static EntityData remindertimevalue;
-	private static EntityData remindertimeunit;
-	private static EntityData title;
+	private EntityData numberEntity;
+	private EntityData dateEntity;
+	private static EntityData alldayEntity;
+	private static EntityData startdateEntity;
+	private static EntityData enddateEntity;
+	private static EntityData locationEntity;
+	private static EntityData descriptionEntity;
+	private static EntityData remindertypeEntity;
+	private static EntityData remindertimevalueEntity;
+	private static EntityData remindertimeunitEntity;
+	private static EntityData titleEntity;
 	
 	
 	/**
@@ -92,23 +92,23 @@ class CalendarSpeechTest {
 		this.speech = this.framework.setServiceUnderTest(CalendarSpeech.class);
 		this.event = new CalendarEvent("ID", LocalDateTime.of(2018, 9, 26, 10, 00),	
 				LocalDateTime.of(2018, 9, 26, 12, 00), "Summary", "", "", false);
-		this.events = Arrays.asList(this.event);
-		this.events2 = Arrays.asList(this.event, this.event);
+		this.oneEvent = Arrays.asList(this.event);
+		this.twoEvents = Arrays.asList(this.event, this.event);
 		mockEntityData();
 	}
 	
 	private void mockEntityData() {
-		this.number = Mockito.mock(EntityData.class);
-		this.date = Mockito.mock(EntityData.class);
-		allDay = Mockito.mock(EntityData.class);
-		startdate = Mockito.mock(EntityData.class);
-		enddate = Mockito.mock(EntityData.class);
-		location = Mockito.mock(EntityData.class);
-		description = Mockito.mock(EntityData.class);
-		remindertype = Mockito.mock(EntityData.class);
-		remindertimevalue = Mockito.mock(EntityData.class);
-		remindertimeunit = Mockito.mock(EntityData.class);
-		title = Mockito.mock(EntityData.class);		
+		this.numberEntity = Mockito.mock(EntityData.class);
+		this.dateEntity = Mockito.mock(EntityData.class);
+		alldayEntity = Mockito.mock(EntityData.class);
+		startdateEntity = Mockito.mock(EntityData.class);
+		enddateEntity = Mockito.mock(EntityData.class);
+		locationEntity = Mockito.mock(EntityData.class);
+		descriptionEntity = Mockito.mock(EntityData.class);
+		remindertypeEntity = Mockito.mock(EntityData.class);
+		remindertimevalueEntity = Mockito.mock(EntityData.class);
+		remindertimeunitEntity = Mockito.mock(EntityData.class);
+		titleEntity = Mockito.mock(EntityData.class);		
 	}
 	
 	/**
@@ -117,8 +117,8 @@ class CalendarSpeechTest {
 	@Test
 	void testGetEventsWithNoEvents() {
 		Map<String, EntityData> map = new HashMap<>();
-		when(this.number.getNumber()).thenReturn(1);
-		map.put("number", this.number);
+		when(this.numberEntity.getNumber()).thenReturn(1);
+		map.put("number", this.numberEntity);
 		String response = this.speech.getEvents(map);
 		assertThat(response, equalToIgnoringWhiteSpace("No events found."));
 	}
@@ -129,9 +129,9 @@ class CalendarSpeechTest {
 	@Test
 	void testGetEventsWithOneEvent() {
 		Map<String, EntityData> map = new HashMap<>();
-		when(this.number.getNumber()).thenReturn(1);
-		map.put("number", this.number);
-		when(this.logic.getEvents(1)).thenReturn(this.events);
+		when(this.numberEntity.getNumber()).thenReturn(1);
+		map.put("number", this.numberEntity);
+		when(this.logic.getEvents(1)).thenReturn(this.oneEvent);
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 10, 00));
 		String response = this.speech.getEvents(map);
 		assertThat(response, equalToIgnoringWhiteSpace("You have following upcoming event: Summary from 10:00 am until 12:00 pm."));
@@ -143,9 +143,9 @@ class CalendarSpeechTest {
 	@Test
 	void testGetEventsWithTwoEvents() {
 		Map<String, EntityData> map = new HashMap<>();
-		when(this.number.getNumber()).thenReturn(2);
-		map.put("number", this.number);
-		when(this.logic.getEvents(2)).thenReturn(this.events2);
+		when(this.numberEntity.getNumber()).thenReturn(2);
+		map.put("number", this.numberEntity);
+		when(this.logic.getEvents(2)).thenReturn(this.twoEvents);
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 10, 00));
 		String response = this.speech.getEvents(map);
 		assertThat(response, equalToIgnoringWhiteSpace("You have following upcoming 2 events: Summary from 10:00 am "
@@ -158,9 +158,9 @@ class CalendarSpeechTest {
 	@Test
 	void testGetEventsTodayWithNoEvent() {
 		Map<String, EntityData> map = new HashMap<>();
-		when(this.date.getDate()).thenReturn(LocalDate.of(2018, 9, 20));
-		when(this.date.getString()).thenReturn("today");
-		map.put("date", this.date);
+		when(this.dateEntity.getDate()).thenReturn(LocalDate.of(2018, 9, 20));
+		when(this.dateEntity.getString()).thenReturn("today");
+		map.put("date", this.dateEntity);
 		map.put("eventyear", null);
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 10, 00));
 		String response = this.speech.getEventsAt(map);
@@ -173,12 +173,12 @@ class CalendarSpeechTest {
 	@Test
 	void testGetEventsTodayWithOneEvent() {
 		Map<String, EntityData> map = new HashMap<>();
-		when(this.date.getDate()).thenReturn(LocalDate.of(2018, 9, 26));
-		when(this.date.getString()).thenReturn("today");
-		map.put("date", this.date);
+		when(this.dateEntity.getDate()).thenReturn(LocalDate.of(2018, 9, 26));
+		when(this.dateEntity.getString()).thenReturn("today");
+		map.put("date", this.dateEntity);
 		map.put("eventyear", null);
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 26, 8, 00));
-		when(this.logic.getEventsAt(LocalDateTime.of(2018, 9, 26, 00, 00))).thenReturn(this.events);
+		when(this.logic.getEventsAt(LocalDateTime.of(2018, 9, 26, 00, 00))).thenReturn(this.oneEvent);
 		String response = this.speech.getEventsAt(map);
 		assertThat(response, equalToIgnoringWhiteSpace("You have following events today: Summary from 10:00 am until 12:00 pm."));
 	}
@@ -189,9 +189,9 @@ class CalendarSpeechTest {
 	@Test
 	void testGetEventsTomorrow() {
 		Map<String, EntityData> map = new HashMap<>();
-		when(this.date.getDate()).thenReturn(LocalDate.of(2018, 9, 21));
-		when(this.date.getString()).thenReturn("tomorrow");
-		map.put("date", this.date);
+		when(this.dateEntity.getDate()).thenReturn(LocalDate.of(2018, 9, 21));
+		when(this.dateEntity.getString()).thenReturn("tomorrow");
+		map.put("date", this.dateEntity);
 		map.put("eventyear", null);
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 10, 00));
 		String response = this.speech.getEventsAt(map);
@@ -204,9 +204,9 @@ class CalendarSpeechTest {
 	@Test
 	void testGetEventsAt() {
 		Map<String, EntityData> map = new HashMap<>();
-		when(this.date.getDate()).thenReturn(LocalDate.of(2018, 9, 20));
-		when(this.date.getString()).thenReturn("");
-		map.put("date", this.date);
+		when(this.dateEntity.getDate()).thenReturn(LocalDate.of(2018, 9, 20));
+		when(this.dateEntity.getString()).thenReturn("");
+		map.put("date", this.dateEntity);
 		map.put("eventyear", null);
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 21, 10, 00));
 		String response = this.speech.getEventsAt(map);
@@ -219,12 +219,12 @@ class CalendarSpeechTest {
 	@Test
 	void testGetEventsAtWithOneEvent() {
 		Map<String, EntityData> map = new HashMap<>();
-		when(this.date.getDate()).thenReturn(LocalDate.of(2018, 9, 20));
-		when(this.date.getString()).thenReturn("");
-		map.put("date", this.date);
+		when(this.dateEntity.getDate()).thenReturn(LocalDate.of(2018, 9, 20));
+		when(this.dateEntity.getString()).thenReturn("");
+		map.put("date", this.dateEntity);
 		map.put("eventyear", null);
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 10, 00));
-		when(this.logic.getEventsAt(LocalDateTime.of(2018, 9, 20, 00, 00))).thenReturn(this.events);
+		when(this.logic.getEventsAt(LocalDateTime.of(2018, 9, 20, 00, 00))).thenReturn(this.oneEvent);
 		String response = this.speech.getEventsAt(map);
 		assertThat(response, equalToIgnoringWhiteSpace("You have following events on the 20th of september 2018: "
 				+ "Summary from 10:00 am until 12:00 pm."));
@@ -237,26 +237,26 @@ class CalendarSpeechTest {
 	void testSetEvent() {
 		Map<String, EntityData> map = new HashMap<>();
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 00, 00));
-		when(allDay.getString()).thenReturn("yes");
-		map.put("allday", allDay);
-		when(startdate.getDate()).thenReturn(LocalDate.of(2018, 9, 16));
-		map.put("startdate", startdate);
-		when(enddate.getDate()).thenReturn(LocalDate.of(2018, 9, 19));
-		map.put("enddate", enddate);
+		when(alldayEntity.getString()).thenReturn("yes");
+		map.put("allday", alldayEntity);
+		when(startdateEntity.getDate()).thenReturn(LocalDate.of(2018, 9, 16));
+		map.put("startdate", startdateEntity);
+		when(enddateEntity.getDate()).thenReturn(LocalDate.of(2018, 9, 19));
+		map.put("enddate", enddateEntity);
 		map.put("startyear", null);
 		map.put("endyear", null);
-		when(location.getString()).thenReturn("no");
-		map.put("location", location);
-		when(description.getString()).thenReturn("no");
-		map.put("description", description);
-		when(remindertimevalue.getNumber()).thenReturn(20);
-		map.put("remindertimevalue", remindertimevalue);
-		when(remindertimeunit.getString()).thenReturn("days");
-		map.put("remindertimeunit", remindertimeunit);
-		when(title.getString()).thenReturn("Okay");
-		map.put("title", title);
-		when(remindertype.getString()).thenReturn("email");
-		map.put("remindertype", remindertype);
+		when(locationEntity.getString()).thenReturn("no");
+		map.put("location", locationEntity);
+		when(descriptionEntity.getString()).thenReturn("no");
+		map.put("description", descriptionEntity);
+		when(remindertimevalueEntity.getNumber()).thenReturn(20);
+		map.put("remindertimevalue", remindertimevalueEntity);
+		when(remindertimeunitEntity.getString()).thenReturn("days");
+		map.put("remindertimeunit", remindertimeunitEntity);
+		when(titleEntity.getString()).thenReturn("Okay");
+		map.put("title", titleEntity);
+		when(remindertypeEntity.getString()).thenReturn("email");
+		map.put("remindertype", remindertypeEntity);
 		CalendarEvent event2 = new CalendarEvent(LocalDateTime.of(2019, 9, 17, 00, 00), 
 				LocalDateTime.of(2019, 9, 21, 00, 00), "Okay", "", "", "email", 28800, "", true);
 		this.speech.setEvent(map);
@@ -270,26 +270,26 @@ class CalendarSpeechTest {
 	void testSetEvent2() {
 		Map<String, EntityData> map = new HashMap<>();
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 9, 20, 00, 00));
-		when(allDay.getString()).thenReturn("yes");
-		map.put("allday", allDay);
-		when(startdate.getDate()).thenReturn(LocalDate.of(2018, 9, 16));
-		map.put("startdate", startdate);
-		when(enddate.getDate()).thenReturn(LocalDate.of(2018, 9, 19));
-		map.put("enddate", enddate);
+		when(alldayEntity.getString()).thenReturn("yes");
+		map.put("allday", alldayEntity);
+		when(startdateEntity.getDate()).thenReturn(LocalDate.of(2018, 9, 16));
+		map.put("startdate", startdateEntity);
+		when(enddateEntity.getDate()).thenReturn(LocalDate.of(2018, 9, 19));
+		map.put("enddate", enddateEntity);
 		map.put("startyear", null);
 		map.put("endyear", null);
-		when(location.getString()).thenReturn("location");
-		map.put("location", location);
-		when(description.getString()).thenReturn("description");
-		map.put("description", description);
-		when(remindertimevalue.getNumber()).thenReturn(20);
-		map.put("remindertimevalue", remindertimevalue);
-		when(remindertimeunit.getString()).thenReturn("hours");
-		map.put("remindertimeunit", remindertimeunit);
-		when(title.getString()).thenReturn("Okay");
-		map.put("title", title);
-		when(remindertype.getString()).thenReturn("email");
-		map.put("remindertype", remindertype);
+		when(locationEntity.getString()).thenReturn("location");
+		map.put("location", locationEntity);
+		when(descriptionEntity.getString()).thenReturn("description");
+		map.put("description", descriptionEntity);
+		when(remindertimevalueEntity.getNumber()).thenReturn(20);
+		map.put("remindertimevalue", remindertimevalueEntity);
+		when(remindertimeunitEntity.getString()).thenReturn("hours");
+		map.put("remindertimeunit", remindertimeunitEntity);
+		when(titleEntity.getString()).thenReturn("Okay");
+		map.put("title", titleEntity);
+		when(remindertypeEntity.getString()).thenReturn("email");
+		map.put("remindertype", remindertypeEntity);
 		CalendarEvent event2 = new CalendarEvent(LocalDateTime.of(2019, 9, 17, 00, 00), 
 				LocalDateTime.of(2019, 9, 21, 00, 00), "Okay", "location", "description", "email", 1200, "", true);
 		this.speech.setEvent(map);
@@ -333,28 +333,28 @@ class CalendarSpeechTest {
 								+ "is before the end."));
 	}
 	
-	private static Map<String, EntityData> speechMap(String alldayString, LocalDate localStartDate, LocalDate localEndDate, String startYear,
+	private static Map<String, EntityData> speechMap(String allDay, LocalDate startDate, LocalDate endDate, String startYear,
 			String endYear, LocalTime startTime, LocalTime endTime) {
 		EntityData allday = Mockito.mock(EntityData.class);
-		EntityData startDate = Mockito.mock(EntityData.class);
+		EntityData startdate = Mockito.mock(EntityData.class);
 		EntityData startyear = Mockito.mock(EntityData.class);
 		EntityData starttime = Mockito.mock(EntityData.class);
-		EntityData endDate = Mockito.mock(EntityData.class);
+		EntityData enddate = Mockito.mock(EntityData.class);
 		EntityData endyear = Mockito.mock(EntityData.class);
 		EntityData endtime = Mockito.mock(EntityData.class);
-		EntityData Location = Mockito.mock(EntityData.class);
-		EntityData Description = Mockito.mock(EntityData.class);
-		EntityData reminderTimeValue = Mockito.mock(EntityData.class);
-		EntityData reminderTimeUnit = Mockito.mock(EntityData.class);
-		EntityData Title = Mockito.mock(EntityData.class);
-		EntityData reminderType = Mockito.mock(EntityData.class);
+		EntityData location = Mockito.mock(EntityData.class);
+		EntityData description = Mockito.mock(EntityData.class);
+		EntityData remindertimetalue = Mockito.mock(EntityData.class);
+		EntityData remindertimeunit = Mockito.mock(EntityData.class);
+		EntityData title = Mockito.mock(EntityData.class);
+		EntityData remindertype = Mockito.mock(EntityData.class);
 		Map<String, EntityData> map = new HashMap<>();
-		when(allday.getString()).thenReturn(alldayString);
+		when(allday.getString()).thenReturn(allDay);
 		map.put("allday", allday);
-		when(startDate.getDate()).thenReturn(localStartDate);
-		map.put("startdate", startDate);
-		when(endDate.getDate()).thenReturn(localEndDate);
-		map.put("enddate", endDate);
+		when(startdate.getDate()).thenReturn(startDate);
+		map.put("startdate", startdate);
+		when(enddate.getDate()).thenReturn(endDate);
+		map.put("enddate", enddate);
 		if (startYear.isEmpty()) {
 			map.put("startyear", null);
 		} else {
@@ -377,18 +377,18 @@ class CalendarSpeechTest {
 			when(endtime.getTime()).thenReturn(endTime);
 			map.put("endtime", endtime);
 		}
-		when(Location.getString()).thenReturn("test");
-		map.put("location", Location);
-		when(Description.getString()).thenReturn("test");
-		map.put("description", Description);
-		when(reminderTimeValue.getNumber()).thenReturn(20);
-		map.put("remindertimevalue", reminderTimeValue);
-		when(reminderTimeUnit.getString()).thenReturn("days");
-		map.put("remindertimeunit", reminderTimeUnit);
-		when(Title.getString()).thenReturn("Okay");
-		map.put("title", Title);
-		when(reminderType.getString()).thenReturn("email");
-		map.put("remindertype", reminderType);
+		when(location.getString()).thenReturn("test");
+		map.put("location", location);
+		when(description.getString()).thenReturn("test");
+		map.put("description", description);
+		when(remindertimetalue.getNumber()).thenReturn(20);
+		map.put("remindertimevalue", remindertimetalue);
+		when(remindertimeunit.getString()).thenReturn("days");
+		map.put("remindertimeunit", remindertimeunit);
+		when(title.getString()).thenReturn("Okay");
+		map.put("title", title);
+		when(remindertype.getString()).thenReturn("email");
+		map.put("remindertype", remindertype);
 		return map;
 	}	
 

@@ -97,26 +97,26 @@ public class CalendarSpeech {
 	public String getEventsAt(Map<String, EntityData> entities) {
 		List<CalendarEvent> events;
 		List<String> eventList = new ArrayList<>();
-		String dateString = entities.get("date").getString();
-		LocalDateTime chosenDate = LocalDateTime.of(entities.get("date").getDate(), ZERO);
-		if (entities.get("eventyear") == null && chosenDate.toLocalDate().isBefore(this.environment.
+		String dateEntity = entities.get("date").getString();
+		LocalDateTime date = LocalDateTime.of(entities.get("date").getDate(), ZERO);
+		if (entities.get("eventyear") == null && date.toLocalDate().isBefore(this.environment.
 				getCurrentLocalDateTime().toLocalDate())) {
-			chosenDate = chosenDate.withYear(this.environment.getCurrentLocalDateTime().getYear() + 1);
+			date = date.withYear(this.environment.getCurrentLocalDateTime().getYear() + 1);
 		}
-		events = this.logic.getEventsAt(chosenDate);
+		events = this.logic.getEventsAt(date);
 		for (CalendarEvent event : events) {
-			eventList.add(this.checkDate(chosenDate, event, false));
+			eventList.add(this.checkDate(date, event, false));
 		}
-		if (dateString.equals("today") || dateString.equals("tomorrow")) {
+		if (dateEntity.equals("today") || dateEntity.equals("tomorrow")) {
 			if (events.isEmpty()) {
-				return "You have no events " + dateString + ".";
+				return "You have no events " + dateEntity + ".";
 			}
-			return "You have following events " + dateString +":\n" + String.join("\n", eventList);
+			return "You have following events " + dateEntity +":\n" + String.join("\n", eventList);
 		}
 		if (events.isEmpty()) {
-			return "No events found for the " + getDate(chosenDate) + " " + chosenDate.getYear() + ".";
+			return "No events found for the " + getDate(date) + " " + date.getYear() + ".";
 		}
-		return "You have following events on the " + getDate(chosenDate) + " " + chosenDate.getYear() + ":\n"
+		return "You have following events on the " + getDate(date) + " " + date.getYear() + ":\n"
 		+ String.join("\n", eventList);
 	}
 
@@ -398,11 +398,11 @@ public class CalendarSpeech {
 	}
 	
 	/**
-	 * @param allDayString
+	 * @param allDayEntity
 	 *            the String from which the boolean is parsed.
 	 * @return if the event is all day
 	 */
-	public static boolean isAllDay(String allDayString) {
-		return allDayString.equals("yes") || allDayString.equals("true") || allDayString.equals("all day");
+	public static boolean isAllDay(String allDayEntity) {
+		return allDayEntity.equals("yes") || allDayEntity.equals("true") || allDayEntity.equals("all day");
 	}
 }
