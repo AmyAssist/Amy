@@ -37,6 +37,7 @@ import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.WithDefault;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -61,8 +62,9 @@ public class EMailLogic {
 	@Reference
 	private ContactRegistry contactRegistry;
 
+	@WithDefault
 	@Reference
-	private Properties configLoader;
+	private Properties properties;
 
 	@Reference
 	private IStorage storage;
@@ -96,6 +98,9 @@ public class EMailLogic {
 	 *            look for new mails
 	 * 
 	 * @return true, if messages have been found, else false
+	 * 
+	 * @throws IllegalStateException
+	 *             when mail session is not connected
 	 */
 	public boolean hasNewMessages(boolean checkForImportant) {
 		if (checkForImportant) {
@@ -111,6 +116,9 @@ public class EMailLogic {
 	 *            put true here if you want the amount of new important mails
 	 * 
 	 * @return number of messages in inbox
+	 * 
+	 * @throws IllegalStateException
+	 *             when mail session is not connected
 	 */
 	public int getNewMessageCount(boolean checkForImportant) {
 		if (checkForImportant) {
@@ -129,6 +137,9 @@ public class EMailLogic {
 	 *            set this to true, if you only want the important mails to be converted, set this to false if you want
 	 *            every message to be converted
 	 * @return readable String of new messages
+	 * 
+	 * @throws IllegalStateException
+	 *             when mail session is not connected
 	 */
 	public String printMessages(int amount, boolean important) {
 		List<Message> messagesToPrint;
@@ -164,6 +175,9 @@ public class EMailLogic {
 	 * Get all unread messages from the inbox
 	 * 
 	 * @return all unread messages in inbox, from newest to oldest
+	 * 
+	 * @throws IllegalStateException
+	 *             when mail session is not connected
 	 */
 	List<Message> getNewMessages() {
 		try {
@@ -181,6 +195,9 @@ public class EMailLogic {
 	 * Get all important messages from given message array
 	 * 
 	 * @return all important messages in given message array
+	 * 
+	 * @throws IllegalStateException
+	 *             when mail session is not connected
 	 */
 	List<Message> getNewImportantMessages() {
 		List<Message> unseenMessages = getNewMessages();
@@ -205,6 +222,9 @@ public class EMailLogic {
 	 *            the amount of mails, put -1 here if you want all mails
 	 * 
 	 * @return array with the requested mails, from newest to oldest, empty array if there was an error
+	 * 
+	 * @throws IllegalStateException
+	 *             when mail session is not connected
 	 */
 	public MessageDTO[] getMailsForREST(int amount) {
 		Message[] messages;
@@ -272,8 +292,8 @@ public class EMailLogic {
 	public boolean connectToMailServer(EMailCredentials credentials) {
 		if (credentials == null) {
 			// if no credentials are given, use the standard ones for Amy
-			String amyUsername = this.configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
-			String amyPassword = this.configLoader.getProperty(AMY_MAIL_PW_KEY);
+			String amyUsername = this.properties.getProperty(AMY_MAIL_ADDRESS_KEY);
+			String amyPassword = this.properties.getProperty(AMY_MAIL_PW_KEY);
 			String amyHost = AMY_MAIL_HOST;
 
 			credentials = new EMailCredentials(amyUsername, amyPassword, amyHost);

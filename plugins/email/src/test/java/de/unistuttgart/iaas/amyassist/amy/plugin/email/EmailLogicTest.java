@@ -73,9 +73,9 @@ public class EmailLogicTest {
 
 	private ContactRegistry contactRegistry;
 
-	private Properties properties;
-
 	private EMailLogic emailLogic;
+
+	private Properties properties;
 
 	private Folder inboxMock;
 
