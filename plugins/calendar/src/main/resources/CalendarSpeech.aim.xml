@@ -31,7 +31,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.setEvent">
-		<gram>[create|make] new [{allday}] (event|appointment) [from {start}] [(to|until) [the] {end}] [with {remindertype} [notification]] [[at ]{remindertime}[ earlier]] [(named|called) {title}]</gram>
+		<gram>[create|make] new [{allday}] (event|appointment) [from [the] {start}] [(to|until) [the] {end}] [with {remindertype} [notification]] [[at ]{remindertime}[ earlier]] [(named|called) {title}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="title" required="true">
 				<gram>*</gram>
