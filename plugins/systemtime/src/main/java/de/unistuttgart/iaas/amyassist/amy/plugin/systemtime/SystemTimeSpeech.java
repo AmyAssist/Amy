@@ -23,17 +23,23 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * A plugin which tells time and date
- * 
+ *
  * @author Florian Bauer, Patrick Gebhardt
  */
 @Service
@@ -41,39 +47,126 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 public class SystemTimeSpeech {
 
 	@Reference
-	private SystemTimeLogic logic;
+	private Environment environment;
+
+	private static final String ITIS = "It is ";
 
 	/**
 	 * A method which returns the current time
 	 *
-	 * @return current time (hour minute) in a string, e.g. it is 10:30
+	 * @param entities
+	 *            from the speech
+	 * @return current time (hour minute) in a string, e.g. It is 10:30
 	 */
 	@Intent()
 	public String time(Map<String, EntityData> entities) {
-		if (this.logic.getTime() != null && this.logic.getTime().length() > 4) {
-			return "it is " + this.logic.getTime().substring(0, 5);
-		}
-		return "couldn't find correct time, this is what I found: " + this.logic.getTime();
+		return ITIS
+				+ this.environment.getCurrentLocalDateTime().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+				+ ".";
 	}
 
 	/**
 	 * A method which returns the current date
 	 *
-	 * @return current date (day month year) in a string, e.g. it is the 20th of june
+	 * @param entities
+	 *            from the speech
+	 * @return current date (day month year) in a string, e.g. It is the 20th of june.
 	 */
 	@Intent()
 	public String date(Map<String, EntityData> entities) {
-		return "it is the " + this.logic.getDate();
+		return ITIS + "the " + ordinal(this.environment.getCurrentLocalDateTime().getDayOfMonth()) + " of "
+				+ this.environment.getCurrentLocalDateTime().getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+				+ ".";
 	}
 
 	/**
 	 * A method which returns the current year
-	 * 
-	 * @return current year in a string, e.g. it is 2018
+	 *
+	 * @param entities
+	 *            from the speech
+	 * @return current year in a string, e.g. It is 2018.
 	 */
 	@Intent
 	public String year(Map<String, EntityData> entities) {
-		return "it is " + this.logic.getYear();
+		return ITIS + this.environment.getCurrentLocalDateTime().getYear() + ".";
+	}
+	
+	/**
+	 * A method which returns the day of week of a chosen date.
+	 *
+	 * @param entities
+	 *            from the speech
+	 * @return current year in a string, e.g. Tomorrow is monday.
+	 */
+	@Intent
+	public String dayOfWeek(Map<String, EntityData> entities) {
+		LocalDate currentDate = this.environment.getCurrentLocalDateTime().toLocalDate();
+		LocalDate chosenDate = entities.get("date").getDate();
+		if (entities.get("date").getString().equals("today")) {
+			return "Today is " + chosenDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
+		}
+		if (entities.get("date").getString().equals("tomorrow")) {
+			return "Tomorrow is " + chosenDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
+		}	
+		if (entities.get("year") == null && chosenDate.isBefore(currentDate)) {
+			chosenDate = chosenDate.withYear(currentDate.getYear() + 1);
+		}
+		String tense = " is a ";	
+		if (chosenDate.isBefore(currentDate)) {
+			tense = " was a ";
+		}
+		if (chosenDate.getYear() != this.environment.getCurrentLocalDateTime().getYear()) {
+			return "The " + ordinal(chosenDate.getDayOfMonth()) + " of "
+					+ chosenDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " + chosenDate.getYear()
+					+ tense + chosenDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
+		}
+		return "The " + ordinal(chosenDate.getDayOfMonth()) + " of "
+				+ chosenDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + tense
+				+ chosenDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
+	}
+	
+	/**
+	 * A method which returns the day count until or since a date in comparison to now
+	 *
+	 * @param entities
+	 *            from the speech
+	 * @return current year in a string, e.g. 1 day until tomorrow.
+	 */
+	@Intent
+	public String howManyDays(Map<String, EntityData> entities) {
+		LocalDate chosenDate = entities.get("date").getDate();
+		LocalDate currentDate = this.environment.getCurrentLocalDateTime().toLocalDate();
+		String day = " days ";
+		if (entities.get("time").getString().equals("until") && entities.get("year") == null 
+				&& chosenDate.isBefore(currentDate)) {
+			chosenDate = chosenDate.withYear(currentDate.getYear() + 1);
+		}
+		long difference = Math.abs(Duration.between(chosenDate.atStartOfDay(), currentDate.atStartOfDay()).toDays());
+		if (difference == 1) {
+			day = " day ";
+		}
+		if (chosenDate.isBefore(currentDate)) {
+			return difference + day	+ " have passed since the " + ordinal(chosenDate.getDayOfMonth()) + " of "
+					+ chosenDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " 
+					+ chosenDate.getYear() + ".";
+		}
+		return difference + day + " until the " + ordinal(chosenDate.getDayOfMonth()) + " of " + chosenDate.getMonth()
+				.getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " + chosenDate.getYear() + ".";
+	}
+
+	/**
+	 * A method to convert the integer day to an ordinal (from 1 to 31)
+	 *
+	 * @param i
+	 *            the day as integer
+	 * @return the day as ordinal, e.g. 1st
+	 */
+	public static String ordinal(int i) {
+		String[] ordinals = { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
+		if (10 < i && i < 14) {
+			return i + "th";
+		}
+		return i + ordinals[i % 10];
 	}
 
 }
