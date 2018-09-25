@@ -91,6 +91,8 @@ public class EMailLogic {
 
 	private static final String IMAPSERVER_CRED_KEY = "imapServerCred";
 
+	private static final String CONFIG_NAME = "de.unistuttgart.iaas.amyassist.amy-plugin-email";
+
 	/**
 	 * returns if unread messages have been found
 	 * 
@@ -293,6 +295,8 @@ public class EMailLogic {
 	public boolean connectToMailServer(EMailCredentials credentials) {
 		if (credentials == null) {
 			// if no credentials are given, use the standard ones for Amy
+			this.configLoader = this.configManager.getConfigurationWithDefaults(CONFIG_NAME);
+
 			String amyUsername = this.configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
 			String amyPassword = this.configLoader.getProperty(AMY_MAIL_PW_KEY);
 			String amyHost = AMY_MAIL_HOST;
@@ -360,8 +364,6 @@ public class EMailLogic {
 	 */
 	@PostConstruct
 	public void connectToMailServer() {
-		this.configLoader = this.configManager
-				.getConfigurationWithDefaults("de.unistuttgart.iaas.amyassist.amy-plugin-email");
 		final EMailCredentials credentials = getCredentials();
 		if (credentials != null) {
 			connectToMailServer(credentials);
