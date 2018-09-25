@@ -97,20 +97,21 @@ public class CalendarSpeech {
 	public String getEventsAt(Map<String, EntityData> entities) {
 		List<CalendarEvent> events;
 		List<String> eventList = new ArrayList<>();
+		String dateString = entities.get("date").getString();
 		LocalDateTime chosenDate = LocalDateTime.of(entities.get("date").getDate(), ZERO);
-		if (entities.get("eventyear") == null && entities.get("date").getDate()
-				.isBefore(this.environment.getCurrentLocalDateTime().toLocalDate())) {
+		if (entities.get("eventyear") == null && chosenDate.toLocalDate().isBefore(this.environment.
+				getCurrentLocalDateTime().toLocalDate())) {
 			chosenDate = chosenDate.withYear(this.environment.getCurrentLocalDateTime().getYear() + 1);
 		}
 		events = this.logic.getEventsAt(chosenDate);
 		for (CalendarEvent event : events) {
 			eventList.add(this.checkDate(chosenDate, event, false));
 		}
-		if (entities.get("date").getString().equals("today") || entities.get("date").getString().equals("tomorrow")) {
+		if (dateString.equals("today") || dateString.equals("tomorrow")) {
 			if (events.isEmpty()) {
-				return "You have no events " + entities.get("date").getString() + ".";
+				return "You have no events " + dateString + ".";
 			}
-			return "You have following events " + entities.get("date").getString() +":\n" + String.join("\n", eventList);
+			return "You have following events " + dateString +":\n" + String.join("\n", eventList);
 		}
 		if (events.isEmpty()) {
 			return "No events found for the " + getDate(chosenDate) + " " + chosenDate.getYear() + ".";

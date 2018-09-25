@@ -112,10 +112,10 @@ class CalendarSpeechTest {
 	}
 	
 	/**
-	 * test getEvents()
+	 * test getEvents() with asking for one event and getting an empty list
 	 */
 	@Test
-	void testGetEvents() {
+	void testGetEventsWithNoEvents() {
 		Map<String, EntityData> map = new HashMap<>();
 		when(this.number.getNumber()).thenReturn(1);
 		map.put("number", this.number);
@@ -124,10 +124,10 @@ class CalendarSpeechTest {
 	}
 	
 	/**
-	 * test getEvents()
+	 * test getEvents() with asking for one event and getting an event as response
 	 */
 	@Test
-	void testGetEvents2() {
+	void testGetEventsWithOneEvent() {
 		Map<String, EntityData> map = new HashMap<>();
 		when(this.number.getNumber()).thenReturn(1);
 		map.put("number", this.number);
@@ -138,10 +138,10 @@ class CalendarSpeechTest {
 	}
 	
 	/**
-	 * test getEvents()
+	 * test getEvents() with asking for two event and getting two events as response
 	 */
 	@Test
-	void testGetEvents3() {
+	void testGetEventsWithTwoEvents() {
 		Map<String, EntityData> map = new HashMap<>();
 		when(this.number.getNumber()).thenReturn(2);
 		map.put("number", this.number);
@@ -153,10 +153,10 @@ class CalendarSpeechTest {
 	}
 	
 	/**
-	 * test getEventsAt() with today
+	 * test getEventsAt() with today and getting an empty list
 	 */
 	@Test
-	void testGetEventsToday() {
+	void testGetEventsTodayWithNoEvent() {
 		Map<String, EntityData> map = new HashMap<>();
 		when(this.date.getDate()).thenReturn(LocalDate.of(2018, 9, 20));
 		when(this.date.getString()).thenReturn("today");
@@ -168,10 +168,10 @@ class CalendarSpeechTest {
 	}
 	
 	/**
-	 * test getEventsAt() with today and events
+	 * test getEventsAt() with today and getting one event as response
 	 */
 	@Test
-	void testGetEventsToday2() {
+	void testGetEventsTodayWithOneEvent() {
 		Map<String, EntityData> map = new HashMap<>();
 		when(this.date.getDate()).thenReturn(LocalDate.of(2018, 9, 26));
 		when(this.date.getString()).thenReturn("today");
@@ -184,7 +184,7 @@ class CalendarSpeechTest {
 	}
 	
 	/**
-	 * test getEventsAt() with tomorrow
+	 * test getEventsAt() with tomorrow and getting an empty list
 	 */
 	@Test
 	void testGetEventsTomorrow() {
@@ -199,7 +199,7 @@ class CalendarSpeechTest {
 	}
 	
 	/**
-	 * test getEventsAt() with 20/9/2018
+	 * test getEventsAt() with 20/9/2018 and getting an empty list
 	 */
 	@Test
 	void testGetEventsAt() {
@@ -214,10 +214,10 @@ class CalendarSpeechTest {
 	}
 	
 	/**
-	 * test getEventsToday() with 20/9/2018 and events
+	 * test getEventsToday() with 20/9/2018 and getting one event as response
 	 */
 	@Test
-	void testGetEventsAt2() {
+	void testGetEventsAtWithOneEvent() {
 		Map<String, EntityData> map = new HashMap<>();
 		when(this.date.getDate()).thenReturn(LocalDate.of(2018, 9, 20));
 		when(this.date.getString()).thenReturn("");
