@@ -37,6 +37,7 @@ import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -62,6 +63,8 @@ public class EMailLogic {
 	private ContactRegistry contactRegistry;
 
 	@Reference
+	private ConfigurationManager configManager;
+
 	private Properties configLoader;
 
 	@Reference
@@ -357,6 +360,8 @@ public class EMailLogic {
 	 */
 	@PostConstruct
 	public void connectToMailServer() {
+		this.configLoader = this.configManager
+				.getConfigurationWithDefaults("de.unistuttgart.iaas.amyassist.amy-plugin-email");
 		final EMailCredentials credentials = getCredentials();
 		if (credentials != null) {
 			connectToMailServer(credentials);
