@@ -29,7 +29,6 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -50,7 +49,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
 import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
@@ -75,8 +73,6 @@ public class EmailLogicTest {
 
 	private ContactRegistry contactRegistry;
 
-	private ConfigurationManager configManager;
-
 	private EMailLogic emailLogic;
 
 	private Properties configLoader;
@@ -95,15 +91,13 @@ public class EmailLogicTest {
 	public void setup() throws MessagingException {
 		this.mailSession = this.framework.mockService(MailSession.class);
 		this.contactRegistry = this.framework.mockService(ContactRegistry.class);
-		this.configManager = this.framework.mockService(ConfigurationManager.class);
+		this.configLoader = this.framework.mockService(Properties.class);
 		this.emailLogic = this.framework.setServiceUnderTest(EMailLogic.class);
 
 		// initialize mocks
-		this.configLoader = mock(Properties.class);
 		this.inboxMock = mock(Folder.class);
 
 		// set mock return values
-		when(this.configManager.getConfigurationWithDefaults(anyString())).thenReturn(this.configLoader);
 		when(this.mailSession.getInbox()).thenReturn(this.inboxMock);
 		when(this.contactRegistry.getAll()).thenReturn(this.contacts);
 

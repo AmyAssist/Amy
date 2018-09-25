@@ -37,7 +37,7 @@ import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.WithDefault;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -62,8 +62,9 @@ public class EMailLogic {
 	@Reference
 	private ContactRegistry contactRegistry;
 
+	@WithDefault
 	@Reference
-	private ConfigurationManager configManager;
+	private Properties configLoader;
 
 	@Reference
 	private IStorage storage;
@@ -88,8 +89,6 @@ public class EMailLogic {
 	private static final String PASSOWRD_CRED_KEY = "passwordCred";
 
 	private static final String IMAPSERVER_CRED_KEY = "imapServerCred";
-
-	private static final String CONFIG_NAME = "de.unistuttgart.iaas.amyassist.amy-plugin-email";
 
 	/**
 	 * returns if unread messages have been found
@@ -293,10 +292,8 @@ public class EMailLogic {
 	public boolean connectToMailServer(EMailCredentials credentials) {
 		if (credentials == null) {
 			// if no credentials are given, use the standard ones for Amy
-			final Properties configLoader = this.configManager.getConfigurationWithDefaults(CONFIG_NAME);
-
-			String amyUsername = configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
-			String amyPassword = configLoader.getProperty(AMY_MAIL_PW_KEY);
+			String amyUsername = this.configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
+			String amyPassword = this.configLoader.getProperty(AMY_MAIL_PW_KEY);
 			String amyHost = AMY_MAIL_HOST;
 
 			credentials = new EMailCredentials(amyUsername, amyPassword, amyHost);
