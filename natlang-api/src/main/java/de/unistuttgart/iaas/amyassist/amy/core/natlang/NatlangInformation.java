@@ -38,7 +38,7 @@ public interface NatlangInformation {
 	 * @param keyword
 	 *            the sentence contains
 	 * @param nmbSentences
-	 *            how many sentences should be provided at max
+	 *            how many sentences sahould be provided at max
 	 * @return a list of sentences
 	 */
 	public List<String> getSampleSentencesFromKeyword(String keyword, int nmbSentences);

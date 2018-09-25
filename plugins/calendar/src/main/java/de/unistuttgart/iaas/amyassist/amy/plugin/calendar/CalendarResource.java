@@ -86,9 +86,8 @@ public class CalendarResource {
         List<CalendarEvent> events = this.logic.getEventsAt(ldt);
         if(events != null) {
     		return events;        	
-        } else {
-        	throw new WebApplicationException("Couldn't get events", Status.NOT_FOUND);
         }
+        throw new WebApplicationException("Couldn't get events", Status.NOT_FOUND);
 	}
 
 }

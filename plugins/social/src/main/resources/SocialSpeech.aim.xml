@@ -52,4 +52,8 @@
 			<gram> [about] {plugin} </gram>
 		</Prompt>
 	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.tellJoke">
+		<gram>(Tell me|say) (a joke|something funny)</gram>
+	</Intent>
 </AmyInteractionModel>

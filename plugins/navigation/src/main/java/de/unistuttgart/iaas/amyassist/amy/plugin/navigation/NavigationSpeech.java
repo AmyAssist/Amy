@@ -77,8 +77,8 @@ public class NavigationSpeech {
 			DateTime time = dateTimeConversion(entities.get("time"));
 			ReadableInstant outputTime = null;
 			outputTime = this.logic.whenIHaveToGo(
-					this.registryConnection.getAddress(cutEndWords(entities.get(START_KEY).getString(), "to")),
-					this.registryConnection.getAddress(cutEndWords(entities.get(END_KEY).getString(), "by")),
+					this.registryConnection.getAddress(entities.get(START_KEY).getString()),
+					this.registryConnection.getAddress(entities.get(END_KEY).getString()),
 					this.logic.getTravelMode(entities.get("mode").getString().trim()), time);
 			if (outputTime != null) {
 				if (outputTime.get(DateTimeFieldType.minuteOfHour()) > 9) {
@@ -105,8 +105,8 @@ public class NavigationSpeech {
 		if (entities.get("time") != null) {
 			DateTime time = dateTimeConversion(entities.get("time"));
 			BestTransportResult result = this.logic.getBestTransportInTime(
-					this.registryConnection.getAddress(cutEndWords(entities.get(START_KEY).getString(), "to")),
-					this.registryConnection.getAddress(cutEndWords(entities.get(END_KEY).getString(), "at")), time);
+					this.registryConnection.getAddress(entities.get(START_KEY).getString()),
+					this.registryConnection.getAddress(entities.get(END_KEY).getString()), time);
 			if (result != null) {
 				return "The best transport Mode is ".concat(result.getMode().toString()).concat(".\n")
 						.concat(result.routeToShortString());
@@ -128,30 +128,14 @@ public class NavigationSpeech {
 		DateTime time = entities.get("time") != null ? dateTimeConversion(entities.get("time")) : DateTime.now();
 
 		BestTransportResult result = this.logic.fromToWithDeparture(
-			this.registryConnection.getAddress(cutEndWords(entities.get(START_KEY).getString(), "to")),
-			this.registryConnection.getAddress(cutEndWords(entities.get(END_KEY).getString(), "by")),
+			this.registryConnection.getAddress(entities.get(START_KEY).getString()),
+			this.registryConnection.getAddress(entities.get(END_KEY).getString()),
 			this.logic.getTravelMode(entities.get("mode").getString().trim()),
 			time
 		);
 
 		return Response.text(result.routeToShortString()).widget("app-route-widget")
 				.attachment(result.routeToWidgetInfo(this.logic.getStaticAPIKey())).build();
-	}
-
-	/**
-	 * helper method to cut words at the end for example to or by that comes from the speech
-	 * 
-	 * @param location
-	 *            location input
-	 * @param cut
-	 *            string to cut
-	 * @return the location string without the end word
-	 */
-	private String cutEndWords(String location, String cut) {
-		if (location.endsWith(cut)) {
-			return location.substring(0, location.length() - cut.length() - 1);
-		}
-		return location.trim();
 	}
 
 	/**

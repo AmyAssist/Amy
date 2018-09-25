@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.NumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.WordToken;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.EndToken;
 
 /**
  * This class is loading language specific numbers
@@ -65,10 +65,10 @@ public class EnglishNumberConversion implements NumberConversion {
 	 * @return the calculated number
 	 */
 	@Override
-	public int calcNumber(Iterable<WordToken> subList) {
+	public int calcNumber(Iterable<EndToken> subList) {
 		int finalNumber = 0;
 		int partialNumber = 0;
-		for (WordToken t : subList) {
+		for (EndToken t : subList) {
 			if (this.wordToNumber.get(t.getContent()) >= 1000) {
 				if (partialNumber == 0)
 					partialNumber = 1;
