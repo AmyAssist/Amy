@@ -137,8 +137,7 @@ public class SystemTimeSpeech {
 		LocalDate chosenDate = entities.get("date").getDate();
 		LocalDate currentDate = this.environment.getCurrentLocalDateTime().toLocalDate();
 		String day = " days ";
-		if (!entities.get("date").getString().equals("today") && !entities.get("date").getString().equals("tomorrow") 
-				&& entities.get("time").getString().equals("until") && entities.get("year") == null 
+		if (entities.get("time").getString().equals("until") && entities.get("year") == null 
 				&& chosenDate.isBefore(currentDate)) {
 			chosenDate = chosenDate.withYear(currentDate.getYear() + 1);
 		}
