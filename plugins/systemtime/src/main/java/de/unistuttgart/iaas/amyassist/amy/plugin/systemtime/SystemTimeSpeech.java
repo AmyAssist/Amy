@@ -23,6 +23,7 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -89,20 +90,7 @@ public class SystemTimeSpeech {
 	public String year(Map<String, EntityData> entities) {
 		return ITIS + this.environment.getCurrentLocalDateTime().getYear() + ".";
 	}
-
-	/**
-	 * A method which returns the current day of week
-	 *
-	 * @param entities
-	 *            from the speech
-	 * @return current year in a string, e.g. It is monday.
-	 */
-	@Intent
-	public String dayOfWeek(Map<String, EntityData> entities) {
-		return ITIS + this.environment.getCurrentLocalDateTime().getDayOfWeek().getDisplayName(TextStyle.FULL,
-				Locale.ENGLISH) + ".";
-	}
-
+	
 	/**
 	 * A method which returns the day of week of a chosen date.
 	 *
@@ -111,20 +99,19 @@ public class SystemTimeSpeech {
 	 * @return current year in a string, e.g. Tomorrow is monday.
 	 */
 	@Intent
-	public String dayOfWeekAt(Map<String, EntityData> entities) {
-		LocalDate chosenDate = entities.get("date").getDate();
+	public String dayOfWeek(Map<String, EntityData> entities) {
 		LocalDate currentDate = this.environment.getCurrentLocalDateTime().toLocalDate();
-		String tense = " is a ";
-		if (!entities.get("date").getString().equals("today") && !entities.get("date").getString().equals("tomorrow")
-				&& entities.get("year") == null && chosenDate.isBefore(currentDate)) {
-			chosenDate = chosenDate.withYear(currentDate.getYear() + 1);
-		}
+		LocalDate chosenDate = entities.get("date").getDate();
 		if (entities.get("date").getString().equals("today")) {
 			return "Today is " + chosenDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
 		}
 		if (entities.get("date").getString().equals("tomorrow")) {
 			return "Tomorrow is " + chosenDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
+		}	
+		if (entities.get("year") == null && chosenDate.isBefore(currentDate)) {
+			chosenDate = chosenDate.withYear(currentDate.getYear() + 1);
 		}
+		String tense = " is a ";	
 		if (chosenDate.isBefore(currentDate)) {
 			tense = " was a ";
 		}
@@ -136,6 +123,36 @@ public class SystemTimeSpeech {
 		return "The " + ordinal(chosenDate.getDayOfMonth()) + " of "
 				+ chosenDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + tense
 				+ chosenDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ".";
+	}
+	
+	/**
+	 * A method which returns the day count until or since a date in comparison to now
+	 *
+	 * @param entities
+	 *            from the speech
+	 * @return current year in a string, e.g. 1 day until tomorrow.
+	 */
+	@Intent
+	public String howManyDays(Map<String, EntityData> entities) {
+		LocalDate chosenDate = entities.get("date").getDate();
+		LocalDate currentDate = this.environment.getCurrentLocalDateTime().toLocalDate();
+		String day = " days ";
+		if (!entities.get("date").getString().equals("today") && !entities.get("date").getString().equals("tomorrow") 
+				&& entities.get("time").getString().equals("until") && entities.get("year") == null 
+				&& chosenDate.isBefore(currentDate)) {
+			chosenDate = chosenDate.withYear(currentDate.getYear() + 1);
+		}
+		long difference = Math.abs(Duration.between(chosenDate.atStartOfDay(), currentDate.atStartOfDay()).toDays());
+		if (difference == 1) {
+			day = " day ";
+		}
+		if (chosenDate.isBefore(currentDate)) {
+			return difference + day	+ " have passed since the " + ordinal(chosenDate.getDayOfMonth()) + " of "
+					+ chosenDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " 
+					+ chosenDate.getYear() + ".";
+		}
+		return difference + day + " until the " + ordinal(chosenDate.getDayOfMonth()) + " of " + chosenDate.getMonth()
+				.getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " + chosenDate.getYear() + ".";
 	}
 
 	/**
