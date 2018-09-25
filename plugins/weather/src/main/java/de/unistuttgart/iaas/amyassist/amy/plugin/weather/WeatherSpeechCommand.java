@@ -110,6 +110,16 @@ public class WeatherSpeechCommand {
 		return result;
 	}
 
+	private String stringifyInstantWeatherReport(String preamble, WeatherReportInstant report) {
+		String result = preamble + " " + report.getSummary() + ".";
+
+		result += " Currently " + round(report.getTemperature()) + "°C.";
+
+		result += " Wind speed is about " + round(report.getWindSpeed()) + " meters per second";
+
+		return result;
+	}
+
 	private String stringifyWeekWeatherReport(String preamble, WeatherReportWeek report) {
 		return preamble + " " + report.getSummary();
 	}
@@ -248,8 +258,7 @@ public class WeatherSpeechCommand {
 			String sat = "";
 			String sun = "";
 			for (WeatherReportDay d : report.getWeek().getDays()) {
-				Instant instant = Instant.ofEpochSecond(d.getTimestamp());
-				ZonedDateTime date = ZonedDateTime.ofInstant(instant, ZoneId.of(report.getTimezone()));
+				ZonedDateTime date = d.getTimestamp();
 				DayOfWeek day = date.getDayOfWeek();
 				if (day == DayOfWeek.SATURDAY) {
 					sat = stringifyRainCheck(d.getPrecipProbability(), d.getPrecipType(), "on Saturday");
@@ -307,6 +316,8 @@ public class WeatherSpeechCommand {
 		return locationNames;
 	}
 
+
+
 	@Intent()
 	public Response weatherAtLocation(Map<String, EntityData> entities) {
 		String locationName = entities.get("locationname").getString();
@@ -316,10 +327,10 @@ public class WeatherSpeechCommand {
       
 			WeatherReport report = weatherLogic.getWeatherReport(pair);
 
-			WeatherReportDay day = report.getWeek().getDays()[0];
-			String text = stringifyDayWeatherReport("This is the weather report for " + locationName + ". ",
-					day, report.getTimezone(), false);
-			return Response.text(text).widget("app-weather-day").attachment(day).build();
+			WeatherReportInstant instantReport = report.getCurrent();
+			String text = stringifyInstantWeatherReport("This is the weather report for " + locationName + ". ",
+					instantReport);
+			return Response.text(text).widget("app-weather-day").attachment(instantReport).build();
 		} catch (GeocoderException e) {
 			return Response.text("I couldn't find this location").build();
 		}
