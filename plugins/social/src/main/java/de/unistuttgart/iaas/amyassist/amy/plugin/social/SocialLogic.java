@@ -36,7 +36,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.NatlangInformation;
 /**
  * Logic for this social plugin
  * 
- * @author Felix Burk
+ * @author Felix Burk, Patrick Singer, Florian Bauer
  */
 @Service
 public class SocialLogic {
@@ -76,6 +76,16 @@ public class SocialLogic {
 			this.pluginNames.put(pluginHumanReadableName, pluginInfo[i]);
 		}
 	}
+	
+	/**
+	 * receive a random name answer
+	 * 
+	 * @return her name
+	 */
+	protected String getMyNameIs() {
+		return generateRandomAnswer(SocialConstants.myNameIs);
+	}
+
 
 	/**
 	 * receive a random greeting
@@ -104,6 +114,15 @@ public class SocialLogic {
 		return generateRandomAnswer(SocialConstants.howAreYou);
 	}
 
+	/**
+	 * receive a random string answer
+	 * 
+	 * @return answer
+	 */
+	protected String getFoxSays() {
+		return generateRandomAnswer(SocialConstants.foxSays);
+	}
+	
 	/**
 	 * receive a number of sample sentences
 	 * 

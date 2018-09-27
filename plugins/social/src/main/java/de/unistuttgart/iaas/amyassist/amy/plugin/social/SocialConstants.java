@@ -25,7 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.social;
 
 /**
  * Constant answers 
- * @author Felix Burk
+ * @author Felix Burk, Florian Bauer
  */
 class SocialConstants {
 
@@ -45,15 +45,28 @@ class SocialConstants {
 	 * whatsup constant
 	 */
 	protected static final String[] whatsUp = {
-			"not much", "taking over the world", "answering your questions"
+			"Not much", "Taking over the world", "Answering your questions", "Doing my duty."
 	};
 	
 	/**
 	 * how are you constant
 	 */
 	protected static final String[] howAreYou = {
-			"fine, thanks", "I'm feeling pretty great!"
+			"Fine, thanks", "I'm feeling pretty great!"
 	};
 	
+	/**
+	 * how are you constant
+	 */
+	protected static final String[] myNameIs = {
+			"They call me Amy.", "My name is Amy, nice to meet you.", "Amy is my name. How can I assist you?"
+	};
 	
+	/**
+	 * fox says constant
+	 */
+	protected static final String[] foxSays = {
+			"Ring-ding-ding-ding-dingeringeding!", "Wa-pa-pa-pa-pa-pa-pow!", "Hatee-hatee-hatee-ho!",
+			"Joff-tchoff-tchoffo-tchoffo-tchoff!"
+	};
 }
