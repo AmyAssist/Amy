@@ -70,4 +70,12 @@ class SocialConstants {
 			"Ring-ding-ding-ding-dingeringeding!", "Wa-pa-pa-pa-pa-pa-pow!", "Hatee-hatee-hatee-ho!",
 			"Joff-tchoff-tchoffo-tchoffo-tchoff!"
 	};
+	
+	/**
+	 * one does not simply constant
+	 */
+	protected static final String[] oneDoesNotSimply = {
+			"...walk into Mordor.", "...pass Theo on the first try.", "...get the top grade on the project.",
+			"...build a personal assistant system from scratch."
+	};
 }

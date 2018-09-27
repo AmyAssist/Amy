@@ -124,6 +124,15 @@ public class SocialLogic {
 	}
 	
 	/**
+	 * receive a random string answer
+	 * 
+	 * @return answer
+	 */
+	protected String getOneDoesNotSimply() {
+		return generateRandomAnswer(SocialConstants.oneDoesNotSimply);
+	}
+	
+	/**
 	 * receive a number of sample sentences
 	 * 
 	 * @param nmbSentences

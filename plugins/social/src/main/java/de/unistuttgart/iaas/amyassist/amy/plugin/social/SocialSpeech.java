@@ -226,4 +226,16 @@ public class SocialSpeech {
 	public String legolas(Map<String, EntityData> entities) {
 		return "They're taking the Hobbits to Isengard!";
 	}
+	
+	/**
+	 * Finishes "one does not simply"
+	 * 
+	 * @param entities
+	 *            entities of input
+	 * @return the answer
+	 */
+	@Intent
+	public String oneDoesNotSimply(Map<String, EntityData> entities) {
+		return this.logic.getOneDoesNotSimply();
+	}
 }

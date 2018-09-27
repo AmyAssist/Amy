@@ -68,6 +68,10 @@
 		<gram>what do your (elfeyes|elf eyes) see</gram>
 	</Intent>
 	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.oneDoesNotSimply">
+		<gram>1 does not simply</gram>
+	</Intent>
+	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.parrot">
 		<gram>(say|repeat) {phrase}</gram>
 		<EntityTemplates>
