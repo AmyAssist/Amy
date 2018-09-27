@@ -45,7 +45,8 @@ class SocialConstants {
 	 * whatsup constant
 	 */
 	protected static final String[] whatsUp = {
-			"Not much", "Taking over the world", "Answering your questions", "Doing my duty."
+			"Not much", "Taking over the world", "Answering your questions", "Doing my duty.",
+			"They're taking the Hobbits to Isengard!"
 	};
 	
 	/**

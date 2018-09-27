@@ -214,4 +214,16 @@ public class SocialSpeech {
 	public String parrot(Map<String, EntityData> entities) {
 		return entities.get("phrase").getString();
 	}
+	
+	/**
+	 * They're taking the Hobbits to Isengard!
+	 * 
+	 * @param entities
+	 *            entities of input
+	 * @return They're taking the Hobbits to Isengard!
+	 */
+	@Intent
+	public String legolas(Map<String, EntityData> entities) {
+		return "They're taking the Hobbits to Isengard!";
+	}
 }

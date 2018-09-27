@@ -19,7 +19,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.whatsUp">
-		<gram>(what|whats) (is|s) (up|going on)</gram>
+		<gram>((what|whats) (is|s) (up|going on)|whatsapp)</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.howAreYou">
@@ -62,6 +62,10 @@
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.valar">
 		<gram>valar morghulis</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.legolas">
+		<gram>what do your (elfeyes|elf eyes) see</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.parrot">
