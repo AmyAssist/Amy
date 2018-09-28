@@ -18,7 +18,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherSpeechCommand.rainCheck">
-		<gram>is it (gonna|going to) rain {timespan} [(at|in) {locationname}]</gram>
+		<gram>[(will|is) it (gonna|going to)] rain ({timespan} [(at|in) {locationname}]|[(at|in) {locationname}] {timespan})</gram>
 		<EntityTemplates>
 			<EntityTemplate id="timespan" required="false">
 				<gram>(today|tomorrow|on the weekend)</gram>
