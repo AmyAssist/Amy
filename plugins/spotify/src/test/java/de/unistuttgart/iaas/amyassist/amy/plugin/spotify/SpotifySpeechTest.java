@@ -102,9 +102,9 @@ class SpotifySpeechTest {
 	void testGetCurrentSong() {
 		when(this.track.toString()).thenReturn("test");
 		when(this.playerlogic.getCurrentSong()).thenReturn(this.track);
-		assertThat(this.speech.getCurrentSong(new HashMap<>()), equalTo("track: test"));
+		assertThat(this.speech.getCurrentSong(new HashMap<>()).getText(), equalTo("track: test"));
 		when(this.playerlogic.getCurrentSong()).thenReturn(null);
-		assertThat(this.speech.getCurrentSong(new HashMap<>()), equalTo("No song is playing"));
+		assertThat(this.speech.getCurrentSong(new HashMap<>()).getText(), equalTo("No song is playing"));
 	}
 
 	@Test
@@ -240,7 +240,7 @@ class SpotifySpeechTest {
 		map.put("name", this.songId);
 		when(this.entityData.getString()).thenReturn("track");
 		map.put("mode", this.entityData);
-		assertThat(this.speech.searchASong(map), equalTo("Element is not available"));
+		assertThat(this.speech.searchASong(map).getText(), equalTo("Element is not available"));
 		verify(this.searchLogic).searchforTracks("test", 1);
 	}
 	

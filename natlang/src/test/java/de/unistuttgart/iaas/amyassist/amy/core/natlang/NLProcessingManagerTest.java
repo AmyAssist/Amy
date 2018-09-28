@@ -93,8 +93,8 @@ public class NLProcessingManagerTest {
 		assertEquals(true, this.quitIntent.contains(this.check));
 	}
 
-	private void consumerMethodForDialog(String s) {
-		this.check = s;
+	private void consumerMethodForDialog(Response response) {
+		this.check = response.getText();
 	}
 
 }

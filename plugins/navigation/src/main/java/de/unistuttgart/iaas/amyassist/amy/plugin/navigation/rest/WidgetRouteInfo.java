@@ -21,44 +21,36 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.restresources.chat;
+package de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
-
-import java.util.Queue;
-
+import java.net.URL;
 
 /**
- * Helper class to add strings to queues
- * @author Felix Burk
+ *
+ * A class for an object that supplies info to the maps widget in the webapp
+ *
+ * @author Benno Krauß
  */
-class AnswerConsumer {
-		
-	private Queue<Response> queue;
-				
-	/**
-	 * empty constructor
-	 */
-	public AnswerConsumer() {
-		/**
-		 * not needed here
-		 */
-	}
+public class WidgetRouteInfo {
+    private URL imageURL;
+    private URL link;
+    private String linkText;
 
-	/**
-	 * add a new answer to the queue
-	 * @param s the answer
-	 */
-	void addToQueue(Response s){
-			this.queue.add(s);
-	}
+    public WidgetRouteInfo(URL imageURL, URL link, String linkText) {
+        this.imageURL = imageURL;
+        this.link = link;
+        this.linkText = linkText;
+    }
 
-	/**
-	 * sets the internal queue
-	 * @param queue to set
-	 */
-	public void setQueue(Queue<Response> queue) {
-		this.queue = queue;
-	}
+    public URL getImageURL() {
+        return imageURL;
+    }
 
+    public URL getLink() {
+        return link;
+    }
+
+    public String getLinkText() {
+        return linkText;
+    }
 }

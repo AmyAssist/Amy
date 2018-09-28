@@ -90,7 +90,7 @@ public class WeatherDarkSkyAdapter {
 		JsonObject instant = fio.getCurrently();
 		JsonObject week = fio.getDaily();
 
-		return new WeatherReport(convertInstant(instant), convertWeek(week), fio.getTimezone());
+		return new WeatherReport(convertInstant(instant), convertWeek(week, fio.getTimezone()), fio.getTimezone());
 	}
 
 	private WeatherReportInstant convertInstant(JsonObject toConvert) {
@@ -105,18 +105,18 @@ public class WeatherDarkSkyAdapter {
 				timestamp, windSpeed, trimQuotes(iconType));
 	}
 
-	private WeatherReportWeek convertWeek(JsonObject toConvert) {
+	private WeatherReportWeek convertWeek(JsonObject toConvert, String timezone) {
 		JsonArray arr = toConvert.get(JSON_NAME_DAYS).asArray();
 		int size = arr.size();
 		WeatherReportDay[] days = new WeatherReportDay[size];
 		for (int i = 0; i < size; i++) {
-			days[i] = convertDay(arr.get(i).asObject());
+			days[i] = convertDay(arr.get(i).asObject(), timezone);
 		}
 
 		return new WeatherReportWeek(toConvert.get(JSON_NAME_SUMMARY).asString(), days);
 	}
 
-	private WeatherReportDay convertDay(JsonObject toConvert) {
+	private WeatherReportDay convertDay(JsonObject toConvert, String timezone) {
 		String summary = toConvert.getString(JSON_NAME_SUMMARY, "null");
 		double precipProbability = toConvert.getDouble(JSON_NAME_PERCIP_PROB, Double.NaN);
 		String precipType = toConvert.getString(JSON_NAME_PERCIP_TYPE, "null");
@@ -129,7 +129,7 @@ public class WeatherDarkSkyAdapter {
 		String iconType = toConvert.getString(JSON_NAME_ICON_TYPE, "null");
 
 		return new WeatherReportDay(trimQuotes(summary), precipProbability, trimQuotes(precipType), temperatureMin,
-				temperatureMax, timestamp, sunrise, sunset, windSpeed, trimQuotes(iconType));
+				temperatureMax, timestamp, sunrise, sunset, windSpeed, trimQuotes(iconType), timezone);
 	}
 
 	private String trimQuotes(String s) {

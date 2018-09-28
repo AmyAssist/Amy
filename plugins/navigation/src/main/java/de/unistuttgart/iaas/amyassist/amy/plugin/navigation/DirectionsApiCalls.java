@@ -57,6 +57,7 @@ public class DirectionsApiCalls {
 	private GeoApiContext context;
 
 	private static final String ERROR_TAG = "Google API Error";
+	private static final String GOOGLE_STATIC_API_KEY = "GOOGLE_STATIC_API_KEY";
 
 	/**
 	 * load the api key and create the context to create calls
@@ -135,5 +136,14 @@ public class DirectionsApiCalls {
 			this.logger.warn(ERROR_TAG, e);
 		}
 		return new DirectionsRoute[0];
+	}
+
+	/**
+	 * Get the "google maps static" api-key from the configuration.
+	 * This key is restricted to websites from our domain (via referer-header)
+	 * @return api key
+	 */
+	String getStaticAPIKey() {
+		return this.properties.getProperty(GOOGLE_STATIC_API_KEY);
 	}
 }

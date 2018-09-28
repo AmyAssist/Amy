@@ -25,7 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.social;
 
 /**
  * Constant answers 
- * @author Felix Burk
+ * @author Felix Burk, Florian Bauer
  */
 class SocialConstants {
 
@@ -37,23 +37,45 @@ class SocialConstants {
 	/**
 	 * greeting constant
 	 */
-	protected static final String[] greeting = {
+	static final String[] greeting = {
 			"Hi", "Hello there", "Good to see you"
 	};
 	
 	/**
 	 * whatsup constant
 	 */
-	protected static final String[] whatsUp = {
-			"not much", "taking over the world", "answering your questions"
+	static final String[] whatsUp = {
+			"Not much", "Taking over the world", "Answering your questions", "Doing my duty.",
+			"They're taking the Hobbits to Isengard!"
 	};
 	
 	/**
 	 * how are you constant
 	 */
-	protected static final String[] howAreYou = {
-			"fine, thanks", "I'm feeling pretty great!"
+	static final String[] howAreYou = {
+			"Fine, thanks", "I'm feeling pretty great!"
 	};
 	
+	/**
+	 * how are you constant
+	 */
+	static final String[] myNameIs = {
+			"They call me Amy.", "My name is Amy, nice to meet you.", "Amy is my name. How can I assist you?"
+	};
 	
+	/**
+	 * fox says constant
+	 */
+	static final String[] foxSays = {
+			"Ring-ding-ding-ding-dingeringeding!", "Wa-pa-pa-pa-pa-pa-pow!", "Hatee-hatee-hatee-ho!",
+			"Joff-tchoff-tchoffo-tchoffo-tchoff!"
+	};
+	
+	/**
+	 * one does not simply constant
+	 */
+	static final String[] oneDoesNotSimply = {
+			"...walk into Mordor.", "...pass Theo on the first try.", "...get the top grade on the project.",
+			"...build a personal assistant system from scratch."
+	};
 }

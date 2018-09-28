@@ -36,7 +36,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 /**
  * A plugin which handles social interactions
  * 
- * @author Felix Burk
+ * @author Felix Burk, Patrick Singer, Florian Bauer
  */
 @Service
 @SpeechCommand
@@ -80,7 +80,7 @@ public class SocialSpeech {
 	 */
 	@Intent
 	public String askForName(Map<String, EntityData> entities) {
-		return "My name is Amy, nice to meet you";
+		return this.logic.getMyNameIs();
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class SocialSpeech {
 	 * 
 	 * @param entities
 	 *            of input
-	 * @return the greeting
+	 * @return the answer
 	 */
 	@Intent
 	public String whatsUp(Map<String, EntityData> entities) {
@@ -177,5 +177,65 @@ public class SocialSpeech {
 	@Intent
 	public String tellJoke(Map<String, EntityData> entities) {
 		return this.logic.getJoke();
+	}
+	
+	/**
+	 * Get a fox answer
+	 * 
+	 * @param entities
+	 *            entities of input
+	 * @return a fox answer
+	 */
+	@Intent
+	public String foxSays(Map<String, EntityData> entities) {
+		return this.logic.getFoxSays();
+	}
+	
+	/**
+	 * Answers to Valar Morghulis
+	 * 
+	 * @param entities
+	 *            entities of input
+	 * @return Valar Dohaeris.
+	 */
+	@Intent
+	public String valar(Map<String, EntityData> entities) {
+		return "Valar Dohaeris.";
+	}
+	
+	/**
+	 * Repeats what you have said
+	 * 
+	 * @param entities
+	 *            entities of input
+	 * @return what you have said after repeat/say
+	 */
+	@Intent
+	public String parrot(Map<String, EntityData> entities) {
+		return entities.get("phrase").getString();
+	}
+	
+	/**
+	 * They're taking the Hobbits to Isengard!
+	 * 
+	 * @param entities
+	 *            entities of input
+	 * @return They're taking the Hobbits to Isengard!
+	 */
+	@Intent
+	public String legolas(Map<String, EntityData> entities) {
+		return "They're taking the Hobbits to Isengard!";
+	}
+	
+	/**
+	 * Finishes "one does not simply"
+	 * 
+	 * @param entities
+	 *            entities of input
+	 * @return the answer
+	 */
+	@Intent
+	public String oneDoesNotSimply(Map<String, EntityData> entities) {
+		return this.logic.getOneDoesNotSimply();
 	}
 }

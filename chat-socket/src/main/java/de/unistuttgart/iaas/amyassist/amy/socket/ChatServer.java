@@ -42,7 +42,7 @@ import static de.unistuttgart.iaas.amyassist.amy.socket.ChatConfig.PROPERTY_PORT
 public class ChatServer implements RunnableService {
 
 	@Reference
-	ChatConfig config;
+	private ChatConfig config;
 	
 	@Reference
 	private Logger logger;

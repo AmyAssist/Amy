@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,7 +133,7 @@ public class UserIntent {
 	 *            map of all entities with the id as key
 	 * @return the result String from calling the command
 	 */
-	public String call(Object instance, Map<String, EntityDataImpl> map) {
+	public Response call(Object instance, Map<String, EntityDataImpl> map) {
 		Object[] params = { map };
 		return NLIAnnotationReader.callNLIMethod(this.method, instance, params);
 	}
