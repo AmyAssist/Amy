@@ -31,7 +31,8 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.setEvent">
-		<gram>[create|make] new [{allday}] (event|appointment) [from [the] {start}] [(to|until) [the] {end}] [with {remindertype} [notification]] [[at ]{remindertime}[ earlier]] [(named|called) {title}]</gram>
+		<gram>[create|make] new [{allday}] (event|appointment) [from [the] {start}] [(to|until) [the] {end}] 
+		[with {remindertype} [notification]] [[at] {remindertime} [earlier]] [(named|called) {title}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="title" required="true">
 				<gram>*</gram>
@@ -99,7 +100,8 @@
 			<gram>[at] [the] {end}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="description">
-			<text>You can skip each of the following two questions by saying "no" after I asked them. What should I write in the description?</text>
+			<text>You can skip each of the following two questions by saying "no" after I asked them.
+			 What should I write in the description?</text>
 			<gram>{description}</gram>
 		</Prompt>
 		<Prompt entityTemplateId="location">
