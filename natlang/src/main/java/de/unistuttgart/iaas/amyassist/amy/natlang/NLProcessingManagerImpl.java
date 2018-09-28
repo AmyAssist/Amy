@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
@@ -132,12 +133,16 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	public void processIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language);
 		List<EndToken> tokens = nlLexer.tokenize(naturalLanguageText);
+		System.out.println(StringUtils.join(naturalLanguageText));
+
 		if (!promptGrammarFound(dialog, tokens)) {
 			// try to skip prefixes and suffixes until a grammar matches
 			for (int i = 0; i <= tokens.size(); i++) {
 				for (int j = tokens.size(); j > i; j--) {
-					if (promptGrammarFound(dialog, tokens.subList(i, j))) {
-						return;
+					if(tokens.subList(i, j).size() > 2) {
+						if (promptGrammarFound(dialog, tokens.subList(i, j))) {
+							return;
+						}
 					}
 				}
 			}
@@ -224,8 +229,10 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		// try to skip prefixes and suffixes until a grammar matches
 		for (int i = 0; i <= tokens.size(); i++) {
 			for (int j = tokens.size(); j > i; j--) {
-				if (intentFound(dialog, tokens.subList(i, j))) {
-					return dialog;
+				if(tokens.subList(i, j).size() > 2) {
+					if (intentFound(dialog, tokens.subList(i, j))) {
+						return dialog;
+					}
 				}
 			}
 		}
