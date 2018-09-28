@@ -5,17 +5,17 @@
 		<gram>[do i have|are there] [any] new [{important}] (messages|mails|miles)</gram>
 		<EntityTemplates>
 			<EntityTemplate id="important" required="false">
-				<gram>important </gram>
+				<gram>important</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>
 		<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.connectToAmyMail">
-		<gram>connect to amy mail</gram>
+		<gram>connect to [amy] mail</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.disconnect">
-		<gram>disconnect from mail</gram>
+		<gram>disconnect from [amy] mail</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailSpeech.numberOfNewMails">
@@ -39,11 +39,9 @@
 			<EntityTemplate id="all" required="false">
 				<gram>all</gram>
 			</EntityTemplate>
-
 			<EntityTemplate id="selection" required="true">
 				<gram>({all}|{number})</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>
-
 </AmyInteractionModel>
