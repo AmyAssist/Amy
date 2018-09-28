@@ -2,7 +2,7 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.setAlarm">
-		<gram>[set|create|new] [an|a|new] alarm [(at|for|on) {time}] [{day}]</gram>
+		<gram>[set|create] [an|a|new] alarm [(at|for|on) {time}] [{day}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="time" required="true">
 				<gram>{amytime}</gram>
