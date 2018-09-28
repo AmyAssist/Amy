@@ -253,4 +253,8 @@ public class DirectionApiLogic {
 		}
 	}
 
+	String getStaticAPIKey() {
+		return this.calls.getStaticAPIKey();
+	}
+
 }

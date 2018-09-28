@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
@@ -119,7 +120,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 		UserIntentTemplate template = new UserIntentTemplate(method, intent);
 
-		// unfortunately we have to use UserIntent here because enity data has to be present
+		// unfortunately we have to use UserIntent here because entity data has to be present
 		UserIntent userIntent = new UserIntent(method, intent);
 		this.nodeToMethodAIMPair.put(userIntent.getGrammar(), template);
 	}
@@ -145,7 +146,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 				}
 			}
 			this.logger.debug("no matching grammar found");
-			dialog.output(dialog.getNextPrompt().getOutputText());
+			dialog.output(Response.text(dialog.getNextPrompt().getOutputText()).build());
 		}
 	}
 
@@ -162,7 +163,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 
 			if (matchingNodeIndex == promptGrams.indexOf(this.quitIntentUserInputGram)) {
-				dialog.output(generateRandomAnswer(QUIT_INTENT_ANSWER));
+				dialog.output(Response.text(generateRandomAnswer(QUIT_INTENT_ANSWER)).build());
 				dialog.setIntent(null);
 				return true;
 			}
@@ -185,7 +186,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 		if (!dialog.getIntent().isFinished()) {
 			dialog.setNextPrompt(dialog.getIntent().getNextPrompt());
-			dialog.output(dialog.getNextPrompt().getOutputText());
+			dialog.output(Response.text(dialog.getNextPrompt().getOutputText()).build());
 		}
 	}
 
@@ -236,7 +237,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		}
 
 		this.logger.debug("no matching grammar found");
-		dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
+		dialog.output(Response.text(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER)).build());
 		return dialog;
 
 	}

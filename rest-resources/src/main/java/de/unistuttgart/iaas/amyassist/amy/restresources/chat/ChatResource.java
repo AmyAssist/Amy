@@ -36,6 +36,7 @@ import javax.ws.rs.core.Response.Status;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -116,17 +117,17 @@ public class ChatResource {
 	@Path("response")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String receiveResponse(String uuidString) {
+	public Response receiveResponse(String uuidString) {
 		try {
 			UUID uuid = UUID.fromString(uuidString);
 			if (this.chatService.getQueue(uuid) != null) {
-				String s = this.chatService.getQueue(uuid).poll();
-				if (s == null) {
-					return "";
+				Response response = this.chatService.getQueue(uuid).poll();
+				if (response == null) {
+					return Response.text("").build();
 				}
-				return s;
+				return response;
 			}
-			return "";
+			return Response.text("").build();
 
 		} catch (IllegalArgumentException e) {
 			throw new WebApplicationException("unknown UUID " + uuidString, e, Status.FORBIDDEN);

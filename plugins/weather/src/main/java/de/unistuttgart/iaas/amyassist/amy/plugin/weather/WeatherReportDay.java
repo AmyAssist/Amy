@@ -23,6 +23,13 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
+import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.ZonedDateTimeAdapter;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 /**
  * Weather report for a day
  * 
@@ -40,7 +47,8 @@ public class WeatherReportDay {
 	/** The maximal temperature in degrees celcius */
 	private final double temperatureMax;
 	/** The time stamp of the weather report */
-	private final long timestamp;
+	@XmlJavaTypeAdapter(ZonedDateTimeAdapter.class)
+	private final ZonedDateTime timestamp;
 	/** The time stamp of the sunrise */
 	private final long sunriseTime;
 	/** The time stamp of the sunset */
@@ -81,13 +89,13 @@ public class WeatherReportDay {
 	 */
 	public WeatherReportDay(String pSummary, double pPrecipitationProbability, String pPrecipitationType,
 			double pTemperatureMin, double pTemperatureMax, long pTimestamp, long pSunriseTime, long pSunsetTime,
-			double pWindSpeed, String pIconType) {
+			double pWindSpeed, String pIconType, String pTimezone) {
 		this.summary = pSummary;
 		this.precipProbability = pPrecipitationProbability;
 		this.precipType = pPrecipitationType;
 		this.temperatureMin = pTemperatureMin;
 		this.temperatureMax = pTemperatureMax;
-		this.timestamp = pTimestamp;
+		this.timestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(pTimestamp), ZoneId.of(pTimezone));
 		this.sunriseTime = pSunriseTime;
 		this.sunsetTime = pSunsetTime;
 		this.windSpeed = pWindSpeed;
@@ -144,7 +152,7 @@ public class WeatherReportDay {
 	 * 
 	 * @return timestamp
 	 */
-	public long getTimestamp() {
+	public ZonedDateTime getTimestamp() {
 		return this.timestamp;
 	}
 

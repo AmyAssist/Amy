@@ -83,7 +83,8 @@ class TestNLIAnnotationReader {
 	public void testIllegalReturnType() {
 		String message = assertThrows(IllegalArgumentException.class,
 				() -> NLIAnnotationReader.getValidIntentMethods(BrokenReturnType.class)).getMessage();
-		assertThat(message, equalTo("The returntype of a method annotated with @Intent should be String."));
+		assertThat(message, equalTo("The returntype of a method annotated with @Intent should be either " +
+				"String or Response."));
 	}
 
 	@SpeechCommand

@@ -23,19 +23,24 @@
 
 package de.unistuttgart.iaas.amyassist.amy.socket;
 
-import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import com.eclipsesource.json.Json;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * A web socket for the chat communication 
@@ -49,6 +54,8 @@ public class ChatWebSocket extends WebSocketServer {
 	private DialogHandler handler;
 	
 	private Map<InetSocketAddress,UUID> dialogMap = new HashMap<>();
+
+	private ObjectMapper mapper;
 	
 	/**
 	 *creates a new web socket server
@@ -60,8 +67,15 @@ public class ChatWebSocket extends WebSocketServer {
 	public ChatWebSocket(int port, DialogHandler handler) {
 		super(new InetSocketAddress(port));
 		this.handler = handler;
+
+		AnnotationIntrospector firstInspector = new JacksonAnnotationIntrospector();
+		AnnotationIntrospector secondInspector = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
+		AnnotationIntrospector inspectors = AnnotationIntrospector.pair(firstInspector, secondInspector);
+
+		mapper = new ObjectMapper();
+		mapper.setAnnotationIntrospector(inspectors);
 	}
-	
+
 	/**
 	 * @see org.java_websocket.server.WebSocketServer#onClose(org.java_websocket.WebSocket, int, java.lang.String, boolean)
 	 */
@@ -93,13 +107,17 @@ public class ChatWebSocket extends WebSocketServer {
 	 */
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
-		send(conn, "Hello, I am Amy");
+		send(conn, Response.text("Hello, I am Amy").build());
 		UUID uuid = this.handler.createDialog(msg -> send(conn, msg));
 		this.dialogMap.put(conn.getRemoteSocketAddress(), uuid);
 	}
 
-	private void send(WebSocket socket, String message) {
-		socket.send(Json.object().add("msg", message).toString());
+	private void send(WebSocket socket, Response response) {
+		try {
+			socket.send(mapper.writeValueAsString(response));
+		} catch (JsonProcessingException e) {
+			logger.error("Error serializing Response-object", e);
+		}
 	}
 
 	/**
