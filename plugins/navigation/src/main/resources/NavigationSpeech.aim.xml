@@ -49,7 +49,7 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.goToAt">
-		<gram>when [do] i have to go from {start} {end} [{mode}] [at {time}]</gram>
+		<gram>when [do] i have to go from {start} to {end} [{mode}] [at {time}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="start" required="true">
 				<gram>+</gram>
