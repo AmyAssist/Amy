@@ -82,7 +82,7 @@ public class SocialLogic {
 	 * 
 	 * @return her name
 	 */
-	protected String getMyNameIs() {
+	String getMyNameIs() {
 		return generateRandomAnswer(SocialConstants.myNameIs);
 	}
 
@@ -92,7 +92,7 @@ public class SocialLogic {
 	 * 
 	 * @return the greeting string
 	 */
-	protected String getGreeting() {
+	String getGreeting() {
 		return generateRandomAnswer(SocialConstants.greeting);
 	}
 
@@ -101,7 +101,7 @@ public class SocialLogic {
 	 * 
 	 * @return answer
 	 */
-	protected String getWhatsUp() {
+	String getWhatsUp() {
 		return generateRandomAnswer(SocialConstants.whatsUp);
 	}
 
@@ -110,7 +110,7 @@ public class SocialLogic {
 	 * 
 	 * @return answer
 	 */
-	protected String getHowAreYou() {
+	String getHowAreYou() {
 		return generateRandomAnswer(SocialConstants.howAreYou);
 	}
 
@@ -119,7 +119,7 @@ public class SocialLogic {
 	 * 
 	 * @return answer
 	 */
-	protected String getFoxSays() {
+	String getFoxSays() {
 		return generateRandomAnswer(SocialConstants.foxSays);
 	}
 	
@@ -128,7 +128,7 @@ public class SocialLogic {
 	 * 
 	 * @return answer
 	 */
-	protected String getOneDoesNotSimply() {
+	String getOneDoesNotSimply() {
 		return generateRandomAnswer(SocialConstants.oneDoesNotSimply);
 	}
 	
@@ -139,7 +139,7 @@ public class SocialLogic {
 	 *            number of sentences
 	 * @return the sentences
 	 */
-	protected String[] getSampleSentences(int nmbSentences) {
+	String[] getSampleSentences(int nmbSentences) {
 		return this.info.getAnySampleSentences(nmbSentences).toArray(new String[nmbSentences]);
 	}
 
@@ -152,7 +152,7 @@ public class SocialLogic {
 	 *            to match
 	 * @return the sentences
 	 */
-	protected String[] getSampleSentencesWithKeyword(String keyword, int nmbSentences) {
+	String[] getSampleSentencesWithKeyword(String keyword, int nmbSentences) {
 		return this.info.getSampleSentencesFromKeyword(keyword, nmbSentences).toArray(new String[nmbSentences]);
 	}
 
@@ -161,7 +161,7 @@ public class SocialLogic {
 	 * 
 	 * @return the list
 	 */
-	protected String[] getInstalledPluginNames() {
+	String[] getInstalledPluginNames() {
 		return this.pluginNames.keySet().toArray(new String[this.pluginNames.size()]);
 
 	}
@@ -173,7 +173,7 @@ public class SocialLogic {
 	 *            name of the plugin
 	 * @return the information
 	 */
-	protected String getPluginInformation(String pluginname) {
+	String getPluginInformation(String pluginname) {
 		if (this.pluginNames.get(pluginname) != null) {
 			return this.constants.getPluginDescription(this.pluginNames.get(pluginname));
 		}
@@ -185,7 +185,7 @@ public class SocialLogic {
 	 * 
 	 * @return a random joke
 	 */
-	protected String getJoke() {
+	String getJoke() {
 		return this.joker.getRandomJoke();
 	}
 

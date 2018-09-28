@@ -37,14 +37,14 @@ class SocialConstants {
 	/**
 	 * greeting constant
 	 */
-	protected static final String[] greeting = {
+	static final String[] greeting = {
 			"Hi", "Hello there", "Good to see you"
 	};
 	
 	/**
 	 * whatsup constant
 	 */
-	protected static final String[] whatsUp = {
+	static final String[] whatsUp = {
 			"Not much", "Taking over the world", "Answering your questions", "Doing my duty.",
 			"They're taking the Hobbits to Isengard!"
 	};
@@ -52,21 +52,21 @@ class SocialConstants {
 	/**
 	 * how are you constant
 	 */
-	protected static final String[] howAreYou = {
+	static final String[] howAreYou = {
 			"Fine, thanks", "I'm feeling pretty great!"
 	};
 	
 	/**
 	 * how are you constant
 	 */
-	protected static final String[] myNameIs = {
+	static final String[] myNameIs = {
 			"They call me Amy.", "My name is Amy, nice to meet you.", "Amy is my name. How can I assist you?"
 	};
 	
 	/**
 	 * fox says constant
 	 */
-	protected static final String[] foxSays = {
+	static final String[] foxSays = {
 			"Ring-ding-ding-ding-dingeringeding!", "Wa-pa-pa-pa-pa-pa-pow!", "Hatee-hatee-hatee-ho!",
 			"Joff-tchoff-tchoffo-tchoffo-tchoff!"
 	};
@@ -74,7 +74,7 @@ class SocialConstants {
 	/**
 	 * one does not simply constant
 	 */
-	protected static final String[] oneDoesNotSimply = {
+	static final String[] oneDoesNotSimply = {
 			"...walk into Mordor.", "...pass Theo on the first try.", "...get the top grade on the project.",
 			"...build a personal assistant system from scratch."
 	};
