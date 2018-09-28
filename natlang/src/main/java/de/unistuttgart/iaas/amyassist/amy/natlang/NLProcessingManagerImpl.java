@@ -133,13 +133,16 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	public void processIntent(Dialog dialog, String naturalLanguageText) {
 		NLLexer nlLexer = new NLLexer(this.language);
 		List<EndToken> tokens = nlLexer.tokenize(naturalLanguageText);
+
 		if (!promptGrammarFound(dialog, tokens)) {
 			// try to skip prefixes and suffixes until a grammar matches
 			for (int i = 0; i <= tokens.size(); i++) {
 				for (int j = tokens.size(); j > i; j--) {
-					if (promptGrammarFound(dialog, tokens.subList(i, j))) {
+					if (tokens.subList(i, j).size() > 2 &&
+							promptGrammarFound(dialog, tokens.subList(i, j))) {
 						return;
 					}
+					
 				}
 			}
 			this.logger.debug("no matching grammar found");
@@ -225,9 +228,11 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		// try to skip prefixes and suffixes until a grammar matches
 		for (int i = 0; i <= tokens.size(); i++) {
 			for (int j = tokens.size(); j > i; j--) {
-				if (intentFound(dialog, tokens.subList(i, j))) {
+				if (tokens.subList(i, j).size() > 2 &&
+						intentFound(dialog, tokens.subList(i, j))) {
 					return dialog;
 				}
+				
 			}
 		}
 
