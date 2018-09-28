@@ -6,15 +6,15 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.date">
-		<gram>[what] [is the] (date|day) [is] [today]</gram>
+		<gram>[what|tell me] [is] [the] (date|day) [is] [today]</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.year">
-		<gram>[what] year [do we have|is it|are we living in]</gram>
+		<gram>[what|tell me the] year [do we have|is it|are we living in]</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.dayOfWeek">
-		<gram>[what] (week day|day [of the] week) [do we have|is|was] [the] [{date}]</gram>
+		<gram>[what|tell me the] (week day|day [of the] week) [do we have|is|was] [the] [{date}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="year" required="false">
 				<gram>{amyyear}</gram>
@@ -30,7 +30,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.howManyDays">
-		<gram>How many days [have passed] {time} [the {date}]</gram>
+		<gram>[How many] days [have passed] {time} [the {date}]</gram>
 		<EntityTemplates>		
 			<EntityTemplate id="time" required="true">
 				<gram>(until|since)</gram>

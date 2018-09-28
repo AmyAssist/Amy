@@ -2,7 +2,7 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.setAlarm">
-		<gram>(set|create) (alarm) [(at|for|on) {time}] [{day}]</gram>
+		<gram>[set|create] [an|a|new] alarm [(at|for|on) {time}] [{day}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="time" required="true">
 				<gram>{amytime}</gram>
@@ -12,13 +12,13 @@
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="time">
-			<text>On what time of day should I set?</text>
+			<text>What time do you want the alarm to ring?</text>
 			<gram>[(at|for|on)] {time}</gram>
 		</Prompt>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.resetAlarmClockObjects">
-		<gram>delete all alarms</gram>
+		<gram>(delete|reset) all alarms</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.deleteAlarmClockObject">
@@ -51,7 +51,7 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getAlarmClockObject">
-		<gram>get alarm {number}</gram>
+		<gram>(get|read) alarm [number] {number}</gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>
