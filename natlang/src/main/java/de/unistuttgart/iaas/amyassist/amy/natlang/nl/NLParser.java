@@ -403,7 +403,7 @@ public class NLParser implements INLParser {
 			this.matchedStrings.add(toMatch.getContent());
 			return true;
 		}
-		if(!CompareWords.isDistanceBigger(nodeContent, tokenContent, 1)) {
+		if(nodeContent.length() > 3 && !CompareWords.isDistanceBigger(nodeContent, tokenContent, 1)) {
 			this.matchedStrings.add(toMatch.getContent());
 			return true;
 		}
