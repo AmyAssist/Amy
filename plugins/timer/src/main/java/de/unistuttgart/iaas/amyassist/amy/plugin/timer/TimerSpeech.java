@@ -144,6 +144,18 @@ public class TimerSpeech {
 	}
 
 	/**
+	 * Deactivates currently ringing timer
+	 * 
+	 * @param entities
+	 *            contains the data input
+	 * @return timer stopped
+	 */
+	@Intent
+	public String stopRinging(Map<String, EntityData> entities) {
+		return this.timerLogic.stopRinging();
+	}
+
+	/**
 	 * gets one specific alarm or timer
 	 * 
 	 * @param entities

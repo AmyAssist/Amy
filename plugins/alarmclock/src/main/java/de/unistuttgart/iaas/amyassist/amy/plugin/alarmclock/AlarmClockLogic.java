@@ -278,6 +278,21 @@ public class AlarmClockLogic implements RunnableService {
 	}
 
 	/**
+	 * Go through all alarms and deactivate old ones
+	 * 
+	 * @return alarm stopped
+	 */
+	public String stopRinging() {
+		List<Alarm> allAlarms = getAllAlarms();
+		for (Alarm a : allAlarms) {
+			if (a.isActive() && a.getAlarmTime().isBefore(this.environment.getCurrentLocalDateTime())) {
+				deactivateAlarm(a.getId());
+			}
+		}
+		return "Alarm stopped";
+	}
+
+	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
 	 */
 	@Override
