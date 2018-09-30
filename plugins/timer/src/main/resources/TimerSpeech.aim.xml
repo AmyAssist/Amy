@@ -2,7 +2,7 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.setTimer">
-		<gram>(set|create) timer (for|on|at) [{hour} hour] [{minute} minute] [{second}second]
+		<gram>(set|create) [a] timer (for|on|at) [{hour} hour] [{minute} minute] [{second}second]
 		</gram>
 		<EntityTemplates>
 			<EntityTemplate id="hour" required="false">
