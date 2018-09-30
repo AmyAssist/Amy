@@ -100,7 +100,7 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.searchASong">
-		<gram> play [this|a|the|following] {mode} {name}  </gram>
+		<gram> play (this|a|the|following) {mode} [{name}]  </gram>
 		<EntityTemplates>
 			<EntityTemplate id="mode" required="true">
 				<gram>(track|playlist|album|song|artist)</gram>
