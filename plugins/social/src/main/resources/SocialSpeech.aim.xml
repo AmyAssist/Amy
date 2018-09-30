@@ -46,10 +46,6 @@
 				<gram>*</gram>
 			</EntityTemplate>
 		</EntityTemplates>
-		<Prompt entityTemplateId="plugin">
-			<text> what plugin should i tell you about? </text>
-			<gram> [about] {plugin} </gram>
-		</Prompt>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.tellJoke">
