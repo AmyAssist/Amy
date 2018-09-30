@@ -24,7 +24,7 @@
 
 		<Prompt entityTemplateId="type">
 			<text>Would you like to look for one of your own playlists or a featured one?</text>
-			<gram>{type} playlist</gram>
+			<gram>{type} [playlist]</gram>
 		</Prompt>
 	</Intent>
 
