@@ -35,8 +35,10 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.util.*;
 
-import javax.mail.*;
 import javax.mail.Flags.Flag;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.search.FlagTerm;
 
@@ -71,9 +73,9 @@ public class EmailLogicTest {
 
 	private ContactRegistry contactRegistry;
 
-	private Properties properties;
-
 	private EMailLogic emailLogic;
+
+	private Properties properties;
 
 	private Folder inboxMock;
 
@@ -221,11 +223,9 @@ public class EmailLogicTest {
 			if (mailAddress.contains("important")) {
 				assertThat(allMails, containsString(mailAddress));
 				assertThat(allMails, containsString(m.getSubject()));
-				assertThat(allMails, containsString(m.getContent().toString()));
 			} else {
 				assertThat(allMails, not(containsString(mailAddress)));
 				assertThat(allMails, not(containsString(m.getSubject())));
-				assertThat(allMails, not(containsString(m.getContent().toString())));
 			}
 		}
 
@@ -237,11 +237,9 @@ public class EmailLogicTest {
 			if (mailAddress.contains("important") && i < amount) {
 				assertThat(someMails, containsString(mailAddress));
 				assertThat(someMails, containsString(m.getSubject()));
-				assertThat(someMails, containsString(m.getContent().toString()));
 			} else {
 				assertThat(someMails, not(containsString(mailAddress)));
 				assertThat(someMails, not(containsString(m.getSubject())));
-				assertThat(someMails, not(containsString(m.getContent().toString())));
 			}
 		}
 	}
@@ -274,7 +272,6 @@ public class EmailLogicTest {
 			String mailAddress = ((InternetAddress) m.getFrom()[0]).getAddress();
 			assertThat(allMails, containsString(mailAddress));
 			assertThat(allMails, containsString(m.getSubject()));
-			assertThat(allMails, containsString(m.getContent().toString()));
 		}
 
 		// check someMails
@@ -285,11 +282,9 @@ public class EmailLogicTest {
 			if (i < amount) {
 				assertThat(someMails, containsString(mailAddress));
 				assertThat(someMails, containsString(m.getSubject()));
-				assertThat(someMails, containsString(m.getContent().toString()));
 			} else {
 				assertThat(someMails, not(containsString(mailAddress)));
 				assertThat(someMails, not(containsString(m.getSubject())));
-				assertThat(someMails, not(containsString(m.getContent().toString())));
 			}
 		}
 	}
@@ -354,73 +349,6 @@ public class EmailLogicTest {
 	}
 
 	/**
-	 * Test method for {@link EMailLogic#getContentFromMessage(Message)}
-	 *
-	 * @throws IOException
-	 *             if something goes wrong
-	 * @throws MessagingException
-	 *             if something goes wrong
-	 */
-	@Test
-	public void testGetContentFromMessagePlainText() throws IOException, MessagingException {
-		Message[] messages = createMockMessages(10, 5);
-		for (Message m : messages) {
-			assertThat(this.emailLogic.getContentFromMessage(m), containsString("content"));
-		}
-	}
-
-	/**
-	 * Test method for {@link EMailLogic#getContentFromMessage(Message)}
-	 *
-	 * @throws IOException
-	 *             if something goes wrong
-	 * @throws MessagingException
-	 *             if something goes wrong
-	 */
-	@Test
-	public void testGetContentFromMessageMultipart() throws IOException, MessagingException {
-		Message[] messages = createMockMessages(10, 5);
-		for (int i = 0; i < messages.length; i++) {
-			// setting up the mocks
-			Message m = messages[i];
-			when(m.isMimeType("text/plain")).thenReturn(false);
-			when(m.isMimeType("multipart/*")).thenReturn(true);
-			Multipart mp = mock(Multipart.class);
-			when(m.getContent()).thenReturn(mp);
-			when(mp.getCount()).thenReturn(2);
-			BodyPart part1 = mock(BodyPart.class);
-			BodyPart part2 = mock(BodyPart.class);
-			when(mp.getBodyPart(0)).thenReturn(part1);
-			when(mp.getBodyPart(1)).thenReturn(part2);
-			when(part1.isMimeType("text/plain")).thenReturn(true);
-			when(part1.getContent()).thenReturn("innerContent" + i);
-
-			// testing
-			String resultString = this.emailLogic.getContentFromMessage(m);
-			assertThat(resultString, containsString("innerContent"));
-			assertThat(resultString, containsString("Body part is not plain text"));
-		}
-
-	}
-
-	/**
-	 * Test method for {@link EMailLogic#getContentFromMessage(Message)}
-	 *
-	 * @throws IOException
-	 *             if something goes wrong
-	 * @throws MessagingException
-	 *             if something goes wrong
-	 */
-	@Test
-	public void testGetContentFromMessageUnreadable() throws IOException, MessagingException {
-		Message[] messages = createMockMessages(10, 5);
-		for (Message m : messages) {
-			when(m.isMimeType("text/plain")).thenReturn(false);
-			assertThat(this.emailLogic.getContentFromMessage(m), containsString("Message content not readable"));
-		}
-	}
-
-	/**
 	 * Tests {@link EMailLogic#getMailsForREST(int)}
 	 *
 	 * @throws MessagingException
@@ -459,12 +387,12 @@ public class EmailLogicTest {
 		}
 	}
 
-	private void compareMessages(Message message, MessageDTO transferMessage) throws MessagingException, IOException {
+	private void compareMessages(Message message, MessageDTO transferMessage) throws MessagingException {
 		String messageFrom = ((InternetAddress) message.getFrom()[0]).getAddress();
 
 		assertThat(transferMessage.getFrom(), is(messageFrom));
 		assertThat(transferMessage.getSubject(), is(message.getSubject()));
-		assertThat(transferMessage.getContent(), is(message.getContent().toString()));
+
 		// need to convert from Date to LocalDateTime
 		assertThat(transferMessage.getSentDate(),
 				is(message.getSentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()));
@@ -601,13 +529,12 @@ public class EmailLogicTest {
 		assertThat(EMailLogic.getFrom(messages[1]), containsString("address"));
 	}
 
-	private Message[] createMockMessages(int amount, int amountImportant) throws MessagingException, IOException {
+	private Message[] createMockMessages(int amount, int amountImportant) throws MessagingException {
 		Message[] messages = new Message[amount];
 		for (int i = 0; i < amount; i++) {
 			Message mockMessage = mock(Message.class);
 			when(mockMessage.getSubject()).thenReturn("subject" + i);
 			when(mockMessage.isMimeType("text/plain")).thenReturn(true);
-			when(mockMessage.getContent()).thenReturn("content" + i);
 			InternetAddress address = mock(InternetAddress.class);
 			when(mockMessage.getFrom()).thenReturn(new InternetAddress[] { address });
 			when(mockMessage.getSentDate()).thenReturn(new Date(System.currentTimeMillis()));

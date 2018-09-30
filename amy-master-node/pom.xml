@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.5.0</version>
+		<version>0.6.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
@@ -54,6 +54,11 @@
 			<groupId>de.unistuttgart.iaas.amyassist</groupId>
 			<artifactId>amy-natlang</artifactId>
 			<version>${amy.natlang.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<artifactId>amy-chat-socket</artifactId>
+			<version>${amy.chatsocket.version}</version>
 		</dependency>
 	</dependencies>
 	<build>

@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import javax.annotation.Nonnull;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 
@@ -31,22 +33,31 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
  * 
  * @author Leon Kiefer
  */
-public class SimpleServiceLocatorImpl implements SimpleServiceLocator {
+class SimpleServiceLocatorImpl implements SimpleServiceLocator {
 
-	private DependencyInjection dependencyInjection;
+	private InternalServiceLocator internalServiceLocator;
 	private ServiceCreation<?> serviceCreationInfo;
 
 	/**
-	 * @param dependencyInjection
+	 * @param internalServiceLocator
 	 * @param serviceCreationInfo
 	 */
-	public SimpleServiceLocatorImpl(DependencyInjection dependencyInjection, ServiceCreation<?> serviceCreationInfo) {
-		this.dependencyInjection = dependencyInjection;
+	public SimpleServiceLocatorImpl(InternalServiceLocator internalServiceLocator,
+			ServiceCreation<?> serviceCreationInfo) {
+		this.internalServiceLocator = internalServiceLocator;
 		this.serviceCreationInfo = serviceCreationInfo;
 	}
 
 	@Override
-	public <T> ServiceHandle<T> getService(ServiceConsumer<T> serviceConsumer) {
-		return this.dependencyInjection.getService(this.serviceCreationInfo, serviceConsumer);
+	public <T> ServiceHandle<T> getService(@Nonnull ServiceConsumer<T> serviceConsumer) {
+		return this.internalServiceLocator.getService(this.serviceCreationInfo, serviceConsumer);
+	}
+
+	/**
+	 * destroy the references
+	 */
+	public void destroy() {
+		this.internalServiceLocator = null;
+		this.serviceCreationInfo = null;
 	}
 }

@@ -23,9 +23,6 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +31,9 @@ import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * Speech class for alarm clock
@@ -44,7 +44,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 public class AlarmClockSpeech {
 
 	@Reference
-	private AlarmClockLogic logic;
+	private AlarmClockLogic alarmLogic;
 
 	@Reference
 	private Logger logger;
@@ -58,9 +58,6 @@ public class AlarmClockSpeech {
 	private static final String TIME_MAP_KEY = "time";
 	private static final String NUMBER_MAP_KEY = "number";
 	private static final String DAY_MAP_KEY = "day";
-	private static final String TYPE_MAP_KEY = "type";
-
-	private static final String REGEX_ALARM = "(alarm|alarms)";
 
 	/**
 	 * Creates new alarm
@@ -77,7 +74,7 @@ public class AlarmClockSpeech {
 			if (entities.get(DAY_MAP_KEY) != null && entities.get(DAY_MAP_KEY).getString().equals(TOMORROW)) {
 				tomoro = 1;
 			}
-			Alarm alarm = this.logic.setAlarm(tomoro, entities.get(TIME_MAP_KEY).getTime().getHour(),
+			Alarm alarm = this.alarmLogic.setAlarm(tomoro, entities.get(TIME_MAP_KEY).getTime().getHour(),
 					entities.get(TIME_MAP_KEY).getTime().getMinute());
 			LocalDateTime time = alarm.getAlarmTime();
 			String day;
@@ -94,34 +91,6 @@ public class AlarmClockSpeech {
 	}
 
 	/**
-	 * Sets a new timer. You can select between hours, minutes and seconds or combinate them
-	 * 
-	 * @param entities
-	 *            contains the data input
-	 * @return params for the timer
-	 */
-	@Intent
-	public String setTimer(Map<String, EntityData> entities) {
-		int hours = 0;
-		int minutes = 0;
-		int seconds = 0;
-		if (entities.get("hour") != null) {
-			hours = entities.get("hour").getNumber();
-		}
-		if (entities.get("minute") != null) {
-			minutes = entities.get("minute").getNumber();
-		}
-		if (entities.get("second") != null) {
-			seconds = entities.get("second").getNumber();
-		}
-		if (hours == 0 && minutes == 0 && seconds == 0) {
-			return "No value is set";
-		}
-		Timer timer = this.logic.setTimer(hours, minutes, seconds);
-		return "Timer " + timer.getId() + " set";
-	}
-
-	/**
 	 * Resets all alarms or timers
 	 * 
 	 * @param entities
@@ -130,9 +99,7 @@ public class AlarmClockSpeech {
 	 */
 	@Intent
 	public String resetAlarmClockObjects(Map<String, EntityData> entities) {
-		if (entities.get(TYPE_MAP_KEY).getString().matches(REGEX_ALARM))
-			return this.logic.resetAlarms();
-		return this.logic.resetTimers();
+		return this.alarmLogic.resetAlarms();
 	}
 
 	/**
@@ -145,9 +112,7 @@ public class AlarmClockSpeech {
 	@Intent
 	public String deleteAlarmClockObject(Map<String, EntityData> entities) {
 		try {
-			if (entities.get(TYPE_MAP_KEY).getString().matches(REGEX_ALARM))
-				return this.logic.deleteAlarm(entities.get(NUMBER_MAP_KEY).getNumber());
-			return this.logic.deleteTimer(entities.get(NUMBER_MAP_KEY).getNumber());
+			return this.alarmLogic.deleteAlarm(entities.get(NUMBER_MAP_KEY).getNumber());
 		} catch (NoSuchElementException e) {
 			this.logException(e);
 			return ELEMENTNOTFOUND;
@@ -164,14 +129,23 @@ public class AlarmClockSpeech {
 	@Intent
 	public String deactivateAlarmClockObject(Map<String, EntityData> entities) {
 		try {
-			if (entities.get(TYPE_MAP_KEY).getString().matches(REGEX_ALARM))
-				return this.logic.deactivateAlarm(entities.get(NUMBER_MAP_KEY).getNumber());
-			this.logic.deleteTimer(entities.get(NUMBER_MAP_KEY).getNumber());
-			return "Timer " + entities.get(NUMBER_MAP_KEY).getNumber() + " deactivated";
+			return this.alarmLogic.deactivateAlarm(entities.get(NUMBER_MAP_KEY).getNumber());
 		} catch (NoSuchElementException e) {
 			this.logException(e);
 			return ELEMENTNOTFOUND;
 		}
+	}
+
+	/**
+	 * Stops the currently ringing alarm
+	 * 
+	 * @param entities
+	 *            contains the data input
+	 * @return if successful
+	 */
+	@Intent
+	public String stopRinging(Map<String, EntityData> entities) {
+		return this.alarmLogic.stopRinging();
 	}
 
 	/**
@@ -184,7 +158,7 @@ public class AlarmClockSpeech {
 	@Intent
 	public String activateAlarm(Map<String, EntityData> entities) {
 		try {
-			return this.logic.activateAlarm(entities.get(NUMBER_MAP_KEY).getNumber());
+			return this.alarmLogic.activateAlarm(entities.get(NUMBER_MAP_KEY).getNumber());
 		} catch (NoSuchElementException e) {
 			this.logException(e);
 			return ELEMENTNOTFOUND;
@@ -201,12 +175,9 @@ public class AlarmClockSpeech {
 	@Intent
 	public String getAlarmClockObject(Map<String, EntityData> entities) {
 		try {
-			if (entities.get(TYPE_MAP_KEY).getString().matches(REGEX_ALARM)) {
-				Alarm alarm = this.logic.getAlarm(entities.get(NUMBER_MAP_KEY).getNumber());
-				return outputAlarm(alarm);
-			}
-			Timer timer = this.logic.getTimer(entities.get(NUMBER_MAP_KEY).getNumber());
-			return outputTimer(timer);
+			Alarm alarm = this.alarmLogic.getAlarm(entities.get(NUMBER_MAP_KEY).getNumber());
+			return outputAlarm(alarm);
+
 		} catch (NoSuchElementException e) {
 			this.logException(e);
 			return ELEMENTNOTFOUND;
@@ -222,26 +193,16 @@ public class AlarmClockSpeech {
 	 */
 	@Intent
 	public String getAllAlarmClockObjects(Map<String, EntityData> entities) {
-		if (entities.get(TYPE_MAP_KEY).getString().matches(REGEX_ALARM)) {
-			List<Alarm> alarms = this.logic.getAllAlarms();
-			if (alarms.isEmpty()) {
-				return "No alarms found";
-			}
-			String[] stringAlarms = new String[alarms.size()];
-			for (int i = 0; i < alarms.size(); i++) {
-				stringAlarms[i] = outputAlarm(alarms.get(i));
-			}
-			return String.join("\n", stringAlarms);
+		List<Alarm> alarms = this.alarmLogic.getAllAlarms();
+		if (alarms.isEmpty()) {
+			return "No alarms found";
 		}
-		List<Timer> timers = this.logic.getAllTimers();
-		if (timers.isEmpty()) {
-			return "No timers found";
+		String[] stringAlarms = new String[alarms.size()];
+		for (int i = 0; i < alarms.size(); i++) {
+			stringAlarms[i] = outputAlarm(alarms.get(i));
 		}
-		String[] stringTimers = new String[timers.size()];
-		for (int i = 0; i < timers.size(); i++) {
-			stringTimers[i] = outputTimer(timers.get(i));
-		}
-		return String.join("\n", stringTimers);
+		return String.join("\n", stringAlarms);
+
 	}
 
 	/**
@@ -258,25 +219,8 @@ public class AlarmClockSpeech {
 			day = 1;
 		}
 		try {
-			return outputAlarm(this.logic.editAlarm(entities.get(NUMBER_MAP_KEY).getNumber(), day,
+			return outputAlarm(this.alarmLogic.editAlarm(entities.get(NUMBER_MAP_KEY).getNumber(), day,
 					entities.get(TIME_MAP_KEY).getTime().getHour(), entities.get(TIME_MAP_KEY).getTime().getMinute()));
-		} catch (NoSuchElementException e) {
-			this.logException(e);
-			return ELEMENTNOTFOUND;
-		}
-	}
-
-	/**
-	 * Gets remaining timer delay
-	 * 
-	 * @param entities
-	 *            contains the data input
-	 * @return remaining timer delay
-	 */
-	@Intent
-	public String getRemainingTimerDelay(Map<String, EntityData> entities) {
-		try {
-			return outputTimer(this.logic.getTimer(entities.get(NUMBER_MAP_KEY).getNumber()));
 		} catch (NoSuchElementException e) {
 			this.logException(e);
 			return ELEMENTNOTFOUND;
@@ -301,22 +245,6 @@ public class AlarmClockSpeech {
 
 		return ALARMS + alarm.getId() + " is set for " + ringTime.getHour() + ":" + ringTime.getMinute() + " " + day
 				+ " but will not ring";
-	}
-
-	private static String outputTimer(Timer timer) {
-		int[] timeDiff = timer.getRemainingTime();
-		int timerNumber = timer.getId();
-		if (timeDiff[0] < 0 || timeDiff[1] < 0 || timeDiff[2] < 0) {
-			return "Timer " + timerNumber + " is ringing right now.";
-		}
-		if (timeDiff[0] == 0) {
-			if (timeDiff[1] == 0) {
-				return "Timer " + timerNumber + " will ring in " + timeDiff[2] + " seconds";
-			}
-			return "Timer " + timerNumber + " will ring in " + timeDiff[1] + " minutes and " + timeDiff[2] + " seconds";
-		}
-		return "Timer " + timerNumber + " will ring in " + timeDiff[0] + " hours and " + timeDiff[1] + " minutes and "
-				+ timeDiff[2] + " seconds";
 	}
 
 }

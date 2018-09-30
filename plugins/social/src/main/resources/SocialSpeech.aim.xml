@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.greeting">
+		<gram>(hello|hi|good (morning|evening|day)) [amy]</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.userName">
+		<gram>(i am | my name is) {name}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="name" required="true">
+				<gram>*</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.askForName">
+		<gram>(what|whats) (is|s) your name</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.whatsUp">
+		<gram>((what|whats) (is|s) (up|going on)|whatsapp)</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.howAreYou">
+		<gram>how (are you [feeling]| do you [feel])</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.sampleSentences">
+		<gram>(what (can|may) i ask you [about] | help [me]) [[with] [the plugin] {pluginname}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="pluginname" required="false">
+				<gram>*</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.getInstalledPlugins">
+		<gram>(what plugins are installed | (tell me about your [installed] | installed) plugins)</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.tellMeAboutPlugin">
+		<gram> tell me about {plugin} </gram>
+		<EntityTemplates>
+			<EntityTemplate id="plugin" required="true">
+				<gram>*</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.tellJoke">
+		<gram>((tell me|say) (a joke|something funny)|make me laugh)</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.foxSays">
+		<gram>what [does] the fox say</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.valar">
+		<gram>valar morghulis</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.legolas">
+		<gram>what do your (elfeyes|elf eyes) see</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.oneDoesNotSimply">
+		<gram>1 does not simply</gram>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialSpeech.parrot">
+		<gram>(say|repeat) {phrase}</gram>
+		<EntityTemplates>
+			<EntityTemplate id="phrase" required="true">
+				<gram>*</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+	</Intent>
+</AmyInteractionModel>

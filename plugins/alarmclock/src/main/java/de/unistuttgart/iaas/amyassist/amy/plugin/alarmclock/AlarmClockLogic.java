@@ -26,7 +26,6 @@ package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -35,9 +34,11 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
 import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.Topics;
 
 /**
- * This class implements the logic for all the functions that our alarm clock and timer are capable of
+ * This class implements the logic for all the functions that our alarm clock is capable of
  * 
  * @author Patrick Singer, Patrick Gebhardt, Florian Bauer
  */
@@ -51,9 +52,6 @@ public class AlarmClockLogic implements RunnableService {
 	private AlarmRegistry alarmStorage;
 
 	@Reference
-	private ITimerStorage timerStorage;
-
-	@Reference
 	private TaskScheduler taskScheduler;
 
 	@Reference
@@ -62,6 +60,9 @@ public class AlarmClockLogic implements RunnableService {
 	private LocalDateTime alarmTime;
 
 	private String alarmS = "Alarm ";
+
+	@Reference
+	private MessageHub messageHub;
 
 	/**
 	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
@@ -78,25 +79,9 @@ public class AlarmClockLogic implements RunnableService {
 			Alarm a = getAlarm(alarmNumber);
 			if (a.isActive() && this.environment.getCurrentLocalDateTime().truncatedTo(ChronoUnit.MINUTES)
 					.isEqual(a.getAlarmTime())) {
+				String topic = Topics.smarthomeAll("alarm");
+				this.messageHub.publish(topic, this.alarmS + alarmNumber + "is ringing");
 				this.alarmbeep.beep(a);
-			}
-		};
-
-	}
-
-	/**
-	 * Creates a Runnable that plays the alarm sound. License: Attribution 3.0
-	 * http://creativecommons.org/licenses/by-sa/3.0/deed.de Recorded by Daniel Simion
-	 * 
-	 * @param timerNumber
-	 *            the number of the timer in storage
-	 * @return runnable
-	 */
-	private Runnable createTimerRunnable(int timerNumber) {
-		return () -> {
-			if (this.timerStorage.hasTimer(timerNumber) && this.timerStorage.getTimer(timerNumber).isActive()) {
-				Timer timer = this.timerStorage.getTimer(timerNumber);
-				this.alarmbeep.beep(timer);
 			}
 		};
 
@@ -117,7 +102,7 @@ public class AlarmClockLogic implements RunnableService {
 	protected Alarm setAlarm(int tomorrow, int hour, int minute) {
 		if (Alarm.timeValid(hour, minute)) {
 			tomorrowCheck(tomorrow, hour, minute);
-			int id = searchId();
+			int id = searchAlarmId();
 			Alarm alarm = new Alarm(id, this.alarmTime, true);
 			this.alarmStorage.save(alarm);
 			Runnable alarmRunnable = createAlarmRunnable(id);
@@ -131,7 +116,7 @@ public class AlarmClockLogic implements RunnableService {
 		throw new IllegalArgumentException();
 	}
 
-	private int searchId() {
+	private int searchAlarmId() {
 		int id = 1;
 		List<Alarm> alarmList = this.alarmStorage.getAll();
 		alarmList.sort((alarm1, alarm2) -> alarm1.getId() - alarm2.getId());
@@ -143,31 +128,6 @@ public class AlarmClockLogic implements RunnableService {
 			}
 		}
 		return id;
-	}
-
-	/**
-	 * Sets new timer and schedules it
-	 * 
-	 * @param hours
-	 *            number of hours of the timer
-	 * @param minutes
-	 *            number of minutes of the timer
-	 * @param seconds
-	 *            number of seconds of the timer
-	 * 
-	 * @return counter, hours, minutes, seconds
-	 */
-	protected Timer setTimer(int hours, int minutes, int seconds) {
-
-		if (Timer.delayValid(hours, minutes, seconds)) {
-			int counter = this.timerStorage.incrementTimerCounter();
-			Timer timer = new Timer(counter, hours, minutes, seconds, true);
-			this.timerStorage.storeTimer(timer);
-			Runnable timerRunnable = createTimerRunnable(counter);
-			this.taskScheduler.schedule(timerRunnable, timer.getTimerDate().toInstant());
-			return timer;
-		}
-		throw new IllegalArgumentException();
 	}
 
 	/**
@@ -189,28 +149,6 @@ public class AlarmClockLogic implements RunnableService {
 	}
 
 	/**
-	 * Delete all timers and reset timerCounter
-	 * 
-	 * @return counter counts the existing timers
-	 */
-	protected String resetTimers() {
-		int amount = this.timerStorage.getTimerCounter();
-		this.timerStorage.putTimerCounter(0);
-		int counter = 0;
-		for (int i = 1; i <= amount; i++) {
-			if (this.timerStorage.hasTimer(i)) {
-				counter++;
-				deactivateTimer(i);
-				this.timerStorage.deleteTimer(i);
-			}
-		}
-		if (counter == 0) {
-			return "No timers found";
-		}
-		return counter + " timers deleted";
-	}
-
-	/**
 	 * Delete one alarm
 	 * 
 	 * @param alarmNumber
@@ -222,22 +160,6 @@ public class AlarmClockLogic implements RunnableService {
 		deactivateAlarm(a.getId());
 		this.alarmStorage.deleteById(a.getPersistentId());
 		return this.alarmS + a.getId() + " deleted";
-	}
-
-	/**
-	 * Deactivates and deletes the timer with the given timer id
-	 * 
-	 * @param timerNumber
-	 *            timerNumber in the storage
-	 * @return timerNumber
-	 */
-	protected String deleteTimer(int timerNumber) {
-		if (this.timerStorage.hasTimer(timerNumber)) {
-			deactivateTimer(timerNumber);
-			this.timerStorage.deleteTimer(timerNumber);
-			return "Timer " + timerNumber + " deleted";
-		}
-		throw new NoSuchElementException();
 	}
 
 	/**
@@ -257,27 +179,6 @@ public class AlarmClockLogic implements RunnableService {
 			return "Alarm " + a.getId() + " deactivated";
 		}
 		return this.alarmS + alarmNumber + " is already inactive";
-	}
-
-	/**
-	 * Deactivated specific timer so it will not go off
-	 * 
-	 * @param timerNumber
-	 *            number of the timer
-	 * @return timerNumber
-	 */
-	protected String deactivateTimer(int timerNumber) {
-		if (this.timerStorage.hasTimer(timerNumber)) {
-			Timer timer = this.timerStorage.getTimer(timerNumber);
-			if (timer.isActive()) {
-				this.alarmbeep.stopBeep(timer);
-				timer.setActive(false);
-				this.timerStorage.storeTimer(timer);
-				return "Timer " + timerNumber + " deactivated";
-			}
-			return "Timer " + timerNumber + " is already inactive";
-		}
-		throw new NoSuchElementException();
 	}
 
 	/**
@@ -316,18 +217,6 @@ public class AlarmClockLogic implements RunnableService {
 	}
 
 	/**
-	 * @param timerNumber
-	 *            number of the timer in storage
-	 * @return timerNumber
-	 */
-	protected Timer getTimer(int timerNumber) {
-		if (this.timerStorage.hasTimer(timerNumber)) {
-			return this.timerStorage.getTimer(timerNumber);
-		}
-		throw new NoSuchElementException();
-	}
-
-	/**
 	 * Get all alarms
 	 * 
 	 * @return List of all alarms
@@ -336,22 +225,6 @@ public class AlarmClockLogic implements RunnableService {
 		List<Alarm> alarmList = this.alarmStorage.getAll();
 		alarmList.sort((alarm1, alarm2) -> alarm1.getId() - alarm2.getId());
 		return alarmList;
-	}
-
-	/**
-	 * Get all timers
-	 * 
-	 * @return List of all timers
-	 */
-	protected List<Timer> getAllTimers() {
-		List<Timer> allTimers = new ArrayList<>();
-		int amount = this.timerStorage.getTimerCounter();
-		for (int i = 1; i <= amount; i++) {
-			if (this.timerStorage.hasTimer(i)) {
-				allTimers.add(this.timerStorage.getTimer(i));
-			}
-		}
-		return allTimers;
 	}
 
 	/**
@@ -402,6 +275,21 @@ public class AlarmClockLogic implements RunnableService {
 		this.alarmTime = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(),
 				LocalDateTime.now().getDayOfMonth(), hour, minute);
 		return this.alarmTime;
+	}
+
+	/**
+	 * Go through all alarms and deactivate old ones
+	 * 
+	 * @return alarm stopped
+	 */
+	public String stopRinging() {
+		List<Alarm> allAlarms = getAllAlarms();
+		for (Alarm a : allAlarms) {
+			if (a.isActive() && a.getAlarmTime().isBefore(this.environment.getCurrentLocalDateTime())) {
+				deactivateAlarm(a.getId());
+			}
+		}
+		return "Alarm stopped";
 	}
 
 	/**

@@ -23,6 +23,8 @@
 
 package de.unistuttgart.iaas.amyassist.amy.restresources.chat;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
+
 import java.util.Queue;
 
 
@@ -32,7 +34,7 @@ import java.util.Queue;
  */
 class AnswerConsumer {
 		
-	private Queue<String> queue;
+	private Queue<Response> queue;
 				
 	/**
 	 * empty constructor
@@ -47,7 +49,7 @@ class AnswerConsumer {
 	 * add a new answer to the queue
 	 * @param s the answer
 	 */
-	void addToQueue(String s){
+	void addToQueue(Response s){
 			this.queue.add(s);
 	}
 
@@ -55,7 +57,7 @@ class AnswerConsumer {
 	 * sets the internal queue
 	 * @param queue to set
 	 */
-	public void setQueue(Queue<String> queue) {
+	public void setQueue(Queue<Response> queue) {
 		this.queue = queue;
 	}
 

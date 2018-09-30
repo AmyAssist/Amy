@@ -23,28 +23,28 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
 
-import javax.annotation.Nullable;
+import org.apache.commons.lang3.tuple.Pair;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.*;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
 import de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherLogic.GeoCoordinatePair;
 import de.unistuttgart.iaas.amyassist.amy.registry.Location;
 import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
 import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
 import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.GeocoderException;
-import org.apache.commons.lang3.tuple.Pair;
+
+import javax.annotation.Nullable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * 
@@ -106,6 +106,16 @@ public class WeatherSpeechCommand {
 			result += " Sunrise is at " + dateString(report.getSunriseTime(), timezone) + " and sunset at "
 					+ dateString(report.getSunsetTime(), timezone);
 		}
+		return result;
+	}
+
+	private String stringifyInstantWeatherReport(String preamble, WeatherReportInstant report) {
+		String result = preamble + " " + report.getSummary() + ".";
+
+		result += " Currently " + round(report.getTemperature()) + "°C.";
+
+		result += " Wind speed is about " + round(report.getWindSpeed()) + " meters per second";
+
 		return result;
 	}
 
@@ -195,8 +205,7 @@ public class WeatherSpeechCommand {
 			String saturdayReport = null;
 			String sundayReport = null;
 			for (WeatherReportDay d : report.getWeek().getDays()) {
-				Instant instant = Instant.ofEpochSecond(d.getTimestamp());
-				ZonedDateTime date = ZonedDateTime.ofInstant(instant, ZoneId.of(report.getTimezone()));
+				ZonedDateTime date = d.getTimestamp();
 				DayOfWeek day = date.getDayOfWeek();
 				if (day == DayOfWeek.SATURDAY) {
 					saturdayReport = stringifyDayWeatherReport("", d, report.getTimezone(), true);
@@ -206,6 +215,72 @@ public class WeatherSpeechCommand {
 			}
 			return "On Saturday, " + saturdayReport + " and on Sunday " + sundayReport;
 		}
+	}
+
+	/**
+	 * tells user if its gonna rain today / tomorrow etc
+	 * 
+	 * @param entities
+	 *            information
+	 * @return the answer
+	 */
+	@Intent
+	public String rainCheck(Map<String, EntityData> entities) {
+		WeatherReport report;
+		if (entities.get("locationname") != null) {
+			String locationName = entities.get("locationname").getString();
+			try {
+				Pair<Double, Double> coordinates = this.geocoder.geocodeAddress(locationName);
+				GeoCoordinatePair pair = new GeoCoordinatePair(coordinates.getRight(), coordinates.getLeft());
+				report = this.weatherLogic.getWeatherReport(pair);
+			} catch (GeocoderException e) {
+				return "I couldn't find this location";
+			}
+		} else {
+			GeoCoordinatePair curr = getCurrentLocation();
+			if (curr == null)
+				return NO_LOCATION_STRING;
+			report = this.weatherLogic.getWeatherReport(curr);
+		}
+
+		String timespan = entities.get("timespan").getString();
+		if (timespan.equals("today")) {
+			WeatherReportDay today = report.getWeek().getDays()[0];
+			return stringifyRainCheck(today.getPrecipProbability(), today.getPrecipType(), "today");
+			
+		} else if (timespan.equals("tomorrow")) {
+			WeatherReportDay tomorrow = report.getWeek().getDays()[1];
+			return stringifyRainCheck(tomorrow.getPrecipProbability(), tomorrow.getPrecipType(), "tomorrow");
+			
+		} else if (timespan.equals("on the weekend")) {
+			StringBuilder builder = new StringBuilder();
+			String sat = "";
+			String sun = "";
+			for (WeatherReportDay d : report.getWeek().getDays()) {
+				ZonedDateTime date = d.getTimestamp();
+				DayOfWeek day = date.getDayOfWeek();
+				if (day == DayOfWeek.SATURDAY) {
+					sat = stringifyRainCheck(d.getPrecipProbability(), d.getPrecipType(), "on Saturday");
+				} else if (day == DayOfWeek.SUNDAY) {
+					sun = stringifyRainCheck(d.getPrecipProbability(), d.getPrecipType(), "on Sunday");
+				}
+			}
+			builder.append(sat + "\n" + sun);
+			return builder.toString();
+		}
+
+		return "i don't understand the date";
+	}
+	
+	private String stringifyRainCheck(double probability, String precipType, String suffix) {
+		final String chanceOf = "% chance of ";
+
+		if(round(probability) == 0) {
+			return "0% chance of rain " + suffix + "!";
+		}
+		
+		return round(probability * 100) + chanceOf + precipType + " " + suffix + "!";
+		
 	}
 
 	/**
@@ -240,17 +315,23 @@ public class WeatherSpeechCommand {
 		return locationNames;
 	}
 
+
+
 	@Intent()
-	public String weatherAtLocation(Map<String, EntityData> entities) {
+	public Response weatherAtLocation(Map<String, EntityData> entities) {
 		String locationName = entities.get("locationname").getString();
 		try {
-			Pair<Double, Double> coordinates = geocoder.geocodeAddress(locationName);
+			Pair<Double, Double> coordinates = this.geocoder.geocodeAddress(locationName);
 			GeoCoordinatePair pair = new GeoCoordinatePair(coordinates.getRight(), coordinates.getLeft());
+      
 			WeatherReport report = weatherLogic.getWeatherReport(pair);
-			return stringifyDayWeatherReport("This is the weather report for " + locationName + ". ",
-					report.getWeek().getDays()[0], report.getTimezone(), false);
+
+			WeatherReportInstant instantReport = report.getCurrent();
+			String text = stringifyInstantWeatherReport("This is the weather report for " + locationName + ". ",
+					instantReport);
+			return Response.text(text).widget("app-weather-day").attachment(instantReport).build();
 		} catch (GeocoderException e) {
-			return "I couldn't find this location";
+			return Response.text("I couldn't find this location").build();
 		}
 	}
 }

@@ -24,11 +24,13 @@
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.*;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.ReadableInstant;
@@ -37,10 +39,6 @@ import org.slf4j.Logger;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * Speech class for the navigation plugin
@@ -62,7 +60,7 @@ public class NavigationSpeech {
 	@Reference
 	private Logger logger;
 
-	private static final String WRONG_PLACE = "One or more places are not in the registry";
+	private static final String WRONG_TIME = "Time Input is wrong. Please try again";
 	private static final String END_KEY = "end";
 	private static final String START_KEY = "start";
 
@@ -75,23 +73,24 @@ public class NavigationSpeech {
 	 */
 	@Intent()
 	public String goToAt(Map<String, EntityData> entities) {
-		LocalDateTime now = this.environment.getCurrentLocalDateTime();
-		LocalTime inputTime = entities.get("time").getTime();
-		if (inputTime != null) {
-			DateTime time = new DateTime(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), inputTime.getHour(),
-					inputTime.getMinute());
+		if (entities.get("time") != null) {
+			DateTime time = dateTimeConversion(entities.get("time"));
 			ReadableInstant outputTime = null;
 			outputTime = this.logic.whenIHaveToGo(
-					cutEndWords(this.registryConnection.getAddress(entities.get(START_KEY).getString()), "to"),
-					cutEndWords(this.registryConnection.getAddress(entities.get(END_KEY).getString()), "by"),
+					this.registryConnection.getAddress(entities.get(START_KEY).getString()),
+					this.registryConnection.getAddress(entities.get(END_KEY).getString()),
 					this.logic.getTravelMode(entities.get("mode").getString().trim()), time);
 			if (outputTime != null) {
+				if (outputTime.get(DateTimeFieldType.minuteOfHour()) > 9) {
+					return "You should go at ".concat(String.valueOf(outputTime.get(DateTimeFieldType.hourOfDay())))
+							.concat(":").concat(String.valueOf(outputTime.get(DateTimeFieldType.minuteOfHour())));
+				}
 				return "You should go at ".concat(String.valueOf(outputTime.get(DateTimeFieldType.hourOfDay())))
-						.concat(":").concat(String.valueOf(outputTime.get(DateTimeFieldType.minuteOfHour())));
+						.concat(":0").concat(String.valueOf(outputTime.get(DateTimeFieldType.minuteOfHour())));
 			}
 			return "You are too late";
 		}
-		return WRONG_PLACE;
+		return WRONG_TIME;
 	}
 
 	/**
@@ -103,20 +102,17 @@ public class NavigationSpeech {
 	 */
 	@Intent()
 	public String bestTransport(Map<String, EntityData> entities) {
-		LocalDateTime now = this.environment.getCurrentLocalDateTime();
-		LocalTime inputTime = entities.get("time").getTime();
-		if (inputTime != null) {
-			DateTime time = new DateTime(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), inputTime.getHour(),
-					inputTime.getMinute());
+		if (entities.get("time") != null) {
+			DateTime time = dateTimeConversion(entities.get("time"));
 			BestTransportResult result = this.logic.getBestTransportInTime(
-					cutEndWords(this.registryConnection.getAddress(entities.get(START_KEY).getString()), "to"),
-					cutEndWords(this.registryConnection.getAddress(entities.get(END_KEY).getString()), "at"), time);
+					this.registryConnection.getAddress(entities.get(START_KEY).getString()),
+					this.registryConnection.getAddress(entities.get(END_KEY).getString()), time);
 			if (result != null) {
 				return "The best transport Mode is ".concat(result.getMode().toString()).concat(".\n")
 						.concat(result.routeToShortString());
 			}
 		}
-		return WRONG_PLACE;
+		return WRONG_TIME;
 	}
 
 	/**
@@ -127,29 +123,39 @@ public class NavigationSpeech {
 	 * @return a output string
 	 */
 	@Intent()
-	public String routeFromtTo(Map<String, EntityData> entities) {
-		return this.logic
-				.fromToWithDeparture(
-						cutEndWords(this.registryConnection.getAddress(entities.get(START_KEY).getString()), "to"),
-						cutEndWords(this.registryConnection.getAddress(entities.get(END_KEY).getString()), "by"),
-						this.logic.getTravelMode(entities.get("mode").getString().trim()), DateTime.now())
-				.routeToShortString();
+	public Response routeFromtTo(Map<String, EntityData> entities) {
+
+		DateTime time = entities.get("time") != null ? dateTimeConversion(entities.get("time")) : DateTime.now();
+
+		BestTransportResult result = this.logic.fromToWithDeparture(
+			this.registryConnection.getAddress(entities.get(START_KEY).getString()),
+			this.registryConnection.getAddress(entities.get(END_KEY).getString()),
+			this.logic.getTravelMode(entities.get("mode").getString().trim()),
+			time
+		);
+
+		return Response.text(result.routeToShortString()).widget("app-route-widget")
+				.attachment(result.routeToWidgetInfo(this.logic.getStaticAPIKey())).build();
 	}
 
 	/**
-	 * helper method to cut words at the end for example to or by that comes from the speech
+	 * Transform the LocalDateTime or LocalTime from EntityData to a DateTime from the api.
 	 * 
-	 * @param location
-	 *            location input
-	 * @param cut
-	 *            string to cut
-	 * @return the location string without the end word
+	 * @param inputTime
+	 *            the EntityData from the time entity
+	 * @return a DateTime object
 	 */
-	private String cutEndWords(String location, String cut) {
-		if (location.endsWith(cut)) {
-			return location.substring(0, location.length() - cut.length() - 1);
+	private DateTime dateTimeConversion(EntityData inputTime) {
+		DateTime outputTime = null;
+		try {
+			outputTime = new DateTime(
+					inputTime.getDateTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+		} catch (DateTimeParseException e) {
+			LocalDateTime now = this.environment.getCurrentLocalDateTime();
+			outputTime = new DateTime(now.getYear(), now.getMonthValue(), now.getDayOfMonth(),
+					inputTime.getTime().getHour(), inputTime.getTime().getMinute());
 		}
-		return location;
+		return outputTime;
 	}
 
 	/**

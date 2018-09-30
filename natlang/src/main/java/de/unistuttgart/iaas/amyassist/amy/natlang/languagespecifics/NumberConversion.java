@@ -25,7 +25,7 @@ package de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics;
 
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.WordToken;
+import de.unistuttgart.iaas.amyassist.amy.natlang.nl.EndToken;
 
 /**
  * This interface provide methods for the number conversion
@@ -42,7 +42,7 @@ public interface NumberConversion {
 	 *                    the sublist containing the list of word representations
 	 * @return the calculated number
 	 */
-	int calcNumber(Iterable<WordToken> subList);
+	int calcNumber(Iterable<EndToken> subList);
 
 	/**
 	 * Get's {@link #wordToNumber wordToNumber}

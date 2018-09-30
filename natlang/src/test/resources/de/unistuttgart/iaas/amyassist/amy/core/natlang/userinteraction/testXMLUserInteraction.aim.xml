@@ -25,4 +25,26 @@
 	ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
 		<gram>test the wildcard *</gram>
 	</Intent>
+	
+
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.navigation.NavigationSpeech.bestTransport">
+		<gram>best transport from {start} to {end} [at blah] [x test]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="time" required="true">
+				<gram>({amytime}|{amydatetime})</gram>
+			</EntityTemplate>
+			<EntityTemplate id="start" required="true">
+				<gram>+</gram>
+			</EntityTemplate>
+			<EntityTemplate id="end" required="true">
+				<gram>+</gram>
+			</EntityTemplate>
+			<Prompt entityTemplateId="time">
+				<text>When are you leaving?</text>
+				<gram> {time}</gram>
+			</Prompt>
+		</EntityTemplates>
+	</Intent>
+	
 </AmyInteractionModel>

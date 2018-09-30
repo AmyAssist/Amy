@@ -45,6 +45,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
 import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
 import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
 
@@ -58,6 +59,8 @@ class AlarmClockResourceTest {
 
 	@Reference
 	private TestFramework framework;
+	
+	private Environment environment;
 
 	private AlarmClockLogic acl;
 
@@ -77,7 +80,8 @@ class AlarmClockResourceTest {
 		this.acl = this.framework.mockService(AlarmClockLogic.class);
 		this.target = this.framework.setRESTResource(AlarmClockResource.class);
 		this.alarmStorage = this.framework.mockService(AlarmRegistry.class);
-
+		this.environment = this.framework.mockService(Environment.class);
+		
 		when(this.alarmStorage.getAll()).thenReturn(this.alarms);
 	}
 
@@ -139,8 +143,9 @@ class AlarmClockResourceTest {
 	 */
 	@Test
 	void testNewAlarm() {
-		Alarm newAlarm = new Alarm(1, LocalDateTime.of(2018, 8, 21, 21, 21), true);
+		Alarm newAlarm = new Alarm(1, LocalDateTime.of(2018, 7, 21, 21, 21), true);
 		when(this.acl.setAlarm(1, 21, 21)).thenReturn(newAlarm);
+		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 10, 4, 19, 19));
 		Entity<Alarm> entity = Entity.entity(newAlarm, MediaType.APPLICATION_JSON);
 
 		this.r = this.target.path("alarms/new").request().post(entity);

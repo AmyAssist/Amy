@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
 
 /**
  * Helper service for the chat inside the webapp
@@ -41,14 +42,14 @@ public class ChatService {
 	/**
 	 * maps uuids from users to a LinkedList<String> containing answers from amy
 	 */
-	private ConcurrentMap<UUID, LinkedList<String>> userQueueMap = new ConcurrentHashMap<>();
+	private ConcurrentMap<UUID, LinkedList<Response>> userQueueMap = new ConcurrentHashMap<>();
 	
 	/**
 	 * retrieve queue from user with uuid
 	 * @param uuid of user
 	 * @return the queue of answers from amy
 	 */
-	public Queue<String> getQueue(UUID uuid) {
+	public Queue<Response> getQueue(UUID uuid) {
 		if(this.userQueueMap.containsKey(uuid)) {
 			return this.userQueueMap.get(uuid);
 		}
@@ -61,7 +62,7 @@ public class ChatService {
 	 * @param uuid string representation of uuid
 	 */
 	public void addUser(UUID uuid) {
-		this.userQueueMap.put(uuid, new LinkedList<String>());
+		this.userQueueMap.put(uuid, new LinkedList<Response>());
 	}
 
 

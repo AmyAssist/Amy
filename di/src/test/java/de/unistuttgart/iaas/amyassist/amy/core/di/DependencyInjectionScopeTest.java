@@ -45,6 +45,8 @@ import uk.org.lidalia.slf4jtest.TestLoggerFactory;
  */
 public class DependencyInjectionScopeTest {
 	private DependencyInjection dependencyInjection;
+	private Configuration configuration;
+	private ServiceLocator serviceLocator;
 
 	/**
 	 * Setup
@@ -52,6 +54,8 @@ public class DependencyInjectionScopeTest {
 	@BeforeEach
 	public void setup() {
 		this.dependencyInjection = new DependencyInjection();
+		this.configuration = this.dependencyInjection.getConfiguration();
+		this.serviceLocator = this.dependencyInjection.getServiceLocator();
 	}
 
 	// Scope GLOBAL and once are already being tested by the other test.
@@ -61,14 +65,14 @@ public class DependencyInjectionScopeTest {
 	 */
 	@Test
 	public void testScopeClass() {
-		this.dependencyInjection.register(Service11.class);
-		this.dependencyInjection.register(Service12.class);
-		this.dependencyInjection.register(Service13.class);
+		this.configuration.register(Service11.class);
+		this.configuration.register(Service12.class);
+		this.configuration.register(Service13.class);
 
-		Service11 s1 = this.dependencyInjection.getService(Service11.class);
+		Service11 s1 = this.serviceLocator.getService(Service11.class);
 		s1.s.id = 4;
 
-		Service13 s2 = this.dependencyInjection.getService(Service13.class);
+		Service13 s2 = this.serviceLocator.getService(Service13.class);
 		assertThat(s1.s, not(theInstance(s2.s1)));
 		assertThat(s1, theInstance(s2.s2));
 		assertThat(s1.s, theInstance(s2.s2.s));
@@ -79,13 +83,13 @@ public class DependencyInjectionScopeTest {
 	 */
 	@Test
 	public void testScopePlugin() {
-		this.dependencyInjection.register(Service14.class);
-		this.dependencyInjection.register(Service15.class);
-		this.dependencyInjection.register(Service16.class);
-		this.dependencyInjection.register(ServiceForPlugins.class);
+		this.configuration.register(Service14.class);
+		this.configuration.register(Service15.class);
+		this.configuration.register(Service16.class);
+		this.configuration.register(ServiceForPlugins.class);
 
 		Map<Class<?>, Integer> plugins = new HashMap<>();
-		this.dependencyInjection.registerContextProvider("custom", new CustomProvider<>(plugins));
+		this.configuration.registerContextProvider("custom", new CustomProvider<>(plugins));
 
 		Class<?> cls1 = Service14.class;
 		Class<?> cls2 = Service15.class;
@@ -95,10 +99,10 @@ public class DependencyInjectionScopeTest {
 		plugins.put(cls2, 1);
 		plugins.put(cls3, 2);
 
-		Service14 s1 = this.dependencyInjection.getService(Service14.class);
-		Service15 s2 = this.dependencyInjection.getService(Service15.class);
+		Service14 s1 = this.serviceLocator.getService(Service14.class);
+		Service15 s2 = this.serviceLocator.getService(Service15.class);
 
-		Service16 s3 = this.dependencyInjection.getService(Service16.class);
+		Service16 s3 = this.serviceLocator.getService(Service16.class);
 
 		assertThat(s1.s, theInstance(s2.s));
 		assertThat(s1.s, not(theInstance(s3.s)));
@@ -106,42 +110,42 @@ public class DependencyInjectionScopeTest {
 
 	@Test
 	public void testContextValue() {
-		this.dependencyInjection.register(Service11.class);
-		this.dependencyInjection.register(Service12.class);
-		this.dependencyInjection.register(Service13.class);
+		this.configuration.register(Service11.class);
+		this.configuration.register(Service12.class);
+		this.configuration.register(Service13.class);
 
-		Service11 s1 = this.dependencyInjection.getService(Service11.class);
+		Service11 s1 = this.serviceLocator.getService(Service11.class);
 		assertThat(s1.s.getConsumerClass(), notNullValue());
 		assertThat(s1.s.getConsumerClass(), equalTo(Service11.class));
 	}
 
 	@Test
 	public void testInjectContextValue() {
-		this.dependencyInjection.register(Service12.class);
+		this.configuration.register(Service12.class);
 
 		Service11 s1 = new Service11();
 
-		this.dependencyInjection.inject(s1);
+		this.serviceLocator.inject(s1);
 		assertThat(s1.s.getConsumerClass(), notNullValue());
 		assertThat(s1.s.getConsumerClass(), equalTo(Service11.class));
 	}
 
 	@Test
 	public void testNoContextProvider() {
-		this.dependencyInjection.register(Service16.class);
-		this.dependencyInjection.register(ServiceForPlugins.class);
+		this.configuration.register(Service16.class);
+		this.configuration.register(ServiceForPlugins.class);
 
 		String message = assertThrows(NoSuchElementException.class,
-				() -> this.dependencyInjection.getService(Service16.class)).getMessage();
+				() -> this.serviceLocator.getService(Service16.class)).getMessage();
 		assertThat(message, equalTo("custom"));
 	}
 
 	@Test
 	public void testContextProviderWithAbstractClass() {
-		this.dependencyInjection.register(Service12.class);
-		this.dependencyInjection.register(ServiceTemplate1.class);
+		this.configuration.register(Service12.class);
+		this.configuration.register(ServiceTemplate1.class);
 
-		ServiceTemplate1 service = this.dependencyInjection.getService(ServiceTemplate1.class);
+		ServiceTemplate1 service = this.serviceLocator.getService(ServiceTemplate1.class);
 		assertThat(service.getService12(), is(notNullValue()));
 		assertThat(service.getService12FromAbstractServiceTemplate(), is(notNullValue()));
 

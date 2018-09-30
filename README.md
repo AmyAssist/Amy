@@ -6,6 +6,9 @@
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=de.unistuttgart.iaas.amyassist%3Aamy&metric=bugs)](https://sonarcloud.io/component_measures?id=de.unistuttgart.iaas.amyassist%3Aamy&metric=Reliability)
 [![Reliability](https://sonarcloud.io/api/project_badges/measure?project=de.unistuttgart.iaas.amyassist%3Aamy&metric=reliability_rating)](https://sonarcloud.io/component_measures?id=de.unistuttgart.iaas.amyassist%3Aamy&metric=Reliability)
 
+[![Docker](http://dockeri.co/image/amyassist/amy)](https://hub.docker.com/r/amyassist/amy/)
+
+
 ### Personal Assistance System
 
 This is a research project from students of the University of Stuttgart. No functionality is tested. There may be harmful errors.  
@@ -76,7 +79,9 @@ Direct links:
 
 ## Deployment
 
-TODO
+Best use our docker compose [project](https://github.com/amyassist/amy-all).
+Otherwise build the master node as a jar and every plugin as a jar and place all plugin jars in a directory.
+Then create a directory named config and place all required configs in there. In the plugin.config set the plugin path acordingly.
 
 ## Built With
 
@@ -88,7 +93,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## Versioning
 
-TODO
+This project uses [Semantic Versioning](https://semver.org/).
 
 ## Authors
 

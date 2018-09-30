@@ -24,6 +24,10 @@
 package de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api;
 
 import java.time.Instant;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nonnull;
 
 /**
  * Service to schedule and execute concurrent tasks.
@@ -46,6 +50,22 @@ public interface TaskScheduler {
 	 *            the task to execute
 	 * @param instant
 	 *            The instant at which to execute that task
+	 * @return the reference to the scheduled task
 	 */
-	void schedule(Runnable task, Instant instant);
+	@Nonnull
+	ScheduledFuture<?> schedule(Runnable task, Instant instant);
+
+	/**
+	 * Schedules the given task to execute at the given delay
+	 * 
+	 * @param task
+	 *            the task to execute
+	 * @param delay
+	 *            the delay
+	 * @param timeUnit
+	 *            the time unit of the delay
+	 * @return the reference to the scheduled task
+	 */
+	@Nonnull
+	ScheduledFuture<?> schedule(Runnable task, long delay, TimeUnit timeUnit);
 }

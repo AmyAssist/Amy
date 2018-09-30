@@ -23,18 +23,21 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.email;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
-import javax.mail.*;
+import javax.mail.Flags;
 import javax.mail.Flags.Flag;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
 
+import de.unistuttgart.iaas.amyassist.amy.core.configuration.WithDefault;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
@@ -59,8 +62,9 @@ public class EMailLogic {
 	@Reference
 	private ContactRegistry contactRegistry;
 
+	@WithDefault
 	@Reference
-	private Properties configLoader;
+	private Properties properties;
 
 	@Reference
 	private IStorage storage;
@@ -94,6 +98,9 @@ public class EMailLogic {
 	 *            look for new mails
 	 * 
 	 * @return true, if messages have been found, else false
+	 * 
+	 * @throws IllegalStateException
+	 *             when mail session is not connected
 	 */
 	public boolean hasNewMessages(boolean checkForImportant) {
 		if (checkForImportant) {
@@ -109,6 +116,9 @@ public class EMailLogic {
 	 *            put true here if you want the amount of new important mails
 	 * 
 	 * @return number of messages in inbox
+	 * 
+	 * @throws IllegalStateException
+	 *             when mail session is not connected
 	 */
 	public int getNewMessageCount(boolean checkForImportant) {
 		if (checkForImportant) {
@@ -127,6 +137,9 @@ public class EMailLogic {
 	 *            set this to true, if you only want the important mails to be converted, set this to false if you want
 	 *            every message to be converted
 	 * @return readable String of new messages
+	 * 
+	 * @throws IllegalStateException
+	 *             when mail session is not connected
 	 */
 	public String printMessages(int amount, boolean important) {
 		List<Message> messagesToPrint;
@@ -148,12 +161,9 @@ public class EMailLogic {
 				Message m = messagesToPrint.get(i);
 				sb.append(getFrom(m) + "\n");
 				sb.append(m.getSubject() + "\n");
-				sb.append(getContentFromMessage(m) + "\n\n");
 			}
 		} catch (MessagingException me) {
 			this.logger.error("Operations on the message failed", me);
-		} catch (IOException ioe) {
-			this.logger.error("Getting content from message failed", ioe);
 		}
 		return sb.toString();
 	}
@@ -165,6 +175,9 @@ public class EMailLogic {
 	 * Get all unread messages from the inbox
 	 * 
 	 * @return all unread messages in inbox, from newest to oldest
+	 * 
+	 * @throws IllegalStateException
+	 *             when mail session is not connected
 	 */
 	List<Message> getNewMessages() {
 		try {
@@ -182,6 +195,9 @@ public class EMailLogic {
 	 * Get all important messages from given message array
 	 * 
 	 * @return all important messages in given message array
+	 * 
+	 * @throws IllegalStateException
+	 *             when mail session is not connected
 	 */
 	List<Message> getNewImportantMessages() {
 		List<Message> unseenMessages = getNewMessages();
@@ -200,53 +216,15 @@ public class EMailLogic {
 	}
 
 	/**
-	 * Get content in the message
-	 * 
-	 * @param message
-	 *            the message
-	 * @return content of the message as readable String
-	 * @throws MessagingException
-	 *             if something went wrong
-	 * @throws IOException
-	 *             if something went wrong
-	 */
-	String getContentFromMessage(Message message) throws MessagingException, IOException {
-		if (message.isMimeType("text/plain")) {
-			return message.getContent().toString();
-		} else if (message.isMimeType("multipart/*")) {
-			StringBuilder sb = new StringBuilder();
-			try {
-				Multipart mp = (Multipart) message.getContent();
-				for (int i = 0; i < mp.getCount(); i++) {
-					Part part = mp.getBodyPart(i);
-					if (part.isMimeType("text/plain")) {
-						sb.append(i + part.getContent().toString() + "\n");
-					} else {
-						sb.append(i + "Body part is not plain text\n");
-					}
-				}
-			} catch (ClassCastException cce) {
-				/*
-				 * Normally, casting should work fine when the content type is multipart, but there seems to be a
-				 * problem with finding the mail configuration, for more info, see:
-				 * https://javaee.github.io/javamail/FAQ#castmultipart
-				 */
-				this.logger.debug("Still getting a stream back", cce);
-				sb.append("Cannot read message content");
-			}
-			return sb.toString();
-		}
-		return "Message content not readable";
-
-	}
-
-	/**
 	 * Get all mails in the inbox and convert them to MessageDTO objects for the REST class to send to the web app
 	 * 
 	 * @param amount
 	 *            the amount of mails, put -1 here if you want all mails
 	 * 
 	 * @return array with the requested mails, from newest to oldest, empty array if there was an error
+	 * 
+	 * @throws IllegalStateException
+	 *             when mail session is not connected
 	 */
 	public MessageDTO[] getMailsForREST(int amount) {
 		Message[] messages;
@@ -261,11 +239,11 @@ public class EMailLogic {
 				// we switch order because we get the messages from the inbox from oldest to newest
 				Message m = messages[messages.length - 1 - i];
 				LocalDateTime sentDate = m.getSentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-				messagesToSend[i] = new MessageDTO(getFrom(m), m.getSubject(), getContentFromMessage(m), sentDate,
-						isImportantMessage(m), m.isSet(Flag.SEEN));
+				messagesToSend[i] = new MessageDTO(getFrom(m), m.getSubject(), sentDate, isImportantMessage(m),
+						m.isSet(Flag.SEEN));
 			}
 			return messagesToSend;
-		} catch (MessagingException | IOException e) {
+		} catch (MessagingException e) {
 			this.logger.error("There were problems handling the messages", e);
 			return new MessageDTO[0];
 		}
@@ -314,8 +292,8 @@ public class EMailLogic {
 	public boolean connectToMailServer(EMailCredentials credentials) {
 		if (credentials == null) {
 			// if no credentials are given, use the standard ones for Amy
-			String amyUsername = this.configLoader.getProperty(AMY_MAIL_ADDRESS_KEY);
-			String amyPassword = this.configLoader.getProperty(AMY_MAIL_PW_KEY);
+			String amyUsername = this.properties.getProperty(AMY_MAIL_ADDRESS_KEY);
+			String amyPassword = this.properties.getProperty(AMY_MAIL_PW_KEY);
 			String amyHost = AMY_MAIL_HOST;
 
 			credentials = new EMailCredentials(amyUsername, amyPassword, amyHost);

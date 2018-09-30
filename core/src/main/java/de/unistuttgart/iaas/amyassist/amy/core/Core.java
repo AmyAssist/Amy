@@ -28,12 +28,11 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.console.ExitConsole;
 import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
+import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
 import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService;
 import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
 import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
@@ -47,6 +46,9 @@ import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableServiceExtension;
  * @author Tim Neumann, Leon Kiefer
  */
 public class Core {
+
+	private static final int EXIT_CODE_ALL_GOOD = 0;
+	private static final int EXIT_CODE_CMA_FLAGS_INVALID = 11;
 
 	private final Logger logger = LoggerFactory.getLogger(Core.class);
 
@@ -76,12 +78,17 @@ public class Core {
 	void start(String[] args) {
 		this.registerAllCoreServices();
 		this.init();
-		CommandLineArgumentHandlerService cmaHandler = this.di.getService(new ServiceConsumerImpl<>(this.getClass(),
-				new ServiceDescriptionImpl<>(CommandLineArgumentHandlerService.class))).getService();
+		CommandLineArgumentHandlerService cmaHandler = this.di.getServiceLocator()
+				.getService(new ServiceConsumerImpl<>(this.getClass(),
+						new ServiceDescriptionImpl<>(CommandLineArgumentHandlerService.class)))
+				.getService();
 		cmaHandler.load(args, System.out::println);
 		if (cmaHandler.shouldProgramContinue()) {
-			this.di.register(new SingletonServiceProvider<>(CommandLineArgumentInfo.class, cmaHandler.getInfo()));
+			this.di.getConfiguration()
+					.register(new SingletonServiceProvider<>(CommandLineArgumentInfo.class, cmaHandler.getInfo()));
 			this.run();
+		} else {
+			System.exit(cmaHandler.areFlagsValid() ? EXIT_CODE_ALL_GOOD : EXIT_CODE_CMA_FLAGS_INVALID); // NOSONAR
 		}
 	}
 
@@ -100,8 +107,6 @@ public class Core {
 	 * register all instances and classes in the DI
 	 */
 	private void registerAllCoreServices() {
-		this.di.register(new SingletonServiceProvider<>(Core.class, this));
-
 		this.di.loadServices();
 	}
 
@@ -113,7 +118,7 @@ public class Core {
 	}
 
 	private void loadPlugins() {
-		PluginManager pluginManager = this.di
+		PluginManager pluginManager = this.di.getServiceLocator()
 				.getService(
 						new ServiceConsumerImpl<>(this.getClass(), new ServiceDescriptionImpl<>(PluginManager.class)))
 				.getService();
@@ -122,7 +127,8 @@ public class Core {
 		} catch (IOException e) {
 			throw new IllegalStateException("Could not load plugins due to an IOException.", e);
 		}
-		this.di.registerContextProvider(Context.PLUGIN, new PluginProvider(pluginManager.getPlugins()));
+		this.di.getConfiguration().registerContextProvider(Context.PLUGIN,
+				new PluginProvider(pluginManager.getPlugins()));
 	}
 
 	/**
@@ -138,18 +144,9 @@ public class Core {
 		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
 	}
 
-	/**
-	 * stop all Threads and terminate the application. This is call form the {@link ExitConsole}
-	 */
-	public void stop() {
-		Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
-		this.doStop();
-	}
-
 	private void doStop() {
 		this.logger.info("stop");
 		this.runnableServiceExtension.stop();
-		this.di.shutdown();
 		this.logger.info("stopped");
 	}
 

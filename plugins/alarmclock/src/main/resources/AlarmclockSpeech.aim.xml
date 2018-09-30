@@ -2,7 +2,7 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.setAlarm">
-		<gram>(set|create) (alarm) [(at|for|on) {time}] [{day}]</gram>
+		<gram>[set|create] [an|a|new] alarm [(at|for|on) {time}] [{day}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="time" required="true">
 				<gram>{amytime}</gram>
@@ -12,59 +12,35 @@
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="time">
-			<text>On what time of day should I set?</text>
+			<text>What time do you want the alarm to ring?</text>
 			<gram>[(at|for|on)] {time}</gram>
 		</Prompt>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.setTimer">
-		<gram>(set|create) timer (for|on|at) [{hour} hour] [{minute} minute] [{second}second]
-		</gram>
-		<EntityTemplates>
-			<EntityTemplate id="hour" required="false">
-				<gram>{amyinteger}</gram>
-			</EntityTemplate>
-			<EntityTemplate id="minute" required="false">
-				<gram>{amyinteger}</gram>
-			</EntityTemplate>
-			<EntityTemplate id="second" required="false">
-				<gram>{amyinteger}</gram>
-			</EntityTemplate>
-		</EntityTemplates>
-	</Intent>
-	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.resetAlarmClockObjects">
-		<gram>delete all {type}</gram>
-		<EntityTemplates>
-			<EntityTemplate id="type" required="true">
-				<gram>(alarms|timers)</gram>
-			</EntityTemplate>
-		</EntityTemplates>
+		<gram>(delete|reset) all alarms</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.deleteAlarmClockObject">
-		<gram>delete {type} {number}</gram>
+		<gram>delete alarm {number}</gram>
 		<EntityTemplates>
-			<EntityTemplate id="type" required="true">
-				<gram>(alarm|timer)</gram>
-			</EntityTemplate>
 			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>
-
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.deactivateAlarmClockObject">
-		<gram>deactivate {type} {number}</gram>
+		<gram>(deactivate|stop) alarm {number}</gram>
 		<EntityTemplates>
-			<EntityTemplate id="type" required="true">
-				<gram>(alarm|timer)</gram>
-			</EntityTemplate>
 			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.stopRinging">
+		<gram>stop alarm</gram>
 	</Intent>
 
 	<Intent
@@ -79,27 +55,17 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getAlarmClockObject">
-		<gram>get {type} {number}</gram>
+		<gram>(get|read) alarm [number] {number}</gram>
 		<EntityTemplates>
-			<EntityTemplate id="type" required="true">
-				<gram>(alarm|timer)</gram>
-			</EntityTemplate>
 			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>
-
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getAllAlarmClockObjects">
-		<gram>get all {type}</gram>
-		<EntityTemplates>
-			<EntityTemplate id="type" required="true">
-				<gram>(alarms|timers)</gram>
-			</EntityTemplate>
-		</EntityTemplates>
+		<gram>get all alarms</gram>
 	</Intent>
-
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.editAlarm">
 		<gram>edit alarm {number} to {time} [{day}]</gram>
@@ -112,16 +78,6 @@
 			</EntityTemplate>
 			<EntityTemplate id="day" required="false">
 				<gram>(today|tomorrow)</gram>
-			</EntityTemplate>
-		</EntityTemplates>
-	</Intent>
-
-	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getRemainingTimerDelay">
-		<gram>when (does|is) timer {number} (ringing|ring)</gram>
-		<EntityTemplates>
-			<EntityTemplate id="number" required="true">
-				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>

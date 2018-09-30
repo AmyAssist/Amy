@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.mensa.MensaSpeech.getFood">
+		<gram>([tell me] what [s|is|does] (the mensa offer|for (lunch|dinner))|i wonder if i will eat) [{amydate}]</gram>
+	</Intent>
+</AmyInteractionModel>

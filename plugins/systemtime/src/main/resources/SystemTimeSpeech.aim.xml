@@ -2,15 +2,49 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.time">
-		<gram>(what is|tell me) the time</gram>
+		<gram>[what|tell me] [is] [the] time [is it]</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.date">
-		<gram>(what is|tell me) the date</gram>
+		<gram>[what|tell me] [is] [the] (date|day) [is] [today]</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.year">
-		<gram>(what is|tell me) the year</gram>
+		<gram>[what|tell me] [is] [the] year [do we have|is it|are we living in]</gram>
 	</Intent>
-
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.dayOfWeek">
+		<gram>[what|tell me the] (week day|day [of the] week) [do we have|is|was] [the] [{date}]</gram>
+		<EntityTemplates>
+			<EntityTemplate id="year" required="false">
+				<gram>{amyyear}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="date" required="true">
+				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{year}]|tomorrow|today)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="date">
+			<text>At which date?</text>
+			<gram>{date}</gram>
+		</Prompt>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.howManyDays">
+		<gram>[How many] days [have passed] {time} [the {date}]</gram>
+		<EntityTemplates>		
+			<EntityTemplate id="time" required="true">
+				<gram>(until|since)</gram>
+			</EntityTemplate>
+			<EntityTemplate id="year" required="false">
+				<gram>{amyyear}</gram>
+			</EntityTemplate>
+			<EntityTemplate id="date" required="true">
+				<gram>([{amydayofweek} [the]] {amydayofmonth} [of] {amymonth} [{year}]|tomorrow|today)</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+		<Prompt entityTemplateId="date">
+			<text>Which date?</text>
+			<gram>{date}</gram>
+		</Prompt>
+	</Intent>
 </AmyInteractionModel>

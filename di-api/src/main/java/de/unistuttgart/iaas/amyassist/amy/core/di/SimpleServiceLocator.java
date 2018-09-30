@@ -23,19 +23,21 @@
 
 package de.unistuttgart.iaas.amyassist.amy.core.di;
 
+import javax.annotation.Nonnull;
+
 import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
 
 /**
- * SimpleServiceLocator is used in {@link ServiceProvider} to get dependencies. The normal extended {@link ServiceLocator} interface
- * should not be used in ServiceProviders.
+ * SimpleServiceLocator is used in {@link ServiceProvider} to get dependencies. The normal extended
+ * {@link ServiceLocator} interface should not be used in ServiceProviders.
  * 
  * @author Leon Kiefer
  */
 public interface SimpleServiceLocator {
 	/**
-	 * Get a service for the given service consumer. This Method track the caller to prevent the service get created
+	 * Get a service for the given service consumer. This method track the caller to prevent the service get created
 	 * twice and to run in a dependency circle.
 	 * 
 	 * @param serviceConsumer
@@ -44,6 +46,6 @@ public interface SimpleServiceLocator {
 	 * @param <T>
 	 *            the type of the service
 	 */
-	<T> ServiceHandle<T> getService(ServiceConsumer<T> serviceConsumer);
+	<T> ServiceHandle<T> getService(@Nonnull ServiceConsumer<T> serviceConsumer);
 
 }

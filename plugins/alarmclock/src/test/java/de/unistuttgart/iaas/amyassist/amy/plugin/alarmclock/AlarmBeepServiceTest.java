@@ -23,10 +23,9 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -53,8 +52,6 @@ public class AlarmBeepServiceTest {
 
 	private Set<Integer> alarms = new HashSet<>();
 
-	private Set<Integer> timers = new HashSet<>();
-
 	/**
 	 * Initializes the class variables before each test
 	 */
@@ -78,19 +75,6 @@ public class AlarmBeepServiceTest {
 	}
 
 	/**
-	 * Tests beep(Alarm)
-	 */
-	@Test
-	public void beepTimerTest() {
-		Timer timer = new Timer(1, 1, 1, 1, true);
-		this.abs.beep(timer);
-		when(this.abs.beep(timer)).thenReturn(this.timers);
-		this.timers.add(timer.getId());
-		this.abs.beep(timer);
-		assertThat(this.abs.beep(timer).size(), is(1));
-	}
-
-	/**
 	 * Tests stopBeep(alarm)
 	 */
 	@Test
@@ -101,18 +85,6 @@ public class AlarmBeepServiceTest {
 		this.abs.stopBeep(alarm);
 		verify(this.abs).stopBeep(alarm);
 		assertThat(this.abs.stopBeep(alarm).size(), is(0));
-	}
-
-	/**
-	 * Tests stopBeep(timer)
-	 */
-	@Test
-	public void stopBeepTimerTest() {
-		Timer timer = new Timer(1, 1, 1, 1, true);
-		when(this.abs.stopBeep(timer)).thenReturn(this.timers);
-		this.abs.stopBeep(timer);
-		verify(this.abs).stopBeep(timer);
-		assertThat(this.abs.stopBeep(timer).size(), is(0));
 	}
 
 }

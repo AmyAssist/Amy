@@ -41,7 +41,6 @@ public class MessageDTO extends Entity {
 
 	private String from;
 	private String subject;
-	private String content;
 
 	@XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
 	private LocalDateTime sentDate;
@@ -62,8 +61,6 @@ public class MessageDTO extends Entity {
 	 *            the mail address of the sender
 	 * @param subject
 	 *            subject of the messages
-	 * @param content
-	 *            the content of the message
 	 * @param sentDate
 	 *            the time the mail was sent
 	 * @param important
@@ -71,11 +68,9 @@ public class MessageDTO extends Entity {
 	 * @param seen
 	 *            is message seen
 	 */
-	public MessageDTO(String from, String subject, String content, LocalDateTime sentDate, boolean important,
-			boolean seen) {
+	public MessageDTO(String from, String subject, LocalDateTime sentDate, boolean important, boolean seen) {
 		this.from = from;
 		this.subject = subject;
-		this.content = content;
 		this.sentDate = sentDate;
 		this.important = important;
 		this.seen = seen;
@@ -93,13 +88,6 @@ public class MessageDTO extends Entity {
 	 */
 	public String getSubject() {
 		return this.subject;
-	}
-
-	/**
-	 * @return return content of message
-	 */
-	public String getContent() {
-		return this.content;
 	}
 
 	/**

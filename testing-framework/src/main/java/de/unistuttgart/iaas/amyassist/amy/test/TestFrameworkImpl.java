@@ -37,9 +37,11 @@ import org.mockito.Mockito;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
+import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceNotFoundException;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import de.unistuttgart.iaas.amyassist.amy.core.di.exception.ServiceNotFoundException;
 import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
 import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
@@ -67,6 +69,8 @@ public class TestFrameworkImpl implements TestFramework {
 	private DependencyInjection dependencyInjection;
 	private Server server;
 	private List<Class<?>> restResources = new ArrayList<>();
+	private Configuration configuration;
+	private ServiceLocator serviceLocator;
 
 	/**
 	 * Create a new instance of the TestFramework
@@ -76,10 +80,12 @@ public class TestFrameworkImpl implements TestFramework {
 				Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS).useConstructor());
 
 		this.dependencyInjection = new DependencyInjection();
-		this.dependencyInjection.register(new SingletonServiceProvider<>(TestFramework.class, this));
-		this.dependencyInjection.register(new SingletonServiceProvider<>(IStorage.class, this.storage));
-		this.dependencyInjection.register(ServerImpl.class);
-		this.dependencyInjection.register(new LoggerProvider());
+		this.configuration = this.dependencyInjection.getConfiguration();
+		this.serviceLocator = this.dependencyInjection.getServiceLocator();
+		this.configuration.register(new SingletonServiceProvider<>(TestFramework.class, this));
+		this.configuration.register(new SingletonServiceProvider<>(IStorage.class, this.storage));
+		this.configuration.register(ServerImpl.class);
+		this.configuration.register(new LoggerProvider());
 	}
 
 	/**
@@ -94,7 +100,7 @@ public class TestFrameworkImpl implements TestFramework {
 
 		ConfigurationManager configLoader = this.mockService(ConfigurationManager.class);
 		Mockito.when(configLoader.getConfigurationWithDefaults(ServerImpl.CONFIG_NAME)).thenReturn(serverConfig);
-		this.server = this.dependencyInjection.getService(Server.class);
+		this.server = this.serviceLocator.getService(Server.class);
 	}
 
 	/**
@@ -103,7 +109,7 @@ public class TestFrameworkImpl implements TestFramework {
 	 *            the object of the test class
 	 */
 	public void setup(Object testInstance) {
-		this.dependencyInjection.inject(testInstance);
+		this.serviceLocator.inject(testInstance);
 	}
 
 	/**
@@ -133,16 +139,16 @@ public class TestFrameworkImpl implements TestFramework {
 	@Override
 	public <T> T mockService(Class<T> serviceType) {
 		T mock = Mockito.mock(serviceType);
-		this.dependencyInjection.register(new SingletonServiceProvider<>(serviceType, mock));
+		this.configuration.register(new SingletonServiceProvider<>(serviceType, mock));
 		return mock;
 	}
 
 	@Override
 	public <T> T setServiceUnderTest(Class<T> serviceClass) {
 		if (Util.isValidServiceClass(serviceClass) && serviceClass.isAnnotationPresent(Service.class)) {
-			this.dependencyInjection.register(serviceClass);
+			this.configuration.register(serviceClass);
 			try {
-				return this.dependencyInjection.createAndInitialize(serviceClass);
+				return this.serviceLocator.createAndInitialize(serviceClass);
 			} catch (ServiceNotFoundException e) {
 				throw new IllegalStateException("The dependencies of " + serviceClass.getName()
 						+ " must be mocked with mockService before calling this method!", e);
@@ -164,7 +170,7 @@ public class TestFrameworkImpl implements TestFramework {
 
 	@Override
 	public <T> T registerService(Class<T> serviceType, Class<? extends T> serviceClass) {
-		this.dependencyInjection.register(serviceClass);
-		return this.dependencyInjection.getService(serviceType);
+		this.configuration.register(serviceClass);
+		return this.serviceLocator.getService(serviceType);
 	}
 }

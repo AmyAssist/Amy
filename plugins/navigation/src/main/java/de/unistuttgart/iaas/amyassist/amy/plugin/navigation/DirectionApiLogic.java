@@ -228,7 +228,7 @@ public class DirectionApiLogic {
 	 * transfer a string to the apt TravelMode of the api
 	 * 
 	 * @param mode
-	 *            supported Strings: driving, car, bicycling, transit, public transport, transport, walking, walk
+	 *            supported Strings: driving, car, bicycling, transit, public transport, transport, walking, walk, etc.
 	 * @return apt travelMode
 	 */
 	public TravelMode getTravelMode(String mode) {
@@ -242,6 +242,7 @@ public class DirectionApiLogic {
 			return TravelMode.BICYCLING;
 		case "transit":
 		case "public transport":
+		case "public transit":
 		case "transport":
 			return TravelMode.TRANSIT;
 		case "walking":
@@ -250,6 +251,10 @@ public class DirectionApiLogic {
 		default:
 			return null;
 		}
+	}
+
+	String getStaticAPIKey() {
+		return this.calls.getStaticAPIKey();
 	}
 
 }

@@ -66,7 +66,7 @@ public class DialogHandlerImplTest {
 	private UUID uuid;
 
 	@Mock
-	private Consumer<String> consumer;
+	private Consumer<Response> consumer;
 
 	private ServiceLocator serviceLocator;
 

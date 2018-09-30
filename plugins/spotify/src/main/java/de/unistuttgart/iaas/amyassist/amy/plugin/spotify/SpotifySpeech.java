@@ -29,10 +29,7 @@ import java.util.Map;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.*;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.*;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
 import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
@@ -90,9 +87,16 @@ public class SpotifySpeech {
 	 * @return the speech output string
 	 */
 	@Intent()
-	public String getCurrentSong(Map<String, EntityData> entites) {
+	public Response getCurrentSong(Map<String, EntityData> entites) {
 		TrackEntity track = this.playerLogic.getCurrentSong();
-		return (track != null) ? "track: " + track.toString() : "No song is playing";
+
+		if (track != null) {
+            return Response.text("track: " + track.toString())
+                .widget("app-current-song")
+                .build();
+        }
+
+		return Response.text("No song is playing").build();
 	}
 
 	/**
@@ -105,16 +109,20 @@ public class SpotifySpeech {
 	@Intent()
 	public String getPlaylists(Map<String, EntityData> entites) {
 		StringBuilder builder = new StringBuilder();
+		int amount = LIMIT_FOR_SEARCH;
+		if (entites.get("number") != null) {
+			amount = entites.get("number").getNumber();
+		}
 		if (entites.get("type").getString() != null) {
 			switch (entites.get("type").getString()) {
 			case "featured":
-				for (PlaylistEntity playlist : this.search.searchFeaturedPlaylists(LIMIT_FOR_SEARCH)) {
+				for (PlaylistEntity playlist : this.search.searchFeaturedPlaylists(amount)) {
 					builder = builder.append(playlist.toString()).append("\n");
 				}
 				break;
 			case "own":
 			case "on":
-				for (PlaylistEntity playlist : this.search.searchOwnPlaylists(LIMIT_FOR_SEARCH)) {
+				for (PlaylistEntity playlist : this.search.searchOwnPlaylists(amount)) {
 					builder = builder.append(playlist.toString()).append("\n");
 				}
 				break;
@@ -155,29 +163,24 @@ public class SpotifySpeech {
 	public String control(Map<String, EntityData> entites) {
 		switch (entites.get("type").getString()) {
 		case "back":
-			if (this.playerLogic.back()) {
-				return "back";
-			}
-			return ERROR_MESSAGE;
+			this.playerLogic.back();
+			break;
 		case "skip":
-			if (this.playerLogic.skip()) {
-				return "skip";
-			}
-			return ERROR_MESSAGE;
+			this.playerLogic.skip();
+			break;
 		case "pause":
 		case "pass":
-			if (this.playerLogic.pause()) {
-				return "pause";
-			}
-			return ERROR_MESSAGE;
+		case "stop":
+			this.playerLogic.pause();
+			break;
 		case "resume":
-			if (this.playerLogic.resume()) {
-				return "resuming";
-			}
-			return ERROR_MESSAGE;
+			this.playerLogic.resume();
+			break;
 		default:
 			return ERROR_MESSAGE;
 		}
+		return "OK";
+
 	}
 
 	/**
@@ -269,39 +272,40 @@ public class SpotifySpeech {
 	 * @return the track, album, playist that is now playing
 	 */
 	@Intent()
-	public String searchASong(Map<String, EntityData> entites) {
+	public Response searchASong(Map<String, EntityData> entites) {
 		switch (entites.get("mode").getString()) {
 		case "track":
 		case "song":
 			List<TrackEntity> tracks = this.search.searchforTracks(entites.get("name").getString(), 1);
 			if (!tracks.isEmpty() && tracks.get(0) != null) {
-				return this.playerLogic.playTrack(0).toString();
+				return Response.text(this.playerLogic.playTrack(0).toString())
+                    .widget("app-current-song")
+                    .build();
 			}
 			break;
 		case "playlist":
 			List<PlaylistEntity> playlists = this.search.searchforPlaylists(entites.get("name").getString(), 1);
 			if (!playlists.isEmpty() && playlists.get(0) != null) {
-				return this.playerLogic.playPlaylist(0, SearchTypes.SEARCH_PLAYLISTS).toString();
+				return Response.text(this.playerLogic.playPlaylist(0, SearchTypes.SEARCH_PLAYLISTS).toString()).build();
 			}
 			break;
 		case "album":
 			List<AlbumEntity> albums = this.search.searchforAlbums(entites.get("name").getString(), 1);
 			if (!albums.isEmpty() && albums.get(0) != null) {
-				return this.playerLogic.playAlbum(0).toString();
+				return Response.text(this.playerLogic.playAlbum(0).toString()).build();
 			}
 			break;
 		case "artist":
-		case "artists":
 			List<ArtistEntity> artists = this.search.searchforArtists(entites.get("name").getString(), 1);
 			if (!artists.isEmpty() && artists.get(0) != null) {
-				return this.playerLogic.playArtist(0).toString();
+				return Response.text(this.playerLogic.playArtist(0).toString()).build();
 			}
 			break;
 		default:
 			break;
 		}
 
-		return ERROR_MESSAGE_ELEMENT;
+		return Response.text(ERROR_MESSAGE_ELEMENT).build();
 	}
 
 	/**

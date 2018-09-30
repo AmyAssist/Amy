@@ -28,6 +28,7 @@ import java.util.Set;
 
 import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
 import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
 import de.unistuttgart.iaas.amyassist.amy.core.di.extension.Extension;
 
 /**
@@ -37,13 +38,13 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.extension.Extension;
  */
 public class RunnableServiceExtension implements Extension {
 
-	private DependencyInjection di;
+	private ServiceLocator serviceLocator;
 
 	private final Set<ServiceDescription<?>> runnableServices = new HashSet<>();
 
 	@Override
 	public void postConstruct(DependencyInjection dependencyInjection) {
-		this.di = dependencyInjection;
+		this.serviceLocator = dependencyInjection.getServiceLocator();
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class RunnableServiceExtension implements Extension {
 	 * Deploy all registered RunnableServies
 	 */
 	public void deploy() {
-		ServiceManagerImpl service = this.di.getService(ServiceManagerImpl.class);
+		ServiceManagerImpl service = this.serviceLocator.getService(ServiceManagerImpl.class);
 		this.runnableServices.forEach(service::register);
 	}
 
@@ -65,14 +66,14 @@ public class RunnableServiceExtension implements Extension {
 	 * Start all registered RunnableServies
 	 */
 	public void start() {
-		this.di.getService(ServiceManagerImpl.class).start();
+		this.serviceLocator.getService(ServiceManagerImpl.class).start();
 	}
 
 	/**
 	 * Stop all running Services
 	 */
 	public void stop() {
-		this.di.getService(ServiceManagerImpl.class).stop();
+		this.serviceLocator.getService(ServiceManagerImpl.class).stop();
 	}
 
 }

@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.5.0</version>
+		<version>0.6.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
@@ -83,7 +83,7 @@
 									<manifestEntries>
 										<Specification-Title>${project.artifactId}</Specification-Title>
 										<Specification-Version>${project.version}</Specification-Version>
-										<Implementation-Title>${project.artifactId}</Implementation-Title>
+										<Implementation-Title>${project.name}</Implementation-Title>
 										<Implementation-Version>${project.version}</Implementation-Version>
 										<Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
 										<PluginID>${project.groupId}.${project.artifactId}</PluginID>

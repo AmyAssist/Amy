@@ -28,7 +28,7 @@ package de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes;
  * 
  * @author Felix Burk
  */
-public class NumberNode extends AGFNode {
+public class NumberNode extends EndNode {
 
 	private int containedNumber;
 
@@ -64,26 +64,6 @@ public class NumberNode extends AGFNode {
 	@Override
 	public AGFNodeType getType() {
 		return AGFNodeType.NUMBER;
-	}
-
-	/**
-	 * special print self method, because this node my never have children
-	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode#printSelf(java.lang.String, int)
-	 */
-	@Override
-	public String printSelf(String name, int indent) {
-		StringBuilder b = new StringBuilder();
-		b.append("+" + name);
-		b.append("\n");
-
-		for (int i = 0; i < indent; i++) {
-			b.append("|");
-			b.append("   ");
-		}
-		b.append("|---" + "<content> " + this.getContent());
-		b.append("\n");
-		return b.toString();
 	}
 
 	/**
