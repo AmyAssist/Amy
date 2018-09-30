@@ -110,7 +110,7 @@
 			</EntityTemplate>
 		</EntityTemplates>
 		<Prompt entityTemplateId="name">
-			<text>which one?</text>
+			<text>Which one?</text>
 			<gram>{name}</gram>
 		</Prompt>
 	</Intent>
