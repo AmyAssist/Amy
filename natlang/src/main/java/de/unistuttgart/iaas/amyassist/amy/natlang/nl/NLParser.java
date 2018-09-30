@@ -290,6 +290,10 @@ public class NLParser implements INLParser {
 	 */
 	private boolean matchLongWC() {
 		this.wildcardSkip = true;
+		//quick hack - match at least one character
+		if(this.currentIndex == this.mRead.size()) {
+			return false;
+		}
 		for (int i = this.currentIndex; i < this.mRead.size(); i++) {
 			EndToken token = lookAhead(0);
 			if(token != null) {
