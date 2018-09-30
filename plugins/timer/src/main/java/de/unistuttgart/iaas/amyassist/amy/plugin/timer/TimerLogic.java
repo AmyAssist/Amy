@@ -157,6 +157,21 @@ public class TimerLogic implements RunnableService {
 	}
 
 	/**
+	 * Go through all timers and delete old ones
+	 * 
+	 * @return timer stopped
+	 */
+	public String stopRinging() {
+		List<Timer> allTimers = getAllTimers();
+		for (Timer t : allTimers) {
+			if (t.isActive() && t.getTimerTime().isBefore(this.environment.getCurrentLocalDateTime())) {
+				deleteTimer(t.getId());
+			}
+		}
+		return "Timer stopped";
+	}
+
+	/**
 	 * Read out one timer
 	 * 
 	 * @param timerNumber

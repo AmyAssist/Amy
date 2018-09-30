@@ -38,6 +38,10 @@
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.stopRinging">
+		<gram>stop alarm</gram>
+	</Intent>
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.activateAlarm">
