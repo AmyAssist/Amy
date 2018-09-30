@@ -2,7 +2,7 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.setTimer">
-		<gram>(set|create) [a] timer (for|on|at) [{hour} hour] [{minute} minute] [{second} second]</gram>
+		<gram>[set|create] [a] timer (for|on|at) [{hour} hour] [{minute} minute] [{second} second]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="hour" required="false">
 				<gram>{amyinteger}</gram>
@@ -39,7 +39,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.deleteTimerObject">
-		<gram>delete timer {number}</gram>
+		<gram>(delete|deactivate|stop) timer {number}</gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>
