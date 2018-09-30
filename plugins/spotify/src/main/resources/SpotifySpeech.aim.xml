@@ -100,20 +100,7 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.searchASong">
-		<gram> play [this|the] {mode} [{name}] </gram>
-		<EntityTemplates>
-			<EntityTemplate id="mode" required="true">
-				<gram>(track|playlist|album|song|artist)</gram>
-			</EntityTemplate>
-			<EntityTemplate id="name" required="true">
-				<gram>*</gram>
-			</EntityTemplate>
-		</EntityTemplates>
-	</Intent>
-
-	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.searchASong">
-		<gram> play (a|the|following) {mode} </gram>
+		<gram> lay [this|a|the|following] {mode} {name}  </gram>
 		<EntityTemplates>
 			<EntityTemplate id="mode" required="true">
 				<gram>(track|playlist|album|song|artist)</gram>
