@@ -39,12 +39,16 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.deleteTimerObject">
-		<gram>(delete|deactivate|stop) timer {number}</gram>
+		<gram>(delete|deactivate) timer {number}</gram> 
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>
 			</EntityTemplate>
 		</EntityTemplates>
+	</Intent>
+	<Intent
+		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.stopRinging">
+		<gram>stop timer</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.getTimerObject">

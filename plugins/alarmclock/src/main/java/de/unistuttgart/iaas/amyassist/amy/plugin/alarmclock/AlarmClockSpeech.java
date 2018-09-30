@@ -137,6 +137,18 @@ public class AlarmClockSpeech {
 	}
 
 	/**
+	 * Stops the currently ringing alarm
+	 * 
+	 * @param entities
+	 *            contains the data input
+	 * @return if successful
+	 */
+	@Intent
+	public String stopRinging(Map<String, EntityData> entities) {
+		return this.alarmLogic.stopRinging();
+	}
+
+	/**
 	 * Activates one specific alarm or timer
 	 * 
 	 * @param entities
