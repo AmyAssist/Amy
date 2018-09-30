@@ -279,7 +279,7 @@ public class WeatherSpeechCommand {
 			return "0% chance of rain " + suffix + "!";
 		}
 		
-		return round(probability * 100) + chanceOf + precipType + suffix;
+		return round(probability * 100) + chanceOf + precipType + " " + suffix + "!";
 		
 	}
 
