@@ -2,7 +2,7 @@
 <AmyInteractionModel>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.time">
-		<gram>[what|tell me the] time [is it]</gram>
+		<gram>[what|tell me] [is] [the] time [is it]</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.date">
@@ -10,7 +10,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.year">
-		<gram>[what|tell me the] year [do we have|is it|are we living in]</gram>
+		<gram>[what|tell me] [is] [the] year [do we have|is it|are we living in]</gram>
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.dayOfWeek">
