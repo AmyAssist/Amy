@@ -23,7 +23,7 @@
 		</EntityTemplates>
 
 		<Prompt entityTemplateId="type">
-			<text>would you like to look for one of your own playlists or a featured one</text>
+			<text>Would you like to look for one of your own playlists or a featured one?</text>
 			<gram>{type} playlist</gram>
 		</Prompt>
 	</Intent>
@@ -89,7 +89,7 @@
 			</EntityTemplate>
 		</EntityTemplates>		
 		<Prompt entityTemplateId="type">
-			<text>would you like to play your own playlist or a featured one</text>
+			<text>Would you like to play your own playlist or a featured one?</text>
 			<gram>{type} [playlist]</gram>
 		</Prompt>
 		<Prompt entityTemplateId="songid">
