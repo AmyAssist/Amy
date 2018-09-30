@@ -31,7 +31,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.deactivateAlarmClockObject">
-		<gram>deactivate alarm {number}</gram>
+		<gram>(deactivate|stop) alarm {number}</gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
 				<gram>{amyinteger}</gram>

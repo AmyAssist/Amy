@@ -24,7 +24,7 @@
 				<gram>(today|tomorrow|on the weekend)</gram>
 			</EntityTemplate>
 			<EntityTemplate id="locationname" required="false">
-				<gram>*</gram>
+				<gram>+</gram>
 			</EntityTemplate>
 		</EntityTemplates>
 	</Intent>
