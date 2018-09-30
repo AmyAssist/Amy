@@ -24,12 +24,8 @@
 package de.unistuttgart.iaas.amyassist.amy.natlang;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
 
 import org.slf4j.Logger;
 
@@ -39,6 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
 import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexer;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParser;
 import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
@@ -86,7 +83,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	@Reference
 	private ConfigurationManager configurationLoader;
 
-	private static final String CONFIG_NAME = "core.config";
+	private static final String CONFIG_NAME = "natlang.config";
 	private static final String PROPERTY_ENABLE_STEMMER = "enableStemmer";
 	private static final String PROBERTY_LANGUAGE = "chooseLanguage";
 
@@ -119,7 +116,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 		UserIntentTemplate template = new UserIntentTemplate(method, intent);
 
-		// unfortunately we have to use UserIntent here because enity data has to be present
+		// unfortunately we have to use UserIntent here because entity data has to be present
 		UserIntent userIntent = new UserIntent(method, intent);
 		this.nodeToMethodAIMPair.put(userIntent.getGrammar(), template);
 	}
@@ -137,15 +134,14 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			// try to skip prefixes and suffixes until a grammar matches
 			for (int i = 0; i <= tokens.size(); i++) {
 				for (int j = tokens.size(); j > i; j--) {
-					if (tokens.subList(i, j).size() > 2 &&
-							promptGrammarFound(dialog, tokens.subList(i, j))) {
+					if (tokens.subList(i, j).size() > 2 && promptGrammarFound(dialog, tokens.subList(i, j))) {
 						return;
 					}
-					
+
 				}
 			}
 			this.logger.debug("no matching grammar found");
-			dialog.output(dialog.getNextPrompt().getOutputText());
+			dialog.output(Response.text(dialog.getNextPrompt().getOutputText()).build());
 		}
 	}
 
@@ -162,7 +158,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 			int matchingNodeIndex = nlParser.matchingNodeIndex(tokens);
 
 			if (matchingNodeIndex == promptGrams.indexOf(this.quitIntentUserInputGram)) {
-				dialog.output(generateRandomAnswer(QUIT_INTENT_ANSWER));
+				dialog.output(Response.text(generateRandomAnswer(QUIT_INTENT_ANSWER)).build());
 				dialog.setIntent(null);
 				return true;
 			}
@@ -185,7 +181,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 
 		if (!dialog.getIntent().isFinished()) {
 			dialog.setNextPrompt(dialog.getIntent().getNextPrompt());
-			dialog.output(dialog.getNextPrompt().getOutputText());
+			dialog.output(Response.text(dialog.getNextPrompt().getOutputText()).build());
 		}
 	}
 
@@ -223,20 +219,19 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		if (intentFound(dialog, tokens)) {
 			return dialog;
 		}
-		
+
 		// try to skip prefixes and suffixes until a grammar matches
 		for (int i = 0; i <= tokens.size(); i++) {
 			for (int j = tokens.size(); j > i; j--) {
-				if (tokens.subList(i, j).size() > 2 &&
-						intentFound(dialog, tokens.subList(i, j))) {
+				if (tokens.subList(i, j).size() > 2 && intentFound(dialog, tokens.subList(i, j))) {
 					return dialog;
 				}
-				
+
 			}
 		}
 
 		this.logger.debug("no matching grammar found");
-		dialog.output(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER));
+		dialog.output(Response.text(generateRandomAnswer(FAILED_TO_UNDERSTAND_ANSWER)).build());
 		return dialog;
 
 	}
@@ -270,7 +265,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 		int rndm = rand.nextInt(strings.length);
 		return strings[rndm];
 	}
-	
+
 	/**
 	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#getPossibleGrammars()
 	 */

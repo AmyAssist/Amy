@@ -23,16 +23,24 @@
 
 package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
+import de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest.WidgetRouteInfo;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 /**
  * This class is needed to store the best route and the transport type
  * 
- * @author Lars Buttgereit, Muhammed Kaya
+ * @author Lars Buttgereit, Muhammed Kaya, Benno Krauß
  */
 @XmlRootElement
 public class BestTransportResult {
@@ -132,6 +140,42 @@ public class BestTransportResult {
 			}
 		}
 		return "No route found";
+	}
+
+	private String urlEncode(String string) throws UnsupportedEncodingException {
+		return URLEncoder.encode(string, StandardCharsets.UTF_8.name());
+	}
+
+	public WidgetRouteInfo routeToWidgetInfo(String mapsStaticAPIKey) {
+
+		try {
+			if (this.route.legs != null && this.route.legs.length > 0) {
+				LatLng start = this.route.legs[0].startLocation;
+				LatLng end = this.route.legs[0].endLocation;
+				String travelMode = this.mode.toUrlValue();
+
+				// Locale.ROOT is used to force points as decimal separators as those are requires by the gmaps web api
+				String linkURLString = String.format(Locale.ROOT, "https://www.google.com/maps/dir/?api=1&" +
+								"origin=%f,%f&destination=%f,%f&travelmode=%s",
+						start.lat, start.lng, end.lat, end.lng, travelMode);
+				URL link = new URL(linkURLString);
+
+
+				String imageURLString = String.format(Locale.ROOT, "https://maps.googleapis.com/maps/api/staticmap?" +
+								"size=300x300&path=enc:%s&markers=%s&markers=%s&key=%s",
+						this.urlEncode(this.route.overviewPolyline.getEncodedPath()),
+						this.urlEncode("color:blue|label:S|" + start.toUrlValue()),
+						this.urlEncode("color:red|label:E|" + end.toUrlValue()),
+						mapsStaticAPIKey
+				);
+				URL image = new URL(imageURLString);
+
+				return new WidgetRouteInfo(image, link, "Start in Google Maps");
+			}
+		} catch (UnsupportedEncodingException | MalformedURLException e) {
+			throw new IllegalStateException("Couldn't create widget info", e);
+		}
+		return null;
 	}
 
 	/**

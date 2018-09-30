@@ -15,9 +15,9 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsAt">
-		<gram>[which|what|do i have] [any] (events|appointments) [do i have] [at] [{date}]</gram>
+		<gram>[which|what|do i have] [any] [is in my] (calendar|events|appointments) [do i have] [at] [{date}]</gram>
 		<EntityTemplates>
-			<EntityTemplate id="eventyear" required="true">
+			<EntityTemplate id="eventyear" required="false">
 				<gram>{amyyear}</gram>
 			</EntityTemplate>
 			<EntityTemplate id="date" required="true">
@@ -31,7 +31,7 @@
 	</Intent>
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.setEvent">
-		<gram>[create|make] new [{allday}] (event|appointment) [from [the] {start}] [(to|until) [the] {end}] [with {remindertype} [notification]] [[at ]{remindertime}[ earlier]] [(named|called) {title}]</gram>
+		<gram>[create|make] new [{allday}] (event|appointment) [from [the] {start}] [(to|until) [the] {end}] [with {remindertype} [notification]] [[at] {remindertime} [earlier]] [(named|called) {title}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="title" required="true">
 				<gram>*</gram>
