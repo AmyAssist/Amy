@@ -79,7 +79,7 @@
 
 	<Intent
 		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.playPlaylistId">
-		<gram> [spotify] play {type} playlist [{songid}] </gram>
+		<gram> [spotify] play [{type}] playlist [{songid}] </gram>
 		<EntityTemplates>
 			<EntityTemplate id="type" required="true">
 				<gram>(own|featured)</gram>
