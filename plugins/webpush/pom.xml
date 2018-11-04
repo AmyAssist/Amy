@@ -7,9 +7,9 @@
 	<description>This plugin can send push notification to registered WebApps</description>
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
-		<artifactId>amy-plugin</artifactId>
+		<artifactId>amy-plugin-internal-preset</artifactId>
 		<version>0.7.0-Snapshot</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../plugin-internal-preset.xml</relativePath>
 	</parent>
 	<dependencies>
 		<dependency>
@@ -71,7 +71,7 @@
 						</goals>
 						<configuration>
 							<includeArtifactIds>bcprov-jdk15on	</includeArtifactIds>
-							<outputDirectory>${project.parent.parent.basedir}/${amy.plugin.build.dir}/lib</outputDirectory>
+							<outputDirectory>${project.parent.parent.parent.basedir}/${amy.plugin.build.dir}/lib</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
