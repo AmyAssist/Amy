@@ -70,7 +70,7 @@ public class MensaLogic {
 				.bodyForm(
 					Form.form()
 						.add("func", "make_spl")
-						.add("locId", "3")
+						.add("locId", "2")
 						.add("date", date.format(formatter))
 						.add("lang", "de")
 						.add("startThisWeek", previousMonday.format(formatter))
