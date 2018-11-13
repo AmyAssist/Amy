@@ -8,6 +8,48 @@
 	<version>0.7.0-Snapshot</version>
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
+	<scm>
+		<url>https://github.com/AmyAssist/Amy</url>
+	</scm>
+	<developers>
+		<developer>
+			<name>Benno Krauss</name>
+		</developer>
+		<developer>
+			<name>Christian Bräuner</name>
+		</developer>
+		<developer>
+			<name>Felix Burk</name>
+		</developer>
+		<developer>
+			<name>Florian Bauer</name>
+		</developer>
+		<developer>
+			<name>Kai Menzel</name>
+		</developer>
+		<developer>
+			<name>Lars Buttgereit</name>
+		</developer>
+		<developer>
+			<name>Leon Kiefer</name>
+			<url>https://github.com/Legion2</url>
+		</developer>
+		<developer>
+			<name>Muhammed Kaya</name>
+		</developer>
+		<developer>
+			<name>Patrick Gebhardt</name>
+		</developer>
+		<developer>
+			<name>Patrick Singer</name>
+		</developer>
+		<developer>
+			<name>Tim Neumann</name>
+		</developer>
+		<developer>
+			<name>Tobias Siemonsen</name>
+		</developer>
+	</developers>
 	<properties>
 		<!-- Amy specific settings -->
 		<amy.plugin.build.dir>build/plugins</amy.plugin.build.dir>
@@ -304,4 +346,12 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<ciManagement>
+		<system>Travis</system>
+		<url>https://travis-ci.com/AmyAssist/Amy</url>
+	</ciManagement>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/AmyAssist/Amy/issues</url>
+	</issueManagement>
 </project>
