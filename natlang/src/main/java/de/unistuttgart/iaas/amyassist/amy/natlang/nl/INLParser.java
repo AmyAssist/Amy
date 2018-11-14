@@ -35,7 +35,7 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
 public interface INLParser {
 
 	/**
-	 * returns matching index of internal List<AGFNode>
+	 * returns matching index of internal AGFNode list
 	 * 
 	 * @param nl
 	 *               the natural languge represented by an Iterator containing all necessary WordTokens

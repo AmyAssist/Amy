@@ -39,13 +39,13 @@ public interface NumberConversion {
 	 * 
 	 * 
 	 * @param subList
-	 *                    the sublist containing the list of word representations
+	 *            the sublist containing the list of word representations
 	 * @return the calculated number
 	 */
 	int calcNumber(Iterable<EndToken> subList);
 
 	/**
-	 * Get's {@link #wordToNumber wordToNumber}
+	 * Get's the mapping from words to numbers
 	 * 
 	 * @return wordToNumber
 	 */

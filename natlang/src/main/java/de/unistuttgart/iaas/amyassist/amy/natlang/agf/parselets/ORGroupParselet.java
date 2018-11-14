@@ -32,7 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.ORGroupNode;
 /**
  * Or Group Parselet
  * 
- * <ORGroupParselet> := "(" <AGFNode>+ ( "|" <AGFNode>+ )* ")";
+ * {@code <ORGroupParselet> := "(" <AGFNode>+ ( "|" <AGFNode>+ )* ")";}
  * 
  * @author Felix Burk
  */

@@ -48,7 +48,7 @@ public class HelloWorldSpeech {
 	/**
 	 * A method that says hello
 	 * 
-	 * @param params
+	 * @param entities
 	 *            [Not used] The parameters of the sentence.
 	 * @return The response of the system
 	 */

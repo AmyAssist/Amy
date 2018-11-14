@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 
 
 /**
- * This interface has methods to disassembling contracted words to the full words. e.g. I'm -> I am
+ * This interface has methods to disassembling contracted words to the full words. e.g. I'm -&gt; I am
  * 
  * @author Lars Buttgereit
  */

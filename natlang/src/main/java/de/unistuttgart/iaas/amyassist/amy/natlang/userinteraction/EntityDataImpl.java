@@ -41,17 +41,17 @@ public class EntityDataImpl implements EntityData {
 
 	/**
 	 * constructor
-	 * @param string content
-	 * @param timeUtility time converter
+	 * 
+	 * @param string
+	 *            content
+	 * @param timeUtility
+	 *            time converter
 	 */
 	public EntityDataImpl(String string, DateTimeUtility timeUtility) {
 		this.string = string;
 		this.timeUtility = timeUtility;
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.EntityData#getNumber()
-	 */
 	@Override
 	public int getNumber() {
 		try {
@@ -62,38 +62,24 @@ public class EntityDataImpl implements EntityData {
 		}
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.EntityData#getString()
-	 */
 	@Override
 	public String getString() {
 		return this.string;
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.EntityData#getTime()
-	 */
 	@Override
 	public LocalTime getTime() {
 		return this.timeUtility.parseTime(this.string);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.EntityData#getDate()
-	 */
 	@Override
 	public LocalDate getDate() {
 		return this.timeUtility.parseDate(this.string);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.EntityData#getDateTime()
-	 */
 	@Override
 	public LocalDateTime getDateTime() {
 		return this.timeUtility.parseDateTime(this.string);
 	}
-	
-	
-	
+
 }

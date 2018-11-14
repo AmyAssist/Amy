@@ -32,7 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.*;
 /**
  * parses the smallest meaningful unit in the AGF Syntax
  * 
- * <Morpheme> := (<Word> | <Rule> | <Number> | <ShortWildcard> | <LongWildcard> | <Entity>)+;
+ * {@code <Morpheme> := (<Word> | <Rule> | <Number> | <ShortWildcard> | <LongWildcard> | <Entity>)+;}
  * 
  * @author Felix Burk
  */
@@ -42,9 +42,9 @@ public class MorphemeParselet implements IAGFParselet {
 	 * parses a morphene parcelet
 	 * 
 	 * @param parser
-	 *                   the parser
+	 *            the parser
 	 * @param token
-	 *                   the token found
+	 *            the token found
 	 * @return a MorpheneNode
 	 */
 	@Override
@@ -56,7 +56,7 @@ public class MorphemeParselet implements IAGFParselet {
 		// first one was already consumed by the parser
 		// the following ones have to be consumed "by hand"
 		while (parser.match(AGFTokenType.OPENCBR) || parser.match(AGFTokenType.CLOSECBR)
-				|| parser.match(AGFTokenType.WORD) || parser.match(AGFTokenType.DOLLAR) 
+				|| parser.match(AGFTokenType.WORD) || parser.match(AGFTokenType.DOLLAR)
 				|| parser.match(AGFTokenType.PLUS) || parser.match(AGFTokenType.ASTERISC)) {
 			AGFToken t = parser.consume();
 			parseMorph(morph, t, parser);
@@ -68,14 +68,14 @@ public class MorphemeParselet implements IAGFParselet {
 	/**
 	 * parses a single morpheme
 	 * 
-	 * <Morpheme> := (<Word> | <Rule> | <Number> | <ShortWildcard> | <LongWildcard> | <Entity>);
+	 * {@code <Morpheme> := (<Word> | <Rule> | <Number> | <ShortWildcard> | <LongWildcard> | <Entity>);}
 	 * 
 	 * @param morph
-	 *                   the morpheme node
+	 *            the morpheme node
 	 * @param token
-	 *                   the corresponding token
+	 *            the corresponding token
 	 * @param parser
-	 *                   the corresponding parser
+	 *            the corresponding parser
 	 */
 	private void parseMorph(MorphemeNode morph, AGFToken token, Parser parser) {
 		// Parse Word
@@ -99,26 +99,25 @@ public class MorphemeParselet implements IAGFParselet {
 			}
 		} else if (token.type == AGFTokenType.DOLLAR) {
 			parseNumberExpression(morph, parser);
-		} else if(token.type == AGFTokenType.PLUS) {
+		} else if (token.type == AGFTokenType.PLUS) {
 			AGFNode node = new ShortWNode("");
 			morph.addChild(node);
-		} else if(token.type == AGFTokenType.ASTERISC) {
+		} else if (token.type == AGFTokenType.ASTERISC) {
 			AGFNode node = new LongWNode("");
 			morph.addChild(node);
 		}
 
 	}
 
-
 	/**
 	 * Parse number expression ex: $(0,100,10)
 	 * 
 	 * @param morph
-	 *                   the morpheme node
+	 *            the morpheme node
 	 * @param token
-	 *                   the corresponding token
+	 *            the corresponding token
 	 * @param parser
-	 *                   the corresponding parser
+	 *            the corresponding parser
 	 */
 	private void parseNumberExpression(MorphemeNode morph, Parser parser) {
 		String[] numbersInsideExpression;
@@ -148,7 +147,9 @@ public class MorphemeParselet implements IAGFParselet {
 
 	/**
 	 * parses (0,10,1)
-	 * @param parser instance
+	 * 
+	 * @param parser
+	 *            instance
 	 * @return String[3] for the three numbers ex: (0,10,1)
 	 */
 	private String[] getNumberExpressionContent(Parser parser) {

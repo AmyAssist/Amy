@@ -32,7 +32,7 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.OptionalGroupNode;
 /**
  * optional group parselet
  * 
- * <ORGroupParselet> := "[" <AGFNode>+ ( "|" <AGFNode>+ )* "]";
+ * {@code <ORGroupParselet> := "[" <AGFNode>+ ( "|" <AGFNode>+ )* "]";}
  * 
  * @author Felix Burk
  */

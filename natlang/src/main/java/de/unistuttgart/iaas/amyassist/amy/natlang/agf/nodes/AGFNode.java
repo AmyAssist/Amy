@@ -47,7 +47,7 @@ public class AGFNode {
 	 * constructor
 	 * 
 	 * @param content
-	 *                    of node
+	 *            of node
 	 */
 	public AGFNode(String content) {
 		this.childs = new ArrayList<>();
@@ -58,7 +58,7 @@ public class AGFNode {
 	 * adds a new child
 	 * 
 	 * @param node
-	 *                 the child
+	 *            the child
 	 */
 	public void addChild(AGFNode node) {
 		this.childs.add(node);
@@ -95,7 +95,7 @@ public class AGFNode {
 	 * equal to convenience method
 	 * 
 	 * @param node
-	 *                 the AGFNode to compare to
+	 *            the AGFNode to compare to
 	 * @return success
 	 */
 	public boolean equalTo(AGFNode node) {
@@ -118,9 +118,9 @@ public class AGFNode {
 	 * helper method to pretty print
 	 * 
 	 * @param name
-	 *                   the name of the node
+	 *            the name of the node
 	 * @param indent
-	 *                   size
+	 *            size
 	 * @return string
 	 */
 	public String printSelf(String name, int indent) {
@@ -141,11 +141,8 @@ public class AGFNode {
 		return b.toString();
 	}
 
-	
 	/**
-	 * returns all contained entity nodes 
-	 * 
-	 * @return List<EntityNode> 
+	 * @return all contained entity nodes
 	 */
 	public List<EntityNode> getChildEntityNodes() {
 		List<EntityNode> result = new ArrayList<>();
@@ -160,12 +157,12 @@ public class AGFNode {
 
 		return result;
 	}
-	
+
 	/**
 	 * deletes content of all entity nodes
 	 */
 	public void deleteEntityContent() {
-		for(AGFNode node : this.childs) {
+		for (AGFNode node : this.childs) {
 			if (node.getType() == AGFNodeType.ENTITY) {
 				EntityNode entity = (EntityNode) node;
 				entity.setUserProvidedContent(null);
@@ -201,9 +198,8 @@ public class AGFNode {
 	}
 
 	/**
-	 * returns all contained child nodes 
 	 * 
-	 * @return List<EntityNode> 
+	 * @return all contained child WordNodes
 	 */
 	public List<WordNode> getChildWordNodes() {
 		List<WordNode> result = new ArrayList<>();
@@ -218,6 +214,5 @@ public class AGFNode {
 
 		return result;
 	}
-
 
 }

@@ -42,7 +42,7 @@ public interface Sound {
 	 * Get a sound player that will play this audio the given amount of times.
 	 * 
 	 * @param loopCount
-	 *            How often to loop. Must be > 0
+	 *            How often to loop. Must be greater 0
 	 * @return The {@link SoundPlayer}
 	 */
 	SoundPlayer getLoopPlayer(int loopCount);

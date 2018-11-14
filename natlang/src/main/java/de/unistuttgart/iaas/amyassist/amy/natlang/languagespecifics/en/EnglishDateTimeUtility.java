@@ -155,9 +155,6 @@ public class EnglishDateTimeUtility implements DateTimeUtility {
 		return sb.toString();
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ITimeUtility#parseDate(java.lang.String)
-	 */
 	@Override
 	public LocalDate parseDate(String toParse) {
 		String dateAsString = toParse;
@@ -187,9 +184,6 @@ public class EnglishDateTimeUtility implements DateTimeUtility {
 		throw new DateTimeParseException("Could not parse date", dateAsString, 0);
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ITimeUtility#formatDate(java.lang.String)
-	 */
 	@Override
 	public String formatDate(String input) {
 		Matcher dateWithPoints = Pattern.compile("\\d+\\.\\d+.\\d+").matcher(input);
@@ -208,9 +202,6 @@ public class EnglishDateTimeUtility implements DateTimeUtility {
 		return sb.toString();
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ITimeUtility#parseDateTime(java.lang.String)
-	 */
 	@Override
 	public LocalDateTime parseDateTime(String toParse) {
 		String[] spiltedString = toParse.split("at");

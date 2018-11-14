@@ -119,7 +119,7 @@ public class CalendarLogic {
 	 *
 	 * @param chosenDay
 	 *            LocalDateTime variable
-	 * @return the events of the chosen day as a List<Event>
+	 * @return the events of the chosen day as a list
 	 */
 	public List<CalendarEvent> getEventsAt(LocalDateTime chosenDay) {
 		List<CalendarEvent> eventList = new ArrayList<>();
