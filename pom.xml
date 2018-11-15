@@ -5,7 +5,7 @@
 	<packaging>pom</packaging>
 	<groupId>de.unistuttgart.iaas.amyassist</groupId>
 	<artifactId>amy</artifactId>
-	<version>0.6.0</version>
+	<version>0.7.0-Snapshot</version>
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
 	<properties>
@@ -19,24 +19,24 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Amy versions to depend on -->
-		<amy.natlang.version>0.6.0</amy.natlang.version>
-		<amy.di.api.version>0.6.0</amy.di.api.version>
-		<amy.natlang.api.version>0.6.0</amy.natlang.api.version>
-		<amy.di.version>0.6.0</amy.di.version>
-		<amy.message-hub.api.version>0.6.0</amy.message-hub.api.version>
-		<amy.message-hub.version>0.6.0</amy.message-hub.version>
-		<amy.api.version>0.6.0</amy.api.version>
-		<amy.plugin-manager-api.version>0.6.0</amy.plugin-manager-api.version>
-		<amy.http-server.api.version>0.6.0</amy.http-server.api.version>
-		<amy.http-server.version>0.6.0</amy.http-server.version>
-		<amy.testing-framework.version>0.6.0</amy.testing-framework.version>
-		<amy.core.version>0.6.0</amy.core.version>
-		<amy.rest-resources.version>0.6.0</amy.rest-resources.version>
-		<amy.utility.version>0.6.0</amy.utility.version>
-		<amy.registry.version>0.6.0</amy.registry.version>
-		<amy.remote-sr.version>0.6.0</amy.remote-sr.version>
-		<amy.chatsocket.version>0.6.0</amy.chatsocket.version>
-		<deployment.descriptor.utility.version>0.6.0</deployment.descriptor.utility.version>
+		<amy.natlang.version>0.7.0-Snapshot</amy.natlang.version>
+		<amy.di.api.version>0.7.0-Snapshot</amy.di.api.version>
+		<amy.natlang.api.version>0.7.0-Snapshot</amy.natlang.api.version>
+		<amy.di.version>0.7.0-Snapshot</amy.di.version>
+		<amy.message-hub.api.version>0.7.0-Snapshot</amy.message-hub.api.version>
+		<amy.message-hub.version>0.7.0-Snapshot</amy.message-hub.version>
+		<amy.api.version>0.7.0-Snapshot</amy.api.version>
+		<amy.plugin-manager-api.version>0.7.0-Snapshot</amy.plugin-manager-api.version>
+		<amy.http-server.api.version>0.7.0-Snapshot</amy.http-server.api.version>
+		<amy.http-server.version>0.7.0-Snapshot</amy.http-server.version>
+		<amy.testing-framework.version>0.7.0-Snapshot</amy.testing-framework.version>
+		<amy.core.version>0.7.0-Snapshot</amy.core.version>
+		<amy.rest-resources.version>0.7.0-Snapshot</amy.rest-resources.version>
+		<amy.utility.version>0.7.0-Snapshot</amy.utility.version>
+		<amy.registry.version>0.7.0-Snapshot</amy.registry.version>
+		<amy.remote-sr.version>0.7.0-Snapshot</amy.remote-sr.version>
+		<amy.chatsocket.version>0.7.0-Snapshot</amy.chatsocket.version>
+		<deployment.descriptor.utility.version>0.7.0-Snapshot</deployment.descriptor.utility.version>
 
 		<!-- External dependency versions. Only project wide or core dependencies 
 			here -->
