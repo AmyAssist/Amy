@@ -68,7 +68,7 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.1.1</version>
 				<configuration>
-					<outputDirectory>${amy.basedir}/${amy.plugin.build.dir}</outputDirectory>
+					<outputFile>${amy.basedir}/${amy.plugin.build.dir}/${project.artifactId}.jar</outputFile>
 				</configuration>
 			</plugin>
 		</plugins>
