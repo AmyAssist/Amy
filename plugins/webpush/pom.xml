@@ -11,6 +11,9 @@
 		<version>0.7.0-Snapshot</version>
 		<relativePath>../plugin-internal-preset.xml</relativePath>
 	</parent>
+	<properties>
+		<amy.basedir>${project.basedir}/../..</amy.basedir>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>nl.martijndwars</groupId>
@@ -70,8 +73,8 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<includeArtifactIds>bcprov-jdk15on	</includeArtifactIds>
-							<outputDirectory>${project.parent.parent.parent.basedir}/${amy.plugin.build.dir}/lib</outputDirectory>
+							<includeArtifactIds>bcprov-jdk15on</includeArtifactIds>
+							<outputDirectory>${amy.basedir}/${amy.plugin.build.dir}/lib</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>

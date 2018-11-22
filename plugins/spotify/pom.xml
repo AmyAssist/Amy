@@ -12,6 +12,7 @@
 		<relativePath>../plugin-internal-preset.xml</relativePath>
 	</parent>
 	<properties>
+		<amy.basedir>${project.basedir}/../..</amy.basedir>
 		<spotify-web-api.version>2.0.2</spotify-web-api.version>
 	</properties>
 	<dependencies>

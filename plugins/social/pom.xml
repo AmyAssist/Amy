@@ -11,12 +11,15 @@
 		<version>0.7.0-Snapshot</version>
 		<relativePath>../plugin-internal-preset.xml</relativePath>
 	</parent>
+	<properties>
+		<amy.basedir>${project.basedir}/../..</amy.basedir>
+	</properties>
 	<dependencies>
-	<!-- Small JSON parser -->
+		<!-- Small JSON parser -->
 		<dependency>
-  			<groupId>com.eclipsesource.minimal-json</groupId>
-  			<artifactId>minimal-json</artifactId>
-  			<version>0.9.5</version>
+			<groupId>com.eclipsesource.minimal-json</groupId>
+			<artifactId>minimal-json</artifactId>
+			<version>0.9.5</version>
 		</dependency>
 	</dependencies>
 </project>
