@@ -33,9 +33,6 @@ public final class Context {
 		// hide constructor
 	}
 
-	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider
-	 */
 	public static final String PLUGIN = "plugin";
 	public static final String CLASS = "class";
 	public static final String CLASSLOADER = "classLoader";

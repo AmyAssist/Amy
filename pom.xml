@@ -8,6 +8,49 @@
 	<version>0.7.0-Snapshot</version>
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
+	<scm>
+		<url>https://github.com/AmyAssist/Amy</url>
+	</scm>
+	<developers>
+		<developer>
+			<name>Benno Krauss</name>
+		</developer>
+		<developer>
+			<name>Christian Bräuner</name>
+		</developer>
+		<developer>
+			<name>Felix Burk</name>
+			<url>https://github.com/FlxB2</url>
+		</developer>
+		<developer>
+			<name>Florian Bauer</name>
+		</developer>
+		<developer>
+			<name>Kai Menzel</name>
+		</developer>
+		<developer>
+			<name>Lars Buttgereit</name>
+		</developer>
+		<developer>
+			<name>Leon Kiefer</name>
+			<url>https://github.com/Legion2</url>
+		</developer>
+		<developer>
+			<name>Muhammed Kaya</name>
+		</developer>
+		<developer>
+			<name>Patrick Gebhardt</name>
+		</developer>
+		<developer>
+			<name>Patrick Singer</name>
+		</developer>
+		<developer>
+			<name>Tim Neumann</name>
+		</developer>
+		<developer>
+			<name>Tobias Siemonsen</name>
+		</developer>
+	</developers>
 	<properties>
 		<!-- Amy specific settings -->
 		<amy.plugin.build.dir>build/plugins</amy.plugin.build.dir>
@@ -157,7 +200,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
-				<version>2.4.1</version>
+				<version>3.1.0</version>
 				<configuration>
 					<followSymLinks>false</followSymLinks>
 					<filesets>
@@ -169,6 +212,74 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<tags>
+								<tag>
+									<name>apiNote</name>
+									<placement>a</placement>
+									<head>API Note:</head>
+								</tag>
+								<tag>
+									<name>implSpec</name>
+									<placement>a</placement>
+									<head>Implementation Requirements:</head>
+								</tag>
+								<tag>
+									<name>implNote</name>
+									<placement>a</placement>
+									<head>Implementation Note:</head>
+								</tag>
+							</tags>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -304,4 +415,12 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<ciManagement>
+		<system>Travis</system>
+		<url>https://travis-ci.com/AmyAssist/Amy</url>
+	</ciManagement>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/AmyAssist/Amy/issues</url>
+	</issueManagement>
 </project>

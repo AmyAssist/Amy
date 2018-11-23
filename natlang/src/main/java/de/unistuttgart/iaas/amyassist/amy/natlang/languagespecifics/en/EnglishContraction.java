@@ -26,7 +26,7 @@ package de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en;
 import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.Contraction;
 
 /**
- * This class disassembling contracted words to the full words. e.g. I'm -> I am
+ * This class disassembling contracted words to the full words. e.g. I'm -&gt; I am
  * 
  * @author Lars Buttgereit
  */

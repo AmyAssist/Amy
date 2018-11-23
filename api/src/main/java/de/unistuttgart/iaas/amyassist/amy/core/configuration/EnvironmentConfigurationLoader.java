@@ -31,12 +31,12 @@ import javax.annotation.Nonnull;
  * A configuration loader that will load configurations from the environment variables. Changes can't be stored with
  * this ConfigurationLoader.
  * <p>
- * The name schema for the environment variables is AMY_<config name>_<property key>.
+ * The name schema for the environment variables is {@code AMY_<config name>_<property key>}.
  * <p>
  * All '.'s in the config name are replaced with '_'. The matching is done case insensitive.
  * <p>
- * A environment variable must match {@value #ALLOWED_ENV_VARS_PATTERN}, so <config name>_<property key> must as well
- * for a configuration to be read from the environment
+ * A environment variable must match {@value #ALLOWED_ENV_VARS_PATTERN}, so {@code <config name>_<property key>} must as
+ * well for a configuration to be read from the environment.
  * 
  * @author Tim Neumann
  */

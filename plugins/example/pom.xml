@@ -7,8 +7,11 @@
 	<description>The Amy example plugin</description>
 	<parent>
 		<groupId>de.unistuttgart.iaas.amyassist</groupId>
-		<artifactId>amy-plugin</artifactId>
+		<artifactId>amy-plugin-internal-preset</artifactId>
 		<version>0.7.0-Snapshot</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../plugin-internal-preset.xml</relativePath>
 	</parent>
+	<properties>
+		<amy.basedir>${project.basedir}/../..</amy.basedir>
+	</properties>
 </project>

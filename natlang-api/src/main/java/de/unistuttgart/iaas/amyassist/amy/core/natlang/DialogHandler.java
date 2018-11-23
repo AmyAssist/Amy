@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 /**
  * entry point for natural language interpretation. To create a new dialog use {@link #createDialog(Consumer)} and store
  * the returned UUID. This uuid represents a running dialog of a single user. If the user closes the current session use
- * {@linkp #deleteDialog(UUID)}.
+ * {@link #deleteDialog(UUID)}.
  * 
  * To process new natural language input use {@link #process(String, UUID)}. The corresponding output will be called
  * from the specified consumer in {@link #createDialog(Consumer)}
