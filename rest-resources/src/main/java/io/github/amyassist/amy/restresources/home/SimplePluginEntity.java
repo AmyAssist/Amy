@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.restresources.home;
+package io.github.amyassist.amy.restresources.home;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
+import io.github.amyassist.amy.core.pluginloader.IPlugin;
 
 /**
  * A plugin, that contains some basic information about itself

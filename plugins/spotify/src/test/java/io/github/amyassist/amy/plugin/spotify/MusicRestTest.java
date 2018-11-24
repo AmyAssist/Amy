@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package io.github.amyassist.amy.plugin.spotify;
 
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
+import static io.github.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -43,14 +43,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.*;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.SearchTypes;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.plugin.spotify.entities.*;
+import io.github.amyassist.amy.plugin.spotify.logic.DeviceLogic;
+import io.github.amyassist.amy.plugin.spotify.logic.PlayerLogic;
+import io.github.amyassist.amy.plugin.spotify.logic.Search;
+import io.github.amyassist.amy.plugin.spotify.logic.SearchTypes;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Test for the rest resource of music
@@ -128,7 +128,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#firstTimeInit(String, String)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#firstTimeInit(String, String)}.
 	 */
 	@Test
 	void testFirstTimeInit() {
@@ -172,7 +172,7 @@ class MusicRestTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#inputAuthCode(String)}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.MusicResource#inputAuthCode(String)}.
 	 */
 	@Test
 	void testInputAuthCode() {
@@ -184,7 +184,7 @@ class MusicRestTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#getDevices()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.MusicResource#getDevices()}.
 	 */
 	@Test
 	void testGetDevices() {
@@ -209,7 +209,7 @@ class MusicRestTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#setDevice(String)}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.MusicResource#setDevice(String)}.
 	 */
 	@Test
 	void testSetDevice() {
@@ -244,7 +244,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchTracks(String, int)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#searchTracks(String, int)}.
 	 */
 	@Test
 	void testSearchTrack() {
@@ -260,7 +260,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchTracks(String, int)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#searchTracks(String, int)}.
 	 */
 	@Test
 	void testSearchTrackEmpty() {
@@ -274,7 +274,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchAlbums(String, int)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#searchAlbums(String, int)}.
 	 */
 	@Test
 	void testSearchAlbum() {
@@ -290,7 +290,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchAlbums(String, int)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#searchAlbums(String, int)}.
 	 */
 	@Test
 	void testSearchAlbumEmpty() {
@@ -304,7 +304,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchArtists(String, int)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#searchArtists(String, int)}.
 	 */
 	@Test
 	void testSearchArtist() {
@@ -320,7 +320,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchArtists(String, int)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#searchArtists(String, int)}.
 	 */
 	@Test
 	void testSearchArtistEmpty() {
@@ -333,7 +333,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchPlaylists(String, int)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#searchPlaylists(String, int)}.
 	 */
 	@Test
 	void testSearchPlaylist() {
@@ -349,7 +349,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#searchPlaylists(String, int)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#searchPlaylists(String, int)}.
 	 */
 	@Test
 	void testSearchPlaylistEmpty() {
@@ -363,7 +363,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#playPlaylist(int, String)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#playPlaylist(int, String)}.
 	 */
 	@Test
 	void playPlaylistUser() {
@@ -385,7 +385,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#playPlaylist(int, String)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#playPlaylist(int, String)}.
 	 */
 	@Test
 	void playPlaylistFeatured() {
@@ -408,7 +408,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#playPlaylist(int, String)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#playPlaylist(int, String)}.
 	 */
 	@Test
 	void playPlaylistSearch() {
@@ -429,7 +429,7 @@ class MusicRestTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#playAlbum(int)}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.MusicResource#playAlbum(int)}.
 	 */
 	@Test
 	void playAlbum() {
@@ -448,7 +448,7 @@ class MusicRestTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#playTrack(int)}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.MusicResource#playTrack(int)}.
 	 */
 	@Test
 	void playTrack() {
@@ -467,7 +467,7 @@ class MusicRestTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#playArtist(int)}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.MusicResource#playArtist(int)}.
 	 */
 	@Test
 	void playArtist() {
@@ -486,7 +486,7 @@ class MusicRestTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#resume()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.MusicResource#resume()}.
 	 */
 	@Test
 	void testResume() {
@@ -505,7 +505,7 @@ class MusicRestTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#pause()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.MusicResource#pause()}.
 	 */
 	@Test
 	void testPause() {
@@ -524,7 +524,7 @@ class MusicRestTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#skip()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.MusicResource#skip()}.
 	 */
 	@Test
 	void testSkip() {
@@ -543,7 +543,7 @@ class MusicRestTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#back()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.MusicResource#back()}.
 	 */
 	@Test
 	void testBack() {
@@ -562,7 +562,7 @@ class MusicRestTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#getCurrentSong()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.MusicResource#getCurrentSong()}.
 	 */
 	@Test
 	void testGetCurrentSong() {
@@ -583,7 +583,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#getPlaylists(String, int)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#getPlaylists(String, int)}.
 	 */
 	@Test
 	void testGetPlaylistUser() {
@@ -598,7 +598,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#getPlaylists(String, int)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#getPlaylists(String, int)}.
 	 */
 	@Test
 	void testGetPlaylistFeatured() {
@@ -613,7 +613,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#getPlaylists(String, int)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#getPlaylists(String, int)}.
 	 */
 	@Test
 	void testGetPlaylistEmpty() {
@@ -625,7 +625,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#setVolume(java.lang.String)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#setVolume(java.lang.String)}.
 	 */
 	@Test
 	void testSetVolume() {
@@ -698,7 +698,7 @@ class MusicRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.MusicResource#setDeviceName(String, String)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.MusicResource#setDeviceName(String, String)}.
 	 */
 	@Test
 	public void setDeviceName() {

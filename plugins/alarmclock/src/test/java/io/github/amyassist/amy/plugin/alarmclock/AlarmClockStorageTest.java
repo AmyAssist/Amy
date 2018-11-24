@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
+package io.github.amyassist.amy.plugin.alarmclock;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -33,10 +33,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.plugin.api.IStorage;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Test class for the alarm clock storage class

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package io.github.amyassist.amy.core.natlang;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -39,17 +39,17 @@ import org.mockito.Mock;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.natlang.Dialog;
-import de.unistuttgart.iaas.amyassist.amy.natlang.DialogHandlerImpl;
-import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager;
-import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManagerImpl;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.Entity;
-import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntent;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.ServiceLocator;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.natlang.Dialog;
+import io.github.amyassist.amy.natlang.DialogHandlerImpl;
+import io.github.amyassist.amy.natlang.NLProcessingManager;
+import io.github.amyassist.amy.natlang.NLProcessingManagerImpl;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.userinteraction.Entity;
+import io.github.amyassist.amy.natlang.userinteraction.UserIntent;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Test class for DialogHandlerImpl

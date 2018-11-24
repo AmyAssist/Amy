@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
+package io.github.amyassist.amy.plugin.spotify.entities;
 
 /**
  * In this class the data from a artist is stored. For example after a search query

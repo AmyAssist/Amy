@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.service;
+package io.github.amyassist.amy.core.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -30,10 +30,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
+import io.github.amyassist.amy.core.di.DependencyInjection;
 
 /**
- * Tests for {@link de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl}.
+ * Tests for {@link io.github.amyassist.amy.core.service.ServiceManagerImpl}.
  * 
  * @author Leon Kiefer
  */
@@ -49,7 +49,7 @@ class ServiceManagerImplTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl#start()}.
+	 * Test method for {@link io.github.amyassist.amy.core.service.ServiceManagerImpl#start()}.
 	 */
 	@Test
 	void testStart() {
@@ -65,7 +65,7 @@ class ServiceManagerImplTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl#start()}.
+	 * Test method for {@link io.github.amyassist.amy.core.service.ServiceManagerImpl#start()}.
 	 */
 	@Test
 	void testStartDouble() {
@@ -75,7 +75,7 @@ class ServiceManagerImplTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.service.ServiceManagerImpl#start()}.
+	 * Test method for {@link io.github.amyassist.amy.core.service.ServiceManagerImpl#start()}.
 	 */
 	@Test
 	void testStartRunnableServiceFromInterface() {

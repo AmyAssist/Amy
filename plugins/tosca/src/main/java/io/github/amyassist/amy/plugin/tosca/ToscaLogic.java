@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.tosca;
+package io.github.amyassist.amy.plugin.tosca;
 
 import java.util.*;
 
@@ -29,14 +29,14 @@ import org.opentosca.containerapi.client.IOpenTOSCAContainerAPIClient;
 import org.opentosca.containerapi.client.model.Application;
 import org.opentosca.containerapi.client.model.ServiceInstance;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.WithDefault;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
-import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
-import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.ConfigurationRegistry;
+import io.github.amyassist.amy.core.configuration.WithDefault;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.plugin.api.IStorage;
+import io.github.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import io.github.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
+import io.github.amyassist.amy.plugin.tosca.configurations.ConfigurationRegistry;
 
 /**
  * The tosca logic class

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package io.github.amyassist.amy.plugin.spotify;
 
 /**
  * Stores user specific content for example the refresh token or current selected device

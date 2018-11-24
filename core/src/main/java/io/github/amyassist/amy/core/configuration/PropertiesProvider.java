@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.configuration;
+package io.github.amyassist.amy.core.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,13 +29,13 @@ import java.util.Properties;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.*;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
+import io.github.amyassist.amy.core.di.*;
+import io.github.amyassist.amy.core.di.consumer.ConsumerFactory;
+import io.github.amyassist.amy.core.di.consumer.ServiceConsumer;
+import io.github.amyassist.amy.core.di.provider.ServiceProvider;
+import io.github.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
+import io.github.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
+import io.github.amyassist.amy.core.pluginloader.IPlugin;
 
 /**
  * Provide the plugin configuration properties as service

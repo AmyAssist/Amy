@@ -21,18 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang;
+package io.github.amyassist.amy.natlang;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.NatlangInformation;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.WordNode;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.natlang.NatlangInformation;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.agf.nodes.WordNode;
 
 /**
  * Service which provides information of possible sentences to tell amy
@@ -46,7 +46,7 @@ public class NatlangInformationImpl implements NatlangInformation {
 	private NLProcessingManager manager;
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NatlangInformation#getSampleSentencesFromKeyword(java.lang.String,
+	 * @see io.github.amyassist.amy.core.natlang.NatlangInformation#getSampleSentencesFromKeyword(java.lang.String,
 	 *      int)
 	 */
 	@Override
@@ -64,7 +64,7 @@ public class NatlangInformationImpl implements NatlangInformation {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.natlang.NatlangInformation#getAnySampleSentences(int)
+	 * @see io.github.amyassist.amy.core.natlang.NatlangInformation#getAnySampleSentences(int)
 	 */
 	@Override
 	public List<String> getAnySampleSentences(int nmbSentences) {

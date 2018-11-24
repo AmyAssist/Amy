@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.utility.rest;
+package io.github.amyassist.amy.utility.rest;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

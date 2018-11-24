@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
+package io.github.amyassist.amy.httpserver.cors;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,8 +37,8 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * a filter for CORS requests and OPTIONS calls "https://www.w3.org/TR/cors/#resource-requests"

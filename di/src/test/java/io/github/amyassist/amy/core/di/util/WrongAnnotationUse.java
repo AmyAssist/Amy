@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.util;
+package io.github.amyassist.amy.core.di.util;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.Context;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 @Service
 public class WrongAnnotationUse {

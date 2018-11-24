@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.registry.geocoder;
+package io.github.amyassist.amy.registry.geocoder;
 
 /**
  * Exception from the geocoder

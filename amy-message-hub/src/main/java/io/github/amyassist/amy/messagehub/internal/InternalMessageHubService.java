@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.internal;
+package io.github.amyassist.amy.messagehub.internal;
 
 import java.lang.reflect.Method;
 import java.util.LinkedList;
@@ -34,16 +34,16 @@ import java.util.function.BiConsumer;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.Message;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.MessagingAdapter;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
+import io.github.amyassist.amy.core.di.ServiceLocator;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.PreDestroy;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.messagehub.Message;
+import io.github.amyassist.amy.messagehub.MessagingAdapter;
+import io.github.amyassist.amy.messagehub.topic.TopicFactory;
+import io.github.amyassist.amy.messagehub.topic.TopicFilter;
+import io.github.amyassist.amy.messagehub.topic.TopicName;
 
 /**
  * The internal implementation of the MessageHub
@@ -164,7 +164,7 @@ public class InternalMessageHubService {
 	/**
 	 * @param identifier
 	 *            The uuid of the subscription to unsubscribe.
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#unsubscribe(java.util.UUID)
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#unsubscribe(java.util.UUID)
 	 */
 	public void unsubscribe(UUID identifier) {
 		synchronized (this.topicListeners) {
@@ -191,7 +191,7 @@ public class InternalMessageHubService {
 	 *            The qos to publish with
 	 * @param retain
 	 *            Whether to retain the message
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(TopicName, java.lang.String, int, boolean)
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#publish(TopicName, java.lang.String, int, boolean)
 	 */
 	public void publish(TopicName topic, String payload, int qualityOfService, boolean retain) {
 		this.adapter.publish(topic, payload, qualityOfService, retain);

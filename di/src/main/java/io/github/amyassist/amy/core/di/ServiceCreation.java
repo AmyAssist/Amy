@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
+import io.github.amyassist.amy.core.di.provider.ServiceHandle;
 
 /**
  * Information about the creation process of a Service

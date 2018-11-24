@@ -21,15 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.runtime;
+package io.github.amyassist.amy.core.di.runtime;
 
 import java.util.Collections;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceInstantiationDescription;
+import io.github.amyassist.amy.core.di.ServiceDescription;
+import io.github.amyassist.amy.core.di.ServiceInstantiationDescription;
 
 /**
  * Immutable implementation of the ServiceInstantiationDescription

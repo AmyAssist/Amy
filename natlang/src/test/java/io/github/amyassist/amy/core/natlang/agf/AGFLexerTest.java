@@ -21,17 +21,17 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
+package io.github.amyassist.amy.core.natlang.agf;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexer;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexerException;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFToken;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFTokenType;
+import io.github.amyassist.amy.natlang.agf.AGFLexer;
+import io.github.amyassist.amy.natlang.agf.AGFLexerException;
+import io.github.amyassist.amy.natlang.agf.AGFToken;
+import io.github.amyassist.amy.natlang.agf.AGFTokenType;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.email;
+package io.github.amyassist.amy.plugin.email;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.*;
@@ -49,14 +49,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
-import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
-import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.plugin.email.rest.EMailCredentials;
+import io.github.amyassist.amy.plugin.email.rest.MessageDTO;
+import io.github.amyassist.amy.plugin.email.session.MailSession;
+import io.github.amyassist.amy.registry.Contact;
+import io.github.amyassist.amy.registry.ContactRegistry;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Test for the email logic class

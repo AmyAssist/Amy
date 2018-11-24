@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.webpush.rest;
+package io.github.amyassist.amy.plugin.webpush.rest;
 
 import java.net.URI;
 

@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction;
+package io.github.amyassist.amy.natlang.userinteraction;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
 
 /**
  * Prompt hold the grammar and output for a query

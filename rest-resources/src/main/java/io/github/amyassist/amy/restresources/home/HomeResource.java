@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.restresources.home;
+package io.github.amyassist.amy.restresources.home;
 
 import java.util.List;
 
@@ -33,12 +33,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.Topics;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.pluginloader.IPlugin;
+import io.github.amyassist.amy.core.pluginloader.PluginManager;
+import io.github.amyassist.amy.messagehub.MessageHub;
+import io.github.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
+import io.github.amyassist.amy.messagehub.topics.Topics;
 import io.swagger.v3.oas.annotations.Operation;
 
 /**

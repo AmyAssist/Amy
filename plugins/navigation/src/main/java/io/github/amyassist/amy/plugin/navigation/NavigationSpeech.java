@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
+package io.github.amyassist.amy.plugin.navigation;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -30,15 +30,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.*;
+import io.github.amyassist.amy.core.natlang.*;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.ReadableInstant;
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.io.Environment;
 
 /**
  * Speech class for the navigation plugin

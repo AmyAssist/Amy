@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio.sound;
+package io.github.amyassist.amy.core.audio.sound;
 
 import javax.sound.sampled.AudioFormat;
 

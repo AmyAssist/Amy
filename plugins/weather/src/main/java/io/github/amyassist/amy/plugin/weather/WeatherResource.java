@@ -21,17 +21,17 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
+package io.github.amyassist.amy.plugin.weather;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherLogic.GeoCoordinatePair;
-import de.unistuttgart.iaas.amyassist.amy.registry.Location;
-import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.plugin.weather.WeatherLogic.GeoCoordinatePair;
+import io.github.amyassist.amy.registry.Location;
+import io.github.amyassist.amy.registry.LocationRegistry;
+import io.github.amyassist.amy.utility.rest.Resource;
+import io.github.amyassist.amy.utility.rest.ResourceEntity;
 
 /**
  * REST Resource for weather
@@ -66,7 +66,7 @@ public class WeatherResource implements Resource {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 * @see io.github.amyassist.amy.utility.rest.Resource#getPluginDescripion()
 	 */
 	@Override
 	public ResourceEntity getPluginDescripion() {

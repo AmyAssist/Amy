@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.configuration;
+package io.github.amyassist.amy.core.configuration;
 
 /**
  * Exception that is thrown if a specific configuration was not found but must be loaded.

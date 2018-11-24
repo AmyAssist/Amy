@@ -1,4 +1,4 @@
-de.unistuttgart.iaas.amyassist.amy.plugin.webpush.WebPushServiceImpl
-de.unistuttgart.iaas.amyassist.amy.plugin.webpush.WebPushNameServiceImpl
-de.unistuttgart.iaas.amyassist.amy.plugin.webpush.persistence.SubscriptionStorage
-de.unistuttgart.iaas.amyassist.amy.plugin.webpush.SimpleWebPushServiceImpl
+io.github.amyassist.amy.plugin.webpush.WebPushServiceImpl
+io.github.amyassist.amy.plugin.webpush.WebPushNameServiceImpl
+io.github.amyassist.amy.plugin.webpush.persistence.SubscriptionStorage
+io.github.amyassist.amy.plugin.webpush.SimpleWebPushServiceImpl

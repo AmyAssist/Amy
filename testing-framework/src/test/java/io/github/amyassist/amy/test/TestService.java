@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.test;
+package io.github.amyassist.amy.test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * Empty Test Service

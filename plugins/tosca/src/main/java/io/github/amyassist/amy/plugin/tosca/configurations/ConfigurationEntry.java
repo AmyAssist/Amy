@@ -21,12 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations;
+package io.github.amyassist.amy.plugin.tosca.configurations;
 
 import javax.persistence.*;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
-import de.unistuttgart.iaas.amyassist.amy.registry.Taggable;
+import io.github.amyassist.amy.registry.RegistryEntity;
+import io.github.amyassist.amy.registry.Taggable;
 
 /**
  * The class representing a configuration entry
@@ -50,7 +50,7 @@ public class ConfigurationEntry implements RegistryEntity, Taggable {
 	private String tag;
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity#getPersistentId()
+	 * @see io.github.amyassist.amy.registry.RegistryEntity#getPersistentId()
 	 */
 	@Override
 	public int getPersistentId() {

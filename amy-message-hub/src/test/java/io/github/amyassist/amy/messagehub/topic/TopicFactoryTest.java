@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
+package io.github.amyassist.amy.messagehub.topic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +36,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
-import de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.test.matcher.throwable.ThrowableMatchers;
 
 /**
  * Tests {@link TopicFactory}
@@ -65,7 +65,7 @@ class TopicFactoryTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactoryService#createTopicFilter(java.lang.String)}.
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicFactoryService#createTopicFilter(java.lang.String)}.
 	 * 
 	 * @param name
 	 *            The name of the topic filter.
@@ -78,7 +78,7 @@ class TopicFactoryTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactoryService#createTopicName(java.lang.String)}.
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicFactoryService#createTopicName(java.lang.String)}.
 	 * 
 	 * @param name
 	 *            The name of the topic filter.
@@ -91,7 +91,7 @@ class TopicFactoryTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactoryService#createTopicFilter(java.lang.String)}
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicFactoryService#createTopicFilter(java.lang.String)}
 	 * when passing a invalid filter string
 	 */
 	@Test
@@ -110,7 +110,7 @@ class TopicFactoryTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactoryService#createTopicName(java.lang.String)}
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicFactoryService#createTopicName(java.lang.String)}
 	 * when passing a invalid name string
 	 */
 	@Test

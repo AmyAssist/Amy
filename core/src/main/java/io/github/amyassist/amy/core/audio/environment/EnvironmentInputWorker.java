@@ -21,12 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio.environment;
+package io.github.amyassist.amy.core.audio.environment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.QueuedInputStream;
+import io.github.amyassist.amy.core.audio.QueuedInputStream;
 
 /**
  * A worker doing to audio input for a audio environment

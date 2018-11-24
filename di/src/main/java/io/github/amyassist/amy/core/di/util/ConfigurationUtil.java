@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.util;
+package io.github.amyassist.amy.core.di.util;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.di.exception.ClassIsNotAServiceException;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ClassServiceProvider;
+import io.github.amyassist.amy.core.di.Configuration;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.exception.ClassIsNotAServiceException;
+import io.github.amyassist.amy.core.di.provider.ClassServiceProvider;
 
 /**
  * Utility for the registration of classes with the ClassServiceProvider.

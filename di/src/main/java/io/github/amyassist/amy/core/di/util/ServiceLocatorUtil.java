@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.util;
+package io.github.amyassist.amy.core.di.util;
 
 import java.lang.reflect.Field;
 
@@ -29,11 +29,11 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.SimpleServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ConsumerFactory;
+import io.github.amyassist.amy.core.di.ServiceDescription;
+import io.github.amyassist.amy.core.di.ServiceLocator;
+import io.github.amyassist.amy.core.di.SimpleServiceLocator;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.consumer.ConsumerFactory;
 
 /**
  * Implementation of operations using the SimpleServiceLocator.

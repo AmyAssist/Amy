@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.plugin.api;
+package io.github.amyassist.amy.core.plugin.api;
 
 /**
  * Interface that defines the storage provided by the core.

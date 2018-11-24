@@ -21,18 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package io.github.amyassist.amy.core.di.provider;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.SimpleServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.util.ServiceLocatorUtil;
-import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
+import io.github.amyassist.amy.core.di.ServiceDescription;
+import io.github.amyassist.amy.core.di.ServiceLocator;
+import io.github.amyassist.amy.core.di.SimpleServiceLocator;
+import io.github.amyassist.amy.core.di.consumer.ServiceConsumer;
+import io.github.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
+import io.github.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
+import io.github.amyassist.amy.core.di.util.ServiceLocatorUtil;
+import io.github.amyassist.amy.core.di.util.Util;
 
 /**
  * Facade for the {@link SimpleServiceLocator}

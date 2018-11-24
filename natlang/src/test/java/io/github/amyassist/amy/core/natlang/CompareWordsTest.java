@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package io.github.amyassist.amy.core.natlang;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.util.CompareWords;
+import io.github.amyassist.amy.natlang.util.CompareWords;
 
 /**
  * Tests the word comperator

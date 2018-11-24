@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.io;
+package io.github.amyassist.amy.core.io;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;

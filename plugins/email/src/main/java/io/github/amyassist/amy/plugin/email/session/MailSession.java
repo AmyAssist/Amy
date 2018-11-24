@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.email.session;
+package io.github.amyassist.amy.plugin.email.session;
 
 import javax.mail.Folder;
 import javax.mail.MessagingException;
@@ -30,10 +30,10 @@ import javax.mail.Store;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
+import io.github.amyassist.amy.core.di.annotation.PreDestroy;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.plugin.email.rest.EMailCredentials;
 
 /**
  * Session class for the google mail provider

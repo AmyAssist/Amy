@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio;
+package io.github.amyassist.amy.core.audio;
 
 import java.util.UUID;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment;
+import io.github.amyassist.amy.core.audio.environment.AudioEnvironment;
 
 /**
  * The interface for a internal audio manager. This interface is a more potent version of the {@link AudioManager} and

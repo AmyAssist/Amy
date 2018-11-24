@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
+package io.github.amyassist.amy.plugin.timer;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -32,11 +32,11 @@ import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.natlang.EntityData;
+import io.github.amyassist.amy.core.natlang.Intent;
+import io.github.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * Speech class for timer

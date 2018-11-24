@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.internal;
+package io.github.amyassist.amy.messagehub.internal;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.Message;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
+import io.github.amyassist.amy.core.di.ServiceLocator;
+import io.github.amyassist.amy.messagehub.Message;
+import io.github.amyassist.amy.messagehub.topic.TopicName;
 
 /**
  * This is a representation of a Subscription

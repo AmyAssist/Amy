@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.remotesr;
+package io.github.amyassist.amy.remotesr;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;

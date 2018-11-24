@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio.environment;
+package io.github.amyassist.amy.core.audio.environment;
 
 /**
  * An abstract worker for environments

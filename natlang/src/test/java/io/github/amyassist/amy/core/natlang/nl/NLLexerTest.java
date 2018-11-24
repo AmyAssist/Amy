@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
+package io.github.amyassist.amy.core.natlang.nl;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -42,11 +42,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.google.common.collect.Lists;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLLexer;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLLexerException;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.EndToken;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.EndTokenType;
+import io.github.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
+import io.github.amyassist.amy.natlang.nl.NLLexer;
+import io.github.amyassist.amy.natlang.nl.NLLexerException;
+import io.github.amyassist.amy.natlang.nl.EndToken;
+import io.github.amyassist.amy.natlang.nl.EndTokenType;
 
 /**
  * Test for NL Lexer

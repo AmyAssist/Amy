@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
+package io.github.amyassist.amy.httpserver.cors;
 
 /**
  * proviedes header values as constants

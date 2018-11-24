@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
+package io.github.amyassist.amy.messagehub.topic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +44,7 @@ class TopicLevelTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#TopicLevelImpl(java.lang.String)}. with
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#TopicLevelImpl(java.lang.String)}. with
 	 * a name containing a slash
 	 * 
 	 * @param name
@@ -62,7 +62,7 @@ class TopicLevelTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#TopicLevelImpl(java.lang.String)}. with
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#TopicLevelImpl(java.lang.String)}. with
 	 * a name containing a + or #
 	 * 
 	 * @param name
@@ -142,7 +142,7 @@ class TopicLevelTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#getStringRepresentation()}.
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#getStringRepresentation()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -158,7 +158,7 @@ class TopicLevelTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#isNormalLevel()}.
+	 * Test method for {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#isNormalLevel()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -174,7 +174,7 @@ class TopicLevelTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#isNormalLevel()} when
+	 * Test method for {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#isNormalLevel()} when
 	 * the level is not normal
 	 * 
 	 * @throws Exception
@@ -190,7 +190,7 @@ class TopicLevelTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#isSingleLevelWildcard()}.
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#isSingleLevelWildcard()}.
 	 * 
 	 * @throws Exception
 	 *             When an error occurs.
@@ -203,7 +203,7 @@ class TopicLevelTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#isSingleLevelWildcard()} when the level
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#isSingleLevelWildcard()} when the level
 	 * is not a single level wildcard
 	 * 
 	 * @param name
@@ -223,7 +223,7 @@ class TopicLevelTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#isMultiLevelWildcard()}.
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#isMultiLevelWildcard()}.
 	 * 
 	 * @throws Exception
 	 *             When an error occurs.
@@ -236,7 +236,7 @@ class TopicLevelTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#isMultiLevelWildcard()}.
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#isMultiLevelWildcard()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -254,7 +254,7 @@ class TopicLevelTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#toString()}.
+	 * Test method for {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#toString()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -270,7 +270,7 @@ class TopicLevelTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#hashCode()}.
+	 * Test method for {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#hashCode()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -287,7 +287,7 @@ class TopicLevelTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#equals(Object)}.
+	 * Test method for {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#equals(Object)}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -304,7 +304,7 @@ class TopicLevelTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#equals(Object)} when
+	 * Test method for {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#equals(Object)} when
 	 * they are not equal.
 	 * 
 	 * @throws Exception
@@ -325,7 +325,7 @@ class TopicLevelTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevelImpl#equals(Object)} when
+	 * Test method for {@link io.github.amyassist.amy.messagehub.topic.TopicLevelImpl#equals(Object)} when
 	 * they are not the same type.
 	 * 
 	 * @throws Exception

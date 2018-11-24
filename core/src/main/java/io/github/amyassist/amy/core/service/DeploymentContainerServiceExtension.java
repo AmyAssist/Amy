@@ -21,16 +21,16 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.service;
+package io.github.amyassist.amy.core.service;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.extension.Extension;
+import io.github.amyassist.amy.core.di.DependencyInjection;
+import io.github.amyassist.amy.core.di.ServiceDescription;
+import io.github.amyassist.amy.core.di.ServiceLocator;
+import io.github.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
+import io.github.amyassist.amy.core.di.extension.Extension;
 
 /**
  * This Extension calls the deploy method on all registered {@link DeploymentContainerService}.

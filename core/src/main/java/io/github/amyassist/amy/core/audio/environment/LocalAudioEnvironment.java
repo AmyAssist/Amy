@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio.environment;
+package io.github.amyassist.amy.core.audio.environment;
 
 import java.util.UUID;
 
@@ -57,7 +57,7 @@ public class LocalAudioEnvironment extends AbstractAudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#getAudioEnvironmentIdentifier()
+	 * @see io.github.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#getAudioEnvironmentIdentifier()
 	 */
 	@Override
 	public UUID getAudioEnvironmentIdentifier() {
@@ -65,7 +65,7 @@ public class LocalAudioEnvironment extends AbstractAudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#readFromInput(byte[],
+	 * @see io.github.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#readFromInput(byte[],
 	 *      int, int)
 	 */
 	@Override
@@ -74,7 +74,7 @@ public class LocalAudioEnvironment extends AbstractAudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#writeToOutput(byte[],
+	 * @see io.github.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#writeToOutput(byte[],
 	 *      int, int)
 	 */
 	@Override
@@ -83,7 +83,7 @@ public class LocalAudioEnvironment extends AbstractAudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#getOutputFormat()
+	 * @see io.github.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#getOutputFormat()
 	 */
 	@Override
 	public AudioFormat getOutputFormat() {
@@ -91,7 +91,7 @@ public class LocalAudioEnvironment extends AbstractAudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#getInputFormat()
+	 * @see io.github.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#getInputFormat()
 	 */
 	@Override
 	public AudioFormat getInputFormat() {
@@ -99,7 +99,7 @@ public class LocalAudioEnvironment extends AbstractAudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#start()
+	 * @see io.github.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#start()
 	 */
 	@Override
 	public void start() {
@@ -117,7 +117,7 @@ public class LocalAudioEnvironment extends AbstractAudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#stop()
+	 * @see io.github.amyassist.amy.core.audio.environment.AbstractAudioEnvironment#stop()
 	 */
 	@Override
 	public void stop() {

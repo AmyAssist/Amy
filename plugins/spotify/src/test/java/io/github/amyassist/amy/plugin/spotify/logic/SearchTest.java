@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
+package io.github.amyassist.amy.plugin.spotify.logic;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -48,15 +48,15 @@ import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.User;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.plugin.spotify.SpotifyAPICalls;
+import io.github.amyassist.amy.plugin.spotify.entities.AlbumEntity;
+import io.github.amyassist.amy.plugin.spotify.entities.ArtistEntity;
+import io.github.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import io.github.amyassist.amy.plugin.spotify.entities.TrackEntity;
+import io.github.amyassist.amy.plugin.spotify.logic.Search;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * 

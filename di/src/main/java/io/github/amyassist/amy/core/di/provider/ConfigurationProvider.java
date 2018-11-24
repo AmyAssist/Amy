@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package io.github.amyassist.amy.core.di.provider;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.*;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
+import io.github.amyassist.amy.core.di.*;
+import io.github.amyassist.amy.core.di.consumer.ServiceConsumer;
+import io.github.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
+import io.github.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
 
 /**
  * Creates the ConfigurationImpl service.

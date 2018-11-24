@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.agf;
+package io.github.amyassist.amy.core.natlang.agf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,11 +31,11 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexer;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParseException;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParser;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNodeType;
+import io.github.amyassist.amy.natlang.agf.AGFLexer;
+import io.github.amyassist.amy.natlang.agf.AGFParseException;
+import io.github.amyassist.amy.natlang.agf.AGFParser;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNodeType;
 
 
 /**

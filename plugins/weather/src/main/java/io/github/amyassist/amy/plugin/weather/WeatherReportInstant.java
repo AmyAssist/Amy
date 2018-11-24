@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
+package io.github.amyassist.amy.plugin.weather;
 
 /**
  * Weather report for an instant

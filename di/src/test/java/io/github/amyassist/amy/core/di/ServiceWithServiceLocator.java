@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 /**
  * Test Service to test the use of the ServiceLocator.

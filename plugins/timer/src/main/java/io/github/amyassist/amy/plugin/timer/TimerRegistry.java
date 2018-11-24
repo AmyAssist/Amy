@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
+package io.github.amyassist.amy.plugin.timer;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.IRegistry;
+import io.github.amyassist.amy.registry.IRegistry;
 
 /**
  * Interface for the timer registry

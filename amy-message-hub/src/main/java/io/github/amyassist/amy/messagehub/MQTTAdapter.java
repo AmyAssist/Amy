@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub;
+package io.github.amyassist.amy.messagehub;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -35,17 +35,17 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.information.InstanceInformation;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.information.InstanceInformation;
+import io.github.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.core.service.RunnableService;
+import io.github.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import io.github.amyassist.amy.messagehub.topic.TopicFactory;
+import io.github.amyassist.amy.messagehub.topic.TopicFilter;
+import io.github.amyassist.amy.messagehub.topic.TopicName;
 
 /**
  * A adapter to talk with the mqtt broker
@@ -122,7 +122,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
+	 * @see io.github.amyassist.amy.core.service.RunnableService#start()
 	 */
 	@Override
 	public void start() {
@@ -130,7 +130,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
+	 * @see io.github.amyassist.amy.core.service.RunnableService#stop()
 	 */
 	@Override
 	public void stop() {
@@ -139,7 +139,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessagingAdapter#isRunning()
+	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#isRunning()
 	 */
 	@Override
 	public boolean isRunning() {
@@ -163,7 +163,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessagingAdapter#publish(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName,
+	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#publish(io.github.amyassist.amy.messagehub.topic.TopicName,
 	 *      java.lang.String, int, boolean)
 	 */
 	@Override
@@ -181,7 +181,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessagingAdapter#subscribe(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter)
+	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#subscribe(io.github.amyassist.amy.messagehub.topic.TopicFilter)
 	 */
 	@Override
 	public void subscribe(TopicFilter topic) {
@@ -195,7 +195,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessagingAdapter#unsubscribe(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter)
+	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#unsubscribe(io.github.amyassist.amy.messagehub.topic.TopicFilter)
 	 */
 	@Override
 	public void unsubscribe(TopicFilter topic) {
@@ -209,7 +209,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessagingAdapter#setCallback(java.util.function.BiConsumer)
+	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#setCallback(java.util.function.BiConsumer)
 	 */
 	@Override
 	public void setCallback(BiConsumer<TopicName, Message> callback) {
@@ -217,7 +217,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessagingAdapter#setStartCallback(java.lang.Runnable)
+	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#setStartCallback(java.lang.Runnable)
 	 */
 	@Override
 	public void setStartCallback(Runnable callback) {

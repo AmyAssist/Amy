@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -34,12 +34,12 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNullableByDefault;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.ClassProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.exception.DuplicateServiceException;
-import de.unistuttgart.iaas.amyassist.amy.core.di.exception.ServiceNotFoundException;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.*;
+import io.github.amyassist.amy.core.di.consumer.ServiceConsumer;
+import io.github.amyassist.amy.core.di.context.provider.ClassProvider;
+import io.github.amyassist.amy.core.di.context.provider.StaticProvider;
+import io.github.amyassist.amy.core.di.exception.DuplicateServiceException;
+import io.github.amyassist.amy.core.di.exception.ServiceNotFoundException;
+import io.github.amyassist.amy.core.di.provider.*;
 
 /**
  * This is the core of the dependency injection. It contains the maps with ServiceProviders and instantiated Services.

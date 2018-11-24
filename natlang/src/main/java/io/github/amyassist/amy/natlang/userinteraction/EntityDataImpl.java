@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction;
+package io.github.amyassist.amy.natlang.userinteraction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.DateTimeUtility;
+import io.github.amyassist.amy.core.natlang.EntityData;
+import io.github.amyassist.amy.natlang.languagespecifics.DateTimeUtility;
 
 /**
  * Stores the data from one entity. Only one attribute is set at the same time

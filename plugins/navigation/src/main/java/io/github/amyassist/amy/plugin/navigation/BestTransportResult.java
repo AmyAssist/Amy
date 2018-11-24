@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
+package io.github.amyassist.amy.plugin.navigation;
 
 import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
-import de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest.WidgetRouteInfo;
+import io.github.amyassist.amy.plugin.navigation.rest.WidgetRouteInfo;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.UnsupportedEncodingException;

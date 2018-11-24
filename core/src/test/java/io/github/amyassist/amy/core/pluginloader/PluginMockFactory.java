@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
+package io.github.amyassist.amy.core.pluginloader;
 
 import java.nio.file.Path;
 import java.util.function.Consumer;

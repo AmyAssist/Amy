@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio.sound;
+package io.github.amyassist.amy.core.audio.sound;
 
 import java.lang.Thread.State;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +31,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.QueuedInputStream;
+import io.github.amyassist.amy.core.audio.QueuedInputStream;
 
 /**
  * Player for sounds

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,10 +32,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
+import io.github.amyassist.amy.core.di.consumer.ServiceConsumer;
+import io.github.amyassist.amy.core.di.provider.ServiceProvider;
+import io.github.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
+import io.github.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 /**

@@ -21,16 +21,16 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.nl;
+package io.github.amyassist.amy.natlang.nl;
 
 import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParseException;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.*;
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.Stemmer;
-import de.unistuttgart.iaas.amyassist.amy.natlang.util.CompareWords;
+import io.github.amyassist.amy.natlang.agf.AGFParseException;
+import io.github.amyassist.amy.natlang.agf.nodes.*;
+import io.github.amyassist.amy.natlang.languagespecifics.Stemmer;
+import io.github.amyassist.amy.natlang.util.CompareWords;
 
 /**
  * NLParser implementation, matches NL input to AGFNodes

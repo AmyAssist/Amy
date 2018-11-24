@@ -7,7 +7,7 @@
 	<name>Amy genric plugin</name>
 	<description>The parent pom for Amy plugins</description>
 	<parent>
-		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
 		<version>0.7.0-Snapshot</version>
 		<relativePath>../pom.xml</relativePath>
@@ -42,7 +42,7 @@
 						</transformer>
 						<transformer
 							implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-							<resource>META-INF/de.unistuttgart.iaas.amyassist.amy.core.di.Services</resource>
+							<resource>META-INF/io.github.amyassist.amy.core.di.Services</resource>
 						</transformer>
 						<transformer
 							implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
@@ -54,7 +54,7 @@
 						</transformer>
 						<transformer
 							implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-							<resource>META-INF/de.unistuttgart.iaas.amyassist.amy.core.console.Console</resource>
+							<resource>META-INF/io.github.amyassist.amy.core.console.Console</resource>
 						</transformer>
 					</transformers>
 				</configuration>

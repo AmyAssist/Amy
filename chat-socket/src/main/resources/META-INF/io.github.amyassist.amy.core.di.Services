@@ -1,2 +1,2 @@
-de.unistuttgart.iaas.amyassist.amy.socket.ChatServer
-de.unistuttgart.iaas.amyassist.amy.socket.ChatConfig
+io.github.amyassist.amy.socket.ChatServer
+io.github.amyassist.amy.socket.ChatConfig

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.output;
+package io.github.amyassist.amy.core.speech.output;
 
 import static org.mockito.Mockito.*;
 
@@ -36,18 +36,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager.OutputBehavior;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.LocalAudio;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.Sound;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.SoundFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.SoundPlayer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.audio.AudioManager;
+import io.github.amyassist.amy.core.audio.AudioManager.OutputBehavior;
+import io.github.amyassist.amy.core.audio.LocalAudio;
+import io.github.amyassist.amy.core.audio.sound.Sound;
+import io.github.amyassist.amy.core.audio.sound.SoundFactory;
+import io.github.amyassist.amy.core.audio.sound.SoundPlayer;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.speech.data.Sounds;
+import io.github.amyassist.amy.core.speech.tts.TextToSpeech;
+import io.github.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Tests {@link Output}
@@ -90,7 +90,7 @@ class OutputTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.speech.output.OutputImpl#voiceOutput(java.lang.String)}.
+	 * {@link io.github.amyassist.amy.core.speech.output.OutputImpl#voiceOutput(java.lang.String)}.
 	 * 
 	 * @throws IOException
 	 *             When an io error occurs
@@ -113,7 +113,7 @@ class OutputTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.speech.output.OutputImpl#soundOutput(de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds)}.
+	 * {@link io.github.amyassist.amy.core.speech.output.OutputImpl#soundOutput(io.github.amyassist.amy.core.speech.data.Sounds)}.
 	 * 
 	 * @throws Exception
 	 *             When an error occurs.
@@ -135,7 +135,7 @@ class OutputTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.speech.output.OutputImpl#stopOutput()}.
+	 * Test method for {@link io.github.amyassist.amy.core.speech.output.OutputImpl#stopOutput()}.
 	 * 
 	 * @throws Exception
 	 *             When an error occurs.
@@ -173,7 +173,7 @@ class OutputTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.speech.output.OutputImpl#isCurrentlyOutputting()}.
+	 * Test method for {@link io.github.amyassist.amy.core.speech.output.OutputImpl#isCurrentlyOutputting()}.
 	 * 
 	 * @throws Exception
 	 *             When an error occurs.

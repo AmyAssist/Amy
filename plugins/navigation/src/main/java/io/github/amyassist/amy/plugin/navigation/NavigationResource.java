@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
+package io.github.amyassist.amy.plugin.navigation;
 
 import java.time.ZonedDateTime;
 
@@ -35,10 +35,10 @@ import org.joda.time.ReadableInstant;
 
 import com.google.maps.model.TravelMode;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest.Route;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.plugin.navigation.rest.Route;
+import io.github.amyassist.amy.utility.rest.Resource;
+import io.github.amyassist.amy.utility.rest.ResourceEntity;
 
 /**
  * Rest Resource for navigation
@@ -195,7 +195,7 @@ public class NavigationResource implements Resource {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 * @see io.github.amyassist.amy.utility.rest.Resource#getPluginDescripion()
 	 */
 	@Override
 	public ResourceEntity getPluginDescripion() {

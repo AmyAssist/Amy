@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
+package io.github.amyassist.amy.core.pluginloader;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,8 +38,8 @@ import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * The class responsible for loading plugins.

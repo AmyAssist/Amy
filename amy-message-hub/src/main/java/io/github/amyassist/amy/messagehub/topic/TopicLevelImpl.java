@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
+package io.github.amyassist.amy.messagehub.topic;
 
 /**
  * Implementation of {@link TopicLevel}
@@ -57,7 +57,7 @@ class TopicLevelImpl implements TopicLevel {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevel#getStringRepresentation()
+	 * @see io.github.amyassist.amy.messagehub.topic.TopicLevel#getStringRepresentation()
 	 */
 	@Override
 	public String getStringRepresentation() {
@@ -65,7 +65,7 @@ class TopicLevelImpl implements TopicLevel {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevel#isNormalLevel()
+	 * @see io.github.amyassist.amy.messagehub.topic.TopicLevel#isNormalLevel()
 	 */
 	@Override
 	public boolean isNormalLevel() {
@@ -73,7 +73,7 @@ class TopicLevelImpl implements TopicLevel {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevel#isSingleLevelWildcard()
+	 * @see io.github.amyassist.amy.messagehub.topic.TopicLevel#isSingleLevelWildcard()
 	 */
 	@Override
 	public boolean isSingleLevelWildcard() {
@@ -81,7 +81,7 @@ class TopicLevelImpl implements TopicLevel {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicLevel#isMultiLevelWildcard()
+	 * @see io.github.amyassist.amy.messagehub.topic.TopicLevel#isMultiLevelWildcard()
 	 */
 	@Override
 	public boolean isMultiLevelWildcard() {

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx;
+package io.github.amyassist.amy.core.speech.sphinx;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -40,10 +40,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Tests the {@link SphinxGrammarCreator}
@@ -73,7 +73,7 @@ class SphinxGrammarCreatorTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarCreator#createGrammar(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * {@link io.github.amyassist.amy.core.speech.sphinx.SphinxGrammarCreator#createGrammar(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
 	 * 
 	 * @throws IOException
 	 *             When an IO error occurs

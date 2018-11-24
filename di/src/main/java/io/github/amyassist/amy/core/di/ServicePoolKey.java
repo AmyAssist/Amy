@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import io.github.amyassist.amy.core.di.provider.ServiceProvider;
 
 /**
  * The Key in the Service Pool of the {@link DependencyInjection} implementation.

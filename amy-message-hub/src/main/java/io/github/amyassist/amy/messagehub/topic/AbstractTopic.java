@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
+package io.github.amyassist.amy.messagehub.topic;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -108,7 +108,7 @@ abstract class AbstractTopic implements Topic {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.Topic#getStringRepresentation()
+	 * @see io.github.amyassist.amy.messagehub.topic.Topic#getStringRepresentation()
 	 */
 	@Override
 	public String getStringRepresentation() {
@@ -124,7 +124,7 @@ abstract class AbstractTopic implements Topic {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.Topic#getTopicLevels()
+	 * @see io.github.amyassist.amy.messagehub.topic.Topic#getTopicLevels()
 	 */
 	@Override
 	public List<TopicLevel> getTopicLevels() {
@@ -132,7 +132,7 @@ abstract class AbstractTopic implements Topic {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.Topic#isSpecialTopic()
+	 * @see io.github.amyassist.amy.messagehub.topic.Topic#isSpecialTopic()
 	 */
 	@Override
 	public boolean isSpecialTopic() {

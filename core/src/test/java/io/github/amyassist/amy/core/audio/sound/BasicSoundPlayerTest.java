@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio.sound;
+package io.github.amyassist.amy.core.audio.sound;
 
 import java.io.IOException;
 
@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.SoundPlayer.StopReason;
+import io.github.amyassist.amy.core.audio.sound.SoundPlayer.StopReason;
 
 /**
  * Test class for {@link BasicSoundPlayer}
@@ -55,7 +55,7 @@ class BasicSoundPlayerTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.audio.sound.BasicSoundPlayer#getAudioStream()}.
+	 * Test method for {@link io.github.amyassist.amy.core.audio.sound.BasicSoundPlayer#getAudioStream()}.
 	 * 
 	 * @throws InterruptedException
 	 *             When the thread gets interrupted
@@ -82,7 +82,7 @@ class BasicSoundPlayerTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.audio.sound.BasicSoundPlayer#setOnStopHook(java.util.function.Consumer)}.
+	 * {@link io.github.amyassist.amy.core.audio.sound.BasicSoundPlayer#setOnStopHook(java.util.function.Consumer)}.
 	 * for {@link StopReason#END_OF_AUDIO}.
 	 * 
 	 * @throws InterruptedException
@@ -126,7 +126,7 @@ class BasicSoundPlayerTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.audio.sound.BasicSoundPlayer#setOnStopHook(java.util.function.Consumer)}.
+	 * {@link io.github.amyassist.amy.core.audio.sound.BasicSoundPlayer#setOnStopHook(java.util.function.Consumer)}.
 	 * for {@link StopReason#STREAM_CLOSED}.
 	 * 
 	 * @throws InterruptedException
@@ -170,7 +170,7 @@ class BasicSoundPlayerTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.audio.sound.BasicSoundPlayer#setOnStopHook(java.util.function.Consumer)}.
+	 * {@link io.github.amyassist.amy.core.audio.sound.BasicSoundPlayer#setOnStopHook(java.util.function.Consumer)}.
 	 * for {@link StopReason#PLAYER_STOPPED}.
 	 * 
 	 * @throws InterruptedException
@@ -213,7 +213,7 @@ class BasicSoundPlayerTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.audio.sound.BasicSoundPlayer#setOnStopHook(java.util.function.Consumer)}.
+	 * {@link io.github.amyassist.amy.core.audio.sound.BasicSoundPlayer#setOnStopHook(java.util.function.Consumer)}.
 	 * for {@link StopReason#OTHER}.
 	 * 
 	 * @throws InterruptedException
@@ -262,7 +262,7 @@ class BasicSoundPlayerTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.audio.sound.BasicSoundPlayer#setOnStopHook(java.util.function.Consumer)}.
+	 * {@link io.github.amyassist.amy.core.audio.sound.BasicSoundPlayer#setOnStopHook(java.util.function.Consumer)}.
 	 * when the player is already started.
 	 * 
 	 * @throws InterruptedException

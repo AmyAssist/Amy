@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.internal;
+package io.github.amyassist.amy.messagehub.internal;
 
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceiver;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.Subscription;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
+import io.github.amyassist.amy.messagehub.annotations.MessageReceiver;
+import io.github.amyassist.amy.messagehub.annotations.Subscription;
+import io.github.amyassist.amy.messagehub.topic.TopicName;
 
 /**
  * Message receiver with invalid methods

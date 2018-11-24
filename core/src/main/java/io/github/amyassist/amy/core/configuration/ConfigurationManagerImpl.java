@@ -21,15 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.configuration;
+package io.github.amyassist.amy.core.configuration;
 
 import java.util.Properties;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.Context;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * Implementation of {@link ConfigurationManager} that uses the {@link ConfigurationLoader} and the
@@ -45,7 +45,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	private InternalDefaultConfigurationLoader internalDefaultConfigurationLoader;
 	@Reference
 	private EnvironmentConfigurationLoader environmentConfiguratinLoader;
-	@Context(de.unistuttgart.iaas.amyassist.amy.core.di.Context.CLASSLOADER)
+	@Context(io.github.amyassist.amy.core.di.Context.CLASSLOADER)
 	private ClassLoader classLoader;
 
 	@Override

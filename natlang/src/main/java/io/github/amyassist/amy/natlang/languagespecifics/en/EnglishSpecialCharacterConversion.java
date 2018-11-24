@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en;
+package io.github.amyassist.amy.natlang.languagespecifics.en;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.SpecialCharacterConversion;
+import io.github.amyassist.amy.natlang.languagespecifics.SpecialCharacterConversion;
 
 /**
  * Special Character conversion for the english language
@@ -51,7 +51,7 @@ public class EnglishSpecialCharacterConversion implements SpecialCharacterConver
 	}
 	
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.SpecialCharacterConversion#format(java.lang.String)
+	 * @see io.github.amyassist.amy.natlang.languagespecifics.SpecialCharacterConversion#format(java.lang.String)
 	 */
 	@Override
 	public String format(String toFormat) {

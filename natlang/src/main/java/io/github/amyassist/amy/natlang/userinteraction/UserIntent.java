@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction;
+package io.github.amyassist.amy.natlang.userinteraction;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -29,19 +29,19 @@ import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
+import io.github.amyassist.amy.core.natlang.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.natlang.NLIAnnotationReader;
-import de.unistuttgart.iaas.amyassist.amy.natlang.PreDefinedEntityTypes;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexer;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParser;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent;
-import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLEntityTemplate;
-import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLPrompt;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.natlang.NLIAnnotationReader;
+import io.github.amyassist.amy.natlang.PreDefinedEntityTypes;
+import io.github.amyassist.amy.natlang.agf.AGFLexer;
+import io.github.amyassist.amy.natlang.agf.AGFParser;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.aim.XMLAIMIntent;
+import io.github.amyassist.amy.natlang.aim.XMLEntityTemplate;
+import io.github.amyassist.amy.natlang.aim.XMLPrompt;
 
 /**
  * The user intent class load all needed grammars and answers from the xml. the entities were saved here.

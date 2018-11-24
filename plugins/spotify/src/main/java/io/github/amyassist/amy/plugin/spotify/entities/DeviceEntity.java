@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
+package io.github.amyassist.amy.plugin.spotify.entities;
 
 import java.util.Objects;
 
@@ -30,8 +30,8 @@ import javax.persistence.Id;
 import javax.persistence.PersistenceUnit;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
+import io.github.amyassist.amy.registry.RegistryEntity;
+import io.github.amyassist.amy.utility.rest.Entity;
 
 /**
  * Device Entity for JSON and Registry

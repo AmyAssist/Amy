@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
+package io.github.amyassist.amy.messagehub.topic;
 
 /**
  * A Exception for when a topic string is not a legal topic as defined in OASIS Standard for MQTT Version 3.1.1.

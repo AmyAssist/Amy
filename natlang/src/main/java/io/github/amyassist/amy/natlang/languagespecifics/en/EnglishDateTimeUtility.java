@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en;
+package io.github.amyassist.amy.natlang.languagespecifics.en;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,7 +32,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.DateTimeUtility;
+import io.github.amyassist.amy.natlang.languagespecifics.DateTimeUtility;
 
 /**
  * 

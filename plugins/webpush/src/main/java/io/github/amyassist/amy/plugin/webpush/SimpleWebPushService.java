@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.webpush;
+package io.github.amyassist.amy.plugin.webpush;
 
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.model.Notification;
+import io.github.amyassist.amy.plugin.webpush.model.Notification;
 
 /**
  * Simple abstracted WebPushService interface.

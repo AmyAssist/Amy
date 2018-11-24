@@ -21,12 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
+package io.github.amyassist.amy.plugin.calendar;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
+import static io.github.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,9 +42,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Test for the rest resource of calendar
@@ -92,7 +92,7 @@ class CalendarRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarResource#setEvent(CalendarEvent)}.
+	 * {@link io.github.amyassist.amy.plugin.calendar.CalendarResource#setEvent(CalendarEvent)}.
 	 */
 	@Test
 	void testSetEvents() {
@@ -111,7 +111,7 @@ class CalendarRestTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarResource#getEventsAt(LocalDateTime)}.
+	 * {@link io.github.amyassist.amy.plugin.calendar.CalendarResource#getEventsAt(LocalDateTime)}.
 	 */
 	@Test
 	void testGetEventsAt() {

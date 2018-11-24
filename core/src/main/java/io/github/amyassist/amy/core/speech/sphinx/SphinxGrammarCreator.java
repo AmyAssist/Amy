@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx;
+package io.github.amyassist.amy.core.speech.sphinx;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -29,10 +29,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.io.Environment;
 
 /**
  * Class that Creates all Grammar Objects sets the MainGrammar and the List of all other Grammars

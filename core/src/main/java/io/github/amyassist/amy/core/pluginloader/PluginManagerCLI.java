@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
+package io.github.amyassist.amy.core.pluginloader;
 
 import asg.cliche.Command;
-import de.unistuttgart.iaas.amyassist.amy.core.Configuration;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.Configuration;
+import io.github.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * Command Line Interface for the PluginManager

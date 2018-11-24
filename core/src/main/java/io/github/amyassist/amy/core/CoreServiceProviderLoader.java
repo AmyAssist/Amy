@@ -21,18 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package io.github.amyassist.amy.core;
 
 import java.util.Set;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.PropertiesProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Services;
-import de.unistuttgart.iaas.amyassist.amy.core.logger.LoggerProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxContext;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarName;
+import io.github.amyassist.amy.core.configuration.PropertiesProvider;
+import io.github.amyassist.amy.core.di.Configuration;
+import io.github.amyassist.amy.core.di.Context;
+import io.github.amyassist.amy.core.di.ServiceProviderLoader;
+import io.github.amyassist.amy.core.di.Services;
+import io.github.amyassist.amy.core.logger.LoggerProvider;
+import io.github.amyassist.amy.core.speech.sphinx.SphinxContext;
+import io.github.amyassist.amy.core.speech.sphinx.SphinxGrammarName;
 
 /**
  * Register the Services of Core

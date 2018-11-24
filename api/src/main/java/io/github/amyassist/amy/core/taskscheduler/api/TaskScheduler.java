@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api;
+package io.github.amyassist.amy.core.taskscheduler.api;
 
 import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;

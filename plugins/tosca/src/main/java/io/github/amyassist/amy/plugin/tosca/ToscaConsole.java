@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.tosca;
+package io.github.amyassist.amy.plugin.tosca;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
 import org.opentosca.containerapi.client.model.Application;
 
 import asg.cliche.Command;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * The console class for the tosca plugin

@@ -21,18 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package io.github.amyassist.amy.httpserver;
 
 import java.util.Set;
 
 import javax.ws.rs.Path;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
-import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
-import de.unistuttgart.iaas.amyassist.amy.deployment.DeploymentDescriptorUtil;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.pluginloader.IPlugin;
+import io.github.amyassist.amy.core.pluginloader.PluginManager;
+import io.github.amyassist.amy.core.service.DeploymentContainerService;
+import io.github.amyassist.amy.deployment.DeploymentDescriptorUtil;
 
 /**
  * An adapter to load resources from deployment descriptors and from the PluginManager.

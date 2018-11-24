@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
+package io.github.amyassist.amy.plugin.alarmclock;
 
 import java.time.LocalDateTime;
 
@@ -33,8 +33,8 @@ import javax.persistence.Id;
 import javax.persistence.PersistenceUnit;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
+import io.github.amyassist.amy.registry.RegistryEntity;
+import io.github.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
 
 /**
  * Class that defines timer attributes and behaviour
@@ -43,7 +43,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdap
  */
 @Entity
 @PersistenceUnit(unitName = "AlarmRegistry")
-public class Alarm extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity implements RegistryEntity {
+public class Alarm extends io.github.amyassist.amy.utility.rest.Entity implements RegistryEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -141,7 +141,7 @@ public class Alarm extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity#getPersistentId()
+	 * @see io.github.amyassist.amy.registry.RegistryEntity#getPersistentId()
 	 */
 	@Override
 	public int getPersistentId() {

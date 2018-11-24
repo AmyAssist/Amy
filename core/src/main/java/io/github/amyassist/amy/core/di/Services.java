@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 import java.util.Set;
 
-import de.unistuttgart.iaas.amyassist.amy.deployment.DeploymentDescriptorUtil;
+import io.github.amyassist.amy.deployment.DeploymentDescriptorUtil;
 
 /**
  * This class name is used as deployment descriptor name.
@@ -37,7 +37,7 @@ public class Services {
 
 	/**
 	 * Loads Services using the deployment descriptor file
-	 * META-INF/de.unistuttgart.iaas.amyassist.amy.core.di.Services
+	 * META-INF/io.github.amyassist.amy.core.di.Services
 	 * 
 	 * @param classLoader
 	 *            the classLoader from which the deployment descriptor is read is used to load the classes

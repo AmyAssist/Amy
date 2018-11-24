@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio;
+package io.github.amyassist.amy.core.audio;
 
 import java.util.NoSuchElementException;
 import java.util.Properties;
@@ -31,12 +31,12 @@ import javax.sound.sampled.LineUnavailableException;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.LocalAudioEnvironment;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.audio.environment.AudioEnvironment;
+import io.github.amyassist.amy.core.audio.environment.LocalAudioEnvironment;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * Implementation of {@link LocalAudio}

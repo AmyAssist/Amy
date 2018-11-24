@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.agf.parselets;
+package io.github.amyassist.amy.natlang.agf.parselets;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFToken;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFTokenType;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.Parser;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.ORGroupNode;
+import io.github.amyassist.amy.natlang.agf.AGFToken;
+import io.github.amyassist.amy.natlang.agf.AGFTokenType;
+import io.github.amyassist.amy.natlang.agf.Parser;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.agf.nodes.ORGroupNode;
 
 /**
  * Or Group Parselet
@@ -39,8 +39,8 @@ import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.ORGroupNode;
 public class ORGroupParselet implements IAGFParselet {
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.agf.parselets.IAGFParselet#parse(de.unistuttgart.iaas.amyassist.amy.natlang.agf.Parser,
-	 *      de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFToken)
+	 * @see io.github.amyassist.amy.natlang.agf.parselets.IAGFParselet#parse(io.github.amyassist.amy.natlang.agf.Parser,
+	 *      io.github.amyassist.amy.natlang.agf.AGFToken)
 	 */
 	@Override
 	public ORGroupNode parse(Parser parser, AGFToken token) {

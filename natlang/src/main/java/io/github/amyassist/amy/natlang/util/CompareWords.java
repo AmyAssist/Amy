@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.util;
+package io.github.amyassist.amy.natlang.util;
 
 /**
  * Helper class to compare words 

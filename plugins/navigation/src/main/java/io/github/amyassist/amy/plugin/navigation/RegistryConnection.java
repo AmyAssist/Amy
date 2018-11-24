@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
+package io.github.amyassist.amy.plugin.navigation;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.registry.Location;
-import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
-import de.unistuttgart.iaas.amyassist.amy.registry.Taggable;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.registry.Location;
+import io.github.amyassist.amy.registry.LocationRegistry;
+import io.github.amyassist.amy.registry.Taggable;
 
 import java.util.List;
 

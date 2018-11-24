@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.adapter;
+package io.github.amyassist.amy.httpserver.adapter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;

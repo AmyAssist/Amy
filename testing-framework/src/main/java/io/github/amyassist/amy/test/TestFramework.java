@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.test;
+package io.github.amyassist.amy.test;
 
 import javax.ws.rs.client.WebTarget;
 
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import io.github.amyassist.amy.core.plugin.api.IStorage;
 
 /**
  * A Framework to test Services

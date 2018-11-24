@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations;
+package io.github.amyassist.amy.plugin.tosca.configurations;
 
 import javax.ws.rs.Path;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.rest.AbstractRegistryResource;
+import io.github.amyassist.amy.registry.rest.AbstractRegistryResource;
 
 /**
  * The configuration resource

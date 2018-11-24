@@ -21,15 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.nl;
+package io.github.amyassist.amy.natlang.nl;
 
 import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.NumberConversion;
+import io.github.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
+import io.github.amyassist.amy.natlang.languagespecifics.NumberConversion;
 
 /**
  * Lexer for language input from speechs

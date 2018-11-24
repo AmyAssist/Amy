@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
+package io.github.amyassist.amy.plugin.spotify.logic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +30,11 @@ import org.slf4j.Logger;
 
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.registry.DeviceRegistry;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.plugin.spotify.SpotifyAPICalls;
+import io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+import io.github.amyassist.amy.plugin.spotify.registry.DeviceRegistry;
 
 /**
  * In this class the devices from spotify are managed

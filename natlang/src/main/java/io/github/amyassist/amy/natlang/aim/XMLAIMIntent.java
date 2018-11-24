@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.aim;
+package io.github.amyassist.amy.natlang.aim;
 
 import java.util.ArrayList;
 import java.util.List;

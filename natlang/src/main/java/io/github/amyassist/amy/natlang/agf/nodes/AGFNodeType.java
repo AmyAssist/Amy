@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes;
+package io.github.amyassist.amy.natlang.agf.nodes;
 
 /**
  * List of Node Types

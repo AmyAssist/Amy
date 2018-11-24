@@ -1,2 +1,2 @@
-de.unistuttgart.iaas.amyassist.amy.plugin.social.SocialLogic
-de.unistuttgart.iaas.amyassist.amy.plugin.social.JokeAPICaller
+io.github.amyassist.amy.plugin.social.SocialLogic
+io.github.amyassist.amy.plugin.social.JokeAPICaller

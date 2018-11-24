@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
+package io.github.amyassist.amy.messagehub.topic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ class TopicFilterTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilterImpl#doesFilterMatch(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName)}
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicFilterImpl#doesFilterMatch(io.github.amyassist.amy.messagehub.topic.TopicName)}
 	 * without any wildcards.
 	 * 
 	 * @param name
@@ -57,7 +57,7 @@ class TopicFilterTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilterImpl#doesFilterMatch(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName)}
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicFilterImpl#doesFilterMatch(io.github.amyassist.amy.messagehub.topic.TopicName)}
 	 * without any wildcards and not matching.
 	 * 
 	 * @param pair
@@ -75,7 +75,7 @@ class TopicFilterTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilterImpl#doesFilterMatch(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName)}
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicFilterImpl#doesFilterMatch(io.github.amyassist.amy.messagehub.topic.TopicName)}
 	 * with single level wildcard.
 	 * 
 	 * @param pair
@@ -92,7 +92,7 @@ class TopicFilterTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilterImpl#doesFilterMatch(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName)}
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicFilterImpl#doesFilterMatch(io.github.amyassist.amy.messagehub.topic.TopicName)}
 	 * with single level wildcard and not matching.
 	 * 
 	 * @param pair
@@ -110,7 +110,7 @@ class TopicFilterTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilterImpl#doesFilterMatch(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName)}
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicFilterImpl#doesFilterMatch(io.github.amyassist.amy.messagehub.topic.TopicName)}
 	 * with multi level wildcard.
 	 * 
 	 * @param pair
@@ -127,7 +127,7 @@ class TopicFilterTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilterImpl#doesFilterMatch(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName)}
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicFilterImpl#doesFilterMatch(io.github.amyassist.amy.messagehub.topic.TopicName)}
 	 * with multi level wildcard and not matching.
 	 * 
 	 * @param pair

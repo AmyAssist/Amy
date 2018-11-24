@@ -21,20 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package io.github.amyassist.amy.plugin.spotify;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.*;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.*;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.SearchTypes;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.natlang.*;
+import io.github.amyassist.amy.plugin.spotify.entities.*;
+import io.github.amyassist.amy.plugin.spotify.logic.DeviceLogic;
+import io.github.amyassist.amy.plugin.spotify.logic.PlayerLogic;
+import io.github.amyassist.amy.plugin.spotify.logic.Search;
+import io.github.amyassist.amy.plugin.spotify.logic.SearchTypes;
 
 /**
  * this class handle the speech commands from the spotify plugin

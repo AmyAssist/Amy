@@ -21,23 +21,23 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.annotations;
+package io.github.amyassist.amy.messagehub.annotations;
 
 import java.lang.reflect.Method;
 import java.util.Set;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
-import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
-import de.unistuttgart.iaas.amyassist.amy.deployment.DeploymentDescriptorUtil;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.internal.InternalMessageHubService;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.internal.SubscriptionUtil;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.pluginloader.IPlugin;
+import io.github.amyassist.amy.core.pluginloader.PluginManager;
+import io.github.amyassist.amy.core.service.DeploymentContainerService;
+import io.github.amyassist.amy.deployment.DeploymentDescriptorUtil;
+import io.github.amyassist.amy.messagehub.internal.InternalMessageHubService;
+import io.github.amyassist.amy.messagehub.internal.SubscriptionUtil;
+import io.github.amyassist.amy.messagehub.topic.TopicFactory;
+import io.github.amyassist.amy.messagehub.topic.TopicFilter;
 
 /**
  * Loads the DD and subscribes all MessageReceivers.

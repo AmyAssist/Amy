@@ -1,3 +1,3 @@
-de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerBeepService
-de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerLogic
-de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerRegistryImpl
+io.github.amyassist.amy.plugin.timer.TimerBeepService
+io.github.amyassist.amy.plugin.timer.TimerLogic
+io.github.amyassist.amy.plugin.timer.TimerRegistryImpl

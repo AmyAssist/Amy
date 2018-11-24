@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
+package io.github.amyassist.amy.core.natlang.nl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -42,16 +42,16 @@ import javax.xml.bind.Unmarshaller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNodeType;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.EntityNode;
-import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAmyInteractionModel;
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishNumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLLexer;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.NLParser;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.EndToken;
-import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntent;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNodeType;
+import io.github.amyassist.amy.natlang.agf.nodes.EntityNode;
+import io.github.amyassist.amy.natlang.aim.XMLAmyInteractionModel;
+import io.github.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
+import io.github.amyassist.amy.natlang.languagespecifics.en.EnglishNumberConversion;
+import io.github.amyassist.amy.natlang.nl.NLLexer;
+import io.github.amyassist.amy.natlang.nl.NLParser;
+import io.github.amyassist.amy.natlang.nl.EndToken;
+import io.github.amyassist.amy.natlang.userinteraction.UserIntent;
 
 /**
  * TODO: Description

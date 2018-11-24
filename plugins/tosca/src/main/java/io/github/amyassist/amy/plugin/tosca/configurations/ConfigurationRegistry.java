@@ -21,12 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations;
+package io.github.amyassist.amy.plugin.tosca.configurations;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.registry.AbstractTaggableRegistry;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.registry.AbstractTaggableRegistry;
 
 /**
  * The configuration registry
@@ -37,7 +37,7 @@ import de.unistuttgart.iaas.amyassist.amy.registry.AbstractTaggableRegistry;
 public class ConfigurationRegistry extends AbstractTaggableRegistry<ConfigurationEntry> {
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry#getPersistenceUnitName()
+	 * @see io.github.amyassist.amy.registry.AbstractRegistry#getPersistenceUnitName()
 	 */
 	@Override
 	protected String getPersistenceUnitName() {
@@ -45,7 +45,7 @@ public class ConfigurationRegistry extends AbstractTaggableRegistry<Configuratio
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry#getEntityClass()
+	 * @see io.github.amyassist.amy.registry.AbstractRegistry#getEntityClass()
 	 */
 	@Override
 	protected @Nonnull Class<? extends ConfigurationEntry> getEntityClass() {

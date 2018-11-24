@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.io;
+package io.github.amyassist.amy.core.io;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformation;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.information.ProgramInformation;
 
 /**
  * This class handles the command line arguments passed to the core.

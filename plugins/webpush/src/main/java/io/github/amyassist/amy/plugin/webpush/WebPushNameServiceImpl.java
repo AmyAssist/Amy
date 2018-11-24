@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.webpush;
+package io.github.amyassist.amy.plugin.webpush;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -29,11 +29,11 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.model.Subscription;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.persistence.SubscriptionEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.persistence.SubscriptionStorage;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.plugin.webpush.model.Subscription;
+import io.github.amyassist.amy.plugin.webpush.persistence.SubscriptionEntity;
+import io.github.amyassist.amy.plugin.webpush.persistence.SubscriptionStorage;
 
 /**
  * Implementation of the WebPushNameService. This uses Tags of the Database entity as names.

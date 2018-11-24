@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang;
+package io.github.amyassist.amy.natlang;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,7 +32,7 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.*;
+import io.github.amyassist.amy.core.natlang.*;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
 /**

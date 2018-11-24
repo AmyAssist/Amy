@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.service;
+package io.github.amyassist.amy.core.service;
 
 /**
  * Service interface

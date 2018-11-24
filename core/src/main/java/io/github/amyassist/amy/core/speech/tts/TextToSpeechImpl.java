@@ -21,16 +21,16 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+package io.github.amyassist.amy.core.speech.tts;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
 import marytts.LocalMaryInterface;
 import marytts.exceptions.MaryConfigurationException;
 import marytts.exceptions.SynthesisException;
@@ -69,7 +69,7 @@ public class TextToSpeechImpl implements TextToSpeech {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech#getMaryAudio(java.lang.String)
+	 * @see io.github.amyassist.amy.core.speech.tts.TextToSpeech#getMaryAudio(java.lang.String)
 	 */
 	@Override
 	public AudioInputStream getMaryAudio(String s) {
@@ -89,7 +89,7 @@ public class TextToSpeechImpl implements TextToSpeech {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech#getMaryAudioFormat()
+	 * @see io.github.amyassist.amy.core.speech.tts.TextToSpeech#getMaryAudioFormat()
 	 */
 	@Override
 	public AudioFormat getMaryAudioFormat() {

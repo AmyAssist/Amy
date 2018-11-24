@@ -21,10 +21,10 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.information;
+package io.github.amyassist.amy.core.information;
 
 import asg.cliche.Command;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * Command Line Interface for the program information

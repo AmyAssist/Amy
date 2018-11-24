@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.annotation;
+package io.github.amyassist.amy.core.di.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

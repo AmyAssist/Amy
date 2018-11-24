@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
+package io.github.amyassist.amy.messagehub.topic;
 
 /**
  * The implementation of {@link TopicName}
@@ -56,7 +56,7 @@ class TopicNameImpl extends AbstractTopic implements TopicName {
 	 *            The topic string to validate
 	 * @throws TopicFormatException
 	 *             When the validation fails.
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicString(java.lang.String)
+	 * @see io.github.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicString(java.lang.String)
 	 */
 	protected static void validateTopicStringForName(String topicString) throws TopicFormatException {
 		if (topicString.contains(Character.toString(Constants.SINGLE_LEVEL_WILDCARD)))

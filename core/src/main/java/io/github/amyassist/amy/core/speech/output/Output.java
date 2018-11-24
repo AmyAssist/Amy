@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.output;
+package io.github.amyassist.amy.core.speech.output;
 
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
+import io.github.amyassist.amy.core.speech.data.Sounds;
 
 /**
  * A class used by the speech system to output audio.

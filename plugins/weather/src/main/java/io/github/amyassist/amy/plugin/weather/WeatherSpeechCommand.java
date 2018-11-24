@@ -21,19 +21,19 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
+package io.github.amyassist.amy.plugin.weather;
 
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.*;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.plugin.weather.WeatherLogic.GeoCoordinatePair;
-import de.unistuttgart.iaas.amyassist.amy.registry.Location;
-import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
-import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
-import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.GeocoderException;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.natlang.*;
+import io.github.amyassist.amy.core.plugin.api.IStorage;
+import io.github.amyassist.amy.plugin.weather.WeatherLogic.GeoCoordinatePair;
+import io.github.amyassist.amy.registry.Location;
+import io.github.amyassist.amy.registry.LocationRegistry;
+import io.github.amyassist.amy.registry.geocoder.Geocoder;
+import io.github.amyassist.amy.registry.geocoder.GeocoderException;
 
 import javax.annotation.Nullable;
 import java.text.DateFormat;

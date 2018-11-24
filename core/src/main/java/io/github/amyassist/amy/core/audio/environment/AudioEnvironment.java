@@ -21,15 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio.environment;
+package io.github.amyassist.amy.core.audio.environment;
 
 import java.util.UUID;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput;
+import io.github.amyassist.amy.core.audio.AudioManager;
+import io.github.amyassist.amy.core.audio.AudioOutput;
 
 /**
  * The interface of a audio environment, which does the audio IO
@@ -40,7 +40,7 @@ public interface AudioEnvironment {
 
 	/**
 	 * @return The {@link AudioFormat} format for outputting. The {@link AudioOutput} given to
-	 *         {@link #playAudio(AudioOutput, de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager.OutputBehavior)}
+	 *         {@link #playAudio(AudioOutput, io.github.amyassist.amy.core.audio.AudioManager.OutputBehavior)}
 	 *         must have this format.
 	 */
 	AudioFormat getOutputFormat();

@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.example;
+package io.github.amyassist.amy.plugin.example;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.plugin.example.api.HelloWorldService;
 
 /**
  * Example REST Resource

@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+package io.github.amyassist.amy.core.speech.tts;
 
 import asg.cliche.Command;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.speech.output.Output;
 
 /**
  * Console Tool to test the TextToSpeech service

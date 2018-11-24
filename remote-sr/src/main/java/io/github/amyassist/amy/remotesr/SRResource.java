@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.remotesr;
+package io.github.amyassist.amy.remotesr;
 
 import java.io.InputStream;
 
@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * SSE resource for the remote SR. Chrome connects to this resource and stays connected indefinitely

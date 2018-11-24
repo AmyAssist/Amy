@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx;
+package io.github.amyassist.amy.core.speech.sphinx;
 
 /**
  * Container class for Sphinx-grammar DI context

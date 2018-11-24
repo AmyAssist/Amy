@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes;
+package io.github.amyassist.amy.natlang.agf.nodes;
 
 /**
  * Wildcard node
@@ -52,7 +52,7 @@ public class LongWNode extends AGFNode {
 	/**
 	 * special print self method, because this node may never have children
 	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode#printSelf(java.lang.String, int)
+	 * @see io.github.amyassist.amy.natlang.agf.nodes.AGFNode#printSelf(java.lang.String, int)
 	 */
 	@Override
 	public String printSelf(String name, int indent) {

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
+package io.github.amyassist.amy.plugin.spotify.logic;
 
 import java.net.URI;
 import java.util.List;
@@ -32,14 +32,14 @@ import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Track;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.messagehub.MessageHub;
+import io.github.amyassist.amy.plugin.spotify.SpotifyAPICalls;
+import io.github.amyassist.amy.plugin.spotify.entities.AlbumEntity;
+import io.github.amyassist.amy.plugin.spotify.entities.ArtistEntity;
+import io.github.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import io.github.amyassist.amy.plugin.spotify.entities.TrackEntity;
 
 /**
  * This class have methods to control a spotify client from a user. For examlpe play, pause playback or search for music

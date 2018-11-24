@@ -21,17 +21,17 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.socket;
+package io.github.amyassist.amy.socket;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.natlang.DialogHandler;
+import io.github.amyassist.amy.core.service.RunnableService;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 
-import static de.unistuttgart.iaas.amyassist.amy.socket.ChatConfig.PROPERTY_PORT;
+import static io.github.amyassist.amy.socket.ChatConfig.PROPERTY_PORT;
 
 /**
  * the class running the server socket for the chat 
@@ -54,7 +54,7 @@ public class ChatServer implements RunnableService {
 	
 	
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
+	 * @see io.github.amyassist.amy.core.service.RunnableService#start()
 	 */
 	@Override
 	public void start() {
@@ -66,7 +66,7 @@ public class ChatServer implements RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
+	 * @see io.github.amyassist.amy.core.service.RunnableService#stop()
 	 */
 	@Override
 	public void stop() {

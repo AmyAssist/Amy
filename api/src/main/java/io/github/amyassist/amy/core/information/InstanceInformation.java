@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.information;
+package io.github.amyassist.amy.core.information;
 
 /**
  * Information about this instance of Amy

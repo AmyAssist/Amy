@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable;
+package io.github.amyassist.amy.test.matcher.throwable;
 
 import org.hamcrest.Matcher;
 

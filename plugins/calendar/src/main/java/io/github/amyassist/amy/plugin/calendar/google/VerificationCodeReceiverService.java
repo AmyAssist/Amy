@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.calendar.google;
+package io.github.amyassist.amy.plugin.calendar.google;
 
 import java.io.IOException;
 import java.net.URI;
@@ -37,10 +37,10 @@ import org.slf4j.Logger;
 
 import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiver;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.service.RunnableService;
+import io.github.amyassist.amy.httpserver.Server;
 
 /**
  * Adapter for javax.ws.rs and VerificationCodeReceiver.

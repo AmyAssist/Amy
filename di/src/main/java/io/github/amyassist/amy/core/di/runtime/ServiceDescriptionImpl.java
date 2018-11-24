@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.runtime;
+package io.github.amyassist.amy.core.di.runtime;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import io.github.amyassist.amy.core.di.ServiceDescription;
 
 /**
  * Implementation of ServiceDescription interface

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
+package io.github.amyassist.amy.messagehub.topic;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ class TopicFilterImpl extends AbstractTopic implements TopicFilter {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter#doesFilterMatch(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName)
+	 * @see io.github.amyassist.amy.messagehub.topic.TopicFilter#doesFilterMatch(io.github.amyassist.amy.messagehub.topic.TopicName)
 	 */
 	@Override
 	public boolean doesFilterMatch(TopicName name) {

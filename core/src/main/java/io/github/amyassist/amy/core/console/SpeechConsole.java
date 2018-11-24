@@ -21,16 +21,16 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.console;
+package io.github.amyassist.amy.core.console;
 
 import java.util.UUID;
 
 import org.slf4j.Logger;
 
 import asg.cliche.Command;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.natlang.DialogHandler;
 
 /**
  * Console commands to interact with Amy like speaking with her.

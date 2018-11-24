@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter;
+package io.github.amyassist.amy.utility.rest.adapter;
 
 import java.time.ZonedDateTime;
 

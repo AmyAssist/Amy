@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.nl;
+package io.github.amyassist.amy.natlang.nl;
 
 /**
  * Custom NL Lexer Exception

@@ -21,12 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.webpush.persistence;
+package io.github.amyassist.amy.plugin.webpush.persistence;
 
 import javax.persistence.*;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
-import de.unistuttgart.iaas.amyassist.amy.registry.Taggable;
+import io.github.amyassist.amy.registry.RegistryEntity;
+import io.github.amyassist.amy.registry.Taggable;
 
 /**
  * Database entity class.

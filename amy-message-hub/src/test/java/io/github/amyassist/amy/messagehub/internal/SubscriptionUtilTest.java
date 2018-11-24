@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.internal;
+package io.github.amyassist.amy.messagehub.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,7 +32,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.Subscription;
+import io.github.amyassist.amy.messagehub.annotations.Subscription;
 
 /**
  * Test for Util

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
+package io.github.amyassist.amy.plugin.calendar;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -44,7 +44,7 @@ class CalendarEventTest {
 	private CalendarEvent event2;
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#CalendarEvent()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#CalendarEvent()}.
 	 */
 	@Test
 	@BeforeEach
@@ -57,7 +57,7 @@ class CalendarEventTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#getId()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#getId()}.
 	 */
 	@Test
 	void testGetId() {
@@ -65,7 +65,7 @@ class CalendarEventTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#getStart()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#getStart()}.
 	 */
 	@Test
 	void testGetStart() {
@@ -73,7 +73,7 @@ class CalendarEventTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#getEnd()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#getEnd()}.
 	 */
 	@Test
 	void testGetEnd() {
@@ -81,7 +81,7 @@ class CalendarEventTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#getSummary()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#getSummary()}.
 	 */
 	@Test
 	void testGetSummary() {
@@ -89,7 +89,7 @@ class CalendarEventTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#getLocation()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#getLocation()}.
 	 */
 	@Test
 	void testGetLocation() {
@@ -97,7 +97,7 @@ class CalendarEventTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#getDescription()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#getDescription()}.
 	 */
 	@Test
 	void testGetDescription() {
@@ -105,7 +105,7 @@ class CalendarEventTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#isAllDay()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#isAllDay()}.
 	 */
 	@Test
 	void testIsAllDay() {
@@ -113,7 +113,7 @@ class CalendarEventTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#getRecurrence()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#getRecurrence()}.
 	 */
 	@Test
 	void testGetRecurrence() {
@@ -121,7 +121,7 @@ class CalendarEventTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#getReminderType()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#getReminderType()}.
 	 */
 	@Test
 	void testGetReminderType() {
@@ -129,7 +129,7 @@ class CalendarEventTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#getReminderTime()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#getReminderTime()}.
 	 */
 	@Test
 	void testGetReminderTime() {
@@ -138,7 +138,7 @@ class CalendarEventTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#equals(java.lang.Object)}.
+	 * {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#equals(java.lang.Object)}.
 	 */
 	@Test
 	void testEqualsObject() {
@@ -151,7 +151,7 @@ class CalendarEventTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarEvent#hashCode()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#hashCode()}.
 	 */
 	@Test
 	void testHashCode() {

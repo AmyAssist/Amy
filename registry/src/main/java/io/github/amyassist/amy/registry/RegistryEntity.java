@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.registry;
+package io.github.amyassist.amy.registry;
 
 /**
  * Interface for an entity class for a registry

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
+package io.github.amyassist.amy.plugin.calendar;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -45,12 +45,12 @@ import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.WithDefault;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.plugin.calendar.google.VerificationCodeReceiverService;
+import io.github.amyassist.amy.core.configuration.WithDefault;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.plugin.calendar.google.VerificationCodeReceiverService;
 
 /**
  * This class authorizes Amy to connect to the google calendar, this is a modified version from

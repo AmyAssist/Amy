@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.webpush.rest;
+package io.github.amyassist.amy.plugin.webpush.rest;
 
 import java.util.NoSuchElementException;
 
@@ -29,10 +29,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.WebPushNameService;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.WebPushService;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.model.SubscriptionImpl;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.plugin.webpush.WebPushNameService;
+import io.github.amyassist.amy.plugin.webpush.WebPushService;
+import io.github.amyassist.amy.plugin.webpush.model.SubscriptionImpl;
 
 /**
  * Resource class to setup Subscriptions.

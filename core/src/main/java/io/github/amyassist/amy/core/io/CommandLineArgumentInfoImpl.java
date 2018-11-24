@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.io;
+package io.github.amyassist.amy.core.io;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,7 +53,7 @@ public class CommandLineArgumentInfoImpl implements CommandLineArgumentInfo {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo#getConfigPaths()
+	 * @see io.github.amyassist.amy.core.io.CommandLineArgumentInfo#getConfigPaths()
 	 */
 	@Override
 	public List<String> getConfigPaths() {

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub;
+package io.github.amyassist.amy.messagehub;
 
 import java.util.UUID;
 
@@ -29,8 +29,8 @@ import org.slf4j.Logger;
 
 import asg.cliche.Command;
 import asg.cliche.Param;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.messagehub.topic.TopicFactory;
 
 /**
  * A console for {@link MessageHub}

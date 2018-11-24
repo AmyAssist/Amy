@@ -21,10 +21,10 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.Context;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * A test service for DependencyInjectionScopeTest

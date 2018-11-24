@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.agf;
+package io.github.amyassist.amy.natlang.agf;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
+package io.github.amyassist.amy.plugin.timer;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -30,9 +30,9 @@ import java.time.temporal.ChronoUnit;
 import javax.persistence.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.DurationAdapter;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
+import io.github.amyassist.amy.registry.RegistryEntity;
+import io.github.amyassist.amy.utility.rest.adapter.DurationAdapter;
+import io.github.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
 
 /**
  * Class that defines timer attributes and behaviour
@@ -42,7 +42,7 @@ import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdap
  */
 @Entity
 @PersistenceUnit(unitName = "TimerRegistry")
-public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity implements RegistryEntity {
+public class Timer extends io.github.amyassist.amy.utility.rest.Entity implements RegistryEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -180,7 +180,7 @@ public class Timer extends de.unistuttgart.iaas.amyassist.amy.utility.rest.Entit
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity#getPersistentId()
+	 * @see io.github.amyassist.amy.registry.RegistryEntity#getPersistentId()
 	 */
 	@Override
 	public int getPersistentId() {

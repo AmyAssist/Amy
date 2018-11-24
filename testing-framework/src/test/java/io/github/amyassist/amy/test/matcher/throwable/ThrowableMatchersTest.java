@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable;
+package io.github.amyassist.amy.test.matcher.throwable;
 
-import static de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers.*;
+import static io.github.amyassist.amy.test.matcher.throwable.ThrowableMatchers.*;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
@@ -49,7 +49,7 @@ class ThrowableMatchersTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(org.hamcrest.Matcher, org.hamcrest.Matcher, org.hamcrest.Matcher)}.
+	 * {@link io.github.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(org.hamcrest.Matcher, org.hamcrest.Matcher, org.hamcrest.Matcher)}.
 	 */
 	@Test
 	void testTossedClassStringThrowable() {
@@ -68,7 +68,7 @@ class ThrowableMatchersTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(org.hamcrest.Matcher, org.hamcrest.Matcher)}.
+	 * {@link io.github.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(org.hamcrest.Matcher, org.hamcrest.Matcher)}.
 	 */
 	@Test
 	void testTossedClassOfString() {
@@ -86,7 +86,7 @@ class ThrowableMatchersTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(org.hamcrest.Matcher)}.
+	 * {@link io.github.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossed(org.hamcrest.Matcher)}.
 	 */
 	@Test
 	void testTossedClass() {
@@ -106,7 +106,7 @@ class ThrowableMatchersTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossedWithCause(org.hamcrest.Matcher, org.hamcrest.Matcher)}.
+	 * {@link io.github.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossedWithCause(org.hamcrest.Matcher, org.hamcrest.Matcher)}.
 	 */
 	@Test
 	void testTossedWithCause() {
@@ -124,7 +124,7 @@ class ThrowableMatchersTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossedAny()}.
+	 * Test method for {@link io.github.amyassist.amy.test.matcher.throwable.ThrowableMatchers#tossedAny()}.
 	 */
 	@Test
 	void testTossedAny() {

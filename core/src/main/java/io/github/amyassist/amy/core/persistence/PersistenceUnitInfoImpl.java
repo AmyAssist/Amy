@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.persistence;
+package io.github.amyassist.amy.core.persistence;
 
 import java.net.URL;
 import java.util.Collections;

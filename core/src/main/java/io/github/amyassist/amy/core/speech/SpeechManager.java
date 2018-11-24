@@ -21,28 +21,28 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package io.github.amyassist.amy.core.speech;
 
 import java.util.Properties;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarCreator;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxGrammarName;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx.SphinxRecognizer;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.Topics;
-import de.unistuttgart.iaas.amyassist.amy.remotesr.RemoteSR;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.natlang.DialogHandler;
+import io.github.amyassist.amy.core.service.RunnableService;
+import io.github.amyassist.amy.core.speech.data.Sounds;
+import io.github.amyassist.amy.core.speech.output.Output;
+import io.github.amyassist.amy.core.speech.sphinx.SphinxGrammarCreator;
+import io.github.amyassist.amy.core.speech.sphinx.SphinxGrammarName;
+import io.github.amyassist.amy.core.speech.sphinx.SphinxRecognizer;
+import io.github.amyassist.amy.messagehub.MessageHub;
+import io.github.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
+import io.github.amyassist.amy.messagehub.topics.Topics;
+import io.github.amyassist.amy.remotesr.RemoteSR;
 
 /**
  * Service that Controls the Local SpeechRecognition
@@ -114,7 +114,7 @@ public class SpeechManager implements RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
+	 * @see io.github.amyassist.amy.core.service.RunnableService#start()
 	 */
 	@Override
 	public void start() {
@@ -124,7 +124,7 @@ public class SpeechManager implements RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
+	 * @see io.github.amyassist.amy.core.service.RunnableService#stop()
 	 */
 	@Override
 	public void stop() {

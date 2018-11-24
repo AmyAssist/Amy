@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package io.github.amyassist.amy.core.natlang;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -36,8 +36,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.NLIAnnotationReader;
-import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.EntityDataImpl;
+import io.github.amyassist.amy.natlang.NLIAnnotationReader;
+import io.github.amyassist.amy.natlang.userinteraction.EntityDataImpl;
 
 /**
  * Test Cases for the AnnotationReader

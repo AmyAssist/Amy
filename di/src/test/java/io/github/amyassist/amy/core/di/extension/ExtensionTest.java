@@ -21,15 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.extension;
+package io.github.amyassist.amy.core.di.extension;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Service1;
+import io.github.amyassist.amy.core.di.DependencyInjection;
+import io.github.amyassist.amy.core.di.Service1;
 
 /**
  * Test for {@link Extension} and the dependency injection interaction

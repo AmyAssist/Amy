@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package io.github.amyassist.amy.httpserver;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver.cors;
+package io.github.amyassist.amy.httpserver.cors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -37,7 +37,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
 
 /**
  * test class for {@link CORSFilter}

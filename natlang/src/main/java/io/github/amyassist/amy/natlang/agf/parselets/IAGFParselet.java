@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.agf.parselets;
+package io.github.amyassist.amy.natlang.agf.parselets;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFToken;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.Parser;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.agf.AGFToken;
+import io.github.amyassist.amy.natlang.agf.Parser;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
 
 /**
  * AGF Parselet interface - use this for different parse implementations

@@ -21,23 +21,23 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.example;
+package io.github.amyassist.amy.plugin.example;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
-import de.unistuttgart.iaas.amyassist.amy.plugin.example.registry.ColorRegistry;
-import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
-import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
+import io.github.amyassist.amy.plugin.example.registry.ColorRegistry;
+import io.github.amyassist.amy.registry.ContactRegistry;
+import io.github.amyassist.amy.registry.LocationRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.plugin.api.IStorage;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * A Test for the Hello World Plugin

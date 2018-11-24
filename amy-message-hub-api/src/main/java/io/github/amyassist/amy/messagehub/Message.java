@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub;
+package io.github.amyassist.amy.messagehub;
 
 /**
  * A message which was received by the {@link MessageHub}.

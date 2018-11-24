@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.email;
+package io.github.amyassist.amy.plugin.email;
 
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -32,11 +32,11 @@ import javax.mail.MessagingException;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.service.RunnableService;
+import io.github.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import io.github.amyassist.amy.messagehub.MessageHub;
 
 /**
  * This class checks every few minutes if the user has received a new email
@@ -89,7 +89,7 @@ public class MailUpdateService implements RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
+	 * @see io.github.amyassist.amy.core.service.RunnableService#start()
 	 */
 	@Override
 	public void start() {
@@ -97,7 +97,7 @@ public class MailUpdateService implements RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
+	 * @see io.github.amyassist.amy.core.service.RunnableService#stop()
 	 */
 	@Override
 	public void stop() {

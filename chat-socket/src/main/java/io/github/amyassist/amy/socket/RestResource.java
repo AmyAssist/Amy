@@ -21,15 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.socket;
+package io.github.amyassist.amy.socket;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Reference;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import static de.unistuttgart.iaas.amyassist.amy.socket.ChatConfig.WEBSOCKET_URL;
+import static io.github.amyassist.amy.socket.ChatConfig.WEBSOCKET_URL;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 /**

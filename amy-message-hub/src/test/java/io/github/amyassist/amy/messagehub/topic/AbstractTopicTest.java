@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
+package io.github.amyassist.amy.messagehub.topic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +45,7 @@ class AbstractTopicTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicString(java.lang.String)}.
+	 * {@link io.github.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicString(java.lang.String)}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -61,7 +61,7 @@ class AbstractTopicTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicString(java.lang.String)}
+	 * {@link io.github.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicString(java.lang.String)}
 	 * when they are not valid.
 	 * 
 	 * @param name
@@ -77,7 +77,7 @@ class AbstractTopicTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicLevels(java.util.List)}.
+	 * {@link io.github.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicLevels(java.util.List)}.
 	 * 
 	 * @throws Exception
 	 *             When an error occurs.
@@ -96,7 +96,7 @@ class AbstractTopicTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicLevels(java.util.List)} for
+	 * {@link io.github.amyassist.amy.messagehub.topic.AbstractTopic#validateTopicLevels(java.util.List)} for
 	 * invalid levels.
 	 */
 	@Test
@@ -127,7 +127,7 @@ class AbstractTopicTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#getStringRepresentation()}.
+	 * {@link io.github.amyassist.amy.messagehub.topic.AbstractTopic#getStringRepresentation()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -144,7 +144,7 @@ class AbstractTopicTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#getTopicLevels()}.
+	 * Test method for {@link io.github.amyassist.amy.messagehub.topic.AbstractTopic#getTopicLevels()}.
 	 * 
 	 * @param levels
 	 *            The levels to use.
@@ -170,7 +170,7 @@ class AbstractTopicTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#isSpecialTopic()}.
+	 * Test method for {@link io.github.amyassist.amy.messagehub.topic.AbstractTopic#isSpecialTopic()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -186,7 +186,7 @@ class AbstractTopicTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#toString()}.
+	 * Test method for {@link io.github.amyassist.amy.messagehub.topic.AbstractTopic#toString()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -202,7 +202,7 @@ class AbstractTopicTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#hashCode()}.
+	 * Test method for {@link io.github.amyassist.amy.messagehub.topic.AbstractTopic#hashCode()}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -220,7 +220,7 @@ class AbstractTopicTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#equals(java.lang.Object)}.
+	 * {@link io.github.amyassist.amy.messagehub.topic.AbstractTopic#equals(java.lang.Object)}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -238,7 +238,7 @@ class AbstractTopicTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#equals(java.lang.Object)} when they are
+	 * {@link io.github.amyassist.amy.messagehub.topic.AbstractTopic#equals(java.lang.Object)} when they are
 	 * not equal.
 	 * 
 	 * @throws Exception
@@ -260,7 +260,7 @@ class AbstractTopicTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.AbstractTopic#equals(java.lang.Object)} when they are
+	 * {@link io.github.amyassist.amy.messagehub.topic.AbstractTopic#equals(java.lang.Object)} when they are
 	 * not the same type.
 	 * 
 	 * @throws Exception

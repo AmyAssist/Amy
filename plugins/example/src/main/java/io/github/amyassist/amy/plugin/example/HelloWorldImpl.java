@@ -21,17 +21,17 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.example;
+package io.github.amyassist.amy.plugin.example;
 
-import de.unistuttgart.iaas.amyassist.amy.plugin.example.registry.ColorEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.example.registry.ColorRegistry;
-import de.unistuttgart.iaas.amyassist.amy.registry.*;
+import io.github.amyassist.amy.plugin.example.registry.ColorEntity;
+import io.github.amyassist.amy.plugin.example.registry.ColorRegistry;
+import io.github.amyassist.amy.registry.*;
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.plugin.example.api.HelloWorldService;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.plugin.api.IStorage;
+import io.github.amyassist.amy.plugin.example.api.HelloWorldService;
 
 import java.util.List;
 

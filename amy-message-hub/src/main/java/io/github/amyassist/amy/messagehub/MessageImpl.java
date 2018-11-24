@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub;
+package io.github.amyassist.amy.messagehub;
 
 import java.nio.charset.StandardCharsets;
 
@@ -52,7 +52,7 @@ public class MessageImpl implements Message {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.Message#getPayload()
+	 * @see io.github.amyassist.amy.messagehub.Message#getPayload()
 	 */
 	@Override
 	public String getPayload() {
@@ -60,7 +60,7 @@ public class MessageImpl implements Message {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.Message#getQualityOfService()
+	 * @see io.github.amyassist.amy.messagehub.Message#getQualityOfService()
 	 */
 	@Override
 	public int getQualityOfService() {
@@ -68,7 +68,7 @@ public class MessageImpl implements Message {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.Message#mayBeDuplicate()
+	 * @see io.github.amyassist.amy.messagehub.Message#mayBeDuplicate()
 	 */
 	@Override
 	public boolean mayBeDuplicate() {
@@ -76,7 +76,7 @@ public class MessageImpl implements Message {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.Message#wasRetained()
+	 * @see io.github.amyassist.amy.messagehub.Message#wasRetained()
 	 */
 	@Override
 	public boolean wasRetained() {

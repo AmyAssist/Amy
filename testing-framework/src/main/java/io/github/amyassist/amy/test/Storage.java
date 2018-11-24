@@ -21,12 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.test;
+package io.github.amyassist.amy.test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
+import io.github.amyassist.amy.core.plugin.api.IStorage;
 
 /**
  * A basic implementation of IStorage for tests.

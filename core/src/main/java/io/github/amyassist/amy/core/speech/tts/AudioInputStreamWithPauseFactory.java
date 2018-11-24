@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.tts;
+package io.github.amyassist.amy.core.speech.tts;
 
 import java.io.IOException;
 import java.io.InputStream;

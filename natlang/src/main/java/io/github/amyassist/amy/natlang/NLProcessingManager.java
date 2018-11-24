@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang;
+package io.github.amyassist.amy.natlang;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.aim.XMLAIMIntent;
 
 /**
  * Handles natural language processing from registered methods and corresponding intents

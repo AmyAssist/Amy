@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecific.en;
+package io.github.amyassist.amy.core.natlang.languageSpecific.en;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -35,7 +35,7 @@ import java.time.format.DateTimeParseException;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishDateTimeUtility;
+import io.github.amyassist.amy.natlang.languagespecifics.en.EnglishDateTimeUtility;
 
 /**
  * 

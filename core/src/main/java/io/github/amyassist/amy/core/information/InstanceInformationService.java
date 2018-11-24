@@ -21,18 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.information;
+package io.github.amyassist.amy.core.information;
 
 import java.util.Properties;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationLoader;
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.configuration.ConfigurationLoader;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * Implementation of {@link InstanceInformation}
@@ -72,7 +72,7 @@ public class InstanceInformationService implements InstanceInformation {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.information.InstanceInformation#getNodeId()
+	 * @see io.github.amyassist.amy.core.information.InstanceInformation#getNodeId()
 	 */
 	@Override
 	public String getNodeId() {

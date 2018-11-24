@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock;
+package io.github.amyassist.amy.plugin.alarmclock;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -29,13 +29,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.Topics;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.core.service.RunnableService;
+import io.github.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import io.github.amyassist.amy.messagehub.MessageHub;
+import io.github.amyassist.amy.messagehub.topics.Topics;
 
 /**
  * This class implements the logic for all the functions that our alarm clock is capable of
@@ -293,7 +293,7 @@ public class AlarmClockLogic implements RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
+	 * @see io.github.amyassist.amy.core.service.RunnableService#start()
 	 */
 	@Override
 	public void start() {
@@ -306,7 +306,7 @@ public class AlarmClockLogic implements RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
+	 * @see io.github.amyassist.amy.core.service.RunnableService#stop()
 	 */
 	@Override
 	public void stop() {

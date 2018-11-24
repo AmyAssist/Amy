@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.service;
+package io.github.amyassist.amy.core.service;
 
 /**
  * A RunnableService is a Service that must be startet and is only operational in the running state. The RunnableService

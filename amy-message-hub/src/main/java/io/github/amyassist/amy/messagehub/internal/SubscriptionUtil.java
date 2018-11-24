@@ -21,12 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.internal;
+package io.github.amyassist.amy.messagehub.internal;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
+import io.github.amyassist.amy.messagehub.topic.TopicName;
 
 /**
  * Util for low level operations

@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.webpush;
+package io.github.amyassist.amy.plugin.webpush;
 
 import java.util.NoSuchElementException;
 
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.model.Subscription;
+import io.github.amyassist.amy.plugin.webpush.model.Subscription;
 
 /**
  * The Core Service of this plugin.

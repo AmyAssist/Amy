@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
+package io.github.amyassist.amy.plugin.email.rest;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

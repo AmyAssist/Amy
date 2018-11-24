@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.deployment;
+package io.github.amyassist.amy.deployment;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -36,9 +36,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.deployment.classes.Class1;
-import de.unistuttgart.iaas.amyassist.amy.deployment.classes.Class2;
-import de.unistuttgart.iaas.amyassist.amy.deployment.classes.Class3;
+import io.github.amyassist.amy.deployment.classes.Class1;
+import io.github.amyassist.amy.deployment.classes.Class2;
+import io.github.amyassist.amy.deployment.classes.Class3;
 
 /**
  * Test different deployment descriptors
@@ -56,7 +56,7 @@ class DeploymentDescriptorUtilTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.deployment.DeploymentDescriptorUtil#getClasses(java.lang.ClassLoader, java.lang.String)}.
+	 * {@link io.github.amyassist.amy.deployment.DeploymentDescriptorUtil#getClasses(java.lang.ClassLoader, java.lang.String)}.
 	 */
 	@Test
 	void testGetClasses() {

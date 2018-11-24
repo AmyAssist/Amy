@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction;
+package io.github.amyassist.amy.natlang.userinteraction;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -37,15 +37,15 @@ import javax.xml.bind.Unmarshaller;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
-import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
-import de.unistuttgart.iaas.amyassist.amy.natlang.NLIAnnotationReader;
-import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager;
-import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent;
-import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAmyInteractionModel;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.pluginloader.IPlugin;
+import io.github.amyassist.amy.core.pluginloader.PluginManager;
+import io.github.amyassist.amy.core.service.DeploymentContainerService;
+import io.github.amyassist.amy.natlang.NLIAnnotationReader;
+import io.github.amyassist.amy.natlang.NLProcessingManager;
+import io.github.amyassist.amy.natlang.aim.XMLAIMIntent;
+import io.github.amyassist.amy.natlang.aim.XMLAmyInteractionModel;
 
 /**
  * This service loads all amy interaction model xml files and saves them inside an array list, containing
@@ -68,7 +68,7 @@ public class LoadAIMService implements DeploymentContainerService {
 	private Logger logger;
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService#deploy()
+	 * @see io.github.amyassist.amy.core.service.DeploymentContainerService#deploy()
 	 */
 	@Override
 	public void deploy() {

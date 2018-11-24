@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.systemtime;
+package io.github.amyassist.amy.plugin.systemtime;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -30,12 +30,12 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.core.natlang.EntityData;
+import io.github.amyassist.amy.core.natlang.Intent;
+import io.github.amyassist.amy.core.natlang.SpeechCommand;
 
 /**
  * A plugin which tells time and date

@@ -1,5 +1,5 @@
-de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceivers
-de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHubService
-de.unistuttgart.iaas.amyassist.amy.messagehub.internal.InternalMessageHubService
-de.unistuttgart.iaas.amyassist.amy.messagehub.MQTTAdapter
-de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactoryService
+io.github.amyassist.amy.messagehub.annotations.MessageReceivers
+io.github.amyassist.amy.messagehub.MessageHubService
+io.github.amyassist.amy.messagehub.internal.InternalMessageHubService
+io.github.amyassist.amy.messagehub.MQTTAdapter
+io.github.amyassist.amy.messagehub.topic.TopicFactoryService

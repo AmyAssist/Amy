@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.webpush;
+package io.github.amyassist.amy.plugin.webpush;
 
 import static nl.martijndwars.webpush.Utils.*;
 import static org.bouncycastle.jce.provider.BouncyCastleProvider.*;
@@ -46,13 +46,13 @@ import org.slf4j.Logger;
 
 import com.google.common.io.BaseEncoding;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.model.Subscription;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.persistence.SubscriptionEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.persistence.SubscriptionStorage;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.plugin.api.IStorage;
+import io.github.amyassist.amy.plugin.webpush.model.Subscription;
+import io.github.amyassist.amy.plugin.webpush.persistence.SubscriptionEntity;
+import io.github.amyassist.amy.plugin.webpush.persistence.SubscriptionStorage;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
 import nl.martijndwars.webpush.Utils;

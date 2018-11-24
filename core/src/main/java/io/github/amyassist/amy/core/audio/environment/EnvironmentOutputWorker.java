@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio.environment;
+package io.github.amyassist.amy.core.audio.environment;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -31,7 +31,7 @@ import javax.sound.sampled.AudioInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput;
+import io.github.amyassist.amy.core.audio.AudioOutput;
 
 /**
  * A worker doing to audio output for a audio environment

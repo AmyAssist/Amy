@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.tosca;
+package io.github.amyassist.amy.plugin.tosca;
 
 import java.util.*;
 
@@ -36,12 +36,12 @@ import org.mockito.stubbing.Answer;
 import org.opentosca.containerapi.client.impl.OpenTOSCAContainerLegacyAPIClient;
 import org.opentosca.containerapi.client.model.Application;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
-import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
-import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.ConfigurationRegistry;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import io.github.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
+import io.github.amyassist.amy.plugin.tosca.configurations.ConfigurationRegistry;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Test for the tosca logic.

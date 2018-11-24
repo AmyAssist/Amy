@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.calendar;
+package io.github.amyassist.amy.plugin.calendar;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -43,10 +43,10 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Tests for the CalendarLogic class
@@ -155,7 +155,7 @@ public class CalendarLogicTest {
 	}
 	
 	/**
-     *  Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarLogic#getDateTime(LocalDateTime, int)}.
+     *  Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarLogic#getDateTime(LocalDateTime, int)}.
      */
     @Test
     void testGetDateTime() {
@@ -165,7 +165,7 @@ public class CalendarLogicTest {
     }
 	
     /**
-     *  Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarLogic#isAllDay(Event)}.
+     *  Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarLogic#isAllDay(Event)}.
      */
     @Test
     void testIsAllDay() {
@@ -174,7 +174,7 @@ public class CalendarLogicTest {
     }
     
     /**
-     *  Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarLogic#getLocalDateTimeStart(Event)}.
+     *  Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarLogic#getLocalDateTimeStart(Event)}.
      */
     @Test
     void testGetLocalDateTimeStart() {
@@ -183,7 +183,7 @@ public class CalendarLogicTest {
     }
     
     /**
-     *  Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarLogic#getLocalDateTimeEnd(Event)}.
+     *  Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarLogic#getLocalDateTimeEnd(Event)}.
      */
     @Test
     void testGetLocalDateTimeEnd() {

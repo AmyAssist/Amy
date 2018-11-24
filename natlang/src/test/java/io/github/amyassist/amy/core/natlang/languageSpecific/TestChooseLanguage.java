@@ -21,18 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecific;
+package io.github.amyassist.amy.core.natlang.languageSpecific;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishContraction;
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishDateTimeUtility;
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishNumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishStemmer;
+import io.github.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
+import io.github.amyassist.amy.natlang.languagespecifics.en.EnglishContraction;
+import io.github.amyassist.amy.natlang.languagespecifics.en.EnglishDateTimeUtility;
+import io.github.amyassist.amy.natlang.languagespecifics.en.EnglishNumberConversion;
+import io.github.amyassist.amy.natlang.languagespecifics.en.EnglishStemmer;
 
 /**
  * Test class for ChooseLanguage

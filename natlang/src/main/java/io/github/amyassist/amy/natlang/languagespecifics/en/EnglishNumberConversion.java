@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en;
+package io.github.amyassist.amy.natlang.languagespecifics.en;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,8 +32,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.NumberConversion;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.EndToken;
+import io.github.amyassist.amy.natlang.languagespecifics.NumberConversion;
+import io.github.amyassist.amy.natlang.nl.EndToken;
 
 /**
  * This class is loading language specific numbers

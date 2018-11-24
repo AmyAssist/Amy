@@ -1,5 +1,5 @@
-de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManagerCLI
-de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TTSConsole
-de.unistuttgart.iaas.amyassist.amy.core.console.SpeechConsole
-de.unistuttgart.iaas.amyassist.amy.core.console.ExitConsole
-de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformationCLI
+io.github.amyassist.amy.core.pluginloader.PluginManagerCLI
+io.github.amyassist.amy.core.speech.tts.TTSConsole
+io.github.amyassist.amy.core.console.SpeechConsole
+io.github.amyassist.amy.core.console.ExitConsole
+io.github.amyassist.amy.core.information.ProgramInformationCLI

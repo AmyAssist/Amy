@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
+package io.github.amyassist.amy.messagehub.topic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ import com.google.common.collect.Streams;
 class TopicNameTest {
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicNameImpl#validateTopicString(java.lang.String)}.
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicNameImpl#validateTopicString(java.lang.String)}.
 	 * 
 	 * @param name
 	 *            The name of the topic to test.
@@ -58,7 +58,7 @@ class TopicNameTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicNameImpl#validateTopicString(java.lang.String)}
+	 * {@link io.github.amyassist.amy.messagehub.topic.TopicNameImpl#validateTopicString(java.lang.String)}
 	 * when the string is not valid
 	 * 
 	 * @param name

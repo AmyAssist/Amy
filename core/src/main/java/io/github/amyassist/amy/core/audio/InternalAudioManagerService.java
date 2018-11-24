@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio;
+package io.github.amyassist.amy.core.audio;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +35,11 @@ import javax.sound.sampled.AudioSystem;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
+import io.github.amyassist.amy.core.audio.environment.AudioEnvironment;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.service.RunnableService;
 
 /**
  * The real implementation of the {@link AudioManager} ( by implementing {@link InternalAudioManager} )

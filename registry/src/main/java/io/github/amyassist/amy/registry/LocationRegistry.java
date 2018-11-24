@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.registry;
+package io.github.amyassist.amy.registry;
 
 /**
  * Location registry with special home, work functionality

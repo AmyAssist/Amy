@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.persistence.storage;
+package io.github.amyassist.amy.core.persistence.storage;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

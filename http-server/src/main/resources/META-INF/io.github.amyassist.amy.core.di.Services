@@ -1,2 +1,2 @@
-de.unistuttgart.iaas.amyassist.amy.httpserver.DeploymentContainerAdapter
-de.unistuttgart.iaas.amyassist.amy.httpserver.ServerImpl
+io.github.amyassist.amy.httpserver.DeploymentContainerAdapter
+io.github.amyassist.amy.httpserver.ServerImpl

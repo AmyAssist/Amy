@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.console;
+package io.github.amyassist.amy.core.console;
 
 import java.util.Properties;
 import java.util.UUID;
@@ -31,11 +31,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
-import de.unistuttgart.iaas.amyassist.amy.test.LoggerProvider;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.di.DependencyInjection;
+import io.github.amyassist.amy.core.di.provider.SingletonServiceProvider;
+import io.github.amyassist.amy.core.natlang.DialogHandler;
+import io.github.amyassist.amy.test.LoggerProvider;
 
 /**
  * Test the SpeechConsole

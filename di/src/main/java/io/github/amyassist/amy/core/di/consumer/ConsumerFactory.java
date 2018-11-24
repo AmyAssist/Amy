@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.consumer;
+package io.github.amyassist.amy.core.di.consumer;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import io.github.amyassist.amy.core.di.ServiceDescription;
 
 /**
  * Consumer Factory to create ServiceConsumers from a class and a ServiceDescription

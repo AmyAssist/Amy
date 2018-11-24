@@ -21,18 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.persistence.storage;
+package io.github.amyassist.amy.core.persistence.storage;
 
 import javax.annotation.PreDestroy;
 import javax.persistence.EntityManager;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
+import io.github.amyassist.amy.core.di.annotation.Context;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.persistence.Persistence;
+import io.github.amyassist.amy.core.plugin.api.IStorage;
+import io.github.amyassist.amy.core.pluginloader.IPlugin;
 
 /**
  * Implementation of IStorage for Plugins using JPA
@@ -44,7 +44,7 @@ public class DatabaseStorage implements IStorage {
 	@Reference
 	private Persistence persistence;
 
-	@Context(de.unistuttgart.iaas.amyassist.amy.core.di.Context.PLUGIN)
+	@Context(io.github.amyassist.amy.core.di.Context.PLUGIN)
 	private IPlugin plugin;
 
 	private EntityManager entityManager;

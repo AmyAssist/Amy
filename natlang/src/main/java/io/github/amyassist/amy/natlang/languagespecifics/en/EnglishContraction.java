@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en;
+package io.github.amyassist.amy.natlang.languagespecifics.en;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.Contraction;
+import io.github.amyassist.amy.natlang.languagespecifics.Contraction;
 
 /**
  * This class disassembling contracted words to the full words. e.g. I'm -&gt; I am

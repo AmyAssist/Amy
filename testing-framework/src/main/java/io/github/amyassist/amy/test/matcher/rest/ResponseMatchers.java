@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.test.matcher.rest;
+package io.github.amyassist.amy.test.matcher.rest;
 
 import javax.ws.rs.core.Response;
 

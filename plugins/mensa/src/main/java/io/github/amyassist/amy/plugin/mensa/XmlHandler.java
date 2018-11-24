@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.mensa;
+package io.github.amyassist.amy.plugin.mensa;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

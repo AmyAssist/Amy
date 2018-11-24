@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.remotesr;
+package io.github.amyassist.amy.remotesr;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,14 +41,14 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.service.RunnableService;
+import io.github.amyassist.amy.core.speech.SpeechRecognizer;
+import io.github.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import io.github.amyassist.amy.httpserver.Server;
 
 /**
  * Class to initiate the remote SR
@@ -112,7 +112,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#recognizeOnce(java.util.function.Consumer)
+	 * @see io.github.amyassist.amy.core.speech.SpeechRecognizer#recognizeOnce(java.util.function.Consumer)
 	 */
 	@Override
 	public void recognizeOnce(Consumer<String> resultHandler) {
@@ -125,7 +125,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#recognizeContinuously(java.util.function.Consumer)
+	 * @see io.github.amyassist.amy.core.speech.SpeechRecognizer#recognizeContinuously(java.util.function.Consumer)
 	 */
 	@Override
 	public void recognizeContinuously(Consumer<String> resultHandler) {
@@ -133,7 +133,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#stopContinuousRecognition()
+	 * @see io.github.amyassist.amy.core.speech.SpeechRecognizer#stopContinuousRecognition()
 	 */
 	@Override
 	public void stopContinuousRecognition() {
@@ -141,7 +141,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#isCurrentlyRecognizing()
+	 * @see io.github.amyassist.amy.core.speech.SpeechRecognizer#isCurrentlyRecognizing()
 	 */
 	@Override
 	public boolean isCurrentlyRecognizing() {
@@ -371,7 +371,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#start()
+	 * @see io.github.amyassist.amy.core.service.RunnableService#start()
 	 */
 	@Override
 	public void start() {
@@ -388,7 +388,7 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService#stop()
+	 * @see io.github.amyassist.amy.core.service.RunnableService#stop()
 	 */
 	@Override
 	public void stop() {

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package io.github.amyassist.amy.core.di.provider;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -33,16 +33,16 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ContextLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceInstantiationDescription;
-import de.unistuttgart.iaas.amyassist.amy.core.di.SimpleServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
+import io.github.amyassist.amy.core.di.ContextLocator;
+import io.github.amyassist.amy.core.di.ServiceDescription;
+import io.github.amyassist.amy.core.di.ServiceInstantiationDescription;
+import io.github.amyassist.amy.core.di.SimpleServiceLocator;
+import io.github.amyassist.amy.core.di.annotation.Context;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.consumer.ServiceConsumer;
+import io.github.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
+import io.github.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionImpl;
+import io.github.amyassist.amy.core.di.util.Util;
 
 /**
  * A ClassServiceProvider which provides service instances for a class

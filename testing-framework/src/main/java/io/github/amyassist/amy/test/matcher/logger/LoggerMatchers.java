@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.test.matcher.logger;
+package io.github.amyassist.amy.test.matcher.logger;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

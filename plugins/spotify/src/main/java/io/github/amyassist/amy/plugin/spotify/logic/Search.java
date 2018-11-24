@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
+package io.github.amyassist.amy.plugin.spotify.logic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,14 +31,14 @@ import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.special.SearchResult;
 import com.wrapper.spotify.model_objects.specification.*;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.AlbumEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.ArtistEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.TrackEntity;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.plugin.api.IStorage;
+import io.github.amyassist.amy.plugin.spotify.SpotifyAPICalls;
+import io.github.amyassist.amy.plugin.spotify.entities.AlbumEntity;
+import io.github.amyassist.amy.plugin.spotify.entities.ArtistEntity;
+import io.github.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import io.github.amyassist.amy.plugin.spotify.entities.TrackEntity;
 
 /**
  * This class create search query to the spotify web api and parse the results in a String or in a Hashmap with

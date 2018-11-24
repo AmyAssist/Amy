@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang;
+package io.github.amyassist.amy.natlang;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -29,28 +29,28 @@ import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexer;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParser;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNodeType;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.EntityNode;
-import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent;
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.*;
-import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.EntityDataImpl;
-import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntent;
-import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntentTemplate;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.di.ServiceLocator;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.core.natlang.Response;
+import io.github.amyassist.amy.natlang.agf.AGFLexer;
+import io.github.amyassist.amy.natlang.agf.AGFParser;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNodeType;
+import io.github.amyassist.amy.natlang.agf.nodes.EntityNode;
+import io.github.amyassist.amy.natlang.aim.XMLAIMIntent;
+import io.github.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
+import io.github.amyassist.amy.natlang.nl.*;
+import io.github.amyassist.amy.natlang.userinteraction.EntityDataImpl;
+import io.github.amyassist.amy.natlang.userinteraction.UserIntent;
+import io.github.amyassist.amy.natlang.userinteraction.UserIntentTemplate;
 
 /**
  * The implementation of the NLProcessingManager. This implementation uses the Parsers in the
- * {@link de.unistuttgart.iaas.amyassist.amy.natlang.nl} and the {@link de.unistuttgart.iaas.amyassist.amy.natlang.agf}
+ * {@link io.github.amyassist.amy.natlang.nl} and the {@link io.github.amyassist.amy.natlang.agf}
  * package.
  *
  * @author Leon Kiefer, Felix Burk
@@ -105,12 +105,12 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#register(java.lang.reflect.Method,
-	 *      de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent)
+	 * @see io.github.amyassist.amy.natlang.NLProcessingManager#register(java.lang.reflect.Method,
+	 *      io.github.amyassist.amy.natlang.aim.XMLAIMIntent)
 	 */
 	@Override
 	public void register(Method method, XMLAIMIntent intent) {
-		if (!method.isAnnotationPresent(de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent.class)) {
+		if (!method.isAnnotationPresent(io.github.amyassist.amy.core.natlang.Intent.class)) {
 			throw new IllegalArgumentException("annotation is not present in " + method.getName());
 		}
 
@@ -122,7 +122,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#processIntent(de.unistuttgart.iaas.amyassist.amy.natlang.Dialog,
+	 * @see io.github.amyassist.amy.natlang.NLProcessingManager#processIntent(io.github.amyassist.amy.natlang.Dialog,
 	 *      java.lang.String)
 	 */
 	@Override
@@ -208,7 +208,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#decideIntent(de.unistuttgart.iaas.amyassist.amy.natlang.Dialog,
+	 * @see io.github.amyassist.amy.natlang.NLProcessingManager#decideIntent(io.github.amyassist.amy.natlang.Dialog,
 	 *      java.lang.String)
 	 */
 	@Override
@@ -267,7 +267,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager#getPossibleGrammars()
+	 * @see io.github.amyassist.amy.natlang.NLProcessingManager#getPossibleGrammars()
 	 */
 	@Override
 	public List<AGFNode> getPossibleGrammars() {

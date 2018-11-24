@@ -21,20 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.httpserver;
+package io.github.amyassist.amy.httpserver;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableService;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.LocalDateTimeMessageBodyWriter;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.LocalDateTimeProvider;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeMessageBodyWriter;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.adapter.ZonedDateTimeProvider;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.cors.CORSFilter;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.di.DependencyInjectionBinder;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.di.ServiceLocator;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.service.RunnableService;
+import io.github.amyassist.amy.httpserver.adapter.LocalDateTimeMessageBodyWriter;
+import io.github.amyassist.amy.httpserver.adapter.LocalDateTimeProvider;
+import io.github.amyassist.amy.httpserver.adapter.ZonedDateTimeMessageBodyWriter;
+import io.github.amyassist.amy.httpserver.adapter.ZonedDateTimeProvider;
+import io.github.amyassist.amy.httpserver.cors.CORSFilter;
+import io.github.amyassist.amy.httpserver.di.DependencyInjectionBinder;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -207,7 +207,7 @@ public class ServerImpl implements RunnableService, Server {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.httpserver.Server#registerOnPostStartHook(java.lang.Runnable)
+	 * @see io.github.amyassist.amy.httpserver.Server#registerOnPostStartHook(java.lang.Runnable)
 	 */
 	@Override
 	public void registerOnPostStartHook(Runnable hook) {

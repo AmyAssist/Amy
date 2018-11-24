@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -33,11 +33,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.exception.ClassIsNotAServiceException;
-import de.unistuttgart.iaas.amyassist.amy.core.di.exception.DuplicateServiceException;
-import de.unistuttgart.iaas.amyassist.amy.core.di.exception.ServiceNotFoundException;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
+import io.github.amyassist.amy.core.di.exception.ClassIsNotAServiceException;
+import io.github.amyassist.amy.core.di.exception.DuplicateServiceException;
+import io.github.amyassist.amy.core.di.exception.ServiceNotFoundException;
+import io.github.amyassist.amy.core.di.provider.ServiceProvider;
+import io.github.amyassist.amy.core.di.provider.SingletonServiceProvider;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
@@ -107,7 +107,7 @@ class DependencyInjectionTest {
 
 		assertThat(message, equalTo("No Service of type " + Service7API.class.getName()
 				+ " with qualifier [] is registered in the DI." + "\nRequired by:"
-				+ "\nde.unistuttgart.iaas.amyassist.amy.core.di.Service6\n└── de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection"
+				+ "\nio.github.amyassist.amy.core.di.Service6\n└── io.github.amyassist.amy.core.di.DependencyInjection"
 				+ "\nSo first make sure you use the Service type and not the Service implementation to find the service."
 				+ "\nIs " + Service7API.class.getName() + " the type of the Service?"
 				+ "\nIf not you MUST change the JavaType of the Reference to match the Service type to get the Service."

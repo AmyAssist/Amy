@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.calendar.google;
+package io.github.amyassist.amy.plugin.calendar.google;
 
 import java.util.UUID;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response.Status;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Reference;
 
 /**
  * REST Resource for calendar verification code from google

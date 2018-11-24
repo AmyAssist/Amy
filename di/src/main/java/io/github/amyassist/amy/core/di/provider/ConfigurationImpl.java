@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.provider;
+package io.github.amyassist.amy.core.di.provider;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
-import de.unistuttgart.iaas.amyassist.amy.core.di.InternalServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.util.ConfigurationUtil;
+import io.github.amyassist.amy.core.di.Configuration;
+import io.github.amyassist.amy.core.di.InternalServiceLocator;
+import io.github.amyassist.amy.core.di.context.provider.StaticProvider;
+import io.github.amyassist.amy.core.di.util.ConfigurationUtil;
 
 /**
  * Implementation of Configuration using the InternalServiceLocator.

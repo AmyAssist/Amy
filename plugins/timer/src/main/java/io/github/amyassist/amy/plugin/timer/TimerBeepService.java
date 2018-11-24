@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
+package io.github.amyassist.amy.plugin.timer;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -35,17 +35,17 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.LocalAudio;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.Sound;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.SoundFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.SoundPlayer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PreDestroy;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
+import io.github.amyassist.amy.core.audio.AudioManager;
+import io.github.amyassist.amy.core.audio.LocalAudio;
+import io.github.amyassist.amy.core.audio.sound.Sound;
+import io.github.amyassist.amy.core.audio.sound.SoundFactory;
+import io.github.amyassist.amy.core.audio.sound.SoundPlayer;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.PreDestroy;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.messagehub.MessageHub;
 
 /**
  * This class controls the alarm sound file, which is used for the alarm clock

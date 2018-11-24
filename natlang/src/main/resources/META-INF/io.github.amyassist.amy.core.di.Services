@@ -1,4 +1,4 @@
-de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManagerImpl
-de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.LoadAIMService
-de.unistuttgart.iaas.amyassist.amy.natlang.DialogHandlerImpl
-de.unistuttgart.iaas.amyassist.amy.natlang.NatlangInformationImpl
+io.github.amyassist.amy.natlang.NLProcessingManagerImpl
+io.github.amyassist.amy.natlang.userinteraction.LoadAIMService
+io.github.amyassist.amy.natlang.DialogHandlerImpl
+io.github.amyassist.amy.natlang.NatlangInformationImpl

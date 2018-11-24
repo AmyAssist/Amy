@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.registry.rest;
+package io.github.amyassist.amy.registry.rest;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.Location;
-import de.unistuttgart.iaas.amyassist.amy.registry.LocationImpl;
-import de.unistuttgart.iaas.amyassist.amy.registry.LocationRegistry;
+import io.github.amyassist.amy.registry.Location;
+import io.github.amyassist.amy.registry.LocationImpl;
+import io.github.amyassist.amy.registry.LocationRegistry;
 
 import javax.ws.rs.Path;
 

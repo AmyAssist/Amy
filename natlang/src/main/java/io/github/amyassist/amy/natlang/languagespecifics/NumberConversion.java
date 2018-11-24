@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics;
+package io.github.amyassist.amy.natlang.languagespecifics;
 
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.nl.EndToken;
+import io.github.amyassist.amy.natlang.nl.EndToken;
 
 /**
  * This interface provide methods for the number conversion

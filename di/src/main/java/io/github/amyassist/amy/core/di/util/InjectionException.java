@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.util;
+package io.github.amyassist.amy.core.di.util;
 
 /**
  * Exception that indicate an injection error

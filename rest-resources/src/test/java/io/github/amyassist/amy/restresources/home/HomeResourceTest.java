@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.restresources.home;
+package io.github.amyassist.amy.restresources.home;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,17 +35,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.Topics;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.pluginloader.IPlugin;
+import io.github.amyassist.amy.core.pluginloader.PluginManager;
+import io.github.amyassist.amy.messagehub.MessageHub;
+import io.github.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
+import io.github.amyassist.amy.messagehub.topics.Topics;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
- * Test Class for {@link de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatResource}
+ * Test Class for {@link io.github.amyassist.amy.restresources.chat.ChatResource}
  * 
  * @author Christian Bräuner
  */
@@ -71,7 +71,7 @@ class HomeResourceTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatResource#getPlugins()}.
+	 * Test method for {@link io.github.amyassist.amy.restresources.chat.ChatResource#getPlugins()}.
 	 */
 	@Test
 	void testGetPlugins() {
@@ -100,7 +100,7 @@ class HomeResourceTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#mute()}.
+	 * Test method for {@link io.github.amyassist.amy.restresources.home.HomeResource#mute()}.
 	 */
 	@Test
 	void testMute() {
@@ -111,7 +111,7 @@ class HomeResourceTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource#unmute()}.
+	 * Test method for {@link io.github.amyassist.amy.restresources.home.HomeResource#unmute()}.
 	 */
 	@Test
 	void testUnmute() {

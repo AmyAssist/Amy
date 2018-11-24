@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topics;
+package io.github.amyassist.amy.messagehub.topics;
 
 /**
  * All system (top level) topics used.

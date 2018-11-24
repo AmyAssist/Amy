@@ -1,2 +1,2 @@
-de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldImpl
-de.unistuttgart.iaas.amyassist.amy.plugin.example.registry.ColorRegistry
+io.github.amyassist.amy.plugin.example.HelloWorldImpl
+io.github.amyassist.amy.plugin.example.registry.ColorRegistry

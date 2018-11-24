@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.configuration;
+package io.github.amyassist.amy.core.configuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,10 +40,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Test class for {@link EnvironmentConfigurationLoader}
@@ -92,7 +92,7 @@ class EnvironmentConfigurationLoaderTest {
 	 * Tests just the trivial behavior.
 	 * <p>
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 * {@link io.github.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
 	 */
 	@Test
 	void testLoadStandard() {
@@ -114,7 +114,7 @@ class EnvironmentConfigurationLoaderTest {
 	 * Tests that env vars without amy_ have no influence
 	 * <p>
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 * {@link io.github.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
 	 */
 	@Test
 	void testLoadNoPrefix() {
@@ -140,7 +140,7 @@ class EnvironmentConfigurationLoaderTest {
 	 * Tests that '.' in the config name works
 	 * <p>
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 * {@link io.github.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
 	 */
 	@Test
 	void testLoadPointInName() {
@@ -159,7 +159,7 @@ class EnvironmentConfigurationLoaderTest {
 	 * Tests that '.' in the key works
 	 * <p>
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 * {@link io.github.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
 	 */
 	@Test
 	void testLoadPointInKey() {
@@ -178,7 +178,7 @@ class EnvironmentConfigurationLoaderTest {
 	 * Tests that it works with a config set in default.
 	 * <p>
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 * {@link io.github.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
 	 */
 	@Test
 	void testLoadDefaults() {
@@ -199,7 +199,7 @@ class EnvironmentConfigurationLoaderTest {
 	 * Tests for configs that are not set in the environment
 	 * <p>
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 * {@link io.github.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
 	 */
 	@Test
 	void testLoadNotSetInEnv() {
@@ -224,7 +224,7 @@ class EnvironmentConfigurationLoaderTest {
 	 * Tests for configs that are not set in the orig
 	 * <p>
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 * {@link io.github.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
 	 */
 	@Test
 	void testLoadNotSetInOrig() {
@@ -249,7 +249,7 @@ class EnvironmentConfigurationLoaderTest {
 	 * Tests the replacing of . with _
 	 * <p>
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 * {@link io.github.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
 	 */
 	@Test
 	void testLoadReplacing() {
@@ -276,7 +276,7 @@ class EnvironmentConfigurationLoaderTest {
 	 * Tests the ignore case
 	 * <p>
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 * {@link io.github.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
 	 */
 	@Test
 	void testLoadIgnoreCase() {
@@ -303,7 +303,7 @@ class EnvironmentConfigurationLoaderTest {
 	 * Tests that multiple keys can get the same value from the same var
 	 * <p>
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
+	 * {@link io.github.amyassist.amy.core.configuration.EnvironmentConfigurationLoaderImpl#load(java.lang.String, java.util.Properties)}.
 	 */
 	@Test
 	void testLoadColidingName() {

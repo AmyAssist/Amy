@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
+package io.github.amyassist.amy.plugin.spotify.entities;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
+import io.github.amyassist.amy.utility.rest.Entity;
 
 /**
  * in this abstract class are all attributes from Data object that are the same in all four different types. For example

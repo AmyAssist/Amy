@@ -1,2 +1,2 @@
-de.unistuttgart.iaas.amyassist.amy.restresources.chat.ChatResource
-de.unistuttgart.iaas.amyassist.amy.restresources.home.HomeResource
+io.github.amyassist.amy.restresources.chat.ChatResource
+io.github.amyassist.amy.restresources.home.HomeResource

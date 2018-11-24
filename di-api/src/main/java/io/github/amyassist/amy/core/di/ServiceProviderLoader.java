@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 /**
  * A Interface for use with {@link java.util.ServiceLoader} to register Service classes, Service provider and Context

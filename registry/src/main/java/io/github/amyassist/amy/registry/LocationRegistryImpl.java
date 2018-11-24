@@ -21,12 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.registry;
+package io.github.amyassist.amy.registry;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.Geocoder;
-import de.unistuttgart.iaas.amyassist.amy.registry.geocoder.GeocoderException;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.registry.geocoder.Geocoder;
+import io.github.amyassist.amy.registry.geocoder.GeocoderException;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;

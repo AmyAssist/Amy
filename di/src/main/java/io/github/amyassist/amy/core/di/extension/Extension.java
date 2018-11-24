@@ -21,12 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.extension;
+package io.github.amyassist.amy.core.di.extension;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceDescription;
+import io.github.amyassist.amy.core.di.DependencyInjection;
+import io.github.amyassist.amy.core.di.ServiceDescription;
 
 /**
  * A Extension can be used to extend the behavior of the dependency injection without make a subclass and override

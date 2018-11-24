@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
+package io.github.amyassist.amy.plugin.spotify.logic;
 
 /**
  * This enum represent the different Types of results in the playlerlogic to find the correct reuslts

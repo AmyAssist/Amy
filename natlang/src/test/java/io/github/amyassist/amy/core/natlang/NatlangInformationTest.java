@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package io.github.amyassist.amy.core.natlang;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,14 +34,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager;
-import de.unistuttgart.iaas.amyassist.amy.natlang.NatlangInformationImpl;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFLexer;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParser;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.natlang.NLProcessingManager;
+import io.github.amyassist.amy.natlang.NatlangInformationImpl;
+import io.github.amyassist.amy.natlang.agf.AGFLexer;
+import io.github.amyassist.amy.natlang.agf.AGFParser;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Test for NatlangInformation Service

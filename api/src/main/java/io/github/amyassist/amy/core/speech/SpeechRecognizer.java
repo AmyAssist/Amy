@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech;
+package io.github.amyassist.amy.core.speech;
 
 import java.util.function.Consumer;
 

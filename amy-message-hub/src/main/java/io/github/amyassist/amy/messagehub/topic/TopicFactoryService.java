@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
+package io.github.amyassist.amy.messagehub.topic;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * Implementation of {@link TopicFactory}.
@@ -34,7 +34,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class TopicFactoryService implements TopicFactory {
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory#createTopicFilter(java.lang.String)
+	 * @see io.github.amyassist.amy.messagehub.topic.TopicFactory#createTopicFilter(java.lang.String)
 	 */
 	@Override
 	public TopicFilter createTopicFilter(String topicFilterString) {
@@ -46,7 +46,7 @@ public class TopicFactoryService implements TopicFactory {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory#createTopicName(java.lang.String)
+	 * @see io.github.amyassist.amy.messagehub.topic.TopicFactory#createTopicName(java.lang.String)
 	 */
 	@Override
 	public TopicName createTopicName(String topicNameString) {

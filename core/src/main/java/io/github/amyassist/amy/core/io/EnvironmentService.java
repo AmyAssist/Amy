@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.io;
+package io.github.amyassist.amy.core.io;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,8 +30,8 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * The Service implementation of the Environment

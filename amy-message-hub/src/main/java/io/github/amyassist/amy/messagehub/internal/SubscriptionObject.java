@@ -21,15 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.internal;
+package io.github.amyassist.amy.messagehub.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.Message;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceiver;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
+import io.github.amyassist.amy.core.di.ServiceLocator;
+import io.github.amyassist.amy.messagehub.Message;
+import io.github.amyassist.amy.messagehub.annotations.MessageReceiver;
+import io.github.amyassist.amy.messagehub.topic.TopicName;
 
 /**
  * A Subscription from a MessageReciever
@@ -46,7 +46,7 @@ class SubscriptionObject implements Subscription {
 	 * @param cls
 	 *            the {@link MessageReceiver} class
 	 * @param method
-	 *            the method of the {@link de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.Subscription}
+	 *            the method of the {@link io.github.amyassist.amy.messagehub.annotations.Subscription}
 	 */
 	public SubscriptionObject(Class<?> cls, Method method) {
 		SubscriptionUtil.assertValidSubscriptionMethod(method);

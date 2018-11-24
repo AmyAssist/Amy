@@ -21,19 +21,19 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.webpush.message;
+package io.github.amyassist.amy.plugin.webpush.message;
 
 import java.util.Collections;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceiver;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.Subscription;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SystemTopics;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.SimpleWebPushService;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.WebPushNameService;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.model.Notification;
-import de.unistuttgart.iaas.amyassist.amy.plugin.webpush.model.NotificationImp;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.messagehub.annotations.MessageReceiver;
+import io.github.amyassist.amy.messagehub.annotations.Subscription;
+import io.github.amyassist.amy.messagehub.topic.TopicName;
+import io.github.amyassist.amy.messagehub.topics.SystemTopics;
+import io.github.amyassist.amy.plugin.webpush.SimpleWebPushService;
+import io.github.amyassist.amy.plugin.webpush.WebPushNameService;
+import io.github.amyassist.amy.plugin.webpush.model.Notification;
+import io.github.amyassist.amy.plugin.webpush.model.NotificationImp;
 
 /**
  * Send Push notification for messages on the user notification topic

@@ -21,12 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import io.github.amyassist.amy.core.di.context.provider.StaticProvider;
+import io.github.amyassist.amy.core.di.provider.ServiceProvider;
 
 /**
  * Configuration of the Service Locator

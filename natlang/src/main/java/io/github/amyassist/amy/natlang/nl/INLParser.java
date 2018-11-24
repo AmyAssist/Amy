@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.nl;
+package io.github.amyassist.amy.natlang.nl;
 
 import java.util.List;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
 
 /**
  * Interface definition of an NLParser

@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en;
+package io.github.amyassist.amy.natlang.languagespecifics.en;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.Stemmer;
+import io.github.amyassist.amy.natlang.languagespecifics.Stemmer;
 
 /**
  * This class implements the porter stemming algorithm see for more information:

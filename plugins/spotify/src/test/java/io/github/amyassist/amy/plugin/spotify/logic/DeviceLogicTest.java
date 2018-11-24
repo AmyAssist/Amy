@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
+package io.github.amyassist.amy.plugin.spotify.logic;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -41,18 +41,18 @@ import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifyAPICalls;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.registry.DeviceRegistry;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.plugin.spotify.SpotifyAPICalls;
+import io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+import io.github.amyassist.amy.plugin.spotify.entities.PlaylistEntity;
+import io.github.amyassist.amy.plugin.spotify.logic.DeviceLogic;
+import io.github.amyassist.amy.plugin.spotify.logic.Search;
+import io.github.amyassist.amy.plugin.spotify.registry.DeviceRegistry;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
- * Test class for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic}
+ * Test class for {@link io.github.amyassist.amy.plugin.spotify.logic.DeviceLogic}
  * 
  * @author Lars Buttgereit
  */

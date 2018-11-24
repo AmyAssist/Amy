@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package io.github.amyassist.amy.core;
 
 import java.util.logging.LogManager;
 

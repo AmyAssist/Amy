@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics;
+package io.github.amyassist.amy.natlang.languagespecifics;
 
 /**
  * Interface for stemmer implementation for different languages

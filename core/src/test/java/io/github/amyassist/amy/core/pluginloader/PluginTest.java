@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
+package io.github.amyassist.amy.core.pluginloader;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -63,8 +63,8 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setPath(Path)} and
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getPath()}.
+	 * Test method for {@link io.github.amyassist.amy.core.pluginloader.Plugin#setPath(Path)} and
+	 * {@link io.github.amyassist.amy.core.pluginloader.Plugin#getPath()}.
 	 */
 	@ParameterizedTest
 	@MethodSource("paths")
@@ -78,8 +78,8 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#setClassLoader(ClassLoader)}
-	 * and {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getClassLoader()}.
+	 * Test method for {@link io.github.amyassist.amy.core.pluginloader.Plugin#setClassLoader(ClassLoader)}
+	 * and {@link io.github.amyassist.amy.core.pluginloader.Plugin#getClassLoader()}.
 	 */
 	@Test
 	void testClassLoader() {
@@ -89,7 +89,7 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getUniqueName()}.
+	 * Test method for {@link io.github.amyassist.amy.core.pluginloader.Plugin#getUniqueName()}.
 	 */
 	@ParameterizedTest
 	@MethodSource("names")
@@ -100,7 +100,7 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getUniqueName()}.
+	 * Test method for {@link io.github.amyassist.amy.core.pluginloader.Plugin#getUniqueName()}.
 	 */
 	@ParameterizedTest
 	@MethodSource("names")
@@ -117,7 +117,7 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getVersion()}.
+	 * Test method for {@link io.github.amyassist.amy.core.pluginloader.Plugin#getVersion()}.
 	 */
 	@ParameterizedTest
 	@MethodSource("versions")
@@ -135,7 +135,7 @@ class PluginTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.pluginloader.Plugin#getManifest()}.
+	 * Test method for {@link io.github.amyassist.amy.core.pluginloader.Plugin#getManifest()}.
 	 */
 	@Test
 	void testManifest() {

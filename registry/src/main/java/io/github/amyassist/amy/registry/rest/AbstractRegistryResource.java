@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.registry.rest;
+package io.github.amyassist.amy.registry.rest;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.registry.IRegistry;
-import de.unistuttgart.iaas.amyassist.amy.registry.RegistryException;
-import de.unistuttgart.iaas.amyassist.amy.registry.RegistryInvalidRequestException;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.registry.IRegistry;
+import io.github.amyassist.amy.registry.RegistryException;
+import io.github.amyassist.amy.registry.RegistryInvalidRequestException;
+import io.github.amyassist.amy.utility.rest.Resource;
+import io.github.amyassist.amy.utility.rest.ResourceEntity;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -39,7 +39,7 @@ import java.util.List;
  * Abstract registry rest resource.
  * This class can be used as a template to create a rest-resource with basic functionality for any registry.
  * Take a look at
- * {@link de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource ContactRegistryResource }
+ * {@link io.github.amyassist.amy.registry.rest.ContactRegistryResource ContactRegistryResource }
  * for an example.
  *
  * This class is intentionally public. Otherwise Jersey throws some errors because it can't access this class

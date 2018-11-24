@@ -6,7 +6,7 @@
 	<name>Amy utility</name>
 	<description>Utility classes for plugins</description>
 	<parent>
-		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
 		<version>0.7.0-Snapshot</version>
 		<relativePath>../pom.xml</relativePath>

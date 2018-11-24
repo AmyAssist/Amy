@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes;
+package io.github.amyassist.amy.natlang.agf.nodes;
 
 /**
  * describes an optional group node it contains optional AGF Syntax

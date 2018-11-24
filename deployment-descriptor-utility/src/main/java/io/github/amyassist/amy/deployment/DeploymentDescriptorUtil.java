@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.deployment;
+package io.github.amyassist.amy.deployment;
 
 import java.io.BufferedReader;
 import java.io.IOException;

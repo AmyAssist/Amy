@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 /**
  * Test Service for DI
@@ -31,7 +31,7 @@ package de.unistuttgart.iaas.amyassist.amy.core.di;
 public class Service7 implements Service7API {
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.di.Service7API#foo()
+	 * @see io.github.amyassist.amy.core.di.Service7API#foo()
 	 */
 	@Override
 	public void foo() {

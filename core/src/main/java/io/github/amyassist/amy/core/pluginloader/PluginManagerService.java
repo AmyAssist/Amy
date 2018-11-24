@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
+package io.github.amyassist.amy.core.pluginloader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,14 +32,14 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Services;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.core.persistence.Persistence;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.di.Configuration;
+import io.github.amyassist.amy.core.di.Services;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.core.persistence.Persistence;
 
 /**
  * Manages the plugin integration.
@@ -113,7 +113,7 @@ public class PluginManagerService implements PluginManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager#loadPlugins()
+	 * @see io.github.amyassist.amy.core.pluginloader.PluginManager#loadPlugins()
 	 */
 	@Override
 	public synchronized void loadPlugins() throws IOException {
@@ -168,7 +168,7 @@ public class PluginManagerService implements PluginManager {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager#getPlugins()
+	 * @see io.github.amyassist.amy.core.pluginloader.PluginManager#getPlugins()
 	 */
 	@Override
 	public List<IPlugin> getPlugins() {

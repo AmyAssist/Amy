@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.context.provider.StaticProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import io.github.amyassist.amy.core.di.context.provider.StaticProvider;
+import io.github.amyassist.amy.core.di.provider.ServiceProvider;
 
 /**
  * A implementation of the {@link ContextLocator} used to register and find static context provider for the

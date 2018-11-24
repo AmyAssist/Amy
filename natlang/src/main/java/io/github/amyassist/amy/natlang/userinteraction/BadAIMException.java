@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction;
+package io.github.amyassist.amy.natlang.userinteraction;
 
 /**
  * Thrown if AIM xml is not correct

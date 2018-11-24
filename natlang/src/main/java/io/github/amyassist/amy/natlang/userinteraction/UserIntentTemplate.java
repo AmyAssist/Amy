@@ -21,11 +21,11 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction;
+package io.github.amyassist.amy.natlang.userinteraction;
 
 import java.lang.reflect.Method;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent;
+import io.github.amyassist.amy.natlang.aim.XMLAIMIntent;
 
 /**
  * Helper Template class

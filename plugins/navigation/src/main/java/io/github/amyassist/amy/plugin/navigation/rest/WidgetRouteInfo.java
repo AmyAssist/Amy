@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest;
+package io.github.amyassist.amy.plugin.navigation.rest;
 
 import java.net.URL;
 

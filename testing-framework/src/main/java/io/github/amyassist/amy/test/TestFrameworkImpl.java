@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.test;
+package io.github.amyassist.amy.test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,17 +36,17 @@ import javax.ws.rs.core.UriBuilder;
 import org.mockito.Mockito;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Configuration;
-import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.di.exception.ServiceNotFoundException;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.util.Util;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.Server;
-import de.unistuttgart.iaas.amyassist.amy.httpserver.ServerImpl;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.di.Configuration;
+import io.github.amyassist.amy.core.di.DependencyInjection;
+import io.github.amyassist.amy.core.di.ServiceLocator;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.exception.ServiceNotFoundException;
+import io.github.amyassist.amy.core.di.provider.SingletonServiceProvider;
+import io.github.amyassist.amy.core.di.util.Util;
+import io.github.amyassist.amy.core.plugin.api.IStorage;
+import io.github.amyassist.amy.httpserver.Server;
+import io.github.amyassist.amy.httpserver.ServerImpl;
 
 /**
  * The Implementation of the TestFramework

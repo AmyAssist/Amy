@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.io;
+package io.github.amyassist.amy.core.io;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,10 +39,10 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.Streams;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformation;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.information.ProgramInformation;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 /**
@@ -74,7 +74,7 @@ class CommandLineArgumentHandlerServiceTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService#shouldProgramContinue()}.
+	 * {@link io.github.amyassist.amy.core.io.CommandLineArgumentHandlerService#shouldProgramContinue()}.
 	 * 
 	 * @param args
 	 *            The cma args to test with
@@ -101,7 +101,7 @@ class CommandLineArgumentHandlerServiceTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService#shouldProgramContinue()}.
+	 * {@link io.github.amyassist.amy.core.io.CommandLineArgumentHandlerService#shouldProgramContinue()}.
 	 * 
 	 * @param args
 	 *            The cma args to test with
@@ -126,7 +126,7 @@ class CommandLineArgumentHandlerServiceTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService#getInfo()}.
+	 * Test method for {@link io.github.amyassist.amy.core.io.CommandLineArgumentHandlerService#getInfo()}.
 	 * 
 	 * @param configs
 	 *            The config names to test with

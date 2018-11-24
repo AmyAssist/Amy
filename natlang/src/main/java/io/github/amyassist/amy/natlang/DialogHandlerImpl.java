@@ -21,22 +21,22 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang;
+package io.github.amyassist.amy.natlang;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
+import io.github.amyassist.amy.core.natlang.Response;
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceLocator;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.DialogHandler;
-import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.EntityDataImpl;
-import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.UserIntent;
+import io.github.amyassist.amy.core.di.ServiceLocator;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.natlang.DialogHandler;
+import io.github.amyassist.amy.natlang.userinteraction.EntityDataImpl;
+import io.github.amyassist.amy.natlang.userinteraction.UserIntent;
 
 /**
  * Handles different dialog tasks

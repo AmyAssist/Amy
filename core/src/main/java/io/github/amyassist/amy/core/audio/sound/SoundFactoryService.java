@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio.sound;
+package io.github.amyassist.amy.core.audio.sound;
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,7 +31,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * Implementation of {@link SoundFactory}

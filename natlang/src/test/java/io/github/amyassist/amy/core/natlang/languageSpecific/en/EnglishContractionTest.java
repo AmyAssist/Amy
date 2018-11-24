@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.languageSpecific.en;
+package io.github.amyassist.amy.core.natlang.languageSpecific.en;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.languagespecifics.en.EnglishContraction;
+import io.github.amyassist.amy.natlang.languagespecifics.en.EnglishContraction;
 
 /**
  * Test class for English Contraction

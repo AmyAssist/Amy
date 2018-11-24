@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.agf;
+package io.github.amyassist.amy.natlang.agf;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -30,8 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.parselets.IAGFParselet;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.agf.parselets.IAGFParselet;
 
 /**
  * this class contains all necessary methods a standard top down recursive descent parser needs, with single token

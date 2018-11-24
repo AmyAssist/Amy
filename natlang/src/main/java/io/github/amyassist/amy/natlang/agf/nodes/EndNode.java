@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes;
+package io.github.amyassist.amy.natlang.agf.nodes;
 
 /**
  * Helper class acting as a parent for all 
@@ -38,7 +38,7 @@ public class EndNode extends AGFNode {
 	}
 	
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode#getType()
+	 * @see io.github.amyassist.amy.natlang.agf.nodes.AGFNode#getType()
 	 */
 	@Override
 	public AGFNodeType getType() {
@@ -49,7 +49,7 @@ public class EndNode extends AGFNode {
 	/**
 	 * special print self method, because this node my never have children
 	 * 
-	 * @see de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode#printSelf(java.lang.String, int)
+	 * @see io.github.amyassist.amy.natlang.agf.nodes.AGFNode#printSelf(java.lang.String, int)
 	 */
 	@Override
 	public String printSelf(String name, int indent) {

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.social;
+package io.github.amyassist.amy.plugin.social;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +38,9 @@ import org.slf4j.Logger;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonValue;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * This class is responsible for calling the RESTful Joke APIs

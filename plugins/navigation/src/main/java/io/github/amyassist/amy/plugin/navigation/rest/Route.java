@@ -21,15 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.navigation.rest;
+package io.github.amyassist.amy.plugin.navigation.rest;
 
 import java.time.ZonedDateTime;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.ZonedDateTimeAdapter;
+import io.github.amyassist.amy.utility.rest.Entity;
+import io.github.amyassist.amy.utility.rest.adapter.ZonedDateTimeAdapter;
 
 /**
  * Entity for navigation routes

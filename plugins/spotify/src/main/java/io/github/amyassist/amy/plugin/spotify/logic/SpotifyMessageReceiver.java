@@ -21,15 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic;
+package io.github.amyassist.amy.plugin.spotify.logic;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceiver;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.Subscription;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topics.SystemTopics;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.messagehub.annotations.MessageReceiver;
+import io.github.amyassist.amy.messagehub.annotations.Subscription;
+import io.github.amyassist.amy.messagehub.topics.SmarthomeFunctionTopics;
+import io.github.amyassist.amy.messagehub.topics.SystemTopics;
 
 /**
  * MessageReveiver for music and sound messages

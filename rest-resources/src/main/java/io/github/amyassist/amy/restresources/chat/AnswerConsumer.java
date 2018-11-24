@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.restresources.chat;
+package io.github.amyassist.amy.restresources.chat;
 
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Response;
+import io.github.amyassist.amy.core.natlang.Response;
 
 import java.util.Queue;
 

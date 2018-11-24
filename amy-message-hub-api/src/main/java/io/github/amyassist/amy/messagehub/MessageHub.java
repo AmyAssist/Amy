@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub;
+package io.github.amyassist.amy.messagehub;
 
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
+import io.github.amyassist.amy.messagehub.topic.TopicFilter;
+import io.github.amyassist.amy.messagehub.topic.TopicName;
 
 /**
  * The MessageHub is a programmatic API to publish and subscribe to topics.

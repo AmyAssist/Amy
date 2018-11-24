@@ -21,17 +21,17 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.social;
+package io.github.amyassist.amy.plugin.social;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import de.unistuttgart.iaas.amyassist.amy.core.Configuration;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.NatlangInformation;
+import io.github.amyassist.amy.core.Configuration;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.natlang.NatlangInformation;
 
 /**
  * Logic for this social plugin

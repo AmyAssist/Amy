@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities;
+package io.github.amyassist.amy.plugin.spotify.entities;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity;
+import io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity;
 
 /**
  * Test case for DeviceEntity
@@ -41,7 +41,7 @@ class DeviceEntityTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#Device(java.lang.String, java.lang.String, java.lang.String)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity#Device(java.lang.String, java.lang.String, java.lang.String)}.
 	 */
 	@Test
 	@BeforeEach
@@ -51,7 +51,7 @@ class DeviceEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#getType()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity#getType()}.
 	 */
 	@Test
 	void testGetType() {
@@ -60,7 +60,7 @@ class DeviceEntityTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#setType(java.lang.String)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity#setType(java.lang.String)}.
 	 */
 	@Test
 	void testSetType() {
@@ -69,7 +69,7 @@ class DeviceEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#getName()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity#getName()}.
 	 */
 	@Test
 	void testGetName() {
@@ -78,7 +78,7 @@ class DeviceEntityTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#setName(java.lang.String)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity#setName(java.lang.String)}.
 	 */
 	@Test
 	void testSetName() {
@@ -87,7 +87,7 @@ class DeviceEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#getID()}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity#getID()}.
 	 */
 	@Test
 	void testGetUri() {
@@ -96,7 +96,7 @@ class DeviceEntityTest {
 
 	/**
 	 * Test method for
-	 * {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#setID(java.lang.String)}.
+	 * {@link io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity#setID(java.lang.String)}.
 	 */
 	@Test
 	void testSetUri() {
@@ -105,7 +105,7 @@ class DeviceEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#equals(Object)}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity#equals(Object)}.
 	 */
 	@Test
 	public void testEqualsSameObject() {
@@ -113,7 +113,7 @@ class DeviceEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#equals(Object)}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity#equals(Object)}.
 	 */
 	@Test
 	public void testEqualsOtherClass() {
@@ -122,7 +122,7 @@ class DeviceEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#equals(Object)}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity#equals(Object)}.
 	 */
 	@Test
 	public void testEquals() {
@@ -131,7 +131,7 @@ class DeviceEntityTest {
 	}
 
 	/**
-	 * Test method for {@link de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.DeviceEntity#equals(Object)}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity#equals(Object)}.
 	 */
 	@Test
 	public void testEqualsNotEqual() {

@@ -21,18 +21,18 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub;
+package io.github.amyassist.amy.messagehub;
 
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.internal.InternalMessageHubService;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFactory;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter;
-import de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.messagehub.internal.InternalMessageHubService;
+import io.github.amyassist.amy.messagehub.topic.TopicFactory;
+import io.github.amyassist.amy.messagehub.topic.TopicFilter;
+import io.github.amyassist.amy.messagehub.topic.TopicName;
 
 /**
  * The implementation of {@link MessageHub}. Uses the internal message hub service.
@@ -49,7 +49,7 @@ public class MessageHubService implements MessageHub {
 	private TopicFactory tf;
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(java.lang.String,
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#subscribe(java.lang.String,
 	 *      java.util.function.Consumer)
 	 */
 	@Override
@@ -58,7 +58,7 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(java.lang.String,
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#subscribe(java.lang.String,
 	 *      java.util.function.BiConsumer)
 	 */
 	@Override
@@ -67,7 +67,7 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter,
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#subscribe(io.github.amyassist.amy.messagehub.topic.TopicFilter,
 	 *      java.util.function.BiConsumer)
 	 */
 	@Override
@@ -76,7 +76,7 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#subscribe(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicFilter,
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#subscribe(io.github.amyassist.amy.messagehub.topic.TopicFilter,
 	 *      java.util.function.Consumer)
 	 */
 	@Override
@@ -85,7 +85,7 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#unsubscribe(java.util.UUID)
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#unsubscribe(java.util.UUID)
 	 */
 	@Override
 	public void unsubscribe(UUID identifier) {
@@ -93,7 +93,7 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String, int,
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String, int,
 	 *      boolean)
 	 */
 	@Override
@@ -102,7 +102,7 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String,
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String,
 	 *      boolean)
 	 */
 	@Override
@@ -112,7 +112,7 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String, int)
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String, int)
 	 */
 	@Override
 	public void publish(String topic, String payload, int qualityOfService) {
@@ -120,7 +120,7 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String)
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#publish(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public void publish(String topic, String payload) {
@@ -128,7 +128,7 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName,
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#publish(io.github.amyassist.amy.messagehub.topic.TopicName,
 	 *      java.lang.String, int, boolean)
 	 */
 	@Override
@@ -137,7 +137,7 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName,
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#publish(io.github.amyassist.amy.messagehub.topic.TopicName,
 	 *      java.lang.String, boolean)
 	 */
 	@Override
@@ -146,7 +146,7 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName,
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#publish(io.github.amyassist.amy.messagehub.topic.TopicName,
 	 *      java.lang.String, int)
 	 */
 	@Override
@@ -155,7 +155,7 @@ public class MessageHubService implements MessageHub {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.messagehub.MessageHub#publish(de.unistuttgart.iaas.amyassist.amy.messagehub.topic.TopicName,
+	 * @see io.github.amyassist.amy.messagehub.MessageHub#publish(io.github.amyassist.amy.messagehub.topic.TopicName,
 	 *      java.lang.String)
 	 */
 	@Override

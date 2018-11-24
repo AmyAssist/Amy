@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.persistence;
+package io.github.amyassist.amy.core.persistence;
 
 import javax.persistence.Entity;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerService;
-import de.unistuttgart.iaas.amyassist.amy.deployment.DeploymentDescriptorUtil;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.service.DeploymentContainerService;
+import io.github.amyassist.amy.deployment.DeploymentDescriptorUtil;
 
 /**
  * Deploy persistent entities to the persistent service.

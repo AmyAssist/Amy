@@ -21,24 +21,24 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package io.github.amyassist.amy.core;
 
 import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.Context;
-import de.unistuttgart.iaas.amyassist.amy.core.di.DependencyInjection;
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.SingletonServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentHandlerService;
-import de.unistuttgart.iaas.amyassist.amy.core.io.CommandLineArgumentInfo;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.service.DeploymentContainerServiceExtension;
-import de.unistuttgart.iaas.amyassist.amy.core.service.RunnableServiceExtension;
+import io.github.amyassist.amy.core.di.Context;
+import io.github.amyassist.amy.core.di.DependencyInjection;
+import io.github.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
+import io.github.amyassist.amy.core.di.provider.SingletonServiceProvider;
+import io.github.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
+import io.github.amyassist.amy.core.io.CommandLineArgumentHandlerService;
+import io.github.amyassist.amy.core.io.CommandLineArgumentInfo;
+import io.github.amyassist.amy.core.pluginloader.PluginManager;
+import io.github.amyassist.amy.core.pluginloader.PluginProvider;
+import io.github.amyassist.amy.core.service.DeploymentContainerServiceExtension;
+import io.github.amyassist.amy.core.service.RunnableServiceExtension;
 
 /**
  * The central core of the application

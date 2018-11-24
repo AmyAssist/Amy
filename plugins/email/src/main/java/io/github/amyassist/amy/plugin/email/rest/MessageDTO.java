@@ -21,15 +21,15 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
+package io.github.amyassist.amy.plugin.email.rest;
 
 import java.time.LocalDateTime;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Entity;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
+import io.github.amyassist.amy.utility.rest.Entity;
+import io.github.amyassist.amy.utility.rest.adapter.LocalDateTimeAdapter;
 
 /**
  * This class defines a message object which is used for handling mails, it represents a single e-mail

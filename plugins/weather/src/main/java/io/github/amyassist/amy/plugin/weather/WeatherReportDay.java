@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.weather;
+package io.github.amyassist.amy.plugin.weather;
 
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.adapter.ZonedDateTimeAdapter;
+import io.github.amyassist.amy.utility.rest.adapter.ZonedDateTimeAdapter;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.Instant;

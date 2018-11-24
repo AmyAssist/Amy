@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.output;
+package io.github.amyassist.amy.core.speech.output;
 
 import java.io.IOException;
 import java.util.EnumMap;
@@ -33,17 +33,17 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.LocalAudio;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.Sound;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.SoundFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.sound.SoundPlayer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.tts.TextToSpeech;
-import de.unistuttgart.iaas.amyassist.amy.core.taskscheduler.api.TaskScheduler;
+import io.github.amyassist.amy.core.audio.AudioManager;
+import io.github.amyassist.amy.core.audio.LocalAudio;
+import io.github.amyassist.amy.core.audio.sound.Sound;
+import io.github.amyassist.amy.core.audio.sound.SoundFactory;
+import io.github.amyassist.amy.core.audio.sound.SoundPlayer;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.speech.data.Sounds;
+import io.github.amyassist.amy.core.speech.tts.TextToSpeech;
+import io.github.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 
 /**
  * This class outputs
@@ -107,7 +107,7 @@ public class OutputImpl implements Output {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output#voiceOutput(java.lang.String,
+	 * @see io.github.amyassist.amy.core.speech.output.Output#voiceOutput(java.lang.String,
 	 *      java.lang.Runnable)
 	 */
 	@Override
@@ -129,7 +129,7 @@ public class OutputImpl implements Output {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.output.Output#soundOutput(de.unistuttgart.iaas.amyassist.amy.core.speech.data.Sounds,
+	 * @see io.github.amyassist.amy.core.speech.output.Output#soundOutput(io.github.amyassist.amy.core.speech.data.Sounds,
 	 *      java.lang.Runnable)
 	 */
 	@Override

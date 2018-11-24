@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.example.api;
+package io.github.amyassist.amy.plugin.example.api;
 
 /**
  * The api provided by the HelloWorldService

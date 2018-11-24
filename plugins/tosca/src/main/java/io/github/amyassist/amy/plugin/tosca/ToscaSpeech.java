@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.tosca;
+package io.github.amyassist.amy.plugin.tosca;
 
 import java.util.List;
 import java.util.Map;
@@ -30,13 +30,13 @@ import java.util.stream.Collectors;
 
 import org.opentosca.containerapi.client.model.Application;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityData;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.EntityProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.Intent;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.SpeechCommand;
-import de.unistuttgart.iaas.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.natlang.EntityData;
+import io.github.amyassist.amy.core.natlang.EntityProvider;
+import io.github.amyassist.amy.core.natlang.Intent;
+import io.github.amyassist.amy.core.natlang.SpeechCommand;
+import io.github.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
 
 /**
  * The speech class for the tosca plugin

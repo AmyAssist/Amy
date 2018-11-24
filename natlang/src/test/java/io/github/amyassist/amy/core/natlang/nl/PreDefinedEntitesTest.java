@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.nl;
+package io.github.amyassist.amy.core.natlang.nl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,8 +29,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.PreDefinedEntityTypes;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.PreDefinedEntityTypes;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
 
 /**
  * TODO: Description

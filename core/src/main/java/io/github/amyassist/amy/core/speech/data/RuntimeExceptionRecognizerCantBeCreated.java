@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.data;
+package io.github.amyassist.amy.core.speech.data;
 
 /**
  * non-Generic RuntimeException

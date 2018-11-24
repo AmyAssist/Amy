@@ -21,10 +21,10 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core;
+package io.github.amyassist.amy.core;
 
-import static de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginMockFactory.plugin;
-import static de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginMockFactory.withUniqueName;
+import static io.github.amyassist.amy.core.pluginloader.PluginMockFactory.plugin;
+import static io.github.amyassist.amy.core.pluginloader.PluginMockFactory.withUniqueName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.hamcrest.Matchers.arrayWithSize;
@@ -37,11 +37,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.pluginloader.IPlugin;
+import io.github.amyassist.amy.core.pluginloader.PluginManager;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Tests for the ConfigurationImpl
@@ -61,7 +61,7 @@ class ConfigurationImplTest {
 		List<IPlugin> hashSet = new ArrayList<>();
 		hashSet.add(plugin(withUniqueName("Plugin1")));
 		hashSet.add(plugin(withUniqueName("Plugin2")));
-		hashSet.add(plugin(withUniqueName("de.unistuttgart.iaas.amyassist.amy.plugin.example")));
+		hashSet.add(plugin(withUniqueName("io.github.amyassist.amy.plugin.example")));
 		Mockito.when(mockService.getPlugins()).thenReturn(hashSet);
 
 		this.configurationImpl = this.framework.setServiceUnderTest(ConfigurationImpl.class);
@@ -70,7 +70,7 @@ class ConfigurationImplTest {
 	@Test
 	void test() {
 		assertThat(this.configurationImpl.getInstalledPlugins(),
-				arrayContainingInAnyOrder("Plugin1", "Plugin2", "de.unistuttgart.iaas.amyassist.amy.plugin.example"));
+				arrayContainingInAnyOrder("Plugin1", "Plugin2", "io.github.amyassist.amy.plugin.example"));
 		assertThat(this.configurationImpl.getInstalledPlugins(), arrayWithSize(3));
 	}
 

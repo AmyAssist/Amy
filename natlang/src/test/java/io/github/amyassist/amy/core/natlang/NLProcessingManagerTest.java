@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package io.github.amyassist.amy.core.natlang;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,15 +36,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.ConfigurationManager;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.io.Environment;
-import de.unistuttgart.iaas.amyassist.amy.natlang.Dialog;
-import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager;
-import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManagerImpl;
-import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAIMIntent;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.configuration.ConfigurationManager;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.natlang.Dialog;
+import io.github.amyassist.amy.natlang.NLProcessingManager;
+import io.github.amyassist.amy.natlang.NLProcessingManagerImpl;
+import io.github.amyassist.amy.natlang.aim.XMLAIMIntent;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 @ExtendWith(FrameworkExtension.class)
 public class NLProcessingManagerTest {

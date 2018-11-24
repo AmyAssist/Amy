@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.speech.sphinx;
+package io.github.amyassist.amy.core.speech.sphinx;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -36,12 +36,12 @@ import javax.sound.sampled.AudioInputStream;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.LocalAudio;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Context;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer;
+import io.github.amyassist.amy.core.audio.AudioManager;
+import io.github.amyassist.amy.core.audio.LocalAudio;
+import io.github.amyassist.amy.core.di.annotation.Context;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.speech.SpeechRecognizer;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;
@@ -90,7 +90,7 @@ public class SphinxRecognizer implements SpeechRecognizer, Runnable {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#recognizeContinuously(java.util.function.Consumer)
+	 * @see io.github.amyassist.amy.core.speech.SpeechRecognizer#recognizeContinuously(java.util.function.Consumer)
 	 */
 	@Override
 	public void recognizeContinuously(Consumer<String> resultHandler) {
@@ -104,7 +104,7 @@ public class SphinxRecognizer implements SpeechRecognizer, Runnable {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#stopContinuousRecognition()
+	 * @see io.github.amyassist.amy.core.speech.SpeechRecognizer#stopContinuousRecognition()
 	 */
 	@Override
 	public void stopContinuousRecognition() {
@@ -115,7 +115,7 @@ public class SphinxRecognizer implements SpeechRecognizer, Runnable {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.speech.SpeechRecognizer#isCurrentlyRecognizing()
+	 * @see io.github.amyassist.amy.core.speech.SpeechRecognizer#isCurrentlyRecognizing()
 	 */
 	@Override
 	public boolean isCurrentlyRecognizing() {

@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.example.registry;
+package io.github.amyassist.amy.plugin.example.registry;
 
-import de.unistuttgart.iaas.amyassist.amy.registry.RegistryEntity;
+import io.github.amyassist.amy.registry.RegistryEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

@@ -21,20 +21,20 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.agf;
+package io.github.amyassist.amy.natlang.agf;
 
 import java.util.Iterator;
 import java.util.Map;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.AGFNode;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.parselets.MorphemeParselet;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.parselets.ORGroupParselet;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.parselets.OptionalGroupParselet;
+import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
+import io.github.amyassist.amy.natlang.agf.parselets.MorphemeParselet;
+import io.github.amyassist.amy.natlang.agf.parselets.ORGroupParselet;
+import io.github.amyassist.amy.natlang.agf.parselets.OptionalGroupParselet;
 
 /**
  * the AGF Parser implementation
  * 
- * @see de.unistuttgart.iaas.amyassist.amy.natlang.agf.Parser
+ * @see io.github.amyassist.amy.natlang.agf.Parser
  * 
  * @author Felix Burk
  */

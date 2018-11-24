@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.email.rest;
+package io.github.amyassist.amy.plugin.email.rest;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.EMailLogic;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.plugin.email.EMailLogic;
 
 /**
  * Rest Resource for email

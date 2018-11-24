@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang.userinteraction;
+package io.github.amyassist.amy.core.natlang.userinteraction;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -37,15 +37,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.natlang.PluginMockFactory;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.PluginManager;
-import de.unistuttgart.iaas.amyassist.amy.natlang.NLProcessingManager;
-import de.unistuttgart.iaas.amyassist.amy.natlang.aim.XMLAmyInteractionModel;
-import de.unistuttgart.iaas.amyassist.amy.natlang.userinteraction.LoadAIMService;
-import de.unistuttgart.iaas.amyassist.amy.test.FrameworkExtension;
-import de.unistuttgart.iaas.amyassist.amy.test.TestFramework;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.natlang.PluginMockFactory;
+import io.github.amyassist.amy.core.pluginloader.IPlugin;
+import io.github.amyassist.amy.core.pluginloader.PluginManager;
+import io.github.amyassist.amy.natlang.NLProcessingManager;
+import io.github.amyassist.amy.natlang.aim.XMLAmyInteractionModel;
+import io.github.amyassist.amy.natlang.userinteraction.LoadAIMService;
+import io.github.amyassist.amy.test.FrameworkExtension;
+import io.github.amyassist.amy.test.TestFramework;
 
 /**
  * Test class for the amy interaction model service class
@@ -105,7 +105,7 @@ class TestAIMService {
 	void testPrintSelf() {
 		StringBuilder builder = new StringBuilder();
 		builder = builder.append(
-				"\n Intent ref=de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes"
+				"\n Intent ref=io.github.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes"
 						+ " gram= say {greeting} {number} \n ")
 				.append("Entity id=number\n ").append("Entity id=greeting grammar= hello\n ")
 				.append("Prompt text= how many times should i say {greeting}?  gram= {number} [times] ");
@@ -115,7 +115,7 @@ class TestAIMService {
 	@Test
 	void testReference() {
 		assertThat(this.interactionModel.getIntents().get(0).getReference(),
-				equalTo("de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes"));
+				equalTo("io.github.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes"));
 	}
 
 	@Test

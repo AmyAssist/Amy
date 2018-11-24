@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.audio.environment;
+package io.github.amyassist.amy.core.audio.environment;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,9 +34,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput;
-import de.unistuttgart.iaas.amyassist.amy.core.audio.QueuedInputStream;
+import io.github.amyassist.amy.core.audio.AudioManager;
+import io.github.amyassist.amy.core.audio.AudioOutput;
+import io.github.amyassist.amy.core.audio.QueuedInputStream;
 
 /**
  * An Audio Environment, which does the AudioIO.
@@ -105,7 +105,7 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 	protected abstract void writeToOutput(byte[] buffer, int off, int len);
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#stopOutput()
+	 * @see io.github.amyassist.amy.core.audio.environment.AudioEnvironment#stopOutput()
 	 */
 	@Override
 	public void stopOutput() {
@@ -113,8 +113,8 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#playAudio(de.unistuttgart.iaas.amyassist.amy.core.audio.AudioOutput,
-	 *      de.unistuttgart.iaas.amyassist.amy.core.audio.AudioManager.OutputBehavior)
+	 * @see io.github.amyassist.amy.core.audio.environment.AudioEnvironment#playAudio(io.github.amyassist.amy.core.audio.AudioOutput,
+	 *      io.github.amyassist.amy.core.audio.AudioManager.OutputBehavior)
 	 */
 	@Override
 	public void playAudio(AudioOutput audioToPlay, AudioManager.OutputBehavior behavior) {
@@ -158,7 +158,7 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#getAudioInputStream()
+	 * @see io.github.amyassist.amy.core.audio.environment.AudioEnvironment#getAudioInputStream()
 	 */
 	@Override
 	public AudioInputStream getAudioInputStream() {
@@ -168,7 +168,7 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#start()
+	 * @see io.github.amyassist.amy.core.audio.environment.AudioEnvironment#start()
 	 */
 	@Override
 	public void start() {
@@ -177,7 +177,7 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#stop()
+	 * @see io.github.amyassist.amy.core.audio.environment.AudioEnvironment#stop()
 	 */
 	@Override
 	public void stop() {
@@ -186,7 +186,7 @@ public abstract class AbstractAudioEnvironment implements AudioEnvironment {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.audio.environment.AudioEnvironment#isCurrentlyOutputting()
+	 * @see io.github.amyassist.amy.core.audio.environment.AudioEnvironment#isCurrentlyOutputting()
 	 */
 	@Override
 	public boolean isCurrentlyOutputting() {

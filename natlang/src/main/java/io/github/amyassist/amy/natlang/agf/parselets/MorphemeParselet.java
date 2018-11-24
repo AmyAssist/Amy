@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.natlang.agf.parselets;
+package io.github.amyassist.amy.natlang.agf.parselets;
 
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFParseException;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFToken;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.AGFTokenType;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.Parser;
-import de.unistuttgart.iaas.amyassist.amy.natlang.agf.nodes.*;
+import io.github.amyassist.amy.natlang.agf.AGFParseException;
+import io.github.amyassist.amy.natlang.agf.AGFToken;
+import io.github.amyassist.amy.natlang.agf.AGFTokenType;
+import io.github.amyassist.amy.natlang.agf.Parser;
+import io.github.amyassist.amy.natlang.agf.nodes.*;
 
 /**
  * parses the smallest meaningful unit in the AGF Syntax

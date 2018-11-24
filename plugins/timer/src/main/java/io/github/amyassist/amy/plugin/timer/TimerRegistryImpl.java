@@ -21,12 +21,12 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.timer;
+package io.github.amyassist.amy.plugin.timer;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.registry.AbstractRegistry;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.registry.AbstractRegistry;
 
 /**
  * The timer registry

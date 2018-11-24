@@ -21,14 +21,14 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.natlang;
+package io.github.amyassist.amy.core.natlang;
 
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import org.mockito.Mockito;
 
-import de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin;
+import io.github.amyassist.amy.core.pluginloader.IPlugin;
 
 /**
  * Factory methods to create Plugin mocks with different properties. Minimal effort and maximal readable in the factory

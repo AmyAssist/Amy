@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.exception;
+package io.github.amyassist.amy.core.di.exception;
 
 /**
  * A exception of the dependency injection, signaling, that a given class is not a service.

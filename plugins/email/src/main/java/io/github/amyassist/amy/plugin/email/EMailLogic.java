@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.email;
+package io.github.amyassist.amy.plugin.email;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -37,16 +37,16 @@ import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
 
-import de.unistuttgart.iaas.amyassist.amy.core.configuration.WithDefault;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.PostConstruct;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
-import de.unistuttgart.iaas.amyassist.amy.core.plugin.api.IStorage;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.EMailCredentials;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.rest.MessageDTO;
-import de.unistuttgart.iaas.amyassist.amy.plugin.email.session.MailSession;
-import de.unistuttgart.iaas.amyassist.amy.registry.Contact;
-import de.unistuttgart.iaas.amyassist.amy.registry.ContactRegistry;
+import io.github.amyassist.amy.core.configuration.WithDefault;
+import io.github.amyassist.amy.core.di.annotation.PostConstruct;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.plugin.api.IStorage;
+import io.github.amyassist.amy.plugin.email.rest.EMailCredentials;
+import io.github.amyassist.amy.plugin.email.rest.MessageDTO;
+import io.github.amyassist.amy.plugin.email.session.MailSession;
+import io.github.amyassist.amy.registry.Contact;
+import io.github.amyassist.amy.registry.ContactRegistry;
 
 /**
  * Logic class for the email functionality, that defines all the behavior

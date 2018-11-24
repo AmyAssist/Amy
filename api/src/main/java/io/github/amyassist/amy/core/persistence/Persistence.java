@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.persistence;
+package io.github.amyassist.amy.core.persistence;
 
 import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;

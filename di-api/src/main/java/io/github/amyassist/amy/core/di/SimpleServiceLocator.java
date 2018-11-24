@@ -21,13 +21,13 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 import javax.annotation.Nonnull;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumer;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceHandle;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ServiceProvider;
+import io.github.amyassist.amy.core.di.consumer.ServiceConsumer;
+import io.github.amyassist.amy.core.di.provider.ServiceHandle;
+import io.github.amyassist.amy.core.di.provider.ServiceProvider;
 
 /**
  * SimpleServiceLocator is used in {@link ServiceProvider} to get dependencies. The normal extended

@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.spotify;
+package io.github.amyassist.amy.plugin.spotify;
 
 import java.net.URI;
 import java.util.List;
@@ -38,14 +38,14 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.entities.*;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.DeviceLogic;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.PlayerLogic;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.Search;
-import de.unistuttgart.iaas.amyassist.amy.plugin.spotify.logic.SearchTypes;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource;
-import de.unistuttgart.iaas.amyassist.amy.utility.rest.ResourceEntity;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.plugin.spotify.entities.*;
+import io.github.amyassist.amy.plugin.spotify.logic.DeviceLogic;
+import io.github.amyassist.amy.plugin.spotify.logic.PlayerLogic;
+import io.github.amyassist.amy.plugin.spotify.logic.Search;
+import io.github.amyassist.amy.plugin.spotify.logic.SearchTypes;
+import io.github.amyassist.amy.utility.rest.Resource;
+import io.github.amyassist.amy.utility.rest.ResourceEntity;
 
 /**
  * Rest Resource for music
@@ -487,7 +487,7 @@ public class MusicResource implements Resource {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.utility.rest.Resource#getPluginDescripion()
+	 * @see io.github.amyassist.amy.utility.rest.Resource#getPluginDescripion()
 	 */
 	@Override
 	public ResourceEntity getPluginDescripion() {

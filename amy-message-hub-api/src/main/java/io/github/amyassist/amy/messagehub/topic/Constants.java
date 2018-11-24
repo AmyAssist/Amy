@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.messagehub.topic;
+package io.github.amyassist.amy.messagehub.topic;
 
 /**
  * The Constants used for topics defined in the OASIS Standard for MQTT Version 3.1.1.

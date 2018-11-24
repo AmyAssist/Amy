@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.console;
+package io.github.amyassist.amy.core.console;
 
 import asg.cliche.Command;
 

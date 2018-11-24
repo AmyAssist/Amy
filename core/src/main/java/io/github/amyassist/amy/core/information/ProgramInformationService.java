@@ -21,9 +21,9 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.information;
+package io.github.amyassist.amy.core.information;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * Implementation of {@link ProgramInformation}
@@ -34,7 +34,7 @@ import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
 public class ProgramInformationService implements ProgramInformation {
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformation#getVersion()
+	 * @see io.github.amyassist.amy.core.information.ProgramInformation#getVersion()
 	 */
 	@Override
 	public String getVersion() {
@@ -42,7 +42,7 @@ public class ProgramInformationService implements ProgramInformation {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.information.ProgramInformation#getLicenseNotice()
+	 * @see io.github.amyassist.amy.core.information.ProgramInformation#getLicenseNotice()
 	 */
 	@Override
 	public String getLicenseNotice() {

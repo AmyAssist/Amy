@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.pluginloader;
+package io.github.amyassist.amy.core.pluginloader;
 
 import java.nio.file.Path;
 import java.util.jar.Attributes.Name;
@@ -64,7 +64,7 @@ class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getPath()
+	 * @see io.github.amyassist.amy.core.pluginloader.IPlugin#getPath()
 	 */
 	@Override
 	public Path getPath() {
@@ -72,7 +72,7 @@ class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getClassLoader()
+	 * @see io.github.amyassist.amy.core.pluginloader.IPlugin#getClassLoader()
 	 */
 	@Override
 	public ClassLoader getClassLoader() {
@@ -80,7 +80,7 @@ class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getUniqueName()
+	 * @see io.github.amyassist.amy.core.pluginloader.IPlugin#getUniqueName()
 	 */
 	@Override
 	public String getUniqueName() {
@@ -92,7 +92,7 @@ class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getDisplayName()
+	 * @see io.github.amyassist.amy.core.pluginloader.IPlugin#getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {
@@ -100,7 +100,7 @@ class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getVersion()
+	 * @see io.github.amyassist.amy.core.pluginloader.IPlugin#getVersion()
 	 */
 	@Override
 	public String getVersion() {
@@ -112,7 +112,7 @@ class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getDescription()
+	 * @see io.github.amyassist.amy.core.pluginloader.IPlugin#getDescription()
 	 */
 	@Override
 	public String getDescription() {
@@ -124,7 +124,7 @@ class Plugin implements IPlugin {
 	}
 
 	/**
-	 * @see de.unistuttgart.iaas.amyassist.amy.core.pluginloader.IPlugin#getManifest()
+	 * @see io.github.amyassist.amy.core.pluginloader.IPlugin#getManifest()
 	 */
 	@Override
 	public Manifest getManifest() {

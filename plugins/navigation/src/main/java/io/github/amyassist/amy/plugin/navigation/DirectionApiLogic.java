@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.plugin.navigation;
+package io.github.amyassist.amy.plugin.navigation;
 
 import java.util.EnumMap;
 
@@ -31,8 +31,8 @@ import org.joda.time.ReadableInstant;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Reference;
-import de.unistuttgart.iaas.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.Reference;
+import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * This class implements the logic that is needed to call the DirectionsApiCalls and processing the results

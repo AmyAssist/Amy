@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di;
+package io.github.amyassist.amy.core.di;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,10 +30,10 @@ import java.util.Set;
 
 import javax.annotation.ParametersAreNullableByDefault;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
-import de.unistuttgart.iaas.amyassist.amy.core.di.extension.Extension;
-import de.unistuttgart.iaas.amyassist.amy.core.di.provider.ClassServiceProvider;
-import de.unistuttgart.iaas.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
+import io.github.amyassist.amy.core.di.consumer.ServiceConsumerImpl;
+import io.github.amyassist.amy.core.di.extension.Extension;
+import io.github.amyassist.amy.core.di.provider.ClassServiceProvider;
+import io.github.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
 
 /**
  * Dependency Injection Used to manage dependencies and Service instantiation at runtime. A Service that relies on DI is
@@ -71,7 +71,7 @@ public class DependencyInjection {
 
 	/**
 	 * Loads Services using the provider configuration file
-	 * META-INF/services/de.unistuttgart.iaas.amyassist.amy.core.di.ServiceProviderLoader and the
+	 * META-INF/services/io.github.amyassist.amy.core.di.ServiceProviderLoader and the
 	 * {@link ServiceProviderLoader}
 	 * 
 	 * @see java.util.ServiceLoader

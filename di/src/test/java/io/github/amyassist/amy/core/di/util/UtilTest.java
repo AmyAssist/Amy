@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package de.unistuttgart.iaas.amyassist.amy.core.di.util;
+package io.github.amyassist.amy.core.di.util;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -35,18 +35,18 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import de.unistuttgart.iaas.amyassist.amy.core.di.NotAService;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Service1;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Service12;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Service19;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Service2;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Service3;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Service4;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Service5;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Service7API;
-import de.unistuttgart.iaas.amyassist.amy.core.di.Service8;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceWithConstructor;
-import de.unistuttgart.iaas.amyassist.amy.core.di.ServiceWithPrivateConstructor;
+import io.github.amyassist.amy.core.di.NotAService;
+import io.github.amyassist.amy.core.di.Service1;
+import io.github.amyassist.amy.core.di.Service12;
+import io.github.amyassist.amy.core.di.Service19;
+import io.github.amyassist.amy.core.di.Service2;
+import io.github.amyassist.amy.core.di.Service3;
+import io.github.amyassist.amy.core.di.Service4;
+import io.github.amyassist.amy.core.di.Service5;
+import io.github.amyassist.amy.core.di.Service7API;
+import io.github.amyassist.amy.core.di.Service8;
+import io.github.amyassist.amy.core.di.ServiceWithConstructor;
+import io.github.amyassist.amy.core.di.ServiceWithPrivateConstructor;
 
 /**
  * Tests for the DI Util
