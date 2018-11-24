@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AmyInteractionModel>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.setTimer">
+		ref="io.github.amyassist.amy.plugin.timer.TimerSpeech.setTimer">
 		<gram>[set|create] [a] timer (for|on|at) [{hour} hour] [{minute} minute] [{second} second]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="hour" required="false">
@@ -16,7 +16,7 @@
 		</EntityTemplates>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.pauseTimer">
+		ref="io.github.amyassist.amy.plugin.timer.TimerSpeech.pauseTimer">
 		<gram>pause timer {number}</gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
@@ -25,7 +25,7 @@
 		</EntityTemplates>
 	</Intent>
 		<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.reactivateTimer">
+		ref="io.github.amyassist.amy.plugin.timer.TimerSpeech.reactivateTimer">
 		<gram>(resume|reactivate) timer {number}</gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
@@ -34,11 +34,11 @@
 		</EntityTemplates>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.resetTimerObjects">
+		ref="io.github.amyassist.amy.plugin.timer.TimerSpeech.resetTimerObjects">
 		<gram>delete all timers</gram>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.deleteTimerObject">
+		ref="io.github.amyassist.amy.plugin.timer.TimerSpeech.deleteTimerObject">
 		<gram>(delete|deactivate) timer {number}</gram> 
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
@@ -47,11 +47,11 @@
 		</EntityTemplates>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.stopRinging">
+		ref="io.github.amyassist.amy.plugin.timer.TimerSpeech.stopRinging">
 		<gram>stop timer</gram>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.getTimerObject">
+		ref="io.github.amyassist.amy.plugin.timer.TimerSpeech.getTimerObject">
 		<gram>get timer {number}</gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
@@ -60,11 +60,11 @@
 		</EntityTemplates>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.getAllTimerObjects">
+		ref="io.github.amyassist.amy.plugin.timer.TimerSpeech.getAllTimerObjects">
 		<gram>get all timers</gram>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.timer.TimerSpeech.getRemainingTimerDelay">
+		ref="io.github.amyassist.amy.plugin.timer.TimerSpeech.getRemainingTimerDelay">
 		<gram>when (does|is) timer {number} (ringing|ring)</gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">

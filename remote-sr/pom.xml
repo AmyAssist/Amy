@@ -6,18 +6,18 @@
 	<name>Amy remote sr</name>
 	<description>Remote for google chrome sr</description>
 	<parent>
-		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
 		<version>0.7.0-Snapshot</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-di-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-api</artifactId>
 		</dependency>
 		<dependency>
@@ -30,7 +30,7 @@
 			<version>${commons-lang3.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-utility</artifactId>
 		</dependency>
 		<dependency>
@@ -38,7 +38,7 @@
 			<artifactId>javax.ws.rs-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-http-server-api</artifactId>
 		</dependency>
 	</dependencies>

@@ -6,14 +6,14 @@
 	<name>Amy di</name>
 	<description>The Amy dependency injection</description>
 	<parent>
-		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
 		<version>0.7.0-Snapshot</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-di-api</artifactId>
 		</dependency>
 		<dependency>

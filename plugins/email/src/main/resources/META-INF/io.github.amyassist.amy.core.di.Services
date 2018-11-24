@@ -1,0 +1,3 @@
+io.github.amyassist.amy.plugin.email.EMailLogic
+io.github.amyassist.amy.plugin.email.session.MailSession
+io.github.amyassist.amy.plugin.email.MailUpdateService

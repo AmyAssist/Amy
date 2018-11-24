@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AmyInteractionModel>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.setAlarm">
+		ref="io.github.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.setAlarm">
 		<gram>[set|create] [an|a|new] alarm [(at|for|on) {time}] [{day}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="time" required="true">
@@ -17,11 +17,11 @@
 		</Prompt>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.resetAlarmClockObjects">
+		ref="io.github.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.resetAlarmClockObjects">
 		<gram>(delete|reset) all alarms</gram>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.deleteAlarmClockObject">
+		ref="io.github.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.deleteAlarmClockObject">
 		<gram>delete alarm {number}</gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
@@ -30,7 +30,7 @@
 		</EntityTemplates>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.deactivateAlarmClockObject">
+		ref="io.github.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.deactivateAlarmClockObject">
 		<gram>(deactivate|stop) alarm {number}</gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
@@ -39,12 +39,12 @@
 		</EntityTemplates>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.stopRinging">
+		ref="io.github.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.stopRinging">
 		<gram>stop alarm</gram>
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.activateAlarm">
+		ref="io.github.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.activateAlarm">
 		<gram>activate alarm {number}</gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
@@ -54,7 +54,7 @@
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getAlarmClockObject">
+		ref="io.github.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getAlarmClockObject">
 		<gram>(get|read) alarm [number] {number}</gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
@@ -63,11 +63,11 @@
 		</EntityTemplates>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getAllAlarmClockObjects">
+		ref="io.github.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.getAllAlarmClockObjects">
 		<gram>get all alarms</gram>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.editAlarm">
+		ref="io.github.amyassist.amy.plugin.alarmclock.AlarmClockSpeech.editAlarm">
 		<gram>edit alarm {number} to {time} [{day}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">

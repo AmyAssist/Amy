@@ -1,2 +1,2 @@
-de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarResource
-de.unistuttgart.iaas.amyassist.amy.plugin.calendar.google.VerificationCodeReceiverResource
+io.github.amyassist.amy.plugin.calendar.CalendarResource
+io.github.amyassist.amy.plugin.calendar.google.VerificationCodeReceiverResource
