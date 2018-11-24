@@ -91,7 +91,7 @@ public class EnglishNumberConversion implements NumberConversion {
 
 	/**
 	 * read numbers of a language from a *.natlang file in
-	 * /resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/languageSpecifics/en
+	 * /resources/io/github/amyassist/amy/core/natlang/languageSpecifics/en
 	 *
 	 * @return List of all numbers in the language
 	 */

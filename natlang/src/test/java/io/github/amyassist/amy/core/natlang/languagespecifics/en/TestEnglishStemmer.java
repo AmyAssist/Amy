@@ -21,14 +21,12 @@
  * For more information see notice.md
  */
 
-package io.github.amyassist.amy.core.natlang.languageSpecific.en;
+package io.github.amyassist.amy.core.natlang.languagespecifics.en;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -124,21 +122,22 @@ class TestEnglishStemmer {
 
 	@Test
 	void testWithManyWords() throws IOException {
-		BufferedReader inputReader = new BufferedReader(new FileReader(
-				"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/stemmingTest/input.txt"));
-		BufferedReader outputReader = new BufferedReader(new FileReader(
-				"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/stemmingTest/output.txt"));
-		String inputLine = "";
-		String outputLine = "";
-		while (inputLine != null || outputLine != null) {
-			inputLine = inputReader.readLine();
-			outputLine = outputReader.readLine();
-			if (inputLine != null && outputLine != null) {
-				assertThat(this.stemming.stem(inputLine), equalTo(outputLine));
+		InputStream inputResource = this.getClass().getResourceAsStream("input.txt");
+		InputStream outputResource = this.getClass().getResourceAsStream("output.txt");
+		try (InputStreamReader inputStreamReader = new InputStreamReader(inputResource, "UTF-8");
+				BufferedReader inputReader = new BufferedReader(inputStreamReader);
+				InputStreamReader outputStreamReader = new InputStreamReader(outputResource, "UTF-8");
+				BufferedReader outputReader = new BufferedReader(outputStreamReader)) {
+			String inputLine = "";
+			String outputLine = "";
+			while (inputLine != null || outputLine != null) {
+				inputLine = inputReader.readLine();
+				outputLine = outputReader.readLine();
+				if (inputLine != null && outputLine != null) {
+					assertThat(this.stemming.stem(inputLine), equalTo(outputLine));
+				}
 			}
 		}
-		inputReader.close();
-		outputReader.close();
 	}
 
 }

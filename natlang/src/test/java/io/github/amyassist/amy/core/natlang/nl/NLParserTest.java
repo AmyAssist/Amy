@@ -23,13 +23,9 @@
 
 package io.github.amyassist.amy.core.natlang.nl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
@@ -47,10 +43,9 @@ import io.github.amyassist.amy.natlang.agf.nodes.AGFNodeType;
 import io.github.amyassist.amy.natlang.agf.nodes.EntityNode;
 import io.github.amyassist.amy.natlang.aim.XMLAmyInteractionModel;
 import io.github.amyassist.amy.natlang.languagespecifics.ChooseLanguage;
-import io.github.amyassist.amy.natlang.languagespecifics.en.EnglishNumberConversion;
+import io.github.amyassist.amy.natlang.nl.EndToken;
 import io.github.amyassist.amy.natlang.nl.NLLexer;
 import io.github.amyassist.amy.natlang.nl.NLParser;
-import io.github.amyassist.amy.natlang.nl.EndToken;
 import io.github.amyassist.amy.natlang.userinteraction.UserIntent;
 
 /**
@@ -62,27 +57,27 @@ public class NLParserTest {
 	private List<UserIntent> intents;
 	
 	@BeforeEach
-	public void setup() throws JAXBException, FileNotFoundException {
-		FileInputStream stream = new FileInputStream(
-				"src/test/resources/de/unistuttgart/iaas/amyassist/amy/core/natlang/userinteraction/testXMLUserInteraction.aim.xml");
-		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-		String xml = reader.lines().collect(Collectors.joining());
-		JAXBContext jc = JAXBContext.newInstance(XMLAmyInteractionModel.class);
-		Unmarshaller unmarshaller = jc.createUnmarshaller();
-		StringReader stringReader = new StringReader(xml);
-		XMLAmyInteractionModel aimmodel = (XMLAmyInteractionModel) unmarshaller.unmarshal(stringReader);
-		
-		UserIntent int0 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(0));
-		UserIntent int1 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(1));
-		UserIntent int2 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(2));
-		UserIntent int3 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(3));
-		
-		this.intents = new ArrayList<>();
-		this.intents.add(int0);
-		this.intents.add(int1);
-		this.intents.add(int2);
-		this.intents.add(int3);
-		
+	public void setup() throws JAXBException, UnsupportedEncodingException, IOException {
+		InputStream inputResource = this.getClass().getResourceAsStream("../userinteraction/testXMLUserInteraction.aim.xml");
+		try (InputStreamReader inputStreamReader = new InputStreamReader(inputResource, "UTF-8");
+				BufferedReader reader = new BufferedReader(inputStreamReader)) {
+			String xml = reader.lines().collect(Collectors.joining());
+			JAXBContext jc = JAXBContext.newInstance(XMLAmyInteractionModel.class);
+			Unmarshaller unmarshaller = jc.createUnmarshaller();
+			StringReader stringReader = new StringReader(xml);
+			XMLAmyInteractionModel aimmodel = (XMLAmyInteractionModel) unmarshaller.unmarshal(stringReader);
+			
+			UserIntent int0 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(0));
+			UserIntent int1 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(1));
+			UserIntent int2 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(2));
+			UserIntent int3 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(3));
+			
+			this.intents = new ArrayList<>();
+			this.intents.add(int0);
+			this.intents.add(int1);
+			this.intents.add(int2);
+			this.intents.add(int3);
+		}
 	}
 	
 	

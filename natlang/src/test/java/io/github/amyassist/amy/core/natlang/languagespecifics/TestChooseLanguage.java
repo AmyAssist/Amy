@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package io.github.amyassist.amy.core.natlang.languageSpecific;
+package io.github.amyassist.amy.core.natlang.languagespecifics;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;

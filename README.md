@@ -37,7 +37,7 @@ Execute `mvn install`, this command will install and test the whole project.
 
 #### Important: It is imperative that you do this at least once (when downloading a fresh copy of the project) or when you make any change to the code, otherwise your changes will not be applied
 
-After installing, you are able to run the project. Use your favourite Java IDE and run the Main method in the [Main class](core/src/main/java/de/unistuttgart/iaas/amyassist/amy/core/Main.java) that lies in the core project.
+After installing, you are able to run the project. Use your favourite Java IDE and run the Main method in the [Main class](core/src/main/java/io/github/amyassist/amy/core/Main.java) that lies in the core project.
 
 As soon as the confirmation `[INFORMATION] :: Speech Recognition activated` pops up in your console you are good to go.  
 
