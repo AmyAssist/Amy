@@ -5,7 +5,7 @@
 	<packaging>pom</packaging>
 	<groupId>io.github.amyassist</groupId>
 	<artifactId>amy</artifactId>
-	<version>0.7.0-Snapshot</version>
+	<version>0.7.0-SNAPSHOT</version>
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
 	<scm>
@@ -62,24 +62,24 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Amy versions to depend on -->
-		<amy.natlang.version>0.7.0-Snapshot</amy.natlang.version>
-		<amy.di.api.version>0.7.0-Snapshot</amy.di.api.version>
-		<amy.natlang.api.version>0.7.0-Snapshot</amy.natlang.api.version>
-		<amy.di.version>0.7.0-Snapshot</amy.di.version>
-		<amy.message-hub.api.version>0.7.0-Snapshot</amy.message-hub.api.version>
-		<amy.message-hub.version>0.7.0-Snapshot</amy.message-hub.version>
-		<amy.api.version>0.7.0-Snapshot</amy.api.version>
-		<amy.plugin-manager-api.version>0.7.0-Snapshot</amy.plugin-manager-api.version>
-		<amy.http-server.api.version>0.7.0-Snapshot</amy.http-server.api.version>
-		<amy.http-server.version>0.7.0-Snapshot</amy.http-server.version>
-		<amy.testing-framework.version>0.7.0-Snapshot</amy.testing-framework.version>
-		<amy.core.version>0.7.0-Snapshot</amy.core.version>
-		<amy.rest-resources.version>0.7.0-Snapshot</amy.rest-resources.version>
-		<amy.utility.version>0.7.0-Snapshot</amy.utility.version>
-		<amy.registry.version>0.7.0-Snapshot</amy.registry.version>
-		<amy.remote-sr.version>0.7.0-Snapshot</amy.remote-sr.version>
-		<amy.chatsocket.version>0.7.0-Snapshot</amy.chatsocket.version>
-		<deployment.descriptor.utility.version>0.7.0-Snapshot</deployment.descriptor.utility.version>
+		<amy.natlang.version>0.7.0-SNAPSHOT</amy.natlang.version>
+		<amy.di.api.version>0.7.0-SNAPSHOT</amy.di.api.version>
+		<amy.natlang.api.version>0.7.0-SNAPSHOT</amy.natlang.api.version>
+		<amy.di.version>0.7.0-SNAPSHOT</amy.di.version>
+		<amy.message-hub.api.version>0.7.0-SNAPSHOT</amy.message-hub.api.version>
+		<amy.message-hub.version>0.7.0-SNAPSHOT</amy.message-hub.version>
+		<amy.api.version>0.7.0-SNAPSHOT</amy.api.version>
+		<amy.plugin-manager-api.version>0.7.0-SNAPSHOT</amy.plugin-manager-api.version>
+		<amy.http-server.api.version>0.7.0-SNAPSHOT</amy.http-server.api.version>
+		<amy.http-server.version>0.7.0-SNAPSHOT</amy.http-server.version>
+		<amy.testing-framework.version>0.7.0-SNAPSHOT</amy.testing-framework.version>
+		<amy.core.version>0.7.0-SNAPSHOT</amy.core.version>
+		<amy.rest-resources.version>0.7.0-SNAPSHOT</amy.rest-resources.version>
+		<amy.utility.version>0.7.0-SNAPSHOT</amy.utility.version>
+		<amy.registry.version>0.7.0-SNAPSHOT</amy.registry.version>
+		<amy.remote-sr.version>0.7.0-SNAPSHOT</amy.remote-sr.version>
+		<amy.chatsocket.version>0.7.0-SNAPSHOT</amy.chatsocket.version>
+		<deployment.descriptor.utility.version>0.7.0-SNAPSHOT</deployment.descriptor.utility.version>
 
 		<!-- External dependency versions. Only project wide or core dependencies 
 			here -->
@@ -423,4 +423,14 @@
 		<system>GitHub</system>
 		<url>https://github.com/AmyAssist/Amy/issues</url>
 	</issueManagement>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 </project>
