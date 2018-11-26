@@ -23,7 +23,7 @@
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-testing-framework</artifactId>
-			<version>${amy.testing-framework.version}</version>
+			<version>0.7.0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
