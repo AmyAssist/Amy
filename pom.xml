@@ -110,6 +110,8 @@
 		<module>core</module>
 		<module>plugin-manager-api</module>
 		<module>rest-resources</module>
+		<module>plugins</module>
+		<module>plugins/plugin-internal-preset.xml</module>
 		<module>plugins/alarmclock</module>
 		<module>plugins/calendar</module>
 		<module>plugins/email</module>
