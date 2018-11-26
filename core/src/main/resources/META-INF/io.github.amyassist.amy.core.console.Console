@@ -1,0 +1,5 @@
+io.github.amyassist.amy.core.pluginloader.PluginManagerCLI
+io.github.amyassist.amy.core.speech.tts.TTSConsole
+io.github.amyassist.amy.core.console.SpeechConsole
+io.github.amyassist.amy.core.console.ExitConsole
+io.github.amyassist.amy.core.information.ProgramInformationCLI

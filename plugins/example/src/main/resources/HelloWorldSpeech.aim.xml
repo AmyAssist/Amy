@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AmyInteractionModel>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.say">
+		ref="io.github.amyassist.amy.plugin.example.HelloWorldSpeech.say">
 		<gram>say hello</gram>
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.repeat">
+		ref="io.github.amyassist.amy.plugin.example.HelloWorldSpeech.repeat">
 		<gram>repeat {somestring} [{int} times]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="somestring" required="true">
@@ -24,22 +24,22 @@
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.getContacts">
+		ref="io.github.amyassist.amy.plugin.example.HelloWorldSpeech.getContacts">
 		<gram>get contacts</gram>
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.testContacts">
+		ref="io.github.amyassist.amy.plugin.example.HelloWorldSpeech.testContacts">
 		<gram>test contacts registry</gram>
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.testLocation">
+		ref="io.github.amyassist.amy.plugin.example.HelloWorldSpeech.testLocation">
 		<gram>test location registry</gram>
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.example.HelloWorldSpeech.testCustom">
+		ref="io.github.amyassist.amy.plugin.example.HelloWorldSpeech.testCustom">
 		<gram>test custom registry</gram>
 	</Intent>
 </AmyInteractionModel>

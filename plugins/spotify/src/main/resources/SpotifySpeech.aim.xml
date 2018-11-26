@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AmyInteractionModel>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.getDevices">
+		ref="io.github.amyassist.amy.plugin.spotify.SpotifySpeech.getDevices">
 		<gram> (get|list) (music|spotify) devices </gram>
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.getCurrentSong">
+		ref="io.github.amyassist.amy.plugin.spotify.SpotifySpeech.getCurrentSong">
 		<gram> (what|get current [playing]) (song|track) [do i listen to] </gram>
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.getPlaylists">
+		ref="io.github.amyassist.amy.plugin.spotify.SpotifySpeech.getPlaylists">
 		<gram> (get|list) [{number}] [{type}] playlists </gram>
 		<EntityTemplates>
 			<EntityTemplate id="type" required="true">
@@ -29,12 +29,12 @@
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.playSomething">
+		ref="io.github.amyassist.amy.plugin.spotify.SpotifySpeech.playSomething">
 		<gram> play some music </gram>
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.control">
+		ref="io.github.amyassist.amy.plugin.spotify.SpotifySpeech.control">
 		<gram> [go] {type} [(a track|the music)] </gram>
 		<EntityTemplates>
 			<EntityTemplate id="type" required="true">
@@ -44,7 +44,7 @@
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.volume">
+		ref="io.github.amyassist.amy.plugin.spotify.SpotifySpeech.volume">
 		<gram> set [spotify|music] volume [to|on] {volumeoption} </gram>
 		<EntityTemplates>
 			<EntityTemplate id="volumeoption" required="true">
@@ -54,7 +54,7 @@
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.volumePercent">
+		ref="io.github.amyassist.amy.plugin.spotify.SpotifySpeech.volumePercent">
 		<gram> (set [music] volume [to] |spotify) {volume} percent </gram>
 		<EntityTemplates>
 			<EntityTemplate id="volume" required="true">
@@ -64,7 +64,7 @@
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.setDeviceId">
+		ref="io.github.amyassist.amy.plugin.spotify.SpotifySpeech.setDeviceId">
 		<gram> (set|change) (spotify|music) device [to {deviceid}] </gram>
 		<EntityTemplates>
 			<EntityTemplate id="deviceid" required="true">
@@ -78,7 +78,7 @@
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.playPlaylistId">
+		ref="io.github.amyassist.amy.plugin.spotify.SpotifySpeech.playPlaylistId">
 		<gram> [spotify] play [{type}] playlist [{songid}] </gram>
 		<EntityTemplates>
 			<EntityTemplate id="type" required="true">
@@ -99,7 +99,7 @@
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.searchASong">
+		ref="io.github.amyassist.amy.plugin.spotify.SpotifySpeech.searchASong">
 		<gram> play (this|a|the|following) {mode} [{name}]  </gram>
 		<EntityTemplates>
 			<EntityTemplate id="mode" required="true">
@@ -116,7 +116,7 @@
 	</Intent>
 
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.spotify.SpotifySpeech.setDeviceName">
+		ref="io.github.amyassist.amy.plugin.spotify.SpotifySpeech.setDeviceName">
 		<gram> set (spotify|music) device [by] [name]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="devicename" required="true">

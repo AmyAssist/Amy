@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AmyInteractionModel>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEvents">
+		ref="io.github.amyassist.amy.plugin.calendar.CalendarSpeech.getEvents">
 		<gram>[what (is|are)] my next [{number}] (events|appointments) </gram>
 		<EntityTemplates>
 			<EntityTemplate id="number" required="true">
@@ -14,7 +14,7 @@
 		</Prompt>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsAt">
+		ref="io.github.amyassist.amy.plugin.calendar.CalendarSpeech.getEventsAt">
 		<gram>[which|what|do i have] [any] [is in my] (calendar|events|appointments) [do i have] [at] [{date}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="eventyear" required="false">
@@ -30,7 +30,7 @@
 		</Prompt>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.calendar.CalendarSpeech.setEvent">
+		ref="io.github.amyassist.amy.plugin.calendar.CalendarSpeech.setEvent">
 		<gram>[create|make] new [{allday}] (event|appointment) [from [the] {start}] [(to|until) [the] {end}] [with {remindertype} [notification]] [[at] {remindertime} [earlier]] [(named|called) {title}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="title" required="true">

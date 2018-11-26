@@ -1,0 +1,3 @@
+io.github.amyassist.amy.registry.ContactRegistryImpl
+io.github.amyassist.amy.registry.LocationRegistryImpl
+io.github.amyassist.amy.registry.geocoder.Geocoder

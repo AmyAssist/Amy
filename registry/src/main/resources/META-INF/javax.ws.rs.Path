@@ -1,2 +1,2 @@
-de.unistuttgart.iaas.amyassist.amy.registry.rest.ContactRegistryResource
-de.unistuttgart.iaas.amyassist.amy.registry.rest.LocationRegistryResource
+io.github.amyassist.amy.registry.rest.ContactRegistryResource
+io.github.amyassist.amy.registry.rest.LocationRegistryResource
