@@ -8,6 +8,7 @@
 	<version>0.7.0-SNAPSHOT</version>
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
+	<url>https://github.com/AmyAssist/Amy</url>
 	<scm>
 		<url>https://github.com/AmyAssist/Amy</url>
 	</scm>
