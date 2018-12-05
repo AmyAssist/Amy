@@ -116,7 +116,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -132,4 +131,51 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>licenses</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>license-maven-plugin</artifactId>
+						<version>1.16</version>
+						<executions>
+							<execution>
+								<id>download-licenses</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>download-licenses</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>3.1.0</version>
+						<executions>
+							<execution>
+								<id>copy-licenses</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.outputDirectory}/META-INF/licenses</outputDirectory>
+									<resources>
+										<resource>
+											<directory>${project.build.directory}/generated-resources/licenses</directory>
+											<filtering>false</filtering>
+										</resource>
+									</resources>
+									<overwrite>true</overwrite>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
