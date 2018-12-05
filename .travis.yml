@@ -26,7 +26,7 @@ jobs:
         script: ./scripts/deployDocker.sh
         on:
           branch: dev
-    - name: "Depoly GitHub Pages"
+    - name: "Deploy GitHub Pages"
       script: ./scripts/deployGH-Pages.sh
       deploy:
         provider: pages
@@ -35,7 +35,7 @@ jobs:
         local_dir: gh-pages/
         on:
           branch: dev
-    - name: "Depoly Maven Snapshot"
+    - name: "Deploy Maven Snapshot"
       install: cp scripts/.travis.settings.xml $HOME/.m2/settings.xml
       script: mvn deploy -DskipTests=true
     - stage: deploy
