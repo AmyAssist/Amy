@@ -68,7 +68,7 @@ public class WeatherSpeechCommand {
 	private IStorage storage;
 
 	@Reference
-	Geocoder geocoder;
+	private Geocoder geocoder;
 
 	private @Nullable GeoCoordinatePair getCurrentLocation() {
 		if (!this.storage.has(CURRENT_LOCATION_KEY)) {

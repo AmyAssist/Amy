@@ -58,7 +58,6 @@ public class TimerSpeech {
 	private static String timerS = "Timer ";
 	private static String secS = " seconds";
 	private static String ringS = " will ring in ";
-	private static String active;
 
 	/**
 	 * Sets a new timer. You can select between hours, minutes and seconds or combinate them
@@ -220,6 +219,7 @@ public class TimerSpeech {
 		int min = (int) (timeDiff.toMinutes() % 60);
 		int hours = (int) (timeDiff.toHours());
 		int timerNumber = timer.getId();
+		String active;
 		if (!timer.isActive()) {
 			active = " but is paused";
 		} else {

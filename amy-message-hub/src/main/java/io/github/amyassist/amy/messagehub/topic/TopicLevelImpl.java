@@ -52,8 +52,9 @@ class TopicLevelImpl implements TopicLevel {
 		} else if (levelString.equals(Character.toString(Constants.MULTI_LEVEL_WILDCARD))) {
 			this.multiWildcard = true;
 		} else if (levelString.contains(Character.toString(Constants.SINGLE_LEVEL_WILDCARD))
-				|| levelString.contains(Character.toString(Constants.MULTI_LEVEL_WILDCARD)))
+				|| levelString.contains(Character.toString(Constants.MULTI_LEVEL_WILDCARD))) {
 			throw new TopicFormatException("A level can not contain a wildcard and another character.");
+		}
 	}
 
 	/**

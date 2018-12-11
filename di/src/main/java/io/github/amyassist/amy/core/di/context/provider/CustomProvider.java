@@ -26,7 +26,6 @@ package io.github.amyassist.amy.core.di.context.provider;
 import java.util.Map;
 
 import io.github.amyassist.amy.core.di.consumer.ServiceConsumer;
-import io.github.amyassist.amy.core.di.context.provider.StaticProvider;
 
 /**
  * A ContextProvider for custom informations

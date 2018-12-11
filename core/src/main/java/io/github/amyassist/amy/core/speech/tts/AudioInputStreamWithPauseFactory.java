@@ -105,7 +105,7 @@ public class AudioInputStreamWithPauseFactory {
 		@Override
 		public int read(byte[] b, int off, int len) throws IOException {
 			if (b == null)
-				throw new NullPointerException();
+				throw new NullPointerException();//NOSONAR
 			else if (off < 0 || len < 0 || len > b.length - off)
 				throw new IndexOutOfBoundsException();
 			else if (len == 0)

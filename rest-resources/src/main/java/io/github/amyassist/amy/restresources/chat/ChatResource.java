@@ -23,6 +23,8 @@
 
 package io.github.amyassist.amy.restresources.chat;
 
+import java.util.NoSuchElementException;
+import java.util.Queue;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
@@ -54,10 +56,10 @@ public class ChatResource {
 	 * the Path of this resource
 	 */
 	public static final String PATH = "chat";
-	
+
 	@Reference
 	private DialogHandler handler;
-	
+
 	@Reference
 	private ChatService chatService;
 
@@ -118,19 +120,23 @@ public class ChatResource {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response receiveResponse(String uuidString) {
+		UUID uuid;
 		try {
-			UUID uuid = UUID.fromString(uuidString);
-			if (this.chatService.getQueue(uuid) != null) {
-				Response response = this.chatService.getQueue(uuid).poll();
-				if (response == null) {
-					return Response.text("").build();
-				}
-				return response;
-			}
-			return Response.text("").build();
-
+			uuid = UUID.fromString(uuidString);
 		} catch (IllegalArgumentException e) {
 			throw new WebApplicationException("unknown UUID " + uuidString, e, Status.FORBIDDEN);
 		}
+		Queue<Response> queue;
+		try {
+			queue = this.chatService.getQueue(uuid);
+		} catch (NoSuchElementException e) {
+			return Response.text("").build();
+		}
+		Response response = queue.poll();
+		if (response == null) {
+			return Response.text("").build();
+		}
+		return response;
+
 	}
 }

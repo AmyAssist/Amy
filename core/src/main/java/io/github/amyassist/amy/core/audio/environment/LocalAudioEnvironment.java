@@ -135,14 +135,14 @@ public class LocalAudioEnvironment extends AbstractAudioEnvironment {
 
 		try {
 			this.sdl.close();
-		} catch (RuntimeException e) {
-			// Needed because of a pulse audio bug, where close throws weird exceptions //NOSONAR
+		} catch (RuntimeException e) {//NOSONAR
+			// Needed because of a pulse audio bug, where close throws weird exceptions
 		}
 
 		try {
 			this.tdl.close();
-		} catch (RuntimeException e) {
-			// Needed because of a pulse audio bug, where close throws weird exceptions //NOSONAR
+		} catch (RuntimeException e) {//NOSONAR
+			// Needed because of a pulse audio bug, where close throws weird exceptions
 		}
 	}
 }

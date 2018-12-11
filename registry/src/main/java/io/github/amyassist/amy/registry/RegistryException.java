@@ -25,14 +25,32 @@ package io.github.amyassist.amy.registry;
 
 /**
  * An exception in the registry.
+ * 
+ * @author Benno Krauß, Leon Kiefer
  */
 public class RegistryException extends RuntimeException {
 
-    /**
-     * Create an exception
-     * @param message a useful error message
-     */
-    public RegistryException(String message) {
-        super(message);
-    }
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4869855745119639030L;
+
+	/**
+	 * Create an exception
+	 * 
+	 * @param message
+	 *            a useful error message
+	 */
+	public RegistryException(String message) {
+		super(message);
+	}
+
+	/**
+	 * @param message
+	 *            a useful error message
+	 * @param throwable
+	 */
+	public RegistryException(String message, Throwable throwable) {
+		super(message, throwable);
+	}
 }

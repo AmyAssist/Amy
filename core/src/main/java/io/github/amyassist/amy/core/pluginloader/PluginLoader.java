@@ -73,8 +73,8 @@ public class PluginLoader {
 			URL[] urls = { path.toUri().toURL() };
 
 			// We need that classLoader to stay open.
-			@SuppressWarnings("resource")
-			URLClassLoader childLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
+			@SuppressWarnings("resource")//NOSONAR
+			URLClassLoader childLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());//NOSONAR
 
 			Manifest mf = jar.getManifest();
 			if (mf == null) {

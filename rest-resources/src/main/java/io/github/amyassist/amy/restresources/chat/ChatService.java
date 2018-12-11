@@ -24,6 +24,7 @@
 package io.github.amyassist.amy.restresources.chat;
 
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,36 +35,41 @@ import io.github.amyassist.amy.core.natlang.Response;
 
 /**
  * Helper service for the chat inside the webapp
+ * 
  * @author Felix Burk
  */
 @Service()
 public class ChatService {
-	
+
 	/**
 	 * maps uuids from users to a LinkedList<String> containing answers from amy
 	 */
 	private ConcurrentMap<UUID, LinkedList<Response>> userQueueMap = new ConcurrentHashMap<>();
-	
+
 	/**
 	 * retrieve queue from user with uuid
-	 * @param uuid of user
+	 * 
+	 * @param uuid
+	 *            of user
 	 * @return the queue of answers from amy
+	 * @throws NoSuchElementException
+	 *             if there is no queue for the given uuid
 	 */
 	public Queue<Response> getQueue(UUID uuid) {
-		if(this.userQueueMap.containsKey(uuid)) {
+		if (this.userQueueMap.containsKey(uuid)) {
 			return this.userQueueMap.get(uuid);
 		}
-		return null;
-		
+		throw new NoSuchElementException("There is no queue with id " + uuid);
 	}
-	
+
 	/**
 	 * adds a new user
-	 * @param uuid string representation of uuid
+	 * 
+	 * @param uuid
+	 *            string representation of uuid
 	 */
 	public void addUser(UUID uuid) {
 		this.userQueueMap.put(uuid, new LinkedList<Response>());
 	}
-
 
 }
