@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
 public class LocationRegistryImpl extends AbstractTaggableRegistry<Location> implements LocationRegistry {
 
     @Reference
-    Geocoder geocoder;
+    private Geocoder geocoder;
 
     @Override
     protected String getPersistenceUnitName() {
@@ -59,11 +59,11 @@ public class LocationRegistryImpl extends AbstractTaggableRegistry<Location> imp
         if (location.getLatitude() == 0 && location.getLongitude() == 0) {
             // Extract coordinates from address by using geocoder API
             try {
-                Pair<Double, Double> coordinates = geocoder.geocodeAddress(location.getAddressString());
+                Pair<Double, Double> coordinates = this.geocoder.geocodeAddress(location.getAddressString());
                 location.setLatitude(coordinates.getKey());
                 location.setLongitude(coordinates.getValue());
             } catch (GeocoderException e) {
-                throw new RegistryException("Could not geocode address: " + e.getMessage());
+                throw new RegistryException("Could not geocode address.", e);
             }
         }
 

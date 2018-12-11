@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import org.opentosca.containerapi.client.model.Application;
 
 import io.github.amyassist.amy.core.di.annotation.Reference;
-import io.github.amyassist.amy.core.di.annotation.Service;
 import io.github.amyassist.amy.core.natlang.EntityData;
 import io.github.amyassist.amy.core.natlang.EntityProvider;
 import io.github.amyassist.amy.core.natlang.Intent;
@@ -43,7 +42,6 @@ import io.github.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
  * 
  * @author Felix Burk, Tim Neumann
  */
-@Service
 @SpeechCommand
 public class ToscaSpeech {
 

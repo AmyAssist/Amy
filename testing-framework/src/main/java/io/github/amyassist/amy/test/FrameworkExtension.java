@@ -73,7 +73,7 @@ public class FrameworkExtension implements TestInstancePostProcessor, BeforeTest
 
 	@Override
 	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-		PrintStream out = System.out;
+		PrintStream out = System.out;//NOSONAR
 		for (LoggingEvent logged : TestLoggerFactory.getAllLoggingEvents()) {
 			out.print(logged.getLevel() + " - " + logged.getMessage() + " - ");
 			for (Object o : logged.getArguments()) {
