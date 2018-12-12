@@ -6,14 +6,17 @@
 	<name>Amy plugin calendar</name>
 	<description>The Amy calendar plugin</description>
 	<parent>
-		<groupId>de.unistuttgart.iaas.amyassist</groupId>
-		<artifactId>amy-plugin</artifactId>
-		<version>0.6.0</version>
-		<relativePath>../pom.xml</relativePath>
+		<groupId>io.github.amyassist</groupId>
+		<artifactId>amy-plugin-internal-preset</artifactId>
+		<version>0.7.0-SNAPSHOT</version>
+		<relativePath>../plugin-internal-preset.xml</relativePath>
 	</parent>
+	<properties>
+		<amy.basedir>${project.basedir}/../..</amy.basedir>
+	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-http-server-api</artifactId>
 			<scope>provided</scope>
 		</dependency>

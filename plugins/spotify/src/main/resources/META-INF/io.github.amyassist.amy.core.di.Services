@@ -1,0 +1,5 @@
+io.github.amyassist.amy.plugin.spotify.SpotifyAPICalls
+io.github.amyassist.amy.plugin.spotify.registry.DeviceRegistry
+io.github.amyassist.amy.plugin.spotify.logic.DeviceLogic
+io.github.amyassist.amy.plugin.spotify.logic.PlayerLogic
+io.github.amyassist.amy.plugin.spotify.logic.Search

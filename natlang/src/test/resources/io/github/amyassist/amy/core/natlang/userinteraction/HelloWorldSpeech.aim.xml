@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AmyInteractionModel>
+	<Intent
+		ref="io.github.amyassist.amy.plugin.example.HelloWorldSpeech.sayHelloXTimes">
+		<gram> say {greeting} {number} </gram>
+		<EntityTemplates>
+			<EntityTemplate id="number"/>
+			<EntityTemplate id="greeting">
+			<gram> hello</gram>
+			</EntityTemplate>
+		</EntityTemplates>
+
+		<Prompt entityTemplateId="number">
+			<text> how many times should i say {greeting}? </text>
+			<gram> {number} [times] </gram>
+		</Prompt>
+	</Intent>
+</AmyInteractionModel>

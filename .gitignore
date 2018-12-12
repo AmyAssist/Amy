@@ -8,10 +8,10 @@ org.eclipse.core.resources.prefs
 
 temp/
 
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
+*.xml.tag
+*.xml.releaseBackup
+*.xml.versionsBackup
+*.xml.next
 dependency-reduced-pom.xml
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)

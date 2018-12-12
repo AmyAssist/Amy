@@ -3,11 +3,55 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>pom</packaging>
-	<groupId>de.unistuttgart.iaas.amyassist</groupId>
+	<groupId>io.github.amyassist</groupId>
 	<artifactId>amy</artifactId>
-	<version>0.6.0</version>
+	<version>0.7.0-SNAPSHOT</version>
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
+	<url>https://github.com/AmyAssist/Amy</url>
+	<scm>
+		<url>https://github.com/AmyAssist/Amy</url>
+	</scm>
+	<developers>
+		<developer>
+			<name>Benno Krauss</name>
+		</developer>
+		<developer>
+			<name>Christian Bräuner</name>
+		</developer>
+		<developer>
+			<name>Felix Burk</name>
+			<url>https://github.com/FlxB2</url>
+		</developer>
+		<developer>
+			<name>Florian Bauer</name>
+		</developer>
+		<developer>
+			<name>Kai Menzel</name>
+		</developer>
+		<developer>
+			<name>Lars Buttgereit</name>
+		</developer>
+		<developer>
+			<name>Leon Kiefer</name>
+			<url>https://github.com/Legion2</url>
+		</developer>
+		<developer>
+			<name>Muhammed Kaya</name>
+		</developer>
+		<developer>
+			<name>Patrick Gebhardt</name>
+		</developer>
+		<developer>
+			<name>Patrick Singer</name>
+		</developer>
+		<developer>
+			<name>Tim Neumann</name>
+		</developer>
+		<developer>
+			<name>Tobias Siemonsen</name>
+		</developer>
+	</developers>
 	<properties>
 		<!-- Amy specific settings -->
 		<amy.plugin.build.dir>build/plugins</amy.plugin.build.dir>
@@ -17,26 +61,6 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-		<!-- Amy versions to depend on -->
-		<amy.natlang.version>0.6.0</amy.natlang.version>
-		<amy.di.api.version>0.6.0</amy.di.api.version>
-		<amy.natlang.api.version>0.6.0</amy.natlang.api.version>
-		<amy.di.version>0.6.0</amy.di.version>
-		<amy.message-hub.api.version>0.6.0</amy.message-hub.api.version>
-		<amy.message-hub.version>0.6.0</amy.message-hub.version>
-		<amy.api.version>0.6.0</amy.api.version>
-		<amy.plugin-manager-api.version>0.6.0</amy.plugin-manager-api.version>
-		<amy.http-server.api.version>0.6.0</amy.http-server.api.version>
-		<amy.http-server.version>0.6.0</amy.http-server.version>
-		<amy.testing-framework.version>0.6.0</amy.testing-framework.version>
-		<amy.core.version>0.6.0</amy.core.version>
-		<amy.rest-resources.version>0.6.0</amy.rest-resources.version>
-		<amy.utility.version>0.6.0</amy.utility.version>
-		<amy.registry.version>0.6.0</amy.registry.version>
-		<amy.remote-sr.version>0.6.0</amy.remote-sr.version>
-		<amy.chatsocket.version>0.6.0</amy.chatsocket.version>
-		<deployment.descriptor.utility.version>0.6.0</deployment.descriptor.utility.version>
 
 		<!-- External dependency versions. Only project wide or core dependencies 
 			here -->
@@ -67,6 +91,8 @@
 		<module>core</module>
 		<module>plugin-manager-api</module>
 		<module>rest-resources</module>
+		<module>plugins</module>
+		<module>plugins/plugin-internal-preset.xml</module>
 		<module>plugins/alarmclock</module>
 		<module>plugins/calendar</module>
 		<module>plugins/email</module>
@@ -157,7 +183,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
-				<version>2.4.1</version>
+				<version>3.1.0</version>
 				<configuration>
 					<followSymLinks>false</followSymLinks>
 					<filesets>
@@ -169,52 +195,120 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<tags>
+								<tag>
+									<name>apiNote</name>
+									<placement>a</placement>
+									<head>API Note:</head>
+								</tag>
+								<tag>
+									<name>implSpec</name>
+									<placement>a</placement>
+									<head>Implementation Requirements:</head>
+								</tag>
+								<tag>
+									<name>implNote</name>
+									<placement>a</placement>
+									<head>Implementation Note:</head>
+								</tag>
+							</tags>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-natlang</artifactId>
-				<version>${amy.natlang.version}</version>
+				<version>0.7.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-chat-socket</artifactId>
-				<version>${amy.chatsocket.version}</version>
+				<version>0.7.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-natlang-api</artifactId>
-				<version>${amy.natlang.api.version}</version>
+				<version>0.7.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-di-api</artifactId>
-				<version>${amy.di.api.version}</version>
+				<version>0.7.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-message-hub-api</artifactId>
-				<version>${amy.message-hub.api.version}</version>
+				<version>0.7.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-api</artifactId>
-				<version>${amy.api.version}</version>
+				<version>0.7.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-http-server-api</artifactId>
-				<version>${amy.http-server.api.version}</version>
+				<version>0.7.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-utility</artifactId>
-				<version>${amy.utility.version}</version>
+				<version>0.7.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>de.unistuttgart.iaas.amyassist</groupId>
+				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-plugin-manager-api</artifactId>
-				<version>${amy.plugin-manager-api.version}</version>
+				<version>0.7.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.ws.rs</groupId>
@@ -304,4 +398,22 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<ciManagement>
+		<system>Travis</system>
+		<url>https://travis-ci.com/AmyAssist/Amy</url>
+	</ciManagement>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/AmyAssist/Amy/issues</url>
+	</issueManagement>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 </project>

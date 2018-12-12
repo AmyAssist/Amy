@@ -6,9 +6,9 @@
 	<name>Amy Plugin Manager api</name>
 	<description>The Amy Plugin Manager api</description>
 	<parent>
-		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.6.0</version>
+		<version>0.7.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>

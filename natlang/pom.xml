@@ -6,9 +6,9 @@
 	<name>Amy natlang</name>
 	<description>The Amy natural language system</description>
 	<parent>
-		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.6.0</version>
+		<version>0.7.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
@@ -23,30 +23,30 @@
 			<version>3.8</version>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-natlang-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-di-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-plugin-manager-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>deployment-descriptor-utility</artifactId>
-			<version>${deployment.descriptor.utility.version}</version>
+			<version>0.7.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-testing-framework</artifactId>
-			<version>${amy.testing-framework.version}</version>
+			<version>0.7.0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- Tests -->

@@ -1,0 +1,4 @@
+io.github.amyassist.amy.plugin.webpush.WebPushServiceImpl
+io.github.amyassist.amy.plugin.webpush.WebPushNameServiceImpl
+io.github.amyassist.amy.plugin.webpush.persistence.SubscriptionStorage
+io.github.amyassist.amy.plugin.webpush.SimpleWebPushServiceImpl

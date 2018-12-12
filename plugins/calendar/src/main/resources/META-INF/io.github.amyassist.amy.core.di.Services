@@ -1,0 +1,3 @@
+io.github.amyassist.amy.plugin.calendar.CalendarLogic
+io.github.amyassist.amy.plugin.calendar.CalendarService
+io.github.amyassist.amy.plugin.calendar.google.VerificationCodeReceiverService

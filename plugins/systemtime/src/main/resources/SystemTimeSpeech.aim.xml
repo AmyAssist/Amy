@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AmyInteractionModel>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.time">
+		ref="io.github.amyassist.amy.plugin.systemtime.SystemTimeSpeech.time">
 		<gram>[what|tell me] [is] [the] time [is it]</gram>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.date">
+		ref="io.github.amyassist.amy.plugin.systemtime.SystemTimeSpeech.date">
 		<gram>[what|tell me] [is] [the] (date|day) [is] [today]</gram>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.year">
+		ref="io.github.amyassist.amy.plugin.systemtime.SystemTimeSpeech.year">
 		<gram>[what|tell me] [is] [the] year [do we have|is it|are we living in]</gram>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.dayOfWeek">
+		ref="io.github.amyassist.amy.plugin.systemtime.SystemTimeSpeech.dayOfWeek">
 		<gram>[what|tell me the] (week day|day [of the] week) [do we have|is|was] [the] [{date}]</gram>
 		<EntityTemplates>
 			<EntityTemplate id="year" required="false">
@@ -29,7 +29,7 @@
 		</Prompt>
 	</Intent>
 	<Intent
-		ref="de.unistuttgart.iaas.amyassist.amy.plugin.systemtime.SystemTimeSpeech.howManyDays">
+		ref="io.github.amyassist.amy.plugin.systemtime.SystemTimeSpeech.howManyDays">
 		<gram>[How many] days [have passed] {time} [the {date}]</gram>
 		<EntityTemplates>		
 			<EntityTemplate id="time" required="true">

@@ -1,10 +1,10 @@
 # Amy
 [![Build Status](https://travis-ci.com/AmyAssist/Amy.svg?branch=dev)](https://travis-ci.com/AmyAssist/Amy)
 [![Coverage Status](https://codecov.io/gh/AmyAssist/Amy/branch/dev/graph/badge.svg)](https://codecov.io/gh/AmyAssist/Amy)
-[![Coverage Status](https://sonarcloud.io/api/project_badges/measure?project=de.unistuttgart.iaas.amyassist%3Aamy&metric=coverage)](https://sonarcloud.io/component_measures?id=de.unistuttgart.iaas.amyassist%3Aamy&metric=Coverage)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=de.unistuttgart.iaas.amyassist%3Aamy&metric=ncloc)](https://sonarcloud.io/dashboard?id=de.unistuttgart.iaas.amyassist%3Aamy)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=de.unistuttgart.iaas.amyassist%3Aamy&metric=bugs)](https://sonarcloud.io/component_measures?id=de.unistuttgart.iaas.amyassist%3Aamy&metric=Reliability)
-[![Reliability](https://sonarcloud.io/api/project_badges/measure?project=de.unistuttgart.iaas.amyassist%3Aamy&metric=reliability_rating)](https://sonarcloud.io/component_measures?id=de.unistuttgart.iaas.amyassist%3Aamy&metric=Reliability)
+[![Coverage Status](https://sonarcloud.io/api/project_badges/measure?project=io.github.amyassist%3Aamy&metric=coverage)](https://sonarcloud.io/component_measures?id=io.github.amyassist%3Aamy&metric=Coverage)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=io.github.amyassist%3Aamy&metric=ncloc)](https://sonarcloud.io/dashboard?id=io.github.amyassist%3Aamy)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=io.github.amyassist%3Aamy&metric=bugs)](https://sonarcloud.io/component_measures?id=io.github.amyassist%3Aamy&metric=Reliability)
+[![Reliability](https://sonarcloud.io/api/project_badges/measure?project=io.github.amyassist%3Aamy&metric=reliability_rating)](https://sonarcloud.io/component_measures?id=io.github.amyassist%3Aamy&metric=Reliability)
 
 [![Docker](http://dockeri.co/image/amyassist/amy)](https://hub.docker.com/r/amyassist/amy/)
 
@@ -16,7 +16,7 @@ This is a research project from students of the University of Stuttgart. No func
 In parallel, we are working on a web interface for Amy, which you can find [here](https://github.com/AmyAssist/Amy-Web)
 
 
-Maven: de.unistuttgart.iaas.amyassist.amy
+Maven: io.github.amyassist.amy
 
 
 
@@ -37,7 +37,7 @@ Execute `mvn install`, this command will install and test the whole project.
 
 #### Important: It is imperative that you do this at least once (when downloading a fresh copy of the project) or when you make any change to the code, otherwise your changes will not be applied
 
-After installing, you are able to run the project. Use your favourite Java IDE and run the Main method in the [Main class](core/src/main/java/de/unistuttgart/iaas/amyassist/amy/core/Main.java) that lies in the core project.
+After installing, you are able to run the project. Use your favourite Java IDE and run the Main method in the [Main class](core/src/main/java/io/github/amyassist/amy/core/Main.java) that lies in the core project.
 
 As soon as the confirmation `[INFORMATION] :: Speech Recognition activated` pops up in your console you are good to go.  
 

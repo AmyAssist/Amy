@@ -1,5 +1,5 @@
 #!/bin/bash
-SEPERATOR="package de.unistuttgart.iaas.amyassist.amy"
+SEPERATOR="package io.github.amyassist.amy"
 
 absPath=$(readlink -f "$0")
 absDir=$(dirname "$absPath")

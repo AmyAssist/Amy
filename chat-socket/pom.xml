@@ -5,9 +5,9 @@
 	<artifactId>amy-chat-socket</artifactId>
 	<name>Amy chat socket</name>
 	<parent>
-		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.6.0</version>
+		<version>0.7.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
@@ -16,15 +16,15 @@
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-natlang-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-di-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-api</artifactId>
 		</dependency>
 		<dependency>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.8.10</version>
+            <version>2.8.11.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>

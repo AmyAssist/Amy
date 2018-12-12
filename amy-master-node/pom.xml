@@ -6,9 +6,9 @@
 	<name>Amy Master node</name>
 	<description>The Amy master node of the AmyAssist system</description>
 	<parent>
-		<groupId>de.unistuttgart.iaas.amyassist</groupId>
+		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.6.0</version>
+		<version>0.7.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
@@ -17,48 +17,48 @@
 			<artifactId>logback-classic</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-core</artifactId>
-			<version>${amy.core.version}</version>
+			<version>0.7.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-utility</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-http-server</artifactId>
-			<version>${amy.http-server.version}</version>
+			<version>0.7.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-rest-resources</artifactId>
-			<version>${amy.rest-resources.version}</version>
+			<version>0.7.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-registry</artifactId>
-			<version>${amy.registry.version}</version>
+			<version>0.7.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-message-hub</artifactId>
-			<version>${amy.message-hub.version}</version>
+			<version>0.7.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-remote-sr</artifactId>
-			<version>${amy.remote-sr.version}</version>
+			<version>0.7.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-natlang</artifactId>
-			<version>${amy.natlang.version}</version>
+			<version>0.7.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>de.unistuttgart.iaas.amyassist</groupId>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-chat-socket</artifactId>
-			<version>${amy.chatsocket.version}</version>
+			<version>0.7.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -89,11 +89,11 @@
 									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>de.unistuttgart.iaas.amyassist.amy.core.Main</mainClass>
+									<mainClass>io.github.amyassist.amy.core.Main</mainClass>
 								</transformer>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-									<resource>META-INF/de.unistuttgart.iaas.amyassist.amy.core.di.Services</resource>
+									<resource>META-INF/io.github.amyassist.amy.core.di.Services</resource>
 								</transformer>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
@@ -105,18 +105,17 @@
 								</transformer>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-									<resource>META-INF/de.unistuttgart.iaas.amyassist.amy.core.console.Console</resource>
+									<resource>META-INF/io.github.amyassist.amy.core.console.Console</resource>
 								</transformer>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-									<resource>META-INF/de.unistuttgart.iaas.amyassist.amy.messagehub.annotations.MessageReceivers</resource>
+									<resource>META-INF/io.github.amyassist.amy.messagehub.annotations.MessageReceivers</resource>
 								</transformer>
 							</transformers>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -132,4 +131,51 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>licenses</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>license-maven-plugin</artifactId>
+						<version>1.16</version>
+						<executions>
+							<execution>
+								<id>download-licenses</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>download-licenses</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>3.1.0</version>
+						<executions>
+							<execution>
+								<id>copy-licenses</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.outputDirectory}/META-INF/licenses</outputDirectory>
+									<resources>
+										<resource>
+											<directory>${project.build.directory}/generated-resources/licenses</directory>
+											<filtering>false</filtering>
+										</resource>
+									</resources>
+									<overwrite>true</overwrite>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
