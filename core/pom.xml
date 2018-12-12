@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.7.0-SNAPSHOT</version>
+		<version>0.7.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<properties>
@@ -39,7 +39,7 @@
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-di</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>0.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
@@ -60,12 +60,12 @@
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>deployment-descriptor-utility</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>0.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-testing-framework</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>0.7.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -145,7 +145,7 @@
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-remote-sr</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>0.7.0</version>
 		</dependency>
 	</dependencies>
 </project>

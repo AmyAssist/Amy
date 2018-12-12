@@ -8,24 +8,24 @@
 	<parent>
 		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.7.0-SNAPSHOT</version>
+		<version>0.7.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-di</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>0.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-api</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>0.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-http-server</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>0.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

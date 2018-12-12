@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy-plugin</artifactId>
-		<version>0.7.0-SNAPSHOT</version>
+		<version>0.7.0</version>
 		<relativePath>pom.xml</relativePath>
 	</parent>
 	<dependencies>
@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-testing-framework</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>0.7.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -58,7 +58,7 @@
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-registry</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>0.7.0</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
