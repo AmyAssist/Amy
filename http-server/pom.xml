@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.7.1-SNAPTSHOT</version>
+		<version>0.7.1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>deployment-descriptor-utility</artifactId>
-			<version>0.7.1-SNAPTSHOT</version>
+			<version>0.7.1</version>
 		</dependency>
 		<!-- Jersey JAX-RS -->
 		<dependency>
@@ -85,7 +85,7 @@
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-di</artifactId>
-			<version>0.7.1-SNAPTSHOT</version>
+			<version>0.7.1</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- Swagger -->

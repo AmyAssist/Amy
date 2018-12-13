@@ -5,7 +5,7 @@
 	<packaging>pom</packaging>
 	<groupId>io.github.amyassist</groupId>
 	<artifactId>amy</artifactId>
-	<version>0.7.1-SNAPTSHOT</version>
+	<version>0.7.1</version>
 	<name>Amy</name>
 	<description>Personal Assistance System</description>
 	<url>https://github.com/AmyAssist/Amy</url>
@@ -268,47 +268,47 @@
 			<dependency>
 				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-natlang</artifactId>
-				<version>0.7.1-SNAPTSHOT</version>
+				<version>0.7.1</version>
 			</dependency>
 			<dependency>
 				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-chat-socket</artifactId>
-				<version>0.7.1-SNAPTSHOT</version>
+				<version>0.7.1</version>
 			</dependency>
 			<dependency>
 				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-natlang-api</artifactId>
-				<version>0.7.1-SNAPTSHOT</version>
+				<version>0.7.1</version>
 			</dependency>
 			<dependency>
 				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-di-api</artifactId>
-				<version>0.7.1-SNAPTSHOT</version>
+				<version>0.7.1</version>
 			</dependency>
 			<dependency>
 				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-message-hub-api</artifactId>
-				<version>0.7.1-SNAPTSHOT</version>
+				<version>0.7.1</version>
 			</dependency>
 			<dependency>
 				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-api</artifactId>
-				<version>0.7.1-SNAPTSHOT</version>
+				<version>0.7.1</version>
 			</dependency>
 			<dependency>
 				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-http-server-api</artifactId>
-				<version>0.7.1-SNAPTSHOT</version>
+				<version>0.7.1</version>
 			</dependency>
 			<dependency>
 				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-utility</artifactId>
-				<version>0.7.1-SNAPTSHOT</version>
+				<version>0.7.1</version>
 			</dependency>
 			<dependency>
 				<groupId>io.github.amyassist</groupId>
 				<artifactId>amy-plugin-manager-api</artifactId>
-				<version>0.7.1-SNAPTSHOT</version>
+				<version>0.7.1</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.ws.rs</groupId>
