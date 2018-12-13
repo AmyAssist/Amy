@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy-plugin-internal-preset</artifactId>
-		<version>0.7.1</version>
+		<version>0.8.0-SNAPSHOT</version>
 		<relativePath>../plugin-internal-preset.xml</relativePath>
 	</parent>
 	<properties>
