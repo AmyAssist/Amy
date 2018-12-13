@@ -21,8 +21,7 @@ Maven: io.github.amyassist.amy
 
 
 ## Getting Started
-To get started with Amy, either clone or download the project from the [main page](https://github.com/AmyAssist/Amy).
-
+To get started with Amy, download the latest [release](https://github.com/AmyAssist/Amy/releases) or [build it yourself](#build-amy).
 
 ### Prerequisites
 
@@ -30,14 +29,18 @@ We handle our dependencies within the project with [Apache Maven](https://maven.
 
 Additionaly we need a running MQTT Broker on the system. See the [wiki](https://github.com/AmyAssist/Amy/wiki/MessageHub) for more information.
 
-### Installing and running
+### Build Amy
+Clone or download the project from [GitHub](https://github.com/AmyAssist/Amy).
+To build the project, you need to run maven install on the root directory of the project, so the path you are in should look something like this: `C:/...folder(s).../Amy/`.
+Execute `mvn install`, this command will build and test the whole project.
+The build artifacts are `amy-master-node/target/amy-master-node.jar` and `build/plugins/`.
 
-To install the project, you need to run maven install on the root directory of the project, so the path you are in should look something like this: `C:/...folder(s).../Amy/`  
-Execute `mvn install`, this command will install and test the whole project. 
-
-#### Important: It is imperative that you do this at least once (when downloading a fresh copy of the project) or when you make any change to the code, otherwise your changes will not be applied
-
-After installing, you are able to run the project. Use your favourite Java IDE and run the Main method in the [Main class](core/src/main/java/io/github/amyassist/amy/core/Main.java) that lies in the core project.
+### Running Amy
+Create a directory named `config` and place all configs in there.
+More information about the configuration can be found in the [Wiki](https://github.com/AmyAssist/Amy/wiki).
+In the plugin.config set the plugin path acordingly, the default is to load all plugins form `plugins/`.
+Executing `java -jar amy-master-node.jar` will run Amy in the current working directory.
+Use the option `-h` to get help `java -jar amy-master-node.jar -h`.
 
 As soon as the confirmation `[INFORMATION] :: Speech Recognition activated` pops up in your console you are good to go.  
 
@@ -80,8 +83,7 @@ Direct links:
 ## Deployment
 
 Best use our docker compose [project](https://github.com/amyassist/amy-all).
-Otherwise build the master node as a jar and every plugin as a jar and place all plugin jars in a directory.
-Then create a directory named config and place all required configs in there. In the plugin.config set the plugin path acordingly.
+Otherwise take the steps described in [Getting Started](#getting-started).
 
 ## Built With
 

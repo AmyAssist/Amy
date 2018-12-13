@@ -2,6 +2,12 @@ language: java
 jdk:
   - oraclejdk8
 #  - openjdk8
+env:
+  global:
+    # GPG_KEY_NAME
+    - secure: "H3qV7CoC6mvBqzpXUE38LoxPLfPE05HVPeYl4EwyNJ5JO0MOldsQfivjhebyR0mpTqO+2lXTri0JFoDfMqGaYfUIka/pQKHEMsZjmo14EhxEqq5qkRxQBd+9Jgz9+PXMRGhmS/xBfgwXtpLw+dybqlvybTbJ41odIyWZbMZryO5EbZ/s5YI0/sChooQSlUdMDqSs2JnVpEFxVckQa4NrLTbOpOxvqLp+mwFatPaTU5pi8n3Jx6rCc3LgfU08UKpUXZrduAUt34T9HZCOGmQpTjikeFyBSgQHylHcPoQpjy6Lxs6nhQVLQ3Mzjxj0YI7kJnoBWIFiTJlZD7tuIaSRuWMRPwWD4NsAFEvHBflzF34nh+zg0pyk3zFLqNaMbjKsPnqdzSZBjksjZ77nMCN0bb5jaoCs2A4GUwJCJbg2AxdmLBTRjg5iyJyV8IMqhunjFQOgfnYVMOjDR2cAkbS2bFTZqml7WyihzUVCLuGx3BacMmVDj1tAhJmTnC3pvp69sX1gq+OXjcohlKFeJ1vHQE9Cl0Qcz8G++xU2xNCO9PwV4o82UwyS+ErUUizhwSq2+flI9PQLzJUGLmEp6zIwXcwZh4JXhDirIlqnV3zRVaCOWg6TTSRdxfazZ7Pz6SBQvvYv4l966mrQK6HICRchxOpu2NuVJs+4EMtvXb1aB0g="
+    # GPG_PASSPHRASE
+    - secure: "QAhhhdqJbr9R7qB9qhKPeAkm93Yueq9n/70tL8b/M99gSEjR3OfKy9O/7JhNuxviJeI8eofHKoxGEya3kJNgLjBJaqXuDFcREAWTIsHQb5QHs0iPtOesNXw3LQVxE+iJK/x+8ZK5qPVlU9aAEYlOPO6aMrLah9T2kVJyOExuaNavOXJ40oNsqO9pgjrS6bx3/62XewlGldXTFwiZxXz3L0tJ0lso/DAG7vMUEvE61jE5ppFnDFgs3CqCvgVQOz8OtuUubS0uLbpoYiCIQau7fGBa25n/alIV5zZ5NJBFtE1mC0Z8KJOchQ6SIPxq8h4C5yTbEoGKZgUWh4p9IZcn9zbb28Ec8/7Ge5WhxMjiRaSbgu+3t8b4Cq4AvFvAGxex8MsY+nDjU2eoELRO8lJ16pG/PkKCPF56xuYG9BCKy+U0lrs47sjtfEVYmZjSPgr2NVvk2wik1yVAYt+bqGlYhti2rL2BrtTpVMY/fChZQv3As0Wszj+4KQK79HL1qCucZYLEclJt+mQDwmI0K7XHkYd1Rce+upY0HVU2DyeolKbTpfp7kg2OvOkdhRQZdCLyikXz5JrtfRl9iqQqLtGz6ZeO/ISzDWABuuE1iYRhHWlvpHzfPt3nFW9enIlxKqjKI1HBCvPNjz5e12WOmh1pKcQVoIFk3/piIWojirKwuD0="
 jobs:
   include:
     - stage: test and code quality
@@ -40,13 +46,7 @@ jobs:
       script: mvn deploy "-Dmaven.test.skip=true"
     - stage: deploy
       name: "Deploy Maven Release"
-      env:
-        global:
-          # GPG_KEY_NAME
-          - secure: "H3qV7CoC6mvBqzpXUE38LoxPLfPE05HVPeYl4EwyNJ5JO0MOldsQfivjhebyR0mpTqO+2lXTri0JFoDfMqGaYfUIka/pQKHEMsZjmo14EhxEqq5qkRxQBd+9Jgz9+PXMRGhmS/xBfgwXtpLw+dybqlvybTbJ41odIyWZbMZryO5EbZ/s5YI0/sChooQSlUdMDqSs2JnVpEFxVckQa4NrLTbOpOxvqLp+mwFatPaTU5pi8n3Jx6rCc3LgfU08UKpUXZrduAUt34T9HZCOGmQpTjikeFyBSgQHylHcPoQpjy6Lxs6nhQVLQ3Mzjxj0YI7kJnoBWIFiTJlZD7tuIaSRuWMRPwWD4NsAFEvHBflzF34nh+zg0pyk3zFLqNaMbjKsPnqdzSZBjksjZ77nMCN0bb5jaoCs2A4GUwJCJbg2AxdmLBTRjg5iyJyV8IMqhunjFQOgfnYVMOjDR2cAkbS2bFTZqml7WyihzUVCLuGx3BacMmVDj1tAhJmTnC3pvp69sX1gq+OXjcohlKFeJ1vHQE9Cl0Qcz8G++xU2xNCO9PwV4o82UwyS+ErUUizhwSq2+flI9PQLzJUGLmEp6zIwXcwZh4JXhDirIlqnV3zRVaCOWg6TTSRdxfazZ7Pz6SBQvvYv4l966mrQK6HICRchxOpu2NuVJs+4EMtvXb1aB0g="
-          # GPG_PASSPHRASE
-          - secure: "QAhhhdqJbr9R7qB9qhKPeAkm93Yueq9n/70tL8b/M99gSEjR3OfKy9O/7JhNuxviJeI8eofHKoxGEya3kJNgLjBJaqXuDFcREAWTIsHQb5QHs0iPtOesNXw3LQVxE+iJK/x+8ZK5qPVlU9aAEYlOPO6aMrLah9T2kVJyOExuaNavOXJ40oNsqO9pgjrS6bx3/62XewlGldXTFwiZxXz3L0tJ0lso/DAG7vMUEvE61jE5ppFnDFgs3CqCvgVQOz8OtuUubS0uLbpoYiCIQau7fGBa25n/alIV5zZ5NJBFtE1mC0Z8KJOchQ6SIPxq8h4C5yTbEoGKZgUWh4p9IZcn9zbb28Ec8/7Ge5WhxMjiRaSbgu+3t8b4Cq4AvFvAGxex8MsY+nDjU2eoELRO8lJ16pG/PkKCPF56xuYG9BCKy+U0lrs47sjtfEVYmZjSPgr2NVvk2wik1yVAYt+bqGlYhti2rL2BrtTpVMY/fChZQv3As0Wszj+4KQK79HL1qCucZYLEclJt+mQDwmI0K7XHkYd1Rce+upY0HVU2DyeolKbTpfp7kg2OvOkdhRQZdCLyikXz5JrtfRl9iqQqLtGz6ZeO/ISzDWABuuE1iYRhHWlvpHzfPt3nFW9enIlxKqjKI1HBCvPNjz5e12WOmh1pKcQVoIFk3/piIWojirKwuD0="
-      before_intall: ./scripts/before_deployMaven.sh
+      before_install: ./scripts/before_deployMaven.sh
       install: cp scripts/.travis.settings.xml $HOME/.m2/settings.xml
       script: mvn deploy "-Dmaven.test.skip=true" -P release
     - name: "Upload GitHub Release Artifacts"
@@ -68,7 +68,7 @@ stages:
   - name: "dev deploy"
     if: branch = dev AND type != pull_request
   - name: "deploy"
-    if: branch = master AND (tag =~ ^v)
+    if: tag =~ ^v
 notifications:
   slack:
     secure: hyZgENH3vLXBUvpyztX3e6Fo8VEaBJYjHCbX1czIzBmX8txIAE41nzwvL5I+D8rUzI7Fy6L0eF4CYltx0HYm27XHhlpOExpo4kEyid7ndO2iwrXeMShbzF1G1ayW0XSzJ51Hb23hPjulTJUZxCDJAiX5hZ+8PTIb0FTm2omC77HfnaV80KX0jcc2s7ULOMpLvvPLJV3bT982RYSPUWwuCCZtjhgjvdNAAhU0tY4WCAjlRTbIjxdTthg+5SeKwCGCw1bWtBG1Z53FDaEIKGOe1NuD5Qq5cGa4sjsZwPEg1o/ENadahhtisH5c/OzqEIIKK0Yg2K1SZgI8YCyl774YBE9XOwHCvgBSJGOHzY5MAJIM68hyEn+bgWQkzxmfuauZNQnIjUi9Z/VKb0sf7YUzWHM4P93MhoDE4nxddIiLND5z1n6E0et3aXIGkw51hR8aIi7I3SOHgZPFKCoOsxci/S730Nt3MGgiTuPjJZKGvzAe/LEj/nPpyQj7/ZGxT1gtYlQNQR0bK5IffRHy9Gj1WyPU27g6wFwxu+DSUV6cJ/ZtDFnVGJsleXAZnX9Sp4Ski1/QZ5o/C84hnq/wINcrOydZVzcXkFxV/VIBjS7mp0S+Ln6olPBmgzxs0K3g7YVgZfSosIhPZjaYoeERK91R8plhfZsGb/DQ1qfH2pnWR8Y=
