@@ -25,11 +25,8 @@ package io.github.amyassist.amy.messagehub;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Properties;
 import java.util.function.BiConsumer;
-import java.util.function.UnaryOperator;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
@@ -42,7 +39,6 @@ import io.github.amyassist.amy.core.di.annotation.Service;
 import io.github.amyassist.amy.core.information.InstanceInformation;
 import io.github.amyassist.amy.core.io.Environment;
 import io.github.amyassist.amy.core.service.RunnableService;
-import io.github.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import io.github.amyassist.amy.messagehub.topic.TopicFactory;
 import io.github.amyassist.amy.messagehub.topic.TopicFilter;
 import io.github.amyassist.amy.messagehub.topic.TopicName;
@@ -50,7 +46,7 @@ import io.github.amyassist.amy.messagehub.topic.TopicName;
 /**
  * A adapter to talk with the mqtt broker
  * 
- * @author Tim Neumann
+ * @author Tim Neumann, Leon Kiefer
  */
 @Service(MessagingAdapter.class)
 public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallback, IMqttActionListener {
@@ -59,15 +55,12 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	private static final String KEY_BROKER_ADDRESS = "brokerAddress";
 	private static final String KEY_PERSITENCE_LOCATION = "persitenceLocation";
 
-	private static final Duration CONNECTION_TIMEOUT = Duration.ofSeconds(10);
-	private static final Duration KEEP_ALIVE_INTERVAL = Duration.ofSeconds(5);
-	private static final Duration DISCONNECT_TIMEOUT = Duration.ofSeconds(2);
-	private static final Duration INITIAL_RECONNECT_TIME = Duration.ofSeconds(3);
+	private static final int DISCONNECTED_BUFFER_SIZE = 10000;
 
-	private static final String OPERATION_CONNECT = "Connect";
-
-	private static final UnaryOperator<Duration> RECONNECT_MODIFIER = amount -> (amount.multipliedBy(4));
-	private static final int MAX_RECONNECT_ATTEMPTS = 3;
+	// All in Seconds
+	private static final int CONNECTION_TIMEOUT = 10;
+	private static final int KEEP_ALIVE_INTERVAL = 5;
+	private static final int DISCONNECT_TIMEOUT = 2;
 
 	@Reference
 	private Logger logger;
@@ -84,9 +77,6 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	@Reference
 	private Environment env;
 
-	@Reference
-	private TaskScheduler scheduler;
-
 	private MqttAsyncClient client;
 
 	private BiConsumer<TopicName, Message> handler;
@@ -95,9 +85,8 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 
 	private MqttConnectOptions options;
 
-	private int reconnectAttempt;
-
 	private boolean running;
+	private IMqttToken connectToken;
 
 	@PostConstruct
 	private void init() {
@@ -115,32 +104,31 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 			throw new IllegalStateException("Failed to initialize mqtt client", e);
 		}
 
+		DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
+		disconnectedBufferOptions.setBufferEnabled(true);
+		disconnectedBufferOptions.setPersistBuffer(true);
+		disconnectedBufferOptions.setBufferSize(DISCONNECTED_BUFFER_SIZE);
+		disconnectedBufferOptions.setDeleteOldestMessages(false);
+		this.client.setBufferOpts(disconnectedBufferOptions);
+
 		this.options = new MqttConnectOptions();
 		this.options.setCleanSession(false);
-		this.options.setConnectionTimeout((int) CONNECTION_TIMEOUT.getSeconds());
-		this.options.setKeepAliveInterval((int) KEEP_ALIVE_INTERVAL.getSeconds());
+		this.options.setConnectionTimeout(CONNECTION_TIMEOUT);
+		this.options.setKeepAliveInterval(KEEP_ALIVE_INTERVAL);
+		this.options.setAutomaticReconnect(true);
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.core.service.RunnableService#start()
-	 */
 	@Override
 	public void start() {
 		connect();
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.core.service.RunnableService#stop()
-	 */
 	@Override
 	public void stop() {
 		this.running = false;
 		disconnect();
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#isRunning()
-	 */
 	@Override
 	public boolean isRunning() {
 		return this.running;
@@ -148,7 +136,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 
 	private void connect() {
 		try {
-			this.client.connect(this.options, OPERATION_CONNECT, this);
+			this.connectToken = this.client.connect(this.options, null, this);
 		} catch (MqttException e) {
 			throw new IllegalStateException("Error while connecting", e);
 		}
@@ -156,20 +144,14 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 
 	private void disconnect() {
 		try {
-			this.client.disconnect(DISCONNECT_TIMEOUT.toMillis());
+			this.client.disconnect(DISCONNECT_TIMEOUT * 1000L);
 		} catch (MqttException | IllegalStateException e) {
 			this.logger.error("Error while stopping mqtt adapter", e);
 		}
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#publish(io.github.amyassist.amy.messagehub.topic.TopicName,
-	 *      java.lang.String, int, boolean)
-	 */
 	@Override
 	public void publish(TopicName topic, String payload, int qualityOfService, boolean retain) {
-		if (!this.isRunning())
-			throw new IllegalStateException("Cannot publish, because the mqtt adapter is not running.");
 		MqttMessage msg = new MqttMessage(payload.getBytes(StandardCharsets.UTF_8));
 		msg.setQos(qualityOfService);
 		msg.setRetained(retain);
@@ -180,9 +162,6 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 		}
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#subscribe(io.github.amyassist.amy.messagehub.topic.TopicFilter)
-	 */
 	@Override
 	public void subscribe(TopicFilter topic) {
 		if (!this.isRunning())
@@ -194,9 +173,6 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 		}
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#unsubscribe(io.github.amyassist.amy.messagehub.topic.TopicFilter)
-	 */
 	@Override
 	public void unsubscribe(TopicFilter topic) {
 		if (!this.isRunning())
@@ -208,92 +184,51 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 		}
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#setCallback(java.util.function.BiConsumer)
-	 */
 	@Override
 	public void setCallback(BiConsumer<TopicName, Message> callback) {
 		this.handler = callback;
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#setStartCallback(java.lang.Runnable)
-	 */
 	@Override
 	public void setStartCallback(Runnable callback) {
 		this.onSuccesfullStartCallback = callback;
 	}
 
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.IMqttActionListener#onSuccess(org.eclipse.paho.client.mqttv3.IMqttToken)
-	 */
 	@Override
 	public void onSuccess(IMqttToken asyncActionToken) {
-		if (asyncActionToken.isComplete() && asyncActionToken.getUserContext().toString().equals(OPERATION_CONNECT)) {
-			this.logger.info("MQTT Adapter connected.");
-			this.reconnectAttempt = 0;
+		if (asyncActionToken.isComplete() && asyncActionToken.equals(this.connectToken)) {
+			this.logger.debug("MQTT Adapter connected.");
+			this.connectToken = null;
 			if (!this.running) {
 				this.running = true;
 				this.onSuccesfullStartCallback.run();
 			}
-
 		}
 	}
 
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.IMqttActionListener#onFailure(org.eclipse.paho.client.mqttv3.IMqttToken,
-	 *      java.lang.Throwable)
-	 */
 	@Override
 	public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-		if (this.reconnectAttempt > 0 && asyncActionToken.getUserContext().toString().equals(OPERATION_CONNECT)) {
-			this.logger.info("Reconnect failed.");
-			tryReconnect();
-		} else {
-			this.logger.error("Async error during operation \"{}\".", asyncActionToken.getUserContext(), exception);
+		if (asyncActionToken.equals(this.connectToken)) {
+			this.connectToken = null;
+			this.logger.error("Could not connect to Broker", exception);
 		}
+		this.logger.error("Async error during operation \"{}\".", asyncActionToken.getUserContext(), exception);
 	}
 
-	private void tryReconnect() {
-		if (this.reconnectAttempt < MAX_RECONNECT_ATTEMPTS) {
-			Duration amount = INITIAL_RECONNECT_TIME;
-
-			for (int i = 0; i < this.reconnectAttempt; i++) {
-				amount = RECONNECT_MODIFIER.apply(amount);
-			}
-
-			this.reconnectAttempt++;
-
-			this.logger.info("Trying to reconnect in {}", amount);
-			this.scheduler.schedule(this::start, Instant.now().plus(amount));
-		} else {
-			this.logger.error("No reconnects left.");
-		}
-	}
-
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.MqttCallback#connectionLost(java.lang.Throwable)
-	 */
 	@Override
 	public void connectionLost(Throwable cause) {
 		this.logger.warn("Conncetion to mqtt broker lost:", cause);
-		tryReconnect();
 	}
 
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.MqttCallback#messageArrived(java.lang.String,
-	 *      org.eclipse.paho.client.mqttv3.MqttMessage)
-	 */
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		if (this.handler != null) {
 			this.handler.accept(this.tf.createTopicName(topic), new MessageImpl(message));
+		} else {
+			this.logger.debug("No handler for incoming messages. Message is ignored!");
 		}
 	}
 
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.MqttCallback#deliveryComplete(org.eclipse.paho.client.mqttv3.IMqttDeliveryToken)
-	 */
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
 		// Don't do anything
