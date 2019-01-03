@@ -228,10 +228,10 @@ public class RemoteSR implements SpeechRecognizer, RunnableService {
 				@Override
 				public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
 
-					String relativeFile = jarPath.relativize(file).toString();
-					Path targetFilePath = target.resolve(relativeFile);
+					Path relativePath = jarPath.relativize(file);
+					Path targetFilePath = target.resolve(relativePath);
 
-					if (relativeFile.equals("Default/Preferences")) {
+					if (relativePath.equals(Paths.get("Default", "Preferences"))) {
 						// Replace host placeholder
 						URI uri = RemoteSR.this.httpServer.getSocketUri();
 						String remoteSRHost = UriBuilder.fromPath("").scheme(uri.getScheme()).host("localhost")
