@@ -30,7 +30,6 @@ import io.github.amyassist.amy.core.di.Configuration;
 import io.github.amyassist.amy.core.di.Context;
 import io.github.amyassist.amy.core.di.ServiceProviderLoader;
 import io.github.amyassist.amy.core.di.Services;
-import io.github.amyassist.amy.core.logger.LoggerProvider;
 import io.github.amyassist.amy.core.speech.sphinx.SphinxContext;
 import io.github.amyassist.amy.core.speech.sphinx.SphinxGrammarName;
 
@@ -46,7 +45,6 @@ public class CoreServiceProviderLoader implements ServiceProviderLoader {
 		Set<Class<?>> loadServices = new Services().loadServices(this.getClass().getClassLoader());
 		loadServices.forEach(di::register);
 
-		di.register(new LoggerProvider());
 		di.register(new PropertiesProvider());
 
 		di.registerContextProvider(Context.CLASSLOADER, consumer -> consumer.getConsumerClass().getClassLoader());
