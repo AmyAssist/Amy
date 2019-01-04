@@ -135,7 +135,7 @@ public class ServerImpl implements RunnableService, Server {
 	public void startWithResources(Class<?>... classes) {
 		if (this.httpServer != null)
 			throw new IllegalStateException("The Server is already started");
-		this.logger.info("start the server");
+		this.logger.debug("start the server");
 
 		ResourceConfig resourceConfig = new ResourceConfig(classes);
 		resourceConfig.registerClasses(this.restResources);
@@ -172,14 +172,14 @@ public class ServerImpl implements RunnableService, Server {
 			throw new IllegalStateException("The Server is can not be started", e);
 		}
 		this.afterStartFuture.complete(null);
-		this.logger.info("started the server");
+		this.logger.debug("started the server");
 	}
 
 	@Override
 	public void stop() {
 		if (this.httpServer == null)
 			throw new IllegalStateException("The Server is not running");
-		this.logger.info("shutdown the server");
+		this.logger.debug("shutdown the server");
 		this.httpServer.shutdownNow();
 		this.httpServer = null;
 	}
