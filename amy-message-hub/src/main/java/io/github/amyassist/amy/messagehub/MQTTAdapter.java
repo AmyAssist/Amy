@@ -57,7 +57,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 
 	private static final int DISCONNECTED_BUFFER_SIZE = 10000;
 
-	// All in Seconds
+	// all durations are given in seconds
 	private static final int CONNECTION_TIMEOUT = 10;
 	private static final int KEEP_ALIVE_INTERVAL = 5;
 	private static final int DISCONNECT_TIMEOUT = 2;
