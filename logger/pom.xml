@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>amy-logger</artifactId>
+	<name>Logger for Amy</name>
+	<description>The Logger provider for Amy with console commands support</description>
+	<parent>
+		<groupId>io.github.amyassist</groupId>
+		<artifactId>amy</artifactId>
+		<version>0.8.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>io.github.amyassist</groupId>
+			<artifactId>amy-di</artifactId>
+			<version>0.8.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+		<!-- Cliche for Console -->
+		<dependency>
+			<groupId>com.googlecode.clichemaven</groupId>
+			<artifactId>cliche</artifactId>
+			<version>${cliche.version}</version>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
+</project>
