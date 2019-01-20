@@ -55,7 +55,7 @@ public class InternalServiceLocator implements SimpleServiceLocator {
 	 */
 	private final Map<ServiceKey<?>, ServiceProvider<?>> register;
 
-	private final Map<ServicePoolKey<?>, ServiceHandle<?>> servicePool;
+	private final Map<ServicePoolKey<?>, InternalServiceHandle<?>> servicePool;
 
 	private final Map<ServicePoolKey<?>, ServiceCreation<?>> serviceCreationInfos;
 
@@ -100,7 +100,7 @@ public class InternalServiceLocator implements SimpleServiceLocator {
 
 	@Override
 	public <T> ServiceHandle<T> getService(@Nonnull ServiceConsumer<T> serviceConsumer) {
-		return this.getService(new ServiceCreation<>(serviceConsumer.getConsumerClass().getName()), serviceConsumer);
+		return this.getService(new ServiceCreation<>("[V]" + serviceConsumer.getConsumerClass().getName()), serviceConsumer);
 	}
 
 	/**
@@ -121,23 +121,11 @@ public class InternalServiceLocator implements SimpleServiceLocator {
 		if (serviceInstantiationDescription == null) {
 			throw new ServiceNotFoundException(serviceConsumer.getServiceDescription(), dependentServiceCreation);
 		}
-		return this.lookUpOrCreateService(dependentServiceCreation, provider, serviceInstantiationDescription);
+		return this.claimService(dependentServiceCreation, provider, serviceInstantiationDescription);
 	}
 
 	@SuppressWarnings("unchecked")
-	@CheckForNull
-	private <T> ServiceHandle<T> lookUpService(@Nonnull ServiceProvider<T> serviceProvider,
-			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
-		ServicePoolKey<?> servicePoolKey = new ServicePoolKey<>(serviceProvider, serviceInstantiationDescription);
-
-		if (!this.servicePool.containsKey(servicePoolKey)) {
-			return null;
-		}
-		return (ServiceHandle<T>) this.servicePool.get(servicePoolKey);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> Future<ServiceHandle<T>> createService(@Nonnull ServiceCreation<?> dependentServiceCreation,
+	private <T> Future<ServiceHandle<T>> lookUpOrCreateService(@Nonnull ServiceCreation<?> dependentServiceCreation,
 			@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
 		ServicePoolKey<T> key = new ServicePoolKey<>(serviceProvider, serviceInstantiationDescription);
@@ -153,9 +141,9 @@ public class InternalServiceLocator implements SimpleServiceLocator {
 					SimpleServiceLocatorImpl tempLocator = new SimpleServiceLocatorImpl(this, serviceCreation);
 					T service = serviceProvider.createService(tempLocator, serviceInstantiationDescription);
 					tempLocator.destroy();
-					ServiceHandle<T> serviceHandle = new ServiceHandleImpl<>(service);
+					InternalServiceHandle<T> serviceHandle = new InternalServiceHandle<>(service, serviceCreation);
 					this.servicePool.put(key, serviceHandle);
-					return serviceHandle;
+					return new ServiceHandleImpl<>(service);
 				});
 
 				this.serviceCreationInfos.put(key, serviceCreation);
@@ -166,26 +154,35 @@ public class InternalServiceLocator implements SimpleServiceLocator {
 		}
 	}
 
-	private <T> ServiceHandle<T> lookUpOrCreateService(@Nonnull ServiceCreation<?> dependentServiceCreationInfo,
+	/**
+	 * This modifies the state of the dependency graph.
+	 * 
+	 * @param dependentServiceCreationInfo
+	 *            the ServiceCreation which claims the Service
+	 * @param serviceProvider
+	 *            the serviceProvider used to create the service if needed
+	 * @param serviceInstantiationDescription
+	 *            the service which should be claimed
+	 * @return the claimed Service
+	 * @param <T>
+	 *            the type of the service
+	 */
+	private <T> ServiceHandle<T> claimService(@Nonnull ServiceCreation<?> dependentServiceCreationInfo,
 			@Nonnull ServiceProvider<T> serviceProvider,
 			@Nonnull ServiceInstantiationDescription<T> serviceInstantiationDescription) {
-		ServiceHandle<T> lookUpService = this.lookUpService(serviceProvider, serviceInstantiationDescription);
-		if (lookUpService == null) {
-			Future<ServiceHandle<T>> createService = this.createService(dependentServiceCreationInfo, serviceProvider,
-					serviceInstantiationDescription);
-			try {
-				lookUpService = createService.get();
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				throw new IllegalStateException(e);
-			} catch (ExecutionException e) {
-				if (e.getCause() instanceof RuntimeException) {
-					throw (RuntimeException) e.getCause();
-				}
-				throw new IllegalStateException("Checked exception thrown", e);
+		Future<ServiceHandle<T>> createService = this.lookUpOrCreateService(dependentServiceCreationInfo, serviceProvider,
+				serviceInstantiationDescription);
+		try {
+			return createService.get();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new IllegalStateException(e);
+		} catch (ExecutionException e) {
+			if (e.getCause() instanceof RuntimeException) {
+				throw (RuntimeException) e.getCause();
 			}
+			throw new IllegalStateException("Checked exception thrown", e);
 		}
-		return lookUpService;
 	}
 
 	/**

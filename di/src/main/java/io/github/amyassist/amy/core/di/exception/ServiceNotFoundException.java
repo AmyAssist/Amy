@@ -46,7 +46,7 @@ public class ServiceNotFoundException extends RuntimeException {
 	public ServiceNotFoundException(ServiceDescription<?> serviceDescription, ServiceCreation<?> serviceCreation) {
 		this.message = "No Service of type " + serviceDescription.getServiceType().getName() + " with qualifier "
 				+ serviceDescription.getAnnotations() + " is registered in the DI." + "\nRequired by:\n"
-				+ serviceCreation.print() + this.resolveMessage(serviceDescription);
+				+ serviceCreation.printDependents() + this.resolveMessage(serviceDescription);
 	}
 
 	private final String resolveMessage(ServiceDescription<?> serviceDescription) {

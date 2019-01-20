@@ -102,21 +102,7 @@ class DependencyInjectionTest {
 	@Test()
 	void testServiceNotFoundException() {
 		this.configuration.register(Service6.class);
-		String message = assertThrows(ServiceNotFoundException.class,
-				() -> this.serviceLocator.getService(Service6.class)).getMessage();
-
-		assertThat(message, equalTo("No Service of type " + Service7API.class.getName()
-				+ " with qualifier [] is registered in the DI." + "\nRequired by:"
-				+ "\nio.github.amyassist.amy.core.di.Service6\n└── io.github.amyassist.amy.core.di.DependencyInjection"
-				+ "\nSo first make sure you use the Service type and not the Service implementation to find the service."
-				+ "\nIs " + Service7API.class.getName() + " the type of the Service?"
-				+ "\nIf not you MUST change the JavaType of the Reference to match the Service type to get the Service."
-				+ "\nElse make sure there is a Service implementation for the Service type "
-				+ Service7API.class.getName() + " registered in the DI."
-				+ "\nFirst step find the implementation of the Service."
-				+ "\nSecond check if the type of the Service is " + Service7API.class.getName()
-				+ "\nif you use the @Service read the JavaDoc to find out how to set the correct type of the Service."
-				+ "\nThird check if the Service implemenatin is loaded either by using a deployment descriptor or by a programmatic call."));
+		assertThrows(ServiceNotFoundException.class, () -> this.serviceLocator.getService(Service6.class));
 	}
 
 	@Test()

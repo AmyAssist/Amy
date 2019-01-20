@@ -55,7 +55,7 @@ public class ConfigurationProvider implements ServiceProvider<Configuration> {
 	@Override
 	public ServiceInstantiationDescription<Configuration> getServiceInstantiationDescription(
 			@Nonnull ContextLocator locator, @Nonnull ServiceConsumer<Configuration> serviceConsumer) {
-		return new ServiceInstantiationDescriptionImpl<>(this.getServiceDescription(), Configuration.class);
+		return new ServiceInstantiationDescriptionImpl<>(this.getServiceDescription(), ConfigurationImpl.class);
 	}
 
 	@Override

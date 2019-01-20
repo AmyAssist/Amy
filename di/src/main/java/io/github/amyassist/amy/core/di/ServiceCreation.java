@@ -41,6 +41,7 @@ import io.github.amyassist.amy.core.di.provider.ServiceHandle;
 public class ServiceCreation<T> {
 	CompletableFuture<ServiceHandle<T>> completableFuture;
 	private final Set<ServiceCreation<?>> dependents = new HashSet<>();
+	private final Set<ServiceCreation<?>> dependencies = new HashSet<>();
 	private final String name;
 
 	/**
@@ -84,11 +85,12 @@ public class ServiceCreation<T> {
 		}
 
 		this.dependents.add(dependent);
+		dependent.dependencies.add(this);
 	}
 
 	@Override
 	public String toString() {
-		return this.print();
+		return "Dependencies:\n" + this.printDependencies() + "\nDependents:\n" + this.printDependents();
 	}
 
 	/**
@@ -96,23 +98,44 @@ public class ServiceCreation<T> {
 	 * 
 	 * @return the tree as string to print to the console
 	 */
-	public String print() {
-		return this.print("\n");
+	public String printDependents() {
+		return this.printDependents("\n");
 	}
 
-	private String print(String prefix) {
+	private String printDependents(String prefix) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(this.name);
 		List<ServiceCreation<?>> children = new ArrayList<>(this.dependents);
 		for (int i = 0; i < children.size() - 1; i++) {
 			stringBuilder.append(prefix);
 			stringBuilder.append("├── ");
-			stringBuilder.append(children.get(i).print(prefix + "│   "));
+			stringBuilder.append(children.get(i).printDependents(prefix + "│   "));
 		}
 		if (!children.isEmpty()) {
 			stringBuilder.append(prefix);
 			stringBuilder.append("└── ");
-			stringBuilder.append(children.get(children.size() - 1).print(prefix + "    "));
+			stringBuilder.append(children.get(children.size() - 1).printDependents(prefix + "    "));
+		}
+		return stringBuilder.toString();
+	}
+
+	public String printDependencies() {
+		return this.printDependencies("\n");
+	}
+
+	private String printDependencies(String prefix) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(this.name);
+		List<ServiceCreation<?>> children = new ArrayList<>(this.dependencies);
+		for (int i = 0; i < children.size() - 1; i++) {
+			stringBuilder.append(prefix);
+			stringBuilder.append("├── ");
+			stringBuilder.append(children.get(i).printDependencies(prefix + "│   "));
+		}
+		if (!children.isEmpty()) {
+			stringBuilder.append(prefix);
+			stringBuilder.append("└── ");
+			stringBuilder.append(children.get(children.size() - 1).printDependencies(prefix + "    "));
 		}
 		return stringBuilder.toString();
 	}
