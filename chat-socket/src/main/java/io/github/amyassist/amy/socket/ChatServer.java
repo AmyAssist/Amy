@@ -34,7 +34,7 @@ import java.io.IOException;
 import static io.github.amyassist.amy.socket.ChatConfig.PROPERTY_PORT;
 
 /**
- * the class running the server socket for the chat 
+ * the class running the server socket for the chat
  * 
  * @author Christian Bräuner
  */
@@ -43,26 +43,23 @@ public class ChatServer implements RunnableService {
 
 	@Reference
 	private ChatConfig config;
-	
+
 	@Reference
 	private Logger logger;
-	
+
 	@Reference
 	private DialogHandler handler;
-	
+
 	private ChatWebSocket socket;
-	
-	
+
 	/**
 	 * @see io.github.amyassist.amy.core.service.RunnableService#start()
 	 */
 	@Override
 	public void start() {
-
-		int port = Integer.parseInt(config.get(PROPERTY_PORT));
+		int port = Integer.parseInt(this.config.get(PROPERTY_PORT));
 		this.socket = new ChatWebSocket(port, this.handler);
 		this.socket.start();
-
 	}
 
 	/**
@@ -78,7 +75,7 @@ public class ChatServer implements RunnableService {
 			this.logger.error("Interrupt while stoping", e);
 			Thread.currentThread().interrupt();
 		}
-		this.logger.info("ChatServer shutdown");
+		this.logger.debug("ChatServer shutdown");
 	}
 
 }

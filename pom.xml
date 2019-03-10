@@ -113,6 +113,7 @@
 		<module>natlang-api</module>
 		<module>chat-socket</module>
 		<module>natlang</module>
+		<module>logger</module>
 	</modules>
 	<licenses>
 		<license>

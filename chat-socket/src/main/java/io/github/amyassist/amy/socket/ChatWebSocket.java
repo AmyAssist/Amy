@@ -43,25 +43,27 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * A web socket for the chat communication 
- *  
+ * A web socket for the chat communication
+ * 
  * @author Christian Bräuner, Benno Krauß
  */
 public class ChatWebSocket extends WebSocketServer {
-	
+
 	private Logger logger = LoggerFactory.getLogger(ChatWebSocket.class);
-	
+
 	private DialogHandler handler;
-	
-	private Map<InetSocketAddress,UUID> dialogMap = new HashMap<>();
+
+	private Map<InetSocketAddress, UUID> dialogMap = new HashMap<>();
 
 	private ObjectMapper mapper;
-	
+
 	/**
-	 *creates a new web socket server
+	 * creates a new web socket server
 	 *
-	 *@param port the port of the server
-	 *@param handler the dialog handler of the backend
+	 * @param port
+	 *            the port of the server
+	 * @param handler
+	 *            the dialog handler of the backend
 	 *
 	 */
 	public ChatWebSocket(int port, DialogHandler handler) {
@@ -72,18 +74,18 @@ public class ChatWebSocket extends WebSocketServer {
 		AnnotationIntrospector secondInspector = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
 		AnnotationIntrospector inspectors = AnnotationIntrospector.pair(firstInspector, secondInspector);
 
-		mapper = new ObjectMapper();
-		mapper.setAnnotationIntrospector(inspectors);
+		this.mapper = new ObjectMapper();
+		this.mapper.setAnnotationIntrospector(inspectors);
 	}
 
 	/**
-	 * @see org.java_websocket.server.WebSocketServer#onClose(org.java_websocket.WebSocket, int, java.lang.String, boolean)
+	 * @see org.java_websocket.server.WebSocketServer#onClose(org.java_websocket.WebSocket, int, java.lang.String,
+	 *      boolean)
 	 */
 	@Override
 	public void onClose(WebSocket clientSocket, int code, String reason, boolean remote) {
 		this.logger.debug("{} closed connection", clientSocket);
 		this.logger.debug("Code was {}. Reason was {}.", code, reason);
-		
 	}
 
 	/**
@@ -103,7 +105,8 @@ public class ChatWebSocket extends WebSocketServer {
 	}
 
 	/**
-	 * @see org.java_websocket.server.WebSocketServer#onOpen(org.java_websocket.WebSocket, org.java_websocket.handshake.ClientHandshake)
+	 * @see org.java_websocket.server.WebSocketServer#onOpen(org.java_websocket.WebSocket,
+	 *      org.java_websocket.handshake.ClientHandshake)
 	 */
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
@@ -114,9 +117,9 @@ public class ChatWebSocket extends WebSocketServer {
 
 	private void send(WebSocket socket, Response response) {
 		try {
-			socket.send(mapper.writeValueAsString(response));
+			socket.send(this.mapper.writeValueAsString(response));
 		} catch (JsonProcessingException e) {
-			logger.error("Error serializing Response-object", e);
+			this.logger.error("Error serializing Response-object", e);
 		}
 	}
 
@@ -125,7 +128,7 @@ public class ChatWebSocket extends WebSocketServer {
 	 */
 	@Override
 	public void onStart() {
-		this.logger.info("Chatserver started");
+		this.logger.debug("Chatserver started");
 		setConnectionLostTimeout(100);
 	}
 
