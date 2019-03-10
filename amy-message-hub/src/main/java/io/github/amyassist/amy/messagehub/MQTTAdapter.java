@@ -52,7 +52,9 @@ import io.github.amyassist.amy.messagehub.topic.TopicName;
 public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallback, IMqttActionListener {
 
 	private static final String CONFIG_NAME = "mqtt.config";
-	private static final String KEY_BROKER_ADDRESS = "brokerAddress";
+	private static final String KEY_BROKER_ADDRESS = "broker.host";
+	private static final String KEY_BROKER_USERNAME = "broker.username";
+	private static final String KEY_BROKER_PASSWORD = "broker.password";
 	private static final String KEY_PERSITENCE_LOCATION = "persitenceLocation";
 
 	private static final int DISCONNECTED_BUFFER_SIZE = 10000;
@@ -97,7 +99,7 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 		Path persistencePath = this.env.getWorkingDirectory().resolve(persitanceLocation);
 
 		try {
-			this.client = new MqttAsyncClient(brokerAddress, this.info.getNodeId() + "-MainJavaApp",
+			this.client = new MqttAsyncClient(brokerAddress, this.info.getNodeId(),
 					new MqttDefaultFilePersistence(persistencePath.toAbsolutePath().toString()));
 			this.client.setCallback(this);
 		} catch (MqttException e) {
@@ -116,6 +118,13 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 		this.options.setConnectionTimeout(CONNECTION_TIMEOUT);
 		this.options.setKeepAliveInterval(KEEP_ALIVE_INTERVAL);
 		this.options.setAutomaticReconnect(true);
+
+		if (!config.getProperty(KEY_BROKER_USERNAME).isEmpty()) {
+			this.options.setUserName(config.getProperty(KEY_BROKER_USERNAME));
+		}
+		if (!config.getProperty(KEY_BROKER_PASSWORD).isEmpty()) {
+			this.options.setPassword(config.getProperty(KEY_BROKER_PASSWORD).toCharArray());
+		}
 	}
 
 	@Override
