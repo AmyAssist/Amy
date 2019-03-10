@@ -25,9 +25,8 @@ package io.github.amyassist.amy.plugin.tosca;
 
 import java.util.*;
 
-import org.opentosca.containerapi.client.IOpenTOSCAContainerAPIClient;
-import org.opentosca.containerapi.client.model.Application;
-import org.opentosca.containerapi.client.model.ServiceInstance;
+import org.opentosca.container.client.ContainerClient;
+import org.opentosca.container.client.model.Application;
 
 import io.github.amyassist.amy.core.configuration.WithDefault;
 import io.github.amyassist.amy.core.di.annotation.PostConstruct;
@@ -37,6 +36,7 @@ import io.github.amyassist.amy.core.plugin.api.IStorage;
 import io.github.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import io.github.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
 import io.github.amyassist.amy.plugin.tosca.configurations.ConfigurationRegistry;
+import io.swagger.client.model.ServiceTemplateInstanceDTO.StateEnum;
 
 /**
  * The tosca logic class
@@ -67,13 +67,13 @@ public class ToscaLogic {
 	/**
 	 * internal tosca client
 	 */
-	private IOpenTOSCAContainerAPIClient apiClient;
+	private ContainerClient apiClient;
 
 	@PostConstruct
 	private void connect() {
-		String containerHost = this.configuration.getProperty("CONTAINER_HOST");
-		String containerHostInternal = this.configuration.getProperty("CONTAINER_HOST_INTERNAL");
-		this.apiClient = this.adapter.createLibrary(containerHost, containerHostInternal);
+		String containerHost = this.configuration.getProperty("container.host");
+		int containerport = Integer.parseInt(this.configuration.getProperty("container.host.port"));
+		this.apiClient = this.adapter.createLibrary(containerHost, containerport);
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class ToscaLogic {
 	 *             When the configuration does not contain all required keys.
 	 */
 	public void install(Application app, String conigurationName) {
-		List<String> keys = app.getInputParameters();
+		List<String> keys = app.getBuildPlan().getInputParameters();
 		Map<String, String> configurations = new HashMap<>();
 		getConfigurations().stream().filter(c -> c.getTag().equals(conigurationName))
 				.forEach(c -> configurations.put(c.getKey().toLowerCase(), c.getValue()));
@@ -146,7 +146,7 @@ public class ToscaLogic {
 	private void installWait(Application app, Map<String, String> parameters) {
 		this.storage.put(STORAGE_KEY, app.getId());
 		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-		this.apiClient.createServiceInstance(app, parameters);
+		this.apiClient.provisionApplication(app, parameters);
 	}
 
 	/**
@@ -158,14 +158,21 @@ public class ToscaLogic {
 		while (!Thread.currentThread().isInterrupted() && wait) {
 			if (this.storage.has(STORAGE_KEY)) {
 				String id = this.storage.get(STORAGE_KEY);
-				Application application = this.apiClient.getApplication(id);
-				wait = this.isCreating(application);
+				Optional<Application> application = this.apiClient.getApplication(id);
+
+				if (application.isPresent()) {
+					wait = this.isCreating(application.get());
+				} else {
+					throw new IllegalStateException(
+							"Can't wait for installation of application, the application was not found.");
+				}
+
 			} else {
 				wait = false;
 			}
 			if (wait) {
 				try {
-					Thread.sleep(5);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
 				}
@@ -174,12 +181,7 @@ public class ToscaLogic {
 	}
 
 	private boolean isCreating(Application application) {
-		for (ServiceInstance serviceInstance : this.apiClient.getServiceInstances(application)) {
-			if ("CREATING".equalsIgnoreCase(serviceInstance.getState())) {
-				return true;
-			}
-		}
-		return false;
+		return !this.apiClient.getApplicationInstances(application, StateEnum.CREATING).isEmpty();
 	}
 
 	/**
