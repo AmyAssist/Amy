@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>com.github.OpenTOSCA</groupId>
 			<artifactId>container-client</artifactId>
-			<version>master-SNAPSHOT</version>
+			<version>e3546655c0640bf9994d7367aac526d36949d36b</version>
 		</dependency>
 		<!-- Cliche for Console -->
 		<dependency>
