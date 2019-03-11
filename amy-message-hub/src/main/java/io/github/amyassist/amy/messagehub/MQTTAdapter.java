@@ -39,6 +39,7 @@ import io.github.amyassist.amy.core.di.annotation.Service;
 import io.github.amyassist.amy.core.information.InstanceInformation;
 import io.github.amyassist.amy.core.io.Environment;
 import io.github.amyassist.amy.core.service.RunnableService;
+import io.github.amyassist.amy.core.taskscheduler.api.TaskScheduler;
 import io.github.amyassist.amy.messagehub.topic.TopicFactory;
 import io.github.amyassist.amy.messagehub.topic.TopicFilter;
 import io.github.amyassist.amy.messagehub.topic.TopicName;
@@ -79,6 +80,9 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	@Reference
 	private Environment env;
 
+	@Reference
+	private TaskScheduler scheduler;
+
 	private MqttAsyncClient client;
 
 	private BiConsumer<TopicName, Message> handler;
@@ -87,6 +91,8 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 
 	private MqttConnectOptions options;
 
+	private Object stateLock = new Object();
+	private ConnectionState currentState = ConnectionState.DISCONNECTED;
 	private boolean running;
 	private IMqttToken connectToken;
 
@@ -129,13 +135,13 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 
 	@Override
 	public void start() {
-		connect();
+		this.connect();
 	}
 
 	@Override
 	public void stop() {
 		this.running = false;
-		disconnect();
+		this.disconnect();
 	}
 
 	@Override
@@ -144,18 +150,36 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	}
 
 	private void connect() {
-		try {
-			this.connectToken = this.client.connect(this.options, null, this);
-		} catch (MqttException e) {
-			throw new IllegalStateException("Error while connecting", e);
+		synchronized (this.stateLock) {
+			if (this.currentState == ConnectionState.DISCONNECTED) {
+				try {
+					this.currentState = ConnectionState.CONNECTING;
+					this.connectToken = this.client.connect(this.options, null, this);
+				} catch (MqttException e) {
+					this.currentState = ConnectionState.DISCONNECTED;
+					throw new IllegalStateException("Error while connecting", e);
+				}
+			} else {
+				throw new IllegalStateException(this.currentState.toString());
+			}
 		}
 	}
 
 	private void disconnect() {
-		try {
-			this.client.disconnect(DISCONNECT_TIMEOUT * 1000L);
-		} catch (MqttException | IllegalStateException e) {
-			this.logger.error("Error while stopping mqtt adapter", e);
+		synchronized (this.stateLock) {
+			if (this.currentState == ConnectionState.CONNECTED) {
+				try {
+					this.currentState = ConnectionState.DISCONNECTING;
+					this.client.disconnect(DISCONNECT_TIMEOUT * 1000L);
+				} catch (MqttException e) {
+					this.currentState = ConnectionState.CONNECTED;
+					this.logger.error("Error while stopping mqtt adapter", e);
+				}
+			} else if (this.currentState == ConnectionState.CONNECTING) {
+				this.currentState = ConnectionState.STOPCONNECTING;
+			} else if (this.currentState == ConnectionState.RECONNECTING) {
+				this.logger.error("not supported by MQTT client");
+			}
 		}
 	}
 
@@ -206,8 +230,18 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	@Override
 	public void onSuccess(IMqttToken asyncActionToken) {
 		if (asyncActionToken.isComplete() && asyncActionToken.equals(this.connectToken)) {
-			this.logger.debug("MQTT Adapter connected.");
-			this.connectToken = null;
+			synchronized (this.stateLock) {
+				this.connectToken = null;
+				if (this.currentState == ConnectionState.CONNECTING) {
+					this.currentState = ConnectionState.CONNECTED;
+					this.logger.debug("MQTT Adapter connected.");
+				} else if (this.currentState == ConnectionState.STOPCONNECTING) {
+					this.currentState = ConnectionState.CONNECTED;
+					this.scheduler.execute(this::disconnect);
+				} else {
+					throw new IllegalStateException(this.currentState.toString());
+				}
+			}
 			if (!this.running) {
 				this.running = true;
 				this.onSuccesfullStartCallback.run();
@@ -218,15 +252,40 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	@Override
 	public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
 		if (asyncActionToken.equals(this.connectToken)) {
-			this.connectToken = null;
-			this.logger.error("Could not connect to Broker", exception);
+			synchronized (this.stateLock) {
+				this.connectToken = null;
+				if (this.currentState == ConnectionState.CONNECTING) {
+					this.currentState = ConnectionState.DISCONNECTED;
+					this.logger.warn("Could not connect to Broker", exception);
+				} else if (this.currentState == ConnectionState.STOPCONNECTING) {
+					this.currentState = ConnectionState.DISCONNECTED;
+				} else {
+					throw new IllegalStateException(this.currentState.toString());
+				}
+			}
+		} else {
+			this.logger.error("Async error during operation \"{}\".", asyncActionToken.getUserContext(), exception);
 		}
-		this.logger.error("Async error during operation \"{}\".", asyncActionToken.getUserContext(), exception);
 	}
 
 	@Override
 	public void connectionLost(Throwable cause) {
-		this.logger.warn("Conncetion to mqtt broker lost:", cause);
+		synchronized (this.stateLock) {
+			if (this.currentState == ConnectionState.CONNECTED) {
+				this.currentState = ConnectionState.RECONNECTING;
+			}
+			if (this.currentState == ConnectionState.RECONNECTING) {
+				this.currentState = ConnectionState.RECONNECTING;
+			} else {
+				throw new IllegalStateException(this.currentState.toString());
+			}
+		}
+		if (cause instanceof MqttException) {
+			MqttException exception = (MqttException) cause;
+			this.logger.info("Conncetion to MQTT broker lost: {}", exception.getMessage());
+		} else {
+			this.logger.warn("Conncetion to MQTT broker lost:", cause);
+		}
 	}
 
 	@Override
@@ -241,6 +300,21 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
 		// Don't do anything
+	}
+
+	private enum ConnectionState {
+		/** -> CONNECTING */
+		DISCONNECTED,
+		/** -> DISCONNECTED, CONNECTED, STOPCONNECTING */
+		CONNECTING,
+		/** -> DISCONNECTED, DISCONNECTING */
+		STOPCONNECTING,
+		/** -> DISCONNECTING */
+		CONNECTED,
+		/** -> DISCONNECTED, RECONNECTING */
+		DISCONNECTING,
+		/** -> CONNECTED */
+		RECONNECTING
 	}
 
 }
