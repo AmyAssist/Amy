@@ -26,7 +26,7 @@ package io.github.amyassist.amy.plugin.tosca;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.opentosca.containerapi.client.model.Application;
+import org.opentosca.container.client.model.Application;
 
 import asg.cliche.Command;
 import io.github.amyassist.amy.core.di.annotation.Reference;
