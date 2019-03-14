@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>amy-persistence</artifactId>
+	<name>Amy persistence</name>
+	<description>The Amy persistence implementation</description>
+	<parent>
+		<groupId>io.github.amyassist</groupId>
+		<artifactId>amy</artifactId>
+		<version>0.8.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>io.github.amyassist</groupId>
+			<artifactId>amy-persistence-api</artifactId>
+			<version>0.8.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.amyassist</groupId>
+			<artifactId>amy-di</artifactId>
+			<version>0.8.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.amyassist</groupId>
+			<artifactId>amy-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.amyassist</groupId>
+			<artifactId>amy-plugin-manager-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.amyassist</groupId>
+			<artifactId>deployment-descriptor-utility</artifactId>
+			<version>0.8.0-SNAPSHOT</version>
+		</dependency>
+		<!-- JPA -->
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>javax.persistence-api</artifactId>
+		</dependency>
+		<!-- Database implementations -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.3.1.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.196</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>5.3.1.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.1.2</version>
+		</dependency>
+	</dependencies>
+</project>

@@ -114,6 +114,8 @@
 		<module>chat-socket</module>
 		<module>natlang</module>
 		<module>logger</module>
+		<module>persistence</module>
+		<module>persistence-api</module>
 	</modules>
 	<licenses>
 		<license>
