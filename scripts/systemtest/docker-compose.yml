@@ -6,7 +6,7 @@ services:
      - "broker"
     environment:
       - AMY_SERVER_CONFIG_SERVER_URL=http://master-node
-      - AMY_MQTT_CONFIG_BROKERADDRESS=tcp://broker
+      - AMY_MQTT_CONFIG_BROKER_HOST=tcp://broker
     ports:
      - "80:80"
     container_name: master-node
