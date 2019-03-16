@@ -10,7 +10,7 @@ COPY --from=source /src/ /app/
 
 WORKDIR /app
 
-RUN set -x; mvn install -DskipTests=true -Ddevelopment
+RUN set -x; mvn install -DskipTests=true
 
 RUN mkdir /dist
 RUN mv amy-master-node/target/amy-master-node.jar /dist/amy.jar
@@ -33,6 +33,5 @@ EXPOSE $AMY_SERVER_CONFIG_SERVER_SOCKET_PORT
 EXPOSE $AMY_SOCKET_CONFIG_WEB_SOCKET_PORT
 
 RUN mkdir /config
-RUN mkdir /data
 
 CMD ["java", "-jar", "amy.jar", "-c", "/config"]

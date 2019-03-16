@@ -7,8 +7,15 @@ services:
     environment:
       - AMY_SERVER_CONFIG_SERVER_URL=http://master-node
       - AMY_MQTT_CONFIG_BROKER_HOST=tcp://broker
+      - AMY_JAVAX_PERSISTENCE_JAVAX_PERSISTENCE_JDBC_URL=jdbc:mysql://database/{databasename}?createDatabaseIfNotExist=true
+      - AMY_JAVAX_PERSISTENCE_JAVAX_PERSISTENCE_JDBC_USER=root
+      - AMY_JAVAX_PERSISTENCE_JAVAX_PERSISTENCE_JDBC_PASSWORD=example
     ports:
      - "80:80"
     container_name: master-node
   broker:
-    image: "eclipse-mosquitto"
+    image: eclipse-mosquitto
+  database:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: example
