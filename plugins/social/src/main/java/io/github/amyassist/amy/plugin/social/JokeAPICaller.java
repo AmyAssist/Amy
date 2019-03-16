@@ -57,14 +57,15 @@ public class JokeAPICaller {
 	@Reference
 	private Logger logger;
 
+	private Random random = new Random();
+
 	/**
 	 * Get a joke from one of the given APIs (random)
 	 * 
 	 * @return a random joke
 	 */
 	protected String getRandomJoke() {
-		Random r = new Random();
-		final int apiIndex = r.nextInt(this.jokeAPIs.size());
+		final int apiIndex = this.random.nextInt(this.jokeAPIs.size());
 		return callJokeAPI(this.jokeAPIs.get(apiIndex));
 	}
 

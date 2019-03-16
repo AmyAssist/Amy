@@ -23,9 +23,9 @@
 
 package io.github.amyassist.amy.plugin.timer;
 
+import static io.github.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -66,8 +66,6 @@ class TimerResourceTest {
 
 	private List<Timer> timers = new ArrayList<>();
 
-	private Response r;
-
 	/**
 	 * setup server and client for requests and responses
 	 */
@@ -87,9 +85,9 @@ class TimerResourceTest {
 	void testGetAllTimers() {
 		List<Timer> returnedTimers = createTimers(3, true);
 		when(this.tLogic.getAllTimers()).thenReturn(returnedTimers);
-		this.r = this.target.path("timers").request().get();
-		assertThat(returnedTimers.size(), is(3));
-		assertEquals(200, this.r.getStatus());
+		Response response = this.target.path("timers").request().get();
+		assertThat(returnedTimers, hasSize(3));
+		assertThat(response, status(200));
 
 	}
 
@@ -111,16 +109,16 @@ class TimerResourceTest {
 		when(this.tLogic.getTimer(2)).thenReturn(returnedTimers.get(1));
 		when(this.tLogic.getTimer(5)).thenThrow(new NoSuchElementException());
 
-		this.r = this.target.path("timers/0").request().get();
-		assertEquals(500, this.r.getStatus());
+		Response response = this.target.path("timers/0").request().get();
+		assertThat(response, status(500));
 
-		this.r = this.target.path("timers/2").request().get();
-		assertEquals(200, this.r.getStatus());
-		assertEquals(this.tLogic.getTimer(2).getId(), 2);
+		response = this.target.path("timers/2").request().get();
+		assertThat(response, status(200));
+		assertThat(this.tLogic.getTimer(2).getId(), is(2));
 
-		this.r = this.target.path("timers/5").request().get();
-		assertEquals(404, this.r.getStatus());
-		assertTrue(this.r.readEntity(String.class).startsWith("there is no timer5"));
+		response = this.target.path("timers/5").request().get();
+		assertThat(response, status(404));
+		assertThat(response.readEntity(String.class), org.hamcrest.Matchers.startsWith("there is no timer5"));
 	}
 
 	/**
@@ -128,8 +126,8 @@ class TimerResourceTest {
 	 */
 	@Test
 	void testDeleteAllTimers() {
-		this.r = this.target.path("timers/deleteAll").request().post(null);
-		assertEquals(204, this.r.getStatus());
+		Response response = this.target.path("timers/deleteAll").request().post(null);
+		assertThat(response, status(204));
 		verify(this.tLogic).deleteAllTimers();
 	}
 
@@ -143,14 +141,14 @@ class TimerResourceTest {
 		when(this.tLogic.setTimer(newTimerTime)).thenReturn(newTimer);
 		Entity<Timer> entity = Entity.entity(newTimer, MediaType.APPLICATION_JSON);
 
-		this.r = this.target.path("timers/new").request().post(entity);
+		Response response = this.target.path("timers/new").request().post(entity);
 
-		Timer timerRead = this.r.readEntity(Timer.class);
-		assertEquals(200, this.r.getStatus());
-		assertEquals(newTimer.getId(), timerRead.getId());
-		assertEquals(newTimer.getTimerTime(), timerRead.getTimerTime());
+		Timer timerRead = response.readEntity(Timer.class);
+		assertThat(response, status(200));
+		assertThat(timerRead.getId(), is(newTimer.getId()));
+		assertThat(timerRead.getTimerTime(), is(newTimer.getTimerTime()));
 		// time.now() is not testable
-		assertEquals(newTimer.isActive(), timerRead.isActive());
+		assertThat(timerRead.isActive(), is(newTimer.isActive()));
 	}
 
 	/**
@@ -162,8 +160,8 @@ class TimerResourceTest {
 		when(this.tLogic.getTimer(1)).thenReturn(returnedTimers.get(0));
 		Entity<Timer> entity = Entity.entity(returnedTimers.get(0), MediaType.APPLICATION_JSON);
 
-		this.r = this.target.path("timers/de.activate/1").request().post(entity);
-		assertEquals(204, this.r.getStatus());
+		Response response = this.target.path("timers/de.activate/1").request().post(entity);
+		assertThat(response, status(204));
 		verify(this.tLogic).reactivateTimer(any());
 	}
 
@@ -176,8 +174,8 @@ class TimerResourceTest {
 		when(this.tLogic.getTimer(1)).thenReturn(returnedTimers.get(0));
 		Entity<Timer> entity = Entity.entity(returnedTimers.get(0), MediaType.APPLICATION_JSON);
 
-		this.r = this.target.path("timers/de.activate/1").request().post(entity);
-		assertEquals(204, this.r.getStatus());
+		Response response = this.target.path("timers/de.activate/1").request().post(entity);
+		assertThat(response, status(204));
 		verify(this.tLogic).pauseTimer(any());
 	}
 
@@ -190,8 +188,8 @@ class TimerResourceTest {
 		when(this.tLogic.getTimer(1)).thenReturn(returnedTimers.get(0));
 		Entity<Timer> entity = Entity.entity(returnedTimers.get(0), MediaType.APPLICATION_JSON);
 
-		this.r = this.target.path("timers/delete/1").request().post(entity);
-		assertEquals(204, this.r.getStatus());
+		Response response = this.target.path("timers/delete/1").request().post(entity);
+		assertThat(response, status(204));
 		verify(this.tLogic).deleteTimer(1);
 	}
 

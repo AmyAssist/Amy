@@ -37,28 +37,39 @@ public interface HelloWorldService {
 	 */
 	String helloWorld();
 
+	/**
+	 * Create a String with the given amount of <i>helloword</i> in it.
+	 * 
+	 * @param times
+	 *            the amount how often the string <i>helloword</i> should be repeated
+	 * @return the created String
+	 */
 	String helloWorldXTimes(int times);
 
 	/**
 	 * Demonstrate the registry's functionality
+	 * 
 	 * @return human-readable text
 	 */
 	String demonstrateContactRegistry();
 
 	/**
 	 * Test the registry for correctness
+	 * 
 	 * @return human-readable text
 	 */
 	String testContactRegistry();
 
 	/**
 	 * Test the location registry
+	 * 
 	 * @return human-readable text
 	 */
-    String testLocationRegistry();
+	String testLocationRegistry();
 
 	/**
 	 * Test custom registry
+	 * 
 	 * @return human-readable text
 	 */
 	String testCustomRegistry();

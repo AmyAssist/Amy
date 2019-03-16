@@ -143,17 +143,11 @@ public class EMailSpeech {
 		}
 		try {
 			if (entities.get("all") != null && entities.get("all").getString() != null) {
-				if (important) {
-					return this.logic.printMessages(-1, true);
-				}
-				return this.logic.printMessages(-1, false);
+				return this.logic.printMessages(-1, important);
 			}
 			if (entities.get("number") != null) {
 				int amount = entities.get("number").getNumber();
-				if (important) {
-					return this.logic.printMessages(amount, true);
-				}
-				return this.logic.printMessages(amount, false);
+				return this.logic.printMessages(amount, important);
 			}
 		} catch (IllegalStateException ise) {
 			return ise.getMessage();
