@@ -33,8 +33,8 @@ import io.github.amyassist.amy.core.persistence.provider.PersistenceProvider;
 
 /**
  * Persistence Provider implementation for JDBC drivers. This Provider use the configuration form the
- * <i>javax.persistence.properties</i>. The property <i>javax.persistence.jdbc.url</i> should contain <i>{databasename}</i> as
- * placeholder for the database name.
+ * <i>javax.persistence.properties</i>. The property <i>javax.persistence.jdbc.url</i> should contain
+ * <i>{databasename}</i> as placeholder for the database name.
  * 
  * @author Leon Kiefer
  */
