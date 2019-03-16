@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import javax.ws.rs.Produces;
@@ -62,7 +63,7 @@ public class DurationMessageBodyWriter implements MessageBodyWriter<Duration> {
 	@Override
 	public void writeTo(Duration d, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
 			MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
-		OutputStreamWriter writer = new OutputStreamWriter(entityStream, "ISO-8859-1");
+		OutputStreamWriter writer = new OutputStreamWriter(entityStream, StandardCharsets.ISO_8859_1);
 		writer.write(d.toString());
 		writer.flush();
 		writer.close();
