@@ -19,8 +19,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
-			<artifactId>amy-di</artifactId>
-			<version>0.8.0-SNAPSHOT</version>
+			<artifactId>amy-di-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
@@ -35,6 +34,10 @@
 			<artifactId>deployment-descriptor-utility</artifactId>
 			<version>0.8.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
 		<!-- JPA -->
 		<dependency>
 			<groupId>javax.persistence</groupId>
@@ -44,22 +47,12 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.3.1.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.4.196</version>
+			<version>5.4.1.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-c3p0</artifactId>
-			<version>5.3.1.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>c3p0</groupId>
-			<artifactId>c3p0</artifactId>
-			<version>0.9.1.2</version>
+			<version>5.4.1.Final</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -10,7 +10,7 @@ COPY --from=source /src/ /app/
 
 WORKDIR /app
 
-RUN set -x; mvn install -DskipTests=true
+RUN set -x; mvn install -DskipTests=true -Ddevelopment
 
 RUN mkdir /dist
 RUN mv amy-master-node/target/amy-master-node.jar /dist/amy.jar

@@ -116,6 +116,8 @@
 		<module>logger</module>
 		<module>persistence</module>
 		<module>persistence-api</module>
+		<module>development-database</module>
+		<module>generic-JDBC-adapter</module>
 	</modules>
 	<licenses>
 		<license>
