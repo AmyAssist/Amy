@@ -44,9 +44,8 @@ public class BasicSoundPlayer implements Runnable, SoundPlayer {
 	private final AudioInputStream audioStream;
 
 	private volatile boolean shouldStop = false;
-	private volatile byte[] data;
-	private volatile int pos;
-	private volatile int remainingLoopCount;
+	private byte[] data;
+	private int remainingLoopCount;
 
 	private Thread playingThread;
 
@@ -82,7 +81,6 @@ public class BasicSoundPlayer implements Runnable, SoundPlayer {
 
 		this.audioStream = new AudioInputStream(this.stream, format, frameLength);
 		this.remainingLoopCount = loopCount;
-		this.pos = 0;
 
 		this.playingThread = new Thread(this, "SoundPlayerThread");
 	}
@@ -97,15 +95,16 @@ public class BasicSoundPlayer implements Runnable, SoundPlayer {
 	 */
 	@Override
 	public void run() {
+		int pos = 0;
 		while (!this.shouldStop && !Thread.interrupted() && this.remainingLoopCount != 0 && !this.stream.isClosed()) {
 			try {
-				if (!this.stream.getQueue().offer(Byte.toUnsignedInt(this.data[this.pos]), 100,
+				if (!this.stream.getQueue().offer(Byte.toUnsignedInt(this.data[pos]), 100,
 						TimeUnit.MILLISECONDS)) {
 					continue;
 				}
-				this.pos++;
-				if (this.pos >= this.data.length) {
-					this.pos = 0;
+				pos++;
+				if (pos >= this.data.length) {
+					pos = 0;
 					if (this.remainingLoopCount != -1) {
 						this.remainingLoopCount--;
 					}
