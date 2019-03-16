@@ -23,9 +23,11 @@
 
 package io.github.amyassist.amy.core.natlang.nl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
@@ -50,28 +52,30 @@ import io.github.amyassist.amy.natlang.userinteraction.UserIntent;
 
 /**
  * TODO: Description
+ * 
  * @author Felix Burk, Lars Buttgereit
  */
 public class NLParserTest {
-	
+
 	private List<UserIntent> intents;
-	
+
 	@BeforeEach
-	public void setup() throws JAXBException, UnsupportedEncodingException, IOException {
-		InputStream inputResource = this.getClass().getResourceAsStream("../userinteraction/testXMLUserInteraction.aim.xml");
-		try (InputStreamReader inputStreamReader = new InputStreamReader(inputResource, "UTF-8");
+	public void setup() throws JAXBException, IOException {
+		InputStream inputResource = this.getClass()
+				.getResourceAsStream("../userinteraction/testXMLUserInteraction.aim.xml");
+		try (InputStreamReader inputStreamReader = new InputStreamReader(inputResource, StandardCharsets.UTF_8);
 				BufferedReader reader = new BufferedReader(inputStreamReader)) {
 			String xml = reader.lines().collect(Collectors.joining());
 			JAXBContext jc = JAXBContext.newInstance(XMLAmyInteractionModel.class);
 			Unmarshaller unmarshaller = jc.createUnmarshaller();
 			StringReader stringReader = new StringReader(xml);
 			XMLAmyInteractionModel aimmodel = (XMLAmyInteractionModel) unmarshaller.unmarshal(stringReader);
-			
+
 			UserIntent int0 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(0));
 			UserIntent int1 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(1));
 			UserIntent int2 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(2));
 			UserIntent int3 = new UserIntent(this.getClass().getMethods()[0], aimmodel.getIntents().get(3));
-			
+
 			this.intents = new ArrayList<>();
 			this.intents.add(int0);
 			this.intents.add(int1);
@@ -79,8 +83,7 @@ public class NLParserTest {
 			this.intents.add(int3);
 		}
 	}
-	
-	
+
 	@Test
 	public void test() {
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
@@ -88,10 +91,10 @@ public class NLParserTest {
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(0).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
-		assertEquals(parser.matchingNodeIndex(tokens),0);
-		assertEquals(this.intents.get(0).isFinished(), false);
+		assertThat(parser.matchingNodeIndex(tokens), is(0));
+		assertThat(this.intents.get(0).isFinished(), is(false));
 	}
-	
+
 	@Test
 	public void finished() {
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
@@ -99,11 +102,11 @@ public class NLParserTest {
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(0).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
-		
-		assertEquals(parser.matchingNodeIndex(tokens),0);
-		assertEquals(getEntityNodeContent(parser.matchingNode(tokens)), "good morning10 oh 20");
+
+		assertThat(parser.matchingNodeIndex(tokens), is(0));
+		assertThat(getEntityNodeContent(parser.matchingNode(tokens)), is("good morning10 oh 20"));
 	}
-	
+
 	/**
 	 * tests stop conditions in + wildcards
 	 */
@@ -114,21 +117,21 @@ public class NLParserTest {
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(3).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
-		
+
 		Deque<AGFNode> queue = parser.generateStopperDeque(nodes.get(0));
 		AGFNode queueLast = queue.pollLast();
-		assertEquals(AGFNodeType.AGF, queueLast.getType());
+		assertThat(queueLast.getType(), is(AGFNodeType.AGF));
 		AGFNode orGroup = queueLast.getChilds().get(0);
-		assertEquals(AGFNodeType.ORG, orGroup.getType());
-		assertEquals(1, orGroup.getChilds().size());
-		
+		assertThat(orGroup.getType(), is(AGFNodeType.ORG));
+		assertThat(orGroup.getChilds(), hasSize(1));
+
 		AGFNode queueSecond = queue.pollLast();
-		assertEquals(AGFNodeType.AGF, queueSecond.getType());
+		assertThat(queueSecond.getType(), is(AGFNodeType.AGF));
 		AGFNode orGroupSecond = queueSecond.getChilds().get(0);
-		assertEquals(AGFNodeType.ORG, orGroupSecond.getType());
-		assertEquals(2, orGroupSecond.getChilds().size());
+		assertThat(orGroupSecond.getType(), is(AGFNodeType.ORG));
+		assertThat(orGroupSecond.getChilds(), hasSize(2));
 	}
-	
+
 	@Test
 	public void shortWildcardTest() {
 		NLLexer lex = new NLLexer(new ChooseLanguage("en", false));
@@ -136,15 +139,14 @@ public class NLParserTest {
 		List<AGFNode> nodes = new ArrayList<>();
 		nodes.add(this.intents.get(1).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
-		assertEquals(parser.matchingNodeIndex(tokens),0);
+		assertThat(parser.matchingNodeIndex(tokens), is(0));
 	}
-	
-	
+
 	@Test
 	public void longWildcardTest() {
 		StringBuilder b = new StringBuilder();
 		b.append("test the wildcard");
-		for(int i=0; i < 1000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			b.append(" really");
 		}
 		b.append(" long");
@@ -154,20 +156,21 @@ public class NLParserTest {
 		nodes.add(this.intents.get(2).getGrammar());
 		NLParser parser = new NLParser(nodes, null);
 		System.out.println(parser.matchingNode(tokens).printSelf());
-		assertEquals(parser.matchingNodeIndex(tokens),0);
+		assertThat(parser.matchingNodeIndex(tokens), is(0));
 	}
-	
+
 	StringBuilder b = new StringBuilder();
+
 	public String getEntityNodeContent(AGFNode node) {
-		for(AGFNode child : node.getChilds()) {
-			if(child.getType() == AGFNodeType.ENTITY) {
+		for (AGFNode child : node.getChilds()) {
+			if (child.getType() == AGFNodeType.ENTITY) {
 				EntityNode entity = (EntityNode) child;
 				this.b.append(entity.getUserProvidedContent());
-			}else {
+			} else {
 				getEntityNodeContent(child);
 			}
 		}
-	
+
 		return this.b.toString();
 	}
 
