@@ -25,11 +25,8 @@ package io.github.amyassist.amy.messagehub;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Properties;
 import java.util.function.BiConsumer;
-import java.util.function.UnaryOperator;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
@@ -50,24 +47,23 @@ import io.github.amyassist.amy.messagehub.topic.TopicName;
 /**
  * A adapter to talk with the mqtt broker
  * 
- * @author Tim Neumann
+ * @author Tim Neumann, Leon Kiefer
  */
 @Service(MessagingAdapter.class)
 public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallback, IMqttActionListener {
 
 	private static final String CONFIG_NAME = "mqtt.config";
-	private static final String KEY_BROKER_ADDRESS = "brokerAddress";
+	private static final String KEY_BROKER_ADDRESS = "broker.host";
+	private static final String KEY_BROKER_USERNAME = "broker.username";
+	private static final String KEY_BROKER_PASSWORD = "broker.password";
 	private static final String KEY_PERSITENCE_LOCATION = "persitenceLocation";
 
-	private static final Duration CONNECTION_TIMEOUT = Duration.ofSeconds(10);
-	private static final Duration KEEP_ALIVE_INTERVAL = Duration.ofSeconds(5);
-	private static final Duration DISCONNECT_TIMEOUT = Duration.ofSeconds(2);
-	private static final Duration INITIAL_RECONNECT_TIME = Duration.ofSeconds(3);
+	private static final int DISCONNECTED_BUFFER_SIZE = 10000;
 
-	private static final String OPERATION_CONNECT = "Connect";
-
-	private static final UnaryOperator<Duration> RECONNECT_MODIFIER = amount -> (amount.multipliedBy(4));
-	private static final int MAX_RECONNECT_ATTEMPTS = 3;
+	// all durations are given in seconds
+	private static final int CONNECTION_TIMEOUT = 10;
+	private static final int KEEP_ALIVE_INTERVAL = 5;
+	private static final int DISCONNECT_TIMEOUT = 2;
 
 	@Reference
 	private Logger logger;
@@ -95,9 +91,10 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 
 	private MqttConnectOptions options;
 
-	private int reconnectAttempt;
-
+	private Object stateLock = new Object();
+	private ConnectionState currentState = ConnectionState.DISCONNECTED;
 	private boolean running;
+	private IMqttToken connectToken;
 
 	@PostConstruct
 	private void init() {
@@ -108,68 +105,86 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 		Path persistencePath = this.env.getWorkingDirectory().resolve(persitanceLocation);
 
 		try {
-			this.client = new MqttAsyncClient(brokerAddress, this.info.getNodeId() + "-MainJavaApp",
+			this.client = new MqttAsyncClient(brokerAddress, this.info.getNodeId(),
 					new MqttDefaultFilePersistence(persistencePath.toAbsolutePath().toString()));
 			this.client.setCallback(this);
 		} catch (MqttException e) {
 			throw new IllegalStateException("Failed to initialize mqtt client", e);
 		}
 
+		DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
+		disconnectedBufferOptions.setBufferEnabled(true);
+		disconnectedBufferOptions.setPersistBuffer(true);
+		disconnectedBufferOptions.setBufferSize(DISCONNECTED_BUFFER_SIZE);
+		disconnectedBufferOptions.setDeleteOldestMessages(false);
+		this.client.setBufferOpts(disconnectedBufferOptions);
+
 		this.options = new MqttConnectOptions();
 		this.options.setCleanSession(false);
-		this.options.setConnectionTimeout((int) CONNECTION_TIMEOUT.getSeconds());
-		this.options.setKeepAliveInterval((int) KEEP_ALIVE_INTERVAL.getSeconds());
+		this.options.setConnectionTimeout(CONNECTION_TIMEOUT);
+		this.options.setKeepAliveInterval(KEEP_ALIVE_INTERVAL);
+		this.options.setAutomaticReconnect(true);
+
+		if (!config.getProperty(KEY_BROKER_USERNAME).isEmpty()) {
+			this.options.setUserName(config.getProperty(KEY_BROKER_USERNAME));
+		}
+		if (!config.getProperty(KEY_BROKER_PASSWORD).isEmpty()) {
+			this.options.setPassword(config.getProperty(KEY_BROKER_PASSWORD).toCharArray());
+		}
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.core.service.RunnableService#start()
-	 */
 	@Override
 	public void start() {
-		connect();
+		this.connect();
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.core.service.RunnableService#stop()
-	 */
 	@Override
 	public void stop() {
 		this.running = false;
-		disconnect();
+		this.disconnect();
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#isRunning()
-	 */
 	@Override
 	public boolean isRunning() {
 		return this.running;
 	}
 
 	private void connect() {
-		try {
-			this.client.connect(this.options, OPERATION_CONNECT, this);
-		} catch (MqttException e) {
-			throw new IllegalStateException("Error while connecting", e);
+		synchronized (this.stateLock) {
+			if (this.currentState == ConnectionState.DISCONNECTED) {
+				try {
+					this.currentState = ConnectionState.CONNECTING;
+					this.connectToken = this.client.connect(this.options, null, this);
+				} catch (MqttException e) {
+					this.currentState = ConnectionState.DISCONNECTED;
+					throw new IllegalStateException("Error while connecting", e);
+				}
+			} else {
+				throw new IllegalStateException(this.currentState.toString());
+			}
 		}
 	}
 
 	private void disconnect() {
-		try {
-			this.client.disconnect(DISCONNECT_TIMEOUT.toMillis());
-		} catch (MqttException | IllegalStateException e) {
-			this.logger.error("Error while stopping mqtt adapter", e);
+		synchronized (this.stateLock) {
+			if (this.currentState == ConnectionState.CONNECTED) {
+				try {
+					this.currentState = ConnectionState.DISCONNECTING;
+					this.client.disconnect(DISCONNECT_TIMEOUT * 1000L);
+				} catch (MqttException e) {
+					this.currentState = ConnectionState.CONNECTED;
+					this.logger.error("Error while stopping mqtt adapter", e);
+				}
+			} else if (this.currentState == ConnectionState.CONNECTING) {
+				this.currentState = ConnectionState.STOPCONNECTING;
+			} else if (this.currentState == ConnectionState.RECONNECTING) {
+				this.logger.error("not supported by MQTT client");
+			}
 		}
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#publish(io.github.amyassist.amy.messagehub.topic.TopicName,
-	 *      java.lang.String, int, boolean)
-	 */
 	@Override
 	public void publish(TopicName topic, String payload, int qualityOfService, boolean retain) {
-		if (!this.isRunning())
-			throw new IllegalStateException("Cannot publish, because the mqtt adapter is not running.");
 		MqttMessage msg = new MqttMessage(payload.getBytes(StandardCharsets.UTF_8));
 		msg.setQos(qualityOfService);
 		msg.setRetained(retain);
@@ -180,9 +195,6 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 		}
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#subscribe(io.github.amyassist.amy.messagehub.topic.TopicFilter)
-	 */
 	@Override
 	public void subscribe(TopicFilter topic) {
 		if (!this.isRunning())
@@ -194,9 +206,6 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 		}
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#unsubscribe(io.github.amyassist.amy.messagehub.topic.TopicFilter)
-	 */
 	@Override
 	public void unsubscribe(TopicFilter topic) {
 		if (!this.isRunning())
@@ -208,95 +217,104 @@ public class MQTTAdapter implements MessagingAdapter, RunnableService, MqttCallb
 		}
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#setCallback(java.util.function.BiConsumer)
-	 */
 	@Override
 	public void setCallback(BiConsumer<TopicName, Message> callback) {
 		this.handler = callback;
 	}
 
-	/**
-	 * @see io.github.amyassist.amy.messagehub.MessagingAdapter#setStartCallback(java.lang.Runnable)
-	 */
 	@Override
 	public void setStartCallback(Runnable callback) {
 		this.onSuccesfullStartCallback = callback;
 	}
 
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.IMqttActionListener#onSuccess(org.eclipse.paho.client.mqttv3.IMqttToken)
-	 */
 	@Override
 	public void onSuccess(IMqttToken asyncActionToken) {
-		if (asyncActionToken.isComplete() && asyncActionToken.getUserContext().toString().equals(OPERATION_CONNECT)) {
-			this.logger.info("MQTT Adapter connected.");
-			this.reconnectAttempt = 0;
+		if (asyncActionToken.isComplete() && asyncActionToken.equals(this.connectToken)) {
+			synchronized (this.stateLock) {
+				this.connectToken = null;
+				if (this.currentState == ConnectionState.CONNECTING) {
+					this.currentState = ConnectionState.CONNECTED;
+					this.logger.debug("MQTT Adapter connected.");
+				} else if (this.currentState == ConnectionState.STOPCONNECTING) {
+					this.currentState = ConnectionState.CONNECTED;
+					this.scheduler.execute(this::disconnect);
+				} else {
+					throw new IllegalStateException(this.currentState.toString());
+				}
+			}
 			if (!this.running) {
 				this.running = true;
 				this.onSuccesfullStartCallback.run();
 			}
-
 		}
 	}
 
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.IMqttActionListener#onFailure(org.eclipse.paho.client.mqttv3.IMqttToken,
-	 *      java.lang.Throwable)
-	 */
 	@Override
 	public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-		if (this.reconnectAttempt > 0 && asyncActionToken.getUserContext().toString().equals(OPERATION_CONNECT)) {
-			this.logger.info("Reconnect failed.");
-			tryReconnect();
+		if (asyncActionToken.equals(this.connectToken)) {
+			synchronized (this.stateLock) {
+				this.connectToken = null;
+				if (this.currentState == ConnectionState.CONNECTING) {
+					this.currentState = ConnectionState.DISCONNECTED;
+					this.logger.warn("Could not connect to Broker", exception);
+				} else if (this.currentState == ConnectionState.STOPCONNECTING) {
+					this.currentState = ConnectionState.DISCONNECTED;
+				} else {
+					throw new IllegalStateException(this.currentState.toString());
+				}
+			}
 		} else {
 			this.logger.error("Async error during operation \"{}\".", asyncActionToken.getUserContext(), exception);
 		}
 	}
 
-	private void tryReconnect() {
-		if (this.reconnectAttempt < MAX_RECONNECT_ATTEMPTS) {
-			Duration amount = INITIAL_RECONNECT_TIME;
-
-			for (int i = 0; i < this.reconnectAttempt; i++) {
-				amount = RECONNECT_MODIFIER.apply(amount);
+	@Override
+	public void connectionLost(Throwable cause) {
+		synchronized (this.stateLock) {
+			if (this.currentState == ConnectionState.CONNECTED) {
+				this.currentState = ConnectionState.RECONNECTING;
 			}
-
-			this.reconnectAttempt++;
-
-			this.logger.info("Trying to reconnect in {}", amount);
-			this.scheduler.schedule(this::start, Instant.now().plus(amount));
+			if (this.currentState == ConnectionState.RECONNECTING) {
+				this.currentState = ConnectionState.RECONNECTING;
+			} else {
+				throw new IllegalStateException(this.currentState.toString());
+			}
+		}
+		if (cause instanceof MqttException) {
+			MqttException exception = (MqttException) cause;
+			this.logger.info("Conncetion to MQTT broker lost: {}", exception.getMessage());
 		} else {
-			this.logger.error("No reconnects left.");
+			this.logger.warn("Conncetion to MQTT broker lost:", cause);
 		}
 	}
 
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.MqttCallback#connectionLost(java.lang.Throwable)
-	 */
-	@Override
-	public void connectionLost(Throwable cause) {
-		this.logger.warn("Conncetion to mqtt broker lost:", cause);
-		tryReconnect();
-	}
-
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.MqttCallback#messageArrived(java.lang.String,
-	 *      org.eclipse.paho.client.mqttv3.MqttMessage)
-	 */
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		if (this.handler != null) {
 			this.handler.accept(this.tf.createTopicName(topic), new MessageImpl(message));
+		} else {
+			this.logger.debug("No handler for incoming messages. Message is ignored!");
 		}
 	}
 
-	/**
-	 * @see org.eclipse.paho.client.mqttv3.MqttCallback#deliveryComplete(org.eclipse.paho.client.mqttv3.IMqttDeliveryToken)
-	 */
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
 		// Don't do anything
+	}
+
+	private enum ConnectionState {
+		/** -> CONNECTING */
+		DISCONNECTED,
+		/** -> DISCONNECTED, CONNECTED, STOPCONNECTING */
+		CONNECTING,
+		/** -> DISCONNECTED, DISCONNECTING */
+		STOPCONNECTING,
+		/** -> DISCONNECTING */
+		CONNECTED,
+		/** -> DISCONNECTED, RECONNECTING */
+		DISCONNECTING,
+		/** -> CONNECTED */
+		RECONNECTING
 	}
 
 }
