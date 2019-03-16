@@ -2,9 +2,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>amy-api</artifactId>
-	<name>Amy api</name>
-	<description>The Amy api interfaces</description>
+	<artifactId>amy-development-database</artifactId>
+	<name>Amy development database</name>
+	<description>A simple H2 Database with Adapter for development</description>
 	<parent>
 		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
@@ -14,12 +14,22 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
+			<artifactId>amy-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-persistence-api</artifactId>
 			<version>0.8.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>jsr305</artifactId>
+			<groupId>io.github.amyassist</groupId>
+			<artifactId>amy-di-api</artifactId>
+		</dependency>
+		<!-- Database implementations -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.199</version>
 		</dependency>
 	</dependencies>
 </project>

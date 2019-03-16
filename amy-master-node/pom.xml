@@ -61,6 +61,11 @@
 			<artifactId>amy-logger</artifactId>
 			<version>0.8.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>io.github.amyassist</groupId>
+			<artifactId>amy-persistence</artifactId>
+			<version>0.8.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -133,6 +138,36 @@
 		</plugins>
 	</build>
 	<profiles>
+		<profile>
+			<id>development</id>
+			<activation>
+				<property>
+					<name>development</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>io.github.amyassist</groupId>
+					<artifactId>amy-development-database</artifactId>
+					<version>0.8.0-SNAPSHOT</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>production</id>
+			<activation>
+				<property>
+					<name>!development</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>io.github.amyassist</groupId>
+					<artifactId>amy-generic-jdbc-adapter</artifactId>
+					<version>0.8.0-SNAPSHOT</version>
+				</dependency>
+			</dependencies>
+		</profile>
 		<profile>
 			<id>licenses</id>
 			<build>
