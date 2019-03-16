@@ -50,8 +50,7 @@ import io.github.amyassist.amy.natlang.userinteraction.UserIntentTemplate;
 
 /**
  * The implementation of the NLProcessingManager. This implementation uses the Parsers in the
- * {@link io.github.amyassist.amy.natlang.nl} and the {@link io.github.amyassist.amy.natlang.agf}
- * package.
+ * {@link io.github.amyassist.amy.natlang.nl} and the {@link io.github.amyassist.amy.natlang.agf} package.
  *
  * @author Leon Kiefer, Felix Burk
  */
@@ -90,6 +89,8 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private ChooseLanguage language;
 
 	private AGFNode quitIntentUserInputGram;
+
+	private Random rand = new Random();
 
 	@PostConstruct
 	private void setup() {
@@ -195,12 +196,9 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	private Map<String, String> getEntityContent(AGFNode node) {
 		Map<String, String> result = new HashMap<>();
 
-		for (AGFNode child : node.getChildEntityNodes()) {
-			if (child.getType() == AGFNodeType.ENTITY) {
-				EntityNode entity = (EntityNode) child;
-				if (entity.getUserProvidedContent() != null) {
-					result.put(entity.getContent(), entity.getUserProvidedContent());
-				}
+		for (EntityNode child : node.getChildEntityNodes()) {
+			if (child.getType() == AGFNodeType.ENTITY && child.getUserProvidedContent() != null) {
+				result.put(child.getContent(), child.getUserProvidedContent());
 			}
 		}
 
@@ -261,8 +259,7 @@ public class NLProcessingManagerImpl implements NLProcessingManager {
 	}
 
 	private String generateRandomAnswer(String[] strings) {
-		Random rand = new Random();
-		int rndm = rand.nextInt(strings.length);
+		int rndm = this.rand.nextInt(strings.length);
 		return strings[rndm];
 	}
 

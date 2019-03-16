@@ -23,7 +23,8 @@
 
 package io.github.amyassist.amy.core.natlang.nl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 import java.util.Map;
 
@@ -34,15 +35,16 @@ import io.github.amyassist.amy.natlang.agf.nodes.AGFNode;
 
 /**
  * TODO: Description
+ * 
  * @author Felix Burk, Lars Buttgereit
  */
 public class PreDefinedEntitesTest {
-	
+
 	@Test
 	public void test() {
 		Map<String, AGFNode> map = PreDefinedEntityTypes.getTypes();
-		
-		assertEquals(map.isEmpty(), false);
+
+		assertThat(map.isEmpty(), is(true));
 	}
 
 }
