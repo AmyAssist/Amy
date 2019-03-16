@@ -44,7 +44,7 @@ public class PreDefinedEntitesTest {
 	public void test() {
 		Map<String, AGFNode> map = PreDefinedEntityTypes.getTypes();
 
-		assertThat(map.isEmpty(), is(true));
+		assertThat(map.isEmpty(), is(false));
 	}
 
 }
