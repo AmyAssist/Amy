@@ -117,7 +117,7 @@
 		<module>persistence</module>
 		<module>persistence-api</module>
 		<module>development-database</module>
-		<module>generic-JDBC-adapter</module>
+		<module>generic-jdbc-adapter</module>
 	</modules>
 	<licenses>
 		<license>

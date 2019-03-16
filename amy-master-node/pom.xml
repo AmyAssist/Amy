@@ -163,7 +163,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>io.github.amyassist</groupId>
-					<artifactId>amy-generic-JDBC-adapter</artifactId>
+					<artifactId>amy-generic-jdbc-adapter</artifactId>
 					<version>0.8.0-SNAPSHOT</version>
 				</dependency>
 			</dependencies>

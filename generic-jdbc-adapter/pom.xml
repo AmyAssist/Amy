@@ -2,7 +2,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>amy-generic-JDBC-adapter</artifactId>
+	<artifactId>amy-generic-jdbc-adapter</artifactId>
 	<name>Amy generic JDBC adapter</name>
 	<description>A generic JDBC adapter to connect to databases using a JDBC Driver</description>
 	<parent>
