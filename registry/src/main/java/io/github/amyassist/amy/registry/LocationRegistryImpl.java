@@ -23,13 +23,14 @@
 
 package io.github.amyassist.amy.registry;
 
+import javax.annotation.Nonnull;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import io.github.amyassist.amy.core.di.annotation.Reference;
 import io.github.amyassist.amy.core.di.annotation.Service;
 import io.github.amyassist.amy.registry.geocoder.Geocoder;
 import io.github.amyassist.amy.registry.geocoder.GeocoderException;
-import org.apache.commons.lang3.tuple.Pair;
-
-import javax.annotation.Nonnull;
 
 /**
  * Location registry implementation
@@ -39,54 +40,58 @@ import javax.annotation.Nonnull;
 @Service(LocationRegistry.class)
 public class LocationRegistryImpl extends AbstractTaggableRegistry<Location> implements LocationRegistry {
 
-    @Reference
-    private Geocoder geocoder;
+	@Reference
+	private Geocoder geocoder;
 
-    @Override
-    protected String getPersistenceUnitName() {
-        return "LocationRegistry";
-    }
+	@Override
+	protected String getPersistenceUnitName() {
+		return "LocationRegistry";
+	}
 
-    @Nonnull
-    @Override
-    protected Class<? extends LocationImpl> getEntityClass() {
-        return LocationImpl.class;
-    }
+	@Nonnull
+	@Override
+	protected Class<? extends LocationImpl> getEntityClass() {
+		return LocationImpl.class;
+	}
 
-    @Override
-    public void save(Location location) {
+	@Override
+	public void save(Location location) {
 
-        if (location.getLatitude() == 0 && location.getLongitude() == 0) {
-            // Extract coordinates from address by using geocoder API
-            try {
-                Pair<Double, Double> coordinates = this.geocoder.geocodeAddress(location.getAddressString());
-                location.setLatitude(coordinates.getKey());
-                location.setLongitude(coordinates.getValue());
-            } catch (GeocoderException e) {
-                throw new RegistryException("Could not geocode address.", e);
-            }
-        }
+		if (location.getLatitude() == 0 && location.getLongitude() == 0) {
+			// Extract coordinates from address by using geocoder API
+			try {
+				Pair<Double, Double> coordinates = this.geocoder.geocodeAddress(location.getAddressString());
+				location.setLatitude(coordinates.getKey());
+				location.setLongitude(coordinates.getValue());
+			} catch (GeocoderException e) {
+				throw new RegistryException("Could not geocode address.", e);
+			}
+		}
 
-        super.save(location);
-    }
+		super.save(location);
+	}
 
-    /**
-     * Get the home location
-     * @return entity or null
-     * @throws RegistryException if there is more than one home entity
-     */
-    @Override
+	/**
+	 * Get the home location
+	 * 
+	 * @return entity or null
+	 * @throws RegistryException
+	 *             if there is more than one home entity
+	 */
+	@Override
 	public Location getHome() {
-        return getEntityWithTag(Tags.HOME);
-    }
+		return getEntityWithTag(Tags.HOME);
+	}
 
-    /**
-     * Get the work location
-     * @return entity or null
-     * @throws RegistryException if there is more than one work entity
-     */
-    @Override
+	/**
+	 * Get the work location
+	 * 
+	 * @return entity or null
+	 * @throws RegistryException
+	 *             if there is more than one work entity
+	 */
+	@Override
 	public Location getWork() {
-        return getEntityWithTag(Tags.WORK);
-    }
+		return getEntityWithTag(Tags.WORK);
+	}
 }
