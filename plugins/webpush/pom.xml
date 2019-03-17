@@ -13,6 +13,7 @@
 	</parent>
 	<properties>
 		<amy.basedir>${project.basedir}/../..</amy.basedir>
+		<bouncycastle.version>1.61</bouncycastle.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -28,7 +29,7 @@
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.61</version>
+			<version>${bouncycastle.version}</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -57,7 +58,7 @@
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
-										<Class-Path>lib/bcprov-jdk15on-1.54.jar</Class-Path>
+										<Class-Path>lib/bcprov-jdk15on-${bouncycastle.version}.jar</Class-Path>
 									</manifestEntries>
 								</transformer>
 							</transformers>
