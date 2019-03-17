@@ -14,9 +14,6 @@ io.github.amyassist.amy.core.audio.LocalAudioService
 io.github.amyassist.amy.core.audio.sound.SoundFactoryService
 io.github.amyassist.amy.core.speech.output.OutputImpl
 io.github.amyassist.amy.core.speech.tts.TextToSpeechImpl
-io.github.amyassist.amy.core.persistence.DeploymentAdapter
-io.github.amyassist.amy.core.persistence.PersistenceService
-io.github.amyassist.amy.core.persistence.storage.DatabaseStorage
 io.github.amyassist.amy.core.pluginloader.PluginLoader
 io.github.amyassist.amy.core.pluginloader.PluginManagerService
 io.github.amyassist.amy.core.service.ServiceManagerImpl

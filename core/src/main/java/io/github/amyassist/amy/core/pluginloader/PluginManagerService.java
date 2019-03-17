@@ -39,7 +39,6 @@ import io.github.amyassist.amy.core.di.annotation.PostConstruct;
 import io.github.amyassist.amy.core.di.annotation.Reference;
 import io.github.amyassist.amy.core.di.annotation.Service;
 import io.github.amyassist.amy.core.io.Environment;
-import io.github.amyassist.amy.core.persistence.Persistence;
 
 /**
  * Manages the plugin integration.
@@ -61,8 +60,6 @@ public class PluginManagerService implements PluginManager {
 	@Reference
 	private PluginLoader pluginLoader;
 
-	@Reference
-	private Persistence persistence;
 	@Reference
 	private ConfigurationManager configurationManager;
 	@Reference
