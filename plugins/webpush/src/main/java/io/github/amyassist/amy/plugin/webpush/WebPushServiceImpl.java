@@ -44,8 +44,6 @@ import org.bouncycastle.math.ec.ECPoint;
 import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 
-import com.google.common.io.BaseEncoding;
-
 import io.github.amyassist.amy.core.di.annotation.PostConstruct;
 import io.github.amyassist.amy.core.di.annotation.Reference;
 import io.github.amyassist.amy.core.di.annotation.Service;
@@ -88,11 +86,11 @@ public class WebPushServiceImpl implements WebPushService {
 			try {
 				KeyPair keyPair = this.generateKeyPair();
 
-				byte[] publicKey = Utils.savePublicKey((ECPublicKey) keyPair.getPublic());
-				byte[] privateKey = Utils.savePrivateKey((ECPrivateKey) keyPair.getPrivate());
+				byte[] publicKey = Utils.encode((ECPublicKey) keyPair.getPublic());
+				byte[] privateKey = Utils.encode((ECPrivateKey) keyPair.getPrivate());
 
-				this.storage.put(PUBLIC_KEY, BaseEncoding.base64Url().encode(publicKey));
-				this.storage.put(PRIVATE_KEY, BaseEncoding.base64Url().encode(privateKey));
+				this.storage.put(PUBLIC_KEY, Base64.getUrlEncoder().encodeToString(publicKey));
+				this.storage.put(PRIVATE_KEY, Base64.getUrlEncoder().encodeToString(privateKey));
 			} catch (InvalidAlgorithmParameterException | NoSuchProviderException | NoSuchAlgorithmException e) {
 				this.logger.error("Could not generate key pair", e);
 			}

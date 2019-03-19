@@ -39,11 +39,6 @@ class DeviceEntityTest {
 
 	private DeviceEntity deviceEntity;
 
-	/**
-	 * Test method for
-	 * {@link io.github.amyassist.amy.plugin.spotify.entities.DeviceEntity#Device(java.lang.String, java.lang.String, java.lang.String)}.
-	 */
-	@Test
 	@BeforeEach
 	void init() {
 		this.deviceEntity = new DeviceEntity("Smartphone", "Hello", "abc123");

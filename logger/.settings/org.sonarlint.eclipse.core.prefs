@@ -5,4 +5,4 @@ fileExclusions=
 idePrefixKey=
 projectKey=io.github.amyassist\:amy
 serverId=SonarCloud/amyassist
-sqPrefixKey=
+sqPrefixKey=logger

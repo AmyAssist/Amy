@@ -45,13 +45,13 @@ public class SocialLogic {
 	 * receive information about possible grammars to use
 	 */
 	@Reference
-	NatlangInformation info;
+	private NatlangInformation info;
 
 	/**
 	 * provides information about installed plugins
 	 */
 	@Reference
-	Configuration constants;
+	private Configuration constants;
 
 	@Reference
 	private JokeAPICaller joker;
@@ -59,7 +59,9 @@ public class SocialLogic {
 	/**
 	 * map of internal and human readable plugin names the key are human readable names and values are the internal ones
 	 */
-	Map<String, String> pluginNames;
+	private Map<String, String> pluginNames;
+
+	private Random rand = new Random();
 
 	/**
 	 * initializes plugin information
@@ -76,7 +78,7 @@ public class SocialLogic {
 			this.pluginNames.put(pluginHumanReadableName, pluginInfo[i]);
 		}
 	}
-	
+
 	/**
 	 * receive a random name answer
 	 * 
@@ -85,7 +87,6 @@ public class SocialLogic {
 	String getMyNameIs() {
 		return generateRandomAnswer(SocialConstants.myNameIs);
 	}
-
 
 	/**
 	 * receive a random greeting
@@ -122,7 +123,7 @@ public class SocialLogic {
 	String getFoxSays() {
 		return generateRandomAnswer(SocialConstants.foxSays);
 	}
-	
+
 	/**
 	 * receive a random string answer
 	 * 
@@ -131,7 +132,7 @@ public class SocialLogic {
 	String getOneDoesNotSimply() {
 		return generateRandomAnswer(SocialConstants.oneDoesNotSimply);
 	}
-	
+
 	/**
 	 * receive a number of sample sentences
 	 * 
@@ -197,8 +198,7 @@ public class SocialLogic {
 	 * @return selected string
 	 */
 	private String generateRandomAnswer(String[] strings) {
-		Random rand = new Random();
-		int rndm = rand.nextInt(strings.length);
+		int rndm = this.rand.nextInt(strings.length);
 		return strings[rndm];
 	}
 }
