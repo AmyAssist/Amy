@@ -8,14 +8,14 @@
 	<parent>
 		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.8.0</version>
+		<version>0.9.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-di</artifactId>
-			<version>0.8.0</version>
+			<version>0.9.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
