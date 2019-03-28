@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import org.opentosca.containerapi.client.model.Application;
+import org.opentosca.container.client.model.Application;
 
 import io.github.amyassist.amy.core.di.annotation.Reference;
 import io.github.amyassist.amy.core.natlang.EntityData;

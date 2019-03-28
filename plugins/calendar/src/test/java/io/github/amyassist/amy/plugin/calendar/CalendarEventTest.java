@@ -23,9 +23,8 @@
 
 package io.github.amyassist.amy.plugin.calendar;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -46,7 +45,6 @@ class CalendarEventTest {
 	/**
 	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#CalendarEvent()}.
 	 */
-	@Test
 	@BeforeEach
 	void testCalendarEventConstructors() {
 		this.event1 = new CalendarEvent();
@@ -137,8 +135,7 @@ class CalendarEventTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#equals(java.lang.Object)}.
+	 * Test method for {@link io.github.amyassist.amy.plugin.calendar.CalendarEvent#equals(java.lang.Object)}.
 	 */
 	@Test
 	void testEqualsObject() {

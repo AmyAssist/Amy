@@ -96,11 +96,11 @@ public class Core {
 	 * The main entry point for the real core logic.
 	 */
 	private void run() {
-		this.logger.info("run");
+		this.logger.debug("run");
 		this.loadPlugins();
 		this.deploy();
 		this.start();
-		this.logger.info("running");
+		this.logger.debug("running");
 	}
 
 	/**
@@ -145,9 +145,9 @@ public class Core {
 	}
 
 	private void doStop() {
-		this.logger.info("stop");
+		this.logger.debug("stop");
 		this.runnableServiceExtension.stop();
-		this.logger.info("stopped");
+		this.logger.debug("stopped");
 	}
 
 }

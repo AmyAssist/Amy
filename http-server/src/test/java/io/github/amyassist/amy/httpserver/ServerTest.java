@@ -28,7 +28,12 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
 import java.util.Properties;
+
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.UriBuilder;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -95,6 +100,12 @@ class ServerTest {
 		ServerImpl server = this.locator.createAndInitialize(ServerImpl.class);
 		server.register(TestRestResource.class);
 		server.start();
+		WebTarget target = ClientBuilder.newClient().target(UriBuilder.fromResource(TestRestResource.class)
+				.scheme("http").host("localhost").port(50080).path("test"));
+
+		String ping = target.path("testParam").request().get(String.class);
+		assertThat(ping, is("testParam"));
+
 		server.stop();
 	}
 

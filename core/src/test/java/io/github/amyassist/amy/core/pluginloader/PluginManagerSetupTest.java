@@ -38,7 +38,6 @@ import io.github.amyassist.amy.core.configuration.ConfigurationManager;
 import io.github.amyassist.amy.core.di.DependencyInjection;
 import io.github.amyassist.amy.core.di.annotation.Reference;
 import io.github.amyassist.amy.core.io.Environment;
-import io.github.amyassist.amy.core.persistence.Persistence;
 import io.github.amyassist.amy.test.FrameworkExtension;
 import io.github.amyassist.amy.test.TestFramework;
 
@@ -76,8 +75,6 @@ class PluginManagerSetupTest {
 		when(configurationManager.getConfigurationWithDefaults("plugin.config")).thenReturn(this.properties);
 
 		//this.testFramework.mockService(NLProcessingManager.class);
-		this.testFramework.mockService(Persistence.class);
-
 	}
 
 	/**

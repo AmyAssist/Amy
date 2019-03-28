@@ -23,29 +23,22 @@
 
 package io.github.amyassist.amy.core.persistence;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Properties;
+import java.util.*;
 
 import javax.annotation.Nonnull;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceProviderResolverHolder;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import com.google.common.collect.Lists;
 
-import io.github.amyassist.amy.core.configuration.ConfigurationManager;
 import io.github.amyassist.amy.core.di.annotation.PostConstruct;
 import io.github.amyassist.amy.core.di.annotation.Reference;
 import io.github.amyassist.amy.core.di.annotation.Service;
-import io.github.amyassist.amy.core.io.Environment;
+import io.github.amyassist.amy.core.persistence.provider.PersistenceProvider;
 
 /**
  * The Persistence Service implementation
@@ -54,34 +47,15 @@ import io.github.amyassist.amy.core.io.Environment;
  */
 @Service
 public class PersistenceService implements Persistence {
-	private static final String PERSISTENCE_CONFIG = "persistence";
-	private static final String PERSISTENCE_DATA_PROPERTY = "dataDir";
-	private static final String JAVAX_PERSISTENCE_CONFIG = "javax.persistence";
-
 	private Map<String, List<Class<?>>> persistenceUnits = new HashMap<>();
 
 	@Reference
-	private Environment environment;
+	private PersistenceProvider persistenceAdapter;
 
-	@Reference
-	private ConfigurationManager configurationManager;
-
-	private Properties hibernateFix;
-	private PersistenceProvider persistenceProvider;
-	private String dataDir;
+	private javax.persistence.spi.PersistenceProvider persistenceProvider;
 
 	@PostConstruct
 	private void init() {
-		Properties javaxProperties = this.configurationManager.getConfigurationWithDefaults(JAVAX_PERSISTENCE_CONFIG);
-
-		this.hibernateFix = new Properties();
-		for (String propertyName : javaxProperties.stringPropertyNames()) {
-			this.hibernateFix.setProperty(propertyName, javaxProperties.getProperty(propertyName));
-		}
-
-		Properties config = this.configurationManager.getConfigurationWithDefaults(PERSISTENCE_CONFIG);
-		this.dataDir = config.getProperty(PERSISTENCE_DATA_PROPERTY);
-
 		this.persistenceProvider = PersistenceProviderResolverHolder.getPersistenceProviderResolver()
 				.getPersistenceProviders().get(0);
 	}
@@ -97,16 +71,18 @@ public class PersistenceService implements Persistence {
 		List<Class<?>> entities = this.persistenceUnits.get(name);
 		List<String> entitiesNames = Lists.transform(entities, Class::getName);
 
-		PersistenceUnitInfo persistenceUnitInfo = new PersistenceUnitInfoImpl(name, entitiesNames,
-				entities.get(0).getClassLoader(), this.hibernateFix);
+		Properties properties = this.persistenceAdapter.getProperties(name);
 
-		Map<String, String> properties = new HashMap<>();
-		String string = this.environment.getWorkingDirectory().resolve(this.dataDir).resolve(name).toAbsolutePath()
-				.toString();
-		properties.put("javax.persistence.jdbc.url", "jdbc:h2:" + string);
+		Properties hibernateFix = new Properties();
+		for (String propertyName : properties.stringPropertyNames()) {
+			hibernateFix.setProperty(propertyName, properties.getProperty(propertyName));
+		}
+
+		PersistenceUnitInfo persistenceUnitInfo = new PersistenceUnitInfoImpl(name, entitiesNames,
+				entities.get(0).getClassLoader(), hibernateFix);
 
 		EntityManagerFactory entityManagerFactory = this.persistenceProvider
-				.createContainerEntityManagerFactory(persistenceUnitInfo, properties);
+				.createContainerEntityManagerFactory(persistenceUnitInfo, null);
 		return entityManagerFactory.createEntityManager();
 	}
 

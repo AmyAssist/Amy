@@ -21,7 +21,7 @@
  * For more information see notice.md
  */
 
-package io.github.amyassist.amy.core.logger;
+package io.github.amyassist.amy.logger;
 
 import java.util.Collections;
 
@@ -30,7 +30,10 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.amyassist.amy.core.di.*;
+import io.github.amyassist.amy.core.di.ContextLocator;
+import io.github.amyassist.amy.core.di.ServiceDescription;
+import io.github.amyassist.amy.core.di.ServiceInstantiationDescription;
+import io.github.amyassist.amy.core.di.SimpleServiceLocator;
 import io.github.amyassist.amy.core.di.consumer.ServiceConsumer;
 import io.github.amyassist.amy.core.di.provider.ServiceProvider;
 import io.github.amyassist.amy.core.di.runtime.ServiceDescriptionImpl;
@@ -42,6 +45,8 @@ import io.github.amyassist.amy.core.di.runtime.ServiceInstantiationDescriptionIm
  * @author Leon Kiefer
  */
 public class LoggerProvider implements ServiceProvider<Logger> {
+	
+	private static final String CONTEXT_CLASS = "class";
 
 	@Override
 	public @Nonnull ServiceDescription<Logger> getServiceDescription() {
@@ -52,13 +57,13 @@ public class LoggerProvider implements ServiceProvider<Logger> {
 	public ServiceInstantiationDescription<Logger> getServiceInstantiationDescription(@Nonnull ContextLocator locator,
 			@Nonnull ServiceConsumer<Logger> serviceConsumer) {
 		return new ServiceInstantiationDescriptionImpl<>(serviceConsumer.getServiceDescription(),
-				Collections.singletonMap(Context.CLASS, serviceConsumer.getConsumerClass()), LoggerFactory.class);
+				Collections.singletonMap(CONTEXT_CLASS, serviceConsumer.getConsumerClass()), LoggerFactory.class);
 	}
 
 	@Override
 	public @Nonnull Logger createService(@Nonnull SimpleServiceLocator locator,
 			@Nonnull ServiceInstantiationDescription<Logger> serviceInstantiationDescription) {
-		Class<?> cls = (Class<?>) serviceInstantiationDescription.getContext().get(Context.CLASS);
+		Class<?> cls = (Class<?>) serviceInstantiationDescription.getContext().get(CONTEXT_CLASS);
 		return LoggerFactory.getLogger(cls);
 	}
 

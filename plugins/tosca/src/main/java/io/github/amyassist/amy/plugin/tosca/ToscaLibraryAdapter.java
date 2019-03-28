@@ -23,15 +23,15 @@
 
 package io.github.amyassist.amy.plugin.tosca;
 
-import org.opentosca.containerapi.client.IOpenTOSCAContainerAPIClient;
-import org.opentosca.containerapi.client.impl.OpenTOSCAContainerLegacyAPIClient;
+import org.opentosca.container.client.ContainerClient;
+import org.opentosca.container.client.ContainerClientBuilder;
 
 import io.github.amyassist.amy.core.di.annotation.Service;
 
 /**
  * Adapter to the tosca client library
  * 
- * @author Tim Neumann
+ * @author Tim Neumann, Leon Kiefer
  */
 @Service
 public class ToscaLibraryAdapter {
@@ -41,12 +41,11 @@ public class ToscaLibraryAdapter {
 	 * 
 	 * @param containerHost
 	 *            The container host to use.
-	 * @param containerHostInternal
-	 *            The internal container host to use.
+	 * @param port
+	 *            The container host port to use.
 	 * @return The created client
-	 * @see OpenTOSCAContainerLegacyAPIClient#OpenTOSCAContainerLegacyAPIClient(String, String)
 	 */
-	public IOpenTOSCAContainerAPIClient createLibrary(String containerHost, String containerHostInternal) {
-		return new OpenTOSCAContainerLegacyAPIClient(containerHost, containerHostInternal);
+	public ContainerClient createLibrary(String containerHost, int port) {
+		return new ContainerClientBuilder().withHostname(containerHost).withPort(port).build();
 	}
 }

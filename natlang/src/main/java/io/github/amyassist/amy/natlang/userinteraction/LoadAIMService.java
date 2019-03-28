@@ -25,6 +25,7 @@ package io.github.amyassist.amy.natlang.userinteraction;
 
 import java.io.*;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -150,7 +151,7 @@ public class LoadAIMService implements DeploymentContainerService {
 		InputStream stream = plugin.getClassLoader().getResourceAsStream(fileName);
 
 		if (stream != null) {
-			try (InputStreamReader inputStream = new InputStreamReader(stream, "UTF-8");
+			try (InputStreamReader inputStream = new InputStreamReader(stream, StandardCharsets.UTF_8);
 					BufferedReader reader = new BufferedReader(inputStream);) {
 				XMLAmyInteractionModel model = extractModel(reader.lines().collect(Collectors.joining()), fileName);
 				if (model != null) {
@@ -201,7 +202,7 @@ public class LoadAIMService implements DeploymentContainerService {
 	public List<String> readMetaFile(InputStream stream, IPlugin plugin) {
 		List<String> aimFiles = new ArrayList<>();
 
-		try (InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+		try (InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
 				BufferedReader in = new BufferedReader(reader);){
 			String line = null;
 			boolean aimsFound = false;

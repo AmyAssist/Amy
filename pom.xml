@@ -113,6 +113,11 @@
 		<module>natlang-api</module>
 		<module>chat-socket</module>
 		<module>natlang</module>
+		<module>logger</module>
+		<module>persistence</module>
+		<module>persistence-api</module>
+		<module>development-database</module>
+		<module>generic-jdbc-adapter</module>
 	</modules>
 	<licenses>
 		<license>
@@ -258,6 +263,17 @@
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.8</version>
+						<extensions>true</extensions>
+						<configuration>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<serverId>ossrh</serverId>
+							<autoReleaseAfterClose>false</autoReleaseAfterClose>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>

@@ -44,6 +44,7 @@ public class NatlangInformationImpl implements NatlangInformation {
 
 	@Reference
 	private NLProcessingManager manager;
+	private Random random = new Random();
 
 	/**
 	 * @see io.github.amyassist.amy.core.natlang.NatlangInformation#getSampleSentencesFromKeyword(java.lang.String,
@@ -86,17 +87,16 @@ public class NatlangInformationImpl implements NatlangInformation {
 	 */
 	private String generateSentenceFromGrammar(AGFNode node) {
 		StringBuilder result = new StringBuilder();
-		Random random = new Random();
 
 		switch (node.getType()) {
 		case OPG:
-			boolean b = random.nextInt(2) % 2 == 0;
+			boolean b = this.random.nextInt(2) % 2 == 0;
 			if (!b) {
 				return "";
 			}
 			//$FALL-THROUGH$
 		case ORG:
-			int i = random.nextInt(node.getChilds().size());
+			int i = this.random.nextInt(node.getChilds().size());
 			return result.append(generateSentenceFromGrammar(node.getChilds().get(i))).toString();
 		case SHORTWC:
 			return result.append(" +").toString();

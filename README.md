@@ -42,7 +42,7 @@ In the plugin.config set the plugin path acordingly, the default is to load all 
 Executing `java -jar amy-master-node.jar` will run Amy in the current working directory.
 Use the option `-h` to get help `java -jar amy-master-node.jar -h`.
 
-As soon as the confirmation `[INFORMATION] :: Speech Recognition activated` pops up in your console you are good to go.  
+As soon as the confirmation `Sphinx listening` pops up in your console you are good to go.  
 
 #### Waking her up and setting her to sleep
 Before giving Amy any commands, she first has to be woken up.  

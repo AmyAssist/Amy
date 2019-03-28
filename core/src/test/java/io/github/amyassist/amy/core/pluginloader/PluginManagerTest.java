@@ -42,7 +42,6 @@ import io.github.amyassist.amy.core.configuration.ConfigurationManager;
 import io.github.amyassist.amy.core.di.DependencyInjection;
 import io.github.amyassist.amy.core.di.annotation.Reference;
 import io.github.amyassist.amy.core.io.Environment;
-import io.github.amyassist.amy.core.persistence.Persistence;
 import io.github.amyassist.amy.test.FrameworkExtension;
 import io.github.amyassist.amy.test.TestFramework;
 import uk.org.lidalia.slf4jtest.TestLogger;
@@ -86,8 +85,6 @@ class PluginManagerTest {
 		ConfigurationManager configurationManager = this.testFramework.mockService(ConfigurationManager.class);
 		this.properties = new Properties();
 		when(configurationManager.getConfigurationWithDefaults("plugin.config")).thenReturn(this.properties);
-
-		this.testFramework.mockService(Persistence.class);
 
 		this.properties.setProperty("pluginDir", "plugins");
 		this.properties.setProperty("plugins", "");

@@ -33,8 +33,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.opentosca.containerapi.client.impl.OpenTOSCAContainerLegacyAPIClient;
-import org.opentosca.containerapi.client.model.Application;
+import org.opentosca.container.client.ContainerClient;
+import org.opentosca.container.client.model.Application;
 
 import io.github.amyassist.amy.core.di.annotation.Reference;
 import io.github.amyassist.amy.core.taskscheduler.api.TaskScheduler;
@@ -42,21 +42,27 @@ import io.github.amyassist.amy.plugin.tosca.configurations.ConfigurationEntry;
 import io.github.amyassist.amy.plugin.tosca.configurations.ConfigurationRegistry;
 import io.github.amyassist.amy.test.FrameworkExtension;
 import io.github.amyassist.amy.test.TestFramework;
+import io.swagger.client.model.CsarDTO;
+import io.swagger.client.model.PlanDTO;
+import io.swagger.client.model.TParameter;
 
 /**
  * Test for the tosca logic.
  * 
- * @author Felix Burk
+ * @author Felix Burk, Leon Kiefer
  */
 @ExtendWith(FrameworkExtension.class)
 public class ToscaLogicTest {
+
+	private final static String CONTAINER_HOST = "somehost";
+	private final static int CONTAINER_HOST_PORT = 1337;
 
 	@Reference
 	private TestFramework framework;
 
 	private ToscaLogic toskaLogic;
 
-	private OpenTOSCAContainerLegacyAPIClient toscaClient;
+	private ContainerClient toscaClient;
 
 	private List<Application> apps;
 
@@ -87,8 +93,14 @@ public class ToscaLogicTest {
 
 	private List<Application> createApps() {
 		List<Application> ret = new ArrayList<>();
-		ret.add(new Application("test", Arrays.asList("testKey"), Collections.emptyList(), "Test App", "V1",
-				"A test app.", "tester", Collections.emptyList(), "meta"));
+		CsarDTO csarDTO = new CsarDTO();
+		csarDTO.setDisplayName("Test App");
+		csarDTO.setVersion("V1");
+		PlanDTO planDTO = new PlanDTO();
+		planDTO.setInputParameters(Arrays.asList(new TParameter().name("testKey")));
+
+		ret.add(Application.builder().csar(csarDTO).buildPlan(planDTO).build());
+
 		return ret;
 	}
 
@@ -100,7 +112,10 @@ public class ToscaLogicTest {
 	 */
 	@BeforeEach
 	public void setup() throws Exception {
-		this.framework.mockService(Properties.class);
+		Properties properties = this.framework.mockService(Properties.class);
+		Mockito.when(properties.getProperty("container.host")).thenReturn(CONTAINER_HOST);
+		Mockito.when(properties.getProperty("container.host.port")).thenReturn(String.valueOf(CONTAINER_HOST_PORT));
+
 		TaskScheduler scheduler = this.framework.mockService(TaskScheduler.class);
 		Mockito.doAnswer(new Answer<Void>() {
 			@Override
@@ -114,12 +129,12 @@ public class ToscaLogicTest {
 		ConfigurationRegistry registry = this.framework.mockService(ConfigurationRegistry.class);
 		List<ConfigurationEntry> config = createConfig();
 		Mockito.when(registry.getAll()).thenReturn(config);
-		this.toscaClient = Mockito.mock(OpenTOSCAContainerLegacyAPIClient.class);
+		this.toscaClient = Mockito.mock(ContainerClient.class);
 		this.apps = createApps();
 		Mockito.when(this.toscaClient.getApplications()).thenReturn(this.apps);
 
 		ToscaLibraryAdapter adap = this.framework.mockService(ToscaLibraryAdapter.class);
-		Mockito.when(adap.createLibrary(null, null)).thenReturn(this.toscaClient);
+		Mockito.when(adap.createLibrary(CONTAINER_HOST, CONTAINER_HOST_PORT)).thenReturn(this.toscaClient);
 
 		this.toskaLogic = this.framework.setServiceUnderTest(ToscaLogic.class);
 	}
@@ -141,7 +156,7 @@ public class ToscaLogicTest {
 		this.toskaLogic.install("Test App", "testConfig");
 		Map<String, String> args = new HashMap<>();
 		args.put("testKey", "testValue");
-		Mockito.verify(this.toscaClient).createServiceInstance(ArgumentMatchers.eq(this.apps.get(0)),
+		Mockito.verify(this.toscaClient).provisionApplication(ArgumentMatchers.eq(this.apps.get(0)),
 				ArgumentMatchers.eq(args));
 	}
 

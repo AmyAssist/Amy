@@ -23,12 +23,10 @@
 
 package io.github.amyassist.amy.plugin.alarmclock;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static io.github.amyassist.amy.test.matcher.rest.ResponseMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -59,7 +57,7 @@ class AlarmClockResourceTest {
 
 	@Reference
 	private TestFramework framework;
-	
+
 	private Environment environment;
 
 	private AlarmClockLogic acl;
@@ -70,8 +68,6 @@ class AlarmClockResourceTest {
 
 	private List<Alarm> alarms = new ArrayList<>();
 
-	private Response r;
-
 	/**
 	 * setup server and client for requests and responses
 	 */
@@ -81,7 +77,7 @@ class AlarmClockResourceTest {
 		this.target = this.framework.setRESTResource(AlarmClockResource.class);
 		this.alarmStorage = this.framework.mockService(AlarmRegistry.class);
 		this.environment = this.framework.mockService(Environment.class);
-		
+
 		when(this.alarmStorage.getAll()).thenReturn(this.alarms);
 	}
 
@@ -92,10 +88,9 @@ class AlarmClockResourceTest {
 	void testGetAllAlarms() {
 		List<Alarm> returnedAlarms = createAlarms(3, true);
 		when(this.acl.getAllAlarms()).thenReturn(returnedAlarms);
-		this.r = this.target.path("alarms").request().get();
+		Response response = this.target.path("alarms").request().get();
 		assertThat(returnedAlarms.size(), is(3));
-		assertEquals(200, this.r.getStatus());
-
+		assertThat(response, status(200));
 	}
 
 	private List<Alarm> createAlarms(int amount, boolean active) {
@@ -116,16 +111,16 @@ class AlarmClockResourceTest {
 		when(this.acl.getAlarm(2)).thenReturn(returnedAlarms.get(1));
 		when(this.acl.getAlarm(5)).thenThrow(new NoSuchElementException());
 
-		this.r = this.target.path("alarms/0").request().get();
-		assertEquals(500, this.r.getStatus());
+		Response response = this.target.path("alarms/0").request().get();
+		assertThat(response, status(500));
 
-		this.r = this.target.path("alarms/2").request().get();
-		assertEquals(200, this.r.getStatus());
-		assertEquals(this.acl.getAlarm(2).getId(), 2);
+		response = this.target.path("alarms/2").request().get();
+		assertThat(response, status(200));
+		assertThat(this.acl.getAlarm(2).getId(), is(2));
 
-		this.r = this.target.path("alarms/5").request().get();
-		assertEquals(404, this.r.getStatus());
-		assertTrue(this.r.readEntity(String.class).startsWith("there is no alarm5"));
+		response = this.target.path("alarms/5").request().get();
+		assertThat(response, status(404));
+		assertThat(response.readEntity(String.class), org.hamcrest.Matchers.startsWith("there is no alarm5"));
 	}
 
 	/**
@@ -133,8 +128,8 @@ class AlarmClockResourceTest {
 	 */
 	@Test
 	void testResetAlarms() {
-		this.r = this.target.path("alarms/reset").request().post(null);
-		assertEquals(204, this.r.getStatus());
+		Response response = this.target.path("alarms/reset").request().post(null);
+		assertThat(response, status(204));
 		verify(this.acl).resetAlarms();
 	}
 
@@ -148,10 +143,11 @@ class AlarmClockResourceTest {
 		when(this.environment.getCurrentLocalDateTime()).thenReturn(LocalDateTime.of(2018, 10, 4, 19, 19));
 		Entity<Alarm> entity = Entity.entity(newAlarm, MediaType.APPLICATION_JSON);
 
-		this.r = this.target.path("alarms/new").request().post(entity);
-		assertEquals(200, this.r.getStatus());
-		Alarm alarmread = this.r.readEntity(Alarm.class);
-		assertEquals(newAlarm, alarmread);
+		Response response = this.target.path("alarms/new").request().post(entity);
+		assertThat(response, status(200));
+		Alarm alarmread = response.readEntity(Alarm.class);
+		assertThat(response, status(200));
+		assertThat(alarmread, is(newAlarm));
 	}
 
 	/**
@@ -165,8 +161,8 @@ class AlarmClockResourceTest {
 		Entity<Alarm> entity = Entity.entity(new Alarm(1, LocalDateTime.of(2018, 8, 23, 12, 12), true),
 				MediaType.APPLICATION_JSON);
 
-		this.r = this.target.path("alarms/delete/1").request().post(entity);
-		assertEquals(204, this.r.getStatus());
+		Response response = this.target.path("alarms/delete/1").request().post(entity);
+		assertThat(response, status(204));
 		verify(this.acl).deleteAlarm(1);
 	}
 
@@ -179,8 +175,8 @@ class AlarmClockResourceTest {
 		when(this.acl.getAlarm(1)).thenReturn(returnedAlarms.get(0));
 		Entity<Alarm> entity = Entity.entity(returnedAlarms.get(0), MediaType.APPLICATION_JSON);
 
-		this.r = this.target.path("alarms/de.activate/1").request().post(entity);
-		assertEquals(204, this.r.getStatus());
+		Response response = this.target.path("alarms/de.activate/1").request().post(entity);
+		assertThat(response, status(204));
 		verify(this.acl).activateAlarm(1);
 	}
 
@@ -193,8 +189,8 @@ class AlarmClockResourceTest {
 		when(this.acl.getAlarm(1)).thenReturn(returnedAlarms.get(0));
 		Entity<Alarm> entity = Entity.entity(returnedAlarms.get(0), MediaType.APPLICATION_JSON);
 
-		this.r = this.target.path("alarms/de.activate/1").request().post(entity);
-		assertEquals(204, this.r.getStatus());
+		Response response = this.target.path("alarms/de.activate/1").request().post(entity);
+		assertThat(response, status(204));
 		verify(this.acl).deactivateAlarm(1);
 	}
 
@@ -207,8 +203,8 @@ class AlarmClockResourceTest {
 		when(this.acl.getAlarm(1)).thenReturn(returnedAlarms.get(0));
 		Entity<Alarm> entity = Entity.entity(returnedAlarms.get(0), MediaType.APPLICATION_JSON);
 
-		this.r = this.target.path("alarms/delete/1").request().post(entity);
-		assertEquals(204, this.r.getStatus());
+		Response response = this.target.path("alarms/delete/1").request().post(entity);
+		assertThat(response, status(204));
 		verify(this.acl).deleteAlarm(1);
 	}
 

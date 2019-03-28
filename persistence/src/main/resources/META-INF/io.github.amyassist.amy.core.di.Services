@@ -1,0 +1,3 @@
+io.github.amyassist.amy.core.persistence.DeploymentAdapter
+io.github.amyassist.amy.core.persistence.PersistenceService
+io.github.amyassist.amy.core.persistence.storage.DatabaseStorage
