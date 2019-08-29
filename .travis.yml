@@ -1,7 +1,6 @@
 language: java
 jdk:
-  - oraclejdk8
-#  - openjdk8
+  - openjdk8
 env:
   global:
     # GPG_KEY_NAME
