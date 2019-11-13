@@ -34,7 +34,7 @@ import io.github.amyassist.amy.messagehub.topic.TopicName;
 /**
  * A Subscription from a MessageReciever
  * 
- * @author Leon kiefer
+ * @author Leon Kiefer
  */
 class SubscriptionObject implements Subscription {
 
