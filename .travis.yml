@@ -11,6 +11,9 @@ jobs:
   include:
     - stage: test and code quality
       name: "test and code quality"
+      jdk:
+      - openjdk8
+      - openjdk13
       script:
       - mvn clean test jacoco:report sonar:sonar
       - bash <(curl -s https://codecov.io/bash)
