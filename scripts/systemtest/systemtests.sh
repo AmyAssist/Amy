@@ -1,11 +1,11 @@
 #!/bin/bash
-WAIT_TO_START=20
+WAIT_TO_START=30
 absPath=$(readlink -f "$0")
 absDir=$(dirname "$absPath")
 cd "${absDir}"
 docker-compose up -d
 sleep $WAIT_TO_START
-curl -I -S --show-error localhost
+curl -sSI http://localhost
 curlCode=$?
 docker-compose stop
 docker-compose logs master-node
