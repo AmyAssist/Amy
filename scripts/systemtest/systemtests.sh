@@ -1,5 +1,5 @@
 #!/bin/bash
-WAIT_TO_START=20
+WAIT_TO_START=60
 absPath=$(readlink -f "$0")
 absDir=$(dirname "$absPath")
 cd "${absDir}"
