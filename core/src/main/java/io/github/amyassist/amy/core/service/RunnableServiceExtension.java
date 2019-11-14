@@ -26,6 +26,8 @@ package io.github.amyassist.amy.core.service;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import io.github.amyassist.amy.core.di.DependencyInjection;
 import io.github.amyassist.amy.core.di.ServiceDescription;
 import io.github.amyassist.amy.core.di.ServiceLocator;
@@ -48,7 +50,7 @@ public class RunnableServiceExtension implements Extension {
 	}
 
 	@Override
-	public <T> void onRegister(ServiceDescription<T> serviceDescription, Class<? extends T> cls) {
+	public <T> void onRegister(@Nonnull ServiceDescription<T> serviceDescription, @Nonnull Class<? extends T> cls) {
 		if (RunnableService.class.isAssignableFrom(cls)) {
 			this.runnableServices.add(serviceDescription);
 		}

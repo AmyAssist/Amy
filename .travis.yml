@@ -18,6 +18,9 @@ jobs:
         sonarcloud:
           organization: "amyassist"
           token: $SONAR_TOKEN
+    - name: "test jdk 13"
+      jdk: openjdk13
+      script: mvn clean test
     - name: "Docker system test"
       if: branch IN (dev, master)
       install: travis_retry docker build . -t amy-master-node
