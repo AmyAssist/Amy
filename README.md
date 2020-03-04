@@ -8,6 +8,7 @@
 
 [![Docker](http://dockeri.co/image/amyassist/amy)](https://hub.docker.com/r/amyassist/amy/)
 
+# THIS PROJECT IS DEPRECATED AND WILL NO LONGER BE MAINTAINED
 
 ### Personal Assistance System
 
