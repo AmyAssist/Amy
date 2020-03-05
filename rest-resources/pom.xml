@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>io.github.amyassist</groupId>
 		<artifactId>amy</artifactId>
-		<version>0.9.0-SNAPSHOT</version>
+		<version>0.9.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<dependencies>
@@ -23,7 +23,7 @@
 		<dependency>
 			<groupId>io.github.amyassist</groupId>
 			<artifactId>amy-testing-framework</artifactId>
-			<version>0.9.0-SNAPSHOT</version>
+			<version>0.9.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
