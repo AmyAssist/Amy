@@ -34,10 +34,9 @@ import java.util.List;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import javax.annotation.PreDestroy;
-
 import org.slf4j.Logger;
 
+import io.github.amyassist.amy.core.di.annotation.PreDestroy;
 import io.github.amyassist.amy.core.di.annotation.Reference;
 import io.github.amyassist.amy.core.di.annotation.Service;
 

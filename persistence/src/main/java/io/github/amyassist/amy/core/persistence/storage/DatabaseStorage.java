@@ -23,13 +23,9 @@
 
 package io.github.amyassist.amy.core.persistence.storage;
 
-import javax.annotation.PreDestroy;
 import javax.persistence.EntityManager;
 
-import io.github.amyassist.amy.core.di.annotation.Context;
-import io.github.amyassist.amy.core.di.annotation.PostConstruct;
-import io.github.amyassist.amy.core.di.annotation.Reference;
-import io.github.amyassist.amy.core.di.annotation.Service;
+import io.github.amyassist.amy.core.di.annotation.*;
 import io.github.amyassist.amy.core.persistence.Persistence;
 import io.github.amyassist.amy.core.plugin.api.IStorage;
 import io.github.amyassist.amy.core.pluginloader.IPlugin;
